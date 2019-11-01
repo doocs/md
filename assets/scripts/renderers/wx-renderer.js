@@ -65,7 +65,7 @@ let WxRenderer = function (opts) {
       }
       return `<code style="font-size: 90%; opacity: 0.6;">[${ x[0] }]</code> ${ x[1] }: <i>${ x[2] }</i><br/>`
     });
-    return `<h3 ${ getStyles('h3') }>References</h3><p ${ getStyles('footnotes') }>${ footnoteArray.join('\n') }</p>`
+    return `<h3 ${ getStyles('h3') }>引用链接</h3><p ${ getStyles('footnotes') }>${ footnoteArray.join('\n') }</p>`
   };
 
   this.buildAddition = function () {

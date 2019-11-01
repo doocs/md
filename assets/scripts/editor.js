@@ -28,9 +28,7 @@ let app = new Vue({
         { label: '17px', value: '17px', desc: '很大' },
       ],
       themeOption: [
-        { label: 'default', value: 'default', author: '张凯强' },
-        { label: 'lyric', value: 'lyric', author: 'Lyric' },
-        { label: 'lupeng', value: 'lupeng', author: '鲁鹏' }
+        { label: 'default', value: 'default', author: '杨立滨' },
       ],
       styleThemes: {
         default: defaultTheme,

@@ -119,7 +119,6 @@ let defaultTheme = {
     wx_link: {
       'color': '#576b95',
       'text-decoration': 'none',
-      'border-bottom': '1px solid #d1e9ff'
     },
     strong: {
       'color': '#ff5f2e',
