@@ -31,9 +31,7 @@ let app = new Vue({
         { label: 'default', value: 'default', author: '杨立滨' },
       ],
       styleThemes: {
-        default: defaultTheme,
-        lyric: lyricTheme,
-        lupeng: lupengTheme
+        default: defaultTheme
       },
       aboutDialogVisible: false
     };
