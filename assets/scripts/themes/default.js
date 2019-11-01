@@ -114,10 +114,10 @@ let defaultTheme = {
       'border-radius': '4px',
     },
     link: {
-      'color': '#009926'
+      'color': '#576b95'
     },
     wx_link: {
-      'color': '#0080ff',
+      'color': '#576b95',
       'text-decoration': 'none',
       'border-bottom': '1px solid #d1e9ff'
     },
