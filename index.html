@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>微信公众号 Markdown 编辑器</title>
+  <link rel="shortcut icon" href="assets/images/favicon.png">
+  <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
+
+  <link rel="stylesheet" href="assets/css/loading.css">
+
+  <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.11.1/theme-chalk/index.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/codemirror.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/base16-light.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/duotone-light.min.css">
+  <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/monokai.min.css">
+
+  <link rel="stylesheet" href="libs/prettify/color-themes/github-v2.min.css">
+
+  <link rel="stylesheet" href="assets/css/app.css">
+</head>
+<body>
+  <!--loading 界面-->
+  <div class="loading" id="loading">
+    <div class="loading-wrapper">
+      <div class="loading-text">Loading...</div>
+      <div class="loading-anim"></div>
+    </div>
+  </div>
+
+  <!--应用主体-->
+  <div id="app" class="container">
+    <el-container>
+      <el-header class="top">
+        <div><img src="assets/images/favicon.png" class="web-icon" alt="icon"> <span
+            class="web-title">公众号 Markdown 编辑器 </span></div>
+        <el-form size="mini" class="ctrl" :inline=true>
+          <el-form-item label="Editor Themes">
+            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择字体" @change="editorThemeChanged">
+              <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
+                         :value="editorTheme.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Fonts">
+            <el-select v-model="currentFont" size="mini" placeholder="选择字体" @change="fontChanged">
+              <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}"
+                         :key="font.value"
+                         :label="font.label"
+                         :value="font.value">
+                <span class="select-item-left">{{ font.label }}</span>
+                <span class="select-item-right">Abc</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Font Size">
+            <el-select v-model="currentSize" size="mini" placeholder="选择段落字体大小" @change="sizeChanged">
+              <el-option v-for="size in sizeOption"
+                         :key="size.value"
+                         :label="size.label"
+                         :value="size.value">
+                <span class="select-item-left">{{ size.label }}</span>
+                <span class="select-item-right">{{ size.desc }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Themes">
+            <el-select v-model="currentTheme" size="mini" placeholder="选择主题样式" @change="themeChanged">
+              <el-option v-for="theme in themeOption" :key="theme.value" :label="theme.label" :value="theme.value">
+                <span class="select-item-left">{{ theme.label }}</span>
+                <span class="select-item-right">{{ theme.author }}</span>
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <el-button class="about" @click="aboutDialogVisible = true">关于</el-button>
+      </el-header>
+      <el-main class="main-body">
+        <el-row :gutter="10" class="main-section">
+          <el-col :span="12">
+              <textarea
+                  id="editor"
+                  type="textarea"
+                  placeholder="Your markdown here."
+                  v-model="source">
+              </textarea>
+          </el-col>
+          <el-col :span="12" class="preview-wrapper" id="preview">
+            <section>
+              <div class="hint">全选复制或<a href="#" @click="copy" class="copy-button">点此复制</a>，然后在公众号编辑器粘贴</div>
+              <div class="preview" contenteditable="true">
+                <div id="output" v-html="output">
+                </div>
+              </div>
+            </section>
+          </el-col>
+        </el-row>
+      </el-main>
+    </el-container>
+
+    <el-dialog title="关于" :visible.sync="aboutDialogVisible" width="30%" center>
+      <div>
+        <p>一款可以将 Markdown 转换为微信公众号文章的在线编辑器，</p>
+        <p>这让你在公众号创作时，摆脱繁琐地排版样式，</p>
+        <p>可以把更多的时间专注于文章本身。</p>
+        <p>除了常规 Markdown 格式化，还增加了外链引用、注音样式等。</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="https://static.zkqiang.cn/images/20191019181436.JPG-slim" style="max-width: 300px">
+      </div>
+      <span slot="footer" class="dialog-footer">
+          <el-button type="primary"
+                     @click="openWindow('https://github.com/zkqiang/wechat-format')">查看 GitHub 仓库</el-button>
+        </span>
+    </el-dialog>
+  </div>
+
+  <script src="https://cdn.staticfile.org/vue/2.6.10/vue.min.js"></script>
+  <script src="https://cdn.staticfile.org/axios/0.19.0-beta.1/axios.min.js"></script>
+  <script src="https://cdn.staticfile.org/marked/0.7.0/marked.min.js"></script>
+  <script src="https://cdn.staticfile.org/codemirror/5.48.4/codemirror.min.js"></script>
+  <script src="https://cdn.staticfile.org/codemirror/5.48.4/mode/markdown/markdown.min.js"></script>
+  <script src="https://cdn.staticfile.org/prettify/r298/prettify.min.js"></script>
+  <script src="https://cdn.staticfile.org/element-ui/2.11.1/index.js"></script>
+  <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
+
+  <script src="libs/sync-scroll.js"></script>
+  <script src="libs/FuriganaMD.js"></script>
+
+  <script src="assets/scripts/themes/default.js"></script>
+  <script src="assets/scripts/themes/lyric.js"></script>
+  <script src="assets/scripts/themes/lupeng.js"></script>
+  <script src="assets/scripts/renderers/wx-renderer.js"></script>
+  <script src="assets/scripts/editor.js"></script>
+  <script src="assets/scripts/loading.js"></script>
+
+</body>
+</html>
