@@ -1,5 +1,5 @@
 # Wechat Markdown Editor
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/yanglbme/wxmd-editor) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/yanglbme/wxmd-editor)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/yanglbme/wxmd-editor) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/yanglbme/wxmd-editor) [![license](https://badgen.net/github/license/yanglbme/wxmd-editor)](./LICENSE)
 
 > Fork from https://github.com/zkqiang/wechat-mdeditor .
 
