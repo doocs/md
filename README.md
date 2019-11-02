@@ -4,10 +4,10 @@
 > Fork from https://github.com/zkqiang/wechat-mdeditor .
 
 ## Site
-- GitHub Page: https://yanglbme.github.io/wxmd-editor/index.html
-- Gitee Page: https://yanglbme.gitee.io/wxmd-editor/index.html
+- GitHub Page: https://yanglbme.github.io/wxmd-editor
+- Gitee Page: https://yanglbme.gitee.io/wxmd-editor
 
-Maybe you can visit [Gitee Page](https://yanglbme.gitee.io/wxmd-editor/index.html) for a better experience.
+Maybe you can visit [Gitee Page](https://yanglbme.gitee.io/wxmd-editor) for a better experience.
 
 ## Official Account
 You can use wechat and scan the qrcode to follow me.
