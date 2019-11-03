@@ -7,39 +7,38 @@ let defaultTheme = {
   BASE_BLOCK: {
     'margin': '1em 8px'
   },
-  // block element
   block: {
     h1: {
       'font-size': '1.2em',
       'text-align': 'center',
       'font-weight': 'bold',
       'display': 'table',
-      'margin': '2em auto 1em auto',
+      'margin': '2em auto 1em',
       'padding': '0 1em',
-      'border-bottom': '1px solid rgb(248,57,41)'
+      'border-bottom': '2px solid rgb(248,57,41)'
     },
     h2: {
       'font-size': '1.2em',
       'text-align': 'center',
       'font-weight': 'bold',
       'display': 'table',
-      'margin': '4em auto 2em auto',
-      'padding': '0 1em',
-      'border-bottom': '1px solid rgb(248,57,41)'
+      'margin': '4em auto 2em',
+      'padding': '0 0.2em',
+      'background': 'rgb(248,57,41)',
+      'color': '#fff'
     },
     h3: {
       'font-weight': 'bold',
       'font-size': '1.1em',
       'margin': '2em 8px 0.75em 0',
-      'padding-bottom': '.1em',
-      // 'border-bottom': '1px solid #eaecef',
+      'line-height': '1.2',
       'padding-left': '8px',
-      'border-left': '4px solid rgb(248,57,41)'
+      'border-left': '3px solid rgb(248,57,41)'
     },
     h4: {
       'font-weight': 'bold',
       'font-size': '1em',
-      'margin': '2em 8px 0.5em 8px',
+      'margin': '2em 8px 0.5em',
     },
     p: {
       'margin': '1.5em 8px',
@@ -76,7 +75,7 @@ let defaultTheme = {
       'border-radius': '4px',
       'display': 'block',
       'margin': '0.5em auto',
-      'width': '100%'
+      'width': '100% !important'
     },
     image_org: {
       'border-radius': '4px',
@@ -100,7 +99,6 @@ let defaultTheme = {
     }
   },
   inline: {
-    // inline element
     listitem: {
       'text-indent': '-1em',
       'display': 'block',

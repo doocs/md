@@ -36,14 +36,14 @@
         <div><img src="assets/images/favicon.png" class="web-icon" alt="icon"> <span
             class="web-title">公众号 Markdown 编辑器 </span></div>
         <el-form size="mini" class="ctrl" :inline=true>
-          <el-form-item label="Editor Themes">
+          <el-form-item label="编辑器主题">
             <el-select v-model="currentEditorTheme" size="mini" placeholder="选择字体" @change="editorThemeChanged">
               <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
                          :value="editorTheme.value">
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Fonts">
+          <el-form-item label="字体">
             <el-select v-model="currentFont" size="mini" placeholder="选择字体" @change="fontChanged">
               <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}"
                          :key="font.value"
@@ -54,7 +54,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Font Size">
+          <el-form-item label="字号">
             <el-select v-model="currentSize" size="mini" placeholder="选择段落字体大小" @change="sizeChanged">
               <el-option v-for="size in sizeOption"
                          :key="size.value"
@@ -65,7 +65,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="Themes">
+          <el-form-item label="样式">
             <el-select v-model="currentTheme" size="mini" placeholder="选择主题样式" @change="themeChanged">
               <el-option v-for="theme in themeOption" :key="theme.value" :label="theme.label" :value="theme.value">
                 <span class="select-item-left">{{ theme.label }}</span>

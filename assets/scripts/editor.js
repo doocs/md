@@ -22,13 +22,12 @@ let app = new Vue({
         }
       ],
       sizeOption: [
-        { label: '14px', value: '14px', desc: '稍小' },
-        { label: '15px', value: '15px', desc: '默认' },
+        { label: '14px', value: '14px', desc: '推荐' },
+        { label: '15px', value: '15px', desc: '正常' },
         { label: '16px', value: '16px', desc: '稍大' },
-        { label: '17px', value: '17px', desc: '很大' },
       ],
       themeOption: [
-        { label: 'default', value: 'default', author: '杨立滨' },
+        { label: 'default', value: 'default', author: '默认' },
       ],
       styleThemes: {
         default: defaultTheme
@@ -37,7 +36,7 @@ let app = new Vue({
     };
     d.currentEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
-    d.currentSize = d.sizeOption[1].value;
+    d.currentSize = d.sizeOption[0].value;
     d.currentTheme = d.themeOption[0].value;
     return d;
   },
