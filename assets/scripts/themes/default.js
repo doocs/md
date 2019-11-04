@@ -15,16 +15,16 @@ let defaultTheme = {
       'display': 'table',
       'margin': '2em auto 1em',
       'padding': '0 1em',
-      'border-bottom': '2px solid rgb(248,57,41)'
+      'border-bottom': '2px solid #ff5f2e'
     },
     h2: {
-      'font-size': '1.2em',
+      'font-size': '1.1em',
       'text-align': 'center',
       'font-weight': 'bold',
       'display': 'table',
       'margin': '4em auto 2em',
       'padding': '0 0.2em',
-      'background': 'rgb(248,57,41)',
+      'background': '#ff5f2e',
       'color': '#fff'
     },
     h3: {
@@ -33,7 +33,7 @@ let defaultTheme = {
       'margin': '2em 8px 0.75em 0',
       'line-height': '1.2',
       'padding-left': '8px',
-      'border-left': '3px solid rgb(248,57,41)'
+      'border-left': '3px solid #ff5f2e'
     },
     h4: {
       'font-weight': 'bold',
