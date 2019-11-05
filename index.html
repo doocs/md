@@ -73,6 +73,7 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
         </el-form>
         <el-button class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>

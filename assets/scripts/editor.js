@@ -31,6 +31,9 @@ let app = new Vue({
         { label: '淡绿', value: 'lightgreen', author: '#42B983'},
         { label: '暗青', value: 'darkcyan', author: '#008B8B'}
       ],
+      colorOption: [
+        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)' },
+      ],
       styleThemes: {
         orange: orangeTheme,
         lightgreen: lightgreenTheme,
@@ -42,6 +45,7 @@ let app = new Vue({
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[0].value;
     d.currentTheme = d.themeOption[1].value;
+    d.currentColor = d.colorOption[0].value;
     return d;
   },
   mounted() {
@@ -111,6 +115,9 @@ let app = new Vue({
         theme: themeObject
       });
       this.refresh()
+    },
+    colorChanged: function (color) {
+      // TODO
     },
     // 刷新右侧预览
     refresh: function () {
