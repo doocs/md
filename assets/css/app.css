@@ -21,11 +21,6 @@ html, body {
   font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
 }
 
-.copy-button {
-  text-decoration: none;
-  color: #ff3502
-}
-
 .el-message__icon {
   display: none
 }

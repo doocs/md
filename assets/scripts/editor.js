@@ -144,16 +144,16 @@ let app = new Vue({
       try {
         if (document.execCommand('copy')) {
           this.$message({
-            message: '已复制到剪贴板', type: 'success'
+            message: '已复制文章到剪贴板，可直接到公众号后台粘贴', type: 'success'
           })
         } else {
           this.$message({
-            message: '未能复制到剪贴板，请全选后右键复制', type: 'warning'
+            message: '未能复制文章到剪贴板，请全选后右键复制', type: 'warning'
           })
         }
       } catch (err) {
         this.$message({
-          message: '未能复制到剪贴板，请全选后右键复制', type: 'warning'
+          message: '未能复制文章到剪贴板，请全选后右键复制', type: 'warning'
         })
       }
     },

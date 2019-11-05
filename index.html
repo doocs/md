@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>微信公众号 Markdown 编辑器</title>
+  <title>微信 Markdown 编辑器</title>
   <link rel="shortcut icon" href="assets/images/favicon.png">
   <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
 
@@ -16,10 +17,10 @@
   <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/duotone-light.min.css">
   <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/monokai.min.css">
 
-  <link rel="stylesheet" href="libs/prettify/color-themes/github-v2.min.css">
-
+  <link rel="stylesheet" href="libs/prettify/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
+
 <body>
   <!--loading 界面-->
   <div class="loading" id="loading">
@@ -33,22 +34,20 @@
   <div id="app" class="container">
     <el-container>
       <el-header class="top">
-        <div><img src="assets/images/favicon.png" class="web-icon" alt="icon"> <span
-            class="web-title">公众号 Markdown 编辑器 </span></div>
+        <div><img src="assets/images/favicon.png" class="web-icon" alt="icon"> <span class="web-title">微信 Markdown 编辑器
+          </span></div>
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item label="编辑器主题">
             <el-select v-model="currentEditorTheme" size="mini" placeholder="选择字体" @change="editorThemeChanged">
               <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
-                         :value="editorTheme.value">
+                :value="editorTheme.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="字体">
             <el-select v-model="currentFont" size="mini" placeholder="选择字体" @change="fontChanged">
-              <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}"
-                         :key="font.value"
-                         :label="font.label"
-                         :value="font.value">
+              <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
+                :label="font.label" :value="font.value">
                 <span class="select-item-left">{{ font.label }}</span>
                 <span class="select-item-right">Abc</span>
               </el-option>
@@ -56,10 +55,7 @@
           </el-form-item>
           <el-form-item label="字号">
             <el-select v-model="currentSize" size="mini" placeholder="选择段落字体大小" @change="sizeChanged">
-              <el-option v-for="size in sizeOption"
-                         :key="size.value"
-                         :label="size.label"
-                         :value="size.value">
+              <el-option v-for="size in sizeOption" :key="size.value" :label="size.label" :value="size.value">
                 <span class="select-item-left">{{ size.label }}</span>
                 <span class="select-item-right">{{ size.desc }}</span>
               </el-option>
@@ -75,21 +71,17 @@
           </el-form-item>
           <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
         </el-form>
-        <el-button class="about" @click="aboutDialogVisible = true">关于</el-button>
+        <el-button type="success" plain @click="copy">复制</el-button>
+        <el-button type="success" plain class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>
       <el-main class="main-body">
         <el-row :gutter="10" class="main-section">
           <el-col :span="12">
-              <textarea
-                  id="editor"
-                  type="textarea"
-                  placeholder="Your markdown here."
-                  v-model="source">
+            <textarea id="editor" type="textarea" placeholder="Your markdown here." v-model="source">
               </textarea>
           </el-col>
           <el-col :span="12" class="preview-wrapper" id="preview">
             <section>
-              <div class="hint">全选复制或<a href="#" @click="copy" class="copy-button">点此复制</a>，然后在公众号编辑器粘贴</div>
               <div class="preview" contenteditable="true">
                 <div id="output" v-html="output">
                 </div>
@@ -101,19 +93,19 @@
     </el-container>
 
     <el-dialog title="关于" :visible.sync="aboutDialogVisible" width="30%" center>
-      <div>
-        <p>一款可以将 Markdown 转换为微信公众号文章的在线编辑器，</p>
-        <p>这让你在公众号创作时，摆脱繁琐地排版样式，</p>
-        <p>可以把更多的时间专注于文章本身。</p>
-        <p>除了常规 Markdown 格式化，还增加了外链引用、注音样式等。</p>
+      <div style="text-align: center;">
+        <h3>一款简洁美观的微信 Markdown 编辑器</h3>
       </div>
       <div style="text-align: center;">
         <img src="assets/images/qrcode.jpg" style="max-width: 300px">
+        <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       </div>
       <span slot="footer" class="dialog-footer">
-          <el-button type="primary"
-                     @click="openWindow('https://github.com/yanglbme/wxmd-editor')">查看 GitHub 仓库</el-button>
-        </span>
+        <el-button type="success" plain @click="openWindow('https://github.com/yanglbme/wxmd-editor')">GitHub 仓库
+        </el-button>
+        <el-button type="success" plain @click="openWindow('https://gitee.com/yanglbme/wxmd-editor')">Gitee 仓库
+        </el-button>
+      </span>
     </el-dialog>
   </div>
 
@@ -137,4 +129,5 @@
   <script src="assets/scripts/loading.js"></script>
 
 </body>
+
 </html>
