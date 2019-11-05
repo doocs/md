@@ -61,11 +61,11 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="样式">
-            <el-select v-model="currentTheme" size="mini" placeholder="选择主题样式" @change="themeChanged">
-              <el-option v-for="theme in themeOption" :key="theme.value" :label="theme.label" :value="theme.value">
-                <span class="select-item-left">{{ theme.label }}</span>
-                <span class="select-item-right">{{ theme.author }}</span>
+          <el-form-item label="颜色">
+            <el-select v-model="currentColor" size="mini" placeholder="选择颜色" @change="colorChanged">
+              <el-option v-for="color in colorOption" :key="color.value" :label="color.label" :value="color.value">
+                <span class="select-item-left">{{ color.label }}</span>
+                <span class="select-item-right">{{ color.author }}</span>
               </el-option>
             </el-select>
           </el-form-item>
@@ -121,10 +121,10 @@
   <script src="libs/sync-scroll.js"></script>
   <script src="libs/FuriganaMD.js"></script>
 
-  <script src="assets/scripts/themes/orange.js"></script>
-  <script src="assets/scripts/themes/lightgreen.js"></script>
-  <script src="assets/scripts/themes/darkcyan.js"></script>
+  <script src="assets/scripts/themes/default-theme.js"></script>
+  
   <script src="assets/scripts/renderers/wx-renderer.js"></script>
+  <script src="assets/scripts/util.js"></script>
   <script src="assets/scripts/editor.js"></script>
   <script src="assets/scripts/loading.js"></script>
 

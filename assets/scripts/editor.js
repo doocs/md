@@ -26,26 +26,17 @@ let app = new Vue({
         { label: '15px', value: '15px', desc: '正常' },
         { label: '16px', value: '16px', desc: '稍大' },
       ],
-      themeOption: [
-        { label: '橘红', value: 'orange', author: '#FF5F2E' },
-        { label: '淡绿', value: 'lightgreen', author: '#42B983'},
-        { label: '暗青', value: 'darkcyan', author: '#008B8B'}
-      ],
       colorOption: [
-        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)' },
+        { label: '橘红', value: '#FF5F2EE6', author: '#FF5F2E' },
+        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)', author: '#42B983'},
+        { label: '暗青', value: '#008B8BE6', author: '#008B8B'}
       ],
-      styleThemes: {
-        orange: orangeTheme,
-        lightgreen: lightgreenTheme,
-        darkcyan: darkcyanTheme
-      },
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[0].value;
-    d.currentTheme = d.themeOption[1].value;
-    d.currentColor = d.colorOption[0].value;
+    d.currentColor = d.colorOption[1].value;
     return d;
   },
   mounted() {
@@ -65,7 +56,7 @@ let app = new Vue({
       self.saveEditorContent();
     });
     this.wxRenderer = new WxRenderer({
-      theme: this.styleThemes.lightgreen,
+      theme: setColor(this.currentColor),
       fonts: this.currentFont,
       size: this.currentSize
     });
@@ -109,15 +100,12 @@ let app = new Vue({
       });
       this.refresh()
     },
-    themeChanged: function (themeName) {
-      let themeObject = this.styleThemes[themeName];
-      this.wxRenderer.setOptions({
-        theme: themeObject
-      });
-      this.refresh()
-    },
     colorChanged: function (color) {
-      // TODO
+      let theme = setColor(color)
+      this.wxRenderer.setOptions({
+        theme: theme
+      })
+      this.refresh()
     },
     // 刷新右侧预览
     refresh: function () {
