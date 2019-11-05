@@ -27,17 +27,21 @@ let app = new Vue({
         { label: '16px', value: '16px', desc: '稍大' },
       ],
       themeOption: [
-        { label: 'default', value: 'default', author: '默认' },
+        { label: '橘红', value: 'orange', author: '#FF5F2E' },
+        { label: '淡绿', value: 'lightgreen', author: '#42B983'},
+        { label: '暗青', value: 'darkcyan', author: '#008B8B'}
       ],
       styleThemes: {
-        default: defaultTheme
+        orange: orangeTheme,
+        lightgreen: lightgreenTheme,
+        darkcyan: darkcyanTheme
       },
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[0].value;
-    d.currentTheme = d.themeOption[0].value;
+    d.currentTheme = d.themeOption[1].value;
     return d;
   },
   mounted() {
@@ -57,7 +61,7 @@ let app = new Vue({
       self.saveEditorContent();
     });
     this.wxRenderer = new WxRenderer({
-      theme: this.styleThemes.default,
+      theme: this.styleThemes.lightgreen,
       fonts: this.currentFont,
       size: this.currentSize
     });

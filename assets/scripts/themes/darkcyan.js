@@ -1,4 +1,4 @@
-let defaultTheme = {
+let darkcyanTheme = {
   BASE: {
     'text-align': 'left',
     'color': '#3f3f3f',
@@ -15,7 +15,7 @@ let defaultTheme = {
       'display': 'table',
       'margin': '2em auto 1em',
       'padding': '0 1em',
-      'border-bottom': '2px solid #ff5f2e'
+      'border-bottom': '2px solid rgba(0, 139, 139, 0.9)'
     },
     h2: {
       'font-size': '1.1em',
@@ -24,7 +24,7 @@ let defaultTheme = {
       'display': 'table',
       'margin': '4em auto 2em',
       'padding': '0 0.2em',
-      'background': '#ff5f2e',
+      'background': 'rgba(0, 139, 139, 0.9)',
       'color': '#fff'
     },
     h3: {
@@ -33,7 +33,7 @@ let defaultTheme = {
       'margin': '2em 8px 0.75em 0',
       'line-height': '1.2',
       'padding-left': '8px',
-      'border-left': '3px solid #ff5f2e'
+      'border-left': '3px solid rgba(0, 139, 139, 0.9)'
     },
     h4: {
       'font-weight': 'bold',
@@ -119,7 +119,7 @@ let defaultTheme = {
       'text-decoration': 'none',
     },
     strong: {
-      'color': '#ff5f2e',
+      'color': 'rgba(0, 139, 139, 0.9)',
       'font-weight': 'bold',
     },
     table: {
