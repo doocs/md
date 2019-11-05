@@ -112,10 +112,6 @@ section {
   width: 100% !important;
 }
 
-/*.preview ul, .preview ol {*/
-/*  padding-left: 40px !important;*/
-/*}*/
-
 .select-item-left {
   float: left;
 }
@@ -196,4 +192,26 @@ section {
   display: flex;
   position: relative;
   font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 16px;
+  background-color: #FFF;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: #FFF;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background-color: rgba(144, 146, 152, 0.5);
+  cursor: pointer;
+  transition: background-color .3s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(144, 146, 152, 0.5);
 }
