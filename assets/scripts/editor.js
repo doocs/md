@@ -27,9 +27,9 @@ let app = new Vue({
         { label: '16px', value: '16px', desc: '稍大' },
       ],
       colorOption: [
-        { label: '橘红', value: '#FF5F2EE6', author: '#FF5F2E' },
+        { label: '橘红', value: 'rgba(255, 95, 46, 0.9)', author: '#FF5F2E' },
         { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)', author: '#42B983'},
-        { label: '暗青', value: '#008B8BE6', author: '#008B8B'}
+        { label: '暗青', value: 'rgba(0, 139, 139, 0.9)', author: '#008B8B'}
       ],
       aboutDialogVisible: false
     };

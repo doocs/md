@@ -21,7 +21,7 @@
 - [x] 支持链接微信图文，外链自动转换为索引并在文末引用
 
 ## 我的公众号
-可以用微信扫码关注我的公众号“Doocs开源社区”，原创技术文章第一时间推送。
+微信扫码关注我的公众号“Doocs开源社区”，原创技术文章第一时间推送。
 
 <div style="text-align:center;">
   <img src="./assets/images/qrcode.jpg" width="200px;"/>
