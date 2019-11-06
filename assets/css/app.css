@@ -202,13 +202,12 @@ section {
 
 ::-webkit-scrollbar-track {
   border-radius: 6px;
-  background-color: #FFF;
+  background-color: rgba(200, 200, 200, 0.3);
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
   background-color: rgba(144, 146, 152, 0.5);
-  cursor: pointer;
   transition: background-color .3s;
 }
 

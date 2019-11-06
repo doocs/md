@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/xq-light.min.css">
   <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/eclipse.min.css">
   <link rel="stylesheet" href="https://cdn.staticfile.org/codemirror/5.48.4/theme/oceanic-next.min.css">
-  <link rel="stylesheet" href="libs/prettify/code-themes/github-v2.min.css">
+  <link rel="stylesheet" href="libs/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 </head>
 
@@ -66,8 +66,8 @@
           </el-form-item>
           <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
         </el-form>
-        <el-button type="success" plain @click="copy">复制</el-button>
-        <el-button type="success" plain class="about" @click="aboutDialogVisible = true">关于</el-button>
+        <el-button type="success" plain size="medium" @click="copy">复制</el-button>
+        <el-button type="success" plain size="medium" class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>
       <el-main class="main-body">
         <el-row :gutter="10" class="main-section">
@@ -112,8 +112,8 @@
   <script src="https://cdn.staticfile.org/element-ui/2.11.1/index.js"></script>
   <script src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js"></script>
 
-  <script src="libs/sync-scroll.js"></script>
   <script src="libs/FuriganaMD.js"></script>
+  <script src="assets/scripts/sync-scroll.js"></script>
   <script src="assets/scripts/themes/default-theme.js"></script>
   <script src="assets/scripts/renderers/wx-renderer.js"></script>
   <script src="assets/scripts/util.js"></script>
