@@ -151,7 +151,7 @@ section {
   border: 1px solid #f0f0f0;
   border-radius: 2px;
   display: flex;
-  line-height: 26px;
+  line-height: 24px;
 }
 
 .code-snippet__fix .code-snippet__line-index {
@@ -196,7 +196,7 @@ section {
 
 ::-webkit-scrollbar {
   width: 6px;
-  height: 16px;
+  height: 6px;
   background-color: #FFF;
 }
 

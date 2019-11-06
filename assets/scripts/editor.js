@@ -6,9 +6,9 @@ let app = new Vue({
       output: '',
       source: '',
       editorThemes: [
-        { label: 'base16-light', value: 'base16-light' },
-        { label: 'duotone-light', value: 'duotone-light' },
-        { label: 'monokai', value: 'monokai' }
+        { label: '淡雅', value: 'xq-light'},
+        { label: '精美', value: 'eclipse'},
+        { label: '暗绿', value: 'oceanic-next'}
       ],
       editor: null,
       builtinFonts: [
