@@ -128,13 +128,13 @@ let WxRenderer = function (opts) {
       let numbers = [];
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        codeLines.push(`<code><span class="code-snippet_outer">${ (line || '<br>') }</span></code>`);
+        codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${ (line || '<br>') }</span></code>`);
         numbers.push('<li></li>')
       }
       let lang = infoString || '';
       return `<section class="code-snippet__fix code-snippet__js">`
         + `<ul class="code-snippet__line-index code-snippet__js">${ numbers.join('') }</ul>`
-        + `<pre class="code-snippet__js prettyprint" data-lang="${ lang }">`
+        + `<pre class="code-snippet__js" data-lang="${ lang }">`
         + codeLines.join('')
         + `</pre></section>`
     };
