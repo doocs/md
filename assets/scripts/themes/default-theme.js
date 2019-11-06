@@ -8,6 +8,7 @@ let default_theme = {
         'margin': '1em 8px'
     },
     block: {
+        // 一级标题样式
         h1: {
             'font-size': '1.2em',
             'text-align': 'center',
@@ -17,6 +18,8 @@ let default_theme = {
             'padding': '0 1em',
             'border-bottom': '2px solid rgba(255, 95, 46, 0.9)'
         },
+
+        // 二级标题样式
         h2: {
             'font-size': '1.1em',
             'text-align': 'center',
@@ -27,6 +30,8 @@ let default_theme = {
             'background': 'rgba(255, 95, 46, 0.9)',
             'color': '#fff'
         },
+
+        // 三级标题样式
         h3: {
             'font-weight': 'bold',
             'font-size': '1.1em',
@@ -35,15 +40,21 @@ let default_theme = {
             'padding-left': '8px',
             'border-left': '3px solid rgba(255, 95, 46, 0.9)'
         },
+
+        // 四级标题样式
         h4: {
             'font-weight': 'bold',
             'font-size': '1em',
             'margin': '2em 8px 0.5em',
         },
+
+        // 段落样式
         p: {
             'margin': '1.5em 8px',
             'letter-spacing': '0.1em'
         },
+
+        // 引用样式
         blockquote: {
             'font-style': 'normal',
             'border-left': 'none',
@@ -118,6 +129,8 @@ let default_theme = {
             'color': '#576b95',
             'text-decoration': 'none',
         },
+
+        // 字体加粗样式
         strong: {
             'color': 'rgba(255, 95, 46, 0.9)',
             'font-weight': 'bold',
@@ -145,4 +158,3 @@ let default_theme = {
         }
     }
 };
-

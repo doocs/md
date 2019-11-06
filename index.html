@@ -33,14 +33,14 @@
       <el-header class="top">
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item label="编辑器主题">
-            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择字体" @change="editorThemeChanged">
+            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择编辑器主题" clearable @change="editorThemeChanged">
               <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
                 :value="editorTheme.value">
               </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="字体">
-            <el-select v-model="currentFont" size="mini" placeholder="选择字体" @change="fontChanged">
+            <el-select v-model="currentFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
               <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
                 :label="font.label" :value="font.value">
                 <span class="select-item-left">{{ font.label }}</span>
@@ -49,7 +49,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="字号">
-            <el-select v-model="currentSize" size="mini" placeholder="选择段落字体大小" @change="sizeChanged">
+            <el-select v-model="currentSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
               <el-option v-for="size in sizeOption" :key="size.value" :label="size.label" :value="size.value">
                 <span class="select-item-left">{{ size.label }}</span>
                 <span class="select-item-right">{{ size.desc }}</span>
@@ -57,10 +57,10 @@
             </el-select>
           </el-form-item>
           <el-form-item label="颜色">
-            <el-select v-model="currentColor" size="mini" placeholder="选择颜色" @change="colorChanged">
+            <el-select v-model="currentColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
               <el-option v-for="color in colorOption" :key="color.value" :label="color.label" :value="color.value">
                 <span class="select-item-left">{{ color.label }}</span>
-                <span class="select-item-right">{{ color.author }}</span>
+                <span class="select-item-right">{{ color.hex }}</span>
               </el-option>
             </el-select>
           </el-form-item>
