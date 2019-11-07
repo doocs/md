@@ -1,18 +1,18 @@
 # 微信 Markdown 编辑器
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/yanglbme/wxmd-editor) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/yanglbme/wxmd-editor) [![license](https://badgen.net/github/license/yanglbme/wxmd-editor)](./LICENSE)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/cseye/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/cseye/md) [![license](https://badgen.net/github/license/cseye/md)](./LICENSE)
 
 本项目克隆自 https://github.com/zkqiang/wechat-mdeditor ，感谢 [zkqiang](https://github.com/zkqiang) 定义的基础 CSS 样式。
 
 英文文档请看 [README](README.md)。
 
 ## 在线编辑器
-- GitHub Page：https://yanglbme.github.io/wxmd-editor
-- Gitee Page：https://yanglbme.gitee.io/wxmd-editor
+- GitHub Page：https://cseye.github.io/md
+- Gitee Page：https://cseye.gitee.io/md
 
 注：对于国内（中国）的朋友，访问 Gitee Page 速度会相对快一些。
 
 ## 为什么要二次改造？
-每个人的审美都不一样，我希望能在基础 CSS 样式的基础上进行改造，定义一款自己喜欢的微信 Markdown 编辑器。
+每个人的审美都不一样，我希望能在基础 CSS 样式的基础上进行改造，定义一款高度简洁的微信 Markdown 编辑器。
 
 ## 功能特性
 - [x] 支持所有基础 Markdown 语法
