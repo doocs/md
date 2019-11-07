@@ -1,7 +1,6 @@
 // 左右栏同步滚动
-
 $(document).ready(function () {
-
+  
   let timeout;
 
   $('div.CodeMirror-scroll, #preview').on("scroll", function callback() {

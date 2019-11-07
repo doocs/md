@@ -1,3 +1,4 @@
+// 设置自定义颜色
 function setColorWithTemplate(template) {
     return function(color) {
         let custom_theme = JSON.parse(JSON.stringify(template));

@@ -49,7 +49,7 @@ let WxRenderer = function (opts) {
     for (const key in dict) {
       arr.push(key + ':' + dict[key])
     }
-    return `style="${ arr.join(';') + (addition || '') }"`
+    return `style="${arr.join(';') + (addition || '')}"`
   };
 
   let addFootnote = function (title, link) {
@@ -61,11 +61,11 @@ let WxRenderer = function (opts) {
   this.buildFootnotes = function () {
     let footnoteArray = footnotes.map(function (x) {
       if (x[1] === x[2]) {
-        return `<code style="font-size: 90%; opacity: 0.6;">[${ x[0] }]</code>: <i>${ x[1] }</i><br/>`
+        return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code>: <i>${x[1]}</i><br/>`
       }
-      return `<code style="font-size: 90%; opacity: 0.6;">[${ x[0] }]</code> ${ x[1] }: <i>${ x[2] }</i><br/>`
+      return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`
     });
-    return `<h3 ${ getStyles('h3') }>引用链接</h3><p ${ getStyles('footnotes') }>${ footnoteArray.join('\n') }</p>`
+    return `<h3 ${getStyles('h3')}>引用链接</h3><p ${getStyles('footnotes')}>${footnoteArray.join('\n')}</p>`
   };
 
   this.buildAddition = function () {
@@ -103,21 +103,21 @@ let WxRenderer = function (opts) {
     renderer.heading = function (text, level) {
       switch (level) {
         case 1:
-          return `<h1 ${ getStyles('h1') }>${ text }</h1>`;
+          return `<h1 ${getStyles('h1')}>${text}</h1>`;
         case 2:
-          return `<h2 ${ getStyles('h2') }>${ text }</h2>`;
+          return `<h2 ${getStyles('h2')}>${text}</h2>`;
         case 3:
-          return `<h3 ${ getStyles('h3') }>${ text }</h3>`;
+          return `<h3 ${getStyles('h3')}>${text}</h3>`;
         default:
-          return `<h4 ${ getStyles('h4') }>${ text }</h4>`;
+          return `<h4 ${getStyles('h4')}>${text}</h4>`;
       }
     };
     renderer.paragraph = function (text) {
-      return `<p ${ getStyles('p') }>${ text }</p>`
+      return `<p ${getStyles('p')}>${text}</p>`
     };
     renderer.blockquote = function (text) {
-      text = text.replace(/<p.*?>/, `<p ${ getStyles('blockquote_p') }>`);
-      return `<blockquote ${ getStyles('blockquote') }>${ text }</blockquote>`
+      text = text.replace(/<p.*?>/, `<p ${getStyles('blockquote_p')}>`);
+      return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`
     };
     renderer.code = function (text, infoString) {
       text = text.replace(/</g, "&lt;");
@@ -128,69 +128,69 @@ let WxRenderer = function (opts) {
       let numbers = [];
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
-        codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${ (line || '<br>') }</span></code>`);
+        codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${(line || '<br>')}</span></code>`);
         numbers.push('<li></li>')
       }
       let lang = infoString || '';
       return `<section class="code-snippet__fix code-snippet__js">`
-        + `<ul class="code-snippet__line-index code-snippet__js">${ numbers.join('') }</ul>`
-        + `<pre class="code-snippet__js" data-lang="${ lang }">`
+        + `<ul class="code-snippet__line-index code-snippet__js">${numbers.join('')}</ul>`
+        + `<pre class="code-snippet__js" data-lang="${lang}">`
         + codeLines.join('')
         + `</pre></section>`
     };
     renderer.codespan = function (text, infoString) {
-      return `<code ${ getStyles('codespan') }>${ text }</code>`
+      return `<code ${getStyles('codespan')}>${text}</code>`
     };
     renderer.listitem = function (text) {
-      return `<span ${ getStyles('listitem') }><span style="margin-right: 10px;"><%s/></span>${ text }</span>`;
+      return `<span ${getStyles('listitem')}><span style="margin-right: 10px;"><%s/></span>${text}</span>`;
     };
     renderer.list = function (text, ordered, start) {
       text = text.replace(/<\/*p.*?>/g, '');
       let segments = text.split(`<%s/>`);
       if (!ordered) {
         text = segments.join('•');
-        return `<p ${ getStyles('ul') }>${ text }</p>`;
+        return `<p ${getStyles('ul')}>${text}</p>`;
       }
       text = segments[0];
       for (let i = 1; i < segments.length; i++) {
         text = text + i + '.' + segments[i];
       }
-      return `<p ${ getStyles('ol') }>${ text }</p>`;
+      return `<p ${getStyles('ol')}>${text}</p>`;
     };
     renderer.image = function (href, title, text) {
       let subText = '';
       if (text) {
-        subText = `<figcaption ${ getStyles('figcaption') }>${ text }</figcaption>`
+        subText = `<figcaption ${getStyles('figcaption')}>${text}</figcaption>`
       }
       let figureStyles = getStyles('figure');
       let imgStyles = getStyles(ENV_STRETCH_IMAGE ? 'image' : 'image_org');
-      return `<figure ${ figureStyles }><img ${ imgStyles } src="${ href }" title="${ title }" alt="${ text }"/>${ subText }</figure>`
+      return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     };
     renderer.link = function (href, title, text) {
       if (href.indexOf('https://mp.weixin.qq.com') === 0) {
-        return `<a href="${ href }" title="${ (title || text) }" ${ getStyles('wx_link') }>${ text }</a>`;
+        return `<a href="${href}" title="${(title || text)}" ${getStyles('wx_link')}>${text}</a>`;
       } else if (href === text) {
         return text;
       } else {
         if (ENV_USE_REFERENCES) {
           let ref = addFootnote(title || text, href);
-          return `<span ${ getStyles('link') }>${ text }<sup>[${ ref }]</sup></span>`;
+          return `<span ${getStyles('link')}>${text}<sup>[${ref}]</sup></span>`;
         } else {
-          return `<a href="${ href }" title="${ (title || text) }" ${ getStyles('link') }>${ text }</a>`;
+          return `<a href="${href}" title="${(title || text)}" ${getStyles('link')}>${text}</a>`;
         }
       }
     };
     renderer.strong = function (text) {
-      return `<strong ${ getStyles('strong') }>${ text }</strong>`;
+      return `<strong ${getStyles('strong')}>${text}</strong>`;
     };
     renderer.em = function (text) {
-      return `<p ${ getStyles('p', ';font-style: italic;')}>${ text }</p>`
+      return `<p ${getStyles('p', ';font-style: italic;')}>${text}</p>`
     };
-      renderer.table = function (header, body) {
-      return `<table class="preview-table"><thead ${ getStyles('thead') }>${ header }</thead><tbody>${ body }</tbody></table>`;
+    renderer.table = function (header, body) {
+      return `<table class="preview-table"><thead ${getStyles('thead')}>${header}</thead><tbody>${body}</tbody></table>`;
     };
     renderer.tablecell = function (text, flags) {
-      return `<td ${ getStyles('td') }>${ text }</td>`;
+      return `<td ${getStyles('td')}>${text}</td>`;
     };
     renderer.hr = function () {
       return `<hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);">`;

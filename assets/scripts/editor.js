@@ -22,9 +22,9 @@ let app = new Vue({
         }
       ],
       sizeOption: [
+        { label: '13px', value: '13px', desc: '稍小' },
         { label: '14px', value: '14px', desc: '推荐' },
-        { label: '15px', value: '15px', desc: '正常' },
-        { label: '16px', value: '16px', desc: '稍大' },
+        { label: '15px', value: '15px', desc: '稍大' },
       ],
       colorOption: [
         { label: '橘红', value: 'rgba(255, 95, 46, 0.9)', hex: '#FF5F2E' },
@@ -35,7 +35,7 @@ let app = new Vue({
     };
     d.currentEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
-    d.currentSize = d.sizeOption[0].value;
+    d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[1].value;
     return d;
   },
