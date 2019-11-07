@@ -131,22 +131,28 @@ let app = new Vue({
 
       try {
         if (document.execCommand('copy')) {
-          this.$message({
+          this.$notify({
             showClose: true,
-            message: '已复制文章到剪贴板，可直接到公众号后台粘贴', 
+            message: '已复制文章到剪贴板，可直接到公众号后台粘贴',
+            offset: 80,
+            duration: 1600,
             type: 'success'
           });
         } else {
-          this.$message({
+          this.$notify({
             showClose: true,
-            message: '未能复制文章到剪贴板，请全选后右键复制', 
+            message: '未能复制文章到剪贴板，请全选后右键复制',
+            offset: 80,
+            duration: 1600,
             type: 'warning'
           });
         }
       } catch (err) {
-        this.$message({
+        this.$notify({
           showClose: true,
-          message: '未能复制文章到剪贴板，请全选后右键复制', 
+          message: '未能复制文章到剪贴板，请全选后右键复制',
+          offset: 80,
+          duration: 1600,
           type: 'warning'
         });
       }
