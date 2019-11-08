@@ -46,6 +46,7 @@ let default_theme = {
             'font-weight': 'bold',
             'font-size': '1em',
             'margin': '2em 8px 0.5em',
+            'color': 'rgba(66, 185, 131, 0.9)'
         },
 
         // 段落样式
@@ -85,8 +86,8 @@ let default_theme = {
         image: {
             'border-radius': '4px',
             'display': 'block',
-            'margin': '0.5em auto',
-            'width': '100% !important'
+            'margin': '0.1em auto 0.5em',
+            'width': '100% !important',
         },
         image_org: {
             'border-radius': '4px',
@@ -113,7 +114,7 @@ let default_theme = {
         listitem: {
             'text-indent': '-1em',
             'display': 'block',
-            'margin': '0.5em 8px'
+            'margin': '0.2em 8px'
         },
         codespan: {
             'font-size': '90%',

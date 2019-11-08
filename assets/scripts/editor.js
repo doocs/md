@@ -78,7 +78,7 @@ let app = new Vue({
       if (this.wxRenderer.hasFootnotes()) {
         // 去除第一行的 margin-top
         output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"');
-        // 引用注脚
+        // 引用脚注
         output += this.wxRenderer.buildFootnotes();
         // 附加的一些 style
         output += this.wxRenderer.buildAddition();

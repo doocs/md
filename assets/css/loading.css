@@ -29,8 +29,8 @@
   width: 35px;
   height: 35px;
   border: 5px solid rgba(189, 189, 189, 0.25);
-  border-left-color: rgba(3, 155, 229, 1);
-  border-top-color: rgba(3, 155, 229, 1);
+  border-left-color: rgba(66, 185, 131, 0.9);
+  border-top-color: rgba(66, 185, 131, 0.9);
   border-radius: 50%;
   display: inline-block;
   animation: rotate 600ms infinite linear;
