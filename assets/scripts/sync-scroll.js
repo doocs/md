@@ -1,13 +1,11 @@
 // 左右栏同步滚动
-$(document).ready(function () {
-  
+$(document).ready(() => {
   let timeout;
-
   $('div.CodeMirror-scroll, #preview').on("scroll", function callback() {
     clearTimeout(timeout);
 
-    let source = $(this),
-      target = $(source.is("#preview") ? 'div.CodeMirror-scroll' : '#preview');
+    let source = $(this), 
+        target = $(source.is("#preview") ? 'div.CodeMirror-scroll' : '#preview');
 
     target.off("scroll");
 
@@ -18,9 +16,8 @@ $(document).ready(function () {
     let height = percentage * (target0.scrollHeight - target0.offsetHeight);
     target0.scrollTo(0, height);
 
-    timeout = setTimeout(function () {
+    timeout = setTimeout(() => {
       target.on("scroll", callback);
     }, 100);
   });
-
 });

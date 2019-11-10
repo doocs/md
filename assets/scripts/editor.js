@@ -6,9 +6,9 @@ let app = new Vue({
       output: '',
       source: '',
       editorThemes: [
-        { label: '淡雅', value: 'xq-light'},
-        { label: '精美', value: 'eclipse'},
-        { label: '暗绿', value: 'oceanic-next'}
+        { label: '淡雅', value: 'xq-light' },
+        { label: '精美', value: 'eclipse' },
+        { label: '暗绿', value: 'oceanic-next' }
       ],
       editor: null,
       builtinFonts: [
@@ -28,8 +28,8 @@ let app = new Vue({
       ],
       colorOption: [
         { label: '橘红', value: 'rgba(255, 95, 46, 0.9)', hex: '#FF5F2E' },
-        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)', hex: '#42B983'},
-        { label: '暗青', value: 'rgba(0, 139, 139, 0.9)', hex: '#008B8B'}
+        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)', hex: '#42B983' },
+        { label: '暗青', value: 'rgba(0, 139, 139, 0.9)', hex: '#008B8B' }
       ],
       aboutDialogVisible: false
     };
@@ -40,7 +40,6 @@ let app = new Vue({
     return d;
   },
   mounted() {
-    let self = this;
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
       {
@@ -51,9 +50,9 @@ let app = new Vue({
         mode: 'text/x-markdown',
       }
     );
-    this.editor.on("change", function (cm, change) {
-      self.refresh();
-      self.saveEditorContent();
+    this.editor.on("change", (cm, change) => {
+      this.refresh();
+      this.saveEditorContent();
     });
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
@@ -67,13 +66,13 @@ let app = new Vue({
       axios({
         method: 'get',
         url: './assets/default-content.md',
-      }).then(function (resp) {
-        self.editor.setValue(resp.data)
+      }).then(resp => {
+        this.editor.setValue(resp.data)
       })
     }
   },
   methods: {
-    renderWeChat: function (source) {
+    renderWeChat(source) {
       let output = marked(source, { renderer: this.wxRenderer.getRenderer() });
       if (this.wxRenderer.hasFootnotes()) {
         // 去除第一行的 margin-top
@@ -85,22 +84,22 @@ let app = new Vue({
       }
       return output
     },
-    editorThemeChanged: function (editorTheme) {
+    editorThemeChanged(editorTheme) {
       this.editor.setOption('theme', editorTheme)
     },
-    fontChanged: function (fonts) {
+    fontChanged(fonts) {
       this.wxRenderer.setOptions({
         fonts: fonts
       });
       this.refresh()
     },
-    sizeChanged: function (size) {
+    sizeChanged(size) {
       this.wxRenderer.setOptions({
         size: size
       });
       this.refresh()
     },
-    colorChanged: function (color) {
+    colorChanged(color) {
       let theme = setColor(color)
       this.wxRenderer.setOptions({
         theme: theme
@@ -108,19 +107,19 @@ let app = new Vue({
       this.refresh()
     },
     // 刷新右侧预览
-    refresh: function () {
+    refresh() {
       this.output = this.renderWeChat(this.editor.getValue(0))
     },
     // 将左侧编辑器内容保存到 LocalStorage
-    saveEditorContent: function () {
+    saveEditorContent() {
       let content = this.editor.getValue(0);
-      if (content){
+      if (content) {
         localStorage.setItem("__editor_content", content);
       } else {
         localStorage.removeItem("__editor_content");
       }
     },
-    copy: function () {
+    copy() {
       let clipboardDiv = document.getElementById('output');
       clipboardDiv.focus();
       window.getSelection().removeAllRanges();
@@ -157,13 +156,13 @@ let app = new Vue({
         });
       }
     },
-    openWindow: function (url) {
+    openWindow(url) {
       window.open(url);
     }
   },
-  updated: function () {
-    this.$nextTick(function () {
-      prettyPrint()
+  updated() {
+    this.$nextTick(() => {
+      prettyPrint();
     })
   }
 });
