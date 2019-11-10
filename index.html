@@ -3,8 +3,10 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+  <meta name="keywords" content="md,markdown,markdown-editor,wechat,official-account,yanglbme,cseye">
+  <meta name="description" content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器">
+  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <title>微信 Markdown 编辑器</title>
   <link rel="shortcut icon" href="assets/images/favicon.png">
   <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
@@ -88,16 +90,16 @@
     </el-container>
     <el-dialog title="关于" :visible.sync="aboutDialogVisible" width="30%" center>
       <div style="text-align: center;">
-        <h3>一款简洁美观的微信 Markdown 编辑器</h3>
+        <h3>一款高度简洁的微信 Markdown 编辑器</h3>
       </div>
       <div style="text-align: center;">
         <img src="assets/images/qrcode.jpg" style="max-width: 300px">
         <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="success" plain @click="openWindow('https://github.com/cseye/md')">GitHub 仓库
+        <el-button type="success" plain @click="visit('https://github.com/cseye/md')">GitHub 仓库
         </el-button>
-        <el-button type="success" plain @click="openWindow('https://gitee.com/cseye/md')">Gitee 仓库
+        <el-button type="success" plain @click="visit('https://gitee.com/cseye/md')">Gitee 仓库
         </el-button>
       </span>
     </el-dialog>

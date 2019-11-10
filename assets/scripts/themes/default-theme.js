@@ -65,6 +65,7 @@ let default_theme = {
             'background': 'rgba(27,31,35,.05)',
             'margin': '2em 8px'
         },
+
         blockquote_p: {
             'letter-spacing': '0.1em',
             'color': 'rgb(80, 80, 80)',
@@ -72,6 +73,7 @@ let default_theme = {
             'font-size': '1em',
             'display': 'inline',
         },
+
         code: {
             'font-size': '80%',
             'overflow': 'auto',
@@ -83,29 +85,35 @@ let default_theme = {
             'border': '1px solid rgb(236,236,236)',
             'margin': '20px 0',
         },
+
         image: {
             'border-radius': '4px',
             'display': 'block',
             'margin': '0.1em auto 0.5em',
             'width': '100% !important',
         },
+
         image_org: {
             'border-radius': '4px',
             'display': 'block'
         },
+
         ol: {
             'margin-left': '0',
             'padding-left': '1em'
         },
+
         ul: {
             'margin-left': '0',
             'padding-left': '1em',
             'list-style': 'circle'
         },
+
         footnotes: {
             'margin': '0.5em 8px',
             'font-size': '80%'
         },
+
         figure: {
             'margin': '1.5em 8px',
         }
@@ -116,6 +124,7 @@ let default_theme = {
             'display': 'block',
             'margin': '0.2em 8px'
         },
+
         codespan: {
             'font-size': '90%',
             'color': '#d14',
@@ -123,9 +132,11 @@ let default_theme = {
             'padding': '3px 5px',
             'border-radius': '4px',
         },
+
         link: {
             'color': '#576b95'
         },
+
         wx_link: {
             'color': '#576b95',
             'text-decoration': 'none',
@@ -136,22 +147,27 @@ let default_theme = {
             'color': 'rgba(255, 95, 46, 0.9)',
             'font-weight': 'bold',
         },
+
         table: {
             'border-collapse': 'collapse',
             'text-align': 'center',
             'margin': '1em 8px'
         },
+
         thead: {
             'background': 'rgba(0, 0, 0, 0.05)'
         },
+
         td: {
             'font-size': '80%',
             'border': '1px solid #dfdfdf',
             'padding': '0.25em 0.5em'
         },
+
         footnote: {
             'font-size': '12px'
         },
+        
         figcaption: {
             'text-align': 'center',
             'color': '#888',

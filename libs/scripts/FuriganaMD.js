@@ -1,7 +1,7 @@
-// 注音功能来自于
-// https://github.com/amclees/furigana-markdown
-// 详见上述文档
-
+/**
+ * 注音功能来自于：https://github.com/amclees/furigana-markdown
+ * 详见上述文档
+ */
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
@@ -9,7 +9,7 @@
 }(this, (function () {
   'use strict';
 
-// This function escapes special characters for use in a regex constructor.
+  // This function escapes special characters for use in a regex constructor.
   function escapeForRegex(string) {
     return string.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
   }

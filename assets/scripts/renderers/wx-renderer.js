@@ -7,7 +7,7 @@ let WxRenderer = function (opts) {
   let footnoteIndex = 0;
   let styleMapping = null;
 
-  let CODE_FONT_FAMILY = "Menlo, Operator Mono, Consolas, Monaco, monospace";
+  const CODE_FONT_FAMILY = "Menlo, Operator Mono, Consolas, Monaco, monospace";
 
   let merge = (base, extend) => Object.assign({}, base, extend);
 
@@ -25,7 +25,7 @@ let WxRenderer = function (opts) {
           style['font-family'] = CODE_FONT_FAMILY;
           style['white-space'] = 'normal';
         }
-        mapping[ele] = merge(base, style)
+        mapping[ele] = merge(base, style);
       }
     }
 
@@ -33,12 +33,12 @@ let WxRenderer = function (opts) {
       if (themeTpl.block.hasOwnProperty(ele)) {
         let style = themeTpl.block[ele];
         if (ele === 'code') {
-          style['font-family'] = CODE_FONT_FAMILY
+          style['font-family'] = CODE_FONT_FAMILY;
         }
-        mapping[ele] = merge(base_block, style)
+        mapping[ele] = merge(base_block, style);
       }
     }
-    return mapping
+    return mapping;
   };
 
   let getStyles = (tokenName, addition) => {
@@ -46,9 +46,9 @@ let WxRenderer = function (opts) {
     let dict = styleMapping[tokenName];
     if (!dict) return '';
     for (const key in dict) {
-      arr.push(key + ':' + dict[key])
+      arr.push(key + ':' + dict[key]);
     }
-    return `style="${arr.join(';') + (addition || '')}"`
+    return `style="${arr.join(';') + (addition || '')}"`;
   };
 
   let addFootnote = (title, link) => {
@@ -59,11 +59,11 @@ let WxRenderer = function (opts) {
   this.buildFootnotes = () => {
     let footnoteArray = footnotes.map(x => {
       if (x[1] === x[2]) {
-        return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code>: <i>${x[1]}</i><br/>`
+        return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code>: <i>${x[1]}</i><br/>`;
       }
-      return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`
+      return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`;
     });
-    return `<h4 ${getStyles('h4')}>引用链接</h4><p ${getStyles('footnotes')}>${footnoteArray.join('\n')}</p>`
+    return `<h4 ${getStyles('h4')}>引用链接</h4><p ${getStyles('footnotes')}>${footnoteArray.join('\n')}</p>`;
   };
 
   this.buildAddition = () => {
@@ -87,7 +87,7 @@ let WxRenderer = function (opts) {
   }
 
   this.setOptions = newOpts => {
-    this.opts = merge(this.opts, newOpts)
+    this.opts = merge(this.opts, newOpts);
   };
 
   this.hasFootnotes = () => footnotes.length !== 0;
@@ -116,7 +116,7 @@ let WxRenderer = function (opts) {
 
     renderer.blockquote = text => {
       text = text.replace(/<p.*?>/, `<p ${getStyles('blockquote_p')}>`);
-      return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`
+      return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`;
     };
     renderer.code = (text, infoString) => {
       text = text.replace(/</g, "&lt;");
@@ -129,7 +129,7 @@ let WxRenderer = function (opts) {
       for (let i = 0; i < lines.length; i++) {
         const line = lines[i];
         codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${(line || '<br>')}</span></code>`);
-        numbers.push('<li></li>')
+        numbers.push('<li></li>');
       }
       let lang = infoString || '';
 
@@ -161,11 +161,11 @@ let WxRenderer = function (opts) {
     renderer.image = (href, title, text) => {
       let subText = '';
       if (text) {
-        subText = `<figcaption ${getStyles('figcaption')}>${text}</figcaption>`
+        subText = `<figcaption ${getStyles('figcaption')}>${text}</figcaption>`;
       }
       let figureStyles = getStyles('figure');
       let imgStyles = getStyles(ENV_STRETCH_IMAGE ? 'image' : 'image_org');
-      return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
+      return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`;
     };
     renderer.link = (href, title, text) => {
       if (href.indexOf('https://mp.weixin.qq.com') === 0) {
@@ -187,6 +187,6 @@ let WxRenderer = function (opts) {
     renderer.tablecell = (text, flags) => `<td ${getStyles('td')}>${text}</td>`;
     renderer.hr = () => `<hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);">`;
 
-    return renderer
+    return renderer;
   }
 };

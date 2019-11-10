@@ -24,7 +24,7 @@ let app = new Vue({
       sizeOption: [
         { label: '13px', value: '13px', desc: '稍小' },
         { label: '14px', value: '14px', desc: '推荐' },
-        { label: '15px', value: '15px', desc: '稍大' },
+        { label: '15px', value: '15px', desc: '稍大' }
       ],
       colorOption: [
         { label: '橘红', value: 'rgba(255, 95, 46, 0.9)', hex: '#FF5F2E' },
@@ -47,7 +47,7 @@ let app = new Vue({
         lineWrapping: true,
         styleActiveLine: true,
         theme: this.currentEditorTheme,
-        mode: 'text/x-markdown',
+        mode: 'text/x-markdown'
       }
     );
     this.editor.on("change", (cm, change) => {
@@ -65,9 +65,9 @@ let app = new Vue({
     } else {
       axios({
         method: 'get',
-        url: './assets/default-content.md',
+        url: './assets/default-content.md'
       }).then(resp => {
-        this.editor.setValue(resp.data)
+        this.editor.setValue(resp.data);
       })
     }
   },
@@ -82,33 +82,33 @@ let app = new Vue({
         // 附加的一些 style
         output += this.wxRenderer.buildAddition();
       }
-      return output
+      return output;
     },
     editorThemeChanged(editorTheme) {
-      this.editor.setOption('theme', editorTheme)
+      this.editor.setOption('theme', editorTheme);
     },
     fontChanged(fonts) {
       this.wxRenderer.setOptions({
         fonts: fonts
       });
-      this.refresh()
+      this.refresh();
     },
     sizeChanged(size) {
       this.wxRenderer.setOptions({
         size: size
       });
-      this.refresh()
+      this.refresh();
     },
     colorChanged(color) {
       let theme = setColor(color)
       this.wxRenderer.setOptions({
         theme: theme
-      })
-      this.refresh()
+      });
+      this.refresh();
     },
     // 刷新右侧预览
     refresh() {
-      this.output = this.renderWeChat(this.editor.getValue(0))
+      this.output = this.renderWeChat(this.editor.getValue(0));
     },
     // 将左侧编辑器内容保存到 LocalStorage
     saveEditorContent() {
@@ -156,7 +156,7 @@ let app = new Vue({
         });
       }
     },
-    openWindow(url) {
+    visit(url) {
       window.open(url);
     }
   },

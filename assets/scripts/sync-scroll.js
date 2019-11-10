@@ -4,7 +4,7 @@ $(document).ready(() => {
   $('div.CodeMirror-scroll, #preview').on("scroll", function callback() {
     clearTimeout(timeout);
 
-    let source = $(this), 
+    let source = $(this),
         target = $(source.is("#preview") ? 'div.CodeMirror-scroll' : '#preview');
 
     target.off("scroll");
