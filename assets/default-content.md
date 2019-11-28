@@ -82,4 +82,4 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 
 欢迎关注我的公众号“Doocs开源社区”，原创技术文章第一时间推送。
 
-![](https://gitee.com/doocs/md/raw/master/assets/images/qrcode.jpg)
+![](https://gitee.com/doocs/md/raw/master/assets/images/qrcode-for-doocs.jpg)
