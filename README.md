@@ -27,6 +27,12 @@
 
 ![copy-and-paste](./assets/images/copy-and-paste.gif)
 
+## 示例文章
+- [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
+- [10 道 BAT 大厂海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
+- [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
+
+
 ## 我的公众号
 GitHub 技术社区 Doocs 旗下唯一公众号“Doocs 开源社区”，欢迎关注，专注于分享有价值的文章；当然，也可以加我个人微信（备注：GitHub）。
 
