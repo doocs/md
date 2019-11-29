@@ -1,5 +1,5 @@
 # 微信 Markdown 编辑器
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
@@ -13,6 +13,8 @@
 
 ## 为何二次开发
 现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行文章排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
+
+欢迎随时提交 PR，让这款微信 Markdown 编辑器变得更好！
 
 ## 功能特性
 - [x] 支持 Markdown 所有基础语法
