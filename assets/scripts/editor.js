@@ -54,6 +54,7 @@ let app = new Vue({
       this.refresh();
       this.saveEditorContent();
     });
+
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
       fonts: this.currentFont,
@@ -106,6 +107,35 @@ let app = new Vue({
       });
       this.refresh();
     },
+
+    // 图片上传结束
+    uploaded(response, file, fileList) {
+      if (response.success) {
+        // 上传成功
+        const cursor = this.editor.getCursor();
+        const imageUrl = response.data.url
+        const markdownImage = `![](${imageUrl})`
+        this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
+        this.refresh();
+
+        this.$message({
+          showClose: true,
+          message: '图片插入成功',
+          type: 'success'
+        });
+
+      } else {
+        // 上传失败
+        this.$message({
+          showClose: true,
+          message: response.message,
+          type: 'error'
+        });
+      }
+    },
+    failed(error, file, fileList) {
+      console.log(error)
+    },
     // 刷新右侧预览
     refresh() {
       this.output = this.renderWeChat(this.editor.getValue(0));
@@ -127,7 +157,7 @@ let app = new Vue({
       range.setStartBefore(clipboardDiv.firstChild);
       range.setEndAfter(clipboardDiv.lastChild);
       window.getSelection().addRange(range);
-
+      this.refresh()
       try {
         if (document.execCommand('copy')) {
           this.$notify({

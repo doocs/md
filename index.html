@@ -6,7 +6,8 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
   <meta name="keywords" content="md,markdown,markdown-editor,wechat,official-account,yanglbme,doocs">
   <meta name="description" content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器">
-  <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta name="viewport"
+    content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <title>微信 Markdown 编辑器</title>
   <link rel="shortcut icon" href="assets/images/favicon.png">
   <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
@@ -33,9 +34,15 @@
   <div id="app" class="container">
     <el-container>
       <el-header class="top">
+        <el-upload action="https://cors-anywhere.herokuapp.com/https://sm.ms/api/v2/upload"
+          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" name="smfile" :on-success="uploaded"
+          :on-error="failed">
+          <i class="el-icon-upload" size="medium">&nbsp;</i>
+        </el-upload>
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item label="编辑器主题">
-            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择编辑器主题" clearable @change="editorThemeChanged">
+            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择编辑器主题" clearable
+              @change="editorThemeChanged">
               <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
                 :value="editorTheme.value">
               </el-option>
@@ -114,7 +121,7 @@
   <script src="libs/scripts/index.js"></script>
   <script src="libs/scripts/jquery.min.js"></script>
   <script src="libs/scripts/FuriganaMD.js"></script>
-  
+
   <script src="assets/scripts/sync-scroll.js"></script>
   <script src="assets/scripts/themes/default-theme.js"></script>
   <script src="assets/scripts/renderers/wx-renderer.js"></script>
@@ -123,4 +130,5 @@
   <script src="assets/scripts/loading.js"></script>
 
 </body>
+
 </html>
