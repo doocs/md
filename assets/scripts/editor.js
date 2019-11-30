@@ -111,10 +111,11 @@ let app = new Vue({
     // 图片上传结束
     uploaded(response, file, fileList) {
       if (response.success) {
-        // 上传成功
+        // 上传成功，获取光标
         const cursor = this.editor.getCursor();
         const imageUrl = response.data.url
         const markdownImage = `![](${imageUrl})`
+        // 将 Markdown 形式的 URL 插入编辑框光标所在位置
         this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
         this.refresh();
 

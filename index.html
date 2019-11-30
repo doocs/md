@@ -34,9 +34,10 @@
   <div id="app" class="container">
     <el-container>
       <el-header class="top">
+        <!-- 图片上传 -->
         <el-upload action="https://cors-anywhere.herokuapp.com/https://sm.ms/api/v2/upload"
-          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" name="smfile" :on-success="uploaded"
-          :on-error="failed">
+          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" :multiple="false"
+          accept=".jpg,.jpeg,.png,.gif" :limit="1" name="smfile" :on-success="uploaded" :on-error="failed">
           <i class="el-icon-upload" size="medium">&nbsp;</i>
         </el-upload>
         <el-form size="mini" class="ctrl" :inline=true>
