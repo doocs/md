@@ -117,13 +117,13 @@ let app = new Vue({
         const markdownImage = `![](${imageUrl})`
         // 将 Markdown 形式的 URL 插入编辑框光标所在位置
         this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
-        this.refresh();
-
         this.$message({
           showClose: true,
           message: '图片插入成功',
           type: 'success'
         });
+        
+        this.refresh();
 
       } else {
         // 上传失败
@@ -136,6 +136,13 @@ let app = new Vue({
     },
     failed(error, file, fileList) {
       console.log(error)
+    },
+    uploading(event, file, fileList) {
+      this.$message({
+        showClose: true,
+        message: '图片上传中...',
+        type: 'info'
+      });
     },
     // 刷新右侧预览
     refresh() {
