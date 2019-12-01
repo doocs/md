@@ -37,8 +37,11 @@
         <!-- 图片上传 -->
         <el-upload action="https://cors-anywhere.herokuapp.com/https://sm.ms/api/v2/upload"
           headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" :multiple="false"
-          accept=".jpg,.jpeg,.png,.gif" :limit="1" name="smfile" :on-success="uploaded" :on-error="failed" :on-progress="uploading">
-          <i class="el-icon-upload" size="medium">&nbsp;</i>
+          accept=".jpg,.jpeg,.png,.gif" :limit="1" name="smfile" :on-success="uploaded" :on-error="failed"
+          :on-progress="uploading">
+          <el-tooltip class="item" effect="dark" content="点击上传图片" placement="bottom-start">
+            <i class="el-icon-upload" size="medium">&nbsp;</i>
+          </el-tooltip>
         </el-upload>
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item label="编辑器主题">
