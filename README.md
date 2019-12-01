@@ -28,6 +28,8 @@
 
 ![copy-and-paste](./assets/images/copy-and-paste.gif)
 
+![insert-image](./assets/images/insert-image.gif)
+
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
 - [10 道 BAT 大厂海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
