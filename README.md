@@ -1,5 +1,5 @@
 # 微信 Markdown 编辑器
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases/tag/v1.0.0) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
 > Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！
 
