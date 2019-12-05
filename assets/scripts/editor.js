@@ -7,7 +7,7 @@ let app = new Vue({
       source: '',
       editorThemes: [
         { label: '淡雅', value: 'xq-light' },
-        { label: '精美', value: 'eclipse' },
+        { label: '精致', value: 'eclipse' },
         { label: '暗绿', value: 'oceanic-next' }
       ],
       editor: null,
@@ -27,16 +27,16 @@ let app = new Vue({
         { label: '15px', value: '15px', desc: '稍大' }
       ],
       colorOption: [
-        { label: '橘红', value: 'rgba(255, 95, 46, 0.9)', hex: '#FF5F2E' },
-        { label: '淡绿', value: 'rgba(66, 185, 131, 0.9)', hex: '#42B983' },
-        { label: '暗青', value: 'rgba(0, 139, 139, 0.9)', hex: '#008B8B' }
+        { label: '经典蓝', value: 'rgba(15, 76, 129, 0.9)', hex: '最新流行色' },
+        { label: '翡翠绿', value: 'rgba(0, 152, 116, 0.9)', hex: '清新且优雅' },
+        { label: '辣椒红', value: 'rgba(155, 35, 53, 0.9)', hex: '自信且迷人' }
       ],
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
-    d.currentColor = d.colorOption[1].value;
+    d.currentColor = d.colorOption[0].value;
     return d;
   },
   mounted() {
