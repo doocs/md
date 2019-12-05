@@ -25,7 +25,7 @@
 - [x] 支持链接微信图文，外链自动转为文末索引
 - [x] 支持一键复制并粘贴到公众号后台
 - [x] 支持图片上传并将 URL 插入编辑器光标定位处
-- [ ] 实现自定义 CSS 并实时渲染（待开发）
+- [ ] 实现自定义 CSS 并实时渲染（[开发中](https://github.com/doocs/md/tree/feat/custom-css)）
 
 ![select-and-replace-color-theme](./assets/images/select-and-replace-color-theme.gif)
 
@@ -38,6 +38,7 @@
 - [10 道 BAT 大厂海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
 - [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
 
+注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 
 ## 我的公众号
 GitHub 技术社区 Doocs 旗下唯一公众号“Doocs 开源社区”，欢迎关注，专注于分享有价值的文章；当然，也可以加我个人微信（备注：GitHub）。
