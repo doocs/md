@@ -11,6 +11,7 @@ let app = new Vue({
         { label: '暗绿', value: 'oceanic-next' }
       ],
       editor: null,
+      cssEditor: null,
       builtinFonts: [
         {
           label: '无衬线',
@@ -34,9 +35,11 @@ let app = new Vue({
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
+    d.currentCssEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[1].value;
+    d.showBox = false;
     return d;
   },
   mounted() {
@@ -50,11 +53,25 @@ let app = new Vue({
         mode: 'text/x-markdown'
       }
     );
+    this.cssEditor = CodeMirror.fromTextArea(
+      document.getElementById('cssEditor'),
+      {
+        lineNumbers: false,
+        lineWrapping: true,
+        styleActiveLine: true,
+        matchBrackets: true,
+        theme: this.currentCssEditorTheme,
+        mode: 'application/json'
+      }
+    );
     this.editor.on("change", (cm, change) => {
       this.refresh();
       this.saveEditorContent();
     });
-
+    this.cssEditor.on('update', (instance) => {
+      this.cssChanged();
+      this.saveEditorContent(this.cssEditor, '__css_content');
+    });
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
       fonts: this.currentFont,
@@ -69,6 +86,19 @@ let app = new Vue({
         url: './assets/default-content.md'
       }).then(resp => {
         this.editor.setValue(resp.data);
+      })
+    }
+
+    if (localStorage.getItem('__css_content')) {
+      this.cssEditor.setValue(localStorage.getItem('__css_content'));
+    } else {
+      axios({
+        method: 'get',
+        url: './assets/scripts/themes/default-theme.js'
+      }).then(resp => {
+        this.cssEditor.setValue(resp.data);
+      }).catch(err => {
+        console.log('无法通过网络请求加载default-theme.js文件');
       })
     }
   },
@@ -107,7 +137,13 @@ let app = new Vue({
       });
       this.refresh();
     },
-
+    cssChanged() {
+      let theme = JSON5.parse(this.cssEditor.getValue(0));
+      this.wxRenderer.setOptions({
+        theme: customCss(theme)
+      });
+      this.refresh();
+    },
     // 图片上传结束
     uploaded(response, file, fileList) {
       if (response.success) {
@@ -156,6 +192,16 @@ let app = new Vue({
       } else {
         localStorage.removeItem("__editor_content");
       }
+    },
+    customStyle() {
+      // this.showBox ?
+      //   this.saveEditorContent(this.cssEditor, '__css_content') :
+      //   this.cssEditor.setValue(localStorage.getItem('__css_content'));
+      // this.showBox = !this.showBox;
+
+      this.saveEditorContent(this.cssEditor, '__css_content');
+      this.showBox = !this.showBox;
+      
     },
     copy() {
       let clipboardDiv = document.getElementById('output');

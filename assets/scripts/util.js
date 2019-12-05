@@ -12,3 +12,17 @@ function setColorWithTemplate(template) {
 }
 
 let setColor = setColorWithTemplate(default_theme);
+
+function customCssWithTemplate(template) {
+    return function(jsonString) {
+        let custom_theme = JSON.parse(JSON.stringify(template));
+        custom_theme.block.h1 = jsonString.h1;
+        custom_theme.block.h2 = jsonString.h2;
+        custom_theme.block.h3 = jsonString.h3;
+        custom_theme.block.h4 = jsonString.h4;
+        custom_theme.block.p = jsonString.p;
+        return custom_theme;
+    };
+}
+
+let customCss = customCssWithTemplate(default_theme);

@@ -79,6 +79,9 @@
           </el-form-item>
           <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
         </el-form>
+        <el-tooltip class="item" effect="dark" content="自定义CSS样式" placement="left">
+          <el-button type="success" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
+        </el-tooltip>
         <el-button type="success" plain size="medium" @click="copy">复制</el-button>
         <el-button type="success" plain size="medium" class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>
@@ -95,6 +98,10 @@
                 </div>
               </div>
             </section>
+          </el-col>
+          <el-col id="cssBox" :span="8" v-show="showBox">
+            <textarea id="cssEditor" type="textarea" placeholder="Custom css here." v-model="source">
+              </textarea>
           </el-col>
         </el-row>
       </el-main>
@@ -125,7 +132,8 @@
   <script src="libs/scripts/index.js"></script>
   <script src="libs/scripts/jquery.min.js"></script>
   <script src="libs/scripts/FuriganaMD.js"></script>
-
+  <script src="libs/scripts/json5.js"></script>
+  
   <script src="assets/scripts/sync-scroll.js"></script>
   <script src="assets/scripts/themes/default-theme.js"></script>
   <script src="assets/scripts/renderers/wx-renderer.js"></script>
