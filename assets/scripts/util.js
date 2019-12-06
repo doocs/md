@@ -7,7 +7,7 @@ function setColorWithTemplate(template) {
         custom_theme.block.h3['border-left'] = `3px solid ${color}`;
         custom_theme.block.h4['color'] = color;
         custom_theme.inline.strong['color'] = color;
-        return custom_theme
+        return custom_theme;
     };
 }
 
@@ -98,7 +98,7 @@ function css2json(css) {
         });
 
         // 继续下个声明块
-        css = css.slice(rbracket + 1).trim()
+        css = css.slice(rbracket + 1).trim();
     }
     
     // 返回JSON形式的结果串
