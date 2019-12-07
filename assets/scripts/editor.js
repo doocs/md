@@ -174,7 +174,6 @@ let app = new Vue({
         method: 'get',
         url: './assets/default-content.md'
       }).then(resp => {
-        console.log(resp.data)
         this.editor.setValue(resp.data);
       }).catch(err => {
         this.editor.setValue('# Your markdown here\n');
