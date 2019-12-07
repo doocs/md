@@ -46,6 +46,7 @@ let app = new Vue({
         lineNumbers: false,
         lineWrapping: true,
         styleActiveLine: true,
+        autoCloseBrackets: true,
         theme: this.currentEditorTheme,
         mode: 'text/x-markdown'
       }
