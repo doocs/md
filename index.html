@@ -43,6 +43,10 @@
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
         </el-upload>
+        <!-- 页面重置 -->
+        <el-tooltip class="item" effect="dark" content="点击重置页面" placement="bottom-start">
+          <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
+        </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item label="编辑器主题">
             <el-select v-model="currentEditorTheme" size="mini" placeholder="选择编辑器主题" clearable
