@@ -82,6 +82,15 @@
             </el-select>
           </el-form-item>
           <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+          &nbsp;&nbsp;
+          <el-tooltip content="微信外链自动转为文末引用" placement="top">
+            <el-switch
+              v-model="status"
+              active-color="#67c23a"
+              inactive-color="#dcdfe6"
+              @change="statusChanged">
+            </el-switch>
+          </el-tooltip>
         </el-form>
         <el-button type="success" plain size="medium" @click="copy">复制</el-button>
         <el-button type="success" plain size="medium" class="about" @click="aboutDialogVisible = true">关于</el-button>

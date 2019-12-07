@@ -37,6 +37,7 @@ let app = new Vue({
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[0].value;
+    d.status = '1';
     return d;
   },
   mounted() {
@@ -59,7 +60,8 @@ let app = new Vue({
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
       fonts: this.currentFont,
-      size: this.currentSize
+      size: this.currentSize,
+      status: this.status
     });
     // 如果有编辑内容被保存则读取，否则加载默认文档
     if (localStorage.getItem("__editor_content")) {
@@ -70,10 +72,10 @@ let app = new Vue({
   },
   methods: {
     renderWeChat(source) {
-      let output = marked(source, { renderer: this.wxRenderer.getRenderer() });
-      if (this.wxRenderer.hasFootnotes()) {
-        // 去除第一行的 margin-top
-        output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"');
+      let output = marked(source, { renderer: this.wxRenderer.getRenderer(this.status) });
+      // 去除第一行的 margin-top
+      output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"');
+      if (this.status) {
         // 引用脚注
         output += this.wxRenderer.buildFootnotes();
         // 附加的一些 style
@@ -160,6 +162,9 @@ let app = new Vue({
       }).catch(() => {
         this.editor.focus();
       });
+    },
+    statusChanged() {
+      this.refresh();
     },
     // 将左侧编辑器内容保存到 LocalStorage
     saveEditorContent() {

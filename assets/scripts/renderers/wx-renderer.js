@@ -1,6 +1,5 @@
 let WxRenderer = function (opts) {
   this.opts = opts;
-  let ENV_USE_REFERENCES = true;
   let ENV_STRETCH_IMAGE = true;
 
   let footnotes = [];
@@ -92,7 +91,7 @@ let WxRenderer = function (opts) {
 
   this.hasFootnotes = () => footnotes.length !== 0;
 
-  this.getRenderer = () => {
+  this.getRenderer = (status) => {
     footnotes = [];
     footnoteIndex = 0;
 
@@ -172,11 +171,11 @@ let WxRenderer = function (opts) {
       } else if (href === text) {
         return text;
       } else {
-        if (ENV_USE_REFERENCES) {
+        if (status) {
           let ref = addFootnote(title || text, href);
           return `<span ${getStyles('link')}>${text}<sup>[${ref}]</sup></span>`;
         } else {
-          return `<a href="${href}" title="${(title || text)}" ${getStyles('link')}>${text}</a>`;
+          return text;
         }
       }
     };
