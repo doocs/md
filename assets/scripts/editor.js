@@ -81,12 +81,7 @@ let app = new Vue({
     if (localStorage.getItem("__editor_content")) {
       this.editor.setValue(localStorage.getItem("__editor_content"));
     } else {
-      axios({
-        method: 'get',
-        url: './assets/default-content.md'
-      }).then(resp => {
-        this.editor.setValue(resp.data);
-      })
+      this.setDefaultContent();
     }
 
     if (localStorage.getItem('__css_content')) {
@@ -184,6 +179,23 @@ let app = new Vue({
     refresh() {
       this.output = this.renderWeChat(this.editor.getValue(0));
     },
+    // 重置页面
+    reset() {
+      this.$confirm('此操作将丢失本地缓存的文本和自定义样式，是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+        center: true
+      }).then(() => {
+        localStorage.removeItem('__editor_content');
+        localStorage.removeItem('__css_content');
+        this.setDefaultContent();
+        this.editor.focus();
+        this.refresh();
+      }).catch(() => {
+        this.editor.focus();
+      });
+    },
     // 将左侧编辑器内容保存到 LocalStorage
     saveEditorContent() {
       let content = this.editor.getValue(0);
@@ -196,7 +208,16 @@ let app = new Vue({
     customStyle() {
       this.saveEditorContent(this.cssEditor, '__css_content');
       this.showBox = !this.showBox;
-      
+    },
+    setDefaultContent() {
+      axios({
+        method: 'get',
+        url: './assets/default-content.md'
+      }).then(resp => {
+        this.editor.setValue(resp.data);
+      }).catch(err => {
+        this.editor.setValue('# Your markdown here\n');
+      })
     },
     copy() {
       let clipboardDiv = document.getElementById('output');

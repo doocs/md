@@ -98,7 +98,6 @@ let WxRenderer = function (opts) {
 
     styleMapping = this.buildTheme(this.opts.theme);
     let renderer = new marked.Renderer();
-    FuriganaMD.register(renderer);
 
     renderer.heading = (text, level) => {
       switch (level) {
