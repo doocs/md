@@ -104,7 +104,7 @@
             </section>
           </el-col>
           <el-col id="cssBox" :span="8" v-show="showBox">
-            <textarea id="cssEditor" type="textarea" placeholder="Custom css here." v-model="source">
+            <textarea id="cssEditor" type="textarea" @change="cssChanged" placeholder="Custom css here." v-model="source">
               </textarea>
           </el-col>
         </el-row>

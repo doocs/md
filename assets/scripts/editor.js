@@ -66,7 +66,7 @@ let app = new Vue({
     );
     this.editor.on("change", (cm, change) => {
       this.refresh();
-      this.saveEditorContent();
+      this.saveEditorContent(this.editor, '__editor_content');
     });
     this.cssEditor.on('update', (instance) => {
       this.cssChanged();
@@ -126,16 +126,18 @@ let app = new Vue({
       this.refresh();
     },
     colorChanged(color) {
-      let theme = setColor(color)
+      let theme = setColor(color);
       this.wxRenderer.setOptions({
         theme: theme
       });
       this.refresh();
     },
     cssChanged() {
-      let theme = JSON5.parse(this.cssEditor.getValue(0));
+      let theme = JSON.parse(this.cssEditor.getValue(0));
       this.wxRenderer.setOptions({
-        theme: customCss(theme)
+        theme: customCss(theme, this.currentColor),
+        font: this.currentFont,
+        size: this.currentSize
       });
       this.refresh();
     },
@@ -197,12 +199,12 @@ let app = new Vue({
       });
     },
     // 将左侧编辑器内容保存到 LocalStorage
-    saveEditorContent() {
-      let content = this.editor.getValue(0);
+    saveEditorContent(editor, name) {
+      const content = editor.getValue(0);
       if (content) {
-        localStorage.setItem("__editor_content", content);
+        localStorage.setItem(name, content);
       } else {
-        localStorage.removeItem("__editor_content");
+        localStorage.removeItem(name);
       }
     },
     customStyle() {
