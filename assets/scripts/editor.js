@@ -11,6 +11,7 @@ let app = new Vue({
         { label: '暗绿', value: 'oceanic-next' }
       ],
       editor: null,
+      cssEditor: null,
       builtinFonts: [
         {
           label: '无衬线',
@@ -31,9 +32,11 @@ let app = new Vue({
         { label: '翡翠绿', value: 'rgba(0, 152, 116, 0.9)', hex: '清新且优雅' },
         { label: '辣椒红', value: 'rgba(155, 35, 53, 0.9)', hex: '自信且迷人' }
       ],
+      showBox: true,
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
+    d.currentCssEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[0].value;
@@ -41,6 +44,8 @@ let app = new Vue({
     return d;
   },
   mounted() {
+    this.showBox = false
+
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
       {
@@ -52,11 +57,36 @@ let app = new Vue({
         mode: 'text/x-markdown'
       }
     );
+    this.cssEditor = CodeMirror.fromTextArea(
+      document.getElementById('cssEditor'), {
+      mode: 'css',
+      theme: 'style-mirror',
+      lineNumbers: false,
+      lineWrapping: true,
+      matchBrackets: true,
+      autofocus: true,
+      extraKeys: {
+        "Ctrl-F": function autoFormat(editor) {
+          var totalLines = editor.lineCount();
+          editor.autoFormatRange({ line: 0, ch: 0 }, { line: totalLines });
+        }
+      },
+    }
+    );
+    // 自动提示
+    this.cssEditor.on("keyup", (cm, e) => {
+      if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
+        cm.showHint(e);
+      }
+    });
     this.editor.on("change", (cm, change) => {
       this.refresh();
-      this.saveEditorContent();
+      this.saveEditorContent(this.editor, '__editor_content');
     });
-
+    this.cssEditor.on('update', (instance) => {
+      this.cssChanged();
+      this.saveEditorContent(this.cssEditor, '__css_content');
+    });
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
       fonts: this.currentFont,
@@ -69,8 +99,15 @@ let app = new Vue({
     } else {
       this.setDefaultContent();
     }
+
+    if (localStorage.getItem("__css_content")) {
+      this.cssEditor.setValue(localStorage.getItem("__css_content"));
+    } else {
+      this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
+    }
   },
   methods: {
+
     renderWeChat(source) {
       let output = marked(source, { renderer: this.wxRenderer.getRenderer(this.status) });
       // 去除第一行的 margin-top
@@ -99,13 +136,20 @@ let app = new Vue({
       this.refresh();
     },
     colorChanged(color) {
-      let theme = setColor(color)
+      let theme = setColor(color);
       this.wxRenderer.setOptions({
         theme: theme
       });
       this.refresh();
     },
-
+    cssChanged() {
+      let json = css2json(this.cssEditor.getValue(0))
+      let theme = customCssWithTemplate(json, this.currentColor)
+      this.wxRenderer.setOptions({
+        theme: theme
+      });
+      this.refresh();
+    },
     // 图片上传结束
     uploaded(response, file, fileList) {
       if (response.success) {
@@ -120,7 +164,7 @@ let app = new Vue({
           message: '图片插入成功',
           type: 'success'
         });
-        
+
         this.refresh();
 
       } else {
@@ -157,6 +201,7 @@ let app = new Vue({
         localStorage.removeItem('__editor_content');
         localStorage.removeItem('__css_content');
         this.setDefaultContent();
+        this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.editor.focus();
         this.refresh();
       }).catch(() => {
@@ -167,13 +212,16 @@ let app = new Vue({
       this.refresh();
     },
     // 将左侧编辑器内容保存到 LocalStorage
-    saveEditorContent() {
-      let content = this.editor.getValue(0);
+    saveEditorContent(editor, name) {
+      const content = editor.getValue(0);
       if (content) {
-        localStorage.setItem("__editor_content", content);
+        localStorage.setItem(name, content);
       } else {
-        localStorage.removeItem("__editor_content");
+        localStorage.removeItem(name);
       }
+    },
+    customStyle() {
+      this.showBox = !this.showBox;
     },
     setDefaultContent() {
       axios({
@@ -221,9 +269,6 @@ let app = new Vue({
           type: 'warning'
         });
       }
-    },
-    visit(url) {
-      window.open(url);
     }
   },
   updated() {

@@ -13,12 +13,22 @@
   <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
   <link rel="stylesheet" href="assets/css/loading.css">
   <link rel="stylesheet" href="libs/css/index.css">
-  <link rel="stylesheet" href="libs/css/codemirror.min.css">
+
   <link rel="stylesheet" href="libs/css/xq-light.min.css">
   <link rel="stylesheet" href="libs/css/eclipse.min.css">
   <link rel="stylesheet" href="libs/css/oceanic-next.min.css">
   <link rel="stylesheet" href="libs/css/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
+
+
+  <!-- codemirror -->
+  <link rel="stylesheet" href="libs/css/codemirror.min.css">
+  <link rel="stylesheet" href="libs/css/show-hint.css">
+  <link rel="stylesheet" href="libs/css/style-mirror.css">
+  <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+  <!-- 默认CSS -->
+  <script src="assets/scripts/themes/default-theme-css.js"></script>
+
 </head>
 
 <body>
@@ -92,6 +102,9 @@
             </el-switch>
           </el-tooltip>
         </el-form>
+        <el-tooltip class="item" effect="dark" content="自定义CSS样式" placement="left">
+          <el-button type="success" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
+        </el-tooltip>
         <el-button type="success" plain size="medium" @click="copy">复制</el-button>
         <el-button type="success" plain size="medium" class="about" @click="aboutDialogVisible = true">关于</el-button>
       </el-header>
@@ -109,6 +122,13 @@
               </div>
             </section>
           </el-col>
+          <transition name="custom-classes-transition" enter-active-class="animated bounceInRight">
+            <el-col id="cssBox" :span="12" v-show="showBox">
+              <textarea id="cssEditor" type="textarea" placeholder="Custom css here.">
+                </textarea>
+            </el-col>
+          </transition>
+
         </el-row>
       </el-main>
     </el-container>
@@ -121,10 +141,14 @@
         <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="success" plain @click="visit('https://github.com/doocs/md')">GitHub 仓库
-        </el-button>
-        <el-button type="success" plain @click="visit('https://gitee.com/doocs/md')">Gitee 仓库
-        </el-button>
+        <a href="https://github.com/doocs/md" target="_blank">
+          <el-button type="success" plain>GitHub 仓库
+          </el-button>
+        </a>
+        <a href="https://gitee.com/doocs/md" target="_blank">
+          <el-button type="success" plain>Gitee 仓库
+          </el-button>
+        </a>
       </span>
     </el-dialog>
   </div>
@@ -132,7 +156,16 @@
   <script src="libs/scripts/vue.min.js"></script>
   <script src="libs/scripts/axios.min.js"></script>
   <script src="libs/scripts/marked.min.js"></script>
-  <script src="libs/scripts/codemirror.min.js"></script>
+
+  <!-- codemirror -->
+  <script src="libs/scripts/codemirror/codemirror.min.js"></script>
+  <script src="libs/scripts/codemirror/css.js"></script>
+  <script src="libs/scripts/codemirror/matchbrackets.js"></script>
+  <script src="libs/scripts/codemirror/active-line.js"></script>
+  <script src="libs/scripts/codemirror/show-hint.js"></script>
+  <script src="libs/scripts/codemirror/css-hint.js"></script>
+  <script src="libs/scripts/codemirror/format.js"></script>
+
   <script src="libs/scripts/markdown.min.js"></script>
   <script src="libs/scripts/prettify.min.js"></script>
   <script src="libs/scripts/index.js"></script>

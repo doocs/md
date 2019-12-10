@@ -1,9 +1,9 @@
 # 微信 Markdown 编辑器
 [![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases/tag/v1.0.0) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
-> Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！
+> 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
-本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
+Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！
 
 ## 编辑器地址
 欢迎使用本微信 Markdown 编辑器进行排版。只要你会基本的 Markdown 语法，就能做出一篇排版美观、大方的微信图文。
@@ -28,7 +28,7 @@
 - [x] 支持链接微信图文，外链自动转为文末索引
 - [x] 支持一键复制并粘贴到公众号后台
 - [x] 支持图片上传并将 URL 插入编辑器光标定位处
-- [ ] 实现自定义 CSS 并实时渲染（[开发中](https://github.com/doocs/md/tree/feat/custom-css)）
+- [ ] 支持自定义 CSS 并实时渲染（[开发中](https://github.com/doocs/md/tree/feat/custom-css)）
 
 ![select-and-replace-color-theme](./assets/images/select-and-replace-color-theme.gif)
 
@@ -45,7 +45,7 @@
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 
 ## 我的公众号
-GitHub 技术社区 Doocs 旗下唯一公众号“Doocs 开源社区”，欢迎关注，专注于分享有价值的文章；当然，也可以加我个人微信（备注：GitHub）。
+GitHub 技术社区 Doocs 旗下唯一公众号“**Doocs 开源社区**”，欢迎关注，专注于分享有价值的文章；当然，也可以加我个人微信（备注：GitHub）。
 
 <table>
     <tr>
