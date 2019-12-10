@@ -167,7 +167,7 @@ let default_theme = {
         footnote: {
             'font-size': '12px'
         },
-        
+
         figcaption: {
             'text-align': 'center',
             'color': '#888',
