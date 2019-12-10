@@ -16,7 +16,6 @@ let setColor = setColorWithTemplate(default_theme);
 function customCssWithTemplate(jsonString, color) {
     let custom_theme = JSON.parse(JSON.stringify(default_theme));
     // block
-    console.log(jsonString)
     custom_theme.block.h1['border-bottom'] = `2px solid ${color}`;
     custom_theme.block.h2['background'] = color;
     custom_theme.block.h3['border-left'] = `3px solid ${color}`;

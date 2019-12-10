@@ -19,14 +19,14 @@
   <link rel="stylesheet" href="libs/css/oceanic-next.min.css">
   <link rel="stylesheet" href="libs/css/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
- 
 
-    <!-- codemirror -->
+
+  <!-- codemirror -->
   <link rel="stylesheet" href="libs/css/codemirror.min.css">
   <link rel="stylesheet" href="libs/css/show-hint.css">
   <link rel="stylesheet" href="libs/css/style-mirror.css">
   <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
-    <!-- 默认CSS -->
+  <!-- 默认CSS -->
   <script src="assets/scripts/themes/default-theme-css.js"></script>
 
 </head>
@@ -113,16 +113,13 @@
               </div>
             </section>
           </el-col>
-          <transition
-            name="custom-classes-transition"
-            enter-active-class="animated bounceInRight"
-          >
+          <transition name="custom-classes-transition" enter-active-class="animated bounceInRight">
             <el-col id="cssBox" :span="12" v-show="showBox">
-                <textarea id="cssEditor" type="textarea" placeholder="Custom css here.">
+              <textarea id="cssEditor" type="textarea" placeholder="Custom css here.">
                 </textarea>
             </el-col>
-        </transition>
-        
+          </transition>
+
         </el-row>
       </el-main>
     </el-container>
@@ -135,10 +132,14 @@
         <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="success" plain @click="visit('https://github.com/doocs/md')">GitHub 仓库
-        </el-button>
-        <el-button type="success" plain @click="visit('https://gitee.com/doocs/md')">Gitee 仓库
-        </el-button>
+        <a href="https://github.com/doocs/md" target="_blank">
+          <el-button type="success" plain>GitHub 仓库
+          </el-button>
+        </a>
+        <a href="https://gitee.com/doocs/md" target="_blank">
+          <el-button type="success" plain>Gitee 仓库
+          </el-button>
+        </a>
       </span>
     </el-dialog>
   </div>
@@ -147,7 +148,7 @@
   <script src="libs/scripts/axios.min.js"></script>
   <script src="libs/scripts/marked.min.js"></script>
 
-    <!-- codemirror -->
+  <!-- codemirror -->
   <script src="libs/scripts/codemirror/codemirror.min.js"></script>
   <script src="libs/scripts/codemirror/css.js"></script>
   <script src="libs/scripts/codemirror/matchbrackets.js"></script>
@@ -171,5 +172,3 @@
 </body>
 
 </html>
-
-

@@ -198,8 +198,8 @@ let app = new Vue({
         localStorage.removeItem('__editor_content');
         localStorage.removeItem('__css_content');
         this.setDefaultContent();
-        this.editor.focus();
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
+        this.editor.focus();
         this.refresh();
       }).catch(() => {
         this.editor.focus();
@@ -263,9 +263,6 @@ let app = new Vue({
           type: 'warning'
         });
       }
-    },
-    visit(url) {
-      window.open(url);
     }
   },
   updated() {
