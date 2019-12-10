@@ -13,12 +13,22 @@
   <link rel="apple-touch-icon-precomposed" href="assets/images/favicon.png">
   <link rel="stylesheet" href="assets/css/loading.css">
   <link rel="stylesheet" href="libs/css/index.css">
-  <link rel="stylesheet" href="libs/css/codemirror.min.css">
+
   <link rel="stylesheet" href="libs/css/xq-light.min.css">
   <link rel="stylesheet" href="libs/css/eclipse.min.css">
   <link rel="stylesheet" href="libs/css/oceanic-next.min.css">
   <link rel="stylesheet" href="libs/css/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
+ 
+
+    <!-- codemirror -->
+  <link rel="stylesheet" href="libs/css/codemirror.min.css">
+  <link rel="stylesheet" href="libs/css/show-hint.css">
+  <link rel="stylesheet" href="libs/css/style-mirror.css">
+  <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+    <!-- 默认CSS -->
+  <script src="assets/scripts/themes/default-theme-css.js"></script>
+
 </head>
 
 <body>
@@ -103,10 +113,16 @@
               </div>
             </section>
           </el-col>
-          <el-col id="cssBox" :span="8" v-show="showBox">
-            <textarea id="cssEditor" type="textarea" @change="cssChanged" placeholder="Custom css here." v-model="source">
-              </textarea>
-          </el-col>
+          <transition
+            name="custom-classes-transition"
+            enter-active-class="animated bounceInRight"
+          >
+            <el-col id="cssBox" :span="12" v-show="showBox">
+                <textarea id="cssEditor" type="textarea" placeholder="Custom css here.">
+                </textarea>
+            </el-col>
+        </transition>
+        
         </el-row>
       </el-main>
     </el-container>
@@ -130,7 +146,16 @@
   <script src="libs/scripts/vue.min.js"></script>
   <script src="libs/scripts/axios.min.js"></script>
   <script src="libs/scripts/marked.min.js"></script>
-  <script src="libs/scripts/codemirror.min.js"></script>
+
+    <!-- codemirror -->
+  <script src="libs/scripts/codemirror/codemirror.min.js"></script>
+  <script src="libs/scripts/codemirror/css.js"></script>
+  <script src="libs/scripts/codemirror/matchbrackets.js"></script>
+  <script src="libs/scripts/codemirror/active-line.js"></script>
+  <script src="libs/scripts/codemirror/show-hint.js"></script>
+  <script src="libs/scripts/codemirror/css-hint.js"></script>
+  <script src="libs/scripts/codemirror/format.js"></script>
+
   <script src="libs/scripts/markdown.min.js"></script>
   <script src="libs/scripts/prettify.min.js"></script>
   <script src="libs/scripts/index.js"></script>
@@ -147,3 +172,5 @@
 </body>
 
 </html>
+
+

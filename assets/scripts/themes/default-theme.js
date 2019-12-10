@@ -16,7 +16,7 @@ let default_theme = {
             'display': 'table',
             'margin': '2em auto 1em',
             'padding': '0 1em',
-            'border-bottom': '2px solid rgba(15, 76, 129, 0.9)'
+            'border-bottom': '2px solid rgba(0, 152, 116, 0.9)'
         },
 
         // 二级标题样式
@@ -27,7 +27,7 @@ let default_theme = {
             'display': 'table',
             'margin': '4em auto 2em',
             'padding': '0 0.2em',
-            'background': 'rgba(15, 76, 129, 0.9)',
+            'background': 'rgba(0, 152, 116, 0.9)',
             'color': '#fff'
         },
 
@@ -38,7 +38,7 @@ let default_theme = {
             'margin': '2em 8px 0.75em 0',
             'line-height': '1.2',
             'padding-left': '8px',
-            'border-left': '3px solid rgba(15, 76, 129, 0.9)'
+            'border-left': '3px solid rgba(0, 152, 116, 0.9)'
         },
 
         // 四级标题样式

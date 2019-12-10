@@ -13,25 +13,37 @@ function setColorWithTemplate(template) {
 
 let setColor = setColorWithTemplate(default_theme);
 
-function customCssWithTemplate(template, color) {
-    return function (jsonString) {
-        let custom_theme = JSON.parse(JSON.stringify(template));
-        custom_theme.block.h1 = jsonString.h1;
-        custom_theme.block.h2 = jsonString.h2;
-        custom_theme.block.h3 = jsonString.h3;
-        custom_theme.block.h4 = jsonString.h4;
-        custom_theme.block.p = jsonString.p;
-        // color
-        custom_theme.block.h1['border-bottom'] = `2px solid ${color}`;
+function customCssWithTemplate(jsonString,color) {
+        let custom_theme = JSON.parse(JSON.stringify(default_theme));
+        // block
+        custom_theme.block.h1 = Object.assign(custom_theme.block.h1,jsonString.h1);
+        custom_theme.block.h2 = Object.assign(custom_theme.block.h2,jsonString.h2);
+        custom_theme.block.h3 = Object.assign(custom_theme.block.h3,jsonString.h3);
+        custom_theme.block.h4 = Object.assign(custom_theme.block.h4,jsonString.h4);
+        custom_theme.block.p = Object.assign(custom_theme.block.p,jsonString.p);
+        custom_theme.block.blockquote = Object.assign(custom_theme.block.blockquote,jsonString.blockquote);
+        custom_theme.block.blockquote_p = Object.assign(custom_theme.block.blockquote_p,jsonString.blockquote_p);
+        custom_theme.block.code = Object.assign(custom_theme.block.code,jsonString.code);
+        custom_theme.block.image = Object.assign(custom_theme.block.image,jsonString.image);
+        custom_theme.block.ol = Object.assign(custom_theme.block.ol,jsonString.ol);
+        custom_theme.block.ul = Object.assign(custom_theme.block.ul,jsonString.ul);
+        custom_theme.block.footnotes = Object.assign(custom_theme.block.footnotes,jsonString.footnotes);
+        custom_theme.block.figure = Object.assign(custom_theme.block.figure,jsonString.figure);
+
+        // inline
+        custom_theme.inline.strong = Object.assign(custom_theme.inline.strong,jsonString.strong);
+        custom_theme.inline.table = Object.assign(custom_theme.inline.table,jsonString.table);
+        custom_theme.inline.thead = Object.assign(custom_theme.inline.thead,jsonString.thead);
+        custom_theme.inline.strong = Object.assign(custom_theme.inline.strong,jsonString.strong);
+        custom_theme.inline.link = Object.assign(custom_theme.inline.link,jsonString.link);
+        custom_theme.inline.wx_link = Object.assign(custom_theme.inline.wx_link,jsonString.wx_link);
+
         custom_theme.block.h2['background'] = color;
         custom_theme.block.h3['border-left'] = `3px solid ${color}`;
-        custom_theme.block.h4['color'] = color;
         custom_theme.inline.strong['color'] = color;
         return custom_theme;
-    };
-}
 
-let customCss = customCssWithTemplate(default_theme);
+}
 
 
 /**

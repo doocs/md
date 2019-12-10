@@ -32,6 +32,7 @@ let app = new Vue({
         { label: '翡翠绿', value: 'rgba(0, 152, 116, 0.9)', hex: '清新且优雅' },
         { label: '辣椒红', value: 'rgba(155, 35, 53, 0.9)', hex: '自信且迷人' }
       ],
+      showBox:true,
       aboutDialogVisible: false
     };
     d.currentEditorTheme = d.editorThemes[0].value;
@@ -39,10 +40,11 @@ let app = new Vue({
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[1].value;
-    d.showBox = false;
     return d;
   },
   mounted() {
+    this.showBox = false
+    
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
       {
@@ -54,23 +56,34 @@ let app = new Vue({
       }
     );
     this.cssEditor = CodeMirror.fromTextArea(
-      document.getElementById('cssEditor'),
-      {
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        theme: this.currentCssEditorTheme,
-        mode: 'application/json'
-      }
+        document.getElementById('cssEditor'), {
+            mode: 'css',
+            theme: 'style-mirror',
+            lineNumbers:false,
+            lineWrapping: true,
+            matchBrackets: true,
+            autofocus: true,
+            extraKeys: {
+                "Ctrl-F": function autoFormat(editor) {
+                    var totalLines = editor.lineCount();
+                          editor.autoFormatRange({line:0, ch:0}, {line:totalLines});
+                }
+            },
+        }
     );
+    // 自动提示
+    this.cssEditor.on("keyup", (cm, e) => {
+        if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
+          cm.showHint(e);
+        }
+      });
     this.editor.on("change", (cm, change) => {
       this.refresh();
       this.saveEditorContent(this.editor, '__editor_content');
     });
     this.cssEditor.on('update', (instance) => {
-      this.cssChanged();
-      this.saveEditorContent(this.cssEditor, '__css_content');
+        this.cssChanged()
+        this.saveEditorContent(this.cssEditor, '__css_content');
     });
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
@@ -84,20 +97,14 @@ let app = new Vue({
       this.setDefaultContent();
     }
 
-    if (localStorage.getItem('__css_content')) {
-      this.cssEditor.setValue(localStorage.getItem('__css_content'));
-    } else {
-      axios({
-        method: 'get',
-        url: './assets/scripts/themes/default-theme.js'
-      }).then(resp => {
-        this.cssEditor.setValue(resp.data);
-      }).catch(err => {
-        console.log('无法通过网络请求加载default-theme.js文件');
-      })
+    if (localStorage.getItem("__css_content")) {
+        this.cssEditor.setValue(localStorage.getItem("__css_content"));
+      } else {
+        this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
     }
   },
   methods: {
+ 
     renderWeChat(source) {
       let output = marked(source, { renderer: this.wxRenderer.getRenderer() });
       if (this.wxRenderer.hasFootnotes()) {
@@ -133,13 +140,12 @@ let app = new Vue({
       this.refresh();
     },
     cssChanged() {
-      let theme = JSON.parse(this.cssEditor.getValue(0));
-      this.wxRenderer.setOptions({
-        theme: customCss(theme, this.currentColor),
-        font: this.currentFont,
-        size: this.currentSize
-      });
-      this.refresh();
+        let json = css2json(this.cssEditor.getValue(0))
+        let theme = customCssWithTemplate(json,this.currentColor)
+        this.wxRenderer.setOptions({
+            theme
+        });
+        this.refresh();
     },
     // 图片上传结束
     uploaded(response, file, fileList) {
@@ -193,6 +199,7 @@ let app = new Vue({
         localStorage.removeItem('__css_content');
         this.setDefaultContent();
         this.editor.focus();
+        this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.refresh();
       }).catch(() => {
         this.editor.focus();
@@ -208,7 +215,7 @@ let app = new Vue({
       }
     },
     customStyle() {
-      this.saveEditorContent(this.cssEditor, '__css_content');
+        console.log(this.currentColor)
       this.showBox = !this.showBox;
     },
     setDefaultContent() {
