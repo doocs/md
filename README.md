@@ -28,7 +28,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持链接微信图文，外链自动转为文末索引
 - [x] 支持一键复制并粘贴到公众号后台
 - [x] 支持图片上传并将 URL 插入编辑器光标定位处
-- [ ] 支持自定义 CSS 并实时渲染（[开发中](https://github.com/doocs/md/tree/feat/custom-css)）
+- [x] 支持自定义 CSS 样式并实时渲染
 
 ![select-and-replace-color-theme](./assets/images/select-and-replace-color-theme.gif)
 
@@ -44,22 +44,10 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 
-## 我的公众号
-GitHub 技术社区 Doocs 旗下唯一公众号“**Doocs 开源社区**”，欢迎关注，专注于分享有价值的文章；当然，也可以加我个人微信（备注：GitHub）。
+## 项目维护者
+- [yanglbme](https://github.com/yanglbme)
+- [bouc615](https://github.com/bouc615)
+- [JimQing](https://github.com/JimQing)
 
-<table>
-    <tr>
-      <td align="center" style="width: 200px;">
-        <a href="https://github.com/doocs">
-          <img src="./assets/images/qrcode-for-doocs.jpg" style="width: 400px;"><br>
-          <sub>公众平台</sub>
-        </a><br>
-      </td>
-      <td align="center" style="width: 200px;">
-        <a href="https://github.com/yanglbme">
-          <img src="./assets/images/qrcode-for-yanglbme.jpg" style="width: 400px;"><br>
-          <sub>个人微信</sub>
-        </a><br>
-      </td>
-    </tr>
-</table>
+## License
+[Do What The F*ck You Want To Public License](LICENSE)
