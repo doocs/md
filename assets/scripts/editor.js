@@ -97,7 +97,7 @@ let app = new Vue({
     if (localStorage.getItem("__editor_content")) {
       this.editor.setValue(localStorage.getItem("__editor_content"));
     } else {
-      this.setDefaultContent();
+      this.editor.setValue(DEFAULT_CONTENT);
     }
 
     if (localStorage.getItem("__css_content")) {
@@ -199,7 +199,7 @@ let app = new Vue({
         center: true
       }).then(() => {
         localStorage.clear()
-        this.setDefaultContent();
+        this.editor.setValue(DEFAULT_CONTENT);
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.editor.focus();
         this.cssChanged()
@@ -225,16 +225,6 @@ let app = new Vue({
       if (!flag) {
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
       }
-    },
-    setDefaultContent() {
-      axios({
-        method: 'get',
-        url: './assets/default-content.md'
-      }).then(resp => {
-        this.editor.setValue(resp.data);
-      }).catch(err => {
-        this.editor.setValue('# Your markdown here\n');
-      })
     },
     copy() {
       let clipboardDiv = document.getElementById('output');
