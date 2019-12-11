@@ -5,11 +5,6 @@ let app = new Vue({
       aboutOutput: '',
       output: '',
       source: '',
-      editorThemes: [
-        { label: '淡雅', value: 'xq-light' },
-        { label: '精致', value: 'eclipse' },
-        { label: '暗绿', value: 'oceanic-next' }
-      ],
       editor: null,
       cssEditor: null,
       builtinFonts: [
@@ -35,8 +30,6 @@ let app = new Vue({
       showBox: true,
       aboutDialogVisible: false
     };
-    d.currentEditorTheme = d.editorThemes[0].value;
-    d.currentCssEditorTheme = d.editorThemes[0].value;
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
     d.currentColor = d.colorOption[0].value;
@@ -49,12 +42,12 @@ let app = new Vue({
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
       {
+        mode: 'text/x-markdown',
+        theme: 'xq-light',
         lineNumbers: false,
         lineWrapping: true,
         styleActiveLine: true,
-        autoCloseBrackets: true,
-        theme: this.currentEditorTheme,
-        mode: 'text/x-markdown'
+        autoCloseBrackets: true
       }
     );
     this.cssEditor = CodeMirror.fromTextArea(

@@ -15,8 +15,6 @@
   <link rel="stylesheet" href="libs/css/index.css">
 
   <link rel="stylesheet" href="libs/css/xq-light.min.css">
-  <link rel="stylesheet" href="libs/css/eclipse.min.css">
-  <link rel="stylesheet" href="libs/css/oceanic-next.min.css">
   <link rel="stylesheet" href="libs/css/code-themes/github-v2.min.css">
   <link rel="stylesheet" href="assets/css/app.css">
 
@@ -58,14 +56,6 @@
           <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
-          <el-form-item label="编辑器主题">
-            <el-select v-model="currentEditorTheme" size="mini" placeholder="选择编辑器主题" clearable
-              @change="editorThemeChanged">
-              <el-option v-for="editorTheme in editorThemes" :key="editorTheme.value" :label="editorTheme.label"
-                :value="editorTheme.value">
-              </el-option>
-            </el-select>
-          </el-form-item>
           <el-form-item label="字体">
             <el-select v-model="currentFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
               <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
