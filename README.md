@@ -32,11 +32,11 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
 
-![select-and-replace-color-theme](./assets/images/select-and-replace-color-theme.gif)
+![select-and-change-color-theme](./assets/images/doocs-md-select-and-change-color-theme.gif)
 
-![copy-and-paste](./assets/images/copy-and-paste.gif)
+![copy-and-paste](./assets/images/doocs-md-copy-and-paste.gif)
 
-![insert-image](./assets/images/insert-image.gif)
+![custom](./assets/images/doocs-md-custom-css.gif)
 
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
