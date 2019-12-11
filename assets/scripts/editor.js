@@ -198,12 +198,11 @@ let app = new Vue({
         type: 'warning',
         center: true
       }).then(() => {
-        localStorage.removeItem('__editor_content');
-        localStorage.removeItem('__css_content');
+        localStorage.clear()
         this.setDefaultContent();
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.editor.focus();
-        this.refresh();
+        this.cssChanged()
       }).catch(() => {
         this.editor.focus();
       });
@@ -220,8 +219,12 @@ let app = new Vue({
         localStorage.removeItem(name);
       }
     },
-    customStyle() {
+    async customStyle() {
       this.showBox = !this.showBox;
+      let flag = await localStorage.getItem("__css_content")
+      if (!flag) {
+        this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
+      }
     },
     setDefaultContent() {
       axios({
