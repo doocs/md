@@ -1,5 +1,5 @@
 # 微信 Markdown 编辑器
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases/tag/v1.1.0) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
 
 > 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
