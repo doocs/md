@@ -38,6 +38,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ![custom](./assets/images/doocs-md-custom-css.gif)
 
+![doocs-md-upload-image](./assets/images/doocs-md-upload-image.gif)
+
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
 - [GitHub 项目持续本地化，交给它来做，准没错！](https://mp.weixin.qq.com/s/KO4xHr4EI0YfjF0hiT3pbw)

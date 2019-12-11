@@ -100,7 +100,6 @@ let app = new Vue({
     }
   },
   methods: {
-
     renderWeChat(source) {
       let output = marked(source, { renderer: this.wxRenderer.getRenderer(this.status) });
       // 去除第一行的 margin-top
@@ -148,7 +147,7 @@ let app = new Vue({
       if (response.success) {
         // 上传成功，获取光标
         const cursor = this.editor.getCursor();
-        const imageUrl = response.data.url
+        const imageUrl = response.data
         const markdownImage = `![](${imageUrl})`
         // 将 Markdown 形式的 URL 插入编辑框光标所在位置
         this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
@@ -157,9 +156,7 @@ let app = new Vue({
           message: '图片插入成功',
           type: 'success'
         });
-
         this.refresh();
-
       } else {
         // 上传失败
         this.$message({
@@ -171,13 +168,6 @@ let app = new Vue({
     },
     failed(error, file, fileList) {
       console.log(error)
-    },
-    uploading(event, file, fileList) {
-      this.$message({
-        showClose: true,
-        message: '图片上传中...',
-        type: 'info'
-      });
     },
     // 刷新右侧预览
     refresh() {

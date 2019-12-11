@@ -43,10 +43,9 @@
     <el-container>
       <el-header class="top">
         <!-- 图片上传 -->
-        <el-upload action="https://cors-anywhere.herokuapp.com/https://sm.ms/api/v2/upload"
-          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" :multiple="false"
-          accept=".jpg,.jpeg,.png,.gif" :limit="1" name="smfile" :on-success="uploaded" :on-error="failed"
-          :on-progress="uploading">
+        <el-upload action="https://imgkr.com/api/files/upload"
+          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" :multiple="true"
+          accept=".jpg,.jpeg,.png,.gif" :limit="5" name="file" :on-success="uploaded" :on-error="failed">
           <el-tooltip class="item" effect="dark" content="点击上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
