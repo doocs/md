@@ -27,7 +27,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持色盘取色，并一键替换颜色
 - [x] 支持链接微信图文，外链自动转为文末索引
 - [x] 支持一键复制并粘贴到公众号后台
-- [x] 支持图片上传并将 URL 插入编辑器光标定位处
+- [x] 支持多图上传并将 URL 插入编辑器光标定位处
 - [x] 支持自定义 CSS 样式并实时渲染
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
@@ -42,6 +42,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
+- [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
 - [GitHub 项目持续本地化，交给它来做，准没错！](https://mp.weixin.qq.com/s/KO4xHr4EI0YfjF0hiT3pbw)
 - [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
 - [全球最大的成人网站 Pornhub 2019 年度报告新鲜出炉！](https://mp.weixin.qq.com/s/LY5kOzof1h3I0bw7tCkV1Q)

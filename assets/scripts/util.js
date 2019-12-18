@@ -29,18 +29,11 @@ function customCssWithTemplate(jsonString, color) {
     custom_theme.block.p = Object.assign(custom_theme.block.p, jsonString.p);
     custom_theme.block.blockquote = Object.assign(custom_theme.block.blockquote, jsonString.blockquote);
     custom_theme.block.blockquote_p = Object.assign(custom_theme.block.blockquote_p, jsonString.blockquote_p);
-    custom_theme.block.code = Object.assign(custom_theme.block.code, jsonString.code);
     custom_theme.block.image = Object.assign(custom_theme.block.image, jsonString.image);
-    custom_theme.block.ol = Object.assign(custom_theme.block.ol, jsonString.ol);
-    custom_theme.block.ul = Object.assign(custom_theme.block.ul, jsonString.ul);
-    custom_theme.block.footnotes = Object.assign(custom_theme.block.footnotes, jsonString.footnotes);
-    custom_theme.block.figure = Object.assign(custom_theme.block.figure, jsonString.figure);
 
     // inline
     custom_theme.inline.strong = Object.assign(custom_theme.inline.strong, jsonString.strong);
-    custom_theme.inline.table = Object.assign(custom_theme.inline.table, jsonString.table);
-    custom_theme.inline.thead = Object.assign(custom_theme.inline.thead, jsonString.thead);
-    custom_theme.inline.strong = Object.assign(custom_theme.inline.strong, jsonString.strong);
+    custom_theme.inline.codespan = Object.assign(custom_theme.inline.codespan, jsonString.codespan);
     custom_theme.inline.link = Object.assign(custom_theme.inline.link, jsonString.link);
     custom_theme.inline.wx_link = Object.assign(custom_theme.inline.wx_link, jsonString.wx_link);
 

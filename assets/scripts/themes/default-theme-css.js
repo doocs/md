@@ -2,46 +2,40 @@ const DEFAULT_CSS_CONTENT =
 `/*
   按Ctrl+F可格式化
 */
-/* 一级标题 */
+/* 一级标题样式 */
 h1 {
 }
-/* 二级标题 */
+/* 二级标题样式 */
 h2 {
 }
-/* 三级标题 */
+/* 三级标题样式 */
 h3 {
 }
-h4{
+/* 四级标题样式 */
+h4 {
 }
-/* 段落 */
-p {
-}
-blockquote {
-}
-blockquote_p {
-}
-code {
-}
+/* 图片样式 */
 image {
 }
-image_org{
-}
-/* 无序列表 */
-ol {
-}
-ul {
-}
-/* 引用 */
+/* 引用样式 */
 blockquote {
 }
-/* 行内样式 */
-table {
+/* 引用段落样式 */
+blockquote_p {
 }
-thead {
+/* 段落样式 */
+p {
 }
+/* 行内代码样式 */
+codespan {
+}
+/* 粗体样式 */
 strong {
 }
-/* 脚注文字 */
-footnote {
+/* 链接样式 */
+link {
+}
+/* 微信链接样式 */
+wx_link {
 }
 `
