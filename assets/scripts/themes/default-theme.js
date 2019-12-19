@@ -21,7 +21,7 @@ let default_theme = {
 
         // 二级标题样式
         h2: {
-            'font-size': '1.1em',
+            'font-size': '1.2em',
             'text-align': 'center',
             'font-weight': 'bold',
             'display': 'table',

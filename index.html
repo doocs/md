@@ -43,9 +43,9 @@
     <el-container>
       <el-header class="top">
         <!-- 图片上传 -->
-        <el-upload action="https://imgkr.com/api/files/upload"
-          headers="{'Content-Type': 'multipart/form-data'}" :show-file-list="false" :multiple="true"
-          accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded" :on-error="failed">
+        <el-upload action="https://imgkr.com/api/files/upload" headers="{'Content-Type': 'multipart/form-data'}"
+          :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded"
+          :on-error="failed">
           <el-tooltip class="item" effect="dark" content="点击上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
@@ -80,14 +80,12 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+          <el-tooltip content="自定义颜色" placement="top">
+            <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+          </el-tooltip>
           &nbsp;&nbsp;
           <el-tooltip content="微信外链自动转为文末引用" placement="top">
-            <el-switch
-              v-model="status"
-              active-color="#67c23a"
-              inactive-color="#dcdfe6"
-              @change="statusChanged">
+            <el-switch v-model="status" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
             </el-switch>
           </el-tooltip>
         </el-form>
@@ -126,7 +124,7 @@
         <h3>一款高度简洁的微信 Markdown 编辑器</h3>
       </div>
       <div style="text-align: center;">
-        <img src="assets/images/qrcode-for-doocs.jpg" style="max-width: 300px">
+        <img src="assets/images/qrcode-for-doocs.jpg" style="width: 60%; display: block; margin: 0 auto;">
         <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       </div>
       <span slot="footer" class="dialog-footer">
