@@ -1,25 +1,32 @@
-# 微信 Markdown 编辑器
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com)
+<p align="center">
+  <a href="https://github.com/doocs/md">
+    <img src="./assets/images/logo-2.png">
+  </a>
+</p>
+<h1 align="center">微信 Markdown 编辑器</h1>
 
+<div align="center">
+
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases)
+
+</div>
+
+## 项目介绍
 > 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
-Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！
+Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！只要你会基本的 Markdown 语法，就能做出一篇样式简洁而又美观大方的微信图文。
 
-## 编辑器地址
-欢迎使用本微信 Markdown 编辑器进行排版。只要你会基本的 Markdown 语法，就能做出一篇排版美观、大方的微信图文。
-
+## 在线编辑器地址
 - GitHub Page：https://doocs.github.io/md
 - Gitee Page：https://doocs.gitee.io/md
 
-注：
-
-- 推荐使用 Chrome 浏览器，效果最佳。
-- 对于国内（中国）的朋友，访问 Gitee Page 速度会相对快一些。
+注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Page](https://doocs.gitee.io/md) 速度会相对快一些。
 
 ## 为何二次开发
+
 现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行文章排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
 
-欢迎随时提交 PR，让这款微信 Markdown 编辑器变得更好！
+欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 Issues 区反馈。
 
 ## 功能特性
 - [x] 支持 Markdown 所有基础语法
@@ -52,9 +59,11 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 
 ## 项目维护者
-- [yanglbme](https://github.com/yanglbme)
-- [bouc615](https://github.com/bouc615)
-- [JimQing](https://github.com/JimQing)
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
 
-## License
-[Do What The F*ck You Want To Public License](LICENSE)
+<a href="https://opencollective.com/doocs-md/contributors.svg?width=890&button=true"><img src="https://opencollective.com/doocs-md/contributors.svg?width=890&button=false" /></a>
+
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## 项目许可证
+[本项目没有任何限制，Just Do What The F*ck You Want。](LICENSE)
