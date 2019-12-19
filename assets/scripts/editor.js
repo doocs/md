@@ -202,6 +202,19 @@ let app = new Vue({
         localStorage.removeItem(name);
       }
     },
+    // 下载编辑器内容到本地
+    downloadEditorContent() {
+      let downLink = document.createElement('a');
+      downLink.download = 'content.md';
+      downLink.style.display = 'none';
+      let blob = new Blob([this.editor.getValue(0)]);
+      downLink.href = URL.createObjectURL(blob);
+      console.log(downLink);
+      document.body.appendChild(downLink);
+      downLink.click();
+      document.body.removeChild(downLink);
+    },
+    // 自定义CSS样式
     async customStyle() {
       this.showBox = !this.showBox;
       let flag = await localStorage.getItem("__css_content")
@@ -209,6 +222,7 @@ let app = new Vue({
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
       }
     },
+    // 复制渲染后的内容到剪贴板
     copy() {
       let clipboardDiv = document.getElementById('output');
       clipboardDiv.focus();

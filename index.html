@@ -50,6 +50,10 @@
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
         </el-upload>
+        <!-- 下载文本文档 -->
+        <el-tooltip class="item" effect="dark" content="点击下载编辑框Markdown文档" placement="bottom-start">
+          <i class="el-icon-download" size="medium" @click="downloadEditorContent">&nbsp;</i>
+        </el-tooltip>
         <!-- 页面重置 -->
         <el-tooltip class="item" effect="dark" content="点击重置页面" placement="bottom-start">
           <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
