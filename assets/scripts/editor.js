@@ -32,7 +32,7 @@ let app = new Vue({
     };
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
-    d.currentColor = d.colorOption[0].value;
+    d.currentColor = d.colorOption[2].value;
     d.status = '1';
     return d;
   },

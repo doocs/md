@@ -22,14 +22,14 @@ Google 官方将自动补全功能称之为“预测”，而不是“建议”�
 
 ![](https://gitee.com/doocs/md/raw/master/assets/images/juex.gif)
 
-## 为什么我们看不到某些联想词？
+## 为什么看不到某些联想词？
 如果我们在输入某个关键字时看不到联想词，那么表明 Google 的算法可能检测到：
 
 - 这个关键字不是热门字词；
 - 搜索的字词太新了，我们可能需要等待几天或几周才能看到联想词；
 - 这是一个侮辱性或敏感字词，这个搜索字词违反了 Google 的相关政策。更加详细的情况，可以了解 [Google 搜索自动补全政策](https://support.google.com/websearch/answer/7368877)。
 
-## 为什么我们会看到某些不当的联想词？
+## 为什么会看到某些不当的联想词？
 Google 拥有专门设计的系统，可以自动捕获不适当的预测结果而不显示出来。然而，Google 每天需要处理数十亿次搜索，这意味着 Google 每天会显示数十亿甚至上百亿条预测。再好的系统，也可能存在缺陷，不正确的预测也可能随时会出现。
 
 我们作为 Google 搜索的用户，如果认定某条预测违反了相关的搜索自动补全政策，可以进行举报反馈，点击右下角“**举报不当的联想查询**”并勾选相关选项即可。
@@ -87,8 +87,11 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 - [好用！期待已久的文本块功能究竟如何在 Java 13 中发挥作用？](https://mp.weixin.qq.com/s/kalGv5T8AZGxTnLHr2wDsA)
 - [2019 GitHub 开源贡献排行榜新鲜出炉！微软谷歌领头，阿里跻身前 12！](https://mp.weixin.qq.com/s/_q812aGD1b9QvZ2WFI0Qgw)
 
+---
 
-欢迎关注我的公众号“Doocs开源社区”，原创技术文章第一时间推送。
+欢迎关注我的公众号“**Doocs开源社区**”，原创技术文章第一时间推送。
 
-![](https://gitee.com/doocs/md/raw/master/assets/images/qrcode-for-doocs.jpg)
+<center>
+<img src="https://gitee.com/doocs/md/raw/master/assets/images/qrcode-for-doocs.gif" style="width: 100px;"></center>
+
 `
