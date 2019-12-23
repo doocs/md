@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![Financial Contributors on Open Collective](https://opencollective.com/doocs-md/all/badge.svg?label=financial+contributors)](https://opencollective.com/doocs-md) [![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases)
 
 </div>
 
@@ -23,7 +23,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Page](https://doocs.gitee.io/md) 速度会相对快一些。
 
 ## 为何二次开发
-
 现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行文章排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 Issues 区反馈。
@@ -67,32 +66,3 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 项目许可证
 [本项目没有任何限制，Just Do What The F*ck You Want。](LICENSE)
-## Contributors
-
-### Code Contributors
-
-This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
-<a href="https://github.com/doocs/md/graphs/contributors"><img src="https://opencollective.com/doocs-md/contributors.svg?width=890&button=false" /></a>
-
-### Financial Contributors
-
-Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/doocs-md/contribute)]
-
-#### Individuals
-
-<a href="https://opencollective.com/doocs-md"><img src="https://opencollective.com/doocs-md/individuals.svg?width=890"></a>
-
-#### Organizations
-
-Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/doocs-md/contribute)]
-
-<a href="https://opencollective.com/doocs-md/organization/0/website"><img src="https://opencollective.com/doocs-md/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/1/website"><img src="https://opencollective.com/doocs-md/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/2/website"><img src="https://opencollective.com/doocs-md/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/3/website"><img src="https://opencollective.com/doocs-md/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/4/website"><img src="https://opencollective.com/doocs-md/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/5/website"><img src="https://opencollective.com/doocs-md/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/6/website"><img src="https://opencollective.com/doocs-md/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/7/website"><img src="https://opencollective.com/doocs-md/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/8/website"><img src="https://opencollective.com/doocs-md/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/doocs-md/organization/9/website"><img src="https://opencollective.com/doocs-md/organization/9/avatar.svg"></a>
