@@ -72,9 +72,32 @@ let app = new Vue({
         cm.showHint(e);
       }
     });
-    this.editor.on("change", (cm, change) => {
+    this.editor.on("change", (cm, e) => {
       this.refresh();
       this.saveEditorContent(this.editor, '__editor_content');
+    });
+
+    // 粘贴上传图片并插入
+    this.editor.on("paste", (cm, e) => {
+      if (!(e.clipboardData && e.clipboardData.items)) {
+        return;
+      }
+      for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
+        let item = e.clipboardData.items[i];
+        if (item.kind === 'file') {
+          const pasteFile = item.getAsFile();
+          let data = new FormData();
+          data.append("file", pasteFile);
+          axios.post('https://imgkr.com/api/files/upload', data, {
+            headers: {
+              'Content-Type': 'multipart/form-data'
+            }
+          }).then(resp => {
+            this.uploaded(resp.data)
+          }).catch(err => {
+          })
+        }
+      }
     });
     this.cssEditor.on('update', (instance) => {
       this.cssChanged();
