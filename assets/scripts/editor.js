@@ -158,8 +158,8 @@ let app = new Vue({
       this.refresh();
     },
     cssChanged() {
-      let json = css2json(this.cssEditor.getValue(0))
-      let theme = customCssWithTemplate(json, this.currentColor)
+      let json = css2json(this.cssEditor.getValue(0));
+      let theme = customCssWithTemplate(json, this.currentColor);
       this.wxRenderer.setOptions({
         theme: theme
       });
@@ -247,33 +247,38 @@ let app = new Vue({
     },
     // 复制渲染后的内容到剪贴板
     copy() {
-      let clipboardDiv = document.getElementById('output');
-      clipboardDiv.focus();
-      window.getSelection().removeAllRanges();
-      let range = document.createRange();
-      range.setStartBefore(clipboardDiv.firstChild);
-      range.setEndAfter(clipboardDiv.lastChild);
-      window.getSelection().addRange(range);
-      this.refresh()
-      try {
-        if (document.execCommand('copy')) {
-          this.$notify({
-            showClose: true,
-            message: '已复制文章到剪贴板，可直接到公众号后台粘贴',
-            offset: 80,
-            duration: 1600,
-            type: 'success'
-          });
-        } else {
-          this.$notify({
-            showClose: true,
-            message: '未能复制文章到剪贴板，请全选后右键复制',
-            offset: 80,
-            duration: 1600,
-            type: 'warning'
-          });
-        }
-      } catch (err) {
+      const text = document.getElementById('output').innerHTML
+      let input = document.getElementById('copy-input');
+      if (!input) {
+        input = document.createElement('input');
+        input.id = 'copy-input';
+        input.style.position = 'absolute';
+        input.style.left = '-1000px';
+        input.style.zIndex = -1000;
+        document.body.appendChild(input);
+      }
+      input.value = 'doocs/md';
+      input.setSelectionRange(0, input.value.length);
+      input.focus();
+
+      // 复制触发
+      document.addEventListener('copy', function copyCall(e) {
+        e.preventDefault();
+        e.clipboardData.setData('text/html', text);
+        e.clipboardData.setData('text/plain', text);
+        console.log(e.clipboardData)
+        document.removeEventListener('copy', copyCall);
+      });
+      
+      if (document.execCommand('copy')) {
+        this.$notify({
+          showClose: true,
+          message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+          offset: 80,
+          duration: 1600,
+          type: 'success'
+        });
+      } else {
         this.$notify({
           showClose: true,
           message: '未能复制文章到剪贴板，请全选后右键复制',
