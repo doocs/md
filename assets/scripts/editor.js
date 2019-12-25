@@ -32,7 +32,6 @@ let app = new Vue({
   },
   mounted() {
     this.showBox = false
-
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
       {
@@ -106,7 +105,6 @@ let app = new Vue({
     // 如果有编辑器内容被保存则读取，否则加载默认内容
     this.loadLocalStorage(this.editor, '__editor_content', DEFAULT_CONTENT);
     this.loadLocalStorage(this.cssEditor, '__css_content', DEFAULT_CSS_CONTENT);
-
   },
   methods: {
     renderWeChat(source) {
@@ -222,7 +220,6 @@ let app = new Vue({
       downLink.style.display = 'none';
       let blob = new Blob([this.editor.getValue(0)]);
       downLink.href = URL.createObjectURL(blob);
-      console.log(downLink);
       document.body.appendChild(downLink);
       downLink.click();
       document.body.removeChild(downLink);

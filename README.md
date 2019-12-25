@@ -7,7 +7,7 @@
 
 <div align="center">
 
-[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](http://makeapullrequest.com) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](https://github.com/doocs/md/releases)
+[![github](https://badgen.net/badge/⭐/GitHub/cyan)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/cyan)](https://gitee.com/doocs/md) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
 
 </div>
 

@@ -59,7 +59,7 @@
           <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
-          <el-form-item label="字体">
+          <el-form-item>
             <el-select v-model="currentFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
               <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
                 :label="font.label" :value="font.value">
@@ -68,7 +68,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="字号">
+          <el-form-item>
             <el-select v-model="currentSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
               <el-option v-for="size in sizeOption" :key="size.value" :label="size.label" :value="size.value">
                 <span class="select-item-left">{{ size.label }}</span>
@@ -76,7 +76,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <el-form-item label="颜色">
+          <el-form-item>
             <el-select v-model="currentColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
               <el-option v-for="color in colorOption" :key="color.value" :label="color.label" :value="color.value">
                 <span class="select-item-left">{{ color.label }}</span>
@@ -170,5 +170,4 @@
   <script src="assets/scripts/loading.js"></script>
 
 </body>
-
 </html>
