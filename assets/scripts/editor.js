@@ -266,11 +266,19 @@ let app = new Vue({
         e.preventDefault();
         e.clipboardData.setData('text/html', text);
         e.clipboardData.setData('text/plain', text);
-        console.log(e.clipboardData)
         document.removeEventListener('copy', copyCall);
       });
       
       if (document.execCommand('copy')) {
+        // 模拟一个选中的状态
+        let clipboardDiv = document.getElementById('output');
+        clipboardDiv.focus();
+        window.getSelection().removeAllRanges();
+        let range = document.createRange();
+        range.setStartBefore(clipboardDiv.firstChild);
+        range.setEndAfter(clipboardDiv.lastChild);
+        window.getSelection().addRange(range);
+        this.refresh()
         this.$notify({
           showClose: true,
           message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
