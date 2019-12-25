@@ -22,7 +22,8 @@
   <link rel="stylesheet" href="libs/css/codemirror.min.css">
   <link rel="stylesheet" href="libs/css/show-hint.css">
   <link rel="stylesheet" href="libs/css/style-mirror.css">
-  <link href="https://cdn.jsdelivr.net/npm/animate.css@3.5.1" rel="stylesheet" type="text/css">
+
+  <link rel="stylesheet" href="libs/css/animate.css">
 
   <!-- 默认CSS/JS -->
   <script src="assets/scripts/themes/default-theme-css.js"></script>
@@ -44,8 +45,7 @@
       <el-header class="top">
         <!-- 图片上传 -->
         <el-upload action="https://imgkr.com/api/files/upload" headers="{'Content-Type': 'multipart/form-data'}"
-          :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded"
-          :on-error="failed">
+          :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded">
           <el-tooltip class="item" effect="dark" content="点击上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
@@ -102,7 +102,7 @@
       <el-main class="main-body">
         <el-row :gutter="10" class="main-section">
           <el-col :span="12">
-            <textarea id="editor" type="textarea" placeholder="Your markdown here." v-model="source">
+            <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
               </textarea>
           </el-col>
           <el-col :span="12" class="preview-wrapper" id="preview">
@@ -115,7 +115,7 @@
           </el-col>
           <transition name="custom-classes-transition" enter-active-class="animated bounceInRight">
             <el-col id="cssBox" :span="12" v-show="showBox">
-              <textarea id="cssEditor" type="textarea" placeholder="Custom css here.">
+              <textarea id="cssEditor" type="textarea" placeholder="Your custom css here.">
                 </textarea>
             </el-col>
           </transition>
@@ -133,14 +133,13 @@
       </div>
       <span slot="footer" class="dialog-footer">
         <a href="https://github.com/doocs/md" target="_blank">
-          <el-button type="success" plain>GitHub 仓库
-          </el-button>
+          <el-button type="success" plain>GitHub 仓库</el-button>
         </a>
         <a href="https://gitee.com/doocs/md" target="_blank">
-          <el-button type="success" plain>Gitee 仓库
-          </el-button>
+          <el-button type="success" plain>Gitee 仓库</el-button>
         </a>
       </span>
+
     </el-dialog>
   </div>
 

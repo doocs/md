@@ -8,14 +8,8 @@ let app = new Vue({
       editor: null,
       cssEditor: null,
       builtinFonts: [
-        {
-          label: '无衬线',
-          value: "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif"
-        },
-        {
-          label: '衬线',
-          value: "Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif"
-        }
+        { label: '无衬线', value: "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif" },
+        { label: '衬线', value: "Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif" }
       ],
       sizeOption: [
         { label: '13px', value: '13px', desc: '稍小' },
@@ -23,16 +17,16 @@ let app = new Vue({
         { label: '15px', value: '15px', desc: '稍大' }
       ],
       colorOption: [
-        { label: '经典蓝', value: 'rgba(15, 76, 129, 0.9)', hex: '最新流行色' },
-        { label: '翡翠绿', value: 'rgba(0, 152, 116, 0.9)', hex: '清新且优雅' },
-        { label: '辣椒红', value: 'rgba(155, 35, 53, 0.9)', hex: '自信且迷人' }
+        { label: '经典蓝', value: 'rgba(15, 76, 129, 1)', hex: '最新流行' },
+        { label: '翡翠绿', value: 'rgba(0, 152, 116, 1)', hex: '优雅清新' },
+        { label: '活力橘', value: 'rgba(250, 81, 81, 1)', hex: '热情活泼' }
       ],
       showBox: true,
       aboutDialogVisible: false
     };
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
-    d.currentColor = d.colorOption[2].value;
+    d.currentColor = d.colorOption[1].value;
     d.status = '1';
     return d;
   },
@@ -59,26 +53,26 @@ let app = new Vue({
       matchBrackets: true,
       autofocus: true,
       extraKeys: {
-        "Ctrl-F": function autoFormat(editor) {
-          var totalLines = editor.lineCount();
+        'Ctrl-F': function autoFormat(editor) {
+          const totalLines = editor.lineCount();
           editor.autoFormatRange({ line: 0, ch: 0 }, { line: totalLines });
         }
       },
     }
     );
     // 自动提示
-    this.cssEditor.on("keyup", (cm, e) => {
+    this.cssEditor.on('keyup', (cm, e) => {
       if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
         cm.showHint(e);
       }
     });
-    this.editor.on("change", (cm, e) => {
+    this.editor.on('change', (cm, e) => {
       this.refresh();
       this.saveEditorContent(this.editor, '__editor_content');
     });
 
     // 粘贴上传图片并插入
-    this.editor.on("paste", (cm, e) => {
+    this.editor.on('paste', (cm, e) => {
       if (!(e.clipboardData && e.clipboardData.items)) {
         return;
       }
@@ -87,15 +81,14 @@ let app = new Vue({
         if (item.kind === 'file') {
           const pasteFile = item.getAsFile();
           let data = new FormData();
-          data.append("file", pasteFile);
+          data.append('file', pasteFile);
           axios.post('https://imgkr.com/api/files/upload', data, {
             headers: {
               'Content-Type': 'multipart/form-data'
             }
           }).then(resp => {
             this.uploaded(resp.data)
-          }).catch(err => {
-          })
+          }).catch(err => { })
         }
       }
     });
@@ -109,18 +102,11 @@ let app = new Vue({
       size: this.currentSize,
       status: this.status
     });
-    // 如果有编辑内容被保存则读取，否则加载默认文档
-    if (localStorage.getItem("__editor_content")) {
-      this.editor.setValue(localStorage.getItem("__editor_content"));
-    } else {
-      this.editor.setValue(DEFAULT_CONTENT);
-    }
 
-    if (localStorage.getItem("__css_content")) {
-      this.cssEditor.setValue(localStorage.getItem("__css_content"));
-    } else {
-      this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
-    }
+    // 如果有编辑器内容被保存则读取，否则加载默认内容
+    this.loadLocalStorage(this.editor, '__editor_content', DEFAULT_CONTENT);
+    this.loadLocalStorage(this.cssEditor, '__css_content', DEFAULT_CSS_CONTENT);
+
   },
   methods: {
     renderWeChat(source) {
@@ -189,9 +175,6 @@ let app = new Vue({
         });
       }
     },
-    failed(error, file, fileList) {
-      console.log(error)
-    },
     // 刷新右侧预览
     refresh() {
       this.output = this.renderWeChat(this.editor.getValue(0));
@@ -216,13 +199,20 @@ let app = new Vue({
     statusChanged() {
       this.refresh();
     },
-    // 将左侧编辑器内容保存到 LocalStorage
+    // 将编辑器内容保存到 LocalStorage
     saveEditorContent(editor, name) {
       const content = editor.getValue(0);
       if (content) {
         localStorage.setItem(name, content);
       } else {
         localStorage.removeItem(name);
+      }
+    },
+    loadLocalStorage(editor, name, content) {
+      if (localStorage.getItem(name)) {
+        editor.setValue(localStorage.getItem(name));
+      } else {
+        editor.setValue(content);
       }
     },
     // 下载编辑器内容到本地
@@ -240,7 +230,7 @@ let app = new Vue({
     // 自定义CSS样式
     async customStyle() {
       this.showBox = !this.showBox;
-      let flag = await localStorage.getItem("__css_content")
+      let flag = await localStorage.getItem('__css_content')
       if (!flag) {
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
       }
@@ -268,33 +258,27 @@ let app = new Vue({
         e.clipboardData.setData('text/plain', text);
         document.removeEventListener('copy', copyCall);
       });
-      
-      if (document.execCommand('copy')) {
-        // 模拟一个选中的状态
-        let clipboardDiv = document.getElementById('output');
-        clipboardDiv.focus();
-        window.getSelection().removeAllRanges();
-        let range = document.createRange();
-        range.setStartBefore(clipboardDiv.firstChild);
-        range.setEndAfter(clipboardDiv.lastChild);
-        window.getSelection().addRange(range);
-        this.refresh()
-        this.$notify({
-          showClose: true,
-          message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
-          offset: 80,
-          duration: 1600,
-          type: 'success'
-        });
-      } else {
-        this.$notify({
-          showClose: true,
-          message: '未能复制文章到剪贴板，请全选后右键复制',
-          offset: 80,
-          duration: 1600,
-          type: 'warning'
-        });
-      }
+
+      // 执行复制
+      document.execCommand('copy');
+
+      // 模拟一个全选的状态
+      let clipboardDiv = document.getElementById('output');
+      clipboardDiv.focus();
+      window.getSelection().removeAllRanges();
+      let range = document.createRange();
+      range.setStartBefore(clipboardDiv.firstChild);
+      range.setEndAfter(clipboardDiv.lastChild);
+      window.getSelection().addRange(range);
+
+      // 输出提示
+      this.$notify({
+        showClose: true,
+        message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+        offset: 80,
+        duration: 1600,
+        type: 'success'
+      });
     }
   },
   updated() {
