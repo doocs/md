@@ -111,7 +111,11 @@ section {
   display: table;
   width: 100% !important;
 }
-
+/* 
+.preview table tr:nth-child(even){
+  background: rgb(250, 250, 250);
+}
+ */
 .select-item-left {
   float: left;
 }

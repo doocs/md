@@ -155,11 +155,11 @@ let default_theme = {
         },
 
         thead: {
-            'background': 'rgba(0, 0, 0, 0.05)'
+            'background': 'rgba(0, 0, 0, 0.05)',
+            'font-weight': 'bold'
         },
 
         td: {
-            'font-size': '80%',
             'border': '1px solid #dfdfdf',
             'padding': '0.25em 0.5em'
         },

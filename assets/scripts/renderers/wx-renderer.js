@@ -181,10 +181,10 @@ let WxRenderer = function (opts) {
     };
     renderer.strong = text => `<strong ${getStyles('strong')}>${text}</strong>`;
     renderer.em = text => `<p ${getStyles('p', ';font-style: italic;')}>${text}</p>`;
-    renderer.table = (header, body) => `<table class="preview-table"><thead ${getStyles('thead')}>${header}</thead><tbody>${body}</tbody></table>`;
+    renderer.table = (header, body) => `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles('thead')}>${header}</thead><tbody>${body}</tbody></table></section>`;
+    // renderer.tablerow = (text) => `<tr style="">${text}</tr>`;
     renderer.tablecell = (text, flags) => `<td ${getStyles('td')}>${text}</td>`;
     renderer.hr = () => `<hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);">`;
-
     return renderer;
   }
 };
