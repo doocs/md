@@ -182,6 +182,8 @@ let app = new Vue({
       this.$confirm('此操作将丢失本地缓存的文本和自定义样式，是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
+        confirmButtonClass: 'el-button--success',
+        cancelButtonClass: 'el-button--success is-plain',
         type: 'warning',
         center: true
       }).then(() => {

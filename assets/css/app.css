@@ -140,6 +140,10 @@ section {
   margin-bottom: 0 !important;
 }
 
+.el-tooltip {
+  cursor: pointer;
+}
+
 /*wechat code block*/
 .rich_media_content .code-snippet *, .rich_media_content .code-snippet__fix * {
   max-width: 1000% !important;
