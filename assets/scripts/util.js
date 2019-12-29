@@ -57,7 +57,7 @@ function css2json(css) {
     // 初始化返回值
     let json = {};
 
-    while (css.length > 0) {
+    while (css.length > 0 && (css.indexOf('{') !== -1) && (css.indexOf('}') !== -1)) {
         // 存储第一个左/右花括号的下标
         const lbracket = css.indexOf('{');
         const rbracket = css.indexOf('}');
