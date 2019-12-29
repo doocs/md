@@ -22,7 +22,12 @@ let app = new Vue({
         { label: '活力橘', value: 'rgba(250, 81, 81, 1)', hex: '热情活泼' }
       ],
       showBox: true,
-      aboutDialogVisible: false
+      aboutDialogVisible: false,
+      dialogFormVisible: false,
+      form: {
+        rows: 1,
+        cols: 1
+      }
     };
     d.currentFont = d.builtinFonts[0].value;
     d.currentSize = d.sizeOption[1].value;
@@ -195,6 +200,33 @@ let app = new Vue({
       }).catch(() => {
         this.editor.focus();
       });
+    },
+    // 插入表格
+    insertTable() {
+      const cursor = this.editor.getCursor();
+      const rows = parseInt(this.form.rows);
+      const cols = parseInt(this.form.cols);
+      if (isNaN(rows) || isNaN(cols) || rows < 1 || cols < 1) {
+        this.$message({
+          showClose: true,
+          message: '输入的行/列数无效，请重新输入',
+          type: 'error'
+        });
+        return;
+      }
+
+      let table = '';
+      for (let i = 0; i < rows + 2; ++i) {
+        for (let j = 0; j < cols + 1; ++j) {
+          table += (j === 0 ? '|' : (i !== 1 ? '     |' : ' --- |'));
+        }
+        table += '\n';
+      }
+
+      this.editor.replaceSelection(`\n${table}\n`, cursor);
+      this.dialogFormVisible = false
+      this.refresh();
+      
     },
     statusChanged() {
       this.refresh();

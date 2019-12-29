@@ -74,17 +74,21 @@
         <!-- 图片上传 -->
         <el-upload action="https://imgkr.com/api/files/upload" headers="{'Content-Type': 'multipart/form-data'}"
           :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded">
-          <el-tooltip class="item" effect="dark" content="点击上传图片" placement="bottom-start">
+          <el-tooltip class="item" effect="dark" content="上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
         </el-upload>
         <!-- 下载文本文档 -->
-        <el-tooltip class="item" effect="dark" content="点击下载编辑框Markdown文档" placement="bottom-start">
+        <el-tooltip class="item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
           <i class="el-icon-download" size="medium" @click="downloadEditorContent">&nbsp;</i>
         </el-tooltip>
         <!-- 页面重置 -->
-        <el-tooltip class="item" effect="dark" content="点击重置页面" placement="bottom-start">
+        <el-tooltip class="item" effect="dark" content="重置页面" placement="bottom-start">
           <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
+        </el-tooltip>
+        <!-- 插入表格 -->
+        <el-tooltip class="item" effect="dark" content="插入表格" placement="bottom-start">
+          <i class="el-icon-s-grid" size="medium" @click="dialogFormVisible = true">&nbsp;</i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
           <el-form-item>
@@ -167,7 +171,20 @@
           <el-button type="success" plain>Gitee 仓库</el-button>
         </a>
       </span>
-
+    </el-dialog>
+    <el-dialog title="插入表格" :visible.sync="dialogFormVisible">
+      <el-form :model="form">
+        <el-form-item label="行数(表头不计入行数)">
+          <el-input  v-model="form.rows"></el-input>
+        </el-form-item>
+        <el-form-item label="列数">
+          <el-input v-model="form.cols"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="success" plain @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="success" @click="insertTable">确 定</el-button>
+      </div>
     </el-dialog>
   </div>
 
