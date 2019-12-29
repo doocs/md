@@ -236,32 +236,6 @@ let app = new Vue({
     },
     // 复制渲染后的内容到剪贴板
     copy() {
-      const text = document.getElementById('output').innerHTML
-      let input = document.getElementById('copy-input');
-      if (!input) {
-        input = document.createElement('input');
-        input.id = 'copy-input';
-        input.style.position = 'absolute';
-        input.style.left = '-1000px';
-        input.style.zIndex = -1000;
-        document.body.appendChild(input);
-      }
-      input.value = 'doocs/md';
-      input.setSelectionRange(0, input.value.length);
-      input.focus();
-
-      // 复制触发
-      document.addEventListener('copy', function copyCall(e) {
-        e.preventDefault();
-        e.clipboardData.setData('text/html', text);
-        e.clipboardData.setData('text/plain', text);
-        document.removeEventListener('copy', copyCall);
-      });
-
-      // 执行复制
-      document.execCommand('copy');
-
-      // 模拟一个全选的状态
       let clipboardDiv = document.getElementById('output');
       clipboardDiv.focus();
       window.getSelection().removeAllRanges();
@@ -269,7 +243,7 @@ let app = new Vue({
       range.setStartBefore(clipboardDiv.firstChild);
       range.setEndAfter(clipboardDiv.lastChild);
       window.getSelection().addRange(range);
-
+      document.execCommand('copy')
       // 输出提示
       this.$notify({
         showClose: true,
