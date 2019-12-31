@@ -39,13 +39,23 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
 
+<!-- 
 ![select-and-change-color-theme](./assets/images/doocs-md-select-and-change-color-theme.gif)
 
 ![copy-and-paste](./assets/images/doocs-md-copy-and-paste.gif)
 
 ![custom](./assets/images/doocs-md-custom-css.gif)
 
-![doocs-md-upload-image](./assets/images/doocs-md-upload-image.gif)
+![doocs-md-upload-image](./assets/images/doocs-md-upload-image.gif) 
+-->
+
+![select-and-change-color-theme](https://imgkr.cn-bj.ufileos.com/32c05c23-6309-491f-bd0d-f22a62c944b4.gif)
+
+![copy-and-paste](https://imgkr.cn-bj.ufileos.com/31f16c2f-480c-4ea3-bb89-89b6e14d18e5.gif)
+
+![custom](https://imgkr.cn-bj.ufileos.com/bbf0a0b6-b817-4626-bf79-4e18df318681.gif)
+
+![doocs-md-upload-image](https://imgkr.cn-bj.ufileos.com/97db3cd6-bddc-4eff-8635-472631b0a642.gif) 
 
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
