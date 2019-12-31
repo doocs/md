@@ -73,7 +73,8 @@
       <el-header class="top">
         <!-- 图片上传 -->
         <el-upload action="https://imgkr.com/api/files/upload" headers="{'Content-Type': 'multipart/form-data'}"
-          :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file" :on-success="uploaded">
+          :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
+          :before-upload="beforeUpload" :on-success="uploaded">
           <el-tooltip class="item" effect="dark" content="上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
           </el-tooltip>
@@ -175,7 +176,7 @@
     <el-dialog title="插入表格" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="行数(表头不计入行数)">
-          <el-input  v-model="form.rows"></el-input>
+          <el-input v-model="form.rows"></el-input>
         </el-form-item>
         <el-form-item label="列数">
           <el-input v-model="form.cols"></el-input>
@@ -214,9 +215,9 @@
   <script src="assets/scripts/editor.js"></script>
   <script>
     $('#loading').hide();
-      window.console
-        && window.console.log
-        && (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
+    window.console
+      && window.console.log
+      && (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
   </script>
 </body>
 

@@ -84,6 +84,9 @@ let app = new Vue({
         let item = e.clipboardData.items[i];
         if (item.kind === 'file') {
           const pasteFile = item.getAsFile();
+          if (!(this.checkType(pasteFile) && this.checkImageSize(pasteFile))) {
+            return;
+          }
           let data = new FormData();
           data.append('file', pasteFile);
           axios.post('https://imgkr.com/api/files/upload', data, {
@@ -153,6 +156,34 @@ let app = new Vue({
         theme: theme
       });
       this.refresh();
+    },
+    // 图片上传前的处理
+    beforeUpload(file) {
+      return this.checkType(file) && this.checkImageSize(file);
+    },
+    // 检查文件类型
+    checkType(file) {
+      if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name)) {
+        this.$message({
+          showClose: true,
+          message: '请上传 JPG/PNG/GIF 格式的图片',
+          type: 'error'
+        });
+        return false;
+      }
+      return true;
+    },
+    // 检查图片大小
+    checkImageSize(file) {
+      if (file.size > 5 * 1024 * 1024) {
+        this.$message({
+          showClose: true,
+          message: '由于公众号限制，图片大小不能超过 5.0M',
+          type: 'error'
+        });
+        return false;
+      }
+      return true;
     },
     // 图片上传结束
     uploaded(response, file, fileList) {
@@ -226,7 +257,6 @@ let app = new Vue({
       this.editor.replaceSelection(`\n${table}\n`, cursor);
       this.dialogFormVisible = false
       this.refresh();
-      
     },
     statusChanged() {
       this.refresh();
