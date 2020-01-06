@@ -11,6 +11,17 @@ function setColorWithTemplate(template) {
     };
 }
 
+
+let setColorWithCustomTemplate = function setColorWithCustomTemplate(template, color) {
+    let custom_theme = JSON.parse(JSON.stringify(template));
+    custom_theme.block.h1['border-bottom'] = `2px solid ${color}`;
+    custom_theme.block.h2['background'] = color;
+    custom_theme.block.h3['border-left'] = `3px solid ${color}`;
+    custom_theme.block.h4['color'] = color;
+    custom_theme.inline.strong['color'] = color;
+    return custom_theme;
+}
+
 // 设置自定义字体大小
 function setFontSizeWithTemplate(template) {
     return function (fontSize) {
@@ -21,14 +32,13 @@ function setFontSizeWithTemplate(template) {
         custom_theme.block.h4['font-size'] = `${fontSize}px`;
         return custom_theme;
     }
-    
 }
 
 let setColor = setColorWithTemplate(default_theme);
 let setFontSize = setFontSizeWithTemplate(default_theme);
 
-function customCssWithTemplate(jsonString, color) {
-    let custom_theme = JSON.parse(JSON.stringify(default_theme));
+function customCssWithTemplate(jsonString, color, theme) {
+    let custom_theme = JSON.parse(JSON.stringify(theme));
     // block
     custom_theme.block.h1['border-bottom'] = `2px solid ${color}`;
     custom_theme.block.h2['background'] = color;

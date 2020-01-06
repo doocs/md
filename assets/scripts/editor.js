@@ -136,6 +136,7 @@ let app = new Vue({
       this.wxRenderer.setOptions({
         fonts: fonts
       });
+      this.currentFont = fonts;
       this.refresh();
     },
     sizeChanged(size) {
@@ -146,18 +147,22 @@ let app = new Vue({
       this.wxRenderer.setOptions({
         theme: theme
       });
+      this.currentSize = size;
       this.refresh();
     },
     colorChanged(color) {
-      let theme = setColor(color);
+      let theme = setFontSize(this.currentSize.replace('px', ''));
+      theme = setColorWithCustomTemplate(theme, color);
       this.wxRenderer.setOptions({
         theme: theme
       });
+      this.currentColor = color;
       this.refresh();
     },
     cssChanged() {
       let json = css2json(this.cssEditor.getValue(0));
-      let theme = customCssWithTemplate(json, this.currentColor);
+      let theme = setFontSize(this.currentSize.replace('px', ''));
+      theme = customCssWithTemplate(json, this.currentColor, theme);
       this.wxRenderer.setOptions({
         theme: theme
       });
