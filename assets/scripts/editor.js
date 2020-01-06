@@ -246,10 +246,10 @@ let app = new Vue({
         this.editor.setValue(DEFAULT_CONTENT);
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.editor.focus();
-        this.currentFont = this.builtinFonts[0].value;
-        this.currentColor = this.colorOption[1].value;
-        this.currentSize = this.sizeOption[2].value;
         this.status = '1';
+        this.fontChanged(this.builtinFonts[0].value);
+        this.colorChanged(this.colorOption[1].value);
+        this.sizeChanged(this.sizeOption[2].value);
         this.cssChanged()
       }).catch(() => {
         this.editor.focus();
