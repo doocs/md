@@ -11,7 +11,21 @@ function setColorWithTemplate(template) {
     };
 }
 
+// 设置自定义字体大小
+function setFontSizeWithTemplate(template) {
+    return function (fontSize) {
+        let custom_theme = JSON.parse(JSON.stringify(template));
+        custom_theme.block.h1['font-size'] = `${fontSize * 1.14}px`;
+        custom_theme.block.h2['font-size'] = `${fontSize * 1.1}px`;
+        custom_theme.block.h3['font-size'] = `${fontSize}px`;
+        custom_theme.block.h4['font-size'] = `${fontSize}px`;
+        return custom_theme;
+    }
+    
+}
+
 let setColor = setColorWithTemplate(default_theme);
+let setFontSize = setFontSizeWithTemplate(default_theme);
 
 function customCssWithTemplate(jsonString, color) {
     let custom_theme = JSON.parse(JSON.stringify(default_theme));

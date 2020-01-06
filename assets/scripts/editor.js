@@ -12,9 +12,11 @@ let app = new Vue({
         { label: '衬线', value: "Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif" }
       ],
       sizeOption: [
+        { label: '12px', value: '12px', desc: '更小' },
         { label: '13px', value: '13px', desc: '稍小' },
         { label: '14px', value: '14px', desc: '推荐' },
-        { label: '15px', value: '15px', desc: '稍大' }
+        { label: '15px', value: '15px', desc: '稍大' },
+        { label: '16px', value: '16px', desc: '更大' }
       ],
       colorOption: [
         { label: '经典蓝', value: 'rgba(15, 76, 129, 1)', hex: '最新流行' },
@@ -30,7 +32,7 @@ let app = new Vue({
       }
     };
     d.currentFont = d.builtinFonts[0].value;
-    d.currentSize = d.sizeOption[1].value;
+    d.currentSize = d.sizeOption[2].value;
     d.currentColor = d.colorOption[1].value;
     d.status = '1';
     return d;
@@ -139,6 +141,10 @@ let app = new Vue({
     sizeChanged(size) {
       this.wxRenderer.setOptions({
         size: size
+      });
+      let theme = setFontSize(size.replace('px', ''));
+      this.wxRenderer.setOptions({
+        theme: theme
       });
       this.refresh();
     },
