@@ -38,6 +38,10 @@ let app = new Vue({
     return d;
   },
   mounted() {
+    this.currentFont = localStorage.getItem('fonts') || this.builtinFonts[0].value;
+    this.currentColor = localStorage.getItem('color') || this.colorOption[1].value;
+    this.currentSize = localStorage.getItem('size') || this.sizeOption[2].value;
+    this.status = localStorage.getItem('status') === 'true';
     this.showBox = false
     this.editor = CodeMirror.fromTextArea(
       document.getElementById('editor'),
@@ -137,6 +141,7 @@ let app = new Vue({
         fonts: fonts
       });
       this.currentFont = fonts;
+      localStorage.setItem('fonts', fonts);
       this.refresh();
     },
     sizeChanged(size) {
@@ -149,6 +154,7 @@ let app = new Vue({
         theme: theme
       });
       this.currentSize = size;
+      localStorage.setItem('size', size);
       this.refresh();
     },
     colorChanged(color) {
@@ -158,6 +164,7 @@ let app = new Vue({
         theme: theme
       });
       this.currentColor = color;
+      localStorage.setItem('color', color);
       this.refresh();
     },
     cssChanged() {
@@ -239,6 +246,10 @@ let app = new Vue({
         this.editor.setValue(DEFAULT_CONTENT);
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
         this.editor.focus();
+        this.currentFont = this.builtinFonts[0].value;
+        this.currentColor = this.colorOption[1].value;
+        this.currentSize = this.sizeOption[2].value;
+        this.status = '1';
         this.cssChanged()
       }).catch(() => {
         this.editor.focus();
@@ -271,6 +282,7 @@ let app = new Vue({
       this.refresh();
     },
     statusChanged() {
+      localStorage.setItem('status', this.status);
       this.refresh();
     },
     // 将编辑器内容保存到 LocalStorage
