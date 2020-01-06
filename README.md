@@ -64,6 +64,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
 - [全球最大的成人网站 Pornhub 2019 年度报告新鲜出炉！](https://mp.weixin.qq.com/s/LY5kOzof1h3I0bw7tCkV1Q)
 - [刷掉 90 % 候选人的海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
+- [GitHub 标星 11.5k 的一款开源工具，助你轻松查看 Git 历史](https://mp.weixin.qq.com/s/PK-ikENqF13Lmqy2pcMhYQ)
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 

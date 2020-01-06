@@ -144,6 +144,7 @@ let app = new Vue({
         size: size
       });
       let theme = setFontSize(size.replace('px', ''));
+      theme = setColorWithCustomTemplate(theme, this.currentColor);
       this.wxRenderer.setOptions({
         theme: theme
       });
