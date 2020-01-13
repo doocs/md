@@ -84,7 +84,7 @@
   <script src="libs/scripts/codemirror/format.js"></script>
 
   <script src="libs/scripts/markdown.min.js"></script>
-  <!-- <script src="libs/scripts/prettify.min.js"></script> -->
+  <script src="libs/scripts/prettify.min.js"></script>
   <!-- <script src="libs/scripts/index.js"></script> -->
   <script src="libs/scripts/jquery.min.js"></script>
   <script src="libs/scripts/closebrackets.js"></script>
@@ -97,6 +97,9 @@
     window.console
       && window.console.log
       && (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
+    setTimeout(() => {
+      document.body.addEventListener('load', prettyPrint())
+    }, 2000)
   </script>
 </body>
 

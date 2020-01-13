@@ -135,7 +135,6 @@ import {
 } from './scripts/util'
 import DEFAULT_CONTENT from './scripts/default-content'
 import DEFAULT_CSS_CONTENT from './scripts/themes/default-theme-css'
-// import { prettyPrint } from 'prettify'
 require('codemirror/mode/javascript/javascript')
 export default {
   data () {
@@ -485,11 +484,6 @@ export default {
         type: 'success'
       })
     }
-  },
-  updated () {
-    this.$nextTick(() => {
-      // prettyPrint()
-    })
   }
 }
 </script>
