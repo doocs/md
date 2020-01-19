@@ -57,6 +57,19 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ![doocs-md-upload-image](https://imgkr.cn-bj.ufileos.com/97db3cd6-bddc-4eff-8635-472631b0a642.gif) 
 
+## 谁在使用
+<table>
+    <tr>
+      <td align="center" style="width: 160px;">
+        <a href="https://github.com/doocs">
+          <img src="https://user-images.githubusercontent.com/21008209/71453045-50269300-27c4-11ea-835d-084439d17d72.png" style="width: 500px;"><br>
+          <sub>Doocs开源社区</sub>
+        </a>
+    </tr>
+</table>
+
+注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
+
 ## 示例文章
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
 - [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
@@ -65,8 +78,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [全球最大的成人网站 Pornhub 2019 年度报告新鲜出炉！](https://mp.weixin.qq.com/s/LY5kOzof1h3I0bw7tCkV1Q)
 - [刷掉 90 % 候选人的海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
 - [GitHub 标星 11.5k 的一款开源工具，助你轻松查看 Git 历史](https://mp.weixin.qq.com/s/PK-ikENqF13Lmqy2pcMhYQ)
-
-注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望将你的文章加入示例列表，欢迎随时提交 PR。
 
 ## 项目维护者
 <!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
