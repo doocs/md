@@ -1,3 +1,5 @@
+import  default_theme  from "./themes/default-theme";
+
 // 设置自定义颜色
 export function setColorWithTemplate (template) {
   return function (color) {

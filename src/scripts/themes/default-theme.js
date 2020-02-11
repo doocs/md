@@ -1,4 +1,4 @@
-let default_theme = {
+export default  {
     BASE: {
         'text-align': 'left',
         'color': '#3f3f3f',

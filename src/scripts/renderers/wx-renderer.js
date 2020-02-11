@@ -1,3 +1,4 @@
+import marked from 'marked'
 const WxRenderer = function (opts) {
   this.opts = opts
   let ENV_STRETCH_IMAGE = true
