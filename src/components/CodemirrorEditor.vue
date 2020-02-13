@@ -122,12 +122,11 @@
 </template>
 <script>
 import CodeMirror from 'codemirror/lib/codemirror'
-import 'codemirror/lib/codemirror.css'
+
 import 'codemirror/mode/css/css.js'
-import 'codemirror/theme/ambiance.css'
 import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/selection/active-line'
-import 'codemirror/addon/hint/show-hint.css'
+
 import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/hint/css-hint.js'
 import '../scripts/format.js'
@@ -177,7 +176,8 @@ export default {
       form: {
         rows: 1,
         cols: 1
-      }
+      },
+      timeout: null
     }
     d.currentFont = d.builtinFonts[0].value
     d.currentSize = d.sizeOption[2].value
@@ -493,7 +493,34 @@ export default {
         duration: 1600,
         type: 'success'
       })
+    },
+    // 左右栏同步滚动
+    leftAndRightScroll() {
+      console.log($)
+      $('div.CodeMirror-scroll, #preview').on('scroll', function callback () {
+        console.log(object)
+        clearTimeout(this.timeout)
+
+        let source = $(this)
+        let target = $(source.is('#preview') ? 'div.CodeMirror-scroll' : '#preview')
+
+        target.off('scroll')
+
+        let source0 = source[0]
+        let target0 = target[0]
+
+        let percentage = source0.scrollTop / (source0.scrollHeight - source0.offsetHeight)
+        let height = percentage * (target0.scrollHeight - target0.offsetHeight)
+        target0.scrollTo(0, height)
+
+        this.timeout = setTimeout(() => {
+          target.on('scroll', callback)
+        }, 100)
+      })
     }
+  },
+  mounted () {
+    this.leftAndRightScroll()
   }
 }
 </script>
