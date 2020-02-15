@@ -1,3 +1,4 @@
+import CodeMirror from "codemirror/lib/codemirror";
 (function () {
   CodeMirror.extendMode('css', {
     commentStart: '/*',

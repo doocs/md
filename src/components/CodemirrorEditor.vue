@@ -123,7 +123,8 @@
 <script>
 import CodeMirror from 'codemirror/lib/codemirror'
 
-import 'codemirror/mode/css/css.js'
+import 'codemirror/mode/css/css'
+import 'codemirror/mode/markdown/markdown'
 import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/selection/active-line'
 
@@ -134,6 +135,7 @@ import '../scripts/format.js'
 import axios from 'axios'
 import WxRenderer from '../scripts/renderers/wx-renderer'
 import marked from 'marked'
+import markdown from 'markdown'
 import {
   setColorWithCustomTemplate,
   setColor,
@@ -145,6 +147,7 @@ import DEFAULT_CONTENT from '../scripts/default-content'
 import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
 
 require('codemirror/mode/javascript/javascript')
+import '../scripts/closebrackets'
 export default {
   data () {
     let d = {
@@ -496,9 +499,7 @@ export default {
     },
     // 左右栏同步滚动
     leftAndRightScroll() {
-      console.log($)
       $('div.CodeMirror-scroll, #preview').on('scroll', function callback () {
-        console.log(object)
         clearTimeout(this.timeout)
 
         let source = $(this)

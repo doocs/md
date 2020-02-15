@@ -8,6 +8,7 @@ import './element'
 import 'codemirror/lib/codemirror.css';
 import "codemirror/theme/ambiance.css";
 import "codemirror/addon/hint/show-hint.css";
+import "codemirror/theme/xq-light.css";
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false
