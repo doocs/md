@@ -6,6 +6,7 @@
 <script>
 import Loading from './components/Loading'
 import CodemirrorEditor from './components/CodemirrorEditor'
+import prettyPrint from 'prettify'
 export default {
   name: 'App',
   components: {
@@ -21,6 +22,12 @@ export default {
     setTimeout(() => {
       this.loading = false
     }, 200)
+        window.console
+      && window.console.log
+      && (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
+    setTimeout(() => {
+      document.body.addEventListener('load', prettyPrint())
+    }, 2000)
   }
 }
 </script>

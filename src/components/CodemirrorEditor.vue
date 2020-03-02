@@ -148,6 +148,7 @@ import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
 
 require('codemirror/mode/javascript/javascript')
 import '../scripts/closebrackets'
+import $ from 'jquery'
 export default {
   data () {
     let d = {
@@ -207,29 +208,6 @@ export default {
           autoCloseBrackets: true
         }
       )
-      this.cssEditor = CodeMirror.fromTextArea(
-        document.getElementById('cssEditor'), {
-          value: '',
-          mode: 'css',
-          theme: 'style-mirror',
-          lineNumbers: false,
-          lineWrapping: true,
-          matchBrackets: true,
-          autofocus: true,
-          extraKeys: {
-            'Ctrl-F': function autoFormat (editor) {
-              const totalLines = editor.lineCount()
-              editor.autoFormatRange({ line: 0, ch: 0 }, { line: totalLines })
-            }
-          }
-        }
-      )
-      // 自动提示
-      this.cssEditor.on('keyup', (cm, e) => {
-        if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-          cm.showHint(e)
-        }
-      })
       this.editor.on('change', (cm, e) => {
         this.refresh()
         this.saveEditorContent(this.editor, '__editor_content')
@@ -263,13 +241,10 @@ export default {
           }
         }
       })
-      this.cssEditor.on('update', (instance) => {
-        this.cssChanged()
-        this.saveEditorContent(this.cssEditor, '__css_content')
-      })
+
       // 如果有编辑器内容被保存则读取，否则加载默认内容
       this.loadLocalStorage(this.editor, '__editor_content', DEFAULT_CONTENT)
-      this.loadLocalStorage(this.cssEditor, '__css_content', DEFAULT_CSS_CONTENT)
+
     })
     this.wxRenderer = new WxRenderer({
       theme: setColor(this.currentColor),
@@ -279,6 +254,36 @@ export default {
     })
   },
   methods: {
+    initCssEditor() {
+      this.cssEditor = CodeMirror.fromTextArea(
+        document.getElementById('cssEditor'), {
+          value: DEFAULT_CSS_CONTENT,
+          mode: 'css',
+          theme: 'style-mirror',
+          lineNumbers: false,
+          lineWrapping: true,
+          matchBrackets: true,
+          autofocus: true,
+          extraKeys: {
+            'Ctrl-F': function autoFormat (editor) {
+              const totalLines = editor.lineCount()
+              editor.autoFormatRange({ line: 0, ch: 0 }, { line: totalLines })
+            }
+          }
+        }
+      )
+      // 自动提示
+      this.cssEditor.on('keyup', (cm, e) => {
+        if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
+          cm.showHint(e)
+        }
+      })
+      this.cssEditor.on('update', (instance) => {
+        this.cssChanged()
+        this.saveEditorContent(this.cssEditor, '__css_content')
+      })
+      this.loadLocalStorage(this.cssEditor, '__css_content', DEFAULT_CSS_CONTENT)
+    },
     renderWeChat (source) {
       let output = marked(source, { renderer: this.wxRenderer.getRenderer(this.status) })
       // 去除第一行的 margin-top
@@ -472,6 +477,7 @@ export default {
     },
     // 自定义CSS样式
     async customStyle () {
+      this.initCssEditor()
       this.showBox = !this.showBox
       let flag = await localStorage.getItem('__css_content')
       if (!flag) {
