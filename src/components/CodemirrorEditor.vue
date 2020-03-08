@@ -174,7 +174,7 @@ export default {
         { label: '翡翠绿', value: 'rgba(0, 152, 116, 1)', hex: '优雅清新' },
         { label: '活力橘', value: 'rgba(250, 81, 81, 1)', hex: '热情活泼' }
       ],
-      showBox: true,
+      showBox: false,
       aboutDialogVisible: false,
       dialogFormVisible: false,
       form: {
@@ -194,8 +194,19 @@ export default {
     this.currentColor = localStorage.getItem('color') || this.colorOption[1].value
     this.currentSize = localStorage.getItem('size') || this.sizeOption[2].value
     this.status = localStorage.getItem('status') === 'true'
-    this.showBox = false
     this.$nextTick(() => {
+      this.initEditor()
+      this.initCssEditor()
+    })
+    this.wxRenderer = new WxRenderer({
+      theme: setColor(this.currentColor),
+      fonts: this.currentFont,
+      size: this.currentSize,
+      status: this.status
+    })
+  },
+  methods: {
+    initEditor() {
       this.editor = CodeMirror.fromTextArea(
         document.getElementById('editor'),
         {
@@ -244,20 +255,11 @@ export default {
 
       // 如果有编辑器内容被保存则读取，否则加载默认内容
       this.loadLocalStorage(this.editor, '__editor_content', DEFAULT_CONTENT)
-
-    })
-    this.wxRenderer = new WxRenderer({
-      theme: setColor(this.currentColor),
-      fonts: this.currentFont,
-      size: this.currentSize,
-      status: this.status
-    })
-  },
-  methods: {
+    },
     initCssEditor() {
       this.cssEditor = CodeMirror.fromTextArea(
         document.getElementById('cssEditor'), {
-          value: DEFAULT_CSS_CONTENT,
+          value: '',
           mode: 'css',
           theme: 'style-mirror',
           lineNumbers: false,
@@ -295,9 +297,6 @@ export default {
         output += this.wxRenderer.buildAddition()
       }
       return output
-    },
-    editorThemeChanged (editorTheme) {
-      this.editor.setOption('theme', editorTheme)
     },
     fontChanged (fonts) {
       this.wxRenderer.setOptions({
@@ -477,8 +476,16 @@ export default {
     },
     // 自定义CSS样式
     async customStyle () {
-      this.initCssEditor()
       this.showBox = !this.showBox
+      this.$nextTick(() => {
+        if(!this.cssEditor) {
+          this.cssEditor.refresh()
+          // this.initCssEditor()
+        }
+      })
+      setTimeout(() => {
+        this.cssEditor.refresh()
+      },50)
       let flag = await localStorage.getItem('__css_content')
       if (!flag) {
         this.cssEditor.setValue(DEFAULT_CSS_CONTENT)

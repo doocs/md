@@ -26,7 +26,7 @@ export default {
       && window.console.log
       && (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
     setTimeout(() => {
-      document.body.addEventListener('load', prettyPrint())
+      // document.body.addEventListener('load', prettyPrint())
     }, 2000)
   }
 }
