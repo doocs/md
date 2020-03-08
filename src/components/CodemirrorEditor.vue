@@ -136,6 +136,7 @@ import axios from 'axios'
 import WxRenderer from '../scripts/renderers/wx-renderer'
 import marked from 'marked'
 import markdown from 'markdown'
+import juice from 'juice'
 import {
   setColorWithCustomTemplate,
   setColor,
