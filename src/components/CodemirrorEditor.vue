@@ -70,8 +70,8 @@
               </textarea>
           </el-col>
           <el-col :span="12" class="preview-wrapper" id="preview">
-            <section>
-              <div class="preview" contenteditable="true">
+            <section id="output-wrapper">
+              <div class="preview" contenteditable="true" >
                 <section id="output" v-html="output">
                 </section>
               </div>
@@ -150,6 +150,7 @@ import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
 require('codemirror/mode/javascript/javascript')
 import '../scripts/closebrackets'
 import $ from 'jquery'
+import { solveWeChatImage, solveHtml, copySafari } from '../scripts/converter'
 export default {
   data () {
     let d = {
@@ -182,7 +183,8 @@ export default {
         rows: 1,
         cols: 1
       },
-      timeout: null
+      timeout: null,
+      html: ''
     }
     d.currentFont = d.builtinFonts[0].value
     d.currentSize = d.sizeOption[2].value
@@ -332,6 +334,7 @@ export default {
     },
     cssChanged () {
       let json = css2json(this.cssEditor.getValue(0))
+      console.log(json)
       let theme = setFontSize(this.currentSize.replace('px', ''))
       theme = customCssWithTemplate(json, this.currentColor, theme)
       this.wxRenderer.setOptions({
@@ -493,7 +496,7 @@ export default {
       }
     },
     // 复制渲染后的内容到剪贴板
-    copy () {
+    copy12 () {
       let clipboardDiv = document.getElementById('output')
       clipboardDiv.focus()
       window.getSelection().removeAllRanges()
@@ -510,6 +513,22 @@ export default {
         duration: 1600,
         type: 'success'
       })
+    },
+    // 复制到微信公众号
+    copy() {
+      let clipboardDiv = document.getElementById('output')
+      const clipboardHTML = clipboardDiv.innerHTML
+      // solveWeChatImage()
+      this.html = solveHtml();
+            // 输出提示
+      this.$notify({
+        showClose: true,
+        message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+        offset: 80,
+        duration: 1600,
+        type: 'success'
+      })
+      clipboardDiv.innerHTML = clipboardHTML; // 恢复现场
     },
     // 左右栏同步滚动
     leftAndRightScroll() {
