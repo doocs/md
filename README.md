@@ -78,6 +78,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>掘墓人的小铲子</sub>
         </a>
       </td>
+      <td align="center" style="width: 160px;">
+        <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
+          <img src="https://imgkr.cn-bj.ufileos.com/ab5de5f9-0b38-4ab8-aaa3-1c5b409f17ac.png" style="width: 500px;"><br>
+          <sub>全网重点</sub>
+        </a>
+      </td>
     </tr>
 </table>
 
