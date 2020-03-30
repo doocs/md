@@ -66,22 +66,28 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 ## 谁在使用
 <table>
     <tr>
-      <td align="center" style="width: 160px;">
+      <td align="center" style="width: 80px;">
         <a href="https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow">
-          <img src="https://user-images.githubusercontent.com/21008209/71453045-50269300-27c4-11ea-835d-084439d17d72.png" style="width: 500px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/29fbfc6e-b1f2-4995-982f-74f993256626.png" style="width: 50px;"><br>
           <sub>Doocs开源社区</sub>
         </a>
       </td>
-      <td align="center" style="width: 160px;">
+      <td align="center" style="width: 80px;">
         <a href="https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g">
-          <img src="https://imgkr.cn-bj.ufileos.com/84b507ae-7e11-4b45-8435-37272ded2f9c.png" style="width: 500px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/2631fe1d-0521-4f51-abb9-5250f4dda268.jpg" style="width: 50px;"><br>
           <sub>掘墓人的小铲子</sub>
         </a>
       </td>
-      <td align="center" style="width: 160px;">
+      <td align="center" style="width: 80px;">
         <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/ab5de5f9-0b38-4ab8-aaa3-1c5b409f17ac.png" style="width: 500px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/4b4b10a4-1146-4056-8799-9f8c1a3e5e9e.png" style="width: 50px;"><br>
           <sub>全网重点</sub>
+        </a>
+      </td>
+      <td align="center" style="width: 80px;">
+        <a href="https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ">
+          <img src="https://imgkr.cn-bj.ufileos.com/1ddb47f6-4943-4aae-ad24-c75c22c758bf.png" style="width: 50px;"><br>
+          <sub>爱码士的内心独白</sub>
         </a>
       </td>
     </tr>
@@ -90,6 +96,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
 
 ## 示例文章
+- [死磕JavaScript系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
 - [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
