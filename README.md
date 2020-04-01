@@ -17,10 +17,10 @@
 Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！只要你会基本的 Markdown 语法，就能做出一篇样式简洁而又美观大方的微信图文。
 
 ## 在线编辑器地址
-- GitHub Page：https://doocs.github.io/md
-- Gitee Page：https://doocs.gitee.io/md
+- GitHub Pages：https://doocs.github.io/md
+- Gitee Pages：https://doocs.gitee.io/md
 
-注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Page](https://doocs.gitee.io/md) 速度会相对快一些。
+注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Pages](https://doocs.gitee.io/md) 速度会相对快一些。
 
 ## 为何二次开发
 现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行文章排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
