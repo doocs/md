@@ -90,12 +90,19 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>爱码士的内心独白</sub>
         </a>
       </td>
+      <td align="center" style="width: 80px;">
+        <a href="https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg">
+          <img src="https://imgkr.cn-bj.ufileos.com/830333b7-74b2-4dbc-9384-b5cac63b1d17.jpg" style="width: 50px;"><br>
+          <sub>乐玩nodejs npm工具库</sub>
+        </a>
+      </td>
     </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
 
 ## 示例文章
+- [Quick Start - 天下武功，唯快不破！效率工具，老少皆宜](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
 - [死磕JavaScript系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
 - [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
