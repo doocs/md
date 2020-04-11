@@ -15,3 +15,10 @@ jobs:
       with:
           source-repo: "git@github.com:doocs/md.git"
           destination-repo: "git@gitee.com:Doocs/md.git"
+
+    - name: Build Gitee Pages
+      uses: yanglbme/gitee-pages-action@master
+      with:
+          gitee-username: yanglbme
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          gitee-repo: doocs/jvm
