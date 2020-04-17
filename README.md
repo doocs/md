@@ -97,16 +97,22 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>乐玩nodejs npm工具库</sub>
         </a>
       </td>
+      <td align="center" style="width: 80px;">
+        <a href="https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ">
+          <img src="https://imgkr.cn-bj.ufileos.com/95e553de-fd8f-4374-8a98-14809122e80e.jpg" style="width: 50px;"><br>
+          <sub>简静慢</sub>
+        </a>
+      </td>
     </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
 
 ## 示例文章
+- [全网首发！GPU 驱动自升级原理详解](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
 - [Quick Start - 天下武功，唯快不破！效率工具，老少皆宜](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
 - [死磕JavaScript系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
-- [ES6 特性快速扫盲](https://mp.weixin.qq.com/s/I3EzOO0skf8xDCGtyYM5Lg)
 - [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
 - [GitHub 项目持续本地化，交给它来做，准没错！](https://mp.weixin.qq.com/s/KO4xHr4EI0YfjF0hiT3pbw)
 - [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
