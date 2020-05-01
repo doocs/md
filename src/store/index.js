@@ -18,9 +18,9 @@ const state = {
     editor: null,
     cssEditor: null,
     html: '',
-    currentFont: {},
-    currentSize: {},
-    currentColor: {}
+    currentFont: '',
+    currentSize: '',
+    currentColor: ''
 };
 const mutations = {
     setEditorValue(state, data) {

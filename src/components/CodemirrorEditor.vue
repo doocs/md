@@ -3,28 +3,28 @@
     <el-container>
       <el-header class="top">
         <!-- 图片上传 -->
-        <el-upload action="https://imgkr.com/api/files/upload" :headers="{'Content-Type': 'multipart/form-data'}"
+        <el-upload class="header__item" action="https://imgkr.com/api/files/upload" :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
             :before-upload="beforeUpload" :on-success="uploaded">
-            <el-tooltip class="item" effect="dark" content="上传图片" placement="bottom-start">
+            <el-tooltip effect="dark" content="上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium">&nbsp;</i>
             </el-tooltip>
         </el-upload>
         <!-- 下载文本文档 -->
-        <el-tooltip class="item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
+        <el-tooltip class="header__item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
             <i class="el-icon-download" size="medium" @click="downloadEditorContent">&nbsp;</i>
         </el-tooltip>
         <!-- 页面重置 -->
-        <el-tooltip class="item" effect="dark" content="重置页面" placement="bottom-start">
+        <el-tooltip class="header__item" effect="dark" content="重置页面" placement="bottom-start">
             <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
         </el-tooltip>
         <!-- 插入表格 -->
-        <el-tooltip class="item" effect="dark" content="插入表格" placement="bottom-start">
+        <el-tooltip class="header__item header__item_last" effect="dark" content="插入表格" placement="bottom-start">
             <i class="el-icon-s-grid" size="medium" @click="dialogFormVisible = true">&nbsp;</i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
             <el-form-item>
-            <el-select v-model="currentFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
+            <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
                 <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
                 :label="font.label" :value="font.value">
                 <span class="select-item-left">{{ font.label }}</span>
@@ -33,7 +33,7 @@
             </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="currentSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
+            <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
                 <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
                 <span class="select-item-left">{{ size.label }}</span>
                 <span class="select-item-right">{{ size.desc }}</span>
@@ -41,7 +41,7 @@
             </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="currentColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
+            <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
                 <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
                 <span class="select-item-left">{{ color.label }}</span>
                 <span class="select-item-right">{{ color.hex }}</span>
@@ -49,11 +49,10 @@
             </el-select>
             </el-form-item>
             <el-tooltip content="自定义颜色" placement="top">
-            <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+            <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
             </el-tooltip>
-            &nbsp;&nbsp;
             <el-tooltip content="微信外链自动转为文末引用" placement="top">
-            <el-switch v-model="status" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
+            <el-switch class="header__switch" v-model="status" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
             </el-switch>
             </el-tooltip>
         </el-form>
@@ -167,6 +166,9 @@
         dialogFormVisible: false,
         timeout: null,
         source: '',
+        selectFont: '',
+        selectSize: '',
+        selectColor: '',
         status: '1'
       }
     },
@@ -192,6 +194,9 @@
             this.initCssEditor()
             this.editorRefresh()
         })
+        this.selectFont = this.currentFont
+        this.selectSize = this.currentSize
+        this.selectColor = this.currentColor
     },
     methods: {
         initEditor() {
@@ -410,14 +415,14 @@
                 this.editor.focus()
             })
         },
-        fontChanged (fonts) {
+        fontChanged(fonts) {
             this.setWxRendererOptions({
                 fonts: fonts
             })
             this.setCurrentFont(fonts);
             this.editorRefresh()
         },
-        sizeChanged (size) {
+        sizeChanged(size) {
             let theme = setFontSize(size.replace('px', ''))
             theme = setColorWithCustomTemplate(theme, this.currentColor)
             this.setWxRendererOptions({
@@ -427,7 +432,7 @@
             this.setCurrentSize(size);
             this.editorRefresh()
         },
-        colorChanged (color) {
+        colorChanged(color) {
             let theme = setFontSize(this.currentSize.replace('px', ''))
             theme = setColorWithCustomTemplate(theme, color)
             this.setWxRendererOptions({
@@ -467,6 +472,14 @@
   }
 
 </script>
-<style lang="scss">
-
+<style lang="less" scoped>
+.header__item {
+    margin: 0 3px;
+}
+.header__item_last {
+    margin-right: 8px;
+}
+.header__switch {
+    margin-left: 8px;
+}
 </style>
