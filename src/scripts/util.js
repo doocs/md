@@ -167,3 +167,29 @@ export function css2json (css) {
   // 返回JSON形式的结果串
   return json
 }
+
+
+/**
+ * 将编辑器内容保存到 LocalStorage
+ * @param {*} editor 
+ * @param {*} name 
+ */
+export function saveEditorContent(editor, name) {
+    const content = editor.getValue(0)
+
+    if (content) {
+        localStorage.setItem(name, content)
+    } else {
+        localStorage.removeItem(name)
+    }
+}
+
+export function checkImage(file) {
+    if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name)) {
+        return '请上传 JPG/PNG/GIF 格式的图片';
+    }
+    if (file.size > 5 * 1024 * 1024) {
+        return '由于公众号限制，图片大小不能超过 5.0M';
+    }
+    return false;
+}
