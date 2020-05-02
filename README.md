@@ -28,12 +28,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 Issues 区反馈。
 
-注：目前在非 master 分支上对项目进行重构，更多新特性，敬请期待！
-
-- [Vue 分支](https://github.com/doocs/md/tree/m_create_vue)
-- [React 分支](https://github.com/doocs/md/tree/chore-webpack)
-
-
 ## 功能特性
 - [x] 支持 Markdown 所有基础语法
 - [x] 支持单独进行字体、字号设置
@@ -45,16 +39,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持自定义 CSS 样式并实时渲染
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
-
-<!-- 
-![select-and-change-color-theme](./assets/images/doocs-md-select-and-change-color-theme.gif)
-
-![copy-and-paste](./assets/images/doocs-md-copy-and-paste.gif)
-
-![custom](./assets/images/doocs-md-custom-css.gif)
-
-![doocs-md-upload-image](./assets/images/doocs-md-upload-image.gif) 
--->
 
 ![select-and-change-color-theme](https://imgkr.cn-bj.ufileos.com/32c05c23-6309-491f-bd0d-f22a62c944b4.gif)
 
