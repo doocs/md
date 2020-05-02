@@ -1,0 +1,18 @@
+name: build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: checkout
+        uses: actions/checkout@master # 将代码拷贝到虚机中
+      - name: npm install, build
+        uses: yanglbme/gitee-pages-action@master
+        env:
+          BRANCH: gh-page # 存放产物的分支名称
+          FOLDER: dist # 存放build后产物的目录
+          BUILD_SCRIPT: npm install && npm run build # 执行的命令
