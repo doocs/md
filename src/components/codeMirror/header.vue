@@ -94,7 +94,6 @@ export default {
             output: state=> state.output,
             editor: state=> state.editor,
             cssEditor: state=> state.cssEditor,
-            html: state=> state.html,
             currentFont: state=> state.currentFont,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor
