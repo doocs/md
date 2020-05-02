@@ -52,9 +52,9 @@ export default {
 
             let table = ''
             for (let i = 0; i < rows + 2; ++i) {
-            for (let j = 0; j < cols + 1; ++j) {
-                table += (j === 0 ? '|' : (i !== 1 ? '     |' : ' --- |'))
-            }
+                for (let j = 0; j < cols + 1; ++j) {
+                    table += (j === 0 ? '|' : (i !== 1 ? '     |' : ' --- |'))
+                }
                 table += '\n'
             }
 
