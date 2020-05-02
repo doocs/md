@@ -7,21 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        node-version: [8.x, 10.x, 12.x]
     steps:
-    - uses: actions/checkout@v1
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v1
-      with:
-        node-version: ${{ matrix.node-version }}
-    - name: npm install, build
-      uses: yanglbme/gitee-pages-action@master
-      env:
-        BRANCH: master # 存放产物的分支名称
-        FOLDER: dist # 存放build后产物的目录
-        BUILD_SCRIPT: npm install && npm run build # 执行的命令
     - name: Sync to Gitee
       uses: wearerequired/git-mirror-action@master
       env:
@@ -29,10 +15,3 @@ jobs:
       with:
           source-repo: "git@github.com:doocs/md.git"
           destination-repo: "git@gitee.com:Doocs/md.git"
-
-    - name: Build Gitee Pages
-      uses: yanglbme/gitee-pages-action@master
-      with:
-          gitee-username: yanglbme
-          gitee-password: ${{ secrets.GITEE_PASSWORD }}
-          gitee-repo: doocs/md
