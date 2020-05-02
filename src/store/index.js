@@ -24,6 +24,9 @@ const state = {
     citeStatus: 0
 };
 const mutations = {
+    setHtml(state, data) {
+        state.html = data;
+    },
     setEditorValue(state, data) {
         state.editor.setValue(data)
     },

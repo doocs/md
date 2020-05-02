@@ -4,7 +4,7 @@
         <el-upload class="header__item" action="https://imgkr.com/api/files/upload"
             :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
-            :before-upload="beforeUpload" :on-success="uploaded">
+            :before-upload="beforeUpload">
             <el-tooltip effect="dark" content="上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium"></i>
             </el-tooltip>
@@ -130,30 +130,6 @@ export default {
             this.setCiteStatus(val)
             this.editorRefresh()
         },
-        // 图片上传结束
-        uploaded(response, file, fileList) {
-            if (response.success) {
-                // 上传成功，获取光标
-                const cursor = this.editor.getCursor()
-                const imageUrl = response.data
-                const markdownImage = `![](${imageUrl})`
-                // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-                this.editor.replaceSelection(`\n${markdownImage}\n`, cursor)
-                this.$message({
-                    showClose: true,
-                    message: '图片插入成功',
-                    type: 'success'
-                })
-                this.editorRefresh()
-            } else {
-                // 上传失败
-                this.$message({
-                    showClose: true,
-                    message: response.message,
-                    type: 'error'
-                })
-            }
-        },
         // 图片上传前的处理
         beforeUpload(file) {
             const checkImageResult = isImageIllegal(file);
@@ -170,7 +146,7 @@ export default {
 
             fd.append('file', file);
             fileApi.fileUpload(fd).then(res => {
-                this.uploaded(res)
+                this.$emit('uploaded', res)
             }).catch(err => {
                 console.log(err.message)
             })
@@ -179,9 +155,17 @@ export default {
         // 复制到微信公众号
         copy() {
             let clipboardDiv = document.getElementById('output')
-            const clipboardHTML = clipboardDiv.innerHTML
-            // solveWeChatImage()
-            this.html = solveHtml();
+            solveWeChatImage()
+            this.setHtml(solveHtml())
+
+            clipboardDiv.focus()
+            window.getSelection().removeAllRanges()
+            let range = document.createRange()
+
+            range.setStartBefore(clipboardDiv.firstChild)
+            range.setEndAfter(clipboardDiv.lastChild)
+            window.getSelection().addRange(range)
+            document.execCommand('copy')
             // 输出提示
             this.$notify({
                 showClose: true,
@@ -190,7 +174,7 @@ export default {
                 duration: 1600,
                 type: 'success'
             })
-            clipboardDiv.innerHTML = clipboardHTML; // 恢复现场
+            clipboardDiv.innerHTML = this.output; // 恢复现场
         },
         // 自定义CSS样式
         async customStyle () {
@@ -244,7 +228,7 @@ export default {
             document.body.removeChild(downLink)
         },
         ...mapMutations(['editorRefresh', 'clearEditorToDefault','setCurrentColor', 'setCiteStatus',
-            'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+            'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
         this.selectFont = this.currentFont

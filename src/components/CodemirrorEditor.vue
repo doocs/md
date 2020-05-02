@@ -3,6 +3,7 @@
         <el-container>
             <el-header class="top editor__header">
                 <editor-header
+                    @uploaded="uploaded"
                     @cssChanged="cssChanged"
                     @showBox="showBox = !showBox"
                     @showAboutDialog="aboutDialogVisible = true"
@@ -164,48 +165,35 @@ export default {
         },
         // 图片上传结束
         uploaded(response, file, fileList) {
-            if (response.success) {
-                // 上传成功，获取光标
-                const cursor = this.editor.getCursor()
-                const imageUrl = response.data
-                const markdownImage = `![](${imageUrl})`
-                // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-                this.editor.replaceSelection(`\n${markdownImage}\n`, cursor)
-                this.$message({
-                    showClose: true,
-                    message: '图片插入成功',
-                    type: 'success'
-                })
-                this.editorRefresh()
+            if (response) {
+                if (response.success) {
+                    // 上传成功，获取光标
+                    const cursor = this.editor.getCursor()
+                    const imageUrl = response.data
+                    const markdownImage = `![](${imageUrl})`
+                    // 将 Markdown 形式的 URL 插入编辑框光标所在位置
+                    this.editor.replaceSelection(`\n${markdownImage}\n`, cursor)
+                    this.$message({
+                        showClose: true,
+                        message: '图片插入成功',
+                        type: 'success'
+                    })
+                    this.editorRefresh()
+                } else {
+                    // 上传失败
+                    this.$message({
+                        showClose: true,
+                        message: response.message,
+                        type: 'error'
+                    })
+                }
             } else {
-                // 上传失败
                 this.$message({
                     showClose: true,
-                    message: response.message,
+                    message: '上传图片未知异常',
                     type: 'error'
                 })
             }
-        },
-        // 复制渲染后的内容到剪贴板
-        copy12() {
-            let clipboardDiv = document.getElementById('output')
-
-            clipboardDiv.focus()
-            window.getSelection().removeAllRanges()
-            let range = document.createRange()
-
-            range.setStartBefore(clipboardDiv.firstChild)
-            range.setEndAfter(clipboardDiv.lastChild)
-            window.getSelection().addRange(range)
-            document.execCommand('copy')
-            // 输出提示
-            this.$notify({
-                showClose: true,
-                message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
-                offset: 80,
-                duration: 1600,
-                type: 'success'
-            })
         },
         // 左右栏同步滚动
         leftAndRightScroll() {

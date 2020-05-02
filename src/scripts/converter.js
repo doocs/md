@@ -1,7 +1,7 @@
 import juice from 'juice'
 
 export function solveWeChatImage() {
-  const clipboardDiv = document.getElementById(output);
+  const clipboardDiv = document.getElementById('output');
   const images = clipboardDiv.getElementsByTagName("img");
   for (let i = 0; i < images.length; i++) {
     const image = images[i];
@@ -24,6 +24,6 @@ export function solveHtml() {
       preserveImportant: true
     }
   );
-  console.log(res);
+//   console.log(res);
   return res;
 }
