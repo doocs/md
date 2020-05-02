@@ -67,9 +67,7 @@
 import {
     setColorWithCustomTemplate,
     setFontSize,
-    css2json,
-    isImageIllegal,
-    customCssWithTemplate,
+    isImageIllegal
 } from '../../scripts/util'
 import {
     solveWeChatImage,
@@ -129,15 +127,6 @@ export default {
         },
         statusChanged(val) {
             this.setCiteStatus(val)
-            this.editorRefresh()
-        },
-        cssChanged() {
-            let json = css2json(this.cssEditor.getValue(0))
-            let theme = setFontSize(this.currentSize.replace('px', ''))
-            theme = customCssWithTemplate(json, this.currentColor, theme)
-            this.setWxRendererOptions({
-                theme: theme
-            });
             this.editorRefresh()
         },
         // 图片上传结束
@@ -229,7 +218,7 @@ export default {
                 this.fontChanged(this.config.builtinFonts[0].value)
                 this.colorChanged(this.config.colorOption[1].value)
                 this.sizeChanged(this.config.sizeOption[2].value)
-                this.cssChanged()
+                this.$emit('cssChanged')
             }).catch(() => {
                 this.editor.focus()
             })

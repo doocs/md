@@ -3,6 +3,7 @@
         <el-container>
             <el-header class="top editor__header">
                 <editor-header
+                    @cssChanged="cssChanged"
                     @showBox="showBox = !showBox"
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
@@ -38,32 +39,35 @@
     </div>
 </template>
 <script>
-  import CodeMirror from 'codemirror/lib/codemirror'
+import CodeMirror from 'codemirror/lib/codemirror'
 
-  import 'codemirror/mode/css/css'
-  import 'codemirror/mode/markdown/markdown'
-  import 'codemirror/addon/edit/matchbrackets'
-  import 'codemirror/addon/selection/active-line'
+import 'codemirror/mode/css/css'
+import 'codemirror/mode/markdown/markdown'
+import 'codemirror/addon/edit/matchbrackets'
+import 'codemirror/addon/selection/active-line'
 
-  import 'codemirror/addon/hint/show-hint.js'
-  import 'codemirror/addon/hint/css-hint.js'
-  import '../scripts/format.js'
+import 'codemirror/addon/hint/show-hint.js'
+import 'codemirror/addon/hint/css-hint.js'
+import '../scripts/format.js'
 
-  import fileApi from '../api/file';
-  import editorHeader from './codeMirror/header';
-  import aboutDialog from './codeMirror/aboutDialog';
-  import insertFormDialog from './codeMirror/insertForm';
-  import {
+import fileApi from '../api/file';
+import editorHeader from './codeMirror/header';
+import aboutDialog from './codeMirror/aboutDialog';
+import insertFormDialog from './codeMirror/insertForm';
+import {
+    setFontSize,
+    css2json,
+    customCssWithTemplate,
     saveEditorContent,
     isImageIllegal
-  } from '../scripts/util'
+} from '../scripts/util'
 
-  require('codemirror/mode/javascript/javascript')
-  import '../scripts/closebrackets'
-  import $ from 'jquery'
-  import config from '../scripts/config'
-  import {mapState, mapMutations} from 'vuex';
-  export default {
+require('codemirror/mode/javascript/javascript')
+import '../scripts/closebrackets'
+import $ from 'jquery'
+import config from '../scripts/config'
+import {mapState, mapMutations} from 'vuex';
+export default {
     data() {
         return {
             config: config,
@@ -83,6 +87,8 @@
             output: state=> state.output,
             editor: state=> state.editor,
             cssEditor: state=> state.cssEditor,
+            currentSize: state=> state.currentSize,
+            currentColor: state=> state.currentColor,
             html: state=> state.html
         })
     },
@@ -145,6 +151,16 @@
                 this.cssChanged()
                 saveEditorContent(this.cssEditor, '__css_content')
             })
+        },
+        cssChanged() {
+            let json = css2json(this.cssEditor.getValue(0))
+            let theme = setFontSize(this.currentSize.replace('px', ''))
+
+            theme = customCssWithTemplate(json, this.currentColor, theme)
+            this.setWxRendererOptions({
+                theme: theme
+            });
+            this.editorRefresh()
         },
         // 图片上传结束
         uploaded(response, file, fileList) {
@@ -213,7 +229,8 @@
                 }, 100)
             })
         },
-        ...mapMutations(['initEditorState', 'initEditorEntity', 'editorRefresh', 'initCssEditorEntity'])
+        ...mapMutations(['initEditorState', 'initEditorEntity', 'setWxRendererOptions',
+            'editorRefresh', 'initCssEditorEntity'])
     },
     mounted() {
         this.leftAndRightScroll()
