@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://github.com/doocs/md">
-    <img src="./assets/images/logo-2.png">
+    <img src="https://imgkr.cn-bj.ufileos.com/f3accc83-b854-4e99-afb5-8a6465e1d84f.png" alt="">
   </a>
 </p>
 <h1 align="center">微信 Markdown 编辑器</h1>
