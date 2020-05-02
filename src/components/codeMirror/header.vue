@@ -1,7 +1,8 @@
 <template>
     <el-container class="top">
         <!-- 图片上传 -->
-        <el-upload class="header__item" action="https://imgkr.com/api/files/upload" :headers="{'Content-Type': 'multipart/form-data'}"
+        <el-upload class="header__item" action="https://imgkr.com/api/files/upload"
+            :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
             :before-upload="beforeUpload" :on-success="uploaded">
             <el-tooltip effect="dark" content="上传图片" placement="bottom-start">
@@ -69,6 +70,7 @@ import {
     setFontSize,
     isImageIllegal
 } from '../../scripts/util'
+import fileApi from '../../api/file';
 import {
     solveWeChatImage,
     solveHtml
@@ -165,7 +167,15 @@ export default {
                 });
                 return false;
             }
-            return true;
+            let fd = new FormData();
+
+            fd.append('file', file);
+            fileApi.fileUpload(fd).then(res => {
+                this.uploaded(res)
+            }).catch(err => {
+                console.log(err.message)
+            })
+            return false;
         },
         // 复制到微信公众号
         copy() {
