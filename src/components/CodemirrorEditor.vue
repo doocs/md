@@ -131,7 +131,7 @@ export default {
                         data.append('file', pasteFile)
 
                         fileApi.fileUpload(data).then(res => {
-                            this.uploaded(resp.data)
+                            this.uploaded(res.data)
                         }).catch(err => {
                             console.log(err.message)
                         })

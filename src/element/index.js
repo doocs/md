@@ -35,7 +35,7 @@ Vue.use(Col)
 Vue.use(Row)
 Vue.use(Dialog)
 Vue.use(Loading)
-Vue.use(Message)
+Vue.component(Message.name, Message)
 
 Vue.prototype.$loading = Loading.service
 Vue.prototype.$message = Message
