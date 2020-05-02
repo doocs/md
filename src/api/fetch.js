@@ -11,7 +11,6 @@ service.interceptors.request.use(
         if (/^(post)|(put)|(delete)$/i.test(config.method)) {
             if (config.data && config.data.upload) {
                 config.headers['Content-Type'] = 'multipart/form-data';
-                config.headers['Access-Control-Allow-Origin'] = 'http://192.168.0.106:8080';
             }
         }
         return config;

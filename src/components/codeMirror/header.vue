@@ -1,29 +1,29 @@
 <template>
-    <div>
+    <el-container class="top">
         <!-- 图片上传 -->
-        <el-upload action="https://imgkr.com/api/files/upload" :headers="{'Content-Type': 'multipart/form-data'}"
+        <el-upload class="header__item" action="https://imgkr.com/api/files/upload" :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
             :before-upload="beforeUpload" :on-success="uploaded">
-            <el-tooltip class="item" effect="dark" content="上传图片" placement="bottom-start">
-            <i class="el-icon-upload" size="medium">&nbsp;</i>
+            <el-tooltip effect="dark" content="上传图片" placement="bottom-start">
+            <i class="el-icon-upload" size="medium"></i>
             </el-tooltip>
         </el-upload>
         <!-- 下载文本文档 -->
-        <el-tooltip class="item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
-            <i class="el-icon-download" size="medium" @click="downloadEditorContent">&nbsp;</i>
+        <el-tooltip class="header__item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
+            <i class="el-icon-download" size="medium" @click="downloadEditorContent"></i>
         </el-tooltip>
         <!-- 页面重置 -->
-        <el-tooltip class="item" effect="dark" content="重置页面" placement="bottom-start">
-            <i class="el-icon-refresh" size="medium" @click="reset">&nbsp;</i>
+        <el-tooltip class="header__item" effect="dark" content="重置页面" placement="bottom-start">
+            <i class="el-icon-refresh" size="medium" @click="reset"></i>
         </el-tooltip>
         <!-- 插入表格 -->
-        <el-tooltip class="item" effect="dark" content="插入表格" placement="bottom-start">
-            <i class="el-icon-s-grid" size="medium" @click="dialogFormVisible = true">&nbsp;</i>
+        <el-tooltip class="header__item header__item_last" effect="dark" content="插入表格" placement="bottom-start">
+            <i class="el-icon-s-grid" size="medium" @click="$emit('showDialogForm')"></i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
             <el-form-item>
-            <el-select v-model="currentFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
-                <el-option v-for="font in builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
+            <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
+                <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
                 :label="font.label" :value="font.value">
                 <span class="select-item-left">{{ font.label }}</span>
                 <span class="select-item-right">Abc</span>
@@ -31,27 +31,26 @@
             </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="currentSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
-                <el-option v-for="size in sizeOption" :key="size.value" :label="size.label" :value="size.value">
+            <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
+                <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
                 <span class="select-item-left">{{ size.label }}</span>
                 <span class="select-item-right">{{ size.desc }}</span>
                 </el-option>
             </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="currentColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
-                <el-option v-for="color in colorOption" :key="color.value" :label="color.label" :value="color.value">
+            <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
+                <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
                 <span class="select-item-left">{{ color.label }}</span>
                 <span class="select-item-right">{{ color.hex }}</span>
                 </el-option>
             </el-select>
             </el-form-item>
             <el-tooltip content="自定义颜色" placement="top">
-            <el-color-picker v-model="currentColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+            <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
             </el-tooltip>
-            &nbsp;&nbsp;
             <el-tooltip content="微信外链自动转为文末引用" placement="top">
-            <el-switch v-model="status" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
+            <el-switch class="header__switch" v-model="citeStatus" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
             </el-switch>
             </el-tooltip>
         </el-form>
@@ -59,19 +58,215 @@
             <el-button type="success" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
         </el-tooltip>
         <el-button type="success" plain size="medium" @click="copy">复制</el-button>
-        <el-button type="success" plain size="medium" class="about" @click="aboutDialogVisible = true">关于</el-button>
-    </div>
+        <el-button type="success" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
+      </el-container>
 </template>
 
 <script>
+
+import {
+    setColorWithCustomTemplate,
+    setFontSize,
+    css2json,
+    isImageIllegal,
+    customCssWithTemplate,
+} from '../../scripts/util'
+import {
+    solveWeChatImage,
+    solveHtml
+} from '../../scripts/converter'
+import config from '../../scripts/config'
+import DEFAULT_CSS_CONTENT from '../../scripts/themes/default-theme-css'
+import {mapState, mapMutations} from 'vuex'
 export default {
-    name: 'header',
-    methods: {
-        
+    name: 'editor-header',
+    data() {
+        return {
+            config: config,
+            citeStatus: false,
+            selectFont: '',
+            selectSize: '',
+            selectColor: ''
+        };
     },
+    computed: {
+        ...mapState({
+            output: state=> state.output,
+            editor: state=> state.editor,
+            cssEditor: state=> state.cssEditor,
+            html: state=> state.html,
+            currentFont: state=> state.currentFont,
+            currentSize: state=> state.currentSize,
+            currentColor: state=> state.currentColor
+        })
+    },
+    methods: {
+        fontChanged(fonts) {
+            this.setWxRendererOptions({
+                fonts: fonts
+            })
+            this.setCurrentFont(fonts);
+            this.editorRefresh()
+        },
+        sizeChanged(size) {
+            let theme = setFontSize(size.replace('px', ''))
+            theme = setColorWithCustomTemplate(theme, this.currentColor)
+            this.setWxRendererOptions({
+                size: size,
+                theme: theme
+            })
+            this.setCurrentSize(size);
+            this.editorRefresh()
+        },
+        colorChanged(color) {
+            let theme = setFontSize(this.currentSize.replace('px', ''))
+            theme = setColorWithCustomTemplate(theme, color)
+            this.setWxRendererOptions({
+                theme: theme
+            })
+            this.setCurrentColor(color);
+            this.editorRefresh()
+        },
+        statusChanged(val) {
+            this.setCiteStatus(val)
+            this.editorRefresh()
+        },
+        cssChanged() {
+            let json = css2json(this.cssEditor.getValue(0))
+            let theme = setFontSize(this.currentSize.replace('px', ''))
+            theme = customCssWithTemplate(json, this.currentColor, theme)
+            this.setWxRendererOptions({
+                theme: theme
+            });
+            this.editorRefresh()
+        },
+        // 图片上传结束
+        uploaded(response, file, fileList) {
+            if (response.success) {
+                // 上传成功，获取光标
+                const cursor = this.editor.getCursor()
+                const imageUrl = response.data
+                const markdownImage = `![](${imageUrl})`
+                // 将 Markdown 形式的 URL 插入编辑框光标所在位置
+                this.editor.replaceSelection(`\n${markdownImage}\n`, cursor)
+                this.$message({
+                    showClose: true,
+                    message: '图片插入成功',
+                    type: 'success'
+                })
+                this.editorRefresh()
+            } else {
+                // 上传失败
+                this.$message({
+                    showClose: true,
+                    message: response.message,
+                    type: 'error'
+                })
+            }
+        },
+        // 图片上传前的处理
+        beforeUpload(file) {
+            const checkImageResult = isImageIllegal(file);
+
+            if (checkImageResult) {
+                this.$message({
+                    showClose: true,
+                    message: checkImageResult,
+                    type: 'error'
+                });
+                return false;
+            }
+            return true;
+        },
+        // 复制到微信公众号
+        copy() {
+            let clipboardDiv = document.getElementById('output')
+            const clipboardHTML = clipboardDiv.innerHTML
+            // solveWeChatImage()
+            this.html = solveHtml();
+            // 输出提示
+            this.$notify({
+                showClose: true,
+                message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+                offset: 80,
+                duration: 1600,
+                type: 'success'
+            })
+            clipboardDiv.innerHTML = clipboardHTML; // 恢复现场
+        },
+        // 自定义CSS样式
+        async customStyle () {
+            this.$emit('showBox');
+            this.$nextTick(() => {
+                if(!this.cssEditor) {
+                    this.cssEditor.refresh()
+                }
+            })
+            setTimeout(() => {
+                this.cssEditor.refresh()
+            },50)
+            let flag = await localStorage.getItem('__css_content')
+
+            if (!flag) {
+                this.setCssEditorValue(DEFAULT_CSS_CONTENT)
+            }
+        },
+        // 重置页面
+        reset() {
+            this.$confirm('此操作将丢失本地缓存的文本和自定义样式，是否继续?', '提示', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                confirmButtonClass: 'el-button--success',
+                cancelButtonClass: 'el-button--success is-plain',
+                type: 'warning',
+                center: true
+            }).then(() => {
+                localStorage.clear()
+                this.clearEditorToDefault();
+                this.editor.focus()
+                this.citeStatus = false;
+                this.statusChanged(false);
+                this.fontChanged(this.config.builtinFonts[0].value)
+                this.colorChanged(this.config.colorOption[1].value)
+                this.sizeChanged(this.config.sizeOption[2].value)
+                this.cssChanged()
+            }).catch(() => {
+                this.editor.focus()
+            })
+        },
+        // 下载编辑器内容到本地
+        downloadEditorContent () {
+            let downLink = document.createElement('a')
+            downLink.download = 'content.md'
+            downLink.style.display = 'none'
+            let blob = new Blob([this.editor.getValue(0)])
+            downLink.href = URL.createObjectURL(blob)
+            document.body.appendChild(downLink)
+            downLink.click()
+            document.body.removeChild(downLink)
+        },
+        ...mapMutations(['editorRefresh', 'clearEditorToDefault','setCurrentColor', 'setCiteStatus',
+            'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+    },
+    mounted() {
+        this.selectFont = this.currentFont
+        this.selectSize = this.currentSize
+        this.selectColor = this.currentColor
+    }
 }
 </script>
 
 <style lang="less" scoped>
-
+.editor__header {
+    width: 100%;
+}
+.header__item {
+    margin: 0 3px;
+}
+.header__item_last {
+    margin-right: 8px;
+}
+.header__switch {
+    margin-left: 8px;
+}
 </style>

@@ -20,7 +20,8 @@ const state = {
     html: '',
     currentFont: '',
     currentSize: '',
-    currentColor: ''
+    currentColor: '',
+    citeStatus: 0
 };
 const mutations = {
     setEditorValue(state, data) {
@@ -31,6 +32,10 @@ const mutations = {
     },
     setWxRendererOptions(state, data) {
         state.wxRenderer.setOptions(data);
+    },
+    setCiteStatus(state, data) {
+        state.citeStatus = data;
+        localStorage.setItem('citeStatus', data)
     },
     setCurrentFont(state, data) {
         state.currentFont = data;
@@ -48,12 +53,12 @@ const mutations = {
         state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value
         state.currentColor = localStorage.getItem('color') || config.colorOption[1].value
         state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value
-        state.status = localStorage.getItem('status') === 'true'
+        state.citeStatus = localStorage.getItem('citeStatus') === 'true'
         state.wxRenderer = new WxRenderer({
             theme: setColor(state.currentColor),
             fonts: state.currentFont,
             size: state.currentSize,
-            status: state.status
+            status: state.citeStatus
         })
     },
     initEditorEntity(state) {
@@ -89,6 +94,7 @@ const mutations = {
                 extraKeys: {
                 'Ctrl-F': function autoFormat(editor) {
                     const totalLines = editor.lineCount()
+
                     editor.autoFormatRange({
                             line: 0,
                             ch: 0
@@ -109,11 +115,11 @@ const mutations = {
     },
     editorRefresh(state) {
         let output = marked(state.editor.getValue(0), {
-            renderer: state.wxRenderer.getRenderer(state.status)
+            renderer: state.wxRenderer.getRenderer(state.citeStatus)
         })
         // 去除第一行的 margin-top
         output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"')
-        if (state.status) {
+        if (state.citeStatus) {
             // 引用脚注
             output += state.wxRenderer.buildFootnotes()
             // 附加的一些 style

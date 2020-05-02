@@ -184,7 +184,7 @@ export function saveEditorContent(editor, name) {
     }
 }
 
-export function checkImage(file) {
+export function isImageIllegal(file) {
     if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name)) {
         return '请上传 JPG/PNG/GIF 格式的图片';
     }
