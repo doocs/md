@@ -17,11 +17,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - name: npm install, build
-      run: |
-        npm install
-        npm run build --if-present
+      uses: yanglbme/gitee-pages-action@master
       env:
-        CI: true
+        BRANCH: master # 存放产物的分支名称
+        FOLDER: dist # 存放build后产物的目录
+        BUILD_SCRIPT: npm install && npm run build # 执行的命令
     - name: Sync to Gitee
       uses: wearerequired/git-mirror-action@master
       env:
