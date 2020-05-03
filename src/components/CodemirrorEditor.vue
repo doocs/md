@@ -77,6 +77,7 @@ export default {
             aboutDialogVisible: false,
             dialogFormVisible: false,
             timeout: null,
+            changeTimer: null,
             source: ''
         }
     },
@@ -106,11 +107,13 @@ export default {
         initEditor() {
             this.initEditorEntity();
             this.editor.on('change', (cm, e) => {
-                this.editorRefresh()
-                setTimeout(() => {
-                    PR.prettyPrint()
+                if (this.changeTimer) clearTimeout(this.changeTimer);
+                this.changeTimer = setTimeout(() => {
+                    setTimeout(()=> PR.prettyPrint(), 0);
+                    this.editorRefresh()
+                    console.log('tick');
+                    saveEditorContent(this.editor, '__editor_content')
                 }, 300);
-                saveEditorContent(this.editor, '__editor_content')
             });
 
             // 粘贴上传图片并插入
