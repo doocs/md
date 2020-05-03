@@ -128,7 +128,6 @@ const mutations = {
             // 附加的一些 style
             output += state.wxRenderer.buildAddition()
         }
-        
         state.output = output
     },
     clearEditorToDefault(state) {
