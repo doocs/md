@@ -22,9 +22,8 @@ service.interceptors.request.use(
 service.interceptors.response.use(res => {
     if (res.data.success) {
         return res.data;
-    } else {
-        console.log(res);
     }
+    console.log(res);
     return Promise.reject(res.data);
 }, error => Promise.reject(error));
 

@@ -24,6 +24,5 @@ export function solveHtml() {
       preserveImportant: true
     }
   );
-//   console.log(res);
   return res;
 }
