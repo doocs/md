@@ -105,7 +105,7 @@ export default {
                 fonts: fonts
             })
             this.setCurrentFont(fonts);
-            this.editorRefresh()
+            this.$emit('refresh')
         },
         sizeChanged(size) {
             let theme = setFontSize(size.replace('px', ''))
@@ -115,7 +115,7 @@ export default {
                 theme: theme
             })
             this.setCurrentSize(size);
-            this.editorRefresh()
+            this.$emit('refresh')
         },
         colorChanged(color) {
             let theme = setFontSize(this.currentSize.replace('px', ''))
@@ -124,11 +124,11 @@ export default {
                 theme: theme
             })
             this.setCurrentColor(color);
-            this.editorRefresh()
+            this.$emit('refresh')
         },
         statusChanged(val) {
             this.setCiteStatus(val)
-            this.editorRefresh()
+            this.$emit('refresh')
         },
         // 图片上传前的处理
         beforeUpload(file) {
@@ -175,6 +175,7 @@ export default {
                 type: 'success'
             })
             clipboardDiv.innerHTML = this.output; // 恢复现场
+            this.$emit('refresh')
         },
         // 自定义CSS样式
         async customStyle () {
@@ -227,7 +228,7 @@ export default {
             downLink.click()
             document.body.removeChild(downLink)
         },
-        ...mapMutations(['editorRefresh', 'clearEditorToDefault','setCurrentColor', 'setCiteStatus',
+        ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus',
             'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
