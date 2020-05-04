@@ -66,6 +66,7 @@ import {
 require('codemirror/mode/javascript/javascript')
 import '../scripts/closebrackets'
 import $ from 'jquery'
+require('../scripts/google-code-prettify/prettify.js')
 import config from '../scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
@@ -76,6 +77,7 @@ export default {
             aboutDialogVisible: false,
             dialogFormVisible: false,
             timeout: null,
+            changeTimer: null,
             source: ''
         }
     },
@@ -105,8 +107,13 @@ export default {
         initEditor() {
             this.initEditorEntity();
             this.editor.on('change', (cm, e) => {
-                this.editorRefresh()
-                saveEditorContent(this.editor, '__editor_content')
+                if (this.changeTimer) clearTimeout(this.changeTimer);
+                this.changeTimer = setTimeout(() => {
+                    setTimeout(()=> PR.prettyPrint(), 0);
+                    this.editorRefresh()
+                    console.log('tick');
+                    saveEditorContent(this.editor, '__editor_content')
+                }, 300);
             });
 
             // 粘贴上传图片并插入
@@ -162,6 +169,9 @@ export default {
                 theme: theme
             });
             this.editorRefresh()
+        },
+        onTextareaChange() {
+            console.log('change');
         },
         // 图片上传结束
         uploaded(response, file, fileList) {
@@ -222,11 +232,15 @@ export default {
     },
     mounted() {
         this.leftAndRightScroll()
+        setTimeout(() => {
+            PR.prettyPrint()
+        }, 300);
     }
 }
 
 </script>
 <style lang="less" scoped>
+@import url('../scripts/google-code-prettify/prettify.css');
 .main-body {
     padding-top: 0;
 }
