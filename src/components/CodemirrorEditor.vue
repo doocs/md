@@ -3,6 +3,7 @@
         <el-container>
             <el-header class="top editor__header">
                 <editor-header
+                    @refresh="onEditorRefresh"
                     @uploaded="uploaded"
                     @cssChanged="cssChanged"
                     @showBox="showBox = !showBox"
@@ -100,7 +101,7 @@ export default {
         this.$nextTick(() => {
             this.initEditor()
             this.initCssEditor()
-            this.editorRefresh()
+            this.onEditorRefresh()
         })
     },
     methods: {
@@ -109,8 +110,7 @@ export default {
             this.editor.on('change', (cm, e) => {
                 if (this.changeTimer) clearTimeout(this.changeTimer);
                 this.changeTimer = setTimeout(() => {
-                    setTimeout(()=> PR.prettyPrint(), 0);
-                    this.editorRefresh()
+                    this.onEditorRefresh()
                     console.log('tick');
                     saveEditorContent(this.editor, '__editor_content')
                 }, 300);
@@ -168,7 +168,7 @@ export default {
             this.setWxRendererOptions({
                 theme: theme
             });
-            this.editorRefresh()
+            this.onEditorRefresh()
         },
         onTextareaChange() {
             console.log('change');
@@ -188,7 +188,7 @@ export default {
                         message: '图片插入成功',
                         type: 'success'
                     })
-                    this.editorRefresh()
+                    this.onEditorRefresh()
                 } else {
                     // 上传失败
                     this.$message({
@@ -226,6 +226,10 @@ export default {
                     target.on('scroll', callback)
                 }, 100)
             })
+        },
+        onEditorRefresh() {
+            this.editorRefresh();
+            setTimeout(()=> PR.prettyPrint(), 0);
         },
         ...mapMutations(['initEditorState', 'initEditorEntity', 'setWxRendererOptions',
             'editorRefresh', 'initCssEditorEntity'])
