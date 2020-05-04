@@ -18,8 +18,8 @@
                         </textarea>
                     </el-col>
                     <el-col :span="12" class="preview-wrapper" id="preview">
-                        <section id="output-wrapper">
-                            <div class="preview" contenteditable="true">
+                        <section id="output-wrapper" >
+                            <div class="preview">
                                 <section id="output" v-html="output">
                                 </section>
                             </div>
