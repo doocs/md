@@ -21,7 +21,8 @@ const state = {
     currentFont: '',
     currentSize: '',
     currentColor: '',
-    citeStatus: 0
+    citeStatus: 0,
+    nightMode: true
 };
 const mutations = {
     setHtml(state, data) {
@@ -51,6 +52,9 @@ const mutations = {
     setCurrentColor(state, data) {
         state.currentColor = data;
         localStorage.setItem('color', data)
+    },
+    themeChanged(state) {
+        state.nightMode = !state.nightMode;
     },
     initEditorState(state) {
         state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value

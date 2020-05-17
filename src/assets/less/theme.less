@@ -1,0 +1,80 @@
+@nightBgColor: #333333;
+@nightPreviewColor: #1e1e1e;
+@nightHeaderColor: #3c3c3c;
+@nightCodeMirrorColor: #1e1e1e;
+@nightActiveCodeMirrorColor: gray;
+@nightFontColor: gray;
+@nightLinkColor: #8e9eb9;
+@nightLinkTextColor: #84868b;
+@nightWhiteColor: #ffffff;
+@nightButtonBg: #1e1e1e;
+@nightButtonHoverColor: #84868b;
+.container_night {
+    background-color: @nightBgColor;
+    .el-main {
+        background-color: @nightBgColor;
+    }
+    .CodeMirror  {
+        caret-color: @nightFontColor;
+        color: @nightFontColor;
+        background-color: @nightCodeMirrorColor;
+        box-shadow: inset 0 0 0 1px rgba(100, 37, 37, 0.102);
+    }
+    .preview {
+        background-color: @nightPreviewColor;
+        box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
+    }
+    .preview-wrapper {
+        background-color: @nightCodeMirrorColor;
+        box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+    }
+    .cm-s-style-mirror .CodeMirror-matchingbracket {
+        color: @nightWhiteColor!important;
+        background: rgb(30, 30, 30)!important;
+    }
+    .cm-s-xq-light span.cm-variable-2, .cm-s-style-mirror span.cm-tag {
+        color: @nightFontColor;
+    }
+    .cm-s-xq-light .CodeMirror-activeline-background {
+        background-color: transparent;
+    }
+    .cm-s-xq-light span.cm-string {
+        color: @nightLinkColor;
+    }
+    .cm-s-xq-light span.cm-link {
+        color: @nightLinkTextColor;
+    }
+    .editor__header {
+        background-color: @nightHeaderColor;
+    }
+    .el-button {
+        color: @nightWhiteColor;
+        background-color: @nightCodeMirrorColor;
+        border: 1px solid transparent;
+    }
+    .el-button.is-plain:focus, .el-button.is-plain:hover {
+        background: @nightButtonBg;
+        color: @nightWhiteColor;
+        border: 1px solid @nightWhiteColor;
+        i {
+            color: @nightWhiteColor;
+        }
+    }
+    .insert__dialog, .about__dialog {
+        .el-dialog {
+            background-color: @nightBgColor;
+        }
+        .el-dialog__body {
+            color: @nightWhiteColor;
+        }
+        .el-dialog__title, .el-form-item__label {
+            color: @nightWhiteColor;
+        }
+    }
+    i {
+        color: @nightWhiteColor;
+    }
+    ::-webkit-scrollbar {
+        background-color: @nightCodeMirrorColor;
+    }
+}

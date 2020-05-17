@@ -1,6 +1,6 @@
 <template>
-    <el-dialog title="插入表格" :visible="dialogFormVisible" @close="$emit('close')">
-        <el-form :model="config.form">
+    <el-dialog title="插入表格" class="insert__dialog" :visible="dialogFormVisible" @close="$emit('close')">
+        <el-form class="insert__form" :model="config.form">
             <el-form-item label="行数(表头不计入行数)">
             <el-input v-model="config.form.rows"></el-input>
             </el-form-item>
@@ -9,8 +9,8 @@
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button type="success" plain @click="$emit('close')">取 消</el-button>
-            <el-button type="success" @click="insertTable">确 定</el-button>
+            <el-button :type="btnType" plain @click="$emit('close')">取 消</el-button>
+            <el-button :type="btnType" @click="insertTable" plain>确 定</el-button>
         </div>
     </el-dialog>
 </template>
@@ -31,7 +31,11 @@ export default {
         }
     },
     computed: {
+        btnType() {
+            return !this.nightMode ? 'success' : 'default';
+        },
         ...mapState({
+            nightMode: state=> state.nightMode,
             editor: state=> state.editor
         })
     },

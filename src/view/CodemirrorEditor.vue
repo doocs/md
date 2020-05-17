@@ -1,7 +1,7 @@
 <template>
-    <div id="app" class="container">
+    <div class="container" :class="{'container_night': nightMode}">
         <el-container>
-            <el-header class="top editor__header">
+            <el-header class="editor__header is-dark">
                 <editor-header
                     @refresh="onEditorRefresh"
                     @uploaded="uploaded"
@@ -53,9 +53,9 @@ import 'codemirror/addon/hint/css-hint.js'
 import '../scripts/format.js'
 
 import fileApi from '../api/file';
-import editorHeader from './codeMirror/header';
-import aboutDialog from './codeMirror/aboutDialog';
-import insertFormDialog from './codeMirror/insertForm';
+import editorHeader from '../components/codeMirror/header';
+import aboutDialog from '../components/codeMirror/aboutDialog';
+import insertFormDialog from '../components/codeMirror/insertForm';
 import {
     setFontSize,
     css2json,
@@ -93,7 +93,8 @@ export default {
             cssEditor: state=> state.cssEditor,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
-            html: state=> state.html
+            html: state=> state.html,
+            nightMode: state=> state.nightMode
         })
     },
     created() {
@@ -207,7 +208,7 @@ export default {
         },
         // 左右栏同步滚动
         leftAndRightScroll() {
-            $('div.CodeMirror-scroll, #preview').on('scroll', function callback() {
+            $('#preview').on('scroll', function callback() {
                 clearTimeout(this.timeout)
 
                 let source = $(this)
@@ -246,6 +247,15 @@ export default {
 <style lang="less" scoped>
 @import url('../scripts/google-code-prettify/prettify.css');
 .main-body {
-    padding-top: 0;
+    padding-top: 12px;
+    overflow: hidden;
+}
+.el-main {
+    transition: all .3s;
+    padding: 0;
+    margin: 20px;
+}
+.container {
+    transition: all .3s;
 }
 </style>

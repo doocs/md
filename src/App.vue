@@ -5,7 +5,7 @@
 
 <script>
 import Loading from './components/Loading'
-import CodemirrorEditor from './components/CodemirrorEditor'
+import CodemirrorEditor from './view/CodemirrorEditor'
 export default {
     name: 'App',
     components: {
