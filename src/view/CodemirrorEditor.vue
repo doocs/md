@@ -250,6 +250,11 @@ export default {
     padding-top: 12px;
     overflow: hidden;
 }
+.el-main {
+    transition: all .3s;
+    padding: 0;
+    margin: 20px;
+}
 .container {
     transition: all .3s;
 }

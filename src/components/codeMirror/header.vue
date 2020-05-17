@@ -26,24 +26,24 @@
             <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
                 <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
                 :label="font.label" :value="font.value">
-                <span class="select-item-left">{{ font.label }}</span>
-                <span class="select-item-right">Abc</span>
+                    <span class="select-item-left">{{ font.label }}</span>
+                    <span class="select-item-right">Abc</span>
                 </el-option>
             </el-select>
             </el-form-item>
             <el-form-item>
             <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
                 <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
-                <span class="select-item-left">{{ size.label }}</span>
-                <span class="select-item-right">{{ size.desc }}</span>
+                    <span class="select-item-left">{{ size.label }}</span>
+                    <span class="select-item-right">{{ size.desc }}</span>
                 </el-option>
             </el-select>
             </el-form-item>
             <el-form-item>
             <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
                 <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
-                <span class="select-item-left">{{ color.label }}</span>
-                <span class="select-item-right">{{ color.hex }}</span>
+                    <span class="select-item-left">{{ color.label }}</span>
+                    <span class="select-item-right">{{ color.hex }}</span>
                 </el-option>
             </el-select>
             </el-form-item>
