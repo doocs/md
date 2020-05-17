@@ -1,24 +1,24 @@
 <template>
-    <el-container class="top">
+    <el-container class="top is-dark">
         <!-- 图片上传 -->
         <el-upload class="header__item" action="https://imgkr.com/api/files/upload"
             :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
             :before-upload="beforeUpload">
-            <el-tooltip effect="dark" content="上传图片" placement="bottom-start">
+            <el-tooltip :effect="effect" content="上传图片" placement="bottom-start">
             <i class="el-icon-upload" size="medium"></i>
             </el-tooltip>
         </el-upload>
         <!-- 下载文本文档 -->
-        <el-tooltip class="header__item" effect="dark" content="下载编辑框Markdown文档" placement="bottom-start">
+        <el-tooltip class="header__item" :effect="effect" content="下载编辑框Markdown文档" placement="bottom-start">
             <i class="el-icon-download" size="medium" @click="downloadEditorContent"></i>
         </el-tooltip>
         <!-- 页面重置 -->
-        <el-tooltip class="header__item" effect="dark" content="重置页面" placement="bottom-start">
+        <el-tooltip class="header__item" :effect="effect" content="重置页面" placement="bottom-start">
             <i class="el-icon-refresh" size="medium" @click="reset"></i>
         </el-tooltip>
         <!-- 插入表格 -->
-        <el-tooltip class="header__item header__item_last" effect="dark" content="插入表格" placement="bottom-start">
+        <el-tooltip class="header__item header__item_last" :effect="effect" content="插入表格" placement="bottom-start">
             <i class="el-icon-s-grid" size="medium" @click="$emit('showDialogForm')"></i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
@@ -47,19 +47,23 @@
                 </el-option>
             </el-select>
             </el-form-item>
-            <el-tooltip content="自定义颜色" placement="top">
+            <el-tooltip content="自定义颜色" :effect="effect" placement="top">
             <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
             </el-tooltip>
-            <el-tooltip content="微信外链自动转为文末引用" placement="top">
-            <el-switch class="header__switch" v-model="citeStatus" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
-            </el-switch>
+            <el-tooltip content="微信外链自动转为文末引用" :effect="effect" placement="top">
+                <el-switch class="header__switch" v-model="citeStatus" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
+                </el-switch>
             </el-tooltip>
         </el-form>
-        <el-tooltip class="item" effect="dark" content="自定义CSS样式" placement="left">
-            <el-button type="success" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
+        <el-tooltip class="item" :effect="effect" content="自定义CSS样式" placement="left">
+            <el-button :type="btnType" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
         </el-tooltip>
-        <el-button type="success" plain size="medium" @click="copy">复制</el-button>
-        <el-button type="success" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
+        <el-button :type="btnType" plain size="medium" @click="copy">复制</el-button>
+        <el-button :type="btnType" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
+        <el-tooltip content="夜间模式" placement="bottom-start">
+            <div class="mode__switch" v-if="!nightMode" @click="themeChanged"></div>
+            <div class="mode__switch mode__switch_black" v-else @click="themeChanged"></div>
+        </el-tooltip>
       </el-container>
 </template>
 
@@ -90,13 +94,20 @@ export default {
         };
     },
     computed: {
+        effect() {
+            return this.nightMode ? 'dark' : 'light'
+        },
+        btnType() {
+            return !this.nightMode ? 'success' : 'default';
+        },
         ...mapState({
             output: state=> state.output,
             editor: state=> state.editor,
             cssEditor: state=> state.cssEditor,
             currentFont: state=> state.currentFont,
             currentSize: state=> state.currentSize,
-            currentColor: state=> state.currentColor
+            currentColor: state=> state.currentColor,
+            nightMode: state=> state.nightMode
         })
     },
     methods: {
@@ -228,7 +239,7 @@ export default {
             downLink.click()
             document.body.removeChild(downLink)
         },
-        ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus',
+        ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
             'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
@@ -251,5 +262,20 @@ export default {
 }
 .header__switch {
     margin-left: 8px;
+}
+.mode__switch {
+    margin-left: 24px;
+    width: 24px;
+    height: 24px;
+    background: url('../../assets/images/night.png') no-repeat;
+    background-size: cover;
+    transition: all .3s;
+}
+.mode__switch_black {
+    background: url('../../assets/images/light.png') no-repeat;
+    background-size: cover;
+}
+.top {
+    margin-right: 0;
 }
 </style>

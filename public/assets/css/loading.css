@@ -8,6 +8,10 @@
   background-color: #f2f2f2;
 }
 
+.loading_night {
+  background-color: #303133;
+}
+
 .loading-wrapper {
   position: fixed;
   top: 50%;
