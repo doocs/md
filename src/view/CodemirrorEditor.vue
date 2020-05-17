@@ -9,8 +9,8 @@
                     @showBox="showBox = !showBox"
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
-                    @startCopy="startCopy"
-                    @endCopy="isCoping = false, backLightColor = false"
+                    @startCopy="isCoping = true, backLight = true"
+                    @endCopy="endCopy"
                 />
             </el-header>
             <el-main class="main-body">
@@ -19,8 +19,8 @@
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
                     </el-col>
-                    <el-col :span="12" class="preview-wrapper" id="preview" :class="{'preview-wrapper_night': nightMode && backLightColor}">
-                        <section id="output-wrapper" :class="{'output_night': nightMode && !isCoping}">
+                    <el-col :span="12" class="preview-wrapper" id="preview" :class="{'preview-wrapper_night': nightMode && isCoping}">
+                        <section id="output-wrapper" :class="{'output_night': nightMode && !backLight}">
                             <div class="preview">
                                 <section id="output" v-html="output">
                                 </section>
@@ -83,8 +83,8 @@ export default {
             showBox: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
-            backLightColor: false,
             isCoping: false,
+            backLight: false,
             timeout: null,
             changeTimer: null,
             source: ''
@@ -240,11 +240,11 @@ export default {
             this.editorRefresh();
             setTimeout(()=> PR.prettyPrint(), 0);
         },
-        startCopy() {
-            this.isCoping = true;
-            setTimeout(() => {
-                this.backLightColor = true;
-            }, 500);
+        endCopy() {
+            this.backLight = false;
+            setTimeout(()=> {
+                this.isCoping = false;
+            }, 800);
         },
         ...mapMutations(['initEditorState', 'initEditorEntity', 'setWxRendererOptions',
             'editorRefresh', 'initCssEditorEntity'])
@@ -272,8 +272,9 @@ export default {
 .container {
     transition: all .3s;
 }
-.preview-wrapper {
-    transition: all .3s;
+.preview {
+    transition: background 0s;
+    transition-delay: .2s;
 }
 .preview-wrapper_night {
     overflow-y: inherit;

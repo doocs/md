@@ -194,9 +194,9 @@ export default {
                     type: 'success'
                 })
                 clipboardDiv.innerHTML = this.output; // 恢复现场
-                this.$emit('refresh')
+                this.$emit('refresh');
                 this.$emit('endCopy');
-            }, 1000);
+            }, 350);
         },
         // 自定义CSS样式
         async customStyle () {
