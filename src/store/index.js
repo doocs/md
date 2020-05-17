@@ -22,7 +22,7 @@ const state = {
     currentSize: '',
     currentColor: '',
     citeStatus: 0,
-    nightMode: true
+    nightMode: false
 };
 const mutations = {
     setHtml(state, data) {
