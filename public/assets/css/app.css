@@ -155,7 +155,7 @@ section {
   margin: 10px 8px;
   color: #333;
   position: relative;
-  background-color: rgba(0, 0, 0, 0.03);
+  background-color: rgb(238,238,238);
   border: 1px solid #f0f0f0;
   border-radius: 2px;
   display: flex;
@@ -228,6 +228,6 @@ section {
 }
 
 .CodeMirror-scroll, .preview-wrapper {
-    overflow: unset!important;
-    overflow-y: scroll!important;
+    overflow: unset;
+    overflow-y: scroll;
 }

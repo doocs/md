@@ -13,9 +13,9 @@ export function solveWeChatImage() {
     image.style.height = height;
   }
 }
-export function solveHtml() {
+export function solveHtml(nightMode = false) {
   const element = document.getElementById("output-wrapper");
-  let html = element.innerHTML;
+  let html = element.innerHTML
   let res = "";
   res = juice.inlineContent(
     html,
