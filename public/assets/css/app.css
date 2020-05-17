@@ -228,6 +228,6 @@ section {
 }
 
 .CodeMirror-scroll, .preview-wrapper {
-    overflow: unset!important;
-    overflow-y: scroll!important;
+    overflow: unset;
+    overflow-y: scroll;
 }

@@ -20,13 +20,18 @@
         background-color: @nightCodeMirrorColor;
         box-shadow: inset 0 0 0 1px rgba(100, 37, 37, 0.102);
     }
-    .preview {
-        background-color: @nightPreviewColor;
-        box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
-    }
-    .preview-wrapper {
-        background-color: @nightCodeMirrorColor;
-        box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+    .output_night {
+        .preview {
+            background-color: @nightPreviewColor;
+            box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
+        }
+        .preview-wrapper {
+            background-color: @nightCodeMirrorColor;
+            box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+        }
+        .code-snippet__fix {
+            background-color: rgb(238,238,238);
+        }
     }
     .cm-s-style-mirror .CodeMirror-matchingbracket {
         color: @nightWhiteColor!important;
@@ -60,7 +65,7 @@
             color: @nightWhiteColor;
         }
     }
-    .insert__dialog, .about__dialog {
+    .insert__dialog, .about__dialog, .reset__dialog {
         .el-dialog {
             background-color: @nightBgColor;
         }

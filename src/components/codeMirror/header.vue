@@ -64,6 +64,7 @@
             <div class="mode__switch" v-if="!nightMode" @click="themeChanged"></div>
             <div class="mode__switch mode__switch_black" v-else @click="themeChanged"></div>
         </el-tooltip>
+        <resetDialog :showResetConfirm="showResetConfirm" @confirm="confirmReset" @close="cancelReset"/>
       </el-container>
 </template>
 
@@ -81,6 +82,7 @@ import {
 } from '../../scripts/converter'
 import config from '../../scripts/config'
 import DEFAULT_CSS_CONTENT from '../../scripts/themes/default-theme-css'
+import resetDialog from '../codeMirror/resetDialog'
 import {mapState, mapMutations} from 'vuex'
 export default {
     name: 'editor-header',
@@ -88,10 +90,14 @@ export default {
         return {
             config: config,
             citeStatus: false,
+            showResetConfirm: false,
             selectFont: '',
             selectSize: '',
             selectColor: ''
         };
+    },
+    components: {
+        resetDialog
     },
     computed: {
         effect() {
@@ -165,28 +171,32 @@ export default {
         },
         // 复制到微信公众号
         copy() {
-            let clipboardDiv = document.getElementById('output')
-            solveWeChatImage()
-            this.setHtml(solveHtml())
+            this.$emit('startCopy');
+            setTimeout(() => {
+                let clipboardDiv = document.getElementById('output')
+                solveWeChatImage()
+                this.setHtml(solveHtml(this.nightMode))
 
-            clipboardDiv.focus()
-            window.getSelection().removeAllRanges()
-            let range = document.createRange()
+                clipboardDiv.focus()
+                window.getSelection().removeAllRanges()
+                let range = document.createRange()
 
-            range.setStartBefore(clipboardDiv.firstChild)
-            range.setEndAfter(clipboardDiv.lastChild)
-            window.getSelection().addRange(range)
-            document.execCommand('copy')
-            // 输出提示
-            this.$notify({
-                showClose: true,
-                message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
-                offset: 80,
-                duration: 1600,
-                type: 'success'
-            })
-            clipboardDiv.innerHTML = this.output; // 恢复现场
-            this.$emit('refresh')
+                range.setStartBefore(clipboardDiv.firstChild)
+                range.setEndAfter(clipboardDiv.lastChild)
+                window.getSelection().addRange(range)
+                document.execCommand('copy')
+                // 输出提示
+                this.$notify({
+                    showClose: true,
+                    message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+                    offset: 80,
+                    duration: 1600,
+                    type: 'success'
+                })
+                clipboardDiv.innerHTML = this.output; // 恢复现场
+                this.$emit('refresh')
+                this.$emit('endCopy');
+            }, 1000);
         },
         // 自定义CSS样式
         async customStyle () {
@@ -207,26 +217,22 @@ export default {
         },
         // 重置页面
         reset() {
-            this.$confirm('此操作将丢失本地缓存的文本和自定义样式，是否继续?', '提示', {
-                confirmButtonText: '确定',
-                cancelButtonText: '取消',
-                confirmButtonClass: 'el-button--success',
-                cancelButtonClass: 'el-button--success is-plain',
-                type: 'warning',
-                center: true
-            }).then(() => {
-                localStorage.clear()
-                this.clearEditorToDefault();
-                this.editor.focus()
-                this.citeStatus = false;
-                this.statusChanged(false);
-                this.fontChanged(this.config.builtinFonts[0].value)
-                this.colorChanged(this.config.colorOption[1].value)
-                this.sizeChanged(this.config.sizeOption[2].value)
-                this.$emit('cssChanged')
-            }).catch(() => {
-                this.editor.focus()
-            })
+            this.showResetConfirm = true;
+        },
+        confirmReset() {
+            localStorage.clear()
+            this.clearEditorToDefault();
+            this.editor.focus()
+            this.citeStatus = false;
+            this.statusChanged(false);
+            this.fontChanged(this.config.builtinFonts[0].value)
+            this.colorChanged(this.config.colorOption[1].value)
+            this.sizeChanged(this.config.sizeOption[2].value)
+            this.$emit('cssChanged')
+        },
+        cancelReset() {
+            this.showResetConfirm = false;
+            this.editor.focus()
         },
         // 下载编辑器内容到本地
         downloadEditorContent () {

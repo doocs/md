@@ -1,7 +1,7 @@
 <template>
     <div class="container" :class="{'container_night': nightMode}">
         <el-container>
-            <el-header class="editor__header is-dark">
+            <el-header class="editor__header">
                 <editor-header
                     @refresh="onEditorRefresh"
                     @uploaded="uploaded"
@@ -9,6 +9,8 @@
                     @showBox="showBox = !showBox"
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
+                    @startCopy="startCopy"
+                    @endCopy="isCoping = false, backLightColor = false"
                 />
             </el-header>
             <el-main class="main-body">
@@ -17,11 +19,15 @@
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
                     </el-col>
-                    <el-col :span="12" class="preview-wrapper" id="preview">
-                        <section id="output-wrapper" >
+                    <el-col :span="12" class="preview-wrapper" id="preview" :class="{'preview-wrapper_night': nightMode && backLightColor}">
+                        <section id="output-wrapper" :class="{'output_night': nightMode && !isCoping}">
                             <div class="preview">
                                 <section id="output" v-html="output">
                                 </section>
+                                <div class="loading-mask" v-if="nightMode && isCoping">
+                                    <div class="loading__img"></div>
+                                    <span>正在生成</span>
+                                </div>
                             </div>
                         </section>
                     </el-col>
@@ -77,6 +83,8 @@ export default {
             showBox: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
+            backLightColor: false,
+            isCoping: false,
             timeout: null,
             changeTimer: null,
             source: ''
@@ -232,6 +240,12 @@ export default {
             this.editorRefresh();
             setTimeout(()=> PR.prettyPrint(), 0);
         },
+        startCopy() {
+            this.isCoping = true;
+            setTimeout(() => {
+                this.backLightColor = true;
+            }, 500);
+        },
         ...mapMutations(['initEditorState', 'initEditorEntity', 'setWxRendererOptions',
             'editorRefresh', 'initCssEditorEntity'])
     },
@@ -257,5 +271,47 @@ export default {
 }
 .container {
     transition: all .3s;
+}
+.preview-wrapper {
+    transition: all .3s;
+}
+.preview-wrapper_night {
+    overflow-y: inherit;
+    position: relative;
+    left: -3px;
+    .preview {
+        background-color: #fff;
+    }
+}
+#output-wrapper {
+    position: relative;
+}
+.loading-mask {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 376px;
+    height: 101%;
+    padding-top: 1px;
+    font-size: 15px;
+    color: gray;
+    background-color: #1e1e1e;
+    .loading__img {
+        position: absolute;
+        left: 50%;
+        top: 330px;
+        width: 50px;
+        height: 50px;
+        transform: translate(-50%, -50%);
+        background: url('../assets/images/favicon.png') no-repeat;
+        background-size: cover;
+    }
+    span {
+        position: absolute;
+        left: 50%;
+        top: 390px;
+        transform: translate(-50%, -50%);
+    }
 }
 </style>
