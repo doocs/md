@@ -261,7 +261,6 @@ export default {
 <style lang="less" scoped>
 @import url('../scripts/google-code-prettify/prettify.css');
 .main-body {
-    padding-top: 12px;
     overflow: hidden;
 }
 .el-main {
