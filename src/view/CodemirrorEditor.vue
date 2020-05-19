@@ -261,12 +261,14 @@ export default {
 <style lang="less" scoped>
 @import url('../scripts/google-code-prettify/prettify.css');
 .main-body {
+    padding-top: 12px;
     overflow: hidden;
 }
 .el-main {
     transition: all .3s;
     padding: 0;
     margin: 20px;
+    margin-top: 0;
 }
 .container {
     transition: all .3s;
