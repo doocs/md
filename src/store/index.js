@@ -3,6 +3,8 @@ import Vuex from 'vuex'
 import config from '../scripts/config';
 import WxRenderer from '../scripts/renderers/wx-renderer'
 import marked from 'marked'
+import prettier from 'prettier/standalone'
+import prettierMarkdown from 'prettier/parser-markdown'
 import CodeMirror from 'codemirror/lib/codemirror'
 import DEFAULT_CONTENT from '../scripts/default-content'
 import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
@@ -70,7 +72,7 @@ const mutations = {
     },
     initEditorEntity(state) {
         state.editor = CodeMirror.fromTextArea(
-            document.getElementById('editor'), 
+            document.getElementById('editor'),
             {
                 value: '',
                 mode: 'text/x-markdown',
@@ -78,7 +80,17 @@ const mutations = {
                 lineNumbers: false,
                 lineWrapping: true,
                 styleActiveLine: true,
-                autoCloseBrackets: true
+                autoCloseBrackets: true,
+                extraKeys: {
+                    'Ctrl-F': function autoFormat(editor) {
+                        const doc = prettier.format(editor.getValue(0), {
+                            parser: 'markdown',
+                            plugins: [prettierMarkdown]
+                        })
+                        localStorage.setItem('__editor_content', doc)
+                        editor.setValue(doc)
+                    }
+                }
             }
         )
         // 如果有编辑器内容被保存则读取，否则加载默认内容
@@ -90,7 +102,8 @@ const mutations = {
     },
     initCssEditorEntity(state) {
         state.cssEditor = CodeMirror.fromTextArea(
-            document.getElementById('cssEditor'), {
+            document.getElementById('cssEditor'),
+            {
                 value: '',
                 mode: 'css',
                 theme: 'style-mirror',
@@ -99,10 +112,10 @@ const mutations = {
                 matchBrackets: true,
                 autofocus: true,
                 extraKeys: {
-                'Ctrl-F': function autoFormat(editor) {
-                    const totalLines = editor.lineCount()
+                    'Ctrl-F': function autoFormat(editor) {
+                        const totalLines = editor.lineCount()
 
-                    editor.autoFormatRange({
+                        editor.autoFormatRange({
                             line: 0,
                             ch: 0
                         }, {
