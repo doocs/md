@@ -31,6 +31,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 功能特性
 
+- [x] 支持黑夜模式
+- [x] 支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速格式化文档
 - [x] 支持 Markdown 所有基础语法
 - [x] 支持单独进行字体、字号设置
 - [x] 支持色盘取色，并一键替换颜色
@@ -41,7 +43,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持自定义 CSS 样式并实时渲染
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
-- [x] 支持夜间模式展示
 
 ![select-and-change-color-theme](https://imgkr.cn-bj.ufileos.com/32c05c23-6309-491f-bd0d-f22a62c944b4.gif)
 
