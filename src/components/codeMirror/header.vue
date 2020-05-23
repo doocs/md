@@ -229,6 +229,7 @@ export default {
             this.colorChanged(this.config.colorOption[1].value)
             this.sizeChanged(this.config.sizeOption[2].value)
             this.$emit('cssChanged')
+            this.showResetConfirm = false;
         },
         cancelReset() {
             this.showResetConfirm = false;
