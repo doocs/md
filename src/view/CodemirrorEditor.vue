@@ -120,7 +120,6 @@ export default {
                 if (this.changeTimer) clearTimeout(this.changeTimer);
                 this.changeTimer = setTimeout(() => {
                     this.onEditorRefresh()
-                    console.log('tick');
                     saveEditorContent(this.editor, '__editor_content')
                 }, 300);
             });
