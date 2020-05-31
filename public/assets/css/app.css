@@ -132,7 +132,7 @@ section {
   font-size: 14px;
   padding: 20px;
   width: 100% !important;
-  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif;
+  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif !important;
 }
 
 /* ele ui */
