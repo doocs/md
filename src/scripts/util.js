@@ -1,4 +1,6 @@
-import  default_theme  from "./themes/default-theme";
+import default_theme  from './themes/default-theme'
+import prettier from 'prettier/standalone'
+import prettierMarkdown from 'prettier/parser-markdown'
 
 
 // 设置自定义颜色
@@ -192,4 +194,12 @@ export function isImageIllegal(file) {
         return '由于公众号限制，图片大小不能超过 5.0M';
     }
     return false;
+}
+
+export function formatDoc(content) {
+  const doc = prettier.format(content, {
+    parser: 'markdown',
+    plugins: [prettierMarkdown]
+  })
+  return doc
 }

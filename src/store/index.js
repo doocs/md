@@ -3,13 +3,12 @@ import Vuex from 'vuex'
 import config from '../scripts/config';
 import WxRenderer from '../scripts/renderers/wx-renderer'
 import marked from 'marked'
-import prettier from 'prettier/standalone'
-import prettierMarkdown from 'prettier/parser-markdown'
 import CodeMirror from 'codemirror/lib/codemirror'
 import DEFAULT_CONTENT from '../scripts/default-content'
 import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
 import {
-    setColor
+    setColor,
+    formatDoc
 } from '../scripts/util'
 
 Vue.use(Vuex)
@@ -83,10 +82,7 @@ const mutations = {
                 autoCloseBrackets: true,
                 extraKeys: {
                     'Ctrl-F': function autoFormat(editor) {
-                        const doc = prettier.format(editor.getValue(0), {
-                            parser: 'markdown',
-                            plugins: [prettierMarkdown]
-                        })
+                        const doc = formatDoc(editor.getValue(0))
                         localStorage.setItem('__editor_content', doc)
                         editor.setValue(doc)
                     }
@@ -97,7 +93,8 @@ const mutations = {
         if (localStorage.getItem('__editor_content')) {
             state.editor.setValue(localStorage.getItem('__editor_content'))
         } else {
-            state.editor.setValue(DEFAULT_CONTENT)
+            const doc = formatDoc(DEFAULT_CONTENT)
+            state.editor.setValue(doc)
         }
     },
     initCssEditorEntity(state) {
