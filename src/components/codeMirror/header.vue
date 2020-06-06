@@ -15,7 +15,7 @@
         </el-tooltip>
         <!-- 页面重置 -->
         <el-tooltip class="header__item" :effect="effect" content="重置页面" placement="bottom-start">
-            <i class="el-icon-refresh" size="medium" @click="reset"></i>
+            <i class="el-icon-refresh" size="medium" @click="showResetConfirm = true"></i>
         </el-tooltip>
         <!-- 插入表格 -->
         <el-tooltip class="header__item header__item_last" :effect="effect" content="插入表格" placement="bottom-start">
@@ -216,9 +216,6 @@ export default {
             }
         },
         // 重置页面
-        reset() {
-            this.showResetConfirm = true;
-        },
         confirmReset() {
             localStorage.clear()
             this.clearEditorToDefault();
@@ -229,6 +226,9 @@ export default {
             this.colorChanged(this.config.colorOption[1].value)
             this.sizeChanged(this.config.sizeOption[2].value)
             this.$emit('cssChanged')
+            this.selectFont = this.currentFont;
+            this.selectSize = this.currentSize;
+            this.selectColor = this.currentColor;
             this.showResetConfirm = false;
         },
         cancelReset() {
@@ -250,9 +250,9 @@ export default {
             'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
-        this.selectFont = this.currentFont
-        this.selectSize = this.currentSize
-        this.selectColor = this.currentColor
+        this.selectFont = this.currentFont;
+        this.selectSize = this.currentSize;
+        this.selectColor = this.currentColor;
     }
 }
 </script>
