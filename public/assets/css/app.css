@@ -83,6 +83,7 @@ section {
   justify-content: center;
   display: flex;
   overflow: scroll;
+  word-break: break-all;
 }
 
 .main-section {
