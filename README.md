@@ -117,14 +117,32 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [刷掉 90 % 候选人的海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
 - [GitHub 标星 11.5k 的一款开源工具，助你轻松查看 Git 历史](https://mp.weixin.qq.com/s/PK-ikENqF13Lmqy2pcMhYQ)
 
-## 项目维护者
-
-<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
-
-<a href="https://opencollective.com/doocs-md/contributors.svg?width=890&button=true"><img src="https://opencollective.com/doocs-md/contributors.svg?width=890&button=false" /></a>
-
-<!-- ALL-CONTRIBUTORS-LIST:END -->
-
 ## 项目许可证
 
 [本项目没有任何限制，Just Do What The F*ck You Want。](LICENSE)
+
+---
+
+## Doocs 社区优质项目
+
+GitHub 技术社区 [Doocs](https://github.com/doocs)，致力于打造一个内容完整、持续成长的互联网开发者学习生态圈！以下是 Doocs 的一些优秀项目，欢迎各位开发者朋友持续保持关注。
+
+| # | 项目名称 | 项目描述 |
+|---|---|---|
+| 1 | [advanced-java](https://github.com/doocs/advanced-java) | 互联网 Java 工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识。 |
+| 2 | [leetcode](https://github.com/doocs/leetcode) | 多种编程语言实现 LeetCode、《剑指 Offer（第 2 版）》、《程序员面试金典（第 6 版）》题解。 |
+| 3 | [source-code-hunter](https://github.com/doocs/source-code-hunter) | 互联网常用组件框架源码分析。 |
+| 4 | [jvm](https://github.com/doocs/jvm) | Java 虚拟机底层原理知识总结。 |
+| 5 | [coding-interview](https://github.com/doocs/coding-interview) | 代码面试题集，包括《剑指 Offer》、《编程之美》等。 |
+| 6 | [md](https://github.com/doocs/md) | 一款高度简洁的微信 Markdown 编辑器。 |
+| 7 | [technical-books](https://github.com/doocs/technical-books) | 值得一看的技术书籍列表。 |
+
+## 贡献者
+
+感谢以下所有朋友对 [GitHub 技术社区 Doocs](https://github.com/doocs) 所做出的贡献，[参与项目维护请戳这儿](https://doocs.github.io/#/?id=how-to-join)。
+
+<!-- ALL-CONTRIBUTORS-LIST: START - Do not remove or modify this section -->
+
+<a href="https://opencollective.com/doocs/contributors.svg?width=890&button=true"><img src="https://opencollective.com/doocs/contributors.svg?width=890&button=false" /></a>
+
+<!-- ALL-CONTRIBUTORS-LIST: END -->
