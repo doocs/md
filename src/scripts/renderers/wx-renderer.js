@@ -111,7 +111,9 @@ const WxRenderer = function (opts) {
           return `<h4 ${getStyles('h4')}>${text}</h4>`
       }
     }
-    renderer.paragraph = text => `<p ${getStyles('p')}>${text}</p>`
+    renderer.paragraph = text => {
+        return text.replace(/ /g, '') === '' ? '' : `<p ${getStyles('p')}>${text}</p>`
+    }
 
     renderer.blockquote = text => {
       text = text.replace(/<p.*?>/, `<p ${getStyles('blockquote_p')}>`)
