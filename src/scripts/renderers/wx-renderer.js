@@ -181,7 +181,7 @@ const WxRenderer = function (opts) {
       }
     }
     renderer.strong = text => `<strong ${getStyles('strong')}>${text}</strong>`
-    renderer.em = text => `<span ${getStyles('p', ';font-style: italic;')}>${text}</span>`
+    renderer.em = text => `<span style="font-style: italic;">${text}</span>`
     renderer.table = (header, body) => `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles('thead')}>${header}</thead><tbody>${body}</tbody></table></section>`
     // renderer.tablerow = (text) => `<tr style="">${text}</tr>`;
     renderer.tablecell = (text, flags) => `<td ${getStyles('td')}>${text}</td>`
