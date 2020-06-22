@@ -112,7 +112,10 @@ const WxRenderer = function (opts) {
       }
     }
     renderer.paragraph = text => {
-        return text.replace(/ /g, '') === '' ? '' : `<p ${getStyles('p')}>${text}</p>`
+      if (text.indexOf('<figure') != -1 && text.indexOf('<img') != -1) {
+        return text;
+      }
+      return text.replace(/ /g, '') === '' ? '' : `<p ${getStyles('p')}>${text}</p>`
     }
 
     renderer.blockquote = text => {
