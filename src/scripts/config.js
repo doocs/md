@@ -1,6 +1,5 @@
 export default {
-    builtinFonts: [
-        {
+    builtinFonts: [{
             label: '无衬线',
             value: '-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif'
         },
@@ -9,8 +8,7 @@ export default {
             value: "Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif"
         }
     ],
-    sizeOption: [
-        {
+    sizeOption: [{
             label: '12px',
             value: '12px',
             desc: '更小'
@@ -36,8 +34,7 @@ export default {
             desc: '更大'
         }
     ],
-    colorOption: [
-        {
+    colorOption: [{
             label: '经典蓝',
             value: 'rgba(15, 76, 129, 1)',
             hex: '最新流行'
