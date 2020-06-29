@@ -14,7 +14,7 @@
                 />
             </el-header>
             <el-main class="main-body">
-                <el-row :gutter="10" class="main-section">
+                <el-row class="main-section">
                     <el-col :span="12">
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
