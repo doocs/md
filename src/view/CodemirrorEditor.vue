@@ -236,17 +236,6 @@ export default {
     },
     mounted() {
         this.leftAndRightScroll()
-    },
-    watch: {
-        isCoping(newVal) {
-            const preDomList = document.getElementsByClassName('code__pre');
-
-            if (preDomList.length > 0) {
-                preDomList.forEach(pre=> {
-                    pre.style.whiteSpace = newVal ? 'pre' : 'normal';
-                })
-            }
-        }
     }
 }
 

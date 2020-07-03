@@ -73,7 +73,8 @@
 import {
     setColorWithCustomTemplate,
     setFontSize,
-    isImageIllegal
+    isImageIllegal,
+    fixCodeWhiteSpace
 } from '../../scripts/util'
 import fileApi from '../../api/file';
 import {
@@ -173,20 +174,22 @@ export default {
         copy() {
             this.$emit('startCopy');
             setTimeout(() => {
-                solveWeChatImage()
-                this.setOutput(solveHtml())
-                let clipboardDiv = document.getElementById('output')
+                solveWeChatImage();
+                fixCodeWhiteSpace();
+                this.setOutput(solveHtml());
+                let clipboardDiv = document.getElementById('output');
 
-                clipboardDiv.focus()
-                window.getSelection().removeAllRanges()
-                let range = document.createRange()
+                clipboardDiv.focus();
+                window.getSelection().removeAllRanges();
+                let range = document.createRange();
 
-                range.setStartBefore(clipboardDiv.firstChild)
-                range.setEndAfter(clipboardDiv.lastChild)
-                window.getSelection().addRange(range)
-                document.execCommand('copy')
-                range.setStartBefore(clipboardDiv.firstChild)
-                range.setEndAfter(clipboardDiv.firstChild)
+                range.setStartBefore(clipboardDiv.firstChild);
+                range.setEndAfter(clipboardDiv.lastChild);
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                range.setStartBefore(clipboardDiv.firstChild);
+                range.setEndAfter(clipboardDiv.firstChild);
+                fixCodeWhiteSpace('normal');
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -194,7 +197,7 @@ export default {
                     offset: 80,
                     duration: 1600,
                     type: 'success'
-                })
+                });
                 this.$emit('refresh');
                 this.$emit('endCopy');
             }, 350);
