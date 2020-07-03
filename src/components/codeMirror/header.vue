@@ -187,8 +187,7 @@ export default {
                 range.setEndAfter(clipboardDiv.lastChild);
                 window.getSelection().addRange(range);
                 document.execCommand('copy');
-                range.setStartBefore(clipboardDiv.firstChild);
-                range.setEndAfter(clipboardDiv.firstChild);
+                window.getSelection().removeAllRanges()
                 fixCodeWhiteSpace('normal');
                 // 输出提示
                 this.$notify({
