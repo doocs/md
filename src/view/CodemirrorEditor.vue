@@ -73,7 +73,6 @@ import {
 require('codemirror/mode/javascript/javascript')
 import '../scripts/closebrackets'
 import $ from 'jquery'
-require('../scripts/google-code-prettify/prettify.js')
 import config from '../scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
@@ -237,7 +236,7 @@ export default {
         },
         onEditorRefresh() {
             this.editorRefresh();
-            setTimeout(()=> PR.prettyPrint(), 0);
+            // setTimeout(()=> PR.prettyPrint(), 0);
         },
         endCopy() {
             this.backLight = false;
@@ -250,15 +249,11 @@ export default {
     },
     mounted() {
         this.leftAndRightScroll()
-        setTimeout(() => {
-            PR.prettyPrint()
-        }, 300);
     }
 }
 
 </script>
 <style lang="less" scoped>
-@import url('../scripts/google-code-prettify/prettify.css');
 .main-body {
     padding-top: 12px;
     overflow: hidden;

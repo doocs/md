@@ -13,7 +13,7 @@ export function solveWeChatImage() {
         image.style.height = height;
     }
 }
-export function solveHtml(nightMode = false) {
+export function solveHtml() {
     const element = document.getElementById("output-wrapper");
     let html = element.innerHTML
     let res = "";

@@ -173,9 +173,9 @@ export default {
         copy() {
             this.$emit('startCopy');
             setTimeout(() => {
-                let clipboardDiv = document.getElementById('output')
                 solveWeChatImage()
-                this.setHtml(solveHtml(this.nightMode))
+                this.setHtml(solveHtml())
+                let clipboardDiv = document.getElementById('output')
 
                 clipboardDiv.focus()
                 window.getSelection().removeAllRanges()
@@ -185,6 +185,7 @@ export default {
                 range.setEndAfter(clipboardDiv.lastChild)
                 window.getSelection().addRange(range)
                 document.execCommand('copy')
+                clipboardDiv.innerHTML = this.output; // 恢复现场
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -193,7 +194,6 @@ export default {
                     duration: 1600,
                     type: 'success'
                 })
-                clipboardDiv.innerHTML = this.output; // 恢复现场
                 this.$emit('refresh');
                 this.$emit('endCopy');
             }, 350);
