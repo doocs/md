@@ -174,7 +174,7 @@ export default {
             this.$emit('startCopy');
             setTimeout(() => {
                 solveWeChatImage()
-                this.setHtml(solveHtml())
+                this.setOutput(solveHtml())
                 let clipboardDiv = document.getElementById('output')
 
                 clipboardDiv.focus()
@@ -185,7 +185,8 @@ export default {
                 range.setEndAfter(clipboardDiv.lastChild)
                 window.getSelection().addRange(range)
                 document.execCommand('copy')
-                clipboardDiv.innerHTML = this.output; // 恢复现场
+                range.setStartBefore(clipboardDiv.firstChild)
+                range.setEndAfter(clipboardDiv.firstChild)
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -247,7 +248,7 @@ export default {
             document.body.removeChild(downLink)
         },
         ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
-            'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+            'setOutput', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
         this.selectFont = this.currentFont;

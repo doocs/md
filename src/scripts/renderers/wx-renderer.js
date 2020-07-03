@@ -140,7 +140,7 @@ const WxRenderer = function (opts) {
             return `
         <section class="code-snippet__fix code-snippet__js">
             <ul class="code-snippet__line-index code-snippet__js">${numbers.join('')}</ul>
-            <pre class="code-snippet__js" data-lang="${lang}">
+            <pre class="code__pre code-snippet__js" data-lang="${lang}">
                 ${codeLines.join('')}
             </pre>
         </section>

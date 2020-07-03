@@ -31,7 +31,7 @@
                             </div>
                         </section>
                     </el-col>
-                    <transition name="custom-classes-transition" enter-active-class="animated bounceInRight">
+                    <transition name="custom-classes-transition" enter-active-class="bounceInRight">
                         <el-col id="cssBox" :span="12" v-show="showBox">
                             <textarea id="cssEditor" type="textarea" placeholder="Your custom css here.">
                                 </textarea>
@@ -47,17 +47,6 @@
     </div>
 </template>
 <script>
-import CodeMirror from 'codemirror/lib/codemirror'
-
-import 'codemirror/mode/css/css'
-import 'codemirror/mode/markdown/markdown'
-import 'codemirror/addon/edit/matchbrackets'
-import 'codemirror/addon/selection/active-line'
-
-import 'codemirror/addon/hint/show-hint.js'
-import 'codemirror/addon/hint/css-hint.js'
-import '../scripts/format.js'
-
 import fileApi from '../api/file';
 import editorHeader from '../components/codeMirror/header';
 import aboutDialog from '../components/codeMirror/aboutDialog';
@@ -71,7 +60,6 @@ import {
 } from '../scripts/util'
 
 require('codemirror/mode/javascript/javascript')
-import '../scripts/closebrackets'
 import $ from 'jquery'
 import config from '../scripts/config'
 import {mapState, mapMutations} from 'vuex';
@@ -100,7 +88,6 @@ export default {
             cssEditor: state=> state.cssEditor,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
-            html: state=> state.html,
             nightMode: state=> state.nightMode
         })
     },
@@ -249,6 +236,17 @@ export default {
     },
     mounted() {
         this.leftAndRightScroll()
+    },
+    watch: {
+        isCoping(newVal) {
+            const preDomList = document.getElementsByClassName('code__pre');
+
+            if (preDomList.length > 0) {
+                preDomList.forEach(pre=> {
+                    pre.style.whiteSpace = newVal ? 'pre' : 'normal';
+                })
+            }
+        }
     }
 }
 
@@ -310,4 +308,35 @@ export default {
         transform: translate(-50%, -50%);
     }
 }
+.bounceInRight {
+    animation-name: bounceInRight;
+    animation-duration: 1s;
+    animation-fill-mode: both;
+}
+@keyframes bounceInRight {
+    0%,60%,75%,90%,100% {
+        transition-timing-function: cubic-bezier(0.215,.610,.355,1.000)
+    }
+    0% {
+        opacity:0;
+        transform:translate3d(3000px,0,0)}
+    60% {
+        opacity:1;
+        transform:translate3d(-25px,0,0)
+    }
+    75% {
+        transform:translate3d(10px,0,0)
+    }
+    90% {
+        transform:translate3d(-5px,0,0)
+    }
+    100% {
+        transform:none
+    }
+}
 </style>
+<style lang="less">
+@import url('../assets/less/app.less');
+@import url('../assets/less/style-mirror.css');
+</style>
+
