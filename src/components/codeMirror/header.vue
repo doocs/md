@@ -58,7 +58,7 @@
         <el-tooltip class="item" :effect="effect" content="自定义CSS样式" placement="left">
             <el-button :type="btnType" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
         </el-tooltip>
-        <el-button :type="btnType" plain size="medium" @click="copy">复制</el-button>
+        <el-button :type="btnType" plain size="medium" @click="copy" placement="bottom-start">复制</el-button>
         <el-button :type="btnType" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
         <el-tooltip content="夜间模式" placement="bottom-start">
             <div class="mode__switch" v-if="!nightMode" @click="themeChanged"></div>
@@ -73,7 +73,8 @@
 import {
     setColorWithCustomTemplate,
     setFontSize,
-    isImageIllegal
+    isImageIllegal,
+    fixCodeWhiteSpace
 } from '../../scripts/util'
 import fileApi from '../../api/file';
 import {
@@ -170,21 +171,25 @@ export default {
             return false;
         },
         // 复制到微信公众号
-        copy() {
+        copy(e) {
             this.$emit('startCopy');
             setTimeout(() => {
-                let clipboardDiv = document.getElementById('output')
-                solveWeChatImage()
-                this.setHtml(solveHtml(this.nightMode))
+                solveWeChatImage();
+                fixCodeWhiteSpace();
+                this.setOutput(solveHtml());
+                let clipboardDiv = document.getElementById('output');
 
-                clipboardDiv.focus()
-                window.getSelection().removeAllRanges()
-                let range = document.createRange()
+                clipboardDiv.focus();
+                window.getSelection().removeAllRanges();
+                let range = document.createRange();
 
-                range.setStartBefore(clipboardDiv.firstChild)
-                range.setEndAfter(clipboardDiv.lastChild)
-                window.getSelection().addRange(range)
-                document.execCommand('copy')
+                range.setStartBefore(clipboardDiv.firstChild);
+                range.setEndAfter(clipboardDiv.lastChild);
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                range.setStartBefore(clipboardDiv.firstChild);
+                range.setEndAfter(clipboardDiv.firstChild);
+                fixCodeWhiteSpace('normal');
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -192,11 +197,11 @@ export default {
                     offset: 80,
                     duration: 1600,
                     type: 'success'
-                })
-                clipboardDiv.innerHTML = this.output; // 恢复现场
+                });
                 this.$emit('refresh');
                 this.$emit('endCopy');
             }, 350);
+            e.target.blur(); 
         },
         // 自定义CSS样式
         async customStyle () {
@@ -247,7 +252,7 @@ export default {
             document.body.removeChild(downLink)
         },
         ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
-            'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+            'setOutput', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
         this.selectFont = this.currentFont;

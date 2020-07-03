@@ -18,7 +18,6 @@ const state = {
     output: '',
     editor: null,
     cssEditor: null,
-    html: '',
     currentFont: '',
     currentSize: '',
     currentColor: '',
@@ -26,8 +25,8 @@ const state = {
     nightMode: false
 };
 const mutations = {
-    setHtml(state, data) {
-        state.html = data;
+    setOutput(state, data) {
+        state.output = data;
     },
     setEditorValue(state, data) {
         state.editor.setValue(data)
