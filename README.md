@@ -43,6 +43,9 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持自定义 CSS 样式并实时渲染
 - [x] 支持一键恢复至默认内容及样式
 - [x] 支持打开或关闭引用链接的选项
+- [ ] 支持在编辑框右键弹出功能选项卡
+- [ ] 支持更加人性化的插入表格功能
+
 
 ![select-and-change-color-theme](https://imgkr.cn-bj.ufileos.com/32c05c23-6309-491f-bd0d-f22a62c944b4.gif)
 

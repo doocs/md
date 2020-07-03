@@ -20,11 +20,7 @@ service.interceptors.request.use(
 );
 
 service.interceptors.response.use(res => {
-    if (res.data.success) {
-        return res.data;
-    }
-    console.log(res);
-    return Promise.reject(res.data);
+    return res.data.success ? res.data : Promise.reject(res.data);
 }, error => Promise.reject(error));
 
 export default service;

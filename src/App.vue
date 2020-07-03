@@ -21,9 +21,6 @@ export default {
         setTimeout(() => {
             this.loading = false
         }, 200)
-        window.console &&
-            window.console.log &&
-            (console.log("Think big, train fast, learn deep. See https://github.com/yanglbme"))
     }
 }
 
