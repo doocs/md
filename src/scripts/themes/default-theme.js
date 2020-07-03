@@ -78,6 +78,7 @@ export default  {
             'font-size': '80%',
             'overflow': 'auto',
             'color': '#333',
+            'white-space': 'pre',
             'background': 'rgb(247, 247, 247)',
             'border-radius': '2px',
             'padding': '10px',
@@ -127,6 +128,7 @@ export default  {
 
         codespan: {
             'font-size': '90%',
+            'white-space': 'pre',
             'color': '#d14',
             'background': 'rgba(27,31,35,.05)',
             'padding': '3px 5px',
