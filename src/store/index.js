@@ -26,7 +26,7 @@ const state = {
     nightMode: false
 };
 const mutations = {
-    setHtmL(state, data) {
+    setHtml(state, data) {
         state.html = data;
     },
     setEditorValue(state, data) {
