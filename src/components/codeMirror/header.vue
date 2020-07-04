@@ -174,10 +174,10 @@ export default {
         copy(e) {
             this.$emit('startCopy');
             setTimeout(() => {
+                let clipboardDiv = document.getElementById('output');
                 solveWeChatImage();
                 fixCodeWhiteSpace();
-                this.setOutput(solveHtml());
-                let clipboardDiv = document.getElementById('output');
+                this.setHtml(solveHtml());
 
                 clipboardDiv.focus();
                 window.getSelection().removeAllRanges();
@@ -189,6 +189,8 @@ export default {
                 document.execCommand('copy');
                 window.getSelection().removeAllRanges()
                 fixCodeWhiteSpace('normal');
+                
+                clipboardDiv.innerHTML = this.output;
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -251,7 +253,7 @@ export default {
             document.body.removeChild(downLink)
         },
         ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
-            'setOutput', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+            'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
         this.selectFont = this.currentFont;
