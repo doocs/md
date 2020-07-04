@@ -58,7 +58,7 @@
         <el-tooltip class="item" :effect="effect" content="自定义CSS样式" placement="left">
             <el-button :type="btnType" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
         </el-tooltip>
-        <el-button :type="btnType" plain size="medium" @click="copy">复制</el-button>
+        <el-button :type="btnType" plain size="medium" @click="copy" placement="bottom-start">复制</el-button>
         <el-button :type="btnType" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
         <el-tooltip content="夜间模式" placement="bottom-start">
             <div class="mode__switch" v-if="!nightMode" @click="themeChanged"></div>
@@ -171,13 +171,13 @@ export default {
             return false;
         },
         // 复制到微信公众号
-        copy() {
+        copy(e) {
             this.$emit('startCopy');
             setTimeout(() => {
+                let clipboardDiv = document.getElementById('output');
                 solveWeChatImage();
                 fixCodeWhiteSpace();
-                this.setOutput(solveHtml());
-                let clipboardDiv = document.getElementById('output');
+                this.setHtml(solveHtml());
 
                 clipboardDiv.focus();
                 window.getSelection().removeAllRanges();
@@ -187,9 +187,10 @@ export default {
                 range.setEndAfter(clipboardDiv.lastChild);
                 window.getSelection().addRange(range);
                 document.execCommand('copy');
-                range.setStartBefore(clipboardDiv.firstChild);
-                range.setEndAfter(clipboardDiv.firstChild);
+                window.getSelection().removeAllRanges()
                 fixCodeWhiteSpace('normal');
+                
+                clipboardDiv.innerHTML = this.output;
                 // 输出提示
                 this.$notify({
                     showClose: true,
@@ -201,6 +202,7 @@ export default {
                 this.$emit('refresh');
                 this.$emit('endCopy');
             }, 350);
+            e.target.blur(); 
         },
         // 自定义CSS样式
         async customStyle () {

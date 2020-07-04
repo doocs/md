@@ -16,6 +16,7 @@ Vue.use(Vuex)
 const state = {
     wxRenderer: null,
     output: '',
+    html: '',
     editor: null,
     cssEditor: null,
     currentFont: '',
@@ -25,8 +26,8 @@ const state = {
     nightMode: false
 };
 const mutations = {
-    setOutput(state, data) {
-        state.output = data;
+    setHtmL(state, data) {
+        state.html = data;
     },
     setEditorValue(state, data) {
         state.editor.setValue(data)
