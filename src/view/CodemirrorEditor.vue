@@ -60,7 +60,7 @@ import {
 } from '../scripts/util'
 
 require('codemirror/mode/javascript/javascript')
-import $ from 'jquery'
+// import $ from 'jquery'
 import config from '../scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
@@ -201,10 +201,12 @@ export default {
         },
         // 左右栏同步滚动
         leftAndRightScroll() {
-            $('#preview').on('scroll', function callback() {
-                clearTimeout(this.timeout)
+            const _this = this;
 
-                let source = $(this)
+            document.getElementById('preview').addEventListener("scroll", function callback() {
+                clearTimeout(_this.timeout)
+
+                let source = $(_this)
                 let target = $(source.is('#preview') ? 'div.CodeMirror-scroll' : '#preview')
 
                 target.off('scroll')
@@ -216,14 +218,13 @@ export default {
                 let height = percentage * (target0.scrollHeight - target0.offsetHeight)
                 target0.scrollTo(0, height)
 
-                this.timeout = setTimeout(() => {
+                _this.timeout = setTimeout(() => {
                     target.on('scroll', callback)
                 }, 100)
-            })
+            }, true);
         },
         onEditorRefresh() {
             this.editorRefresh();
-            // setTimeout(()=> PR.prettyPrint(), 0);
         },
         endCopy() {
             this.backLight = false;
