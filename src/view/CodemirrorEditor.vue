@@ -202,26 +202,23 @@ export default {
         // 左右栏同步滚动
         leftAndRightScroll() {
             const _this = this;
+            const previewRef = document.getElementById('preview');
 
-            document.getElementById('preview').addEventListener("scroll", function callback() {
+            previewRef.addEventListener("scroll", function callback() {
                 clearTimeout(_this.timeout)
 
-                let source = $(_this)
-                let target = $(source.is('#preview') ? 'div.CodeMirror-scroll' : '#preview')
+                let source = this
+                let target = this.id === 'preview' ? document.getElementsByClassName('CodeMirror-scroll')[0] : previewRef;
+                
+                target.removeEventListener("scroll", callback, false);
+                let percentage = source.scrollTop / (source.scrollHeight - source.offsetHeight)
+                let height = percentage * (target.scrollHeight - target.offsetHeight)
+                target.scrollTo(0, height)
 
-                target.off('scroll')
-
-                let source0 = source[0]
-                let target0 = target[0]
-
-                let percentage = source0.scrollTop / (source0.scrollHeight - source0.offsetHeight)
-                let height = percentage * (target0.scrollHeight - target0.offsetHeight)
-                target0.scrollTo(0, height)
-
-                _this.timeout = setTimeout(() => {
-                    target.on('scroll', callback)
-                }, 100)
-            }, true);
+                _this.timeout = setTimeout(()=> {
+                    target.addEventListener("scroll", callback, false);
+                }, 300)
+            }, false);
         },
         onEditorRefresh() {
             this.editorRefresh();
@@ -236,7 +233,7 @@ export default {
             'editorRefresh', 'initCssEditorEntity'])
     },
     mounted() {
-        this.leftAndRightScroll()
+        this.leftAndRightScroll();
     }
 }
 
