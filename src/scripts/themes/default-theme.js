@@ -71,7 +71,7 @@ export default  {
             'color': 'rgb(80, 80, 80)',
             'font-family': 'PingFangSC-light, PingFangTC-light, Open Sans, Helvetica Neue, sans-serif',
             'font-size': '1em',
-            'display': 'inline',
+            'display': 'block',
         },
 
         code: {
