@@ -119,7 +119,7 @@ const WxRenderer = function (opts) {
         }
 
         renderer.blockquote = text => {
-            text = text.replace(/<p.*?>/, `<p ${getStyles('blockquote_p')}>`)
+            text = text.replace(/<p.*?>/g, `<p ${getStyles('blockquote_p')}>`)
             return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`
         }
         renderer.code = (text, infoString) => {
