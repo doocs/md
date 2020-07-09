@@ -3,7 +3,7 @@ import App from './App.vue'
 import store from './store'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
-import './element'
+import './plugins/element'
 import 'codemirror/lib/codemirror.css';
 import 'codemirror/theme/ambiance.css';
 import 'codemirror/theme/xq-light.css';

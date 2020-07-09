@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import config from '../scripts/config';
-import WxRenderer from '../scripts/renderers/wx-renderer'
+import config from '../assets/scripts/config';
+import WxRenderer from '../assets/scripts/renderers/wx-renderer'
 import marked from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
-import DEFAULT_CONTENT from '../scripts/default-content'
-import DEFAULT_CSS_CONTENT from '../scripts/themes/default-theme-css'
+import DEFAULT_CONTENT from '../assets/scripts/default-content'
+import DEFAULT_CSS_CONTENT from '../assets/scripts/themes/default-theme-css'
 import {
     setColor,
     formatDoc
-} from '../scripts/util'
+} from '../assets/scripts/util'
 
 Vue.use(Vuex)
 
