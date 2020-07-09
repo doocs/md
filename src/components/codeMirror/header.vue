@@ -177,8 +177,7 @@ export default {
                 let clipboardDiv = document.getElementById('output');
                 solveWeChatImage();
                 fixCodeWhiteSpace();
-                this.setHtml(solveHtml());
-
+                solveHtml();
                 clipboardDiv.focus();
                 window.getSelection().removeAllRanges();
                 let range = document.createRange();
@@ -253,7 +252,7 @@ export default {
             document.body.removeChild(downLink)
         },
         ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
-            'setHtml', 'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+            'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
     },
     mounted() {
         this.selectFont = this.currentFont;

@@ -60,46 +60,52 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 <table>
     <tr>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow">
-          <img src="https://imgkr.cn-bj.ufileos.com/29fbfc6e-b1f2-4995-982f-74f993256626.png" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/29fbfc6e-b1f2-4995-982f-74f993256626.png" style="width: 40px;"><br>
           <sub>Doocs开源社区</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g">
-          <img src="https://imgkr.cn-bj.ufileos.com/2631fe1d-0521-4f51-abb9-5250f4dda268.jpg" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/2631fe1d-0521-4f51-abb9-5250f4dda268.jpg" style="width: 40px;"><br>
           <sub>掘墓人的小铲子</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/4b4b10a4-1146-4056-8799-9f8c1a3e5e9e.png" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/4b4b10a4-1146-4056-8799-9f8c1a3e5e9e.png" style="width: 40px;"><br>
           <sub>全网重点</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/1ddb47f6-4943-4aae-ad24-c75c22c758bf.png" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/1ddb47f6-4943-4aae-ad24-c75c22c758bf.png" style="width: 40px;"><br>
           <sub>爱码士的内心独白</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg">
-          <img src="https://imgkr.cn-bj.ufileos.com/830333b7-74b2-4dbc-9384-b5cac63b1d17.jpg" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/830333b7-74b2-4dbc-9384-b5cac63b1d17.jpg" style="width: 40px;"><br>
           <sub>乐玩nodejs npm工具库</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/95e553de-fd8f-4374-8a98-14809122e80e.jpg" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/95e553de-fd8f-4374-8a98-14809122e80e.jpg" style="width: 40px;"><br>
           <sub>简静慢</sub>
         </a>
       </td>
-      <td align="center" style="width: 80px;">
+      <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug">
-          <img src="https://imgkr.cn-bj.ufileos.com/2fbeb8d5-d778-43e2-ada2-5ca442ce1b9a.jpg" style="width: 50px;"><br>
+          <img src="https://imgkr.cn-bj.ufileos.com/2fbeb8d5-d778-43e2-ada2-5ca442ce1b9a.jpg" style="width: 40px;"><br>
           <sub>0加1</sub>
+        </a>
+      </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg">
+          <img src="https://imgkr.cn-bj.ufileos.com/b7b3e99f-0289-460c-acea-d8fa0cc90c8b.jpg" style="width: 40px;"><br>
+          <sub>码云Gitee</sub>
         </a>
       </td>
     </tr>
@@ -109,17 +115,18 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 示例文章
 
-- [不限速下载 bilibili 壁纸娘的 432 张壁纸](https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug)
-- [全网首发！GPU 驱动自升级原理详解](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
-- [Quick Start - 天下武功，唯快不破！效率工具，老少皆宜](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
-- [死磕JavaScript系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
+- [全网首发！GPU 驱动自升级原理详解](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
+- [死磕 JavaScript 系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
+- [不限速下载 bilibili 壁纸娘的 432 张壁纸](https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug)
 - [GitHub 项目持续本地化，交给它来做，准没错！](https://mp.weixin.qq.com/s/KO4xHr4EI0YfjF0hiT3pbw)
 - [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
 - [全球最大的成人网站 Pornhub 2019 年度报告新鲜出炉！](https://mp.weixin.qq.com/s/LY5kOzof1h3I0bw7tCkV1Q)
 - [刷掉 90 % 候选人的海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
+- [Quick Start - 天下武功，唯快不破！效率工具，老少皆宜](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
 - [GitHub 标星 11.5k 的一款开源工具，助你轻松查看 Git 历史](https://mp.weixin.qq.com/s/PK-ikENqF13Lmqy2pcMhYQ)
+- [用 Markdown 编辑微信公众号？这个高颜值解决方案你一定会爱上](https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg)
 
 ## 项目许可证
 
