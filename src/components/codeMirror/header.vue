@@ -75,14 +75,14 @@ import {
     setFontSize,
     isImageIllegal,
     fixCodeWhiteSpace
-} from '../../scripts/util'
+} from '../../assets/scripts/util'
 import fileApi from '../../api/file';
 import {
     solveWeChatImage,
     solveHtml
-} from '../../scripts/converter'
-import config from '../../scripts/config'
-import DEFAULT_CSS_CONTENT from '../../scripts/themes/default-theme-css'
+} from '../../assets/scripts/converter'
+import config from '../../assets/scripts/config'
+import DEFAULT_CSS_CONTENT from '../../assets/scripts/themes/default-theme-css'
 import resetDialog from '../codeMirror/resetDialog'
 import {mapState, mapMutations} from 'vuex'
 export default {

@@ -57,11 +57,10 @@ import {
     customCssWithTemplate,
     saveEditorContent,
     isImageIllegal
-} from '../scripts/util'
+} from '../assets/scripts/util'
 
 require('codemirror/mode/javascript/javascript')
-// import $ from 'jquery'
-import config from '../scripts/config'
+import config from '../assets/scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
     data() {

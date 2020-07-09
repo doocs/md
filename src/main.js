@@ -15,8 +15,8 @@ import 'codemirror/addon/hint/show-hint.js'
 import 'codemirror/addon/hint/css-hint.js'
 import './assets/less/theme.less';
 // 对codemirror预处理
-import './scripts/format'
-import './scripts/closebrackets'
+import './assets/scripts/format'
+import './assets/scripts/closebrackets'
 Vue.use(ElementUI)
 
 Vue.config.productionTip = false

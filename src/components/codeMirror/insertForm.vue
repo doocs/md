@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import config from '../../scripts/config'
+import config from '../../assets/scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
     props: {
