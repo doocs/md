@@ -83,7 +83,7 @@ import {
 } from '../../assets/scripts/converter'
 import config from '../../assets/scripts/config'
 import DEFAULT_CSS_CONTENT from '../../assets/scripts/themes/default-theme-css'
-import resetDialog from '../codeMirror/resetDialog'
+import resetDialog from './resetDialog'
 import {mapState, mapMutations} from 'vuex'
 export default {
     name: 'editor-header',

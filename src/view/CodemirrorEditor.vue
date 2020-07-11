@@ -48,9 +48,9 @@
 </template>
 <script>
 import fileApi from '../api/file';
-import editorHeader from '../components/codeMirror/header';
-import aboutDialog from '../components/codeMirror/aboutDialog';
-import insertFormDialog from '../components/codeMirror/insertForm';
+import editorHeader from '../components/CodemirrorEditor/header';
+import aboutDialog from '../components/CodemirrorEditor/aboutDialog';
+import insertFormDialog from '../components/CodemirrorEditor/insertForm';
 import {
     setFontSize,
     css2json,
@@ -60,12 +60,10 @@ import {
 } from '../assets/scripts/util'
 
 require('codemirror/mode/javascript/javascript')
-import config from '../assets/scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
     data() {
         return {
-            config: config,
             showBox: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
@@ -163,9 +161,6 @@ export default {
             });
             this.onEditorRefresh()
         },
-        onTextareaChange() {
-            console.log('change');
-        },
         // 图片上传结束
         uploaded(response, file, fileList) {
             if (response) {
@@ -228,8 +223,12 @@ export default {
                 this.isCoping = false;
             }, 800);
         },
-        ...mapMutations(['initEditorState', 'initEditorEntity', 'setWxRendererOptions',
-            'editorRefresh', 'initCssEditorEntity'])
+        ...mapMutations([
+            'initEditorState',
+            'initEditorEntity',
+            'setWxRendererOptions',
+            'editorRefresh',
+            'initCssEditorEntity'])
     },
     mounted() {
         this.leftAndRightScroll();
