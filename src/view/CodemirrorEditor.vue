@@ -216,6 +216,7 @@ export default {
         },
         onEditorRefresh() {
             this.editorRefresh();
+            setTimeout(()=> PR.prettyPrint(), 0);
         },
         endCopy() {
             this.backLight = false;
@@ -232,6 +233,9 @@ export default {
     },
     mounted() {
         this.leftAndRightScroll();
+        setTimeout(() => {
+            PR.prettyPrint()
+        }, 300);
     }
 }
 
