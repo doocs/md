@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="关于" class="about__dialog" :visible="aboutDialogVisible" @close="$emit('close')" width="30%" center>
+    <el-dialog title="关于" class="about__dialog" :visible="value" @close="$emit('input', false)" width="30%" center>
         <div style="text-align: center;">
             <h3>一款高度简洁的微信 Markdown 编辑器</h3>
         </div>
@@ -17,7 +17,7 @@
 <script>
 export default {
     props: {
-        aboutDialogVisible: {
+        value: {
             type: Boolean,
             default: false
         }

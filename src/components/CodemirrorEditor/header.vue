@@ -11,7 +11,7 @@
         </el-upload>
         <!-- 下载文本文档 -->
         <el-tooltip class="header__item" :effect="effect" content="下载编辑框Markdown文档" placement="bottom-start">
-            <i class="el-icon-download" size="medium" @click="downloadEditorContent"></i>
+            <i class="el-icon-download" size="medium" @click="$emit('downLoad')"></i>
         </el-tooltip>
         <!-- 页面重置 -->
         <el-tooltip class="header__item" :effect="effect" content="重置页面" placement="bottom-start">
@@ -71,10 +71,11 @@
 <script>
 
 import {
-    setColorWithCustomTemplate,
+    downLoadMD,
     setFontSize,
     isImageIllegal,
-    fixCodeWhiteSpace
+    fixCodeWhiteSpace,
+    setColorWithCustomTemplate
 } from '../../assets/scripts/util'
 import fileApi from '../../api/file';
 import {
@@ -205,7 +206,7 @@ export default {
         },
         // 自定义CSS样式
         async customStyle () {
-            this.$emit('showBox');
+            this.$emit('showCssEditor');
             this.$nextTick(() => {
                 if(!this.cssEditor) {
                     this.cssEditor.refresh()
@@ -239,17 +240,6 @@ export default {
         cancelReset() {
             this.showResetConfirm = false;
             this.editor.focus()
-        },
-        // 下载编辑器内容到本地
-        downloadEditorContent () {
-            let downLink = document.createElement('a')
-            downLink.download = 'content.md'
-            downLink.style.display = 'none'
-            let blob = new Blob([this.editor.getValue(0)])
-            downLink.href = URL.createObjectURL(blob)
-            document.body.appendChild(downLink)
-            downLink.click()
-            document.body.removeChild(downLink)
         },
         ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
             'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])

@@ -214,3 +214,16 @@ export function fixCodeWhiteSpace(value = 'pre') {
         })
     }
 }
+
+export function downLoadMD(doc) {
+    let downLink = document.createElement('a');
+
+    downLink.download = 'content.md';
+    downLink.style.display = 'none';
+    let blob = new Blob([doc]);
+
+    downLink.href = URL.createObjectURL(blob);
+    document.body.appendChild(downLink);
+    downLink.click();
+    document.body.removeChild(downLink);
+}

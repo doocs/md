@@ -3,10 +3,12 @@
         <el-container>
             <el-header class="editor__header">
                 <editor-header
+                    ref="header"
                     @refresh="onEditorRefresh"
                     @uploaded="uploaded"
                     @cssChanged="cssChanged"
-                    @showBox="showBox = !showBox"
+                    @downLoad="downloadEditorContent"
+                    @showCssEditor="showCssEditor = !showCssEditor"
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
                     @startCopy="isCoping = true, backLight = true"
@@ -15,7 +17,9 @@
             </el-header>
             <el-main class="main-body">
                 <el-row class="main-section">
-                    <el-col :span="12">
+                    <el-col :span="12"
+                        @contextmenu.prevent.native="openMenu($event)"
+                    >
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
                     </el-col>
@@ -38,7 +42,7 @@
                         </section>
                     </el-col>
                     <transition name="custom-classes-transition" enter-active-class="bounceInRight">
-                        <el-col id="cssBox" :span="12" v-show="showBox">
+                        <el-col id="cssBox" :span="12" v-show="showCssEditor">
                             <textarea id="cssEditor" type="textarea" placeholder="Your custom css here.">
                                 </textarea>
                         </el-col>
@@ -46,10 +50,16 @@
                 </el-row>
             </el-main>
         </el-container>
-        <about-dialog :aboutDialogVisible="aboutDialogVisible"
-            @close="aboutDialogVisible = false" />
-        <insert-form-dialog :dialogFormVisible="dialogFormVisible"
-            @close="dialogFormVisible = false" />
+        <about-dialog v-model="aboutDialogVisible"/>
+        <insert-form-dialog v-model="dialogFormVisible"/>
+        <right-click-menu
+            v-model="rightClickMenuVisible"
+            :left="mouseLeft"
+            :top="mouseTop"
+            @downLoad="downloadEditorContent"
+            @menuTick="onMenuEvent"
+            @insertTable="dialogFormVisible = true"
+        />
     </div>
 </template>
 <script>
@@ -57,12 +67,14 @@ import fileApi from '../api/file';
 import editorHeader from '../components/CodemirrorEditor/header';
 import aboutDialog from '../components/CodemirrorEditor/aboutDialog';
 import insertFormDialog from '../components/CodemirrorEditor/insertForm';
+import rightClickMenu from '../components/CodemirrorEditor/rightClickMenu';
 import {
-    setFontSize,
     css2json,
-    customCssWithTemplate,
+    downLoadMD,
+    setFontSize,
+    isImageIllegal,
     saveEditorContent,
-    isImageIllegal
+    customCssWithTemplate
 } from '../assets/scripts/util'
 
 require('codemirror/mode/javascript/javascript')
@@ -70,18 +82,24 @@ import {mapState, mapMutations} from 'vuex';
 export default {
     data() {
         return {
-            showBox: false,
+            showCssEditor: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
+            rightClickMenuVisible: false,
             isCoping: false,
             backLight: false,
             timeout: null,
             changeTimer: null,
-            source: ''
+            source: '',
+            mouseLeft: 0,
+            mouseTop: 0
         }
     },
     components: {
-        editorHeader, aboutDialog, insertFormDialog
+        editorHeader,
+        aboutDialog,
+        insertFormDialog,
+        rightClickMenu
     },
     computed: {
         ...mapState({
@@ -153,52 +171,53 @@ export default {
                 }
             });
             this.cssEditor.on('update', (instance) => {
-                this.cssChanged()
+                this.cssChanged();
                 saveEditorContent(this.cssEditor, '__css_content')
             })
         },
         cssChanged() {
-            let json = css2json(this.cssEditor.getValue(0))
-            let theme = setFontSize(this.currentSize.replace('px', ''))
+            let json = css2json(this.cssEditor.getValue(0));
+            let theme = setFontSize(this.currentSize.replace('px', ''));
 
             theme = customCssWithTemplate(json, this.currentColor, theme)
             this.setWxRendererOptions({
                 theme: theme
             });
-            this.onEditorRefresh()
+            this.onEditorRefresh();
         },
         // 图片上传结束
-        uploaded(response, file, fileList) {
+        uploaded(response) {
             if (response) {
                 if (response.success) {
                     // 上传成功，获取光标
-                    const cursor = this.editor.getCursor()
-                    const imageUrl = response.data
-                    const markdownImage = `![](${imageUrl})`
+                    const cursor = this.editor.getCursor();
+                    const imageUrl = response.data;
+                    const markdownImage = `![](${imageUrl})`;
                     // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-                    this.editor.replaceSelection(`\n${markdownImage}\n`, cursor)
+                    this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
                     this.$message({
                         showClose: true,
                         message: '图片插入成功',
                         type: 'success'
-                    })
-                    this.onEditorRefresh()
+                    });
+                    this.onEditorRefresh();
                 } else {
                     // 上传失败
                     this.$message({
                         showClose: true,
                         message: response.message,
                         type: 'error'
-                    })
+                    });
                 }
             } else {
                 this.$message({
                     showClose: true,
                     message: '上传图片未知异常',
                     type: 'error'
-                })
+                });
             }
         },
+        // 左右滚动
         leftAndRightScroll() {
             const scrollCB = text=> {
                 let source, target;
@@ -235,15 +254,50 @@ export default {
             this.$refs.preview.$el.addEventListener("scroll", previewScrollCB, false);
             this.editor.on('scroll', editorScrollCB);
         },
+        // 更新编辑器
         onEditorRefresh() {
             this.editorRefresh();
             setTimeout(()=> PR.prettyPrint(), 0);
         },
+        // 复制结束
         endCopy() {
             this.backLight = false;
             setTimeout(()=> {
                 this.isCoping = false;
             }, 800);
+        },
+        // 下载编辑器内容到本地
+        downloadEditorContent() {
+            downLoadMD(this.editor.getValue(0));
+        },
+        // 右键菜单
+        openMenu(e) {
+            const menuMinWidth = 105;
+            const offsetLeft = this.$el.getBoundingClientRect().left;
+            const offsetWidth = this.$el.offsetWidth;
+            const maxLeft = offsetWidth - menuMinWidth;
+            const left = e.clientX - offsetLeft;
+
+            if (left > maxLeft) {
+                this.mouseLeft = maxLeft;
+            } else {
+                this.mouseLeft = left;
+            }
+
+            this.mouseTop = e.clientY + 10;
+            this.rightClickMenuVisible = true;
+        },
+        onMenuEvent(type, info = {}) {
+            switch (type) {
+                case 'pageReset':
+                    this.$refs.header.showResetConfirm = true;
+                    break;
+                case 'insertPic':
+                    this.uploaded(info);
+                    break;
+                default:
+                    break;
+            }
         },
         ...mapMutations([
             'initEditorState',

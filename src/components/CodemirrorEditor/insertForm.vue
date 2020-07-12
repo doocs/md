@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="插入表格" class="insert__dialog" :visible="dialogFormVisible" @close="$emit('close')">
+    <el-dialog title="插入表格" class="insert__dialog" :visible="value" @close="$emit('input', false)">
         <el-form class="insert__form" :model="config.form">
             <el-form-item label="行数(表头不计入行数)">
             <el-input v-model="config.form.rows"></el-input>
@@ -9,7 +9,7 @@
             </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
-            <el-button :type="btnType" plain @click="$emit('close')">取 消</el-button>
+            <el-button :type="btnType" plain @click="$emit('input', false)">取 消</el-button>
             <el-button :type="btnType" @click="insertTable" plain>确 定</el-button>
         </div>
     </el-dialog>
@@ -20,7 +20,7 @@ import config from '../../assets/scripts/config'
 import {mapState, mapMutations} from 'vuex';
 export default {
     props: {
-        dialogFormVisible: {
+        value: {
             type: Boolean,
             default: false
         }
@@ -63,7 +63,7 @@ export default {
             }
 
             this.editor.replaceSelection(`\n${table}\n`, cursor)
-            this.$emit('close')
+            this.$emit('input', false)
             this.editorRefresh()
         },
         ...mapMutations(['editorRefresh'])
