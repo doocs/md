@@ -19,7 +19,13 @@
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
                     </el-col>
-                    <el-col :span="12" class="preview-wrapper" id="preview" :class="{'preview-wrapper_night': nightMode && isCoping}">
+                    <el-col
+                        :span="12"
+                        class="preview-wrapper"
+                        id="preview"
+                        ref="preview"
+                        :class="{'preview-wrapper_night': nightMode && isCoping}"
+                    >
                         <section id="output-wrapper" :class="{'output_night': nightMode && !backLight}">
                             <div class="preview">
                                 <section id="output" v-html="output">
@@ -193,26 +199,41 @@ export default {
                 })
             }
         },
-        // 左右栏同步滚动
         leftAndRightScroll() {
-            const _this = this;
-            const previewRef = document.getElementById('preview');
+            const scrollCB = text=> {
+                let source, target;
 
-            previewRef.addEventListener("scroll", function callback() {
-                clearTimeout(_this.timeout)
+                clearTimeout(this.timeout);
+                if (text === 'preview') {
+                    source = this.$refs.preview.$el;
+                    target = document.getElementsByClassName('CodeMirror-scroll')[0];
+                    this.editor.off('scroll', editorScrollCB);
+                    this.timeout = setTimeout(()=> {
+                        this.editor.on('scroll', editorScrollCB);
+                    }, 300);
+                } else if (text === 'editor') {
+                    source = document.getElementsByClassName('CodeMirror-scroll')[0];
+                    target = this.$refs.preview.$el;
+                    target.removeEventListener("scroll", previewScrollCB, false);
+                    this.timeout = setTimeout(()=> {
+                        target.addEventListener("scroll", previewScrollCB, false);
+                    }, 300);
+                }
 
-                let source = this
-                let target = this.id === 'preview' ? document.getElementsByClassName('CodeMirror-scroll')[0] : previewRef;
-                
-                target.removeEventListener("scroll", callback, false);
-                let percentage = source.scrollTop / (source.scrollHeight - source.offsetHeight)
-                let height = percentage * (target.scrollHeight - target.offsetHeight)
-                target.scrollTo(0, height)
+                let percentage = source.scrollTop / (source.scrollHeight - source.offsetHeight);
+                let height = percentage * (target.scrollHeight - target.offsetHeight);
 
-                _this.timeout = setTimeout(()=> {
-                    target.addEventListener("scroll", callback, false);
-                }, 300)
-            }, false);
+                target.scrollTo(0, height);
+            };
+            const editorScrollCB = ()=> {
+                scrollCB('editor');
+            };
+            const previewScrollCB = ()=> {
+                scrollCB('preview');
+            };
+
+            this.$refs.preview.$el.addEventListener("scroll", previewScrollCB, false);
+            this.editor.on('scroll', editorScrollCB);
         },
         onEditorRefresh() {
             this.editorRefresh();
@@ -232,8 +253,8 @@ export default {
             'initCssEditorEntity'])
     },
     mounted() {
-        this.leftAndRightScroll();
         setTimeout(() => {
+            this.leftAndRightScroll();
             PR.prettyPrint()
         }, 300);
     }
