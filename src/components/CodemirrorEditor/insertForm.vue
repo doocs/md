@@ -106,8 +106,10 @@ export default {
         table += currRow.join("|");
         table += "|\n";
       }
-
-      this.editor.replaceSelection(`\n${table}\n`, cursor);
+      this.tableData = {};
+      this.rowNum = 1;
+      this.colNum = 1;
+      this.editor.replaceSelection(`\n${table}\n`, "end");
       this.$emit("close");
       this.editorRefresh();
     },
