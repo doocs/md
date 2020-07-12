@@ -51,80 +51,76 @@
 </template>
 
 <script>
-import config from "../../assets/scripts/config";
-import { mapState, mapMutations } from "vuex";
-export default {
-  props: {
-    dialogFormVisible: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data() {
-    return {
-      config: config,
-      rowNum: 1,
-      colNum: 1,
-      tableData: {}
-    };
-  },
-  computed: {
-    btnType() {
-      return !this.nightMode ? "success" : "default";
-    },
-    ...mapState({
-      nightMode: state => state.nightMode,
-      editor: state => state.editor
-    })
-  },
-  methods: {
-    // 插入表格
-    insertTable() {
-      const cursor = this.editor.getCursor();
-      const rows = this.rowNum;
-      const cols = this.colNum;
+    import config from "../../assets/scripts/config";
+    import {
+        mapState,
+        mapMutations
+    } from "vuex";
+    export default {
+        props: {
+            dialogFormVisible: {
+                type: Boolean,
+                default: false
+            }
+        },
+        data() {
+            return {
+                config: config,
+                rowNum: 1,
+                colNum: 1,
+                tableData: {}
+            };
+        },
+        computed: {
+            btnType() {
+                return !this.nightMode ? "success" : "default";
+            },
+            ...mapState({
+                nightMode: state => state.nightMode,
+                editor: state => state.editor
+            })
+        },
+        methods: {
+            // 插入表格
+            insertTable() {
+                const cursor = this.editor.getCursor();
+                const rows = this.rowNum;
+                const cols = this.colNum;
 
-      let table = "";
-      let currRow = [];
-      for (let i = 0; i < rows + 2; ++i) {
-        table += "|";
-        currRow = [];
-        for (let j = 0; j < cols; ++j) {
-          let rowIdx = i;
-          if (i > 1) {
-            rowIdx = i - 1;
-          }
-
-          i === 1
-            ? currRow.push("---")
-            : currRow.push(
-                this.tableData[`k_${rowIdx}_${j}`]
-                  ? this.tableData[`k_${rowIdx}_${j}`]
-                  : ""
-              );
+                let table = "";
+                let currRow = [];
+                for (let i = 0; i < rows + 2; ++i) {
+                    table += "|\t";
+                    currRow = [];
+                    for (let j = 0; j < cols; ++j) {
+                        const rowIdx = i > 1 ? i - 1 : i;
+                        i === 1 ? 
+                        currRow.push("---\t") :
+                        currRow.push(this.tableData[`k_${rowIdx}_${j}`] || "");
+                    }
+                    table += currRow.join("\t|\t");
+                    table += "\t|\n";
+                }
+                this.tableData = {};
+                this.rowNum = 1;
+                this.colNum = 1;
+                this.editor.replaceSelection(`\n${table}\n`, "end");
+                this.$emit("close");
+                this.editorRefresh();
+            },
+            ...mapMutations(["editorRefresh"]),
+            handleChange(val, type) {}
         }
-        table += currRow.join("|");
-        table += "|\n";
-      }
-      this.tableData = {};
-      this.rowNum = 1;
-      this.colNum = 1;
-      this.editor.replaceSelection(`\n${table}\n`, "end");
-      this.$emit("close");
-      this.editorRefresh();
-    },
-    ...mapMutations(["editorRefresh"]),
-    handleChange(val, type) {}
-  }
-};
+    };
+
 </script>
 
 <style lang="less">
 .tb-options {
-  margin-bottom: 20px;
+    margin-bottom: 20px;
 }
 
 .head-style .el-input__inner {
-  background-color: #f2f2f2;
+    background-color: #f2f2f2;
 }
 </style>
