@@ -108,6 +108,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>码云Gitee</sub>
         </a>
       </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w">
+          <img src="https://imgkr.cn-bj.ufileos.com/5d78fb3e-1a3a-4769-9980-192e18321834.jpg" style="width: 40px;"><br>
+          <sub>好酸一柠檬</sub>
+        </a>
+      </td>
     </tr>
 </table>
 
@@ -115,6 +121,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 示例文章
 
+- [阅读计划 | 传记、社科类](https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w)
 - [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
 - [全网首发！GPU 驱动自升级原理详解](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
 - [死磕 JavaScript 系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
