@@ -56,9 +56,7 @@
             v-model="rightClickMenuVisible"
             :left="mouseLeft"
             :top="mouseTop"
-            @downLoad="downloadEditorContent"
             @menuTick="onMenuEvent"
-            @insertTable="dialogFormVisible = true"
         />
     </div>
 </template>
@@ -280,6 +278,11 @@ export default {
                 case 'insertPic':
                     this.uploaded(info);
                     break;
+                case 'downLoad':
+                    this.downloadEditorContent();
+                    break;
+                case 'insertTable':
+                    this.dialogFormVisible = true;
                 default:
                     break;
             }
