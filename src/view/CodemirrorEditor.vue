@@ -187,35 +187,26 @@ export default {
         },
         // 图片上传结束
         uploaded(response) {
-            if (response) {
-                if (response.success) {
-                    // 上传成功，获取光标
-                    const cursor = this.editor.getCursor();
-                    const imageUrl = response.data;
-                    const markdownImage = `![](${imageUrl})`;
-                    // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-                    this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
-                    this.$message({
-                        showClose: true,
-                        message: '图片插入成功',
-                        type: 'success'
-                    });
-                    this.onEditorRefresh();
-                } else {
-                    // 上传失败
-                    this.$message({
-                        showClose: true,
-                        message: response.message,
-                        type: 'error'
-                    });
-                }
-            } else {
+            if (!response || !response.success) {
                 this.$message({
                     showClose: true,
                     message: '上传图片未知异常',
                     type: 'error'
                 });
+                return;
             }
+            // 上传成功，获取光标
+            const cursor = this.editor.getCursor();
+            const imageUrl = response.data;
+            const markdownImage = `![](${imageUrl})`;
+            // 将 Markdown 形式的 URL 插入编辑框光标所在位置
+            this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
+            this.$message({
+                showClose: true,
+                message: '图片插入成功',
+                type: 'success'
+            });
+            this.onEditorRefresh();
         },
         // 左右滚动
         leftAndRightScroll() {
@@ -277,13 +268,7 @@ export default {
             const offsetWidth = this.$el.offsetWidth;
             const maxLeft = offsetWidth - menuMinWidth;
             const left = e.clientX - offsetLeft;
-
-            if (left > maxLeft) {
-                this.mouseLeft = maxLeft;
-            } else {
-                this.mouseLeft = left;
-            }
-
+            this.mouseLeft = Math.min(maxLeft, left);
             this.mouseTop = e.clientY + 10;
             this.rightClickMenuVisible = true;
         },
