@@ -2,8 +2,8 @@
   <el-dialog
     title="插入表格"
     class="insert__dialog"
-    :visible="dialogFormVisible"
-    @close="$emit('close')"
+    :visible="value"
+    @close="$emit('input', false)"
     border
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">
@@ -44,7 +44,7 @@
     </table>
     <!--  -->
     <div slot="footer" class="dialog-footer">
-      <el-button :type="btnType" plain @click="$emit('close')">取 消</el-button>
+      <el-button :type="btnType" plain @click="$emit('input', false)">取 消</el-button>
       <el-button :type="btnType" @click="insertTable" plain>确 定</el-button>
     </div>
   </el-dialog>
@@ -58,7 +58,7 @@
     } from "vuex";
     export default {
         props: {
-            dialogFormVisible: {
+            value: {
                 type: Boolean,
                 default: false
             }
@@ -94,7 +94,7 @@
                     currRow = [];
                     for (let j = 0; j < cols; ++j) {
                         const rowIdx = i > 1 ? i - 1 : i;
-                        i === 1 ? 
+                        i === 1 ?
                         currRow.push("---\t") :
                         currRow.push(this.tableData[`k_${rowIdx}_${j}`] || "");
                     }
@@ -105,7 +105,7 @@
                 this.rowNum = 1;
                 this.colNum = 1;
                 this.editor.replaceSelection(`\n${table}\n`, "end");
-                this.$emit("close");
+                this.$emit('input', false);
                 this.editorRefresh();
             },
             ...mapMutations(["editorRefresh"]),
