@@ -73,11 +73,10 @@
 import {
     downLoadMD,
     setFontSize,
-    isImageIllegal,
     fixCodeWhiteSpace,
     setColorWithCustomTemplate
 } from '../../assets/scripts/util'
-import fileApi from '../../api/file';
+import {uploadImgFile} from '../../assets/scripts/uploadImageFile';
 import {
     solveWeChatImage,
     solveHtml
@@ -151,24 +150,15 @@ export default {
         },
         // 图片上传前的处理
         beforeUpload(file) {
-            const checkImageResult = isImageIllegal(file);
-
-            if (checkImageResult) {
+            uploadImgFile(file).then(res=> {
+                this.$emit('uploaded', res)
+            }).catch(err=> {
                 this.$message({
                     showClose: true,
-                    message: checkImageResult,
+                    message: err,
                     type: 'error'
                 });
-                return false;
-            }
-            let fd = new FormData();
-
-            fd.append('file', file);
-            fileApi.fileUpload(fd).then(res => {
-                this.$emit('uploaded', res)
-            }).catch(err => {
-                console.log(err.message)
-            })
+            });
             return false;
         },
         // 复制到微信公众号

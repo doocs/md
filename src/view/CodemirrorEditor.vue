@@ -61,7 +61,6 @@
     </div>
 </template>
 <script>
-import fileApi from '../api/file';
 import editorHeader from '../components/CodemirrorEditor/header';
 import aboutDialog from '../components/CodemirrorEditor/aboutDialog';
 import insertFormDialog from '../components/CodemirrorEditor/insertForm';
@@ -70,10 +69,10 @@ import {
     css2json,
     downLoadMD,
     setFontSize,
-    isImageIllegal,
     saveEditorContent,
     customCssWithTemplate
 } from '../assets/scripts/util'
+import {uploadImgFile} from '../assets/scripts/uploadImageFile';
 
 require('codemirror/mode/javascript/javascript')
 import {mapState, mapMutations} from 'vuex';
@@ -85,6 +84,7 @@ export default {
             dialogFormVisible: false,
             rightClickMenuVisible: false,
             isCoping: false,
+            isImgLoading: false,
             backLight: false,
             timeout: null,
             changeTimer: null,
@@ -131,31 +131,30 @@ export default {
 
             // 粘贴上传图片并插入
             this.editor.on('paste', (cm, e) => {
-                if (!(e.clipboardData && e.clipboardData.items)) {
-                    return
+                if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
+                    return;
                 }
                 for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
                     let item = e.clipboardData.items[i]
                     if (item.kind === 'file') {
+                        this.isImgLoading = true;
+                        this.$message({
+                            showClose: true,
+                            message: '正在加载资源'
+                        });
                         const pasteFile = item.getAsFile()
-                        const checkImageResult = isImageIllegal(pasteFile);
 
-                        if (checkImageResult) {
+                        uploadImgFile(pasteFile).then(res=> {
+                            this.uploaded(res)
+                            this.isImgLoading = false;
+                        }).catch(err=> {
                             this.$message({
                                 showClose: true,
-                                message: checkImageResult,
+                                message: err,
                                 type: 'error'
                             });
-                            return;
-                        }
-                        let data = new FormData()
-                        data.append('file', pasteFile)
-
-                        fileApi.fileUpload(data).then(res => {
-                            this.uploaded(res)
-                        }).catch(err => {
-                            console.log(err.message)
-                        })
+                            this.isImgLoading = false;
+                        });
                     }
                 }
             });

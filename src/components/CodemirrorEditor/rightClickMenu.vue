@@ -13,9 +13,8 @@
 
 <script>
 import {
-    isImageIllegal,
-} from '../../assets/scripts/util';
-import fileApi from '../../api/file';
+    uploadImgFile,
+} from '../../assets/scripts/uploadImageFile';
 export default {
     props: {
         value: {
@@ -60,24 +59,15 @@ export default {
         // 空函数，阻断el-upload上传
         // 图片上传前的处理
         beforeUpload(file) {
-            const checkImageResult = isImageIllegal(file);
-
-            if (checkImageResult) {
+            uploadImgFile(file).then(res=> {
+                this.$emit('menuTick', 'insertPic', res)
+            }).catch(err=> {
                 this.$message({
                     showClose: true,
-                    message: checkImageResult,
+                    message: err,
                     type: 'error'
                 });
-                return false;
-            }
-            let fd = new FormData();
-
-            fd.append('file', file);
-            fileApi.fileUpload(fd).then(res => {
-                this.$emit('menuTick', 'insertPic', res)
-            }).catch(err => {
-                console.log(err.message)
-            })
+            });
             return false;
         },
     },

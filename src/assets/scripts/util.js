@@ -187,15 +187,6 @@ export function saveEditorContent(editor, name) {
     }
 }
 
-export function isImageIllegal(file) {
-    if (!/\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name)) {
-        return '请上传 JPG/PNG/GIF 格式的图片';
-    }
-    if (file.size > 5 * 1024 * 1024) {
-        return '由于公众号限制，图片大小不能超过 5.0M';
-    }
-    return false;
-}
 
 export function formatDoc(content) {
     const doc = prettier.format(content, {
