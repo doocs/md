@@ -2,7 +2,7 @@
     <div class="loading" id="loading">
         <div class="loading-wrapper">
             <div class="loading-anim"></div>
-            <div class="loading-text">致力于让MarkDown编辑更简单</div>
+            <div class="loading-text">致力于让 Markdown 编辑更简单</div>
         </div>
     </div>
 </template>

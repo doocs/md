@@ -36,6 +36,6 @@ export default {
     opacity: 1;
 }
 .fade-enter-active,.fade-leave-active{
-    transition: all 2s;
+    transition: all 1s;
 }
 </style>
