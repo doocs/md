@@ -1,5 +1,7 @@
 <template>
-    <loading v-if="loading" />
+    <transition name="fade" v-if="loading">
+        <loading />
+    </transition>
     <codemirror-editor v-else />
 </template>
 
@@ -20,11 +22,20 @@ export default {
     mounted() {
         setTimeout(() => {
             this.loading = false
-        }, 200)
+        }, 280);
     }
 }
 
 </script>
 
 <style lang="scss" scoped>
+.fade-enter,.fade-leave-to{
+    opacity: 0;
+}
+.fade-enter-to,.fade-leave{
+    opacity: 1;
+}
+.fade-enter-active,.fade-leave-active{
+    transition: all 2s;
+}
 </style>

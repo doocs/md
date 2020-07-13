@@ -1,8 +1,8 @@
 <template>
     <div class="loading" id="loading">
         <div class="loading-wrapper">
-            <div class="loading-text">Loading...</div>
             <div class="loading-anim"></div>
+            <div class="loading-text">致力于让MD编辑更简单</div>
         </div>
     </div>
 </template>
@@ -10,7 +10,13 @@
 <script>
 </script>
 
-<style scoped>
+<style lang="less" scoped>
+.loading-wrapper {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-50%);
+}
 .loading {
     text-align: center;
     position: fixed;
@@ -25,37 +31,18 @@
     background-color: #303133;
 }
 
-.loading-wrapper {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    -webkit-transform: translateX(-50%) translateY(-50%);
-    -moz-transform: translateX(-50%) translateY(-50%);
-    -ms-transform: translateX(-50%) translateY(-50%);
-    transform: translateX(-50%) translateY(-50%);
-}
-
 .loading-text {
-    line-height: 1.4;
-    font-size: 1.2rem;
+    font-size: 18px;
     font-weight: bold;
-    margin-bottom: 1rem;
+    margin-top: 26px;
+    color: #303133;
 }
 
 .loading-anim {
-    width: 35px;
-    height: 35px;
-    border: 5px solid rgba(189, 189, 189, 0.25);
-    border-left-color: rgba(66, 185, 131, 0.9);
-    border-top-color: rgba(66, 185, 131, 0.9);
-    border-radius: 50%;
     display: inline-block;
-    animation: rotate 600ms infinite linear;
-}
-
-@keyframes rotate {
-    to {
-        transform: rotate(1turn)
-    }
+    width: 100px;
+    height: 100px;
+    background: url('../assets/images/favicon.png') no-repeat;
+    background-size: cover;
 }
 </style>
