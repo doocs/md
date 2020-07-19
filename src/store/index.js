@@ -52,7 +52,7 @@ const mutations = {
         state.currentColor = data;
         localStorage.setItem('color', data)
     },
-    setRightClickMenuVisible(state,data){
+    setRightClickMenuVisible(state,data) {
         state.rightClickMenuVisible = data;
     },
     themeChanged(state) {
@@ -98,13 +98,13 @@ const mutations = {
             state.editor.setValue(doc)
         }
 
-        state.editor.on("cursorActivity",function(){
+        state.editor.on('mousedown', function() {
             state.rightClickMenuVisible = false
         });
-        state.editor.on("blur",function(){
+        state.editor.on('blur', function() {
             state.rightClickMenuVisible = false
         });
-        state.editor.on("scroll",function(){
+        state.editor.on('scroll', function() {
             state.rightClickMenuVisible = false
         });
 
