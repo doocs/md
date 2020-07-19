@@ -50,6 +50,18 @@ export default {
             hex: '热情活泼'
         }
     ],
+    codeThemeOption: [
+        {
+            label: '微信',
+            value: 'wechat',
+            hex: '默认样式'
+        },
+        {
+            label: 'github',
+            value: 'github',
+            hex: '精简风格'
+        }
+    ],
     form: {
         rows: 1,
         cols: 1

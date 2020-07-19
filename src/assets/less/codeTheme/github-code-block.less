@@ -1,0 +1,47 @@
+/*github code block*/
+.code-snippet__github {
+    display: flex;
+    font-size: 12px;
+    margin: 10px 8px;
+    position: relative; 
+    height: auto;
+    background-color: rgb(238, 238, 238);
+
+    .code-snippet__line-index {
+        display: none;
+    }
+
+    .code__pre {
+        display: grid;
+        position: relative;
+        counter-reset: line;
+        overflow-x: auto;
+        padding: 1em;
+        white-space: normal;
+        flex: 1;
+        line-height: 20px;
+        font-family: Operator Mono, Consolas, Monaco, Menlo, monospace;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    pre {
+        display: inline-block;
+        font-size: 12px;
+    }
+
+    code {
+        display: flex;
+        position: relative;
+        padding-right: 8px;
+        text-align: left;
+        white-space: pre;
+        font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace;
+        &::before {
+            display: none;
+        }
+    }
+
+    ul li {
+        list-style: none;
+    }
+}

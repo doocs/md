@@ -23,7 +23,8 @@ const state = {
     currentSize: '',
     currentColor: '',
     citeStatus: 0,
-    nightMode: false
+    nightMode: false,
+    codeTheme: 'wechat'
 };
 const mutations = {
     setEditorValue(state, data) {
@@ -51,6 +52,10 @@ const mutations = {
         state.currentColor = data;
         localStorage.setItem('color', data)
     },
+    setCurrentCodeTheme(state, data) {
+        state.codeTheme = data;
+        localStorage.setItem('codeTheme', data);
+    },
     themeChanged(state) {
         state.nightMode = !state.nightMode;
     },
@@ -58,6 +63,7 @@ const mutations = {
         state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value
         state.currentColor = localStorage.getItem('color') || config.colorOption[1].value
         state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value
+        state.codeTheme = localStorage.getItem('codeTheme') || config.codeThemeOption[0].value
         state.citeStatus = localStorage.getItem('citeStatus') === 'true'
         state.wxRenderer = new WxRenderer({
             theme: setColor(state.currentColor),

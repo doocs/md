@@ -1,4 +1,5 @@
-import marked from 'marked'
+import marked from 'marked';
+import store from '../../../store/index';
 const WxRenderer = function (opts) {
     this.opts = opts
     let ENV_STRETCH_IMAGE = true
@@ -68,22 +69,22 @@ const WxRenderer = function (opts) {
 
     this.buildAddition = () => {
         return `
-    <style>
-      .preview-wrapper pre::before {
-        font-family: "SourceSansPro", "HelveticaNeue", Arial, sans-serif;
-        position: absolute;
-        top: 0;
-        right: 0;
-        color: #ccc;
-        text-align: center;
-        font-size: 0.8em;
-        padding: 5px 10px 0;
-        line-height: 15px;
-        height: 15px;
-        font-weight: 600;
-      }
-    </style>
-    `
+            <style>
+            .preview-wrapper pre::before {
+                font-family: "SourceSansPro", "HelveticaNeue", Arial, sans-serif;
+                position: absolute;
+                top: 0;
+                right: 0;
+                color: #ccc;
+                text-align: center;
+                font-size: 0.8em;
+                padding: 5px 10px 0;
+                line-height: 15px;
+                height: 15px;
+                font-weight: 600;
+            }
+            </style>
+        `
     }
 
     this.setOptions = newOpts => {
@@ -135,16 +136,35 @@ const WxRenderer = function (opts) {
                 codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${(line || '<br>')}</span></code>`)
                 numbers.push('<li></li>')
             }
-            let lang = infoString || ''
+            const lang = infoString || '';
+            const codeTheme = store.state.codeTheme;
+            let result;
 
-            return `
-        <section class="code-snippet__fix code-snippet__js">
-            <ul class="code-snippet__line-index code-snippet__js">${numbers.join('')}</ul>
-            <pre class="code__pre code-snippet__js" data-lang="${lang}">
-                ${codeLines.join('')}
-            </pre>
-        </section>
-        `
+            switch (codeTheme) {
+                case 'wechat':
+                    result = `
+                        <section class="code-snippet__${codeTheme} code-snippet__js">
+                            <ul class="code-snippet__line-index code-snippet__js">${numbers.join('')}</ul>
+                            <pre class="code__pre code-snippet__js" data-lang="${lang}">
+                                ${codeLines.join('')}
+                            </pre>
+                        </section>
+                    `;
+                    break;
+                case 'github':
+                    result = `
+                        <section class="code-snippet__${codeTheme}">
+                            <pre class="code__pre" data-lang="${lang}">
+                                ${codeLines.join('')}
+                            </pre>
+                        </section>
+                    `;
+                    break;
+                default:
+                    break;
+            }
+
+            return result;
         }
         renderer.codespan = (text, infoString) => `<code ${getStyles('codespan')}>${text}</code>`
         renderer.listitem = text => `<span ${getStyles('listitem')}><span style="margin-right: 10px;"><%s/></span>${text}</span>`
