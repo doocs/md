@@ -82,7 +82,6 @@ export default {
             showCssEditor: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
-            rightClickMenuVisible: false,
             isCoping: false,
             isImgLoading: false,
             backLight: false,
@@ -107,7 +106,8 @@ export default {
             cssEditor: state=> state.cssEditor,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
-            nightMode: state=> state.nightMode
+            nightMode: state=> state.nightMode,
+            rightClickMenuVisible: state=> state.rightClickMenuVisible
         })
     },
     created() {
@@ -267,7 +267,7 @@ export default {
             const left = e.clientX - offsetLeft;
             this.mouseLeft = Math.min(maxLeft, left);
             this.mouseTop = e.clientY + 10;
-            this.rightClickMenuVisible = true;
+            this.$store.commit('setRightClickMenuVisible', true);
         },
         onMenuEvent(type, info = {}) {
             switch (type) {

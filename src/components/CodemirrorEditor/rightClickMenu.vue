@@ -71,15 +71,6 @@ export default {
             return false;
         },
     },
-    watch: {
-        value(newVal) {
-            if (newVal) {
-                document.body.addEventListener('click', this.closeCB.bind(this));
-            } else {
-                document.body.removeEventListener('click', this.closeCB.bind(this));
-            }
-        }
-    },
 }
 </script>
 

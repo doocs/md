@@ -23,7 +23,8 @@ const state = {
     currentSize: '',
     currentColor: '',
     citeStatus: 0,
-    nightMode: false
+    nightMode: false,
+    rightClickMenuVisible:false
 };
 const mutations = {
     setEditorValue(state, data) {
@@ -50,6 +51,9 @@ const mutations = {
     setCurrentColor(state, data) {
         state.currentColor = data;
         localStorage.setItem('color', data)
+    },
+    setRightClickMenuVisible(state,data){
+        state.rightClickMenuVisible = data;
     },
     themeChanged(state) {
         state.nightMode = !state.nightMode;
@@ -93,6 +97,17 @@ const mutations = {
             const doc = formatDoc(DEFAULT_CONTENT)
             state.editor.setValue(doc)
         }
+
+        state.editor.on("cursorActivity",function(){
+            state.rightClickMenuVisible = false
+        });
+        state.editor.on("blur",function(){
+            state.rightClickMenuVisible = false
+        });
+        state.editor.on("scroll",function(){
+            state.rightClickMenuVisible = false
+        });
+
     },
     initCssEditorEntity(state) {
         state.cssEditor = CodeMirror.fromTextArea(
