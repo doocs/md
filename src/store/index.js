@@ -24,7 +24,7 @@ const state = {
     currentColor: '',
     citeStatus: 0,
     nightMode: false,
-    rightClickMenuVisible:false
+    rightClickMenuVisible: false
 };
 const mutations = {
     setEditorValue(state, data) {
@@ -52,7 +52,7 @@ const mutations = {
         state.currentColor = data;
         localStorage.setItem('color', data)
     },
-    setRightClickMenuVisible(state,data) {
+    setRightClickMenuVisible(state, data) {
         state.rightClickMenuVisible = data;
     },
     themeChanged(state) {
@@ -72,8 +72,7 @@ const mutations = {
     },
     initEditorEntity(state) {
         state.editor = CodeMirror.fromTextArea(
-            document.getElementById('editor'),
-            {
+            document.getElementById('editor'), {
                 value: '',
                 mode: 'text/x-markdown',
                 theme: 'xq-light',
@@ -90,19 +89,13 @@ const mutations = {
                 }
             }
         )
-        // 如果有编辑器内容被保存则读取，否则加载默认内容
-        if (localStorage.getItem('__editor_content')) {
-            state.editor.setValue(localStorage.getItem('__editor_content'))
-        } else {
-            const doc = formatDoc(DEFAULT_CONTENT)
-            state.editor.setValue(doc)
-        }
         
+        // 如果有编辑器内容被保存则读取，否则加载默认内容
+        state.editor.setValue(localStorage.getItem('__editor_content') || formatDoc(DEFAULT_CONTENT))
     },
     initCssEditorEntity(state) {
         state.cssEditor = CodeMirror.fromTextArea(
-            document.getElementById('cssEditor'),
-            {
+            document.getElementById('cssEditor'), {
                 value: '',
                 mode: 'css',
                 theme: 'style-mirror',
@@ -113,7 +106,6 @@ const mutations = {
                 extraKeys: {
                     'Ctrl-F': function autoFormat(editor) {
                         const totalLines = editor.lineCount()
-
                         editor.autoFormatRange({
                             line: 0,
                             ch: 0
@@ -126,11 +118,7 @@ const mutations = {
         )
 
         // 如果有编辑器内容被保存则读取，否则加载默认内容
-        if (localStorage.getItem('__css_content')) {
-            state.cssEditor.setValue(localStorage.getItem('__css_content'))
-        } else {
-            state.cssEditor.setValue(DEFAULT_CSS_CONTENT)
-        }
+        state.cssEditor.setValue(localStorage.getItem('__css_content') || DEFAULT_CSS_CONTENT)
     },
     editorRefresh(state) {
         let output = marked(state.editor.getValue(0), {

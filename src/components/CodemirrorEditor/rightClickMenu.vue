@@ -76,7 +76,7 @@ export default {
             } else {
                 this.$emit('menuTick', key)
             }
-           this.$emit('closeMenu',false)
+           this.$emit('closeMenu', false)
         }
     },
 }
