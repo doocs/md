@@ -57,6 +57,7 @@
             :left="mouseLeft"
             :top="mouseTop"
             @menuTick="onMenuEvent"
+            @closeMenu="closeRightClickMenu"
         />
     </div>
 </template>
@@ -82,7 +83,6 @@ export default {
             showCssEditor: false,
             aboutDialogVisible: false,
             dialogFormVisible: false,
-            rightClickMenuVisible: false,
             isCoping: false,
             isImgLoading: false,
             backLight: false,
@@ -107,7 +107,8 @@ export default {
             cssEditor: state=> state.cssEditor,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
-            nightMode: state=> state.nightMode
+            nightMode: state=> state.nightMode,
+            rightClickMenuVisible: state=> state.rightClickMenuVisible
         })
     },
     created() {
@@ -158,6 +159,18 @@ export default {
                     }
                 }
             });
+
+            this.editor.on('mousedown', () => {
+                this.$store.commit('setRightClickMenuVisible', false);
+            });
+            this.editor.on('blur', () => {
+                //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
+                this.$store.commit('setRightClickMenuVisible', false);   
+            });
+            this.editor.on('scroll', () => {
+                this.$store.commit('setRightClickMenuVisible', false);
+            });
+
         },
         initCssEditor() {
             this.initCssEditorEntity();
@@ -267,7 +280,10 @@ export default {
             const left = e.clientX - offsetLeft;
             this.mouseLeft = Math.min(maxLeft, left);
             this.mouseTop = e.clientY + 10;
-            this.rightClickMenuVisible = true;
+            this.$store.commit('setRightClickMenuVisible', true);
+        },
+        closeRightClickMenu(){
+            this.$store.commit('setRightClickMenuVisible', false);
         },
         onMenuEvent(type, info = {}) {
             switch (type) {

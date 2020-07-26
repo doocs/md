@@ -1,12 +1,12 @@
 <template>
     <ul v-show="value"  id="menu" class="menu" :style="`left: ${left}px;top: ${top}px;`">
-        <li v-for="item of list" :key="item.key" class="menu_item">
+        <li v-for="item of list" :key="item.key" class="menu_item" @mousedown="onMouseDown(item.key)">
             <el-upload v-if="item.key === 'insertPic'" action="" class="li__upload"
                 :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
                 :before-upload="beforeUpload">
-                <span>{{item.text}}</span>
+                <button class="btn-upload">{{item.text}}</button>
             </el-upload>
-            <span v-else @click="$emit('menuTick', item.key)">{{item.text}}</span>
+            <span v-else>{{item.text}}</span>
         </li>
     </ul>
 </template>
@@ -70,14 +70,13 @@ export default {
             });
             return false;
         },
-    },
-    watch: {
-        value(newVal) {
-            if (newVal) {
-                document.body.addEventListener('click', this.closeCB.bind(this));
+        onMouseDown(key){
+            if (key == 'insertPic') {
+                document.querySelector('.li__upload button').click()
             } else {
-                document.body.removeEventListener('click', this.closeCB.bind(this));
+                this.$emit('menuTick', key)
             }
+           this.$emit('closeMenu',false)
         }
     },
 }
@@ -107,11 +106,21 @@ export default {
         color: white;
         background: rgb(139, 146, 148);
     }
-    span {
+    span,.btn-upload {
         text-align: center;
         display: inline-block;
         padding: 4px 0;
         width: 100%;
+    }
+    .btn-upload {
+        margin: 0;
+        border:none;
+        outline: none;
+        background: transparent;
+    }
+    .btn-upload:hover {
+        color: white;
+        background: rgb(139, 146, 148);
     }
     /deep/ .el-upload {
         width: 100%;
