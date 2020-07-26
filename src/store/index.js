@@ -97,17 +97,7 @@ const mutations = {
             const doc = formatDoc(DEFAULT_CONTENT)
             state.editor.setValue(doc)
         }
-
-        state.editor.on('mousedown', function() {
-            state.rightClickMenuVisible = false
-        });
-        state.editor.on('blur', function() {
-            state.rightClickMenuVisible = false
-        });
-        state.editor.on('scroll', function() {
-            state.rightClickMenuVisible = false
-        });
-
+        
     },
     initCssEditorEntity(state) {
         state.cssEditor = CodeMirror.fromTextArea(

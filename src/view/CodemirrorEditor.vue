@@ -57,6 +57,7 @@
             :left="mouseLeft"
             :top="mouseTop"
             @menuTick="onMenuEvent"
+            @closeMenu="closeRightClickMenu"
         />
     </div>
 </template>
@@ -158,6 +159,18 @@ export default {
                     }
                 }
             });
+
+            this.editor.on('mousedown', () => {
+                this.$store.commit('setRightClickMenuVisible', false);
+            });
+            this.editor.on('blur', () => {
+                //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
+                this.$store.commit('setRightClickMenuVisible', false);   
+            });
+            this.editor.on('scroll', () => {
+                this.$store.commit('setRightClickMenuVisible', false);
+            });
+
         },
         initCssEditor() {
             this.initCssEditorEntity();
@@ -268,6 +281,9 @@ export default {
             this.mouseLeft = Math.min(maxLeft, left);
             this.mouseTop = e.clientY + 10;
             this.$store.commit('setRightClickMenuVisible', true);
+        },
+        closeRightClickMenu(){
+            this.$store.commit('setRightClickMenuVisible', false);
         },
         onMenuEvent(type, info = {}) {
             switch (type) {
