@@ -405,5 +405,6 @@ export default {
 <style lang="less">
 @import url('../assets/less/app.less');
 @import url('../assets/less/style-mirror.css');
+@import url('../assets/less/github-v2.min.css');
 </style>
 
