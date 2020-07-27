@@ -24,7 +24,7 @@ const state = {
     currentColor: '',
     citeStatus: 0,
     nightMode: false,
-    codeTheme: 'wechat',
+    codeTheme: 'github',
     rightClickMenuVisible: false
 };
 const mutations = {

@@ -37,29 +37,29 @@ export default {
     colorOption: [{
             label: '经典蓝',
             value: 'rgba(15, 76, 129, 1)',
-            hex: '最新流行'
+            desc: '最新流行'
         },
         {
             label: '翡翠绿',
             value: 'rgba(0, 152, 116, 1)',
-            hex: '优雅清新'
+            desc: '优雅清新'
         },
         {
             label: '活力橘',
             value: 'rgba(250, 81, 81, 1)',
-            hex: '热情活泼'
+            desc: '热情活泼'
         }
     ],
     codeThemeOption: [
         {
             label: '微信',
             value: 'wechat',
-            hex: '默认样式'
+            desc: '默认样式'
         },
         {
-            label: 'github',
+            label: 'GitHub',
             value: 'github',
-            hex: '精简风格'
+            desc: '精简风格'
         }
     ],
     form: {
