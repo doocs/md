@@ -43,17 +43,17 @@
                 <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
                     <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
                         <span class="select-item-left">{{ color.label }}</span>
-                        <span class="select-item-right">{{ color.hex }}</span>
+                        <span class="select-item-right">{{ color.desc }}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="selectCodeTheme" size="mini" placeholder="选择代码样式" clearable @change="codeThemeChanged">
+                <el-select v-model="selectCodeTheme" size="mini" placeholder="选择代码块样式" clearable @change="codeThemeChanged">
                     <el-option v-for="theme in config.codeThemeOption" :key="theme.value"
-                        :label="'代码块样式：' + theme.label"
+                        :label="theme.label"
                         :value="theme.value">
                         <span class="select-item-left">{{ theme.label }}</span>
-                        <span class="select-item-right">{{ theme.hex }}</span>
+                        <span class="select-item-right">{{ theme.desc }}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
