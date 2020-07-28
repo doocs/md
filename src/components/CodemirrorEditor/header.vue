@@ -23,29 +23,29 @@
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline=true>
             <el-form-item>
-            <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
-                <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
-                :label="font.label" :value="font.value">
-                    <span class="select-item-left">{{ font.label }}</span>
-                    <span class="select-item-right">Abc</span>
-                </el-option>
-            </el-select>
+                <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
+                    <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
+                    :label="font.label" :value="font.value">
+                        <span class="select-item-left">{{ font.label }}</span>
+                        <span class="select-item-right">Abc</span>
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
-                <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
-                    <span class="select-item-left">{{ size.label }}</span>
-                    <span class="select-item-right">{{ size.desc }}</span>
-                </el-option>
-            </el-select>
+                <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
+                    <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
+                        <span class="select-item-left">{{ size.label }}</span>
+                        <span class="select-item-right">{{ size.desc }}</span>
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-form-item>
-            <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
-                <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
-                    <span class="select-item-left">{{ color.label }}</span>
-                    <span class="select-item-right">{{ color.hex }}</span>
-                </el-option>
-            </el-select>
+                <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
+                    <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
+                        <span class="select-item-left">{{ color.label }}</span>
+                        <span class="select-item-right">{{ color.desc }}</span>
+                    </el-option>
+                </el-select>
             </el-form-item>
             <el-tooltip content="自定义颜色" :effect="effect" placement="top">
             <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
@@ -94,7 +94,8 @@ export default {
             showResetConfirm: false,
             selectFont: '',
             selectSize: '',
-            selectColor: ''
+            selectColor: '',
+            selectCodeTheme: 'github'
         };
     },
     components: {
@@ -114,6 +115,7 @@ export default {
             currentFont: state=> state.currentFont,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
+            codeTheme: state=> state.codeTheme,
             nightMode: state=> state.nightMode
         })
     },
@@ -142,6 +144,10 @@ export default {
                 theme: theme
             })
             this.setCurrentColor(color);
+            this.$emit('refresh')
+        },
+        codeThemeChanged(theme) {
+            this.setCurrentCodeTheme(theme);
             this.$emit('refresh')
         },
         statusChanged(val) {
@@ -231,13 +237,23 @@ export default {
             this.showResetConfirm = false;
             this.editor.focus()
         },
-        ...mapMutations(['clearEditorToDefault','setCurrentColor', 'setCiteStatus', 'themeChanged',
-            'setCurrentFont', 'setCurrentSize', 'setCssEditorValue', 'setWxRendererOptions'])
+        ...mapMutations([
+            'clearEditorToDefault',
+            'setCurrentColor',
+            'setCiteStatus',
+            'themeChanged',
+            'setCurrentFont',
+            'setCurrentSize',
+            'setCssEditorValue',
+            'setCurrentCodeTheme',
+            'setWxRendererOptions'
+        ])
     },
     mounted() {
         this.selectFont = this.currentFont;
         this.selectSize = this.currentSize;
         this.selectColor = this.currentColor;
+        this.selectCodeTheme = this.codeTheme;
     }
 }
 </script>
