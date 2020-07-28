@@ -137,34 +137,14 @@ const WxRenderer = function (opts) {
                 numbers.push('<li></li>')
             }
             const lang = infoString || '';
-            const codeTheme = store.state.codeTheme;
-            let result;
-
-            switch (codeTheme) {
-                case 'wechat':
-                    result = `
-                        <section class="code-snippet__${codeTheme} code-snippet__js">
-                            <ul class="code-snippet__line-index code-snippet__js">${numbers.join('')}</ul>
-                            <pre class="code__pre code-snippet__js" data-lang="${lang}">
-                                ${codeLines.join('')}
-                            </pre>
-                        </section>
-                    `;
-                    break;
-                case 'github':
-                    result = `
-                        <section class="code-snippet__${codeTheme}">
-                            <pre class="code__pre" data-lang="${lang}">
-                                ${codeLines.join('')}
-                            </pre>
-                        </section>
-                    `;
-                    break;
-                default:
-                    break;
-            }
-
-            return result;
+            const codeTheme = 'github';
+            return `
+                <section class="code-snippet__${codeTheme}">
+                    <pre class="code__pre" data-lang="${lang}">
+                        ${codeLines.join('')}
+                    </pre>
+                </section>
+            `;
         }
         renderer.codespan = (text, infoString) => `<code ${getStyles('codespan')}>${text}</code>`
         renderer.listitem = text => `<span ${getStyles('listitem')}><span style="margin-right: 10px;"><%s/></span>${text}</span>`

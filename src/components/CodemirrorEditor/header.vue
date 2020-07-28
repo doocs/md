@@ -47,16 +47,6 @@
                     </el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item>
-                <el-select v-model="selectCodeTheme" size="mini" placeholder="选择代码块样式" clearable @change="codeThemeChanged">
-                    <el-option v-for="theme in config.codeThemeOption" :key="theme.value"
-                        :label="theme.label"
-                        :value="theme.value">
-                        <span class="select-item-left">{{ theme.label }}</span>
-                        <span class="select-item-right">{{ theme.desc }}</span>
-                    </el-option>
-                </el-select>
-            </el-form-item>
             <el-tooltip content="自定义颜色" :effect="effect" placement="top">
             <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
             </el-tooltip>
