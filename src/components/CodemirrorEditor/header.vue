@@ -125,6 +125,7 @@ export default {
             currentFont: state=> state.currentFont,
             currentSize: state=> state.currentSize,
             currentColor: state=> state.currentColor,
+            codeTheme: state=> state.codeTheme,
             nightMode: state=> state.nightMode
         })
     },
@@ -262,6 +263,7 @@ export default {
         this.selectFont = this.currentFont;
         this.selectSize = this.currentSize;
         this.selectColor = this.currentColor;
+        this.selectCodeTheme = this.codeTheme;
     }
 }
 </script>
