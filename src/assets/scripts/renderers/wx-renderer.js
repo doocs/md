@@ -123,30 +123,19 @@ const WxRenderer = function (opts) {
             text = text.replace(/<p.*?>/g, `<p ${getStyles('blockquote_p')}>`)
             return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`
         }
-        renderer.code = (text, infoString) => {
-            text = text.replace(/</g, '&lt;')
-            text = text.replace(/>/g, '&gt;')
-
-            let lines = text.split('\n')
-            let codeLines = []
-            let numbers = []
-
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i]
-                codeLines.push(`<code class="prettyprint"><span class="code-snippet_outer">${(line || '<br>')}</span></code>`)
-                numbers.push('<li></li>')
-            }
-            const lang = infoString || '';
-            const codeTheme = 'github';
+        renderer.code = (text, lang) => {
+            text = text.replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            const codeLines = text.split('\n').map(line => `<code class="prettyprint"><span class="code-snippet_outer">${(line || '<br>')}</span></code>`)
+            const codeTheme = 'github'
             return `
                 <section class="code-snippet__${codeTheme}">
                     <pre class="code__pre" data-lang="${lang}">
                         ${codeLines.join('')}
                     </pre>
                 </section>
-            `;
+            `
         }
-        renderer.codespan = (text, infoString) => `<code ${getStyles('codespan')}>${text}</code>`
+        renderer.codespan = (text, lang) => `<code ${getStyles('codespan')}>${text}</code>`
         renderer.listitem = text => `<span ${getStyles('listitem')}><span style="margin-right: 10px;"><%s/></span>${text}</span>`
 
         renderer.list = (text, ordered, start) => {
@@ -174,16 +163,12 @@ const WxRenderer = function (opts) {
         renderer.link = (href, title, text) => {
             if (href.indexOf('https://mp.weixin.qq.com') === 0) {
                 return `<a href="${href}" title="${(title || text)}" ${getStyles('wx_link')}>${text}</a>`
-            } else if (href === text) {
-                return text
-            } else {
-                if (status) {
-                    let ref = addFootnote(title || text, href)
-                    return `<span ${getStyles('link')}>${text}<sup>[${ref}]</sup></span>`
-                } else {
-                    return text
-                }
             }
+            if (href === text || !status) {
+                return text
+            }
+            let ref = addFootnote(title || text, href)
+            return `<span ${getStyles('link')}>${text}<sup>[${ref}]</sup></span>`
         }
         renderer.strong = text => `<strong ${getStyles('strong')}>${text}</strong>`
         renderer.em = text => `<span style="font-style: italic;">${text}</span>`
