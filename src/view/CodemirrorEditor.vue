@@ -17,19 +17,11 @@
             </el-header>
             <el-main class="main-body">
                 <el-row class="main-section">
-                    <el-col :span="12"
-                        @contextmenu.prevent.native="openMenu($event)"
-                    >
+                    <el-col :span="12" @contextmenu.prevent.native="openMenu($event)">
                         <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
                         </textarea>
                     </el-col>
-                    <el-col
-                        :span="12"
-                        class="preview-wrapper"
-                        id="preview"
-                        ref="preview"
-                        :class="{'preview-wrapper_night': nightMode && isCoping}"
-                    >
+                    <el-col :span="12" class="preview-wrapper" id="preview" ref="preview" :class="{'preview-wrapper_night': nightMode && isCoping}">
                         <section id="output-wrapper" :class="{'output_night': nightMode && !backLight}">
                             <div class="preview">
                                 <section id="output" v-html="output">
@@ -139,23 +131,17 @@ export default {
                     let item = e.clipboardData.items[i]
                     if (item.kind === 'file') {
                         this.isImgLoading = true;
-                        this.$message({
-                            showClose: true,
-                            message: '正在加载资源'
-                        });
                         const pasteFile = item.getAsFile()
-
                         uploadImgFile(pasteFile).then(res=> {
                             this.uploaded(res)
-                            this.isImgLoading = false;
                         }).catch(err=> {
                             this.$message({
                                 showClose: true,
                                 message: err,
                                 type: 'error'
                             });
-                            this.isImgLoading = false;
                         });
+                        this.isImgLoading = false;
                     }
                 }
             });
