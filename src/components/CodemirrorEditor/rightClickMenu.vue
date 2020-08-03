@@ -33,10 +33,10 @@ export default {
     data() {
         return {
             list: [
-                {
-                    text: '上传图片',
-                    key: 'insertPic'
-                },
+                // {
+                //     text: '上传图片',
+                //     key: 'insertPic'
+                // },
                 {
                     text: '插入表格',
                     key: 'insertTable'

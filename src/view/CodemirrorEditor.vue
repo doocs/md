@@ -123,28 +123,28 @@ export default {
             });
 
             // 粘贴上传图片并插入
-            this.editor.on('paste', (cm, e) => {
-                if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
-                    return;
-                }
-                for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
-                    let item = e.clipboardData.items[i]
-                    if (item.kind === 'file') {
-                        this.isImgLoading = true;
-                        const pasteFile = item.getAsFile()
-                        uploadImgFile(pasteFile).then(res=> {
-                            this.uploaded(res)
-                        }).catch(err=> {
-                            this.$message({
-                                showClose: true,
-                                message: err,
-                                type: 'error'
-                            });
-                        });
-                        this.isImgLoading = false;
-                    }
-                }
-            });
+            // this.editor.on('paste', (cm, e) => {
+            //     if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
+            //         return;
+            //     }
+            //     for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
+            //         let item = e.clipboardData.items[i]
+            //         if (item.kind === 'file') {
+            //             this.isImgLoading = true;
+            //             const pasteFile = item.getAsFile()
+            //             uploadImgFile(pasteFile).then(res=> {
+            //                 this.uploaded(res)
+            //             }).catch(err=> {
+            //                 this.$message({
+            //                     showClose: true,
+            //                     message: err,
+            //                     type: 'error'
+            //                 });
+            //             });
+            //             this.isImgLoading = false;
+            //         }
+            //     }
+            // });
 
             this.editor.on('mousedown', () => {
                 this.$store.commit('setRightClickMenuVisible', false);
