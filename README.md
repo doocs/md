@@ -1,8 +1,10 @@
-<p align="center">
-  <a href="https://github.com/doocs/md">
-    <img src="https://imgkr.cn-bj.ufileos.com/f3accc83-b854-4e99-afb5-8a6465e1d84f.png" alt="">
-  </a>
-</p>
+<div align="center">
+
+  [![doocs-md](./public/assets/images/logo-2.png)](https://github.com/doocs/md) 
+
+</div>
+
+
 <h1 align="center">微信 Markdown 编辑器</h1>
 
 <div align="center">
@@ -47,13 +49,13 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - [x] 支持在编辑框右键弹出功能选项卡
 
 
-![select-and-change-color-theme](https://imgkr.cn-bj.ufileos.com/32c05c23-6309-491f-bd0d-f22a62c944b4.gif)
+![select-and-change-color-theme](./public/assets/images/select-and-change-color-theme.gif)
 
-![copy-and-paste](https://imgkr.cn-bj.ufileos.com/31f16c2f-480c-4ea3-bb89-89b6e14d18e5.gif)
+![copy-and-paste](./public/assets/images/copy-and-paste.gif)
 
-![custom](https://imgkr.cn-bj.ufileos.com/bbf0a0b6-b817-4626-bf79-4e18df318681.gif)
+![custom](./public/assets/images/custom.gif)
 
-![doocs-md-upload-image](https://imgkr.cn-bj.ufileos.com/97db3cd6-bddc-4eff-8635-472631b0a642.gif) 
+![doocs-md-upload-image](./public/assets/images/doocs-md-upload-image.gif) 
 
 ## 谁在使用
 
@@ -61,55 +63,55 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
     <tr>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow">
-          <img src="https://imgkr.cn-bj.ufileos.com/29fbfc6e-b1f2-4995-982f-74f993256626.png" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/0-Doocs%E5%BC%80%E6%BA%90%E7%A4%BE%E5%8C%BA.png" style="width: 40px;"><br>
           <sub>Doocs开源社区</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g">
-          <img src="https://imgkr.cn-bj.ufileos.com/2631fe1d-0521-4f51-abb9-5250f4dda268.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/1-%E6%8E%98%E5%A2%93%E4%BA%BA%E7%9A%84%E5%B0%8F%E9%93%B2%E5%AD%90.jpg" style="width: 40px;"><br>
           <sub>掘墓人的小铲子</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/4b4b10a4-1146-4056-8799-9f8c1a3e5e9e.png" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/2-%E5%85%A8%E7%BD%91%E9%87%8D%E7%82%B9.png" style="width: 40px;"><br>
           <sub>全网重点</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/1ddb47f6-4943-4aae-ad24-c75c22c758bf.png" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/3-%E7%88%B1%E7%A0%81%E5%A3%AB%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E7%99%BD.png" style="width: 40px;"><br>
           <sub>爱码士的内心独白</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg">
-          <img src="https://imgkr.cn-bj.ufileos.com/830333b7-74b2-4dbc-9384-b5cac63b1d17.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/4-%E4%B9%90%E7%8E%A9nodejsnpm%E5%B7%A5%E5%85%B7%E5%BA%93.jpg" style="width: 40px;"><br>
           <sub>乐玩nodejs npm工具库</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ">
-          <img src="https://imgkr.cn-bj.ufileos.com/95e553de-fd8f-4374-8a98-14809122e80e.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/5-%E7%AE%80%E9%9D%99%E6%85%A2.jpg" style="width: 40px;"><br>
           <sub>简静慢</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug">
-          <img src="https://imgkr.cn-bj.ufileos.com/2fbeb8d5-d778-43e2-ada2-5ca442ce1b9a.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/6-0%E5%8A%A01.jpg" style="width: 40px;"><br>
           <sub>0加1</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg">
-          <img src="https://imgkr.cn-bj.ufileos.com/b7b3e99f-0289-460c-acea-d8fa0cc90c8b.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/7-%E7%A0%81%E4%BA%91Gitee.jpg" style="width: 40px;"><br>
           <sub>码云Gitee</sub>
         </a>
       </td>
       <td align="center" style="width: 60px;">
         <a href="https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w">
-          <img src="https://imgkr.cn-bj.ufileos.com/5d78fb3e-1a3a-4769-9980-192e18321834.jpg" style="width: 40px;"><br>
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/8-%E5%A5%BD%E9%85%B8%E4%B8%80%E6%9F%A0%E6%AA%AC.jpg" style="width: 40px;"><br>
           <sub>好酸一柠檬</sub>
         </a>
       </td>

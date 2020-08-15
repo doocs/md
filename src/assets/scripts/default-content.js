@@ -5,7 +5,7 @@ const DEFAULT_CONTENT =
 ## 使用自动补全
 Google 搜索的自动补全功能可以在 Google 搜索应用的大多数位置使用，包括 [Google](https://www.google.com/) 主页、适用于 IOS 和 Android 的 Google 应用，我们只需要在 Google 搜索框上开始键入关键字，就可以看到联想词了。
 
-![](https://imgkr.cn-bj.ufileos.com/17ed83bf-e028-4db2-9503-5a3b4e64deee.gif)
+![](https://gitee.com/yanglbme/resource/raw/master/doocs-md/juejin.gif)
 
 在上图示例中，我们可以看到，输入关键字 \`juej\`，Google 搜索会联想到“掘金”、“掘金小册”、“绝句”等等，好处就是，我们无须输入完整的关键字即可轻松完成针对这些 topics 的搜索。
 
@@ -20,7 +20,7 @@ Google 官方将自动补全功能称之为“预测”，而不是“建议”�
 
 另外，这些“预测”也会随着我们键入的关键字的变更而更改。例如，当我们把键入的关键字从 \`juej\` 更改为 \`juex\` 时，与“掘金”相关的预测会“消失”，同时，与“觉醒”、“决心”相关联的词会出现。
 
-![](https://imgkr.cn-bj.ufileos.com/5b17dc99-606d-42c1-9f86-e09e88aaa822.gif)
+![](https://gitee.com/yanglbme/resource/raw/master/doocs-md/juex.gif)
 
 ## 为什么看不到某些联想词？
 如果我们在输入某个关键字时看不到联想词，那么表明 Google 的算法可能检测到：
@@ -34,7 +34,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 
 我们作为 Google 搜索的用户，如果认定某条预测违反了相关的搜索自动补全政策，可以进行举报反馈，点击右下角“**举报不当的联想查询**”并勾选相关选项即可。
 
-![](https://imgkr.cn-bj.ufileos.com/6ca8185d-12c6-4550-bb4e-e49cfbf56db7.gif)
+![](https://gitee.com/yanglbme/resource/raw/master/doocs-md/report.gif)
 
 ## 如何实现自动补全算法？
 目前，Google 官方似乎并没有公开搜索自动补全的算法实现，但是业界在这方面已经有了不少研究。
@@ -53,7 +53,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 ### 前缀树实现
 通常来说，许多词汇都以相同的前缀开头，比如 \`need\`、\`nested\` 都以 \`ne\` 开头，\`seed\`、\`speed\` 都以 \`s\` 开头。要是为每个单词分别存储公共前缀似乎很浪费。
 
-![](https://imgkr.cn-bj.ufileos.com/7cc3cf37-040a-420e-8ef9-d05e92c82cfd.png)
+![](https://gitee.com/yanglbme/resource/raw/master/doocs-md/pretree.png)
 
 前缀树是一种利用公共前缀来加速补全速度的数据结构。前缀树在节点树中排列一组单词，单词沿着从根节点到叶子节点的路径存储，树的层次对应于前缀的字母位置。
 
@@ -65,7 +65,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 有没有一种方法可以更加节省存储空间呢？有的，那就是 DFA。
 
 <center>
-<img src="https://imgkr.cn-bj.ufileos.com/02bc143e-e1a7-4b3c-bd5d-8d6d39139f0a.png" style="width: 50%;"></center>
+<img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/dfa.gif" style="width: 50%;"></center>
 
 在上面的例子中，单词 \`need\`、\`nested\`、\`seed\` 和 \`speed\` 仅由 9 个节点组成，而上一张图中的前缀树包含了 17 个节点。
 
@@ -93,7 +93,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 欢迎关注我的公众号“**Doocs开源社区**”，原创技术文章第一时间推送。
 
 <center>
-    <img src="https://imgkr.cn-bj.ufileos.com/1092dc45-e817-4bb0-82b0-2b2b4826ccf2.gif" style="width: 100px;">
+    <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/qrcode.png" style="width: 100px;">
 </center>
 
 `
