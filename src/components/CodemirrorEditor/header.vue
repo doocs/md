@@ -1,7 +1,7 @@
 <template>
     <el-container class="top is-dark">
         <!-- 图片上传 -->
-        <el-upload class="header__item" action="https://imgkr.com/api/files/upload"
+        <el-upload class="header__item" action="https://github.com/doocs/md"
             :headers="{'Content-Type': 'multipart/form-data'}"
             :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
             :before-upload="beforeUpload">

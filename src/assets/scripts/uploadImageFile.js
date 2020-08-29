@@ -14,9 +14,8 @@ export function uploadImgFile(file) {
             imgFile.readAsDataURL(file);
             
             imgFile.onload = function() {
-                const base64Cotent = this.result.split(',').pop();
-
-                fileApi.fileUpload(base64Cotent, file.name).then(res=> {
+                const base64Content = this.result.split(',').pop();
+                fileApi.fileUpload(base64Content, file.name).then(res=> {
                     const imageUrl = res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
                     
                     resolve(imageUrl);

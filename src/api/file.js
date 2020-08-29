@@ -3,13 +3,15 @@ import { v4 as uuidv4 } from 'uuid';
 const fileUploadConfig = {
     username: 'filess',
     repo: 'images',
-    access_tokens: [
-        'cc16734fc2d92c5b6d90155f0da9b5c43701b386',
-        'f5c1b69cac9e2d53213adb1adda927ae7b3ca762',
-        '5533628a92d69d2271d6d1fdd5a9170c7de65bc8',
-        '7dc129821137b52d9fb897ba4a96d16224b63845',
-        '90669202e6277399ec0ea81649953b8f60793c6a',
-        'a1900917f80c8c1b2ad73327e7c35b47106025dd'
+    accessToken: [
+        '7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af',
+        'c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe',
+        '2821cd8819fa345c053doocsmdca86ac653f8bc20db1f1b',
+        '445f0dae46ef1f2a4d6doocsmdc797301e94797b4750a4c',
+        'cc1d0c1426d0fd0902bdoocsmdd2d7184b14da61b86ec46',
+        'b67e9d15cb6f910492fdoocsmdac6b44d379c953bb19eff',
+        '618c4dc2244ccbbc088doocsmd125d17fd31b7d06a50cf3',
+        'a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55'
     ]
 }
 
@@ -18,9 +20,9 @@ function fileUpload(content, fileName) {
     const date = new Date();
     const dir = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
     const uuid = uuidv4(); 
-    const token = fileUploadConfig.access_tokens[Math.round(fileUploadConfig.access_tokens.length * Math.random())];
+    const token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '');
     const dateFilename = new Date().getTime() + '-' + uuid + '.' + fileName.split('.')[1];
-    const url = `https://api.github.com/repos/${fileUploadConfig.username}/${fileUploadConfig.repo}/contents/${dir}/${dateFilename}?access_token=${token}`;
+    const url = `https://api.github.com/repos/${fileUploadConfig.username}/${fileUploadConfig.repo}/contents/${dir}/${dateFilename}`;
 
     return fetch({
         url,
@@ -29,7 +31,7 @@ function fileUpload(content, fileName) {
             'Authorization': 'token ' + token
         },
         data: {
-            message: 'Upload image by https://github.com/doocs/md',
+            message: 'Upload image by https://doocs.github.io/md',
             content: content
         }
     })
