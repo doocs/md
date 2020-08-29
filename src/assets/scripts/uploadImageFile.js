@@ -1,20 +1,30 @@
 import fileApi from '../../api/file';
+const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
+const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
 
 export function uploadImgFile(file) {
+        
     return new Promise((resolve, reject)=> {
         const checkImageResult = isImageIllegal(file);
 
         if (checkImageResult) {
             reject(checkImageResult);
         } else {
-            let fd = new FormData();
-    
-            fd.append('file', file);
-            fileApi.fileUpload(fd).then(res => {
-                resolve(res);
-            }).catch(err => {
-                console.log(err.message)
-            })
+            const imgFile = new FileReader();
+            imgFile.readAsDataURL(file);
+            
+            imgFile.onload = function() {
+                const base64Cotent = this.result.split(',').pop();
+
+                fileApi.fileUpload(base64Cotent, file.name).then(res=> {
+                    const imageUrl = res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+                    
+                    resolve(imageUrl);
+                }).catch(err => {
+                    console.log(err.message)
+                })
+            }
+
         }
     });
 }

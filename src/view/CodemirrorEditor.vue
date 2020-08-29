@@ -123,28 +123,28 @@ export default {
             });
 
             // 粘贴上传图片并插入
-            // this.editor.on('paste', (cm, e) => {
-            //     if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
-            //         return;
-            //     }
-            //     for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
-            //         let item = e.clipboardData.items[i]
-            //         if (item.kind === 'file') {
-            //             this.isImgLoading = true;
-            //             const pasteFile = item.getAsFile()
-            //             uploadImgFile(pasteFile).then(res=> {
-            //                 this.uploaded(res)
-            //             }).catch(err=> {
-            //                 this.$message({
-            //                     showClose: true,
-            //                     message: err,
-            //                     type: 'error'
-            //                 });
-            //             });
-            //             this.isImgLoading = false;
-            //         }
-            //     }
-            // });
+            this.editor.on('paste', (cm, e) => {
+                if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
+                    return;
+                }
+                for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
+                    let item = e.clipboardData.items[i]
+                    if (item.kind === 'file') {
+                        this.isImgLoading = true;
+                        const pasteFile = item.getAsFile()
+                        uploadImgFile(pasteFile).then(res=> {
+                            this.uploaded(res)
+                        }).catch(err=> {
+                            this.$message({
+                                showClose: true,
+                                message: err,
+                                type: 'error'
+                            });
+                        });
+                        this.isImgLoading = false;
+                    }
+                }
+            });
 
             this.editor.on('mousedown', () => {
                 this.$store.commit('setRightClickMenuVisible', false);
@@ -183,7 +183,7 @@ export default {
         },
         // 图片上传结束
         uploaded(response) {
-            if (!response || !response.success) {
+            if (!response) {
                 this.$message({
                     showClose: true,
                     message: '上传图片未知异常',
@@ -193,7 +193,7 @@ export default {
             }
             // 上传成功，获取光标
             const cursor = this.editor.getCursor();
-            const imageUrl = response.data;
+            const imageUrl = response;
             const markdownImage = `![](${imageUrl})`;
             // 将 Markdown 形式的 URL 插入编辑框光标所在位置
             this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
