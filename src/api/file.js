@@ -4,12 +4,12 @@ const fileUploadConfig = {
     username: 'filess',
     repo: 'images',
     access_tokens: [
-        'c849e371c79eb9f6d9ebcf28983227bed284d92d',
-        'a447236ffceb656eaab4b0fb6367851f8e5e1e93',
-        '12adcf31e54a8b3710a52de2ac46f3d42f57ce22',
-        '8187af6fd468bdaa852972be1a864ce6e6a592e7',
-        '6412beee93f641b709fcfc3d6b6b8b96a0a7a81c',
-        '6fec856c7462b63a2a2148f7b25fe2c333a42225'
+        'cc16734fc2d92c5b6d90155f0da9b5c43701b386',
+        'f5c1b69cac9e2d53213adb1adda927ae7b3ca762',
+        '5533628a92d69d2271d6d1fdd5a9170c7de65bc8',
+        '7dc129821137b52d9fb897ba4a96d16224b63845',
+        '90669202e6277399ec0ea81649953b8f60793c6a',
+        'a1900917f80c8c1b2ad73327e7c35b47106025dd'
     ]
 }
 
@@ -18,7 +18,7 @@ function fileUpload(content, fileName) {
     const date = new Date();
     const dir = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
     const uuid = uuidv4(); 
-    const token = fileUploadConfig.access_tokens[Math.round(6 * Math.random())];
+    const token = fileUploadConfig.access_tokens[Math.round(fileUploadConfig.access_tokens.length * Math.random())];
     const dateFilename = new Date().getTime() + '-' + uuid + '.' + fileName.split('.')[1];
     const url = `https://api.github.com/repos/${fileUploadConfig.username}/${fileUploadConfig.repo}/contents/${dir}/${dateFilename}?access_token=${token}`;
 
