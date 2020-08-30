@@ -200,7 +200,7 @@ export function fixCodeWhiteSpace(value = 'pre') {
     const preDomList = document.getElementsByClassName('code__pre');
 
     if (preDomList.length > 0) {
-        preDomList.forEach(pre=> {
+        preDomList.forEach(pre => {
             pre.style.whiteSpace = value;
         })
     }

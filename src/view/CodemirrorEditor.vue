@@ -93,14 +93,14 @@ export default {
     },
     computed: {
         ...mapState({
-            wxRenderer: state=> state.wxRenderer,
-            output: state=> state.output,
-            editor: state=> state.editor,
-            cssEditor: state=> state.cssEditor,
-            currentSize: state=> state.currentSize,
-            currentColor: state=> state.currentColor,
-            nightMode: state=> state.nightMode,
-            rightClickMenuVisible: state=> state.rightClickMenuVisible
+            wxRenderer: state => state.wxRenderer,
+            output: state => state.output,
+            editor: state => state.editor,
+            cssEditor: state => state.cssEditor,
+            currentSize: state => state.currentSize,
+            currentColor: state => state.currentColor,
+            nightMode: state => state.nightMode,
+            rightClickMenuVisible: state => state.rightClickMenuVisible
         })
     },
     created() {
@@ -132,9 +132,9 @@ export default {
                     if (item.kind === 'file') {
                         this.isImgLoading = true;
                         const pasteFile = item.getAsFile()
-                        uploadImgFile(pasteFile).then(res=> {
+                        uploadImgFile(pasteFile).then(res => {
                             this.uploaded(res)
-                        }).catch(err=> {
+                        }).catch(err => {
                             this.$message({
                                 showClose: true,
                                 message: err,
@@ -206,7 +206,7 @@ export default {
         },
         // 左右滚动
         leftAndRightScroll() {
-            const scrollCB = text=> {
+            const scrollCB = text => {
                 let source, target;
 
                 clearTimeout(this.timeout);
@@ -214,14 +214,14 @@ export default {
                     source = this.$refs.preview.$el;
                     target = document.getElementsByClassName('CodeMirror-scroll')[0];
                     this.editor.off('scroll', editorScrollCB);
-                    this.timeout = setTimeout(()=> {
+                    this.timeout = setTimeout(() => {
                         this.editor.on('scroll', editorScrollCB);
                     }, 300);
                 } else if (text === 'editor') {
                     source = document.getElementsByClassName('CodeMirror-scroll')[0];
                     target = this.$refs.preview.$el;
                     target.removeEventListener("scroll", previewScrollCB, false);
-                    this.timeout = setTimeout(()=> {
+                    this.timeout = setTimeout(() => {
                         target.addEventListener("scroll", previewScrollCB, false);
                     }, 300);
                 }
@@ -231,10 +231,10 @@ export default {
 
                 target.scrollTo(0, height);
             };
-            const editorScrollCB = ()=> {
+            const editorScrollCB = () => {
                 scrollCB('editor');
             };
-            const previewScrollCB = ()=> {
+            const previewScrollCB = () => {
                 scrollCB('preview');
             };
 
@@ -244,12 +244,12 @@ export default {
         // 更新编辑器
         onEditorRefresh() {
             this.editorRefresh();
-            setTimeout(()=> PR.prettyPrint(), 0);
+            setTimeout(() => PR.prettyPrint(), 0);
         },
         // 复制结束
         endCopy() {
             this.backLight = false;
-            setTimeout(()=> {
+            setTimeout(() => {
                 this.isCoping = false;
             }, 800);
         },

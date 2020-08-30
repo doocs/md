@@ -109,14 +109,14 @@ export default {
             return !this.nightMode ? 'success' : 'default';
         },
         ...mapState({
-            output: state=> state.output,
-            editor: state=> state.editor,
-            cssEditor: state=> state.cssEditor,
-            currentFont: state=> state.currentFont,
-            currentSize: state=> state.currentSize,
-            currentColor: state=> state.currentColor,
-            codeTheme: state=> state.codeTheme,
-            nightMode: state=> state.nightMode
+            output: state => state.output,
+            editor: state => state.editor,
+            cssEditor: state => state.cssEditor,
+            currentFont: state => state.currentFont,
+            currentSize: state => state.currentSize,
+            currentColor: state => state.currentColor,
+            codeTheme: state => state.codeTheme,
+            nightMode: state => state.nightMode
         })
     },
     methods: {
@@ -156,9 +156,9 @@ export default {
         },
         // 图片上传前的处理
         beforeUpload(file) {
-            uploadImgFile(file).then(res=> {
+            uploadImgFile(file).then(res => {
                 this.$emit('uploaded', res)
-            }).catch(err=> {
+            }).catch(err => {
                 this.$message({
                     showClose: true,
                     message: err,
@@ -201,7 +201,7 @@ export default {
             e.target.blur(); 
         },
         // 自定义CSS样式
-        async customStyle () {
+        async customStyle() {
             this.$emit('showCssEditor');
             this.$nextTick(() => {
                 if(!this.cssEditor) {

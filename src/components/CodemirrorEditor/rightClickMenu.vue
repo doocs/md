@@ -59,9 +59,9 @@ export default {
         // 空函数，阻断el-upload上传
         // 图片上传前的处理
         beforeUpload(file) {
-            uploadImgFile(file).then(res=> {
+            uploadImgFile(file).then(res => {
                 this.$emit('menuTick', 'insertPic', res)
-            }).catch(err=> {
+            }).catch(err => {
                 this.$message({
                     showClose: true,
                     message: err,

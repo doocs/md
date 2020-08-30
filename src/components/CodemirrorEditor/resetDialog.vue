@@ -21,10 +21,10 @@ export default {
     },
     computed: {
         btnType() {
-            return !this.nightMode ? 'success' : 'default';
+            return this.nightMode ? 'default' : 'success';
         },
         ...mapState({
-            nightMode: state=> state.nightMode
+            nightMode: state => state.nightMode
         })
     }
 }

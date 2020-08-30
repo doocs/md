@@ -16,12 +16,12 @@ const fileUploadConfig = {
 }
 
 
-function fileUpload(content, fileName) {
+function fileUpload(content, filename) {
     const date = new Date();
-    const dir = date.getFullYear() + '/' + (date.getMonth() + 1) + '/' + date.getDate();
+    const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
     const uuid = uuidv4(); 
     const token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '');
-    const dateFilename = new Date().getTime() + '-' + uuid + '.' + fileName.split('.')[1];
+    const dateFilename = new Date().getTime() + '-' + uuid + '.' + filename.split('.')[1];
     const url = `https://api.github.com/repos/${fileUploadConfig.username}/${fileUploadConfig.repo}/contents/${dir}/${dateFilename}`;
 
     return fetch({
