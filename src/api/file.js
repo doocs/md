@@ -19,10 +19,28 @@ const fileUploadConfig = {
 function fileUpload(content, filename) {
     const date = new Date();
     const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
-    const uuid = uuidv4(); 
-    const token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '');
+    const uuid = uuidv4();
     const dateFilename = new Date().getTime() + '-' + uuid + '.' + filename.split('.')[1];
-    const url = `https://api.github.com/repos/${fileUploadConfig.username}/${fileUploadConfig.repo}/contents/${dir}/${dateFilename}`;
+    const imgHost = localStorage.getItem("ImgHost") || 'default'
+
+    let token = ''
+    let username = ''
+    let repo = ''
+
+    if (imgHost === 'default') {
+        token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '');
+        username = fileUploadConfig.username
+        repo = fileUploadConfig.repo
+    }
+
+    if (imgHost === 'github' && localStorage.getItem("GitHubConfig")) {
+        const githubConfg = JSON.parse(localStorage.getItem("GitHubConfig"));
+        token = githubConfg.accessToken
+        username = githubConfg.username
+        repo = githubConfg.repo
+    }
+
+    const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/${dateFilename}`;
 
     return fetch({
         url,

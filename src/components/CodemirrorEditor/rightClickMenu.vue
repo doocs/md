@@ -1,12 +1,7 @@
 <template>
     <ul v-show="value"  id="menu" class="menu" :style="`left: ${left}px;top: ${top}px;`">
         <li v-for="item of list" :key="item.key" class="menu_item" @mousedown="onMouseDown(item.key)">
-            <el-upload v-if="item.key === 'insertPic'" action="" class="li__upload"
-                :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
-                :before-upload="beforeUpload">
-                <button class="btn-upload">{{item.text}}</button>
-            </el-upload>
-            <span v-else>{{item.text}}</span>
+            <span>{{item.text}}</span>
         </li>
     </ul>
 </template>
@@ -56,27 +51,9 @@ export default {
         closeCB() {
             this.$emit('input', false);
         },
-        // 空函数，阻断el-upload上传
-        // 图片上传前的处理
-        beforeUpload(file) {
-            uploadImgFile(file).then(res => {
-                this.$emit('menuTick', 'insertPic', res)
-            }).catch(err => {
-                this.$message({
-                    showClose: true,
-                    message: err,
-                    type: 'error'
-                });
-            });
-            return false;
-        },
         onMouseDown(key){
-            if (key == 'insertPic') {
-                document.querySelector('.li__upload button').click()
-            } else {
-                this.$emit('menuTick', key)
-            }
-           this.$emit('closeMenu', false)
+            this.$emit('menuTick', key)
+            this.$emit('closeMenu', false)
         }
     },
 }

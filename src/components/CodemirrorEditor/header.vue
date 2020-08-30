@@ -1,14 +1,9 @@
 <template>
     <el-container class="top is-dark">
         <!-- 图片上传 -->
-        <el-upload class="header__item" action="https://github.com/doocs/md"
-            :headers="{'Content-Type': 'multipart/form-data'}"
-            :show-file-list="false" :multiple="true" accept=".jpg,.jpeg,.png,.gif" name="file"
-            :before-upload="beforeUpload">
-            <el-tooltip :effect="effect" content="上传图片" placement="bottom-start">
-            <i class="el-icon-upload" size="medium"></i>
-            </el-tooltip>
-        </el-upload>
+        <el-tooltip :effect="effect" content="上传图片" placement="bottom-start"> 
+            <i class="el-icon-upload" size="medium" @click="$emit('showDialogUploadImg')"></i>
+        </el-tooltip>
         <!-- 下载文本文档 -->
         <el-tooltip class="header__item" :effect="effect" content="下载编辑框Markdown文档" placement="bottom-start">
             <i class="el-icon-download" size="medium" @click="$emit('downLoad')"></i>
@@ -76,7 +71,6 @@ import {
     fixCodeWhiteSpace,
     setColorWithCustomTemplate
 } from '../../assets/scripts/util'
-import {uploadImgFile} from '../../assets/scripts/uploadImageFile';
 import {
     solveWeChatImage,
     solveHtml
@@ -153,19 +147,6 @@ export default {
         statusChanged(val) {
             this.setCiteStatus(val)
             this.$emit('refresh')
-        },
-        // 图片上传前的处理
-        beforeUpload(file) {
-            uploadImgFile(file).then(res => {
-                this.$emit('uploaded', res)
-            }).catch(err => {
-                this.$message({
-                    showClose: true,
-                    message: err,
-                    type: 'error'
-                });
-            });
-            return false;
         },
         // 复制到微信公众号
         copy(e) {
