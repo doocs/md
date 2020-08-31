@@ -29,22 +29,23 @@
           <!-- <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane class="github-panel" label="GitHub图床" name="github">
+      <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
         <el-form
           class="setting-form"
           ref="form"
           :model="formGitHub"
           label-position="right"
-          label-width="100px"
+          label-width="80px"
         >
-          <el-form-item label="用户名:">
+          <el-form-item label="用户名">
             <el-input v-model="formGitHub.username" placeholder="如：yanglbme"></el-input>
           </el-form-item>
-          <el-form-item label="仓库名:">
+          <el-form-item label="仓库名">
             <el-input v-model="formGitHub.repo" placeholder="如：resource"></el-input>
           </el-form-item>
-          <el-form-item label="token:">
+          <el-form-item label="token">
             <el-input v-model="formGitHub.accessToken" placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
+            <el-link type="primary" href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" target="_blank">如何获取 GitHub token？</el-link>
           </el-form-item>
           <!-- <el-form-item label="jsDelivr CDN:">
             <el-checkbox v-model="formGitHub.useCDN"></el-checkbox>
@@ -138,7 +139,7 @@ export default {
         case "github":
           const { username, repo, accessToken } = this.formGitHub;
           if (!username || !repo || !accessToken) {
-            this.$message.error("未配置GitHub参数");
+            this.$message.error("未配置 GitHub 参数");
             return false;
           }
       }
