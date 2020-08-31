@@ -8,8 +8,8 @@
             <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/qrcode.png" style="width: 40%; display: block; margin: 20px auto 10px;">
         </div>
         <span slot="footer" class="dialog-footer">
-            <el-button type="success" @click="onRedirect('https://github.com/doocs/md')" plain>GitHub 仓库</el-button>
-            <el-button type="success" @click="onRedirect('https://gitee.com/doocs/md')" plain>Gitee 仓库</el-button>
+            <el-button type="primary" @click="onRedirect('https://github.com/doocs/md')" plain>GitHub 仓库</el-button>
+            <el-button type="primary" @click="onRedirect('https://gitee.com/doocs/md')" plain>Gitee 仓库</el-button>
         </span>
     </el-dialog>
 </template>

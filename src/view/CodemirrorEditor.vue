@@ -5,12 +5,12 @@
                 <editor-header
                     ref="header"
                     @refresh="onEditorRefresh"
-                    @uploaded="uploaded"
                     @cssChanged="cssChanged"
                     @downLoad="downloadEditorContent"
                     @showCssEditor="showCssEditor = !showCssEditor"
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
+                    @showDialogUploadImg="dialogUploadImgVisible = true"
                     @startCopy="isCoping = true, backLight = true"
                     @endCopy="endCopy"
                 />
@@ -42,6 +42,7 @@
                 </el-row>
             </el-main>
         </el-container>
+        <upload-img-dialog v-model="dialogUploadImgVisible" @close="dialogUploadImgVisible = false" @uploaded="uploaded" />
         <about-dialog v-model="aboutDialogVisible"/>
         <insert-form-dialog v-model="dialogFormVisible"/>
         <right-click-menu
@@ -58,6 +59,8 @@ import editorHeader from '../components/CodemirrorEditor/header';
 import aboutDialog from '../components/CodemirrorEditor/aboutDialog';
 import insertFormDialog from '../components/CodemirrorEditor/insertForm';
 import rightClickMenu from '../components/CodemirrorEditor/rightClickMenu';
+import uploadImgDialog from '../components/CodemirrorEditor/uploadImgDialog';
+
 import {
     css2json,
     downLoadMD,
@@ -74,6 +77,7 @@ export default {
         return {
             showCssEditor: false,
             aboutDialogVisible: false,
+            dialogUploadImgVisible: false,
             dialogFormVisible: false,
             isCoping: false,
             isImgLoading: false,
@@ -89,7 +93,8 @@ export default {
         editorHeader,
         aboutDialog,
         insertFormDialog,
-        rightClickMenu
+        rightClickMenu,
+        uploadImgDialog
     },
     computed: {
         ...mapState({
@@ -191,6 +196,7 @@ export default {
                 });
                 return;
             }
+            this.dialogUploadImgVisible = false
             // 上传成功，获取光标
             const cursor = this.editor.getCursor();
             const imageUrl = response;
@@ -277,7 +283,7 @@ export default {
                     this.$refs.header.showResetConfirm = true;
                     break;
                 case 'insertPic':
-                    this.uploaded(info);
+                    this.dialogUploadImgVisible = true
                     break;
                 case 'downLoad':
                     this.downloadEditorContent();
