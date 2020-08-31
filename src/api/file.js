@@ -1,5 +1,7 @@
 import fetch from './fetch';
-import { v4 as uuidv4 } from 'uuid';
+import {
+    v4 as uuidv4
+} from 'uuid';
 const fileUploadConfig = {
     username: 'filess',
     repo: 'images',
@@ -15,32 +17,41 @@ const fileUploadConfig = {
     ]
 }
 
+function getConfiguration() {
+    const imgHost = localStorage.getItem("ImgHost") || 'default'
+
+    // default
+    let token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '')
+    let username = fileUploadConfig.username
+    let repo = fileUploadConfig.repo
+
+    // GitHub
+    if (imgHost === 'github' && localStorage.getItem("GitHubConfig")) {
+        const githubConfg = JSON.parse(localStorage.getItem("GitHubConfig"))
+        const repoUrl = githubConfg.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/")
+        token = githubConfg.accessToken
+        username = repoUrl[0]
+        repo = repoUrl[1]
+    }
+    return {
+        username,
+        repo,
+        token
+    }
+}
+
 
 function fileUpload(content, filename) {
     const date = new Date();
     const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
     const uuid = uuidv4();
     const dateFilename = new Date().getTime() + '-' + uuid + '.' + filename.split('.')[1];
-    const imgHost = localStorage.getItem("ImgHost") || 'default'
-
-    let token = ''
-    let username = ''
-    let repo = ''
-
-    if (imgHost === 'default') {
-        token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '');
-        username = fileUploadConfig.username
-        repo = fileUploadConfig.repo
-    }
-
-    if (imgHost === 'github' && localStorage.getItem("GitHubConfig")) {
-        const githubConfg = JSON.parse(localStorage.getItem("GitHubConfig"));
-        token = githubConfg.accessToken
-        username = githubConfg.username
-        repo = githubConfg.repo
-    }
-
-    const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/${dateFilename}`;
+    const {
+        username,
+        repo,
+        token
+    } = getConfiguration()
+    const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/${dateFilename}`
 
     return fetch({
         url,

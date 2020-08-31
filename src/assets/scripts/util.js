@@ -179,7 +179,6 @@ export function css2json(css) {
  */
 export function saveEditorContent(editor, name) {
     const content = editor.getValue(0)
-
     if (content) {
         localStorage.setItem(name, content)
     } else {
@@ -198,7 +197,6 @@ export function formatDoc(content) {
 
 export function fixCodeWhiteSpace(value = 'pre') {
     const preDomList = document.getElementsByClassName('code__pre');
-
     if (preDomList.length > 0) {
         preDomList.forEach(pre => {
             pre.style.whiteSpace = value;
