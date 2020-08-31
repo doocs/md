@@ -26,7 +26,6 @@
             将文件拖到此处，或
             <em>点击上传</em>
           </div>
-          <!-- <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
       <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
@@ -35,21 +34,15 @@
           ref="form"
           :model="formGitHub"
           label-position="right"
-          label-width="80px"
+          label-width="100px"
         >
-          <el-form-item label="用户名">
-            <el-input v-model="formGitHub.username" placeholder="如：yanglbme"></el-input>
-          </el-form-item>
-          <el-form-item label="仓库名">
-            <el-input v-model="formGitHub.repo" placeholder="如：resource"></el-input>
+          <el-form-item label="GitHub 仓库">
+            <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
           </el-form-item>
           <el-form-item label="token">
             <el-input v-model="formGitHub.accessToken" placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
             <el-link type="primary" href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token" target="_blank">如何获取 GitHub token？</el-link>
           </el-form-item>
-          <!-- <el-form-item label="jsDelivr CDN:">
-            <el-checkbox v-model="formGitHub.useCDN"></el-checkbox>
-          </el-form-item>-->
           <el-form-item>
             <el-button type="primary" @click="onSubmit">保存配置</el-button>
           </el-form-item>
@@ -72,10 +65,8 @@ export default {
   data() {
     return {
       formGitHub: {
-        username: "",
         repo: "",
         accessToken: "",
-        // useCDN: true,
       },
       options: [
         {
@@ -105,8 +96,17 @@ export default {
       localStorage.setItem("ImgHost", this.imgHost);
     },
     onSubmit() {
-      console.log("submit github params:", this.formGitHub);
+      if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
+        const blankElement = this.formGitHub.repo ? "token" : "GitHub 仓库"
+        this.$message({
+          showClose: true,
+          message: `参数「​${blankElement}」不能为空`,
+          type: "error",
+        });
+        return;
+      }
       localStorage.setItem("GitHubConfig", JSON.stringify(this.formGitHub));
+      console.log("submit github params:", this.formGitHub);
       this.$message({
         message: "保存成功",
         type: "success",
@@ -137,8 +137,8 @@ export default {
     validateConfig() {
       switch (this.imgHost) {
         case "github":
-          const { username, repo, accessToken } = this.formGitHub;
-          if (!username || !repo || !accessToken) {
+          const { repo, accessToken } = this.formGitHub;
+          if (!repo || !accessToken) {
             this.$message.error("未配置 GitHub 参数");
             return false;
           }
