@@ -21,7 +21,7 @@ export default {
     },
     computed: {
         btnType() {
-            return this.nightMode ? 'default' : 'success';
+            return this.nightMode ? 'default' : 'primary';
         },
         ...mapState({
             nightMode: state => state.nightMode

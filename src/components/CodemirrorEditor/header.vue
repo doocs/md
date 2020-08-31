@@ -100,7 +100,7 @@ export default {
             return this.nightMode ? 'dark' : 'light'
         },
         btnType() {
-            return !this.nightMode ? 'success' : 'default';
+            return this.nightMode ? 'default' : 'primary';
         },
         ...mapState({
             output: state => state.output,
