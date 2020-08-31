@@ -29,7 +29,7 @@
           <!-- <div class="el-upload__tip" slot="tip">只能上传jpg/png文件，且不超过500kb</div> -->
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane class="github-panel" label="Github图床" name="github">
+      <el-tab-pane class="github-panel" label="GitHub图床" name="github">
         <el-form
           class="setting-form"
           ref="form"
