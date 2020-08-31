@@ -38,13 +38,13 @@
           label-width="100px"
         >
           <el-form-item label="用户名:">
-            <el-input v-model="formGitHub.username"></el-input>
+            <el-input v-model="formGitHub.username" placeholder="如：yanglbme"></el-input>
           </el-form-item>
           <el-form-item label="仓库名:">
-            <el-input v-model="formGitHub.repo"></el-input>
+            <el-input v-model="formGitHub.repo" placeholder="如：resource"></el-input>
           </el-form-item>
           <el-form-item label="token:">
-            <el-input v-model="formGitHub.accessToken"></el-input>
+            <el-input v-model="formGitHub.accessToken" placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
           </el-form-item>
           <!-- <el-form-item label="jsDelivr CDN:">
             <el-checkbox v-model="formGitHub.useCDN"></el-checkbox>
