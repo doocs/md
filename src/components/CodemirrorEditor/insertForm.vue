@@ -8,7 +8,7 @@
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">
       <el-col :span="6">
-        行：
+        行数
         <el-input-number
           v-model="rowNum"
           controls-position="right"
@@ -19,7 +19,7 @@
         ></el-input-number>
       </el-col>
       <el-col :span="6">
-        列：
+        列数
         <el-input-number
           v-model="colNum"
           controls-position="right"

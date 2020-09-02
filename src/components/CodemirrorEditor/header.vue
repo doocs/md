@@ -55,9 +55,9 @@
         </el-tooltip>
         <el-button :type="btnType" plain size="medium" @click="copy" placement="bottom-start">复制</el-button>
         <el-button :type="btnType" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
-        <el-tooltip content="夜间模式" placement="bottom-start">
-            <div class="mode__switch" v-if="!nightMode" @click="themeChanged"></div>
-            <div class="mode__switch mode__switch_black" v-else @click="themeChanged"></div>
+        <el-tooltip :content="btnContent" :effect="effect" placement="bottom-start">
+            <div class="mode__switch mode__switch_black" v-if="nightMode" @click="themeChanged"></div>
+            <div class="mode__switch" v-else @click="themeChanged"></div>
         </el-tooltip>
         <resetDialog :showResetConfirm="showResetConfirm" @confirm="confirmReset" @close="cancelReset"/>
       </el-container>
@@ -98,6 +98,9 @@ export default {
     computed: {
         effect() {
             return this.nightMode ? 'dark' : 'light'
+        },
+        btnContent() {
+            return this.nightMode ? '浅色模式' : '暗黑模式'
         },
         btnType() {
             return this.nightMode ? 'default' : 'primary';
