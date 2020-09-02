@@ -31,7 +31,7 @@
       </el-col>
     </el-row>
     <!--  -->
-    <table style="border-collapse: collapse">
+    <table style="border-collapse: collapse" class="input-table">
       <tr :class="{ 'head-style': row===1 }" v-for="row in rowNum+1" :key="row">
         <td v-for="col in colNum" :key="col">
           <el-input
@@ -118,6 +118,12 @@
 <style lang="less">
 .tb-options {
     margin-bottom: 20px;
+}
+
+.input-table {
+    /deep/ .el-input__inner {
+        border-radius: 0;
+    }
 }
 
 .head-style .el-input__inner {
