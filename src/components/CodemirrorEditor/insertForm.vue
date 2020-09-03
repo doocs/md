@@ -115,15 +115,13 @@
 
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
 .tb-options {
     margin-bottom: 20px;
 }
 
-.input-table {
-    /deep/ .el-input__inner {
-        border-radius: 0;
-    }
+.input-table ::v-deep .el-input__inner {
+    border-radius: 0;
 }
 
 .head-style .el-input__inner {

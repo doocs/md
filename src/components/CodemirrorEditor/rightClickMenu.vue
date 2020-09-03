@@ -99,7 +99,7 @@ export default {
         color: white;
         background: rgb(139, 146, 148);
     }
-    /deep/ .el-upload {
+    ::v-deep .el-upload {
         width: 100%;
     }
 }
