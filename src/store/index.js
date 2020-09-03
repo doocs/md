@@ -91,7 +91,8 @@ const mutations = {
                         const doc = formatDoc(editor.getValue(0))
                         localStorage.setItem('__editor_content', doc)
                         editor.setValue(doc)
-                    }
+                    },
+                    'Ctrl-S': function save(editor) {}
                 }
             }
         )
@@ -118,7 +119,8 @@ const mutations = {
                         }, {
                             line: totalLines
                         })
-                    }
+                    },
+                    'Ctrl-S': function save(editor) {}
                 }
             }
         )
