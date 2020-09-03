@@ -62,6 +62,7 @@ const mutations = {
     },
     themeChanged(state) {
         state.nightMode = !state.nightMode;
+        localStorage.setItem('nightMode', state.nightMode)
     },
     initEditorState(state) {
         state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value
@@ -69,6 +70,7 @@ const mutations = {
         state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value
         state.codeTheme = localStorage.getItem('codeTheme') || config.codeThemeOption[0].value
         state.citeStatus = localStorage.getItem('citeStatus') === 'true'
+        state.nightMode = localStorage.getItem('nightMode') || false
         state.wxRenderer = new WxRenderer({
             theme: setColor(state.currentColor),
             fonts: state.currentFont,
