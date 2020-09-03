@@ -70,7 +70,7 @@ const mutations = {
         state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value
         state.codeTheme = localStorage.getItem('codeTheme') || config.codeThemeOption[0].value
         state.citeStatus = localStorage.getItem('citeStatus') === 'true'
-        state.nightMode = localStorage.getItem('nightMode') || false
+        state.nightMode = localStorage.getItem('nightMode') === 'true'
         state.wxRenderer = new WxRenderer({
             theme: setColor(state.currentColor),
             fonts: state.currentFont,
