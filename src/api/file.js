@@ -20,7 +20,7 @@ const fileUploadConfig = {
 function getConfiguration() {
     const imgHost = localStorage.getItem("ImgHost") || 'default'
 
-    // default
+    // Default
     let token = fileUploadConfig.accessToken[Math.floor(Math.random() * fileUploadConfig.accessToken.length)].replace('doocsmd', '')
     let username = fileUploadConfig.username
     let repo = fileUploadConfig.repo

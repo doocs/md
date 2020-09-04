@@ -29,13 +29,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.fade-enter,.fade-leave-to{
+.fade-enter, .fade-leave-to {
     opacity: 0;
 }
-.fade-enter-to,.fade-leave{
+.fade-enter-to, .fade-leave {
     opacity: 1;
 }
-.fade-enter-active,.fade-leave-active{
+.fade-enter-active, .fade-leave-active {
     transition: all 1s;
 }
 </style>
