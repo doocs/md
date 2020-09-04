@@ -17,11 +17,11 @@
                 </el-upload>
             </el-tab-pane>
             <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
-                <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="100px">
-                    <el-form-item label="GitHub 仓库">
+                <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="120px">
+                    <el-form-item label="GitHub 仓库" required='true'>
                         <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
-                    <el-form-item label="token">
+                    <el-form-item label="token" required='true'>
                         <el-input v-model="formGitHub.accessToken"
                             placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
                         <el-link type="primary"
