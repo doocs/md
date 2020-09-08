@@ -1,5 +1,4 @@
 import marked from 'marked';
-import store from '../../../store/index';
 const WxRenderer = function (opts) {
     this.opts = opts
     let ENV_STRETCH_IMAGE = true

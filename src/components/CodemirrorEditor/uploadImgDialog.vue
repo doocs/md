@@ -18,10 +18,10 @@
             </el-tab-pane>
             <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
                 <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="120px">
-                    <el-form-item label="GitHub 仓库" required='true'>
+                    <el-form-item label="GitHub 仓库" :required="true">
                         <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
-                    <el-form-item label="token" required='true'>
+                    <el-form-item label="token" :required="true">
                         <el-input v-model="formGitHub.accessToken"
                             placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
                         <el-link type="primary"
@@ -69,8 +69,8 @@ export default {
         };
     },
     created() {
-        if (localStorage.getItem("GitHubConfig")) {
-            this.formGitHub = JSON.parse(localStorage.getItem("GitHubConfig"));
+        if (localStorage.getItem("githubConfig")) {
+            this.formGitHub = JSON.parse(localStorage.getItem("githubConfig"));
         }
         if (localStorage.getItem("ImgHost")) {
             this.imgHost = localStorage.getItem("ImgHost");
@@ -91,7 +91,7 @@ export default {
                 });
                 return;
             }
-            localStorage.setItem("GitHubConfig", JSON.stringify(this.formGitHub));
+            localStorage.setItem("githubConfig", JSON.stringify(this.formGitHub));
             console.log("submit github params:", this.formGitHub);
             this.$message({
                 message: "保存成功",
@@ -106,11 +106,11 @@ export default {
 
             this.uploadingImg = true;
             uploadImgFile(file)
-                .then((res) => {
+                .then(res=> {
                     this.$emit("uploaded", res);
                     this.uploadingImg = false;
                 })
-                .catch((err) => {
+                .catch(err=> {
                     this.uploadingImg = false;
                     this.$message({
                         showClose: true,
@@ -139,6 +139,15 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .el-dialog {
+    width: 40%;
+}
+/deep/ .el-upload-dragger {
+    width: 335px;
+}
+/deep/ .el-dialog__body {
+    padding-bottom: 50px;
+}
 .upload-panel {
     display: flex;
     flex-direction: column;
@@ -159,7 +168,7 @@ export default {
 }
 
 .setting-form {
-    width: 70%;
+    width: 100%;
 
     .el-form-item {
         margin: 15px;
@@ -169,4 +178,5 @@ export default {
         text-align: right;
     }
 }
+
 </style>

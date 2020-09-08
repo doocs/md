@@ -15,11 +15,12 @@ export function uploadImgFile(file) {
 
         imgFile.onload = function () {
             const base64Content = this.result.split(',').pop();
+
             fileApi.fileUpload(base64Content, file.name).then(res => {
                 const imageUrl = res.content.download_url.replace(githubResourceUrl, cdnResourceUrl);
                 resolve(imageUrl);
             }).catch(err => {
-                console.log(err.message)
+                reject(err.message)
             })
         }
     });
