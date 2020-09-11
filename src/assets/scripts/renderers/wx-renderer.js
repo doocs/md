@@ -21,10 +21,6 @@ const WxRenderer = function (opts) {
         for (let ele in themeTpl.inline) {
             if (themeTpl.inline.hasOwnProperty(ele)) {
                 let style = themeTpl.inline[ele]
-                if (ele === 'codespan') {
-                    style['font-family'] = CODE_FONT_FAMILY
-                    style['white-space'] = 'normal'
-                }
                 mapping[ele] = merge(base, style)
             }
         }
@@ -70,7 +66,6 @@ const WxRenderer = function (opts) {
         return `
             <style>
             .preview-wrapper pre::before {
-                font-family: "SourceSansPro", "HelveticaNeue", Arial, sans-serif;
                 position: absolute;
                 top: 0;
                 right: 0;
