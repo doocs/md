@@ -15,39 +15,54 @@ const state = {
             'a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55'
         ]
     },
+    aliOSS: {
+        bucket: '<Your BucketName>',
+        // region以杭州为例（oss-cn-hangzhou），其他region按实际情况填写。
+        region: '<Your Region>',
+        // 阿里云主账号AccessKey拥有所有API的访问权限，风险很高。强烈建议您创建并使用RAM账号进行API访问或日常运维，请登录RAM控制台创建RAM账号。
+        accessKeyId: '<Your AccessKeyId>',
+        accessKeySecret: '<Your AccessKeySecret>',
+    },
     qiniuCloud: {}
 };
 const getters = {
     config(state) {
-        let token, username, repo, method;
-        const activeKey = state.imgHost !== 'default' && localStorage.getItem(`${state.imgHost}Config`) ? state.imgHost : 'default';
-        
-        switch (activeKey) {
-            case 'github':
-                const githubConfg = JSON.parse(localStorage.getItem("githubConfig"));
-                const repoUrl = githubConfg.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/");
-                token = githubConfg.accessToken;
-                username = repoUrl[0];
-                repo = repoUrl[1];
-                method = 'put';
-                break;
-            case 'qiniuCloud':
-                break;
-            default:
-                token = state.default.accessToken[Math.floor(Math.random() * state.default.accessToken.length)].replace('doocsmd', '');
-                username = state.default.username;
-                repo = state.default.repo;
-                method = state.default.method;
-                break;
-        }
         const date = new Date();
         const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
-        const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`;
-    
-        return {
-            method,
-            token,
-            url
+        const activeKey = state.imgHost !== 'default' && localStorage.getItem(`${state.imgHost}Config`) ? state.imgHost : 'default';
+
+        switch (activeKey) {
+            case 'aliOSS':
+                return {
+                    ...state.aliOSS,
+                    dir
+                };
+            case 'qiniuCloud':
+                return {
+                };
+            case 'github':
+                const githubConfig = JSON.parse(localStorage.getItem("githubConfig"));
+                const repoUrl = githubConfig.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/");
+                const username = repoUrl[0];
+                const repo = repoUrl[1];
+
+                return {
+                    method: 'put',
+                    headers: {
+                        'Authorization': 'token ' + githubConfig.accessToken
+                    },
+                    url: `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
+                };
+            default:
+                const token = state.default.accessToken[Math.floor(Math.random() * state.default.accessToken.length)].replace('doocsmd', '');
+
+                return {
+                    method: state.default.method,
+                    headers: {
+                        'Authorization': 'token ' + token
+                    },
+                    url: `https://api.github.com/repos/${state.default.username}/${state.default.repo}/contents/${dir}/`
+                };
         }
     }
 };
