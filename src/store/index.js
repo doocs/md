@@ -10,8 +10,6 @@ import {
     setColor,
     formatDoc
 } from '../assets/scripts/util'
-// module
-import imageApi from './imageApi.js';
 
 Vue.use(Vuex)
 
@@ -156,8 +154,5 @@ const mutations = {
 export default new Vuex.Store({
     state,
     mutations,
-    actions: {},
-    modules: {
-        imageApi
-    }
+    actions: {}
 })

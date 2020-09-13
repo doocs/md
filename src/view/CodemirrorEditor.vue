@@ -135,6 +135,18 @@ export default {
                 for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
                     let item = e.clipboardData.items[i]
                     if (item.kind === 'file') {
+
+                        // 校验图床参数
+                        const imgHost = localStorage.getItem('imgHost') || 'default';
+                        if (imgHost != 'default' && !localStorage.getItem(`${imgHost}Config`)) {
+                            this.$message({
+                                showClose: true,
+                                message: '请先配置好图床参数',
+                                type: 'error'
+                            });
+                            continue;
+                        }
+
                         this.isImgLoading = true;
                         const pasteFile = item.getAsFile()
                         uploadImgFile(pasteFile).then(res => {
@@ -205,7 +217,7 @@ export default {
             this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
             this.$message({
                 showClose: true,
-                message: '图片插入成功',
+                message: '图片上传成功',
                 type: 'success'
             });
             this.onEditorRefresh();

@@ -11,7 +11,9 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "ali-oss": "^6.10.0",
     "axios": "^0.19.1",
+    "buffer-from": "^1.1.1",
     "codemirror": "^5.50.2",
     "core-js": "^3.4.4",
     "element-ui": "^2.13.0",
