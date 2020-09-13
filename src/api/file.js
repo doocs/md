@@ -1,70 +1,102 @@
 import fetch from './fetch';
-import store from '../store/index';
+import OSS from 'ali-oss';
+import Buffer from 'buffer-from';
 import {
     v4 as uuidv4
 } from 'uuid';
 
-function fileUpload(content, filename) {
-    const fileUploadType = store.state.imgHost;
-    const activeKey = fileUploadType !== 'default' && localStorage.getItem(`${fileUploadType}Config`)
-        ? fileUploadType : 'default';
+const defaultConfig = {
+    username: 'filess',
+    repo: 'images',
+    method: 'put',
+    accessToken: [
+        '7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af',
+        'c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe',
+        '2821cd8819fa345c053doocsmdca86ac653f8bc20db1f1b',
+        '445f0dae46ef1f2a4d6doocsmdc797301e94797b4750a4c',
+        'cc1d0c1426d0fd0902bdoocsmdd2d7184b14da61b86ec46',
+        'b67e9d15cb6f910492fdoocsmdac6b44d379c953bb19eff',
+        '618c4dc2244ccbbc088doocsmd125d17fd31b7d06a50cf3',
+        'a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55'
+    ]
+}
 
-    switch (activeKey) {
+function fileUpload(content, filename) {
+    const imgHost = localStorage.getItem('imgHost');
+    !imgHost && localStorage.setItem('imgHost', 'default');
+    switch (imgHost) {
         case 'aliOSS':
             return aliOSSUploadFile(content, filename);
-        case 'default':
-            return githubUploadFile(content, filename);
         case 'github':
-            return githubUploadFile(content, filename);
         default:
-            break;
+            return githubUploadFile(content, filename);
     }
 }
 
-/**
- * github 图片上传
- * @param {*} content 
- * @param {*} filename 
- */
-function githubUploadFile(content, filename) {
-    const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
-    const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
-    const {
-        method,
-        headers,
-        url
-    } = store.getters['imageApi/config'];
-    const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + filename.split('.')[1];
-    const uploadUrl = url + dateFilename;
+function getDefaultConfig() {
+    const date = new Date();
+    const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
+    const token = defaultConfig.accessToken[Math.floor(Math.random() * defaultConfig.accessToken.length)].replace('doocsmd', '');
+    return {
+        method: defaultConfig.method,
+        headers: {
+            'Authorization': 'token ' + token
+        },
+        url: `https://api.github.com/repos/${defaultConfig.username}/${defaultConfig.repo}/contents/${dir}/`
+    };
+}
 
+function getGitHubConfig() {
+    const date = new Date();
+    const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
+    const githubConfig = JSON.parse(localStorage.getItem("githubConfig"));
+    const repoUrl = githubConfig.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/");
+    const username = repoUrl[0];
+    const repo = repoUrl[1];
+
+    return {
+        method: 'put',
+        headers: {
+            'Authorization': 'token ' + githubConfig.accessToken
+        },
+        url: `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
+    };
+}
+
+function githubUploadFile(content, filename) {
+    const isDefault = localStorage.getItem('imgHost') !== 'github';
+    const config = isDefault ? getDefaultConfig() : getGitHubConfig();
+    const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + filename.split('.')[1];
+    
     return fetch({
-        url: uploadUrl,
-        method,
-        headers,
+        url: config.url + dateFilename,
+        method: config.method,
+        headers: config.headers,
         data: {
-            message: 'Upload image by https://doocs.github.io/md',
+            message: 'Upload by https://doocs.github.io/md',
             content: content
         }
-    }).then(res=> {
-        const imageUrl = res.content.download_url.replace(githubResourceUrl, cdnResourceUrl);
-
-        return imageUrl;
+    }).then(res => {
+        const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
+        const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
+        return isDefault ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl) : res.content.download_url;
     });
+    
 }
 
 function aliOSSUploadFile(content, filename) {
-    debugger;
-    const config = store.getters['imageApi/config'];
     const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + filename.split('.')[1];
-    const dir = config.dir + '/' + dateFilename;
-    const Buffer = require('buffer-from')
+    const aliOSSConfig = JSON.parse(localStorage.getItem('aliOSSConfig'));
     const buffer = Buffer(content, 'base64');
-    const OSS = require('ali-oss');
     try {
-        const client = new OSS(config);
-
-        return client.put(dir, buffer).then(res=> {
-            console.log('aliOSSUoladFile', res);
+        const dir = aliOSSConfig.path + '/' + dateFilename;
+        const client = new OSS({
+            region: aliOSSConfig.region,
+            bucket: aliOSSConfig.bucket,
+            accessKeyId: aliOSSConfig.accessKeyId,
+            accessKeySecret: aliOSSConfig.accessKeySecret
+        });
+        return client.put(dir, buffer).then(res => {
             return res.url;
         })
     } catch (e) {

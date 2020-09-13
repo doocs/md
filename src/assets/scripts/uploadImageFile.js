@@ -16,7 +16,7 @@ export function uploadImgFile(file) {
             fileApi.fileUpload(base64Content, file.name).then(res => {
                 resolve(res);
             }).catch(err => {
-                reject(err.message)
+                reject(err);
             })
         }
     });

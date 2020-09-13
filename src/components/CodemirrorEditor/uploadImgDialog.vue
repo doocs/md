@@ -2,7 +2,7 @@
     <el-dialog title="本地上传" class="upload__dialog" :visible="value" @close="$emit('close')">
         <el-tabs type="card" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-                <el-select v-model="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
+                <el-select v-model="imgHost" @change="changeimgHost" placeholder="请选择" size="small">
                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -17,7 +17,7 @@
                 </el-upload>
             </el-tab-pane>
             <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
-                <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="120px">
+                <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="140px">
                     <el-form-item label="GitHub 仓库" :required="true">
                         <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
@@ -29,7 +29,36 @@
                             target="_blank">如何获取 GitHub token？</el-link>
                     </el-form-item>
                     <el-form-item>
-                        <el-button type="primary" @click="onSubmit">保存配置</el-button>
+                        <el-button type="primary" @click="saveGitHubConfiguration">保存配置</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+             <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
+                <el-form class="setting-form" ref="form" :model="formAliOSS" label-position="right" label-width="140px">
+                    <el-form-item label="AccessKey ID" :required="true">
+                        <el-input v-model="formAliOSS.accessKeyId" placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"></el-input>
+                    </el-form-item>
+                    <el-form-item label="AccessKey Secret" :required="true">
+                        <el-input v-model="formAliOSS.accessKeySecret" show-password
+                            placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket" :required="true">
+                        <el-input v-model="formAliOSS.bucket"
+                            placeholder="如：doocs"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket 所在区域" :required="true">
+                        <el-input v-model="formAliOSS.region"
+                            placeholder="如：oss-cn-shenzhen"></el-input>
+                    </el-form-item>
+                     <el-form-item label="存储路径">
+                        <el-input v-model="formAliOSS.path"
+                            placeholder="如：img"></el-input>
+                        <el-link type="primary"
+                            href="https://help.aliyun.com/document_detail/31883.html"
+                            target="_blank">如何使用阿里云 OSS？</el-link>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="saveAliOSSConfiguration">保存配置</el-button>
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
@@ -55,6 +84,13 @@ export default {
                 repo: "",
                 accessToken: "",
             },
+            formAliOSS: {
+                accessKeyId: "",
+                accessKeySecret: "",
+                bucket: "",
+                region: "",
+                path: ""
+            },
             options: [{
                     value: "default",
                     label: "默认图床",
@@ -63,6 +99,10 @@ export default {
                     value: "github",
                     label: "GitHub",
                 },
+                {
+                    value: "aliOSS",
+                    label: "阿里云"
+                }
             ],
             imgHost: "default",
             uploadingImg: false,
@@ -72,16 +112,18 @@ export default {
         if (localStorage.getItem("githubConfig")) {
             this.formGitHub = JSON.parse(localStorage.getItem("githubConfig"));
         }
-        if (localStorage.getItem("ImgHost")) {
-            this.imgHost = localStorage.getItem("ImgHost");
+        if (localStorage.getItem("aliOSSConfig")) {
+            this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
+        }
+        if (localStorage.getItem("imgHost")) {
+            this.imgHost = localStorage.getItem("imgHost");
         }
     },
     methods: {
-        changeImgHost() {
-            console.log("select img host:", this.imgHost);
-            localStorage.setItem("ImgHost", this.imgHost);
+        changeimgHost() {
+            localStorage.setItem("imgHost", this.imgHost);
         },
-        onSubmit() {
+        saveGitHubConfiguration() {
             if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
                 const blankElement = this.formGitHub.repo ? "token" : "GitHub 仓库"
                 this.$message({
@@ -92,12 +134,28 @@ export default {
                 return;
             }
             localStorage.setItem("githubConfig", JSON.stringify(this.formGitHub));
-            console.log("submit github params:", this.formGitHub);
             this.$message({
                 message: "保存成功",
                 type: "success",
             });
         },
+        saveAliOSSConfiguration() {
+            if (!(this.formAliOSS.accessKeyId && this.formAliOSS.accessKeySecret && this.formAliOSS.bucket && this.formAliOSS.region)) {
+                this.$message({
+                    showClose: true,
+                    message: `阿里云 OSS 参数配置不全`,
+                    type: "error",
+                });
+                return;
+            }
+            localStorage.setItem("aliOSSConfig", JSON.stringify(this.formAliOSS));
+            this.$message({
+                message: "保存成功",
+                type: "success",
+            });
+        },
+
+
         // 图片上传前的处理
         beforeUpload(file) {
             if (!this.validateConfig()) {
@@ -106,11 +164,11 @@ export default {
 
             this.uploadingImg = true;
             uploadImgFile(file)
-                .then(res=> {
+                .then(res => {
                     this.$emit("uploaded", res);
                     this.uploadingImg = false;
                 })
-                .catch(err=> {
+                .catch(err => {
                     this.uploadingImg = false;
                     this.$message({
                         showClose: true,
@@ -128,7 +186,16 @@ export default {
                     } = this.formGitHub;
                     
                     if (!repo || !accessToken) {
-                        this.$message.error("未配置 GitHub 参数");
+                        this.$message.error("请先配置 GitHub 图床参数");
+                        return false;
+                    }
+                case 'aliOSS':
+                    const {
+                        accessKeyId, accessKeySecret, bucket, region, path
+                    } = this.formAliOSS;
+
+                    if (!(accessKeyId && accessKeySecret && bucket && region)) {
+                        this.$message.error("请先配置阿里云 OSS 参数");
                         return false;
                     }
             }
