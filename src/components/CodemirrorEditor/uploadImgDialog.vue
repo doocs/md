@@ -2,7 +2,7 @@
     <el-dialog title="本地上传" class="upload__dialog" :visible="value" @close="$emit('close')">
         <el-tabs type="card" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-                <el-select v-model="imgHost" @change="changeimgHost" placeholder="请选择" size="small">
+                <el-select v-model="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -120,8 +120,13 @@ export default {
         }
     },
     methods: {
-        changeimgHost() {
+        changeImgHost() {
             localStorage.setItem("imgHost", this.imgHost);
+            this.$message({
+                showClose: true,
+                message: '已成功切换图床',
+                type: "success",
+            });
         },
         saveGitHubConfiguration() {
             if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
@@ -179,7 +184,7 @@ export default {
             return false;
         },
         validateConfig() {
-            switch (this.imgHost) {
+            switch (localStorage.getItem('imgHost')) {
                 case "github":
                     const {
                         repo, accessToken
@@ -189,6 +194,7 @@ export default {
                         this.$message.error("请先配置 GitHub 图床参数");
                         return false;
                     }
+                    break;
                 case 'aliOSS':
                     const {
                         accessKeyId, accessKeySecret, bucket, region, path
