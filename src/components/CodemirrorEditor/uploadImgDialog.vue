@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="插入图片" class="upload__dialog" :visible="value" @close="$emit('close')">
+    <el-dialog title="本地上传" class="upload__dialog" :visible="value" @close="$emit('close')">
         <el-tabs type="card" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
                 <el-select v-model="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
@@ -11,7 +11,7 @@
                     v-loading="uploadingImg">
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">
-                        将文件拖到此处，或
+                        将图片拖到此处，或
                         <em>点击上传</em>
                     </div>
                 </el-upload>
@@ -22,7 +22,7 @@
                         <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
                     <el-form-item label="token" :required="true">
-                        <el-input v-model="formGitHub.accessToken"
+                        <el-input v-model="formGitHub.accessToken" show-password
                             placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
                         <el-link type="primary"
                             href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"

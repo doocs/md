@@ -205,7 +205,7 @@ export default {
             this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
             this.$message({
                 showClose: true,
-                message: '图片插入成功',
+                message: '图片上传成功',
                 type: 'success'
             });
             this.onEditorRefresh();
