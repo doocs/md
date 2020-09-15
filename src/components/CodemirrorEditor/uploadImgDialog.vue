@@ -2,7 +2,7 @@
     <el-dialog title="本地上传" class="upload__dialog" :visible="value" @close="$emit('close')">
         <el-tabs type="card" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-                <el-select v-model="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
+                <el-select v-model.trim="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -19,10 +19,10 @@
             <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
                 <el-form class="setting-form" ref="form" :model="formGitHub" label-position="right" label-width="140px">
                     <el-form-item label="GitHub 仓库" :required="true">
-                        <el-input v-model="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
+                        <el-input v-model.trim="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
                     <el-form-item label="token" :required="true">
-                        <el-input v-model="formGitHub.accessToken" show-password
+                        <el-input v-model.trim="formGitHub.accessToken" show-password
                             placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
                         <el-link type="primary"
                             href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
@@ -36,22 +36,22 @@
              <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
                 <el-form class="setting-form" ref="form" :model="formAliOSS" label-position="right" label-width="140px">
                     <el-form-item label="AccessKey ID" :required="true">
-                        <el-input v-model="formAliOSS.accessKeyId" placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"></el-input>
+                        <el-input v-model.trim="formAliOSS.accessKeyId" placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"></el-input>
                     </el-form-item>
                     <el-form-item label="AccessKey Secret" :required="true">
-                        <el-input v-model="formAliOSS.accessKeySecret" show-password
+                        <el-input v-model.trim="formAliOSS.accessKeySecret" show-password
                             placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"></el-input>
                     </el-form-item>
                     <el-form-item label="Bucket" :required="true">
-                        <el-input v-model="formAliOSS.bucket"
+                        <el-input v-model.trim="formAliOSS.bucket"
                             placeholder="如：doocs"></el-input>
                     </el-form-item>
                     <el-form-item label="Bucket 所在区域" :required="true">
-                        <el-input v-model="formAliOSS.region"
+                        <el-input v-model.trim="formAliOSS.region"
                             placeholder="如：oss-cn-shenzhen"></el-input>
                     </el-form-item>
                      <el-form-item label="存储路径">
-                        <el-input v-model="formAliOSS.path"
+                        <el-input v-model.trim="formAliOSS.path"
                             placeholder="如：img"></el-input>
                         <el-link type="primary"
                             href="https://help.aliyun.com/document_detail/31883.html"
