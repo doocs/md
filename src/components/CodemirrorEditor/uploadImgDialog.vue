@@ -156,7 +156,7 @@ export default {
             this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
         }
         if (localStorage.getItem("txCOSConfig")) {
-            this.formAliOSS = JSON.parse(localStorage.getItem("txCOSConfig"));
+            this.formTxCOS = JSON.parse(localStorage.getItem("txCOSConfig"));
         }
         if (localStorage.getItem("imgHost")) {
             this.imgHost = localStorage.getItem("imgHost");
