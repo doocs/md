@@ -1,5 +1,6 @@
 import fetch from './fetch';
 import OSS from 'ali-oss';
+import COS from 'cos-js-sdk-v5';
 import Buffer from 'buffer-from';
 import {
     v4 as uuidv4
@@ -21,15 +22,17 @@ const defaultConfig = {
     ]
 }
 
-function fileUpload(content, filename) {
+function fileUpload(content, file) {
     const imgHost = localStorage.getItem('imgHost');
     !imgHost && localStorage.setItem('imgHost', 'default');
     switch (imgHost) {
         case 'aliOSS':
-            return aliOSSUploadFile(content, filename);
+            return aliOSSUploadFile(content, file.name);
+        case 'txCOS':
+            return txCOSUploadFile(file);        
         case 'github':
         default:
-            return githubUploadFile(content, filename);
+            return githubUploadFile(content, file.name);
     }
 }
 
@@ -102,6 +105,29 @@ function aliOSSUploadFile(content, filename) {
     } catch (e) {
         return Promise.reject(e);
     }
+}
+
+function txCOSUploadFile(file) {
+    const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + file.name.split('.')[1];
+    const txCOSConfig = JSON.parse(localStorage.getItem('txCOSConfig'));
+    const cos = new COS({
+        SecretId: txCOSConfig.secretId,
+        SecretKey: txCOSConfig.secretKey
+    });
+    return new Promise((resolve, reject) => {
+        cos.putObject({
+            Bucket: txCOSConfig.bucket,
+            Region: txCOSConfig.region,
+            Key: txCOSConfig.path + '/' + dateFilename,
+            Body: file
+        }, function(err, data) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve("https://" + data.Location);
+            }
+        });
+    })
 }
 
 export default {

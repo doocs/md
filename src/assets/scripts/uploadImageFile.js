@@ -12,8 +12,7 @@ export function uploadImgFile(file) {
 
         base64Reader.onload = function () {
             const base64Content = this.result.split(',').pop();
-
-            fileApi.fileUpload(base64Content, file.name).then(res => {
+            fileApi.fileUpload(base64Content, file).then(res => {
                 resolve(res);
             }).catch(err => {
                 reject(err);

@@ -16,6 +16,7 @@
     "buffer-from": "^1.1.1",
     "codemirror": "^5.50.2",
     "core-js": "^3.4.4",
+    "cos-js-sdk-v5": "^0.5.27",
     "element-ui": "^2.13.0",
     "jquery": "^3.4.1",
     "juice": "^6.0.0",

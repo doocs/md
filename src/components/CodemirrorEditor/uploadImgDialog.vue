@@ -2,7 +2,7 @@
     <el-dialog title="本地上传" class="upload__dialog" :visible="value" @close="$emit('close')">
         <el-tabs type="card" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-                <el-select v-model.trim="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
+                <el-select v-model="imgHost" @change="changeImgHost" placeholder="请选择" size="small">
                     <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
                     </el-option>
                 </el-select>
@@ -62,6 +62,35 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
+            <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
+                <el-form class="setting-form" ref="form" :model="formTxCOS" label-position="right" label-width="140px">
+                    <el-form-item label="SecretId" :required="true">
+                        <el-input v-model.trim="formTxCOS.secretId" placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"></el-input>
+                    </el-form-item>
+                    <el-form-item label="SecretKey" :required="true">
+                        <el-input v-model.trim="formTxCOS.secretKey" show-password
+                            placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket" :required="true">
+                        <el-input v-model.trim="formTxCOS.bucket"
+                            placeholder="如：doocs-3212520134"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket 所在区域" :required="true">
+                        <el-input v-model.trim="formTxCOS.region"
+                            placeholder="如：ap-guangzhou"></el-input>
+                    </el-form-item>
+                     <el-form-item label="存储路径">
+                        <el-input v-model.trim="formTxCOS.path"
+                            placeholder="如：img"></el-input>
+                        <el-link type="primary"
+                            href="https://cloud.tencent.com/document/product/436/38484"
+                            target="_blank">如何使用腾讯云 COS？</el-link>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="saveTxCOSConfiguration">保存配置</el-button>
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
         </el-tabs>
     </el-dialog>
 </template>
@@ -91,6 +120,13 @@ export default {
                 region: "",
                 path: ""
             },
+            formTxCOS: {
+                secretId: "",
+                secretKey: "",
+                bucket: "",
+                region: "",
+                path: ""
+            },
             options: [{
                     value: "default",
                     label: "默认图床",
@@ -102,6 +138,10 @@ export default {
                 {
                     value: "aliOSS",
                     label: "阿里云"
+                },
+                {
+                    value: "txCOS",
+                    label: "腾讯云"
                 }
             ],
             imgHost: "default",
@@ -114,6 +154,9 @@ export default {
         }
         if (localStorage.getItem("aliOSSConfig")) {
             this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
+        }
+        if (localStorage.getItem("txCOSConfig")) {
+            this.formAliOSS = JSON.parse(localStorage.getItem("txCOSConfig"));
         }
         if (localStorage.getItem("imgHost")) {
             this.imgHost = localStorage.getItem("imgHost");
@@ -160,6 +203,21 @@ export default {
             });
         },
 
+        saveTxCOSConfiguration() {
+            if (!(this.formTxCOS.secretId && this.formTxCOS.secretKey && this.formTxCOS.bucket && this.formTxCOS.region)) {
+                this.$message({
+                    showClose: true,
+                    message: `腾讯云 COS 参数配置不全`,
+                    type: "error",
+                });
+                return;
+            }
+            localStorage.setItem("txCOSConfig", JSON.stringify(this.formTxCOS));
+            this.$message({
+                message: "保存成功",
+                type: "success",
+            });
+        },
 
         // 图片上传前的处理
         beforeUpload(file) {
@@ -186,24 +244,25 @@ export default {
         validateConfig() {
             switch (localStorage.getItem('imgHost')) {
                 case "github":
-                    const {
-                        repo, accessToken
-                    } = this.formGitHub;
-                    
-                    if (!repo || !accessToken) {
+                    if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
                         this.$message.error("请先配置 GitHub 图床参数");
                         return false;
                     }
                     break;
                 case 'aliOSS':
-                    const {
-                        accessKeyId, accessKeySecret, bucket, region, path
-                    } = this.formAliOSS;
-
-                    if (!(accessKeyId && accessKeySecret && bucket && region)) {
+                    if (!(this.formAliOSS.accessKeyId && this.formAliOSS.accessKeySecret && this.formAliOSS.bucket && this.formAliOSS.region)) {
                         this.$message.error("请先配置阿里云 OSS 参数");
                         return false;
                     }
+                    break;
+                case 'txCOS':
+                    if (!(this.formTxCOS.secretId && this.formTxCOS.secretKey && this.formTxCOS.bucket && this.formTxCOS.region)) {
+                        this.$message.error("请先配置腾讯云 COS 参数");
+                        return false;
+                    }
+                    break;
+                default:
+                    return true;
             }
             return true;
         },
