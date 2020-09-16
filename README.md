@@ -9,7 +9,7 @@
 
 <div align="center">
 
-[![actions status](https://github.com/doocs/md/workflows/Sync/badge.svg)](https://github.com/doocs/md/actions) [![actions status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls) [![users](https://badgen.net/badge/who's/using/green)](../../issues)<br> [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
+[![actions status](https://github.com/doocs/md/workflows/Sync/badge.svg)](https://github.com/doocs/md/actions) [![actions status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls) [![users](https://badgen.net/badge/Who's/using/green)](../../issues)<br> [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
 
 </div>
 
@@ -32,16 +32,18 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 Issues 区反馈。
 
-## 图床支持
+## 目前支持哪些图床
 
-- [x] 默认图床
-- [x] 自定义 GitHub 图床
-- [x] 自定义阿里云 OSS
-- [x] 自定义腾讯云 COS
+| # | 图床 | 使用时是否需要配置 | 备注 |
+|---|---|---|---|
+| 1 | 默认图床 | 否 | - |
+| 2 | GitHub 图床 | 配置 `Repo`、`Token` 参数 | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) |
+| 3 | 阿里云 OSS | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 等参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html) |
+| 4 | 腾讯云 COS | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 等参数 | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484) |
 
 ## 功能特性
 
-- [x] 支持黑夜模式
+- [x] 支持浅色、暗黑模式
 - [x] 支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速格式化文档
 - [x] 支持 Markdown 所有基础语法
 - [x] 支持单独进行字体、字号设置

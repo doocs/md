@@ -9,7 +9,7 @@ import {
 const defaultConfig = {
     username: 'filess',
     repo: 'images',
-    method: 'put',
+    branch: 'master',
     accessToken: [
         '7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af',
         'c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe',
@@ -27,67 +27,62 @@ function fileUpload(content, file) {
     !imgHost && localStorage.setItem('imgHost', 'default');
     switch (imgHost) {
         case 'aliOSS':
-            return aliOSSUploadFile(content, file.name);
+            return aliOSSFileUpload(content, file.name);
         case 'txCOS':
-            return txCOSUploadFile(file);        
+            return txCOSFileUpload(file);        
         case 'github':
         default:
-            return githubUploadFile(content, file.name);
+            return ghFileUpload(content, file.name);
     }
 }
 
-function getDefaultConfig() {
+function getGitHubCommonConfig(username, repo, branch, token) {
     const date = new Date();
     const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
-    const token = defaultConfig.accessToken[Math.floor(Math.random() * defaultConfig.accessToken.length)].replace('doocsmd', '');
-    return {
-        method: defaultConfig.method,
-        headers: {
-            'Authorization': 'token ' + token
-        },
-        url: `https://api.github.com/repos/${defaultConfig.username}/${defaultConfig.repo}/contents/${dir}/`
-    };
-}
-
-function getGitHubConfig() {
-    const date = new Date();
-    const dir = date.getFullYear() + '/' + (date.getMonth() + 1).toString().padStart(2, '0') + '/' + date.getDate().toString().padStart(2, '0');
-    const githubConfig = JSON.parse(localStorage.getItem("githubConfig"));
-    const repoUrl = githubConfig.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/");
-    const username = repoUrl[0];
-    const repo = repoUrl[1];
-
     return {
         method: 'put',
         headers: {
-            'Authorization': 'token ' + githubConfig.accessToken
+            'Authorization': 'token ' + token
         },
+        branch: branch,
         url: `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
     };
 }
 
-function githubUploadFile(content, filename) {
+function getDefaultConfig() {
+    const token = defaultConfig.accessToken[Math.floor(Math.random() * defaultConfig.accessToken.length)].replace('doocsmd', '');
+    return getGitHubCommonConfig(defaultConfig.username, defaultConfig.repo, defaultConfig.branch, token);
+}
+
+function getGitHubConfig() {
+    const githubConfig = JSON.parse(localStorage.getItem("githubConfig"));
+    const repoUrl = githubConfig.repo.replace("https://github.com/", "").replace("http://github.com/", "").replace("github.com/", "").split("/");
+    const username = repoUrl[0];
+    const repo = repoUrl[1];
+    return getGitHubCommonConfig(username, repo, githubConfig.branch, githubConfig.accessToken);
+}
+
+async function ghFileUpload(content, filename) {
     const isDefault = localStorage.getItem('imgHost') !== 'github';
     const config = isDefault ? getDefaultConfig() : getGitHubConfig();
     const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + filename.split('.')[1];
-    
-    return fetch({
+    const res = await fetch({
         url: config.url + dateFilename,
         method: config.method,
         headers: config.headers,
         data: {
+            branch: config.branch || 'master',
             message: 'Upload by https://doocs.github.io/md',
             content: content
         }
-    }).then(res => {
-        const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
-        const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
-        return isDefault ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl) : res.content.download_url;
     });
+    const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
+    const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
+    return isDefault ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl) : res.content.download_url;
     
 }
 
-function aliOSSUploadFile(content, filename) {
+async function aliOSSFileUpload(content, filename) {
     const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + filename.split('.')[1];
     const aliOSSConfig = JSON.parse(localStorage.getItem('aliOSSConfig'));
     const buffer = Buffer(content, 'base64');
@@ -99,15 +94,14 @@ function aliOSSUploadFile(content, filename) {
             accessKeyId: aliOSSConfig.accessKeyId,
             accessKeySecret: aliOSSConfig.accessKeySecret
         });
-        return client.put(dir, buffer).then(res => {
-            return res.url;
-        })
+        const res = await client.put(dir, buffer);
+        return res.url;
     } catch (e) {
         return Promise.reject(e);
     }
 }
 
-function txCOSUploadFile(file) {
+async function txCOSFileUpload(file) {
     const dateFilename = new Date().getTime() + '-' + uuidv4() + '.' + file.name.split('.')[1];
     const txCOSConfig = JSON.parse(localStorage.getItem('txCOSConfig'));
     const cos = new COS({

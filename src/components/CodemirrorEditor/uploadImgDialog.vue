@@ -21,12 +21,15 @@
                     <el-form-item label="GitHub 仓库" :required="true">
                         <el-input v-model.trim="formGitHub.repo" placeholder="如：github.com/yanglbme/resource"></el-input>
                     </el-form-item>
-                    <el-form-item label="token" :required="true">
+                    <el-form-item label="分支">
+                        <el-input v-model.trim="formGitHub.branch" placeholder="如：release，可不填，默认 master"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Token" :required="true">
                         <el-input v-model.trim="formGitHub.accessToken" show-password
                             placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"></el-input>
                         <el-link type="primary"
                             href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                            target="_blank">如何获取 GitHub token？</el-link>
+                            target="_blank">如何获取 GitHub Token？</el-link>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="saveGitHubConfiguration">保存配置</el-button>
@@ -52,7 +55,7 @@
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formAliOSS.path"
-                            placeholder="如：img"></el-input>
+                            placeholder="如：img，可不填，默认根目录"></el-input>
                         <el-link type="primary"
                             href="https://help.aliyun.com/document_detail/31883.html"
                             target="_blank">如何使用阿里云 OSS？</el-link>
@@ -81,7 +84,7 @@
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formTxCOS.path"
-                            placeholder="如：img"></el-input>
+                            placeholder="如：img，可不填，默认根目录"></el-input>
                         <el-link type="primary"
                             href="https://cloud.tencent.com/document/product/436/38484"
                             target="_blank">如何使用腾讯云 COS？</el-link>
@@ -111,6 +114,7 @@ export default {
         return {
             formGitHub: {
                 repo: "",
+                branch: "",
                 accessToken: "",
             },
             formAliOSS: {
