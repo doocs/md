@@ -13,11 +13,13 @@
 
 </div>
 
+
 ## 项目介绍
 
 > 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
 Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！只要你会基本的 Markdown 语法，就能做出一篇样式简洁而又美观大方的微信图文。
+
 
 ## 在线编辑器地址
 
@@ -26,11 +28,22 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Pages](https://doocs.gitee.io/md) 速度会相对快一些。
 
+
 ## 为何二次开发
 
 现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行文章排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 Issues 区反馈。
+
+## 功能特性
+
+- [x] 支持自定义 CSS 样式
+- [x] 支持 Markdown 所有基础语法
+- [x] 支持浅色、暗黑两种主题模式
+- [x] 支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速格式化文档
+- [x] 支持色盘取色，快速替换文章整体色调
+- [x] 支持多图上传，可自定义配置图床
+- [x] 支持在编辑框右键弹出功能选项卡
 
 ## 目前支持哪些图床
 
@@ -41,22 +54,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 | 3 | 阿里云 OSS | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 等参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html) |
 | 4 | 腾讯云 COS | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 等参数 | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484) |
 
-## 功能特性
-
-- [x] 支持浅色、暗黑模式
-- [x] 支持 <kbd>Ctrl</kbd> + <kbd>F</kbd> 快速格式化文档
-- [x] 支持 Markdown 所有基础语法
-- [x] 支持单独进行字体、字号设置
-- [x] 支持色盘取色，并一键替换颜色
-- [x] 支持链接微信图文，外链自动转为文末索引
-- [x] 支持一键复制并粘贴到公众号后台
-- [x] 支持多图上传并将 URL 插入编辑器光标定位处
-- [x] 支持一键下载 Markdown 文档到本地
-- [x] 支持自定义 CSS 样式并实时渲染
-- [x] 支持一键恢复至默认内容及样式
-- [x] 支持打开或关闭引用链接的选项
-- [x] 支持在编辑框右键弹出功能选项卡
-
 
 ![select-and-change-color-theme](./public/assets/images/select-and-change-color-theme.gif)
 
@@ -65,6 +62,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 ![custom](./public/assets/images/custom.gif)
 
 ![doocs-md-upload-image](./public/assets/images/doocs-md-upload-image.gif) 
+
 
 ## 谁在使用
 
@@ -132,33 +130,42 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>不知所云Hub</sub>
         </a>
       </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/c9ZXxQHCrKz1FP1Zbh1S1w">
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/10-%E4%BC%9A%E6%B3%BD%E7%99%BE%E5%AE%B6.jpg" style="width: 40px;"><br>
+          <sub>会泽百家</sub>
+        </a>
+      </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/MV8ch6qlSsamSaBOhWr9kg">
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/11-%E5%B9%B3%E5%87%A1%E8%80%8C%E8%AF%97%E6%84%8F.jpg" style="width: 40px;"><br>
+          <sub>平凡而诗意</sub>
+        </a>
+      </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/bWPKO-S3TNLsCgzwspHCTg">
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/12-%E6%B2%BB%E6%81%92%E8%AF%B4%E8%AF%B4.jpg" style="width: 40px;"><br>
+          <sub>治恒说说</sub>
+        </a>
+      </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/AHHrxu7aIYBpvn3PpVHE_Q">
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/13-%E6%9F%AF%E5%AE%81%E7%94%B3%E7%9A%84%E5%8F%99%E4%BA%8B%E5%B1%8B.jpg" style="width: 40px;"><br>
+          <sub>柯宁申的叙事屋</sub>
+        </a>
+      </td>
     </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
 
-## 示例文章
-
-- [如何下载 Pixiv 图片](https://mp.weixin.qq.com/s/leDCdpvnfk8eZRPRRHwg5w)
-- [阅读计划 | 传记、社科类](https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w)
-- [一文多发神器--ArtiPub&OpenWrite](https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g)
-- [全网首发！GPU 驱动自升级原理详解](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
-- [死磕 JavaScript 系列之原来你是对象(一)](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
-- [免费且好用的图床，就你了，「图壳」！](https://mp.weixin.qq.com/s/0HhgHLo_tTRFZcC-CVjDbw)
-- [不限速下载 bilibili 壁纸娘的 432 张壁纸](https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug)
-- [GitHub 项目持续本地化，交给它来做，准没错！](https://mp.weixin.qq.com/s/KO4xHr4EI0YfjF0hiT3pbw)
-- [阿里又一个 20k+ stars 开源项目诞生，恭喜 fastjson！](https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow)
-- [全球最大的成人网站 Pornhub 2019 年度报告新鲜出炉！](https://mp.weixin.qq.com/s/LY5kOzof1h3I0bw7tCkV1Q)
-- [刷掉 90 % 候选人的海量数据面试题（附题解+方法总结）](https://mp.weixin.qq.com/s/rjGqxUvrEqJNlo09GrT1Dw)
-- [Quick Start - 天下武功，唯快不破！效率工具，老少皆宜](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
-- [GitHub 标星 11.5k 的一款开源工具，助你轻松查看 Git 历史](https://mp.weixin.qq.com/s/PK-ikENqF13Lmqy2pcMhYQ)
-- [用 Markdown 编辑微信公众号？这个高颜值解决方案你一定会爱上](https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg)
 
 ## 项目许可证
 
 [本项目没有任何限制，Just Do What The F*ck You Want。](LICENSE)
 
 ---
+
 
 ## Doocs 社区优质项目
 
@@ -173,6 +180,7 @@ Doocs 技术社区，致力于打造一个内容完整、持续成长的互联�
 | 5 | [coding-interview](https://github.com/doocs/coding-interview) | 代码面试题集，包括《剑指 Offer》、《编程之美》等。 | ![](https://badgen.net/github/stars/doocs/coding-interview) <br>![](https://badgen.net/github/forks/doocs/coding-interview) |
 | 6 | [md](https://github.com/doocs/md) | 一款高度简洁的微信 Markdown 编辑器。 | ![](https://badgen.net/github/stars/doocs/md) <br>![](https://badgen.net/github/forks/doocs/md) |
 | 7 | [technical-books](https://github.com/doocs/technical-books) | 值得一看的技术书籍列表。 | ![](https://badgen.net/github/stars/doocs/technical-books) <br>![](https://badgen.net/github/forks/doocs/technical-books) |
+
 
 ## 贡献者
 
