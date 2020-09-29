@@ -110,6 +110,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
           <sub>0加1</sub>
         </a>
       </td>
+      <td align="center" style="width: 60px;">
+        <a href="https://mp.weixin.qq.com/s/7bfpKACg7HP-PhBrkpM9IQ">
+          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/14-%E7%BC%96%E7%A8%8B%E5%9B%BE%E8%A7%A3.png" style="width: 40px;"><br>
+          <sub>编程图解</sub>
+        </a>
+      </td>
     </tr>
     <tr>
       <td align="center" style="width: 60px;">
