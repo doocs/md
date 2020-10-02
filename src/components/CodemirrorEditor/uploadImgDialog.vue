@@ -55,7 +55,7 @@
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formAliOSS.path"
-                            placeholder="如：img，可不填，默认根目录"></el-input>
+                            placeholder="如：img，可不填，默认为根目录"></el-input>
                         <el-link type="primary"
                             href="https://help.aliyun.com/document_detail/31883.html"
                             target="_blank">如何使用阿里云 OSS？</el-link>

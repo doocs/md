@@ -72,7 +72,7 @@ async function ghFileUpload(content, filename) {
         headers: config.headers,
         data: {
             branch: config.branch || 'master',
-            message: 'Upload by https://doocs.github.io/md',
+            message: `Upload by ${window.location.href}`,
             content: content
         }
     });
