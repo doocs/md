@@ -24,7 +24,7 @@ export default {
     },
     methods: {
         onRedirect(url) {
-            window.open(url)
+            window.open(url);
         }
     }
 }

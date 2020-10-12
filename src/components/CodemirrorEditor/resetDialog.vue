@@ -11,33 +11,39 @@
 </template>
 
 <script>
-import {mapState} from 'vuex';
-export default {
-    props: {
-        showResetConfirm: {
-            type: Boolean,
-            default: false
-        }
-    },
-    computed: {
-        btnType() {
-            return this.nightMode ? 'default' : 'primary';
+    import {
+        mapState
+    } from 'vuex';
+    export default {
+        props: {
+            showResetConfirm: {
+                type: Boolean,
+                default: false
+            }
         },
-        ...mapState({
-            nightMode: state => state.nightMode
-        })
+        computed: {
+            btnType() {
+                return this.nightMode ? 'default' : 'primary';
+            },
+            ...mapState({
+                nightMode: state => state.nightMode
+            })
+        }
     }
-}
+
 </script>
 
 <style lang="less" scoped>
-.reset__dialog {
-    text-align: center;
-}
-.text {
-    text-align: center;
-}
-.dialog-footer {
-    text-align: center;
-}
+    .reset__dialog {
+        text-align: center;
+    }
+
+    .text {
+        text-align: center;
+    }
+
+    .dialog-footer {
+        text-align: center;
+    }
+
 </style>

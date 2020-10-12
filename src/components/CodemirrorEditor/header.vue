@@ -120,9 +120,9 @@ export default {
         fontChanged(fonts) {
             this.setWxRendererOptions({
                 fonts: fonts
-            })
+            });
             this.setCurrentFont(fonts);
-            this.$emit('refresh')
+            this.$emit('refresh');
         },
         sizeChanged(size) {
             let theme = setFontSize(size.replace('px', ''))
@@ -130,26 +130,27 @@ export default {
             this.setWxRendererOptions({
                 size: size,
                 theme: theme
-            })
+            });
             this.setCurrentSize(size);
-            this.$emit('refresh')
+            this.$emit('refresh');
         },
         colorChanged(color) {
-            let theme = setFontSize(this.currentSize.replace('px', ''))
-            theme = setColorWithCustomTemplate(theme, color)
+            let theme = setFontSize(this.currentSize.replace('px', ''));
+
+            theme = setColorWithCustomTemplate(theme, color);
             this.setWxRendererOptions({
                 theme: theme
-            })
+            });
             this.setCurrentColor(color);
-            this.$emit('refresh')
+            this.$emit('refresh');
         },
         codeThemeChanged(theme) {
             this.setCurrentCodeTheme(theme);
-            this.$emit('refresh')
+            this.$emit('refresh');
         },
         statusChanged(val) {
-            this.setCiteStatus(val)
-            this.$emit('refresh')
+            this.setCiteStatus(val);
+            this.$emit('refresh');
         },
         // 复制到微信公众号
         copy(e) {
@@ -167,7 +168,7 @@ export default {
                 range.setEndAfter(clipboardDiv.lastChild);
                 window.getSelection().addRange(range);
                 document.execCommand('copy');
-                window.getSelection().removeAllRanges()
+                window.getSelection().removeAllRanges();
                 fixCodeWhiteSpace('normal');
                 
                 clipboardDiv.innerHTML = this.output;
@@ -189,16 +190,16 @@ export default {
             this.$emit('showCssEditor');
             this.$nextTick(() => {
                 if(!this.cssEditor) {
-                    this.cssEditor.refresh()
+                    this.cssEditor.refresh();
                 }
             })
             setTimeout(() => {
-                this.cssEditor.refresh()
+                this.cssEditor.refresh();
             },50)
-            let flag = await localStorage.getItem('__css_content')
+            let flag = await localStorage.getItem('__css_content');
 
             if (!flag) {
-                this.setCssEditorValue(DEFAULT_CSS_CONTENT)
+                this.setCssEditorValue(DEFAULT_CSS_CONTENT);
             }
         },
         // 重置页面
