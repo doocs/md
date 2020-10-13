@@ -249,19 +249,18 @@ export default {
             let checkRes = true, errMessage = '';
 
             switch (localStorage.getItem('imgHost')) {
-                case "github":
+                case 'github':
                     checkRes = this.formGitHub.repo && this.formGitHub.accessToken;
-                    errMessage = !checkRes ? '请先配置 GitHub 图床参数' : '';
+                    errMessage = checkRes ? '' : '请先配置 GitHub 图床参数';
                     break;
                 case 'aliOSS':
                     checkRes = this.formAliOSS.accessKeyId && this.formAliOSS.accessKeySecret && this.formAliOSS.bucket && this.formAliOSS.region;
-                    errMessage = !checkRes ? '请先配置阿里云 OSS 参数' : '';
+                    errMessage = checkRes ? '' : '请先配置阿里云 OSS 参数';
                     break;
                 case 'txCOS':
                     checkRes = this.formTxCOS.secretId && this.formTxCOS.secretKey && this.formTxCOS.bucket && this.formTxCOS.region;
-                    errMessage = !checkRes ? '请先配置腾讯云 COS 参数' : '';
+                    errMessage = checkRes ? '' : '请先配置腾讯云 COS 参数';
                     break;
-                default:
             }
             errMessage && this.$message.error(errMessage);
             return checkRes;
