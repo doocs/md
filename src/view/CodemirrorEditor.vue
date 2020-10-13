@@ -109,12 +109,12 @@ export default {
         })
     },
     created() {
-        this.initEditorState()
+        this.initEditorState();
         this.$nextTick(() => {
-            this.initEditor()
-            this.initCssEditor()
-            this.onEditorRefresh()
-        })
+            this.initEditor();
+            this.initCssEditor();
+            this.onEditorRefresh();
+        });
     },
     methods: {
         initEditor() {
@@ -122,8 +122,8 @@ export default {
             this.editor.on('change', (cm, e) => {
                 if (this.changeTimer) clearTimeout(this.changeTimer);
                 this.changeTimer = setTimeout(() => {
-                    this.onEditorRefresh()
-                    saveEditorContent(this.editor, '__editor_content')
+                    this.onEditorRefresh();
+                    saveEditorContent(this.editor, '__editor_content');
                 }, 300);
             });
 
@@ -133,9 +133,9 @@ export default {
                     return;
                 }
                 for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
-                    let item = e.clipboardData.items[i]
-                    if (item.kind === 'file') {
+                    let item = e.clipboardData.items[i];
 
+                    if (item.kind === 'file') {
                         // 校验图床参数
                         const imgHost = localStorage.getItem('imgHost') || 'default';
                         if (imgHost != 'default' && !localStorage.getItem(`${imgHost}Config`)) {
@@ -180,19 +180,19 @@ export default {
             // 自动提示
             this.cssEditor.on('keyup', (cm, e) => {
                 if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-                    cm.showHint(e)
+                    cm.showHint(e);
                 }
             });
             this.cssEditor.on('update', (instance) => {
                 this.cssChanged();
-                saveEditorContent(this.cssEditor, '__css_content')
+                saveEditorContent(this.cssEditor, '__css_content');
             })
         },
         cssChanged() {
             let json = css2json(this.cssEditor.getValue(0));
             let theme = setFontSize(this.currentSize.replace('px', ''));
 
-            theme = customCssWithTemplate(json, this.currentColor, theme)
+            theme = customCssWithTemplate(json, this.currentColor, theme);
             this.setWxRendererOptions({
                 theme: theme
             });
@@ -208,7 +208,7 @@ export default {
                 });
                 return;
             }
-            this.dialogUploadImgVisible = false
+            this.dialogUploadImgVisible = false;
             // 上传成功，获取光标
             const cursor = this.editor.getCursor();
             const imageUrl = response;
@@ -316,7 +316,7 @@ export default {
     mounted() {
         setTimeout(() => {
             this.leftAndRightScroll();
-            PR.prettyPrint()
+            PR.prettyPrint();
         }, 300);
     }
 }

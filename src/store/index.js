@@ -29,54 +29,54 @@ const state = {
 };
 const mutations = {
     setEditorValue(state, data) {
-        state.editor.setValue(data)
+        state.editor.setValue(data);
     },
     setCssEditorValue(state, data) {
-        state.cssEditor.setValue(data)
+        state.cssEditor.setValue(data);
     },
     setWxRendererOptions(state, data) {
         state.wxRenderer.setOptions(data);
     },
     setCiteStatus(state, data) {
         state.citeStatus = data;
-        localStorage.setItem('citeStatus', data)
+        localStorage.setItem('citeStatus', data);
     },
     setCurrentFont(state, data) {
         state.currentFont = data;
-        localStorage.setItem('fonts', data)
+        localStorage.setItem('fonts', data);
     },
     setCurrentSize(state, data) {
         state.currentSize = data;
-        localStorage.setItem('size', data)
+        localStorage.setItem('size', data);
     },
     setCurrentColor(state, data) {
         state.currentColor = data;
-        localStorage.setItem('color', data)
+        localStorage.setItem('color', data);
     },
     setCurrentCodeTheme(state, data) {
         state.codeTheme = data;
-        localStorage.setItem('codeTheme', data)
+        localStorage.setItem('codeTheme', data);
     },
     setRightClickMenuVisible(state, data) {
         state.rightClickMenuVisible = data;
     },
     themeChanged(state) {
         state.nightMode = !state.nightMode;
-        localStorage.setItem('nightMode', state.nightMode)
+        localStorage.setItem('nightMode', state.nightMode);
     },
     initEditorState(state) {
-        state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value
-        state.currentColor = localStorage.getItem('color') || config.colorOption[1].value
-        state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value
-        state.codeTheme = localStorage.getItem('codeTheme') || config.codeThemeOption[0].value
-        state.citeStatus = localStorage.getItem('citeStatus') === 'true'
-        state.nightMode = localStorage.getItem('nightMode') === 'true'
+        state.currentFont = localStorage.getItem('fonts') || config.builtinFonts[0].value;
+        state.currentColor = localStorage.getItem('color') || config.colorOption[1].value;
+        state.currentSize = localStorage.getItem('size') || config.sizeOption[2].value;
+        state.codeTheme = localStorage.getItem('codeTheme') || config.codeThemeOption[0].value;
+        state.citeStatus = localStorage.getItem('citeStatus') === 'true';
+        state.nightMode = localStorage.getItem('nightMode') === 'true';
         state.wxRenderer = new WxRenderer({
             theme: setColor(state.currentColor),
             fonts: state.currentFont,
             size: state.currentSize,
             status: state.citeStatus
-        })
+        });
     },
     initEditorEntity(state) {
         state.editor = CodeMirror.fromTextArea(
@@ -97,7 +97,7 @@ const mutations = {
                     'Ctrl-S': function save(editor) {}
                 }
             }
-        )
+        );
         
         // 如果有编辑器内容被保存则读取，否则加载默认内容
         state.editor.setValue(localStorage.getItem('__editor_content') || formatDoc(DEFAULT_CONTENT))
@@ -114,18 +114,19 @@ const mutations = {
                 autofocus: true,
                 extraKeys: {
                     'Ctrl-F': function autoFormat(editor) {
-                        const totalLines = editor.lineCount()
+                        const totalLines = editor.lineCount();
+
                         editor.autoFormatRange({
                             line: 0,
                             ch: 0
                         }, {
                             line: totalLines
-                        })
+                        });
                     },
                     'Ctrl-S': function save(editor) {}
                 }
             }
-        )
+        );
 
         // 如果有编辑器内容被保存则读取，否则加载默认内容
         state.cssEditor.setValue(localStorage.getItem('__css_content') || DEFAULT_CSS_CONTENT)
@@ -133,21 +134,23 @@ const mutations = {
     editorRefresh(state) {
         let output = marked(state.editor.getValue(0), {
             renderer: state.wxRenderer.getRenderer(state.citeStatus)
-        })
+        });
+
         // 去除第一行的 margin-top
-        output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"')
+        output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"');
         if (state.citeStatus) {
             // 引用脚注
-            output += state.wxRenderer.buildFootnotes()
+            output += state.wxRenderer.buildFootnotes();
             // 附加的一些 style
-            output += state.wxRenderer.buildAddition()
+            output += state.wxRenderer.buildAddition();
         }
-        state.output = output
+        state.output = output;
     },
     clearEditorToDefault(state) {
-        const doc = formatDoc(DEFAULT_CONTENT)
-        state.editor.setValue(doc)
-        state.cssEditor.setValue(DEFAULT_CSS_CONTENT)
+        const doc = formatDoc(DEFAULT_CONTENT);
+
+        state.editor.setValue(doc);
+        state.cssEditor.setValue(DEFAULT_CSS_CONTENT);
     }
 }
 
@@ -155,4 +158,4 @@ export default new Vuex.Store({
     state,
     mutations,
     actions: {}
-})
+});

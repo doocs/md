@@ -216,3 +216,28 @@ export function downLoadMD(doc) {
     downLink.click();
     document.body.removeChild(downLink);
 }
+
+/**
+ * 生成列表字符串
+ * @param {*} data 对应内容集合
+ * @param {*} rows 行
+ * @param {*} cols 列
+ */
+export function createTable({data, rows, cols}) {
+    let table = "";
+    let currRow = [];
+    for (let i = 0; i < rows + 2; ++i) {
+        table += "|\t";
+        currRow = [];
+        for (let j = 0; j < cols; ++j) {
+            const rowIdx = i > 1 ? i - 1 : i;
+            i === 1 ?
+            currRow.push("---\t") :
+            currRow.push(data[`k_${rowIdx}_${j}`] || "");
+        }
+        table += currRow.join("\t|\t");
+        table += "\t|\n";
+    }
+
+    return table;
+}

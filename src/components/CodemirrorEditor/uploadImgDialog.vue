@@ -246,29 +246,24 @@ export default {
             return false;
         },
         validateConfig() {
+            let checkRes = true, errMessage = '';
+
             switch (localStorage.getItem('imgHost')) {
-                case "github":
-                    if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
-                        this.$message.error("请先配置 GitHub 图床参数");
-                        return false;
-                    }
+                case 'github':
+                    checkRes = this.formGitHub.repo && this.formGitHub.accessToken;
+                    errMessage = checkRes ? '' : '请先配置 GitHub 图床参数';
                     break;
                 case 'aliOSS':
-                    if (!(this.formAliOSS.accessKeyId && this.formAliOSS.accessKeySecret && this.formAliOSS.bucket && this.formAliOSS.region)) {
-                        this.$message.error("请先配置阿里云 OSS 参数");
-                        return false;
-                    }
+                    checkRes = this.formAliOSS.accessKeyId && this.formAliOSS.accessKeySecret && this.formAliOSS.bucket && this.formAliOSS.region;
+                    errMessage = checkRes ? '' : '请先配置阿里云 OSS 参数';
                     break;
                 case 'txCOS':
-                    if (!(this.formTxCOS.secretId && this.formTxCOS.secretKey && this.formTxCOS.bucket && this.formTxCOS.region)) {
-                        this.$message.error("请先配置腾讯云 COS 参数");
-                        return false;
-                    }
+                    checkRes = this.formTxCOS.secretId && this.formTxCOS.secretKey && this.formTxCOS.bucket && this.formTxCOS.region;
+                    errMessage = checkRes ? '' : '请先配置腾讯云 COS 参数';
                     break;
-                default:
-                    return true;
             }
-            return true;
+            errMessage && this.$message.error(errMessage);
+            return checkRes;
         },
     },
 };
