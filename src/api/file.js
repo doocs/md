@@ -95,6 +95,9 @@ async function aliOSSFileUpload(content, filename) {
             accessKeySecret: aliOSSConfig.accessKeySecret
         });
         const res = await client.put(dir, buffer);
+        if(aliOSSConfig.cdnHost != ''){
+            return aliOSSConfig.cdnHost +'/'+dir;
+        }
         return res.url;
     } catch (e) {
         return Promise.reject(e);
@@ -118,7 +121,12 @@ async function txCOSFileUpload(file) {
             if (err) {
                 reject(err);
             } else {
-                resolve("https://" + data.Location);
+                if(txCOSConfig.cdnHost != ''){
+                    resolve(txCOSConfig.cdnHost+'/'+txCOSConfig.path + '/' + dateFilename);
+                }else{
+                    resolve(data.Location);
+                }
+                
             }
         });
     })
