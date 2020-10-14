@@ -53,6 +53,10 @@
                         <el-input v-model.trim="formAliOSS.region"
                             placeholder="如：oss-cn-shenzhen"></el-input>
                     </el-form-item>
+                    <el-form-item label="自定义CDN域名" :required="false">
+                        <el-input v-model.trim="formAliOSS.cdnHost"
+                            placeholder="如：https://imagecdn.alidaodao.com"></el-input>
+                    </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formAliOSS.path"
                             placeholder="如：img，可不填，默认为根目录"></el-input>
@@ -81,6 +85,10 @@
                     <el-form-item label="Bucket 所在区域" :required="true">
                         <el-input v-model.trim="formTxCOS.region"
                             placeholder="如：ap-guangzhou"></el-input>
+                    </el-form-item>
+                    <el-form-item label="自定义CDN域名" :required="false">
+                        <el-input v-model.trim="formTxCOS.cdnHost"
+                            placeholder="如：https://imagecdn.alidaodao.com"></el-input>
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formTxCOS.path"
@@ -122,14 +130,16 @@ export default {
                 accessKeySecret: "",
                 bucket: "",
                 region: "",
-                path: ""
+                path: "",
+                cdnHost:""
             },
             formTxCOS: {
                 secretId: "",
                 secretKey: "",
                 bucket: "",
                 region: "",
-                path: ""
+                path: "",
+                cdnHost:""
             },
             options: [{
                     value: "default",
