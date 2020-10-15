@@ -86,7 +86,7 @@
                         <el-input v-model.trim="formTxCOS.region"
                             placeholder="如：ap-guangzhou"></el-input>
                     </el-form-item>
-                    <el-form-item label="自定义CDN域名" :required="false">
+                    <el-form-item label="自定义 CDN 域名" :required="false">
                         <el-input v-model.trim="formTxCOS.cdnHost"
                             placeholder="如：https://imagecdn.alidaodao.com"></el-input>
                     </el-form-item>
@@ -131,7 +131,7 @@ export default {
                 bucket: "",
                 region: "",
                 path: "",
-                cdnHost:""
+                cdnHost: "",
             },
             formTxCOS: {
                 secretId: "",
@@ -139,7 +139,7 @@ export default {
                 bucket: "",
                 region: "",
                 path: "",
-                cdnHost:""
+                cdnHost: "",
             },
             options: [{
                     value: "default",

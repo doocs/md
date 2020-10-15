@@ -5,6 +5,7 @@ import Buffer from 'buffer-from';
 import {
     v4 as uuidv4
 } from 'uuid';
+import { resolveConfigFile } from 'prettier';
 
 const defaultConfig = {
     username: 'filess',
@@ -29,7 +30,7 @@ function fileUpload(content, file) {
         case 'aliOSS':
             return aliOSSFileUpload(content, file.name);
         case 'txCOS':
-            return txCOSFileUpload(file);        
+            return txCOSFileUpload(file);
         case 'github':
         default:
             return ghFileUpload(content, file.name);
@@ -79,7 +80,7 @@ async function ghFileUpload(content, filename) {
     const githubResourceUrl = 'raw.githubusercontent.com/filess/images/master/';
     const cdnResourceUrl = 'cdn.jsdelivr.net/gh/filess/images/';
     return isDefault ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl) : res.content.download_url;
-    
+
 }
 
 async function aliOSSFileUpload(content, filename) {
@@ -95,10 +96,7 @@ async function aliOSSFileUpload(content, filename) {
             accessKeySecret: aliOSSConfig.accessKeySecret
         });
         const res = await client.put(dir, buffer);
-        if(aliOSSConfig.cdnHost != ''){
-            return aliOSSConfig.cdnHost +'/'+dir;
-        }
-        return res.url;
+        return aliOSSConfig.cdnHost == '' ? res.url : aliOSSConfig.cdnHost + '/' + (aliOSSConfig.path == '' ? dateFilename : dir);
     } catch (e) {
         return Promise.reject(e);
     }
@@ -117,16 +115,15 @@ async function txCOSFileUpload(file) {
             Region: txCOSConfig.region,
             Key: txCOSConfig.path + '/' + dateFilename,
             Body: file
-        }, function(err, data) {
+        }, function (err, data) {
             if (err) {
                 reject(err);
+            } else if (txCOSConfig.cdnHost) {
+                // if cdnHost exists
+                resolve(txCOSConfig.path != '' ? txCOSConfig.cdnHost + '/' + txCOSConfig.path + '/' + dateFilename : txCOSConfig.cdnHost + '/' + dateFilename);
             } else {
-                if(txCOSConfig.cdnHost != ''){
-                    resolve(txCOSConfig.cdnHost+'/'+txCOSConfig.path + '/' + dateFilename);
-                }else{
-                    resolve(data.Location);
-                }
-                
+                // if cdnHost not exists
+                reject(data.Location);   
             }
         });
     })
