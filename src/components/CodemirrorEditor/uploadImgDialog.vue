@@ -53,9 +53,9 @@
                         <el-input v-model.trim="formAliOSS.region"
                             placeholder="如：oss-cn-shenzhen"></el-input>
                     </el-form-item>
-                    <el-form-item label="自定义CDN域名" :required="false">
+                    <el-form-item label="自定义 CDN 域名" :required="false">
                         <el-input v-model.trim="formAliOSS.cdnHost"
-                            placeholder="如：https://imagecdn.alidaodao.com"></el-input>
+                            placeholder="如：https://imagecdn.alidaodao.com，可不填"></el-input>
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formAliOSS.path"
@@ -88,7 +88,7 @@
                     </el-form-item>
                     <el-form-item label="自定义 CDN 域名" :required="false">
                         <el-input v-model.trim="formTxCOS.cdnHost"
-                            placeholder="如：https://imagecdn.alidaodao.com"></el-input>
+                            placeholder="如：https://imagecdn.alidaodao.com，可不填"></el-input>
                     </el-form-item>
                      <el-form-item label="存储路径">
                         <el-input v-model.trim="formTxCOS.path"
