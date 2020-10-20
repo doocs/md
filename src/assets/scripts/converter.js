@@ -1,7 +1,7 @@
-import juice from 'juice'
+import juice from "juice";
 
 export function solveWeChatImage() {
-    const clipboardDiv = document.getElementById('output');
+    const clipboardDiv = document.getElementById("output");
     const images = clipboardDiv.getElementsByTagName("img");
     for (let i = 0; i < images.length; i++) {
         const image = images[i];
@@ -15,13 +15,11 @@ export function solveWeChatImage() {
 }
 export function solveHtml() {
     const element = document.getElementById("output-wrapper");
-    let html = element.innerHTML
+    let html = element.innerHTML;
     let res = "";
-    res = juice.inlineContent(
-        html, {
-            inlinePseudoElements: true,
-            preserveImportant: true
-        }
-    );
+    res = juice.inlineContent(html, {
+        inlinePseudoElements: true,
+        preserveImportant: true,
+    });
     return res;
 }

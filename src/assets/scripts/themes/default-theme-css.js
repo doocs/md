@@ -1,5 +1,4 @@
-const DEFAULT_CSS_CONTENT =
-`/*
+const DEFAULT_CSS_CONTENT = `/*
   按Ctrl+F可格式化
 */
 /* 一级标题样式 */
@@ -38,5 +37,5 @@ link {
 /* 微信链接样式 */
 wx_link {
 }
-`
-export default DEFAULT_CSS_CONTENT
+`;
+export default DEFAULT_CSS_CONTENT;

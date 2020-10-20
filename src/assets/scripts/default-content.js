@@ -1,5 +1,4 @@
-const DEFAULT_CONTENT =
-`# 示例文章：Google 搜索的即时自动补全功能究竟是如何“工作”的？
+const DEFAULT_CONTENT = `# 示例文章：Google 搜索的即时自动补全功能究竟是如何“工作”的？
 > Google 搜索**自动补全功能**的强大，相信不少朋友都能感受到，它帮助我们更快地“补全”我们所要输入的搜索关键字。那么，它怎么知道我们要输入什么内容？它又是如何工作的？在这篇文章里，我们一起来看看。
 
 ## 使用自动补全
@@ -96,5 +95,5 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
     <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/qrcode.png" style="width: 100px;">
 </center>
 
-`
-export default DEFAULT_CONTENT
+`;
+export default DEFAULT_CONTENT;

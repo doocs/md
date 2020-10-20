@@ -6,12 +6,16 @@ import CodeMirror from "codemirror/lib/codemirror";
         pairs: "()[]{}''\"\"",
         closeBefore: ")]}'\":;>",
         triples: "",
-        explode: "[]{}"
+        explode: "[]{}",
     };
 
     var Pos = CodeMirror.Pos;
 
-    CodeMirror.defineOption("autoCloseBrackets", false, function (cm, val, old) {
+    CodeMirror.defineOption("autoCloseBrackets", false, function (
+        cm,
+        val,
+        old
+    ) {
         if (old && old != CodeMirror.Init) {
             cm.removeKeyMap(keyMap);
             cm.state.closeBrackets = null;
@@ -31,7 +35,7 @@ import CodeMirror from "codemirror/lib/codemirror";
 
     var keyMap = {
         Backspace: handleBackspace,
-        Enter: handleEnter
+        Enter: handleEnter,
     };
 
     function ensureBound(chars) {
@@ -65,7 +69,8 @@ import CodeMirror from "codemirror/lib/codemirror";
         for (var i = 0; i < ranges.length; i++) {
             if (!ranges[i].empty()) return CodeMirror.Pass;
             var around = charsAround(cm, ranges[i].head);
-            if (!around || pairs.indexOf(around) % 2 != 0) return CodeMirror.Pass;
+            if (!around || pairs.indexOf(around) % 2 != 0)
+                return CodeMirror.Pass;
         }
         for (var i = ranges.length - 1; i >= 0; i--) {
             var cur = ranges[i].head;
@@ -87,7 +92,8 @@ import CodeMirror from "codemirror/lib/codemirror";
         for (var i = 0; i < ranges.length; i++) {
             if (!ranges[i].empty()) return CodeMirror.Pass;
             var around = charsAround(cm, ranges[i].head);
-            if (!around || explode.indexOf(around) % 2 != 0) return CodeMirror.Pass;
+            if (!around || explode.indexOf(around) % 2 != 0)
+                return CodeMirror.Pass;
         }
         cm.operation(function () {
             var linesep = cm.lineSeparator() || "\n";
@@ -105,8 +111,11 @@ import CodeMirror from "codemirror/lib/codemirror";
     function contractSelection(sel) {
         var inverted = CodeMirror.cmpPos(sel.anchor, sel.head) > 0;
         return {
-            anchor: new Pos(sel.anchor.line, sel.anchor.ch + (inverted ? -1 : 1)),
-            head: new Pos(sel.head.line, sel.head.ch + (inverted ? 1 : -1))
+            anchor: new Pos(
+                sel.anchor.line,
+                sel.anchor.ch + (inverted ? -1 : 1)
+            ),
+            head: new Pos(sel.head.line, sel.head.ch + (inverted ? 1 : -1)),
         };
     }
 
@@ -150,13 +159,17 @@ import CodeMirror from "codemirror/lib/codemirror";
             ) {
                 if (
                     cur.ch > 2 &&
-                    /\bstring/.test(cm.getTokenTypeAt(Pos(cur.line, cur.ch - 2)))
+                    /\bstring/.test(
+                        cm.getTokenTypeAt(Pos(cur.line, cur.ch - 2))
+                    )
                 )
                     return CodeMirror.Pass;
                 curType = "addFour";
             } else if (identical) {
                 var prev =
-                    cur.ch == 0 ? " " : cm.getRange(Pos(cur.line, cur.ch - 1), cur);
+                    cur.ch == 0
+                        ? " "
+                        : cm.getRange(Pos(cur.line, cur.ch - 1), cur);
                 if (
                     !CodeMirror.isWordChar(next) &&
                     prev != ch &&
@@ -166,7 +179,9 @@ import CodeMirror from "codemirror/lib/codemirror";
                 else return CodeMirror.Pass;
             } else if (
                 opening &&
-                (next.length === 0 || /\s/.test(next) || closeBefore.indexOf(next) > -1)
+                (next.length === 0 ||
+                    /\s/.test(next) ||
+                    closeBefore.indexOf(next) > -1)
             ) {
                 curType = "both";
             } else {
@@ -185,7 +200,8 @@ import CodeMirror from "codemirror/lib/codemirror";
                 for (var i = 0; i < 3; i++) cm.execCommand("goCharRight");
             } else if (type == "surround") {
                 var sels = cm.getSelections();
-                for (var i = 0; i < sels.length; i++) sels[i] = left + sels[i] + right;
+                for (var i = 0; i < sels.length; i++)
+                    sels[i] = left + sels[i] + right;
                 cm.replaceSelections(sels, "around");
                 sels = cm.listSelections().slice();
                 for (var i = 0; i < sels.length; i++)
@@ -203,7 +219,10 @@ import CodeMirror from "codemirror/lib/codemirror";
     }
 
     function charsAround(cm, pos) {
-        var str = cm.getRange(Pos(pos.line, pos.ch - 1), Pos(pos.line, pos.ch + 1));
+        var str = cm.getRange(
+            Pos(pos.line, pos.ch - 1),
+            Pos(pos.line, pos.ch + 1)
+        );
         return str.length == 2 ? str : null;
     }
 

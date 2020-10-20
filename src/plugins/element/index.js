@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue from "vue";
 import {
     Container,
     Header,
@@ -16,8 +16,8 @@ import {
     Row,
     Dialog,
     Loading,
-    Message
-} from 'element-ui'
+    Message,
+} from "element-ui";
 
 Vue.use(Container);
 Vue.use(Header);

@@ -1,9 +1,8 @@
 <div align="center">
 
-  [![doocs-md](./public/assets/images/logo-2.png)](https://github.com/doocs/md) 
+[![doocs-md](./public/assets/images/logo-2.png)](https://github.com/doocs/md)
 
 </div>
-
 
 <h1 align="center">微信 Markdown 编辑器</h1>
 
@@ -13,13 +12,11 @@
 
 </div>
 
-
 ## 项目介绍
 
 > 本项目基于 [wechat-format](https://github.com/lyricat/wechat-format) 进行二次开发，感谢 [lyricat](https://github.com/lyricat) 的创意和贡献！
 
 Markdown 文档自动即时渲染为微信图文，让你不再为微信文章排版而发愁！只要你会基本的 Markdown 语法，就能做出一篇样式简洁而又美观大方的微信图文。
-
 
 ## 在线编辑器地址
 
@@ -27,7 +24,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 - GitHub Pages：https://doocs.github.io/md
 
 注：推荐使用 Chrome 浏览器，效果最佳。另外，对于国内（中国）的朋友，访问 [Gitee Pages](https://doocs.gitee.io/md) 速度会相对快一些。
-
 
 ## 为何二次开发
 
@@ -47,13 +43,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 目前支持哪些图床
 
-| # | 图床 | 使用时是否需要配置 | 备注 |
-|---|---|---|---|
-| 1 | 默认图床 | 否 | - |
-| 2 | GitHub 图床 | 配置 `Repo`、`Token` 参数 | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) |
-| 3 | 阿里云 OSS | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 等参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html) |
-| 4 | 腾讯云 COS | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 等参数 | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484) |
-
+| #   | 图床        | 使用时是否需要配置                                                 | 备注                                                                                                                   |
+| --- | ----------- | ------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| 1   | 默认图床    | 否                                                                 | -                                                                                                                      |
+| 2   | GitHub 图床 | 配置 `Repo`、`Token` 参数                                          | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) |
+| 3   | 阿里云 OSS  | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 等参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                             |
+| 4   | 腾讯云 COS  | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 等参数            | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 
 ![select-and-change-color-theme](./public/assets/images/select-and-change-color-theme.gif)
 
@@ -61,8 +56,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ![custom](./public/assets/images/custom.gif)
 
-![doocs-md-upload-image](./public/assets/images/doocs-md-upload-image.gif) 
-
+![doocs-md-upload-image](./public/assets/images/doocs-md-upload-image.gif)
 
 ## 谁在使用
 
@@ -165,28 +159,25 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
 
-
 ## 项目许可证
 
-[本项目没有任何限制，Just Do What The F*ck You Want。](LICENSE)
+[本项目没有任何限制，Just Do What The F\*ck You Want。](LICENSE)
 
 ---
-
 
 ## Doocs 社区优质项目
 
 Doocs 技术社区，致力于打造一个内容完整、持续成长的互联网开发者学习生态圈！以下是 Doocs 旗下的一些优秀项目，欢迎各位开发者朋友持续保持关注。
 
-| # | 项目 | 描述 | 热度 |
-|---|---|---|---|
-| 1 | [advanced-java](https://github.com/doocs/advanced-java) | 互联网 Java 工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识。 | ![](https://badgen.net/github/stars/doocs/advanced-java) <br>![](https://badgen.net/github/forks/doocs/advanced-java) |
-| 2 | [leetcode](https://github.com/doocs/leetcode) | 多种编程语言实现 LeetCode、《剑指 Offer（第 2 版）》、《程序员面试金典（第 6 版）》题解。 | ![](https://badgen.net/github/stars/doocs/leetcode) <br>![](https://badgen.net/github/forks/doocs/leetcode) |
-| 3 | [source-code-hunter](https://github.com/doocs/source-code-hunter) | 互联网常用组件框架源码分析。 | ![](https://badgen.net/github/stars/doocs/source-code-hunter) <br>![](https://badgen.net/github/forks/doocs/source-code-hunter) |
-| 4 | [jvm](https://github.com/doocs/jvm) | Java 虚拟机底层原理知识总结。 | ![](https://badgen.net/github/stars/doocs/jvm) <br>![](https://badgen.net/github/forks/doocs/jvm) |
-| 5 | [coding-interview](https://github.com/doocs/coding-interview) | 代码面试题集，包括《剑指 Offer》、《编程之美》等。 | ![](https://badgen.net/github/stars/doocs/coding-interview) <br>![](https://badgen.net/github/forks/doocs/coding-interview) |
-| 6 | [md](https://github.com/doocs/md) | 一款高度简洁的微信 Markdown 编辑器。 | ![](https://badgen.net/github/stars/doocs/md) <br>![](https://badgen.net/github/forks/doocs/md) |
-| 7 | [technical-books](https://github.com/doocs/technical-books) | 值得一看的技术书籍列表。 | ![](https://badgen.net/github/stars/doocs/technical-books) <br>![](https://badgen.net/github/forks/doocs/technical-books) |
-
+| #   | 项目                                                              | 描述                                                                                             | 热度                                                                                                                            |
+| --- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | [advanced-java](https://github.com/doocs/advanced-java)           | 互联网 Java 工程师进阶知识完全扫盲：涵盖高并发、分布式、高可用、微服务、海量数据处理等领域知识。 | ![](https://badgen.net/github/stars/doocs/advanced-java) <br>![](https://badgen.net/github/forks/doocs/advanced-java)           |
+| 2   | [leetcode](https://github.com/doocs/leetcode)                     | 多种编程语言实现 LeetCode、《剑指 Offer（第 2 版）》、《程序员面试金典（第 6 版）》题解。        | ![](https://badgen.net/github/stars/doocs/leetcode) <br>![](https://badgen.net/github/forks/doocs/leetcode)                     |
+| 3   | [source-code-hunter](https://github.com/doocs/source-code-hunter) | 互联网常用组件框架源码分析。                                                                     | ![](https://badgen.net/github/stars/doocs/source-code-hunter) <br>![](https://badgen.net/github/forks/doocs/source-code-hunter) |
+| 4   | [jvm](https://github.com/doocs/jvm)                               | Java 虚拟机底层原理知识总结。                                                                    | ![](https://badgen.net/github/stars/doocs/jvm) <br>![](https://badgen.net/github/forks/doocs/jvm)                               |
+| 5   | [coding-interview](https://github.com/doocs/coding-interview)     | 代码面试题集，包括《剑指 Offer》、《编程之美》等。                                               | ![](https://badgen.net/github/stars/doocs/coding-interview) <br>![](https://badgen.net/github/forks/doocs/coding-interview)     |
+| 6   | [md](https://github.com/doocs/md)                                 | 一款高度简洁的微信 Markdown 编辑器。                                                             | ![](https://badgen.net/github/stars/doocs/md) <br>![](https://badgen.net/github/forks/doocs/md)                                 |
+| 7   | [technical-books](https://github.com/doocs/technical-books)       | 值得一看的技术书籍列表。                                                                         | ![](https://badgen.net/github/stars/doocs/technical-books) <br>![](https://badgen.net/github/forks/doocs/technical-books)       |
 
 ## 贡献者
 
