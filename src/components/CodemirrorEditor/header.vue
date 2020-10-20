@@ -1,162 +1,278 @@
 <template>
     <el-container class="top is-dark">
         <!-- 图片上传 -->
-        <el-tooltip :effect="effect" content="上传图片" placement="bottom-start"> 
-            <i class="el-icon-upload" size="medium" @click="$emit('showDialogUploadImg')"></i>
+        <el-tooltip
+            :effect="effect"
+            content="上传图片"
+            placement="bottom-start"
+        >
+            <i
+                class="el-icon-upload"
+                size="medium"
+                @click="$emit('showDialogUploadImg')"
+            ></i>
         </el-tooltip>
         <!-- 下载文本文档 -->
-        <el-tooltip class="header__item" :effect="effect" content="下载编辑框Markdown文档" placement="bottom-start">
-            <i class="el-icon-download" size="medium" @click="$emit('downLoad')"></i>
+        <el-tooltip
+            class="header__item"
+            :effect="effect"
+            content="下载编辑框Markdown文档"
+            placement="bottom-start"
+        >
+            <i
+                class="el-icon-download"
+                size="medium"
+                @click="$emit('downLoad')"
+            ></i>
         </el-tooltip>
         <!-- 页面重置 -->
-        <el-tooltip class="header__item" :effect="effect" content="重置页面" placement="bottom-start">
-            <i class="el-icon-refresh" size="medium" @click="showResetConfirm = true"></i>
+        <el-tooltip
+            class="header__item"
+            :effect="effect"
+            content="重置页面"
+            placement="bottom-start"
+        >
+            <i
+                class="el-icon-refresh"
+                size="medium"
+                @click="showResetConfirm = true"
+            ></i>
         </el-tooltip>
         <!-- 插入表格 -->
-        <el-tooltip class="header__item header__item_last" :effect="effect" content="插入表格" placement="bottom-start">
-            <i class="el-icon-s-grid" size="medium" @click="$emit('showDialogForm')"></i>
+        <el-tooltip
+            class="header__item header__item_last"
+            :effect="effect"
+            content="插入表格"
+            placement="bottom-start"
+        >
+            <i
+                class="el-icon-s-grid"
+                size="medium"
+                @click="$emit('showDialogForm')"
+            ></i>
         </el-tooltip>
-        <el-form size="mini" class="ctrl" :inline=true>
+        <el-form size="mini" class="ctrl" :inline="true">
             <el-form-item>
-                <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
-                    <el-option v-for="font in config.builtinFonts" :style="{fontFamily: font.value}" :key="font.value"
-                    :label="font.label" :value="font.value">
+                <el-select
+                    v-model="selectFont"
+                    size="mini"
+                    placeholder="选择字体"
+                    clearable
+                    @change="fontChanged"
+                >
+                    <el-option
+                        v-for="font in config.builtinFonts"
+                        :style="{ fontFamily: font.value }"
+                        :key="font.value"
+                        :label="font.label"
+                        :value="font.value"
+                    >
                         <span class="select-item-left">{{ font.label }}</span>
                         <span class="select-item-right">Abc</span>
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="selectSize" size="mini" placeholder="选择段落字号" clearable @change="sizeChanged">
-                    <el-option v-for="size in config.sizeOption" :key="size.value" :label="size.label" :value="size.value">
+                <el-select
+                    v-model="selectSize"
+                    size="mini"
+                    placeholder="选择段落字号"
+                    clearable
+                    @change="sizeChanged"
+                >
+                    <el-option
+                        v-for="size in config.sizeOption"
+                        :key="size.value"
+                        :label="size.label"
+                        :value="size.value"
+                    >
                         <span class="select-item-left">{{ size.label }}</span>
                         <span class="select-item-right">{{ size.desc }}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-form-item>
-                <el-select v-model="selectColor" size="mini" placeholder="选择颜色" clearable @change="colorChanged">
-                    <el-option v-for="color in config.colorOption" :key="color.value" :label="color.label" :value="color.value">
+                <el-select
+                    v-model="selectColor"
+                    size="mini"
+                    placeholder="选择颜色"
+                    clearable
+                    @change="colorChanged"
+                >
+                    <el-option
+                        v-for="color in config.colorOption"
+                        :key="color.value"
+                        :label="color.label"
+                        :value="color.value"
+                    >
                         <span class="select-item-left">{{ color.label }}</span>
                         <span class="select-item-right">{{ color.desc }}</span>
                     </el-option>
                 </el-select>
             </el-form-item>
             <el-tooltip content="自定义颜色" :effect="effect" placement="top">
-            <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
+                <el-color-picker
+                    v-model="selectColor"
+                    size="mini"
+                    show-alpha
+                    @change="colorChanged"
+                ></el-color-picker>
             </el-tooltip>
-            <el-tooltip content="微信外链自动转为文末引用" :effect="effect" placement="top">
-                <el-switch class="header__switch" v-model="citeStatus" active-color="#67c23a" inactive-color="#dcdfe6" @change="statusChanged">
+            <el-tooltip
+                content="微信外链自动转为文末引用"
+                :effect="effect"
+                placement="top"
+            >
+                <el-switch
+                    class="header__switch"
+                    v-model="citeStatus"
+                    active-color="#67c23a"
+                    inactive-color="#dcdfe6"
+                    @change="statusChanged"
+                >
                 </el-switch>
             </el-tooltip>
         </el-form>
-        <el-tooltip class="item" :effect="effect" content="自定义CSS样式" placement="left">
-            <el-button :type="btnType" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
+        <el-tooltip
+            class="item"
+            :effect="effect"
+            content="自定义CSS样式"
+            placement="left"
+        >
+            <el-button
+                :type="btnType"
+                plain
+                size="medium"
+                icon="el-icon-setting"
+                @click="customStyle"
+            ></el-button>
         </el-tooltip>
-        <el-button :type="btnType" plain size="medium" @click="copy" placement="bottom-start">复制</el-button>
-        <el-button :type="btnType" plain size="medium" class="about" @click="$emit('showAboutDialog')">关于</el-button>
-        <el-tooltip :content="btnContent" :effect="effect" placement="bottom-start">
-            <div class="mode__switch mode__switch_black" v-if="nightMode" @click="themeChanged"></div>
+        <el-button
+            :type="btnType"
+            plain
+            size="medium"
+            @click="copy"
+            placement="bottom-start"
+            >复制</el-button
+        >
+        <el-button
+            :type="btnType"
+            plain
+            size="medium"
+            class="about"
+            @click="$emit('showAboutDialog')"
+            >关于</el-button
+        >
+        <el-tooltip
+            :content="btnContent"
+            :effect="effect"
+            placement="bottom-start"
+        >
+            <div
+                class="mode__switch mode__switch_black"
+                v-if="nightMode"
+                @click="themeChanged"
+            ></div>
             <div class="mode__switch" v-else @click="themeChanged"></div>
         </el-tooltip>
-        <resetDialog :showResetConfirm="showResetConfirm" @confirm="confirmReset" @close="cancelReset"/>
-      </el-container>
+        <resetDialog
+            :showResetConfirm="showResetConfirm"
+            @confirm="confirmReset"
+            @close="cancelReset"
+        />
+    </el-container>
 </template>
 
 <script>
-
 import {
     downLoadMD,
     setFontSize,
     fixCodeWhiteSpace,
-    setColorWithCustomTemplate
-} from '../../assets/scripts/util'
-import {
-    solveWeChatImage,
-    solveHtml
-} from '../../assets/scripts/converter'
-import config from '../../assets/scripts/config'
-import DEFAULT_CSS_CONTENT from '../../assets/scripts/themes/default-theme-css'
-import resetDialog from './resetDialog'
-import {mapState, mapMutations} from 'vuex'
+    setColorWithCustomTemplate,
+} from "../../assets/scripts/util";
+import { solveWeChatImage, solveHtml } from "../../assets/scripts/converter";
+import config from "../../assets/scripts/config";
+import DEFAULT_CSS_CONTENT from "../../assets/scripts/themes/default-theme-css";
+import resetDialog from "./resetDialog";
+import { mapState, mapMutations } from "vuex";
 export default {
-    name: 'editor-header',
+    name: "editor-header",
     data() {
         return {
             config: config,
             citeStatus: false,
             showResetConfirm: false,
-            selectFont: '',
-            selectSize: '',
-            selectColor: '',
-            selectCodeTheme: 'github'
+            selectFont: "",
+            selectSize: "",
+            selectColor: "",
+            selectCodeTheme: "github",
         };
     },
     components: {
-        resetDialog
+        resetDialog,
     },
     computed: {
         effect() {
-            return this.nightMode ? 'dark' : 'light'
+            return this.nightMode ? "dark" : "light";
         },
         btnContent() {
-            return this.nightMode ? '浅色模式' : '暗黑模式'
+            return this.nightMode ? "浅色模式" : "暗黑模式";
         },
         btnType() {
-            return this.nightMode ? 'default' : 'primary';
+            return this.nightMode ? "default" : "primary";
         },
         ...mapState({
-            output: state => state.output,
-            editor: state => state.editor,
-            cssEditor: state => state.cssEditor,
-            currentFont: state => state.currentFont,
-            currentSize: state => state.currentSize,
-            currentColor: state => state.currentColor,
-            codeTheme: state => state.codeTheme,
-            nightMode: state => state.nightMode
-        })
+            output: (state) => state.output,
+            editor: (state) => state.editor,
+            cssEditor: (state) => state.cssEditor,
+            currentFont: (state) => state.currentFont,
+            currentSize: (state) => state.currentSize,
+            currentColor: (state) => state.currentColor,
+            codeTheme: (state) => state.codeTheme,
+            nightMode: (state) => state.nightMode,
+        }),
     },
     methods: {
         fontChanged(fonts) {
             this.setWxRendererOptions({
-                fonts: fonts
+                fonts: fonts,
             });
             this.setCurrentFont(fonts);
-            this.$emit('refresh');
+            this.$emit("refresh");
         },
         sizeChanged(size) {
-            let theme = setFontSize(size.replace('px', ''))
-            theme = setColorWithCustomTemplate(theme, this.currentColor)
+            let theme = setFontSize(size.replace("px", ""));
+            theme = setColorWithCustomTemplate(theme, this.currentColor);
             this.setWxRendererOptions({
                 size: size,
-                theme: theme
+                theme: theme,
             });
             this.setCurrentSize(size);
-            this.$emit('refresh');
+            this.$emit("refresh");
         },
         colorChanged(color) {
-            let theme = setFontSize(this.currentSize.replace('px', ''));
+            let theme = setFontSize(this.currentSize.replace("px", ""));
 
             theme = setColorWithCustomTemplate(theme, color);
             this.setWxRendererOptions({
-                theme: theme
+                theme: theme,
             });
             this.setCurrentColor(color);
-            this.$emit('refresh');
+            this.$emit("refresh");
         },
         codeThemeChanged(theme) {
             this.setCurrentCodeTheme(theme);
-            this.$emit('refresh');
+            this.$emit("refresh");
         },
         statusChanged(val) {
             this.setCiteStatus(val);
-            this.$emit('refresh');
+            this.$emit("refresh");
         },
         // 复制到微信公众号
         copy(e) {
-            this.$emit('startCopy');
+            this.$emit("startCopy");
             setTimeout(() => {
-                let clipboardDiv = document.getElementById('output');
+                let clipboardDiv = document.getElementById("output");
                 solveWeChatImage();
                 fixCodeWhiteSpace();
                 solveHtml();
@@ -167,36 +283,37 @@ export default {
                 range.setStartBefore(clipboardDiv.firstChild);
                 range.setEndAfter(clipboardDiv.lastChild);
                 window.getSelection().addRange(range);
-                document.execCommand('copy');
+                document.execCommand("copy");
                 window.getSelection().removeAllRanges();
-                fixCodeWhiteSpace('normal');
-                
+                fixCodeWhiteSpace("normal");
+
                 clipboardDiv.innerHTML = this.output;
                 // 输出提示
                 this.$notify({
                     showClose: true,
-                    message: '已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴',
+                    message:
+                        "已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴",
                     offset: 80,
                     duration: 1600,
-                    type: 'success'
+                    type: "success",
                 });
-                this.$emit('refresh');
-                this.$emit('endCopy');
+                this.$emit("refresh");
+                this.$emit("endCopy");
             }, 350);
-            e.target.blur(); 
+            e.target.blur();
         },
         // 自定义CSS样式
         async customStyle() {
-            this.$emit('showCssEditor');
+            this.$emit("showCssEditor");
             this.$nextTick(() => {
-                if(!this.cssEditor) {
+                if (!this.cssEditor) {
                     this.cssEditor.refresh();
                 }
-            })
+            });
             setTimeout(() => {
                 this.cssEditor.refresh();
-            },50)
-            let flag = await localStorage.getItem('__css_content');
+            }, 50);
+            let flag = await localStorage.getItem("__css_content");
 
             if (!flag) {
                 this.setCssEditorValue(DEFAULT_CSS_CONTENT);
@@ -204,15 +321,15 @@ export default {
         },
         // 重置页面
         confirmReset() {
-            localStorage.clear()
+            localStorage.clear();
             this.clearEditorToDefault();
-            this.editor.focus()
+            this.editor.focus();
             this.citeStatus = false;
             this.statusChanged(false);
-            this.fontChanged(this.config.builtinFonts[0].value)
-            this.colorChanged(this.config.colorOption[1].value)
-            this.sizeChanged(this.config.sizeOption[2].value)
-            this.$emit('cssChanged')
+            this.fontChanged(this.config.builtinFonts[0].value);
+            this.colorChanged(this.config.colorOption[1].value);
+            this.sizeChanged(this.config.sizeOption[2].value);
+            this.$emit("cssChanged");
             this.selectFont = this.currentFont;
             this.selectSize = this.currentSize;
             this.selectColor = this.currentColor;
@@ -220,27 +337,27 @@ export default {
         },
         cancelReset() {
             this.showResetConfirm = false;
-            this.editor.focus()
+            this.editor.focus();
         },
         ...mapMutations([
-            'clearEditorToDefault',
-            'setCurrentColor',
-            'setCiteStatus',
-            'themeChanged',
-            'setCurrentFont',
-            'setCurrentSize',
-            'setCssEditorValue',
-            'setCurrentCodeTheme',
-            'setWxRendererOptions'
-        ])
+            "clearEditorToDefault",
+            "setCurrentColor",
+            "setCiteStatus",
+            "themeChanged",
+            "setCurrentFont",
+            "setCurrentSize",
+            "setCssEditorValue",
+            "setCurrentCodeTheme",
+            "setWxRendererOptions",
+        ]),
     },
     mounted() {
         this.selectFont = this.currentFont;
         this.selectSize = this.currentSize;
         this.selectColor = this.currentColor;
         this.selectCodeTheme = this.codeTheme;
-    }
-}
+    },
+};
 </script>
 
 <style lang="less" scoped>
@@ -260,12 +377,12 @@ export default {
     margin-left: 24px;
     width: 24px;
     height: 24px;
-    background: url('../../assets/images/night.png') no-repeat;
+    background: url("../../assets/images/night.png") no-repeat;
     background-size: cover;
-    transition: all .3s;
+    transition: all 0.3s;
 }
 .mode__switch_black {
-    background: url('../../assets/images/light.png') no-repeat;
+    background: url("../../assets/images/light.png") no-repeat;
     background-size: cover;
 }
 .top {

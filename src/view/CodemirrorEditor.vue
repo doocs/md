@@ -1,5 +1,5 @@
 <template>
-    <div class="container" :class="{'container_night': nightMode}">
+    <div class="container" :class="{ container_night: nightMode }">
         <el-container>
             <el-header class="editor__header">
                 <editor-header
@@ -11,40 +11,72 @@
                     @showAboutDialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
                     @showDialogUploadImg="dialogUploadImgVisible = true"
-                    @startCopy="isCoping = true, backLight = true"
+                    @startCopy="(isCoping = true), (backLight = true)"
                     @endCopy="endCopy"
                 />
             </el-header>
             <el-main class="main-body">
                 <el-row class="main-section">
-                    <el-col :span="12" @contextmenu.prevent.native="openMenu($event)">
-                        <textarea id="editor" type="textarea" placeholder="Your markdown text here." v-model="source">
+                    <el-col
+                        :span="12"
+                        @contextmenu.prevent.native="openMenu($event)"
+                    >
+                        <textarea
+                            id="editor"
+                            type="textarea"
+                            placeholder="Your markdown text here."
+                            v-model="source"
+                        >
                         </textarea>
                     </el-col>
-                    <el-col :span="12" class="preview-wrapper" id="preview" ref="preview" :class="{'preview-wrapper_night': nightMode && isCoping}">
-                        <section id="output-wrapper" :class="{'output_night': nightMode && !backLight}">
+                    <el-col
+                        :span="12"
+                        class="preview-wrapper"
+                        id="preview"
+                        ref="preview"
+                        :class="{
+                            'preview-wrapper_night': nightMode && isCoping,
+                        }"
+                    >
+                        <section
+                            id="output-wrapper"
+                            :class="{ output_night: nightMode && !backLight }"
+                        >
                             <div class="preview">
-                                <section id="output" v-html="output">
-                                </section>
-                                <div class="loading-mask" v-if="nightMode && isCoping">
+                                <section id="output" v-html="output"></section>
+                                <div
+                                    class="loading-mask"
+                                    v-if="nightMode && isCoping"
+                                >
                                     <div class="loading__img"></div>
                                     <span>正在生成</span>
                                 </div>
                             </div>
                         </section>
                     </el-col>
-                    <transition name="custom-classes-transition" enter-active-class="bounceInRight">
+                    <transition
+                        name="custom-classes-transition"
+                        enter-active-class="bounceInRight"
+                    >
                         <el-col id="cssBox" :span="12" v-show="showCssEditor">
-                            <textarea id="cssEditor" type="textarea" placeholder="Your custom css here.">
-                                </textarea>
+                            <textarea
+                                id="cssEditor"
+                                type="textarea"
+                                placeholder="Your custom css here."
+                            >
+                            </textarea>
                         </el-col>
                     </transition>
                 </el-row>
             </el-main>
         </el-container>
-        <upload-img-dialog v-model="dialogUploadImgVisible" @close="dialogUploadImgVisible = false" @uploaded="uploaded" />
-        <about-dialog v-model="aboutDialogVisible"/>
-        <insert-form-dialog v-model="dialogFormVisible"/>
+        <upload-img-dialog
+            v-model="dialogUploadImgVisible"
+            @close="dialogUploadImgVisible = false"
+            @uploaded="uploaded"
+        />
+        <about-dialog v-model="aboutDialogVisible" />
+        <insert-form-dialog v-model="dialogFormVisible" />
         <right-click-menu
             v-model="rightClickMenuVisible"
             :left="mouseLeft"
@@ -55,23 +87,23 @@
     </div>
 </template>
 <script>
-import editorHeader from '../components/CodemirrorEditor/header';
-import aboutDialog from '../components/CodemirrorEditor/aboutDialog';
-import insertFormDialog from '../components/CodemirrorEditor/insertForm';
-import rightClickMenu from '../components/CodemirrorEditor/rightClickMenu';
-import uploadImgDialog from '../components/CodemirrorEditor/uploadImgDialog';
+import editorHeader from "../components/CodemirrorEditor/header";
+import aboutDialog from "../components/CodemirrorEditor/aboutDialog";
+import insertFormDialog from "../components/CodemirrorEditor/insertForm";
+import rightClickMenu from "../components/CodemirrorEditor/rightClickMenu";
+import uploadImgDialog from "../components/CodemirrorEditor/uploadImgDialog";
 
 import {
     css2json,
     downLoadMD,
     setFontSize,
     saveEditorContent,
-    customCssWithTemplate
-} from '../assets/scripts/util'
-import {uploadImgFile} from '../assets/scripts/uploadImageFile';
+    customCssWithTemplate,
+} from "../assets/scripts/util";
+import { uploadImgFile } from "../assets/scripts/uploadImageFile";
 
-require('codemirror/mode/javascript/javascript')
-import {mapState, mapMutations} from 'vuex';
+require("codemirror/mode/javascript/javascript");
+import { mapState, mapMutations } from "vuex";
 export default {
     data() {
         return {
@@ -84,29 +116,29 @@ export default {
             backLight: false,
             timeout: null,
             changeTimer: null,
-            source: '',
+            source: "",
             mouseLeft: 0,
-            mouseTop: 0
-        }
+            mouseTop: 0,
+        };
     },
     components: {
         editorHeader,
         aboutDialog,
         insertFormDialog,
         rightClickMenu,
-        uploadImgDialog
+        uploadImgDialog,
     },
     computed: {
         ...mapState({
-            wxRenderer: state => state.wxRenderer,
-            output: state => state.output,
-            editor: state => state.editor,
-            cssEditor: state => state.cssEditor,
-            currentSize: state => state.currentSize,
-            currentColor: state => state.currentColor,
-            nightMode: state => state.nightMode,
-            rightClickMenuVisible: state => state.rightClickMenuVisible
-        })
+            wxRenderer: (state) => state.wxRenderer,
+            output: (state) => state.output,
+            editor: (state) => state.editor,
+            cssEditor: (state) => state.cssEditor,
+            currentSize: (state) => state.currentSize,
+            currentColor: (state) => state.currentColor,
+            nightMode: (state) => state.nightMode,
+            rightClickMenuVisible: (state) => state.rightClickMenuVisible,
+        }),
     },
     created() {
         this.initEditorState();
@@ -119,82 +151,94 @@ export default {
     methods: {
         initEditor() {
             this.initEditorEntity();
-            this.editor.on('change', (cm, e) => {
+            this.editor.on("change", (cm, e) => {
                 if (this.changeTimer) clearTimeout(this.changeTimer);
                 this.changeTimer = setTimeout(() => {
                     this.onEditorRefresh();
-                    saveEditorContent(this.editor, '__editor_content');
+                    saveEditorContent(this.editor, "__editor_content");
                 }, 300);
             });
 
             // 粘贴上传图片并插入
-            this.editor.on('paste', (cm, e) => {
-                if (!(e.clipboardData && e.clipboardData.items) || this.isImgLoading) {
+            this.editor.on("paste", (cm, e) => {
+                if (
+                    !(e.clipboardData && e.clipboardData.items) ||
+                    this.isImgLoading
+                ) {
                     return;
                 }
-                for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
+                for (
+                    let i = 0, len = e.clipboardData.items.length;
+                    i < len;
+                    ++i
+                ) {
                     let item = e.clipboardData.items[i];
 
-                    if (item.kind === 'file') {
+                    if (item.kind === "file") {
                         // 校验图床参数
-                        const imgHost = localStorage.getItem('imgHost') || 'default';
-                        if (imgHost != 'default' && !localStorage.getItem(`${imgHost}Config`)) {
+                        const imgHost =
+                            localStorage.getItem("imgHost") || "default";
+                        if (
+                            imgHost != "default" &&
+                            !localStorage.getItem(`${imgHost}Config`)
+                        ) {
                             this.$message({
                                 showClose: true,
-                                message: '请先配置好图床参数',
-                                type: 'error'
+                                message: "请先配置好图床参数",
+                                type: "error",
                             });
                             continue;
                         }
 
                         this.isImgLoading = true;
-                        const pasteFile = item.getAsFile()
-                        uploadImgFile(pasteFile).then(res => {
-                            this.uploaded(res)
-                        }).catch(err => {
-                            this.$message({
-                                showClose: true,
-                                message: err,
-                                type: 'error'
+                        const pasteFile = item.getAsFile();
+                        uploadImgFile(pasteFile)
+                            .then((res) => {
+                                this.uploaded(res);
+                            })
+                            .catch((err) => {
+                                this.$message({
+                                    showClose: true,
+                                    message: err,
+                                    type: "error",
+                                });
                             });
-                        });
                         this.isImgLoading = false;
                     }
                 }
             });
 
-            this.editor.on('mousedown', () => {
-                this.$store.commit('setRightClickMenuVisible', false);
+            this.editor.on("mousedown", () => {
+                this.$store.commit("setRightClickMenuVisible", false);
             });
-            this.editor.on('blur', () => {
+            this.editor.on("blur", () => {
                 //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
-                this.$store.commit('setRightClickMenuVisible', false);   
+                this.$store.commit("setRightClickMenuVisible", false);
             });
-            this.editor.on('scroll', () => {
-                this.$store.commit('setRightClickMenuVisible', false);
+            this.editor.on("scroll", () => {
+                this.$store.commit("setRightClickMenuVisible", false);
             });
-
         },
         initCssEditor() {
             this.initCssEditorEntity();
             // 自动提示
-            this.cssEditor.on('keyup', (cm, e) => {
+            this.cssEditor.on("keyup", (cm, e) => {
                 if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
                     cm.showHint(e);
                 }
             });
-            this.cssEditor.on('update', (instance) => {
+            this.cssEditor.on("update", (instance) => {
                 this.cssChanged();
-                saveEditorContent(this.cssEditor, '__css_content');
-            })
+                saveEditorContent(this.cssEditor, "__css_content");
+            });
         },
         cssChanged() {
             let json = css2json(this.cssEditor.getValue(0));
-            let theme = setFontSize(this.currentSize.replace('px', ''));
+            let theme = setFontSize(this.currentSize.replace("px", ""));
 
             theme = customCssWithTemplate(json, this.currentColor, theme);
             this.setWxRendererOptions({
-                theme: theme
+                theme: theme,
             });
             this.onEditorRefresh();
         },
@@ -203,8 +247,8 @@ export default {
             if (!response) {
                 this.$message({
                     showClose: true,
-                    message: '上传图片未知异常',
-                    type: 'error'
+                    message: "上传图片未知异常",
+                    type: "error",
                 });
                 return;
             }
@@ -217,47 +261,66 @@ export default {
             this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
             this.$message({
                 showClose: true,
-                message: '图片上传成功',
-                type: 'success'
+                message: "图片上传成功",
+                type: "success",
             });
             this.onEditorRefresh();
         },
         // 左右滚动
         leftAndRightScroll() {
-            const scrollCB = text => {
+            const scrollCB = (text) => {
                 let source, target;
 
                 clearTimeout(this.timeout);
-                if (text === 'preview') {
+                if (text === "preview") {
                     source = this.$refs.preview.$el;
-                    target = document.getElementsByClassName('CodeMirror-scroll')[0];
-                    this.editor.off('scroll', editorScrollCB);
+                    target = document.getElementsByClassName(
+                        "CodeMirror-scroll"
+                    )[0];
+                    this.editor.off("scroll", editorScrollCB);
                     this.timeout = setTimeout(() => {
-                        this.editor.on('scroll', editorScrollCB);
+                        this.editor.on("scroll", editorScrollCB);
                     }, 300);
-                } else if (text === 'editor') {
-                    source = document.getElementsByClassName('CodeMirror-scroll')[0];
+                } else if (text === "editor") {
+                    source = document.getElementsByClassName(
+                        "CodeMirror-scroll"
+                    )[0];
                     target = this.$refs.preview.$el;
-                    target.removeEventListener("scroll", previewScrollCB, false);
+                    target.removeEventListener(
+                        "scroll",
+                        previewScrollCB,
+                        false
+                    );
                     this.timeout = setTimeout(() => {
-                        target.addEventListener("scroll", previewScrollCB, false);
+                        target.addEventListener(
+                            "scroll",
+                            previewScrollCB,
+                            false
+                        );
                     }, 300);
                 }
 
-                let percentage = source.scrollTop / (source.scrollHeight - source.offsetHeight);
-                let height = percentage * (target.scrollHeight - target.offsetHeight);
+                let percentage =
+                    source.scrollTop /
+                    (source.scrollHeight - source.offsetHeight);
+                let height =
+                    percentage * (target.scrollHeight - target.offsetHeight);
 
                 target.scrollTo(0, height);
             };
             const editorScrollCB = () => {
-                scrollCB('editor');
+                scrollCB("editor");
             };
             const previewScrollCB = () => {
-                scrollCB('preview');
+                scrollCB("preview");
             };
 
-            this.$refs.preview.$el.addEventListener("scroll", previewScrollCB, false);
-            this.editor.on('scroll', editorScrollCB);
+            this.$refs.preview.$el.addEventListener(
+                "scroll",
+                previewScrollCB,
+                false
+            );
+            this.editor.on("scroll", editorScrollCB);
         },
         // 更新编辑器
         onEditorRefresh() {
@@ -284,43 +347,43 @@ export default {
             const left = e.clientX - offsetLeft;
             this.mouseLeft = Math.min(maxLeft, left);
             this.mouseTop = e.clientY + 10;
-            this.$store.commit('setRightClickMenuVisible', true);
+            this.$store.commit("setRightClickMenuVisible", true);
         },
-        closeRightClickMenu(){
-            this.$store.commit('setRightClickMenuVisible', false);
+        closeRightClickMenu() {
+            this.$store.commit("setRightClickMenuVisible", false);
         },
         onMenuEvent(type, info = {}) {
             switch (type) {
-                case 'pageReset':
+                case "pageReset":
                     this.$refs.header.showResetConfirm = true;
                     break;
-                case 'insertPic':
-                    this.dialogUploadImgVisible = true
+                case "insertPic":
+                    this.dialogUploadImgVisible = true;
                     break;
-                case 'downLoad':
+                case "downLoad":
                     this.downloadEditorContent();
                     break;
-                case 'insertTable':
+                case "insertTable":
                     this.dialogFormVisible = true;
                 default:
                     break;
             }
         },
         ...mapMutations([
-            'initEditorState',
-            'initEditorEntity',
-            'setWxRendererOptions',
-            'editorRefresh',
-            'initCssEditorEntity'])
+            "initEditorState",
+            "initEditorEntity",
+            "setWxRendererOptions",
+            "editorRefresh",
+            "initCssEditorEntity",
+        ]),
     },
     mounted() {
         setTimeout(() => {
             this.leftAndRightScroll();
             PR.prettyPrint();
         }, 300);
-    }
-}
-
+    },
+};
 </script>
 <style lang="less" scoped>
 .main-body {
@@ -328,17 +391,17 @@ export default {
     overflow: hidden;
 }
 .el-main {
-    transition: all .3s;
+    transition: all 0.3s;
     padding: 0;
     margin: 20px;
     margin-top: 0;
 }
 .container {
-    transition: all .3s;
+    transition: all 0.3s;
 }
 .preview {
     transition: background 0s;
-    transition-delay: .2s;
+    transition-delay: 0.2s;
 }
 .preview-wrapper_night {
     overflow-y: inherit;
@@ -369,7 +432,7 @@ export default {
         width: 50px;
         height: 50px;
         transform: translate(-50%, -50%);
-        background: url('../assets/images/favicon.png') no-repeat;
+        background: url("../assets/images/favicon.png") no-repeat;
         background-size: cover;
     }
     span {
@@ -385,30 +448,34 @@ export default {
     animation-fill-mode: both;
 }
 @keyframes bounceInRight {
-    0%,60%,75%,90%,100% {
-        transition-timing-function: cubic-bezier(0.215,.610,.355,1.000)
+    0%,
+    60%,
+    75%,
+    90%,
+    100% {
+        transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
     }
     0% {
-        opacity:0;
-        transform:translate3d(3000px,0,0)}
+        opacity: 0;
+        transform: translate3d(3000px, 0, 0);
+    }
     60% {
-        opacity:1;
-        transform:translate3d(-25px,0,0)
+        opacity: 1;
+        transform: translate3d(-25px, 0, 0);
     }
     75% {
-        transform:translate3d(10px,0,0)
+        transform: translate3d(10px, 0, 0);
     }
     90% {
-        transform:translate3d(-5px,0,0)
+        transform: translate3d(-5px, 0, 0);
     }
     100% {
-        transform:none
+        transform: none;
     }
 }
 </style>
 <style lang="less">
-@import url('../assets/less/app.less');
-@import url('../assets/less/style-mirror.css');
-@import url('../assets/less/github-v2.min.css');
+@import url("../assets/less/app.less");
+@import url("../assets/less/style-mirror.css");
+@import url("../assets/less/github-v2.min.css");
 </style>
-
