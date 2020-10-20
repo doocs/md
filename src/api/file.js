@@ -3,7 +3,6 @@ import OSS from "ali-oss";
 import COS from "cos-js-sdk-v5";
 import Buffer from "buffer-from";
 import { v4 as uuidv4 } from "uuid";
-import { resolveConfigFile } from "prettier";
 
 const defaultConfig = {
     username: "filess",
@@ -98,7 +97,7 @@ async function ghFileUpload(content, filename) {
         },
     });
     const githubResourceUrl = "raw.githubusercontent.com/filess/images/master/";
-    const cdnResourceUrl = "cdn.jsdelivr.net/gh/filess/images/";
+    const cdnResourceUrl = "cdn.jsdelivr.net/gh/filess/images@master/";
     return isDefault
         ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
         : res.content.download_url;
