@@ -6,36 +6,38 @@
 </template>
 
 <script>
-import Loading from './components/Loading'
-import CodemirrorEditor from './view/CodemirrorEditor'
+import Loading from "./components/Loading";
+import CodemirrorEditor from "./view/CodemirrorEditor";
 export default {
-    name: 'App',
+    name: "App",
     components: {
         Loading,
-        CodemirrorEditor
+        CodemirrorEditor,
     },
     data() {
         return {
-            loading: true
-        }
+            loading: true,
+        };
     },
     mounted() {
         setTimeout(() => {
-            this.loading = false
+            this.loading = false;
         }, 100);
-    }
-}
-
+    },
+};
 </script>
 
 <style lang="scss" scoped>
-.fade-enter, .fade-leave-to {
+.fade-enter,
+.fade-leave-to {
     opacity: 0;
 }
-.fade-enter-to, .fade-leave {
+.fade-enter-to,
+.fade-leave {
     opacity: 1;
 }
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: all 1s;
 }
 </style>

@@ -1,62 +1,70 @@
 <template>
-    <ul v-show="value"  id="menu" class="menu" :style="`left: ${left}px;top: ${top}px;`">
-        <li v-for="item of list" :key="item.key" class="menu_item" @mousedown="onMouseDown(item.key)">
-            <span>{{item.text}}</span>
+    <ul
+        v-show="value"
+        id="menu"
+        class="menu"
+        :style="`left: ${left}px;top: ${top}px;`"
+    >
+        <li
+            v-for="item of list"
+            :key="item.key"
+            class="menu_item"
+            @mousedown="onMouseDown(item.key)"
+        >
+            <span>{{ item.text }}</span>
         </li>
     </ul>
 </template>
 
 <script>
-import {
-    uploadImgFile,
-} from '../../assets/scripts/uploadImageFile';
+import { uploadImgFile } from "../../assets/scripts/uploadImageFile";
 export default {
     props: {
         value: {
             type: Boolean,
-            default: false
+            default: false,
         },
         top: {
             type: Number,
-            default: 0
+            default: 0,
         },
         left: {
             type: Number,
-            default: 0
-        }
+            default: 0,
+        },
     },
     data() {
         return {
             list: [
                 {
-                    text: '上传图片',
-                    key: 'insertPic'
+                    text: "上传图片",
+                    key: "insertPic",
                 },
                 {
-                    text: '插入表格',
-                    key: 'insertTable'
+                    text: "插入表格",
+                    key: "insertTable",
                 },
                 {
-                    text: '页面重置',
-                    key: 'pageReset'
+                    text: "页面重置",
+                    key: "pageReset",
                 },
                 {
-                    text: '下载MD文档',
-                    key: 'downLoad'
-                }
-            ]
-        }
+                    text: "下载MD文档",
+                    key: "downLoad",
+                },
+            ],
+        };
     },
     methods: {
         closeCB() {
-            this.$emit('input', false);
+            this.$emit("input", false);
         },
-        onMouseDown(key){
-            this.$emit('menuTick', key)
-            this.$emit('closeMenu', false)
-        }
+        onMouseDown(key) {
+            this.$emit("menuTick", key);
+            this.$emit("closeMenu", false);
+        },
     },
-}
+};
 </script>
 
 <style lang="less" scoped>
@@ -83,7 +91,8 @@ export default {
         color: white;
         background: rgb(139, 146, 148);
     }
-    span,.btn-upload {
+    span,
+    .btn-upload {
         text-align: center;
         display: inline-block;
         padding: 4px 0;
@@ -91,7 +100,7 @@ export default {
     }
     .btn-upload {
         margin: 0;
-        border:none;
+        border: none;
         outline: none;
         background: transparent;
     }
@@ -104,7 +113,6 @@ export default {
     }
 }
 
-
 li:hover {
     background-color: #1790ff;
     color: white;
@@ -114,5 +122,4 @@ li {
     font-size: 15px;
     list-style: none;
 }
-
 </style>
