@@ -8,7 +8,7 @@
 
 <div align="center">
 
-[![actions status](https://github.com/doocs/md/workflows/Sync/badge.svg)](https://github.com/doocs/md/actions) [![actions status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls) [![users](https://badgen.net/badge/Who's/using/green)](../../issues)<br> [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
+[![sync status](https://github.com/doocs/md/workflows/Sync/badge.svg)](https://github.com/doocs/md/actions) [![deploy status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![prettier status](https://github.com/doocs/md/workflows/Prettier/badge.svg)](https://github.com/doocs/md/actions) [![users](https://badgen.net/badge/Who's/using/green)](../../issues) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls)<br> [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
 
 </div>
 
@@ -61,100 +61,100 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 ## 谁在使用
 
 <table>
-    <tr>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/0-Doocs%E5%BC%80%E6%BA%90%E7%A4%BE%E5%8C%BA.png" style="width: 40px;"><br>
-          <sub>Doocs开源社区</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/1-%E6%8E%98%E5%A2%93%E4%BA%BA%E7%9A%84%E5%B0%8F%E9%93%B2%E5%AD%90.jpg" style="width: 40px;"><br>
-          <sub>掘墓人的小铲子</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/2-%E5%85%A8%E7%BD%91%E9%87%8D%E7%82%B9.png" style="width: 40px;"><br>
-          <sub>全网重点</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/3-%E7%88%B1%E7%A0%81%E5%A3%AB%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E7%99%BD.png" style="width: 40px;"><br>
-          <sub>爱码士的内心独白</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/4-%E4%B9%90%E7%8E%A9nodejsnpm%E5%B7%A5%E5%85%B7%E5%BA%93.jpg" style="width: 40px;"><br>
-          <sub>乐玩nodejs npm工具库</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/5-%E7%AE%80%E9%9D%99%E6%85%A2.jpg" style="width: 40px;"><br>
-          <sub>简静慢</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/6-0%E5%8A%A01.jpg" style="width: 40px;"><br>
-          <sub>0加1</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/7bfpKACg7HP-PhBrkpM9IQ">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/14-%E7%BC%96%E7%A8%8B%E5%9B%BE%E8%A7%A3.png" style="width: 40px;"><br>
-          <sub>编程图解</sub>
-        </a>
-      </td>
-    </tr>
-    <tr>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/7-%E7%A0%81%E4%BA%91Gitee.jpg" style="width: 40px;"><br>
-          <sub>码云Gitee</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/8-%E5%A5%BD%E9%85%B8%E4%B8%80%E6%9F%A0%E6%AA%AC.jpg" style="width: 40px;"><br>
-          <sub>好酸一柠檬</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/leDCdpvnfk8eZRPRRHwg5w">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/9-%E4%B8%8D%E7%9F%A5%E6%89%80%E4%BA%91Hub.png" style="width: 40px;"><br>
-          <sub>不知所云Hub</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/c9ZXxQHCrKz1FP1Zbh1S1w">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/10-%E4%BC%9A%E6%B3%BD%E7%99%BE%E5%AE%B6.jpg" style="width: 40px;"><br>
-          <sub>会泽百家</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/MV8ch6qlSsamSaBOhWr9kg">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/11-%E5%B9%B3%E5%87%A1%E8%80%8C%E8%AF%97%E6%84%8F.jpg" style="width: 40px;"><br>
-          <sub>平凡而诗意</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/bWPKO-S3TNLsCgzwspHCTg">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/12-%E6%B2%BB%E6%81%92%E8%AF%B4%E8%AF%B4.jpg" style="width: 40px;"><br>
-          <sub>治恒说说</sub>
-        </a>
-      </td>
-      <td align="center" style="width: 60px;">
-        <a href="https://mp.weixin.qq.com/s/AHHrxu7aIYBpvn3PpVHE_Q">
-          <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/13-%E6%9F%AF%E5%AE%81%E7%94%B3%E7%9A%84%E5%8F%99%E4%BA%8B%E5%B1%8B.jpg" style="width: 40px;"><br>
-          <sub>柯宁申的叙事屋</sub>
-        </a>
-      </td>
-    </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/RNKDCK2KoyeuMeEs6GUrow">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/0-Doocs%E5%BC%80%E6%BA%90%E7%A4%BE%E5%8C%BA.png" style="width: 40px;"><br>
+        <sub>Doocs开源社区</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/FpGIX9viQR6Z9iSCEPH86g">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/1-%E6%8E%98%E5%A2%93%E4%BA%BA%E7%9A%84%E5%B0%8F%E9%93%B2%E5%AD%90.jpg" style="width: 40px;"><br>
+        <sub>掘墓人的小铲子</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/yB3ZH3jmcF_LbzuKmnR9BQ">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/2-%E5%85%A8%E7%BD%91%E9%87%8D%E7%82%B9.png" style="width: 40px;"><br>
+        <sub>全网重点</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/3-%E7%88%B1%E7%A0%81%E5%A3%AB%E7%9A%84%E5%86%85%E5%BF%83%E7%8B%AC%E7%99%BD.png" style="width: 40px;"><br>
+        <sub>爱码士的内心独白</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/4-%E4%B9%90%E7%8E%A9nodejsnpm%E5%B7%A5%E5%85%B7%E5%BA%93.jpg" style="width: 40px;"><br>
+        <sub>乐玩nodejs npm工具库</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/5-%E7%AE%80%E9%9D%99%E6%85%A2.jpg" style="width: 40px;"><br>
+        <sub>简静慢</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/6-0%E5%8A%A01.jpg" style="width: 40px;"><br>
+        <sub>0加1</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/7bfpKACg7HP-PhBrkpM9IQ">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/14-%E7%BC%96%E7%A8%8B%E5%9B%BE%E8%A7%A3.png" style="width: 40px;"><br>
+        <sub>编程图解</sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/bnlWqzCarDlR4F27HHXNUg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/7-%E7%A0%81%E4%BA%91Gitee.jpg" style="width: 40px;"><br>
+        <sub>码云Gitee</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/8-%E5%A5%BD%E9%85%B8%E4%B8%80%E6%9F%A0%E6%AA%AC.jpg" style="width: 40px;"><br>
+        <sub>好酸一柠檬</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/leDCdpvnfk8eZRPRRHwg5w">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/9-%E4%B8%8D%E7%9F%A5%E6%89%80%E4%BA%91Hub.png" style="width: 40px;"><br>
+        <sub>不知所云Hub</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/c9ZXxQHCrKz1FP1Zbh1S1w">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/10-%E4%BC%9A%E6%B3%BD%E7%99%BE%E5%AE%B6.jpg" style="width: 40px;"><br>
+        <sub>会泽百家</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/MV8ch6qlSsamSaBOhWr9kg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/11-%E5%B9%B3%E5%87%A1%E8%80%8C%E8%AF%97%E6%84%8F.jpg" style="width: 40px;"><br>
+        <sub>平凡而诗意</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/bWPKO-S3TNLsCgzwspHCTg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/12-%E6%B2%BB%E6%81%92%E8%AF%B4%E8%AF%B4.jpg" style="width: 40px;"><br>
+        <sub>治恒说说</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/AHHrxu7aIYBpvn3PpVHE_Q">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/13-%E6%9F%AF%E5%AE%81%E7%94%B3%E7%9A%84%E5%8F%99%E4%BA%8B%E5%B1%8B.jpg" style="width: 40px;"><br>
+        <sub>柯宁申的叙事屋</sub>
+      </a>
+    </td>
+  </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/issues/5) 留言。
