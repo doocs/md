@@ -201,6 +201,66 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
+            <el-tab-pane class="github-panel" label="七牛云 Kodo" name="qiniu">
+                <el-form
+                    class="setting-form"
+                    ref="form"
+                    :model="formQiniu"
+                    label-position="right"
+                    label-width="140px"
+                >
+                    <el-form-item label="AccessKey" :required="true">
+                        <el-input
+                            v-model.trim="formQiniu.accessKey"
+                            placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="SecretKey" :required="true">
+                        <el-input
+                            v-model.trim="formQiniu.secretKey"
+                            show-password
+                            placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket" :required="true">
+                        <el-input
+                            v-model.trim="formQiniu.bucket"
+                            placeholder="如：md"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="Bucket 对应域名" :required="true">
+                        <el-input
+                            v-model.trim="formQiniu.domain"
+                            placeholder="如：http://images.123ylb.cn"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="存储区域" :required="true">
+                        <el-input
+                            v-model.trim="formQiniu.region"
+                            placeholder="如：z2"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="存储路径" :required="false">
+                        <el-input
+                            v-model.trim="formQiniu.path"
+                            placeholder="如：img，可不填，默认为根目录"
+                        ></el-input>
+                        <el-link
+                            type="primary"
+                            href="https://cloud.tencent.com/document/product/436/38484"
+                            target="_blank"
+                            >如何使用七牛云 Kodo？</el-link
+                        >
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            @click="saveQiniuConfiguration"
+                            >保存配置</el-button
+                        >
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
         </el-tabs>
     </el-dialog>
 </template>
@@ -238,6 +298,13 @@ export default {
                 path: "",
                 cdnHost: "",
             },
+            formQiniu: {
+                accessKey: "",
+                secretKey: "",
+                bucket: "",
+                domain: "",
+                region: "",
+            },
             options: [
                 {
                     value: "default",
@@ -254,6 +321,10 @@ export default {
                 {
                     value: "txCOS",
                     label: "腾讯云",
+                },
+                {
+                    value: "qiniu",
+                    label: "七牛云",
                 },
             ],
             imgHost: "default",
@@ -347,6 +418,30 @@ export default {
                 return;
             }
             localStorage.setItem("txCOSConfig", JSON.stringify(this.formTxCOS));
+            this.$message({
+                message: "保存成功",
+                type: "success",
+            });
+        },
+
+        saveQiniuConfiguration() {
+            if (
+                !(
+                    this.formQiniu.accessKey &&
+                    this.formQiniu.secretKey &&
+                    this.formQiniu.bucket &&
+                    this.formQiniu.domain &&
+                    this.formQiniu.region
+                )
+            ) {
+                this.$message({
+                    showClose: true,
+                    message: `七牛云 Kodo 参数配置不全`,
+                    type: "error",
+                });
+                return;
+            }
+            localStorage.setItem("qiniuConfig", JSON.stringify(this.formQiniu));
             this.$message({
                 message: "保存成功",
                 type: "success",
