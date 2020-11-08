@@ -240,7 +240,7 @@
                             placeholder="如：z2"
                         ></el-input>
                     </el-form-item>
-                     <el-form-item label="存储路径" :required="false">
+                    <el-form-item label="存储路径" :required="false">
                         <el-input
                             v-model.trim="formQiniu.path"
                             placeholder="如：img，可不填，默认为根目录"
@@ -427,10 +427,10 @@ export default {
         saveQiniuConfiguration() {
             if (
                 !(
-                    this.formQiniu.accessKey && 
-                    this.formQiniu.secretKey && 
-                    this.formQiniu.bucket && 
-                    this.formQiniu.domain && 
+                    this.formQiniu.accessKey &&
+                    this.formQiniu.secretKey &&
+                    this.formQiniu.bucket &&
+                    this.formQiniu.domain &&
                     this.formQiniu.region
                 )
             ) {
