@@ -1,8 +1,11 @@
 import fetch from "./fetch";
+import CryptoJS from "crypto-js";
 import OSS from "ali-oss";
 import COS from "cos-js-sdk-v5";
 import Buffer from "buffer-from";
 import { v4 as uuidv4 } from "uuid";
+import * as qiniu from "qiniu-js";
+import { utf16to8, base64encode, safe64 } from "../assets/scripts/tokenTools";
 
 const defaultConfig = {
     username: "filess",
@@ -28,6 +31,8 @@ function fileUpload(content, file) {
             return aliOSSFileUpload(content, file.name);
         case "txCOS":
             return txCOSFileUpload(file);
+        case "qiniu":
+            return qiniuUpload(file);
         case "github":
         default:
             return ghFileUpload(content, file.name);
@@ -79,6 +84,14 @@ function getGitHubConfig() {
         githubConfig.branch,
         githubConfig.accessToken
     );
+}
+
+function getQiniuToken(accessKey, secretKey, putPolicy) {
+    const policy = JSON.stringify(putPolicy);
+    const encoded = base64encode(utf16to8(policy));
+    const hash = CryptoJS.HmacSHA1(encoded, secretKey);
+    const encodedSigned = hash.toString(CryptoJS.enc.Base64);
+    return accessKey + ":" + safe64(encodedSigned) + ":" + encoded;
 }
 
 async function ghFileUpload(content, filename) {
@@ -163,6 +176,44 @@ async function txCOSFileUpload(file) {
                 }
             }
         );
+    });
+}
+
+async function qiniuUpload(file) {
+    const qiniuConfig = JSON.parse(localStorage.getItem("qiniuConfig"));
+    const putPolicy = {
+        scope: qiniuConfig.bucket,
+        deadline: Math.trunc(new Date().getTime() / 1000) + 3600,
+    };
+    const token = getQiniuToken(
+        qiniuConfig.accessKey,
+        qiniuConfig.secretKey,
+        putPolicy
+    );
+    const dir = qiniuConfig.path ? qiniuConfig.path + "/" : "";
+    const dateFilename =
+        dir +
+        new Date().getTime() +
+        "-" +
+        uuidv4() +
+        "." +
+        file.name.split(".")[1];
+    const config = {
+        region: qiniuConfig.region,
+    };
+    const observable = qiniu.upload(file, dateFilename, token, {}, config);
+    return new Promise((resolve, reject) => {
+        observable.subscribe({
+            next: (result) => {
+                console.log(result);
+            },
+            error: (err) => {
+                reject(err.message);
+            },
+            complete: (result) => {
+                resolve(qiniuConfig.domain + "/" + result.key);
+            },
+        });
     });
 }
 
