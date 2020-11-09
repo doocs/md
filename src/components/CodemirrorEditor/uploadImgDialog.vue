@@ -497,7 +497,7 @@ export default {
                     errMessage = checkRes ? "" : "请先配置腾讯云 COS 参数";
                     break;
                 case "qiniu":
-                    checkRes = 
+                    checkRes =
                         this.formQiniu.accessKey &&
                         this.formQiniu.secretKey &&
                         this.formQiniu.bucket &&

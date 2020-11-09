@@ -49,7 +49,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 | 2   | GitHub 图床 | 配置 `Repo`、`Token` 参数                                          | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token) |
 | 3   | 阿里云 OSS  | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 等参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                             |
 | 4   | 腾讯云 COS  | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 等参数            | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
-| 5   | 七牛云 Kodo | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 等参数 | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                          |
+| 5   | 七牛云 Kodo | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 等参数 | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
 
 ![select-and-change-color-theme](./public/assets/images/select-and-change-color-theme.gif)
 
