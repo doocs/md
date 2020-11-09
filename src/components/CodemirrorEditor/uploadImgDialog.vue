@@ -231,7 +231,7 @@
                     <el-form-item label="Bucket 对应域名" :required="true">
                         <el-input
                             v-model.trim="formQiniu.domain"
-                            placeholder="如：http://images.123ylb.cn"
+                            placeholder="如：https://images.123ylb.cn"
                         ></el-input>
                     </el-form-item>
                     <el-form-item label="存储区域" :required="true">
@@ -247,7 +247,7 @@
                         ></el-input>
                         <el-link
                             type="primary"
-                            href="https://cloud.tencent.com/document/product/436/38484"
+                            href="https://developer.qiniu.com/kodo"
                             target="_blank"
                             >如何使用七牛云 Kodo？</el-link
                         >
@@ -495,6 +495,15 @@ export default {
                         this.formTxCOS.bucket &&
                         this.formTxCOS.region;
                     errMessage = checkRes ? "" : "请先配置腾讯云 COS 参数";
+                    break;
+                case "qiniu":
+                    checkRes = 
+                        this.formQiniu.accessKey &&
+                        this.formQiniu.secretKey &&
+                        this.formQiniu.bucket &&
+                        this.formQiniu.domain &&
+                        this.formQiniu.region;
+                    errMessage = checkRes ? "" : "请先配置七牛云 Kodo 参数";
                     break;
             }
             errMessage && this.$message.error(errMessage);

@@ -59,9 +59,9 @@ export function utf8to16(str) {
     return out;
 }
 
-var base64EncodeChars =
+const base64EncodeChars =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-var base64DecodeChars = new Array(
+const base64DecodeChars = new Array(
     -1,
     -1,
     -1,
