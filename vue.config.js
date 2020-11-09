@@ -1,4 +1,4 @@
 module.exports = {
     outputDir: "dist",
-    publicPath: "/md/",
+    publicPath: process.env.NETLIFY ? '/' : '/md/'
 };

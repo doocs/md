@@ -3,7 +3,7 @@
   "author": "doocs",
   "version": "1.4.2",
   "private": true,
-  "homepage": "https://doocs.gitee.io/md",
+  "homepage": ".",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
