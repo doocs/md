@@ -41,7 +41,7 @@ function fileUpload(content, file) {
     }
 }
 
-function getGitHubCommonConfig(username, repo, branch, token) {
+function getDir() {
     const date = new Date();
     const dir =
         date.getFullYear() +
@@ -49,6 +49,17 @@ function getGitHubCommonConfig(username, repo, branch, token) {
         (date.getMonth() + 1).toString().padStart(2, "0") +
         "/" +
         date.getDate().toString().padStart(2, "0");
+    return dir;
+}
+
+function getDateFilename(filename) {
+    const dateFilename =
+        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
+    return dateFilename;
+}
+
+function getGitHubCommonConfig(username, repo, branch, token) {
+    const dir = getDir();
     return {
         method: "put",
         headers: {
@@ -99,8 +110,7 @@ function getQiniuToken(accessKey, secretKey, putPolicy) {
 async function ghFileUpload(content, filename) {
     const isDefault = localStorage.getItem("imgHost") !== "github";
     const config = isDefault ? getDefaultConfig() : getGitHubConfig();
-    const dateFilename =
-        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
+    const dateFilename = getDateFilename(filename);
     const res = await fetch({
         url: config.url + dateFilename,
         method: config.method,
@@ -127,15 +137,8 @@ async function giteeUpload(content, filename) {
         .split("/");
     const username = repoUrl[0];
     const repo = repoUrl[1];
-    const date = new Date();
-    const dir =
-        date.getFullYear() +
-        "/" +
-        (date.getMonth() + 1).toString().padStart(2, "0") +
-        "/" +
-        date.getDate().toString().padStart(2, "0");
-    const dateFilename =
-        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
+    const dir = getDir();
+    const dateFilename = getDateFilename(filename);
     const res = await fetch({
         url: `https://gitee.com/api/v5/repos/${username}/${repo}/contents/${dir}/${dateFilename}`,
         method: "POST",
@@ -150,8 +153,7 @@ async function giteeUpload(content, filename) {
 }
 
 async function aliOSSFileUpload(content, filename) {
-    const dateFilename =
-        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
+    const dateFilename = getDateFilename(filename);
     const aliOSSConfig = JSON.parse(localStorage.getItem("aliOSSConfig"));
     const buffer = Buffer(content, "base64");
     try {
@@ -174,8 +176,7 @@ async function aliOSSFileUpload(content, filename) {
 }
 
 async function txCOSFileUpload(file) {
-    const dateFilename =
-        new Date().getTime() + "-" + uuidv4() + "." + file.name.split(".")[1];
+    const dateFilename = getDateFilename(file.name);
     const txCOSConfig = JSON.parse(localStorage.getItem("txCOSConfig"));
     const cos = new COS({
         SecretId: txCOSConfig.secretId,
@@ -224,13 +225,7 @@ async function qiniuUpload(file) {
         putPolicy
     );
     const dir = qiniuConfig.path ? qiniuConfig.path + "/" : "";
-    const dateFilename =
-        dir +
-        new Date().getTime() +
-        "-" +
-        uuidv4() +
-        "." +
-        file.name.split(".")[1];
+    const dateFilename = dir + getDateFilename(file.name);
     const config = {
         region: qiniuConfig.region,
     };
