@@ -39,48 +39,6 @@
                     </div>
                 </el-upload>
             </el-tab-pane>
-            <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
-                <el-form
-                    class="setting-form"
-                    ref="form"
-                    :model="formGitHub"
-                    label-position="right"
-                    label-width="140px"
-                >
-                    <el-form-item label="GitHub 仓库" :required="true">
-                        <el-input
-                            v-model.trim="formGitHub.repo"
-                            placeholder="如：github.com/yanglbme/resource"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="分支">
-                        <el-input
-                            v-model.trim="formGitHub.branch"
-                            placeholder="如：release，可不填，默认 master"
-                        ></el-input>
-                    </el-form-item>
-                    <el-form-item label="Token" :required="true">
-                        <el-input
-                            v-model.trim="formGitHub.accessToken"
-                            show-password
-                            placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
-                        ></el-input>
-                        <el-link
-                            type="primary"
-                            href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                            target="_blank"
-                            >如何获取 GitHub Token？</el-link
-                        >
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button
-                            type="primary"
-                            @click="saveGitHubConfiguration"
-                            >保存配置</el-button
-                        >
-                    </el-form-item>
-                </el-form>
-            </el-tab-pane>
             <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
                 <el-form
                     class="setting-form"
@@ -119,6 +77,48 @@
                         <el-button
                             type="primary"
                             @click="saveGiteeConfiguration"
+                            >保存配置</el-button
+                        >
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
+            <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
+                <el-form
+                    class="setting-form"
+                    ref="form"
+                    :model="formGitHub"
+                    label-position="right"
+                    label-width="140px"
+                >
+                    <el-form-item label="GitHub 仓库" :required="true">
+                        <el-input
+                            v-model.trim="formGitHub.repo"
+                            placeholder="如：github.com/yanglbme/resource"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="分支">
+                        <el-input
+                            v-model.trim="formGitHub.branch"
+                            placeholder="如：release，可不填，默认 master"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="Token" :required="true">
+                        <el-input
+                            v-model.trim="formGitHub.accessToken"
+                            show-password
+                            placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
+                        ></el-input>
+                        <el-link
+                            type="primary"
+                            href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
+                            target="_blank"
+                            >如何获取 GitHub Token？</el-link
+                        >
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            @click="saveGitHubConfiguration"
                             >保存配置</el-button
                         >
                     </el-form-item>
@@ -356,15 +356,15 @@ export default {
             options: [
                 {
                     value: "default",
-                    label: "默认图床",
-                },
-                {
-                    value: "github",
-                    label: "GitHub",
+                    label: "默认",
                 },
                 {
                     value: "gitee",
                     label: "Gitee",
+                },
+                {
+                    value: "github",
+                    label: "GitHub",
                 },
                 {
                     value: "aliOSS",
