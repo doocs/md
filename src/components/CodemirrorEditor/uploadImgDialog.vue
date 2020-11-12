@@ -111,7 +111,8 @@
                             type="primary"
                             href="https://gitee.com/profile/personal_access_tokens"
                             target="_blank"
-                            >请在 Gitee「设置->安全设置->私人令牌」中生成</el-link
+                            >请在
+                            Gitee「设置->安全设置->私人令牌」中生成</el-link
                         >
                     </el-form-item>
                     <el-form-item>
@@ -441,10 +442,7 @@ export default {
                 });
                 return;
             }
-            localStorage.setItem(
-                "giteeConfig",
-                JSON.stringify(this.formGitee)
-            );
+            localStorage.setItem("giteeConfig", JSON.stringify(this.formGitee));
             this.$message({
                 message: "保存成功",
                 type: "success",
