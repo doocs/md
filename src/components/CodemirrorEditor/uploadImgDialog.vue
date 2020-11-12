@@ -81,6 +81,48 @@
                     </el-form-item>
                 </el-form>
             </el-tab-pane>
+            <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
+                <el-form
+                    class="setting-form"
+                    ref="form"
+                    :model="formGitee"
+                    label-position="right"
+                    label-width="140px"
+                >
+                    <el-form-item label="Gitee 仓库" :required="true">
+                        <el-input
+                            v-model.trim="formGitee.repo"
+                            placeholder="如：gitee.com/yanglbme/resource"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="分支">
+                        <el-input
+                            v-model.trim="formGitee.branch"
+                            placeholder="如：release，可不填，默认 master"
+                        ></el-input>
+                    </el-form-item>
+                    <el-form-item label="私人令牌" :required="true">
+                        <el-input
+                            v-model.trim="formGitee.accessToken"
+                            show-password
+                            placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
+                        ></el-input>
+                        <el-link
+                            type="primary"
+                            href="https://gitee.com/profile/personal_access_tokens"
+                            target="_blank"
+                            >请在 Gitee「设置->安全设置->私人令牌」中生成</el-link
+                        >
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button
+                            type="primary"
+                            @click="saveGiteeConfiguration"
+                            >保存配置</el-button
+                        >
+                    </el-form-item>
+                </el-form>
+            </el-tab-pane>
             <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
                 <el-form
                     class="setting-form"
@@ -282,6 +324,11 @@ export default {
                 branch: "",
                 accessToken: "",
             },
+            formGitee: {
+                repo: "",
+                branch: "",
+                accessToken: "",
+            },
             formAliOSS: {
                 accessKeyId: "",
                 accessKeySecret: "",
@@ -315,6 +362,10 @@ export default {
                     label: "GitHub",
                 },
                 {
+                    value: "gitee",
+                    label: "Gitee",
+                },
+                {
                     value: "aliOSS",
                     label: "阿里云",
                 },
@@ -334,6 +385,9 @@ export default {
     created() {
         if (localStorage.getItem("githubConfig")) {
             this.formGitHub = JSON.parse(localStorage.getItem("githubConfig"));
+        }
+        if (localStorage.getItem("giteeConfig")) {
+            this.formGitee = JSON.parse(localStorage.getItem("giteeConfig"));
         }
         if (localStorage.getItem("aliOSSConfig")) {
             this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
@@ -369,6 +423,27 @@ export default {
             localStorage.setItem(
                 "githubConfig",
                 JSON.stringify(this.formGitHub)
+            );
+            this.$message({
+                message: "保存成功",
+                type: "success",
+            });
+        },
+        saveGiteeConfiguration() {
+            if (!(this.formGitee.repo && this.formGitee.accessToken)) {
+                const blankElement = this.formGitee.repo
+                    ? "私人令牌"
+                    : "Gitee 仓库";
+                this.$message({
+                    showClose: true,
+                    message: `参数「​${blankElement}」不能为空`,
+                    type: "error",
+                });
+                return;
+            }
+            localStorage.setItem(
+                "giteeConfig",
+                JSON.stringify(this.formGitee)
             );
             this.$message({
                 message: "保存成功",
@@ -479,6 +554,11 @@ export default {
                     checkRes =
                         this.formGitHub.repo && this.formGitHub.accessToken;
                     errMessage = checkRes ? "" : "请先配置 GitHub 图床参数";
+                    break;
+                case "gitee":
+                    checkRes =
+                        this.formGitee.repo && this.formGitee.accessToken;
+                    errMessage = checkRes ? "" : "请先配置 Gitee 图床参数";
                     break;
                 case "aliOSS":
                     checkRes =

@@ -33,6 +33,8 @@ function fileUpload(content, file) {
             return txCOSFileUpload(file);
         case "qiniu":
             return qiniuUpload(file);
+        case "gitee":
+            return giteeUpload(content, file.name);
         case "github":
         default:
             return ghFileUpload(content, file.name);
@@ -114,6 +116,37 @@ async function ghFileUpload(content, filename) {
     return isDefault
         ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
         : res.content.download_url;
+}
+
+async function giteeUpload(content, filename) {
+    const giteeConfig = JSON.parse(localStorage.getItem("giteeConfig"));
+    const repoUrl = giteeConfig.repo
+        .replace("https://gitee.com/", "")
+        .replace("http://gitee.com/", "")
+        .replace("gitee.com/", "")
+        .split("/");
+    const username = repoUrl[0];
+    const repo = repoUrl[1];
+    const date = new Date();
+    const dir =
+        date.getFullYear() +
+        "/" +
+        (date.getMonth() + 1).toString().padStart(2, "0") +
+        "/" +
+        date.getDate().toString().padStart(2, "0");
+    const dateFilename =
+        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
+    const res = await fetch({
+        url: `https://gitee.com/api/v5/repos/${username}/${repo}/contents/${dir}/${dateFilename}`,
+        method: "POST",
+        data: {
+            access_token: giteeConfig.accessToken,
+            branch: giteeConfig.branch || "master",
+            content: content,
+            message: `Upload by ${window.location.href}`,
+        },
+    });
+    return encodeURI(res.content.download_url);
 }
 
 async function aliOSSFileUpload(content, filename) {
