@@ -11,21 +11,21 @@ import CodeMirror from "codemirror/lib/codemirror";
 
     var Pos = CodeMirror.Pos;
 
-    CodeMirror.defineOption("autoCloseBrackets", false, function (
-        cm,
-        val,
-        old
-    ) {
-        if (old && old != CodeMirror.Init) {
-            cm.removeKeyMap(keyMap);
-            cm.state.closeBrackets = null;
+    CodeMirror.defineOption(
+        "autoCloseBrackets",
+        false,
+        function (cm, val, old) {
+            if (old && old != CodeMirror.Init) {
+                cm.removeKeyMap(keyMap);
+                cm.state.closeBrackets = null;
+            }
+            if (val) {
+                ensureBound(getOption(val, "pairs"));
+                cm.state.closeBrackets = val;
+                cm.addKeyMap(keyMap);
+            }
         }
-        if (val) {
-            ensureBound(getOption(val, "pairs"));
-            cm.state.closeBrackets = val;
-            cm.addKeyMap(keyMap);
-        }
-    });
+    );
 
     function getOption(conf, name) {
         if (name == "pairs" && typeof conf == "string") return conf;
