@@ -313,8 +313,8 @@ export default {
             setTimeout(() => {
                 this.cssEditor.refresh();
             }, 50);
-            let flag = await localStorage.getItem("__css_content");
 
+            let flag = await localStorage.getItem("__css_content");
             if (!flag) {
                 this.setCssEditorValue(DEFAULT_CSS_CONTENT);
             }

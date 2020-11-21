@@ -188,6 +188,10 @@ export function saveEditorContent(editor, name) {
     }
 }
 
+/**
+ * 格式化文档
+ * @param {文档内容} content 
+ */
 export function formatDoc(content) {
     const doc = prettier.format(content, {
         parser: "markdown",
@@ -195,6 +199,7 @@ export function formatDoc(content) {
     });
     return doc;
 }
+
 
 export function fixCodeWhiteSpace(value = "pre") {
     const preDomList = document.getElementsByClassName("code__pre");
@@ -205,6 +210,10 @@ export function fixCodeWhiteSpace(value = "pre") {
     }
 }
 
+/**
+ * 下载原始 Markdown 文档
+ * @param {文档内容} doc 
+ */
 export function downLoadMD(doc) {
     let downLink = document.createElement("a");
 
