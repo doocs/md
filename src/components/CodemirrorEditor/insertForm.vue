@@ -105,6 +105,11 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .el-dialog {
+    width: 55%;
+    min-height: 375px;
+    min-width: 440px;
+}
 .tb-options {
     margin-bottom: 20px;
 }

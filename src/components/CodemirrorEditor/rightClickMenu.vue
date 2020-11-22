@@ -5,14 +5,16 @@
         class="menu"
         :style="`left: ${left}px;top: ${top}px;`"
     >
-        <li
-            v-for="item of list"
-            :key="item.key"
-            class="menu_item"
-            @mousedown="onMouseDown(item.key)"
-        >
-            <span>{{ item.text }}</span>
-        </li>
+        <div class="menu__group" v-for="(menuItem, index) in menu" :key="index">
+            <li
+                v-for="item of menuItem"
+                :key="item.key"
+                class="menu_item"
+                @mousedown="onMouseDown(item.key)"
+            >
+                <span>{{ item.text }}</span>
+            </li>
+        </div>
     </ul>
 </template>
 
@@ -35,8 +37,8 @@ export default {
     },
     data() {
         return {
-            list: [
-                {
+            menu: [
+                [{
                     text: "上传图片",
                     key: "insertPic",
                 },
@@ -47,12 +49,12 @@ export default {
                 {
                     text: "页面重置",
                     key: "pageReset",
-                },
-                {
+                }],
+                [{
                     text: "下载MD文档",
                     key: "downLoad",
-                },
-            ],
+                }]
+            ]
         };
     },
     methods: {
@@ -70,32 +72,30 @@ export default {
 <style lang="less" scoped>
 .menu {
     position: absolute;
-    padding: 6px 0;
     border-radius: 4px;
-    border: 1px solid #aaaaaa;
     background-color: #ffffff;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .12), 0 2px 4px 0 rgba(0, 0, 0, .08);
     z-index: 9999;
 }
 
 .menu_item {
     margin-top: 10px;
-    min-width: 125px;
-    font-size: 14px;
+    min-width: 200px;
+    font-size: 12px;
     line-height: 20px;
-    color: #303133;
+    color: #333333;
     cursor: pointer;
     &:first-of-type {
         margin-top: 0;
     }
     &:hover {
-        color: white;
-        background: rgb(139, 146, 148);
+        background: #f0f0f0;
     }
     span,
     .btn-upload {
-        text-align: center;
         display: inline-block;
         padding: 4px 0;
+        padding-left: 24px;
         width: 100%;
     }
     .btn-upload {
@@ -105,17 +105,24 @@ export default {
         background: transparent;
     }
     .btn-upload:hover {
-        color: white;
-        background: rgb(139, 146, 148);
+        background: #aaaaaa;
     }
     ::v-deep .el-upload {
         width: 100%;
     }
 }
 
+.menu__group {
+    padding-top: 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid #eeeeee;
+    &:last-of-type {
+        border-bottom: none;
+    }
+}
+
 li:hover {
     background-color: #1790ff;
-    color: white;
 }
 
 li {
