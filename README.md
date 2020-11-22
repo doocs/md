@@ -53,13 +53,13 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 | 5   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数            | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 | 6   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数 | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
 
-![select-and-change-color-theme](./public/assets/images/select-and-change-color-theme.gif)
+![select-and-change-color-theme](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542281-a8c99fa7-c11e-4e43-98da-e36012f54dc8.gif)
 
-![copy-and-paste](./public/assets/images/copy-and-paste.gif)
+![copy-and-paste](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542372-59707c83-2caf-4a96-9bb6-c4effaecf731.gif)
 
-![custom](./public/assets/images/custom.gif)
+![custom](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542180-4d1c48b1-75f6-4794-95f7-e3b877c2b6a2.gif)
 
-![doocs-md-upload-image](./public/assets/images/doocs-md-upload-image.gif)
+![doocs-md-upload-image](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542512-0769a336-b9eb-4d58-83c1-29db7b54f71b.gif)
 
 ## 谁在使用
 
