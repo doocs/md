@@ -38,23 +38,27 @@ export default {
     data() {
         return {
             menu: [
-                [{
-                    text: "上传图片",
-                    key: "insertPic",
-                },
-                {
-                    text: "插入表格",
-                    key: "insertTable",
-                },
-                {
-                    text: "页面重置",
-                    key: "pageReset",
-                }],
-                [{
-                    text: "下载MD文档",
-                    key: "downLoad",
-                }]
-            ]
+                [
+                    {
+                        text: "上传图片",
+                        key: "insertPic",
+                    },
+                    {
+                        text: "插入表格",
+                        key: "insertTable",
+                    },
+                    {
+                        text: "页面重置",
+                        key: "pageReset",
+                    },
+                ],
+                [
+                    {
+                        text: "下载MD文档",
+                        key: "downLoad",
+                    },
+                ],
+            ],
         };
     },
     methods: {
@@ -74,7 +78,7 @@ export default {
     position: absolute;
     border-radius: 4px;
     background-color: #ffffff;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, .12), 0 2px 4px 0 rgba(0, 0, 0, .08);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
     z-index: 9999;
 }
 
