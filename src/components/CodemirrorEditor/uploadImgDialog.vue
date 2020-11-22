@@ -5,7 +5,7 @@
         :visible="value"
         @close="$emit('close')"
     >
-        <el-tabs type="card" :value="'upload'">
+        <el-tabs type="activeName" :value="'upload'">
             <el-tab-pane class="upload-panel" label="选择上传" name="upload">
                 <el-select
                     v-model="imgHost"
@@ -42,7 +42,6 @@
             <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
                 <el-form
                     class="setting-form"
-                    ref="form"
                     :model="formGitee"
                     label-position="right"
                     label-width="140px"
@@ -85,7 +84,6 @@
             <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
                 <el-form
                     class="setting-form"
-                    ref="form"
                     :model="formGitHub"
                     label-position="right"
                     label-width="140px"
@@ -127,7 +125,6 @@
             <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
                 <el-form
                     class="setting-form"
-                    ref="form"
                     :model="formAliOSS"
                     label-position="right"
                     label-width="140px"
@@ -187,7 +184,6 @@
             <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
                 <el-form
                     class="setting-form"
-                    ref="form"
                     :model="formTxCOS"
                     label-position="right"
                     label-width="140px"
@@ -247,7 +243,6 @@
             <el-tab-pane class="github-panel" label="七牛云 Kodo" name="qiniu">
                 <el-form
                     class="setting-form"
-                    ref="form"
                     :model="formQiniu"
                     label-position="right"
                     label-width="140px"
@@ -593,10 +588,19 @@ export default {
 
 <style lang="less" scoped>
 /deep/ .el-dialog {
-    width: 40%;
+    width: 55%;
+    min-height: 615px;
+    min-width: 640px;
 }
 /deep/ .el-upload-dragger {
-    width: 335px;
+    display: flex;
+    flex-flow: column;
+    justify-content: center;
+    width: 500px;
+    height: 360px;
+    .el-icon-upload {
+        margin-top: 0;
+    }
 }
 /deep/ .el-dialog__body {
     padding-bottom: 50px;

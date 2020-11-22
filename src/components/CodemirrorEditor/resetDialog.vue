@@ -40,6 +40,9 @@ export default {
 </script>
 
 <style lang="less" scoped>
+/deep/ .el-dialog {
+    min-width: 440px;
+}
 .reset__dialog {
     text-align: center;
 }

@@ -50,4 +50,8 @@ export default {
 };
 </script>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+/deep/ .el-dialog {
+    min-width: 420px;
+}
+</style>
