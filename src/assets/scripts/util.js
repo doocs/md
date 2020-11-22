@@ -213,7 +213,7 @@ export function fixCodeWhiteSpace(value = "pre") {
  * 下载原始 Markdown 文档
  * @param {文档内容} doc
  */
-export function downLoadMD(doc) {
+export function downloadMD(doc) {
     let downLink = document.createElement("a");
 
     downLink.download = "content.md";

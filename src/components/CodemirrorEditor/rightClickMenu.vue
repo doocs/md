@@ -54,8 +54,8 @@ export default {
                 ],
                 [
                     {
-                        text: "下载MD文档",
-                        key: "downLoad",
+                        text: "下载 Markdown 文档",
+                        key: "download",
                     },
                 ],
             ],

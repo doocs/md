@@ -6,11 +6,11 @@
                     ref="header"
                     @refresh="onEditorRefresh"
                     @cssChanged="cssChanged"
-                    @downLoad="downloadEditorContent"
+                    @download="downloadEditorContent"
                     @showCssEditor="showCssEditor = !showCssEditor"
-                    @showAboutDialog="aboutDialogVisible = true"
+                    @show-about-dialog="aboutDialogVisible = true"
                     @showDialogForm="dialogFormVisible = true"
-                    @showDialogUploadImg="dialogUploadImgVisible = true"
+                    @show-dialog-upload-img="dialogUploadImgVisible = true"
                     @startCopy="(isCoping = true), (backLight = true)"
                     @endCopy="endCopy"
                 />
@@ -95,7 +95,8 @@ import uploadImgDialog from "../components/CodemirrorEditor/uploadImgDialog";
 
 import {
     css2json,
-    downLoadMD,
+    downloadMD,
+    formatDoc,
     setFontSize,
     saveEditorContent,
     customCssWithTemplate,
@@ -336,7 +337,7 @@ export default {
         },
         // 下载编辑器内容到本地
         downloadEditorContent() {
-            downLoadMD(this.editor.getValue(0));
+            downloadMD(this.editor.getValue(0));
         },
         // 右键菜单
         openMenu(e) {
@@ -360,7 +361,7 @@ export default {
                 case "insertPic":
                     this.dialogUploadImgVisible = true;
                     break;
-                case "downLoad":
+                case "download":
                     this.downloadEditorContent();
                     break;
                 case "insertTable":

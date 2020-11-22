@@ -9,20 +9,20 @@
             <i
                 class="el-icon-upload"
                 size="medium"
-                @click="$emit('showDialogUploadImg')"
+                @click="$emit('show-dialog-upload-img')"
             ></i>
         </el-tooltip>
         <!-- 下载文本文档 -->
         <el-tooltip
             class="header__item"
             :effect="effect"
-            content="下载编辑框Markdown文档"
+            content="下载 Markdown 文档"
             placement="bottom-start"
         >
             <i
                 class="el-icon-download"
                 size="medium"
-                @click="$emit('downLoad')"
+                @click="$emit('download')"
             ></i>
         </el-tooltip>
         <!-- 页面重置 -->
@@ -160,7 +160,7 @@
             plain
             size="medium"
             class="about"
-            @click="$emit('showAboutDialog')"
+            @click="$emit('show-about-dialog')"
             >关于</el-button
         >
         <el-tooltip
@@ -185,7 +185,7 @@
 
 <script>
 import {
-    downLoadMD,
+    downloadMD,
     setFontSize,
     fixCodeWhiteSpace,
     setColorWithCustomTemplate,
@@ -327,7 +327,7 @@ export default {
             this.citeStatus = false;
             this.statusChanged(false);
             this.fontChanged(this.config.builtinFonts[0].value);
-            this.colorChanged(this.config.colorOption[1].value);
+            this.colorChanged(this.config.colorOption[0].value);
             this.sizeChanged(this.config.sizeOption[2].value);
             this.$emit("cssChanged");
             this.selectFont = this.currentFont;

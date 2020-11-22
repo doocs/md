@@ -65,7 +65,7 @@ const mutations = {
         state.currentFont =
             localStorage.getItem("fonts") || config.builtinFonts[0].value;
         state.currentColor =
-            localStorage.getItem("color") || config.colorOption[1].value;
+            localStorage.getItem("color") || config.colorOption[0].value;
         state.currentSize =
             localStorage.getItem("size") || config.sizeOption[2].value;
         state.codeTheme =
