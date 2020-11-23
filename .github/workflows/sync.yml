@@ -13,5 +13,5 @@ jobs:
       env:
           SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
       with:
-          source-repo: "git@github.com:doocs/md.git"
-          destination-repo: "git@gitee.com:Doocs/md.git"
+          source-repo: git@github.com:doocs/md.git
+          destination-repo: git@gitee.com:Doocs/md.git
