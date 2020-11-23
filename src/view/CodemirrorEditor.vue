@@ -339,6 +339,12 @@ export default {
         downloadEditorContent() {
             downloadMD(this.editor.getValue(0));
         },
+        // 格式化文档
+        formatContent() {
+            const doc = formatDoc(this.editor.getValue(0));
+            localStorage.setItem("__editor_content", doc);
+            this.editor.setValue(doc);
+        },
         // 右键菜单
         openMenu(e) {
             const menuMinWidth = 105;
@@ -366,6 +372,10 @@ export default {
                     break;
                 case "insertTable":
                     this.dialogFormVisible = true;
+                    break;
+                case "formatMarkdown":
+                    this.formatContent();
+                    break;
                 default:
                     break;
             }

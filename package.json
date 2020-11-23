@@ -1,9 +1,9 @@
 {
   "name": "vue-md",
-  "version": "1.4.3",
+  "version": "1.4.4",
   "homepage": ".",
   "description": "An open-source wechat markdown editor.",
-  "author": "yanglbme <contact@yanglibin.info>",
+  "author": "doocs",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

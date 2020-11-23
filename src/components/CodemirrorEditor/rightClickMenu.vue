@@ -57,6 +57,10 @@ export default {
                         text: "下载 Markdown 文档",
                         key: "download",
                     },
+                    {
+                        text: "格式化 Markdown 文档",
+                        key: "formatMarkdown",
+                    },
                 ],
             ],
         };
