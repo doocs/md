@@ -9,7 +9,6 @@
 <div align="center">
 
 [![sync status](https://github.com/doocs/md/workflows/Sync/badge.svg)](https://github.com/doocs/md/actions) [![deploy status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![prettier status](https://github.com/doocs/md/workflows/Prettier/badge.svg)](https://github.com/doocs/md/actions) [![users](https://badgen.net/badge/Who's/using/green)](#谁在使用) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls)<br> [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdoocs%2Fmd.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdoocs%2Fmd?ref=badge_shield)
 
 </div>
 
@@ -167,6 +166,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 [本项目没有任何限制，Just Do What The F\*ck You Want。](LICENSE)
 
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdoocs%2Fmd.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdoocs%2Fmd?ref=badge_large)
+
 ---
 
 ## Doocs 社区优质项目
@@ -192,7 +193,3 @@ Doocs 技术社区，致力于打造一个内容完整、持续成长的互联�
 <a href="https://opencollective.com/doocs/contributors.svg?width=890&button=true"><img src="https://opencollective.com/doocs/contributors.svg?width=890&button=false" /></a>
 
 <!-- ALL-CONTRIBUTORS-LIST: END -->
-
-
-## License
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdoocs%2Fmd.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdoocs%2Fmd?ref=badge_large)
