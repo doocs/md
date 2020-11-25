@@ -166,6 +166,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 [本项目没有任何限制，Just Do What The F\*ck You Want。](LICENSE)
 
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdoocs%2Fmd.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Fdoocs%2Fmd?ref=badge_large)
+
 ---
 
 ## Doocs 社区优质项目
