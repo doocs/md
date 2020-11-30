@@ -31,20 +31,21 @@ function fileUpload(content, file) {
 
 function getDir() {
     const date = new Date();
-    const dir =
-        date.getFullYear() +
-        "/" +
-        (date.getMonth() + 1).toString().padStart(2, "0") +
-        "/" +
-        date.getDate().toString().padStart(2, "0");
-    return dir;
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}/${month}/${day}`;
 }
 
 function getDateFilename(filename) {
-    const dateFilename =
-        new Date().getTime() + "-" + uuidv4() + "." + filename.split(".")[1];
-    return dateFilename;
+    const currentTimestamp = new Date().getTime();
+    const fileSuffix = filename.split(".")[1];
+    return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`;
 }
+
+//-----------------------------------------------------------------------
+// GitHub File Upload
+//-----------------------------------------------------------------------
 
 function getGitHubCommonConfig(username, repo, branch, token) {
     const dir = getDir();
@@ -77,9 +78,10 @@ function getGitHubDefaultConfig() {
         ],
     };
 
-    const token = defaultConfig.accessToken[
-        Math.floor(Math.random() * defaultConfig.accessToken.length)
-    ].replace("doocsmd", "");
+    const randIndex = Math.floor(
+        Math.random() * defaultConfig.accessToken.length
+    );
+    const token = defaultConfig.accessToken[randIndex].replace("doocsmd", "");
     return getGitHubCommonConfig(
         defaultConfig.username,
         defaultConfig.repo,
@@ -105,41 +107,6 @@ function getGitHubConfig() {
     );
 }
 
-function getGiteeDefaultConfig() {
-    const defaultConfig = {
-        username: "filesss",
-        repo: `img${Math.floor(Math.random() * 10)}`,
-        branch: "main",
-        accessToken: [
-            "ed5fc9866bd6c2fdoocsmddd433f806fd2f399c",
-            "5448ffebbbf1151doocsmdc4e337cf814fc8a62",
-            "25b05efd2557ca2doocsmd75b5c0835e3395911",
-            "11628c7a5aef015doocsmd2eeff9fb9566f0458",
-            "cb2f5145ed938dedoocsmdbd063b4ed244eecf8",
-            "d8c0b57500672c1doocsmd55f48b866b5ebcd98",
-            "78c56eadb88e453doocsmd43ddd95753351771a",
-            "03e1a688003948fdoocsmda16fcf41e6f03f1f0",
-        ],
-    };
-
-    const token = defaultConfig.accessToken[
-        Math.floor(Math.random() * defaultConfig.accessToken.length)
-    ].replace("doocsmd", "");
-    return {
-        repo: `gitee.com/${defaultConfig.username}/${defaultConfig.repo}`,
-        branch: defaultConfig.branch,
-        accessToken: token,
-    };
-}
-
-function getQiniuToken(accessKey, secretKey, putPolicy) {
-    const policy = JSON.stringify(putPolicy);
-    const encoded = base64encode(utf16to8(policy));
-    const hash = CryptoJS.HmacSHA1(encoded, secretKey);
-    const encodedSigned = hash.toString(CryptoJS.enc.Base64);
-    return `${accessKey}:${safe64(encodedSigned)}:${encoded}`;
-}
-
 async function ghFileUpload(content, filename) {
     const isDefault = localStorage.getItem("imgHost") !== "github";
     const config = isDefault ? getGitHubDefaultConfig() : getGitHubConfig();
@@ -162,6 +129,38 @@ async function ghFileUpload(content, filename) {
     return isDefault
         ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
         : res.content.download_url;
+}
+
+//-----------------------------------------------------------------------
+// Gitee File Upload
+//-----------------------------------------------------------------------
+
+function getGiteeDefaultConfig() {
+    const defaultConfig = {
+        username: "filesss",
+        repo: `img${Math.floor(Math.random() * 10)}`,
+        branch: "main",
+        accessToken: [
+            "ed5fc9866bd6c2fdoocsmddd433f806fd2f399c",
+            "5448ffebbbf1151doocsmdc4e337cf814fc8a62",
+            "25b05efd2557ca2doocsmd75b5c0835e3395911",
+            "11628c7a5aef015doocsmd2eeff9fb9566f0458",
+            "cb2f5145ed938dedoocsmdbd063b4ed244eecf8",
+            "d8c0b57500672c1doocsmd55f48b866b5ebcd98",
+            "78c56eadb88e453doocsmd43ddd95753351771a",
+            "03e1a688003948fdoocsmda16fcf41e6f03f1f0",
+        ],
+    };
+
+    const randIndex = Math.floor(
+        Math.random() * defaultConfig.accessToken.length
+    );
+    const token = defaultConfig.accessToken[randIndex].replace("doocsmd", "");
+    return {
+        repo: `gitee.com/${defaultConfig.username}/${defaultConfig.repo}`,
+        branch: defaultConfig.branch,
+        accessToken: token,
+    };
 }
 
 async function giteeUpload(content, filename) {
@@ -191,59 +190,16 @@ async function giteeUpload(content, filename) {
     return encodeURI(res.content.download_url);
 }
 
-async function aliOSSFileUpload(content, filename) {
-    const dateFilename = getDateFilename(filename);
-    const aliOSSConfig = JSON.parse(localStorage.getItem("aliOSSConfig"));
-    const buffer = Buffer(content, "base64");
-    try {
-        const dir = `${aliOSSConfig.path}/${dateFilename}`;
-        const client = new OSS({
-            region: aliOSSConfig.region,
-            bucket: aliOSSConfig.bucket,
-            accessKeyId: aliOSSConfig.accessKeyId,
-            accessKeySecret: aliOSSConfig.accessKeySecret,
-        });
-        const res = await client.put(dir, buffer);
-        return aliOSSConfig.cdnHost == ""
-            ? res.url
-            : `${aliOSSConfig.cdnHost}/${
-                  aliOSSConfig.path == "" ? dateFilename : dir
-              }`;
-    } catch (e) {
-        return Promise.reject(e);
-    }
-}
+//-----------------------------------------------------------------------
+// Qiniu File Upload
+//-----------------------------------------------------------------------
 
-async function txCOSFileUpload(file) {
-    const dateFilename = getDateFilename(file.name);
-    const txCOSConfig = JSON.parse(localStorage.getItem("txCOSConfig"));
-    const cos = new COS({
-        SecretId: txCOSConfig.secretId,
-        SecretKey: txCOSConfig.secretKey,
-    });
-    return new Promise((resolve, reject) => {
-        cos.putObject(
-            {
-                Bucket: txCOSConfig.bucket,
-                Region: txCOSConfig.region,
-                Key: `${txCOSConfig.path}/${dateFilename}`,
-                Body: file,
-            },
-            function (err, data) {
-                if (err) {
-                    reject(err);
-                } else if (txCOSConfig.cdnHost) {
-                    resolve(
-                        txCOSConfig.path != ""
-                            ? `${txCOSConfig.cdnHost}/${txCOSConfig.path}/${dateFilename}`
-                            : `${txCOSConfig.cdnHost}/${dateFilename}`
-                    );
-                } else {
-                    resolve(`https://${data.Location}`);
-                }
-            }
-        );
-    });
+function getQiniuToken(accessKey, secretKey, putPolicy) {
+    const policy = JSON.stringify(putPolicy);
+    const encoded = base64encode(utf16to8(policy));
+    const hash = CryptoJS.HmacSHA1(encoded, secretKey);
+    const encodedSigned = hash.toString(CryptoJS.enc.Base64);
+    return `${accessKey}:${safe64(encodedSigned)}:${encoded}`;
 }
 
 async function qiniuUpload(file) {
@@ -275,6 +231,69 @@ async function qiniuUpload(file) {
                 resolve(`${qiniuConfig.domain}/${result.key}`);
             },
         });
+    });
+}
+
+//-----------------------------------------------------------------------
+// AliOSS File Upload
+//-----------------------------------------------------------------------
+
+async function aliOSSFileUpload(content, filename) {
+    const dateFilename = getDateFilename(filename);
+    const aliOSSConfig = JSON.parse(localStorage.getItem("aliOSSConfig"));
+    const buffer = Buffer(content, "base64");
+    try {
+        const dir = `${aliOSSConfig.path}/${dateFilename}`;
+        const client = new OSS({
+            region: aliOSSConfig.region,
+            bucket: aliOSSConfig.bucket,
+            accessKeyId: aliOSSConfig.accessKeyId,
+            accessKeySecret: aliOSSConfig.accessKeySecret,
+        });
+        const res = await client.put(dir, buffer);
+        return aliOSSConfig.cdnHost == ""
+            ? res.url
+            : `${aliOSSConfig.cdnHost}/${
+                  aliOSSConfig.path == "" ? dateFilename : dir
+              }`;
+    } catch (e) {
+        return Promise.reject(e);
+    }
+}
+
+//-----------------------------------------------------------------------
+// TxCOS File Upload
+//-----------------------------------------------------------------------
+
+async function txCOSFileUpload(file) {
+    const dateFilename = getDateFilename(file.name);
+    const txCOSConfig = JSON.parse(localStorage.getItem("txCOSConfig"));
+    const cos = new COS({
+        SecretId: txCOSConfig.secretId,
+        SecretKey: txCOSConfig.secretKey,
+    });
+    return new Promise((resolve, reject) => {
+        cos.putObject(
+            {
+                Bucket: txCOSConfig.bucket,
+                Region: txCOSConfig.region,
+                Key: `${txCOSConfig.path}/${dateFilename}`,
+                Body: file,
+            },
+            function (err, data) {
+                if (err) {
+                    reject(err);
+                } else if (txCOSConfig.cdnHost) {
+                    resolve(
+                        txCOSConfig.path != ""
+                            ? `${txCOSConfig.cdnHost}/${txCOSConfig.path}/${dateFilename}`
+                            : `${txCOSConfig.cdnHost}/${dateFilename}`
+                    );
+                } else {
+                    resolve(`https://${data.Location}`);
+                }
+            }
+        );
     });
 }
 
