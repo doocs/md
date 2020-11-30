@@ -7,22 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 import * as qiniu from "qiniu-js";
 import { utf16to8, base64encode, safe64 } from "../assets/scripts/tokenTools";
 
-const defaultConfig = {
-    username: "filess",
-    repo: "images",
-    branch: "master",
-    accessToken: [
-        "7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af",
-        "c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe",
-        "2821cd8819fa345c053doocsmdca86ac653f8bc20db1f1b",
-        "445f0dae46ef1f2a4d6doocsmdc797301e94797b4750a4c",
-        "cc1d0c1426d0fd0902bdoocsmdd2d7184b14da61b86ec46",
-        "b67e9d15cb6f910492fdoocsmdac6b44d379c953bb19eff",
-        "618c4dc2244ccbbc088doocsmd125d17fd31b7d06a50cf3",
-        "a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55",
-    ],
-};
-
 function fileUpload(content, file) {
     const imgHost = localStorage.getItem("imgHost");
     !imgHost && localStorage.setItem("imgHost", "default");
@@ -36,7 +20,11 @@ function fileUpload(content, file) {
         case "gitee":
             return giteeUpload(content, file.name);
         case "github":
+            return ghFileUpload(content, file.name);
         default:
+            // return file.size / 1024 < 1024
+            //     ? giteeUpload(content, file.name)
+            //     : ghFileUpload(content, file.name);
             return ghFileUpload(content, file.name);
     }
 }
@@ -65,12 +53,30 @@ function getGitHubCommonConfig(username, repo, branch, token) {
         headers: {
             Authorization: "token " + token,
         },
+        username: username,
+        repo: repo,
         branch: branch,
         url: `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`,
     };
 }
 
-function getDefaultConfig() {
+function getGitHubDefaultConfig() {
+    const defaultConfig = {
+        username: "filess",
+        repo: `img${Math.floor(Math.random() * 10)}`,
+        branch: "main",
+        accessToken: [
+            "7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af",
+            "c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe",
+            "2821cd8819fa345c053doocsmdca86ac653f8bc20db1f1b",
+            "445f0dae46ef1f2a4d6doocsmdc797301e94797b4750a4c",
+            "cc1d0c1426d0fd0902bdoocsmdd2d7184b14da61b86ec46",
+            "b67e9d15cb6f910492fdoocsmdac6b44d379c953bb19eff",
+            "618c4dc2244ccbbc088doocsmd125d17fd31b7d06a50cf3",
+            "a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55",
+        ],
+    };
+
     const token = defaultConfig.accessToken[
         Math.floor(Math.random() * defaultConfig.accessToken.length)
     ].replace("doocsmd", "");
@@ -99,37 +105,70 @@ function getGitHubConfig() {
     );
 }
 
+function getGiteeDefaultConfig() {
+    const defaultConfig = {
+        username: "filesss",
+        repo: `img${Math.floor(Math.random() * 10)}`,
+        branch: "main",
+        accessToken: [
+            "ed5fc9866bd6c2fdoocsmddd433f806fd2f399c",
+            "5448ffebbbf1151doocsmdc4e337cf814fc8a62",
+            "25b05efd2557ca2doocsmd75b5c0835e3395911",
+            "11628c7a5aef015doocsmd2eeff9fb9566f0458",
+            "cb2f5145ed938dedoocsmdbd063b4ed244eecf8",
+            "d8c0b57500672c1doocsmd55f48b866b5ebcd98",
+            "78c56eadb88e453doocsmd43ddd95753351771a",
+            "03e1a688003948fdoocsmda16fcf41e6f03f1f0",
+        ],
+    };
+
+    const token = defaultConfig.accessToken[
+        Math.floor(Math.random() * defaultConfig.accessToken.length)
+    ].replace("doocsmd", "");
+    return {
+        repo: `gitee.com/${defaultConfig.username}/${defaultConfig.repo}`,
+        branch: defaultConfig.branch,
+        accessToken: token,
+    };
+}
+
 function getQiniuToken(accessKey, secretKey, putPolicy) {
     const policy = JSON.stringify(putPolicy);
     const encoded = base64encode(utf16to8(policy));
     const hash = CryptoJS.HmacSHA1(encoded, secretKey);
     const encodedSigned = hash.toString(CryptoJS.enc.Base64);
-    return accessKey + ":" + safe64(encodedSigned) + ":" + encoded;
+    return `${accessKey}:${safe64(encodedSigned)}:${encoded}`;
 }
 
 async function ghFileUpload(content, filename) {
     const isDefault = localStorage.getItem("imgHost") !== "github";
-    const config = isDefault ? getDefaultConfig() : getGitHubConfig();
+    const config = isDefault ? getGitHubDefaultConfig() : getGitHubConfig();
     const dateFilename = getDateFilename(filename);
+
+    const branch = config.branch || "master";
     const res = await fetch({
         url: config.url + dateFilename,
         method: config.method,
         headers: config.headers,
         data: {
-            branch: config.branch || "master",
+            branch: branch,
             message: `Upload by ${window.location.href}`,
             content: content,
         },
     });
-    const githubResourceUrl = "raw.githubusercontent.com/filess/images/master/";
-    const cdnResourceUrl = "cdn.jsdelivr.net/gh/filess/images@master/";
+
+    const githubResourceUrl = `raw.githubusercontent.com/${config.username}/${config.repo}/${branch}/`;
+    const cdnResourceUrl = `cdn.jsdelivr.net/gh/${config.username}/${config.repo}@${branch}/`;
     return isDefault
         ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
         : res.content.download_url;
 }
 
 async function giteeUpload(content, filename) {
-    const giteeConfig = JSON.parse(localStorage.getItem("giteeConfig"));
+    const isDefault = localStorage.getItem("imgHost") == "default";
+    const giteeConfig = isDefault
+        ? getGiteeDefaultConfig()
+        : JSON.parse(localStorage.getItem("giteeConfig"));
     const repoUrl = giteeConfig.repo
         .replace("https://gitee.com/", "")
         .replace("http://gitee.com/", "")
@@ -157,7 +196,7 @@ async function aliOSSFileUpload(content, filename) {
     const aliOSSConfig = JSON.parse(localStorage.getItem("aliOSSConfig"));
     const buffer = Buffer(content, "base64");
     try {
-        const dir = aliOSSConfig.path + "/" + dateFilename;
+        const dir = `${aliOSSConfig.path}/${dateFilename}`;
         const client = new OSS({
             region: aliOSSConfig.region,
             bucket: aliOSSConfig.bucket,
@@ -167,9 +206,9 @@ async function aliOSSFileUpload(content, filename) {
         const res = await client.put(dir, buffer);
         return aliOSSConfig.cdnHost == ""
             ? res.url
-            : aliOSSConfig.cdnHost +
-                  "/" +
-                  (aliOSSConfig.path == "" ? dateFilename : dir);
+            : `${aliOSSConfig.cdnHost}/${
+                  aliOSSConfig.path == "" ? dateFilename : dir
+              }`;
     } catch (e) {
         return Promise.reject(e);
     }
@@ -187,26 +226,20 @@ async function txCOSFileUpload(file) {
             {
                 Bucket: txCOSConfig.bucket,
                 Region: txCOSConfig.region,
-                Key: txCOSConfig.path + "/" + dateFilename,
+                Key: `${txCOSConfig.path}/${dateFilename}`,
                 Body: file,
             },
             function (err, data) {
                 if (err) {
                     reject(err);
                 } else if (txCOSConfig.cdnHost) {
-                    // if cdnHost exists
                     resolve(
                         txCOSConfig.path != ""
-                            ? txCOSConfig.cdnHost +
-                                  "/" +
-                                  txCOSConfig.path +
-                                  "/" +
-                                  dateFilename
-                            : txCOSConfig.cdnHost + "/" + dateFilename
+                            ? `${txCOSConfig.cdnHost}/${txCOSConfig.path}/${dateFilename}`
+                            : `${txCOSConfig.cdnHost}/${dateFilename}`
                     );
                 } else {
-                    // if cdnHost not exists
-                    reject(data.Location);
+                    resolve(`https://${data.Location}`);
                 }
             }
         );
@@ -239,7 +272,7 @@ async function qiniuUpload(file) {
                 reject(err.message);
             },
             complete: (result) => {
-                resolve(qiniuConfig.domain + "/" + result.key);
+                resolve(`${qiniuConfig.domain}/${result.key}`);
             },
         });
     });
