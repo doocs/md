@@ -32,6 +32,20 @@ function getConfig(useDefault, platform) {
     };
 }
 
+function getDir() {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const day = date.getDate().toString().padStart(2, "0");
+    return `${year}/${month}/${day}`;
+}
+
+function getDateFilename(filename) {
+    const currentTimestamp = new Date().getTime();
+    const fileSuffix = filename.split(".")[1];
+    return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`;
+}
+
 //-----------------------------------------------------------------------
 // GitHub File Upload
 //-----------------------------------------------------------------------
@@ -192,20 +206,6 @@ async function txCOSFileUpload(file) {
             }
         );
     });
-}
-
-function getDir() {
-    const date = new Date();
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
-    return `${year}/${month}/${day}`;
-}
-
-function getDateFilename(filename) {
-    const currentTimestamp = new Date().getTime();
-    const fileSuffix = filename.split(".")[1];
-    return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`;
 }
 
 function fileUpload(content, file) {
