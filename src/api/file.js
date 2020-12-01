@@ -1,4 +1,5 @@
 import fetch from "./fetch";
+import { githubConfig, giteeConfig } from "./config";
 import CryptoJS from "crypto-js";
 import OSS from "ali-oss";
 import COS from "cos-js-sdk-v5";
@@ -7,37 +8,21 @@ import { v4 as uuidv4 } from "uuid";
 import * as qiniu from "qiniu-js";
 import { utf16to8, base64encode, safe64 } from "../assets/scripts/tokenTools";
 
-//-----------------------------------------------------------------------
-// GitHub File Upload
-//-----------------------------------------------------------------------
-
-function getGitHubConfig(useDefault) {
+function getConfig(useDefault, platform) {
+    const config = platform === "github" ? githubConfig : giteeConfig;
     if (useDefault) {
-        const accessToken = [
-            "7715d7ca67b5d3837cfdoocsmde8c38421815aa423510af",
-            "c411415bf95dbe39625doocsmd5047ba9b7a2a6c9642abe",
-            "2821cd8819fa345c053doocsmdca86ac653f8bc20db1f1b",
-            "445f0dae46ef1f2a4d6doocsmdc797301e94797b4750a4c",
-            "cc1d0c1426d0fd0902bdoocsmdd2d7184b14da61b86ec46",
-            "b67e9d15cb6f910492fdoocsmdac6b44d379c953bb19eff",
-            "618c4dc2244ccbbc088doocsmd125d17fd31b7d06a50cf3",
-            "a4b581732e1c1507458doocsmdc5b223b27dae5e2e16a55",
-        ];
-        const randIndex = Math.floor(Math.random() * accessToken.length);
-        const token = accessToken[randIndex].replace("doocsmd", "");
-        return {
-            username: "filess",
-            // img0...img9
-            repo: `img${Math.floor(Math.random() * 10)}`,
-            branch: "main",
-            accessToken: token,
-        };
+        const { username, repoList, branch, accessTokenList } = config;
+        const tokenIndex = Math.floor(Math.random() * accessTokenList.length);
+        const repoIndex = Math.floor(Math.random() * repoList.length);
+        const accessToken = accessTokenList[tokenIndex].replace("doocsmd", "");
+        const repo = repoList[repoIndex];
+        return { username, repo, branch, accessToken };
     }
-    const customConfig = JSON.parse(localStorage.getItem("githubConfig"));
+    const customConfig = JSON.parse(localStorage.getItem(`${platform}Config`));
     const repoUrl = customConfig.repo
-        .replace("https://github.com/", "")
-        .replace("http://github.com/", "")
-        .replace("github.com/", "")
+        .replace(`https://${platform}.com/`, "")
+        .replace(`http://${platform}.com/`, "")
+        .replace(`${platform}.com/`, "")
         .split("/");
     return {
         username: repoUrl[0],
@@ -47,9 +32,13 @@ function getGitHubConfig(useDefault) {
     };
 }
 
+//-----------------------------------------------------------------------
+// GitHub File Upload
+//-----------------------------------------------------------------------
+
 async function ghFileUpload(content, filename) {
     const useDefault = localStorage.getItem("imgHost") === "default";
-    const config = getGitHubConfig(useDefault);
+    const config = getConfig(useDefault, "github");
     const dir = getDir();
     const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${dir}/`;
     const dateFilename = getDateFilename(filename);
@@ -77,47 +66,11 @@ async function ghFileUpload(content, filename) {
 // Gitee File Upload
 //-----------------------------------------------------------------------
 
-function getGiteeConfig(useDefault) {
-    if (useDefault) {
-        const accessToken = [
-            "ed5fc9866bd6c2fdoocsmddd433f806fd2f399c",
-            "5448ffebbbf1151doocsmdc4e337cf814fc8a62",
-            "25b05efd2557ca2doocsmd75b5c0835e3395911",
-            "11628c7a5aef015doocsmd2eeff9fb9566f0458",
-            "cb2f5145ed938dedoocsmdbd063b4ed244eecf8",
-            "d8c0b57500672c1doocsmd55f48b866b5ebcd98",
-            "78c56eadb88e453doocsmd43ddd95753351771a",
-            "03e1a688003948fdoocsmda16fcf41e6f03f1f0",
-        ];
-        const randIndex = Math.floor(Math.random() * accessToken.length);
-        const token = accessToken[randIndex].replace("doocsmd", "");
-        return {
-            username: "filesss",
-            // img0...img9
-            repo: `img${Math.floor(Math.random() * 10)}`,
-            branch: "main",
-            accessToken: token,
-        };
-    }
-    const customConfig = JSON.parse(localStorage.getItem("giteeConfig"));
-    const repoUrl = customConfig.repo
-        .replace("https://gitee.com/", "")
-        .replace("http://gitee.com/", "")
-        .replace("gitee.com/", "")
-        .split("/");
-    return {
-        username: repoUrl[0],
-        repo: repoUrl[1],
-        branch: customConfig.branch || "master",
-        accessToken: customConfig.accessToken,
-    };
-}
-
 async function giteeUpload(content, filename) {
     const useDefault = JSON.parse(
         localStorage.getItem("imgHost") === "default"
     );
-    const config = getGiteeConfig(useDefault);
+    const config = getConfig(useDefault, "gitee");
     const dir = getDir();
     const dateFilename = getDateFilename(filename);
     const url = `https://gitee.com/api/v5/repos/${config.username}/${config.repo}/contents/${dir}/${dateFilename}`;
@@ -277,4 +230,6 @@ function fileUpload(content, file) {
     }
 }
 
-export default fileUpload;
+export default {
+    fileUpload,
+};
