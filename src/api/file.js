@@ -52,25 +52,28 @@ function getDateFilename(filename) {
 
 async function ghFileUpload(content, filename) {
     const useDefault = localStorage.getItem("imgHost") === "default";
-    const config = getConfig(useDefault, "github");
+    const { username, repo, branch, accessToken } = getConfig(
+        useDefault,
+        "github"
+    );
     const dir = getDir();
-    const url = `https://api.github.com/repos/${config.username}/${config.repo}/contents/${dir}/`;
+    const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`;
     const dateFilename = getDateFilename(filename);
     const res = await fetch({
         url: url + dateFilename,
         method: "put",
         headers: {
-            Authorization: `token ${config.accessToken}`,
+            Authorization: `token ${accessToken}`,
         },
         data: {
-            branch: config.branch,
+            content,
+            branch,
             message: `Upload by ${window.location.href}`,
-            content: content,
         },
     });
 
-    const githubResourceUrl = `raw.githubusercontent.com/${config.username}/${config.repo}/${config.branch}/`;
-    const cdnResourceUrl = `cdn.jsdelivr.net/gh/${config.username}/${config.repo}@${config.branch}/`;
+    const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`;
+    const cdnResourceUrl = `cdn.jsdelivr.net/gh/${username}/${repo}@${branch}/`;
     return useDefault
         ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
         : res.content.download_url;
@@ -81,20 +84,21 @@ async function ghFileUpload(content, filename) {
 //-----------------------------------------------------------------------
 
 async function giteeUpload(content, filename) {
-    const useDefault = JSON.parse(
-        localStorage.getItem("imgHost") === "default"
+    const useDefault = localStorage.getItem("imgHost") === "default";
+    const { username, repo, branch, accessToken } = getConfig(
+        useDefault,
+        "gitee"
     );
-    const config = getConfig(useDefault, "gitee");
     const dir = getDir();
     const dateFilename = getDateFilename(filename);
-    const url = `https://gitee.com/api/v5/repos/${config.username}/${config.repo}/contents/${dir}/${dateFilename}`;
+    const url = `https://gitee.com/api/v5/repos/${username}/${repo}/contents/${dir}/${dateFilename}`;
     const res = await fetch({
         url,
         method: "POST",
         data: {
-            access_token: config.accessToken,
-            branch: config.branch,
-            content: content,
+            content,
+            branch,
+            access_token: accessToken,
             message: `Upload by ${window.location.href}`,
         },
     });
@@ -114,20 +118,17 @@ function getQiniuToken(accessKey, secretKey, putPolicy) {
 }
 
 async function qiniuUpload(file) {
-    const qiniuConfig = JSON.parse(localStorage.getItem("qiniuConfig"));
-    const putPolicy = {
-        scope: qiniuConfig.bucket,
-        deadline: Math.trunc(new Date().getTime() / 1000) + 3600,
-    };
-    const token = getQiniuToken(
-        qiniuConfig.accessKey,
-        qiniuConfig.secretKey,
-        putPolicy
+    const { accessKey, secretKey, bucket, region, path, domain } = JSON.parse(
+        localStorage.getItem("qiniuConfig")
     );
-    const dir = qiniuConfig.path ? qiniuConfig.path + "/" : "";
+    const token = getQiniuToken(accessKey, secretKey, {
+        scope: bucket,
+        deadline: Math.trunc(new Date().getTime() / 1000) + 3600,
+    });
+    const dir = path ? `${path}/` : "";
     const dateFilename = dir + getDateFilename(file.name);
     const config = {
-        region: qiniuConfig.region,
+        region,
     };
     const observable = qiniu.upload(file, dateFilename, token, {}, config);
     return new Promise((resolve, reject) => {
@@ -139,7 +140,7 @@ async function qiniuUpload(file) {
                 reject(err.message);
             },
             complete: (result) => {
-                resolve(`${qiniuConfig.domain}/${result.key}`);
+                resolve(`${domain}/${result.key}`);
             },
         });
     });
@@ -151,22 +152,27 @@ async function qiniuUpload(file) {
 
 async function aliOSSFileUpload(content, filename) {
     const dateFilename = getDateFilename(filename);
-    const aliOSSConfig = JSON.parse(localStorage.getItem("aliOSSConfig"));
+    const {
+        region,
+        bucket,
+        accessKeyId,
+        accessKeySecret,
+        cdnHost,
+        path,
+    } = JSON.parse(localStorage.getItem("aliOSSConfig"));
     const buffer = Buffer(content, "base64");
     try {
-        const dir = `${aliOSSConfig.path}/${dateFilename}`;
+        const dir = `${path}/${dateFilename}`;
         const client = new OSS({
-            region: aliOSSConfig.region,
-            bucket: aliOSSConfig.bucket,
-            accessKeyId: aliOSSConfig.accessKeyId,
-            accessKeySecret: aliOSSConfig.accessKeySecret,
+            region,
+            bucket,
+            accessKeyId,
+            accessKeySecret,
         });
         const res = await client.put(dir, buffer);
-        return aliOSSConfig.cdnHost == ""
+        return cdnHost == ""
             ? res.url
-            : `${aliOSSConfig.cdnHost}/${
-                  aliOSSConfig.path == "" ? dateFilename : dir
-              }`;
+            : `${cdnHost}/${path == "" ? dateFilename : dir}`;
     } catch (e) {
         return Promise.reject(e);
     }
@@ -178,27 +184,29 @@ async function aliOSSFileUpload(content, filename) {
 
 async function txCOSFileUpload(file) {
     const dateFilename = getDateFilename(file.name);
-    const txCOSConfig = JSON.parse(localStorage.getItem("txCOSConfig"));
+    const { secretId, secretKey, bucket, region, path, cdnHost } = JSON.parse(
+        localStorage.getItem("txCOSConfig")
+    );
     const cos = new COS({
-        SecretId: txCOSConfig.secretId,
-        SecretKey: txCOSConfig.secretKey,
+        SecretId: secretId,
+        SecretKey: secretKey,
     });
     return new Promise((resolve, reject) => {
         cos.putObject(
             {
-                Bucket: txCOSConfig.bucket,
-                Region: txCOSConfig.region,
-                Key: `${txCOSConfig.path}/${dateFilename}`,
+                Bucket: bucket,
+                Region: region,
+                Key: `${path}/${dateFilename}`,
                 Body: file,
             },
             function (err, data) {
                 if (err) {
                     reject(err);
-                } else if (txCOSConfig.cdnHost) {
+                } else if (cdnHost) {
                     resolve(
-                        txCOSConfig.path != ""
-                            ? `${txCOSConfig.cdnHost}/${txCOSConfig.path}/${dateFilename}`
-                            : `${txCOSConfig.cdnHost}/${dateFilename}`
+                        path == ""
+                            ? `${cdnHost}/${dateFilename}`
+                            : `${cdnHost}/${path}/${dateFilename}`
                     );
                 } else {
                     resolve(`https://${data.Location}`);

@@ -518,8 +518,11 @@ export default {
 
         // 图片上传前的处理
         beforeUpload(file) {
-            if (!this.validateConfig()) {
-                return;
+            const imgHost = localStorage.getItem("imgHost");
+            const config = localStorage.getItem(`${imgHost}Config`);
+            if (!config && imgHost !== "" && imgHost !== "default") {
+                this.$message.error(`请先配置 ${imgHost} 图床参数`);
+                return false;
             }
 
             this.uploadingImg = true;
@@ -537,50 +540,6 @@ export default {
                     });
                 });
             return false;
-        },
-        validateConfig() {
-            let checkRes = true,
-                errMessage = "";
-
-            switch (localStorage.getItem("imgHost")) {
-                case "github":
-                    checkRes =
-                        this.formGitHub.repo && this.formGitHub.accessToken;
-                    errMessage = checkRes ? "" : "请先配置 GitHub 图床参数";
-                    break;
-                case "gitee":
-                    checkRes =
-                        this.formGitee.repo && this.formGitee.accessToken;
-                    errMessage = checkRes ? "" : "请先配置 Gitee 图床参数";
-                    break;
-                case "aliOSS":
-                    checkRes =
-                        this.formAliOSS.accessKeyId &&
-                        this.formAliOSS.accessKeySecret &&
-                        this.formAliOSS.bucket &&
-                        this.formAliOSS.region;
-                    errMessage = checkRes ? "" : "请先配置阿里云 OSS 参数";
-                    break;
-                case "txCOS":
-                    checkRes =
-                        this.formTxCOS.secretId &&
-                        this.formTxCOS.secretKey &&
-                        this.formTxCOS.bucket &&
-                        this.formTxCOS.region;
-                    errMessage = checkRes ? "" : "请先配置腾讯云 COS 参数";
-                    break;
-                case "qiniu":
-                    checkRes =
-                        this.formQiniu.accessKey &&
-                        this.formQiniu.secretKey &&
-                        this.formQiniu.bucket &&
-                        this.formQiniu.domain &&
-                        this.formQiniu.region;
-                    errMessage = checkRes ? "" : "请先配置七牛云 Kodo 参数";
-                    break;
-            }
-            errMessage && this.$message.error(errMessage);
-            return checkRes;
         },
     },
 };
