@@ -161,18 +161,17 @@ async function aliOSSFileUpload(content, filename) {
         path,
     } = JSON.parse(localStorage.getItem("aliOSSConfig"));
     const buffer = Buffer(content, "base64");
+    const dir = `${path}/${dateFilename}`;
+    const client = new OSS({
+        region,
+        bucket,
+        accessKeyId,
+        accessKeySecret,
+    });
     try {
-        const dir = `${path}/${dateFilename}`;
-        const client = new OSS({
-            region,
-            bucket,
-            accessKeyId,
-            accessKeySecret,
-        });
         const res = await client.put(dir, buffer);
-        return cdnHost == ""
-            ? res.url
-            : `${cdnHost}/${path == "" ? dateFilename : dir}`;
+        if (cdnHost == "") return res.url;
+        return `${cdnHost}/${path == "" ? dateFilename : dir}`;
     } catch (e) {
         return Promise.reject(e);
     }
