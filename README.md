@@ -157,6 +157,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
         <sub>柯宁申的叙事屋</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/6BO977YG5e_4qYxL4oVQJw">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/15-%E6%88%91%E7%9A%84Beta%E4%B8%96%E7%95%8C.jpg" style="width: 40px;"><br>
+        <sub>我的 Beta 世界</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
