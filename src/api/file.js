@@ -127,10 +127,7 @@ async function qiniuUpload(file) {
     });
     const dir = path ? `${path}/` : "";
     const dateFilename = dir + getDateFilename(file.name);
-    const config = {
-        region,
-    };
-    const observable = qiniu.upload(file, dateFilename, token, {}, config);
+    const observable = qiniu.upload(file, dateFilename, token, {}, { region });
     return new Promise((resolve, reject) => {
         observable.subscribe({
             next: (result) => {
