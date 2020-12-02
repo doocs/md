@@ -6,7 +6,7 @@ import marked from "marked";
 import CodeMirror from "codemirror/lib/codemirror";
 import DEFAULT_CONTENT from "../assets/scripts/default-content";
 import DEFAULT_CSS_CONTENT from "../assets/scripts/themes/default-theme-css";
-import { setColor, formatDoc } from "../assets/scripts/util";
+import { setColor, formatDoc, formatCss } from "../assets/scripts/util";
 
 Vue.use(Vuex);
 
@@ -121,17 +121,9 @@ const mutations = {
                 autofocus: true,
                 extraKeys: {
                     "Ctrl-F": function autoFormat(editor) {
-                        const totalLines = editor.lineCount();
-
-                        editor.autoFormatRange(
-                            {
-                                line: 0,
-                                ch: 0,
-                            },
-                            {
-                                line: totalLines,
-                            }
-                        );
+                        const doc = formatCss(editor.getValue(0));
+                        localStorage.setItem("__css_content", doc);
+                        editor.setValue(doc);
                     },
                     "Ctrl-S": function save(editor) {},
                 },

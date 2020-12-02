@@ -9,16 +9,26 @@ import * as qiniu from "qiniu-js";
 import { utf16to8, base64encode, safe64 } from "../assets/scripts/tokenTools";
 
 function getConfig(useDefault, platform) {
-    const config = platform === "github" ? githubConfig : giteeConfig;
     if (useDefault) {
+        // load default config file
+        const config = platform === "github" ? githubConfig : giteeConfig;
         const { username, repoList, branch, accessTokenList } = config;
+
+        // choose random token from access_token list
         const tokenIndex = Math.floor(Math.random() * accessTokenList.length);
-        const repoIndex = Math.floor(Math.random() * repoList.length);
         const accessToken = accessTokenList[tokenIndex].replace("doocsmd", "");
+
+        // choose random repo from repo list
+        const repoIndex = Math.floor(Math.random() * repoList.length);
         const repo = repoList[repoIndex];
+
         return { username, repo, branch, accessToken };
     }
+
+    // load configuration from localStorage
     const customConfig = JSON.parse(localStorage.getItem(`${platform}Config`));
+
+    // split username/repo
     const repoUrl = customConfig.repo
         .replace(`https://${platform}.com/`, "")
         .replace(`http://${platform}.com/`, "")

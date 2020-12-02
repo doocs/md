@@ -1,6 +1,7 @@
 import default_theme from "./themes/default-theme";
 import prettier from "prettier/standalone";
 import prettierMarkdown from "prettier/parser-markdown";
+import prettierCss from "prettier/parser-postcss";
 
 // 设置自定义颜色
 export function setColorWithTemplate(template) {
@@ -196,6 +197,18 @@ export function formatDoc(content) {
     const doc = prettier.format(content, {
         parser: "markdown",
         plugins: [prettierMarkdown],
+    });
+    return doc;
+}
+
+/**
+ * 格式化css
+ * @param {css内容}} content
+ */
+export function formatCss(content) {
+    const doc = prettier.format(content, {
+        parser: "css",
+        plugins: [prettierCss],
     });
     return doc;
 }
