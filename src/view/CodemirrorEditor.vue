@@ -9,7 +9,7 @@
                     @download="downloadEditorContent"
                     @showCssEditor="showCssEditor = !showCssEditor"
                     @show-about-dialog="aboutDialogVisible = true"
-                    @showDialogForm="dialogFormVisible = true"
+                    @show-dialog-form="dialogFormVisible = true"
                     @show-dialog-upload-img="dialogUploadImgVisible = true"
                     @startCopy="(isCoping = true), (backLight = true)"
                     @endCopy="endCopy"

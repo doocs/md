@@ -29,7 +29,8 @@
                     :multiple="true"
                     accept=".jpg, .jpeg, .png, .gif"
                     name="file"
-                    :before-upload="beforeUpload"
+                    :before-upload="beforeImageUpload"
+                    :http-request="uploadImage"
                     v-loading="uploadingImg"
                 >
                     <i class="el-icon-upload"></i>
@@ -305,6 +306,8 @@
 
 <script>
 import { uploadImgFile } from "../../assets/scripts/uploadImageFile";
+import { toBase64 } from "../../assets/scripts/util";
+import fileApi from "../../api/file";
 
 export default {
     props: {
@@ -516,30 +519,42 @@ export default {
             });
         },
 
-        // 图片上传前的处理
-        beforeUpload(file) {
-            const imgHost = localStorage.getItem("imgHost");
-            const config = localStorage.getItem(`${imgHost}Config`);
-            if (!config && imgHost !== "" && imgHost !== "default") {
-                this.$message.error(`请先配置 ${imgHost} 图床参数`);
-                return false;
-            }
+        beforeImageUpload(file) {
+            let imgHost = localStorage.getItem("imgHost");
+            imgHost = !imgHost ? "default" : imgHost;
 
+            const config = localStorage.getItem(`${imgHost}Config`);
+            const maxSize = 5;
+
+            const isValidSuffix = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(
+                file.name
+            );
+            const isLt5M = file.size / 1024 / 1024 <= maxSize;
+            const isValidHost = imgHost == "default" || config;
+
+            if (!isValidSuffix) {
+                this.$message.error("请上传 JPG/PNG/GIF 格式的图片");
+            }
+            if (!isLt5M) {
+                this.$message.error(
+                    `由于公众号限制，图片大小不能超过 ${maxSize}M`
+                );
+            }
+            if (!isValidHost) {
+                this.$message.error(`请先配置 ${imgHost} 图床参数`);
+            }
+            return isValidSuffix && isLt5M && isValidHost;
+        },
+        uploadImage(params) {
             this.uploadingImg = true;
-            uploadImgFile(file)
+            uploadImgFile(params.file)
                 .then((res) => {
                     this.$emit("uploaded", res);
-                    this.uploadingImg = false;
                 })
                 .catch((err) => {
-                    this.uploadingImg = false;
-                    this.$message({
-                        showClose: true,
-                        message: err,
-                        type: "error",
-                    });
+                    this.$message.error(err);
                 });
-            return false;
+            this.uploadingImg = false;
         },
     },
 };

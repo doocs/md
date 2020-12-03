@@ -237,9 +237,9 @@ function fileUpload(content, file) {
         case "github":
             return ghFileUpload(content, file.name);
         default:
-            // return file.size / 1024 < 1024
-            //     ? giteeUpload(content, file.name)
-            //     : ghFileUpload(content, file.name);
+            return file.size / 1024 < 1024
+                ? giteeUpload(content, file.name)
+                : ghFileUpload(content, file.name);
             return ghFileUpload(content, file.name);
     }
 }

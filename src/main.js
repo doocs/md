@@ -5,7 +5,6 @@ import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./plugins/element";
 import "codemirror/lib/codemirror.css";
-import "codemirror/theme/ambiance.css";
 import "codemirror/theme/xq-light.css";
 import "codemirror/mode/css/css";
 import "codemirror/mode/markdown/markdown";
