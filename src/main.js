@@ -2,6 +2,7 @@ import Vue from "vue";
 import App from "./App.vue";
 import store from "./store";
 import ElementUI from "element-ui";
+import { Message} from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import "./plugins/element";
 import "codemirror/lib/codemirror.css";
@@ -16,6 +17,7 @@ import "codemirror/addon/hint/css-hint.js";
 import "./assets/less/theme.less";
 
 Vue.use(ElementUI);
+Vue.use(Message);
 
 Vue.config.productionTip = false;
 
