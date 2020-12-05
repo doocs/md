@@ -229,7 +229,7 @@ export default {
             // validate image
             const checkResult = checkImage(file);
             if (!checkResult.ok) {
-                 this.$message.error(checkResult.msg);
+                this.$message.error(checkResult.msg);
                 return false;
             }
 
