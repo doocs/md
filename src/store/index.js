@@ -152,7 +152,6 @@ const mutations = {
     },
     clearEditorToDefault(state) {
         const doc = formatDoc(DEFAULT_CONTENT);
-
         state.editor.setValue(doc);
         state.cssEditor.setValue(DEFAULT_CSS_CONTENT);
     },

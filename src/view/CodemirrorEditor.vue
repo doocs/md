@@ -9,7 +9,7 @@
                     @download="downloadEditorContent"
                     @showCssEditor="showCssEditor = !showCssEditor"
                     @show-about-dialog="aboutDialogVisible = true"
-                    @showDialogForm="dialogFormVisible = true"
+                    @show-dialog-form="dialogFormVisible = true"
                     @show-dialog-upload-img="dialogUploadImgVisible = true"
                     @startCopy="(isCoping = true), (backLight = true)"
                     @endCopy="endCopy"
@@ -73,6 +73,8 @@
         <upload-img-dialog
             v-model="dialogUploadImgVisible"
             @close="dialogUploadImgVisible = false"
+            @beforeUpload="beforeUpload"
+            @uploadImage="uploadImage"
             @uploaded="uploaded"
         />
         <about-dialog v-model="aboutDialogVisible" />
@@ -100,8 +102,11 @@ import {
     setFontSize,
     saveEditorContent,
     customCssWithTemplate,
+    checkImage,
 } from "../assets/scripts/util";
-import { uploadImgFile } from "../assets/scripts/uploadImageFile";
+
+import { toBase64 } from "../assets/scripts/util";
+import fileApi from "../api/file";
 
 require("codemirror/mode/javascript/javascript");
 import { mapState, mapMutations } from "vuex";
@@ -174,37 +179,14 @@ export default {
                     ++i
                 ) {
                     let item = e.clipboardData.items[i];
-
                     if (item.kind === "file") {
                         // 校验图床参数
-                        const imgHost =
-                            localStorage.getItem("imgHost") || "default";
-                        if (
-                            imgHost != "default" &&
-                            !localStorage.getItem(`${imgHost}Config`)
-                        ) {
-                            this.$message({
-                                showClose: true,
-                                message: "请先配置好图床参数",
-                                type: "error",
-                            });
+                        const pasteFile = item.getAsFile();
+                        const isValid = this.beforeUpload(pasteFile);
+                        if (!isValid) {
                             continue;
                         }
-
-                        this.isImgLoading = true;
-                        const pasteFile = item.getAsFile();
-                        uploadImgFile(pasteFile)
-                            .then((res) => {
-                                this.uploaded(res);
-                            })
-                            .catch((err) => {
-                                this.$message({
-                                    showClose: true,
-                                    message: err,
-                                    type: "error",
-                                });
-                            });
-                        this.isImgLoading = false;
+                        this.uploadImage(pasteFile);
                     }
                 }
             });
@@ -243,14 +225,49 @@ export default {
             });
             this.onEditorRefresh();
         },
+        beforeUpload(file) {
+            // validate image
+            const checkResult = checkImage(file);
+            if (!checkResult.ok) {
+                 this.$message.error(checkResult.msg);
+                return false;
+            }
+
+            // check image host
+            let imgHost = localStorage.getItem("imgHost");
+            imgHost = imgHost ? imgHost : "default";
+            localStorage.setItem("imgHost", imgHost);
+
+            const config = localStorage.getItem(`${imgHost}Config`);
+            const isValidHost = imgHost == "default" || config;
+            if (!isValidHost) {
+                this.$message.error(`请先配置 ${imgHost} 图床参数`);
+                return false;
+            }
+            return true;
+        },
+        uploadImage(file) {
+            this.isImgLoading = true;
+            toBase64(file)
+                .then((base64Content) => {
+                    fileApi
+                        .fileUpload(base64Content, file)
+                        .then((url) => {
+                            this.uploaded(url);
+                        })
+                        .catch((err) => {
+                            this.$message.error(err.message);
+                        });
+                })
+                .catch((err) => {
+                    this.$message.error(err.message);
+                });
+            this.isImgLoading = false;
+        },
         // 图片上传结束
         uploaded(response) {
             if (!response) {
-                this.$message({
-                    showClose: true,
-                    message: "上传图片未知异常",
-                    type: "error",
-                });
+                this.$message.error("上传图片未知异常");
                 return;
             }
             this.dialogUploadImgVisible = false;
@@ -260,11 +277,7 @@ export default {
             const markdownImage = `![](${imageUrl})`;
             // 将 Markdown 形式的 URL 插入编辑框光标所在位置
             this.editor.replaceSelection(`\n${markdownImage}\n`, cursor);
-            this.$message({
-                showClose: true,
-                message: "图片上传成功",
-                type: "success",
-            });
+            this.$message.success("图片上传成功");
             this.onEditorRefresh();
         },
         // 左右滚动

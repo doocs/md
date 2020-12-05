@@ -29,8 +29,8 @@
                     :multiple="true"
                     accept=".jpg, .jpeg, .png, .gif"
                     name="file"
-                    :before-upload="beforeUpload"
-                    v-loading="uploadingImg"
+                    :before-upload="beforeImageUpload"
+                    :http-request="uploadImage"
                 >
                     <i class="el-icon-upload"></i>
                     <div class="el-upload__text">
@@ -304,7 +304,7 @@
 </template>
 
 <script>
-import { uploadImgFile } from "../../assets/scripts/uploadImageFile";
+import { checkImage } from "../../assets/scripts/util";
 
 export default {
     props: {
@@ -375,7 +375,6 @@ export default {
                 },
             ],
             imgHost: "default",
-            uploadingImg: false,
         };
     },
     created() {
@@ -398,50 +397,32 @@ export default {
     methods: {
         changeImgHost() {
             localStorage.setItem("imgHost", this.imgHost);
-            this.$message({
-                showClose: true,
-                message: "已成功切换图床",
-                type: "success",
-            });
+            this.$message.success("已成功切换图床");
         },
         saveGitHubConfiguration() {
             if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
                 const blankElement = this.formGitHub.repo
                     ? "token"
                     : "GitHub 仓库";
-                this.$message({
-                    showClose: true,
-                    message: `参数「​${blankElement}」不能为空`,
-                    type: "error",
-                });
+                this.$message.error(`参数「​${blankElement}」不能为空`);
                 return;
             }
             localStorage.setItem(
                 "githubConfig",
                 JSON.stringify(this.formGitHub)
             );
-            this.$message({
-                message: "保存成功",
-                type: "success",
-            });
+            this.$message.success("保存成功");
         },
         saveGiteeConfiguration() {
             if (!(this.formGitee.repo && this.formGitee.accessToken)) {
                 const blankElement = this.formGitee.repo
                     ? "私人令牌"
                     : "Gitee 仓库";
-                this.$message({
-                    showClose: true,
-                    message: `参数「​${blankElement}」不能为空`,
-                    type: "error",
-                });
+                this.$message.error(`参数「​${blankElement}」不能为空`);
                 return;
             }
             localStorage.setItem("giteeConfig", JSON.stringify(this.formGitee));
-            this.$message({
-                message: "保存成功",
-                type: "success",
-            });
+            this.$message.success("保存成功");
         },
         saveAliOSSConfiguration() {
             if (
@@ -452,21 +433,14 @@ export default {
                     this.formAliOSS.region
                 )
             ) {
-                this.$message({
-                    showClose: true,
-                    message: `阿里云 OSS 参数配置不全`,
-                    type: "error",
-                });
+                this.$message.error(`阿里云 OSS 参数配置不全`);
                 return;
             }
             localStorage.setItem(
                 "aliOSSConfig",
                 JSON.stringify(this.formAliOSS)
             );
-            this.$message({
-                message: "保存成功",
-                type: "success",
-            });
+            this.$message.success("保存成功");
         },
 
         saveTxCOSConfiguration() {
@@ -478,18 +452,11 @@ export default {
                     this.formTxCOS.region
                 )
             ) {
-                this.$message({
-                    showClose: true,
-                    message: `腾讯云 COS 参数配置不全`,
-                    type: "error",
-                });
+                this.$message.error(`腾讯云 COS 参数配置不全`);
                 return;
             }
             localStorage.setItem("txCOSConfig", JSON.stringify(this.formTxCOS));
-            this.$message({
-                message: "保存成功",
-                type: "success",
-            });
+            this.$message.success("保存成功");
         },
 
         saveQiniuConfiguration() {
@@ -502,44 +469,35 @@ export default {
                     this.formQiniu.region
                 )
             ) {
-                this.$message({
-                    showClose: true,
-                    message: `七牛云 Kodo 参数配置不全`,
-                    type: "error",
-                });
+                this.$message.error(`七牛云 Kodo 参数配置不全`);
                 return;
             }
             localStorage.setItem("qiniuConfig", JSON.stringify(this.formQiniu));
-            this.$message({
-                message: "保存成功",
-                type: "success",
-            });
+            this.$message.success("保存成功");
         },
 
-        // 图片上传前的处理
-        beforeUpload(file) {
-            const imgHost = localStorage.getItem("imgHost");
+        beforeImageUpload(file) {
+            // check image
+            const checkResult = checkImage(file);
+            if (!checkResult.ok) {
+                this.$message.error(checkResult.msg);
+                return false;
+            }
+            // check image host
+            let imgHost = localStorage.getItem("imgHost");
+            imgHost = imgHost ? imgHost : "default";
+            localStorage.setItem("imgHost", imgHost);
+
             const config = localStorage.getItem(`${imgHost}Config`);
-            if (!config && imgHost !== "" && imgHost !== "default") {
+            const isValidHost = imgHost == "default" || config;
+            if (!isValidHost) {
                 this.$message.error(`请先配置 ${imgHost} 图床参数`);
                 return false;
             }
-
-            this.uploadingImg = true;
-            uploadImgFile(file)
-                .then((res) => {
-                    this.$emit("uploaded", res);
-                    this.uploadingImg = false;
-                })
-                .catch((err) => {
-                    this.uploadingImg = false;
-                    this.$message({
-                        showClose: true,
-                        message: err,
-                        type: "error",
-                    });
-                });
-            return false;
+            return true;
+        },
+        uploadImage(params) {
+            this.$emit("uploadImage", params.file);
         },
     },
 };

@@ -48,7 +48,7 @@
             <i
                 class="el-icon-s-grid"
                 size="medium"
-                @click="$emit('showDialogForm')"
+                @click="$emit('show-dialog-form')"
             ></i>
         </el-tooltip>
         <el-form size="mini" class="ctrl" :inline="true">

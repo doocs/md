@@ -19,7 +19,6 @@
 </template>
 
 <script>
-import { uploadImgFile } from "../../assets/scripts/uploadImageFile";
 export default {
     props: {
         value: {

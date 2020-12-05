@@ -263,3 +263,33 @@ export function createTable({ data, rows, cols }) {
 
     return table;
 }
+
+export const toBase64 = (file) =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result.split(",").pop());
+        reader.onerror = (error) => reject(error);
+    });
+
+export function checkImage(file) {
+    // check filename suffix
+    const isValidSuffix = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name);
+    if (!isValidSuffix) {
+        return {
+            ok: false,
+            msg: "请上传 JPG/PNG/GIF 格式的图片",
+        };
+    }
+
+    // check file size
+    const maxSize = 5;
+    const isLt5M = file.size / 1024 / 1024 <= maxSize;
+    if (!isLt5M) {
+        return {
+            ok: false,
+            msg: `由于公众号限制，图片大小不能超过 ${maxSize}M`,
+        };
+    }
+    return { ok: true };
+}
