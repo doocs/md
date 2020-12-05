@@ -304,6 +304,7 @@
 </template>
 
 <script>
+import { checkImage } from "../../assets/scripts/util";
 
 export default {
     props: {
@@ -311,14 +312,9 @@ export default {
             type: Boolean,
             default: false,
         },
-        a: {
-            type: Boolean,
-            default: false,
-        }
     },
     data() {
         return {
-            checkResult: false,
             formGitHub: {
                 repo: "",
                 branch: "",
@@ -381,11 +377,6 @@ export default {
             imgHost: "default",
         };
     },
-    watch: {
-        a: function(newVal, oldVal) {
-            this.checkResult = newVal;
-        }
-    },
     created() {
         if (localStorage.getItem("githubConfig")) {
             this.formGitHub = JSON.parse(localStorage.getItem("githubConfig"));
@@ -413,7 +404,7 @@ export default {
                 const blankElement = this.formGitHub.repo
                     ? "token"
                     : "GitHub 仓库";
-                this.$message.error( `参数「​${blankElement}」不能为空`);
+                this.$message.error(`参数「​${blankElement}」不能为空`);
                 return;
             }
             localStorage.setItem(
@@ -486,12 +477,27 @@ export default {
         },
 
         beforeImageUpload(file) {
-            this.$emit("beforeUpload", file);
-            console.log(this.checkResult);
-            return this.checkResult;
+            // check image
+            const checkResult = checkImage(file);
+            if (!checkResult.ok) {
+                this.$message.error(checkResult.msg);
+                return false;
+            }
+            // check image host
+            let imgHost = localStorage.getItem("imgHost");
+            imgHost = imgHost ? imgHost : "default";
+            localStorage.setItem("imgHost", imgHost);
+
+            const config = localStorage.getItem(`${imgHost}Config`);
+            const isValidHost = imgHost == "default" || config;
+            if (!isValidHost) {
+                this.$message.error(`请先配置 ${imgHost} 图床参数`);
+                return false;
+            }
+            return true;
         },
         uploadImage(params) {
-            return this.$emit("uploadImage", params.file);
+            this.$emit("uploadImage", params.file);
         },
     },
 };

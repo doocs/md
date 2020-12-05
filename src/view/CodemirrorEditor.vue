@@ -76,7 +76,6 @@
             @beforeUpload="beforeUpload"
             @uploadImage="uploadImage"
             @uploaded="uploaded"
-            :a = "a"
         />
         <about-dialog v-model="aboutDialogVisible" />
         <insert-form-dialog v-model="dialogFormVisible" />
@@ -103,6 +102,7 @@ import {
     setFontSize,
     saveEditorContent,
     customCssWithTemplate,
+    checkImage,
 } from "../assets/scripts/util";
 
 import { toBase64 } from "../assets/scripts/util";
@@ -125,7 +125,6 @@ export default {
             source: "",
             mouseLeft: 0,
             mouseTop: 0,
-            a: false,
         };
     },
     components: {
@@ -227,25 +226,11 @@ export default {
             this.onEditorRefresh();
         },
         beforeUpload(file) {
-            // check filename suffix
-            const isValidSuffix = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(
-                file.name
-            );
-            if (!isValidSuffix) {
-                this.$message.error("请上传 JPG/PNG/GIF 格式的图片");
-                this.a = false;
-                return;
-            }
-
-            // check file size
-            const maxSize = 5;
-            const isLt5M = file.size / 1024 / 1024 <= maxSize;
-            if (!isLt5M) {
-                this.$message.error(
-                    `由于公众号限制，图片大小不能超过 ${maxSize}M`
-                );
-                this.a = false;
-                return;
+            // validate image
+            const checkResult = checkImage(file);
+            if (!checkResult.ok) {
+                 this.$message.error(checkResult.msg);
+                return false;
             }
 
             // check image host
@@ -257,10 +242,9 @@ export default {
             const isValidHost = imgHost == "default" || config;
             if (!isValidHost) {
                 this.$message.error(`请先配置 ${imgHost} 图床参数`);
-                this.a = false;
-                return;
+                return false;
             }
-            this.a = true;
+            return true;
         },
         uploadImage(file) {
             this.isImgLoading = true;
