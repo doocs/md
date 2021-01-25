@@ -184,7 +184,7 @@ class WxRenderer {
                 return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`;
             };
             renderer.link = (href, title, text) => {
-                if (href.indexOf("https://mp.weixin.qq.com") === 0) {
+                if (href.startsWith("https://mp.weixin.qq.com")) {
                     return `<a href="${href}" title="${
                         title || text
                     }" ${getStyles("wx_link")}>${text}</a>`;
@@ -205,7 +205,6 @@ class WxRenderer {
                 `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles(
                     "thead"
                 )}>${header}</thead><tbody>${body}</tbody></table></section>`;
-            // renderer.tablerow = (text) => `<tr style="">${text}</tr>`;
             renderer.tablecell = (text, flags) =>
                 `<td ${getStyles("td")}>${text}</td>`;
             renderer.hr = () =>
