@@ -22,7 +22,7 @@
     "jquery": "^3.5.1",
     "juice": "^7.0.0",
     "less": "^3.12.2",
-    "marked": "^1.2.5",
+    "marked": "^2.0.0",
     "prettier": "^2.2.0",
     "prettify": "^0.1.7",
     "qiniu-js": "^3.1.2",
