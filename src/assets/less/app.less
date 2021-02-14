@@ -41,14 +41,6 @@ body {
   flex-direction: column;
 }
 
-.top {
-  height: 60px;
-  padding: 10px 20px;
-  display: flex;
-  align-items: center;
-  margin-right: 20px;
-}
-
 .web-title {
   margin: 0 15px 0 5px;
 }
@@ -75,7 +67,6 @@ section {
   display: flex;
   flex-direction: column;
   padding-top: 0;
-  padding-bottom: 10px;
 }
 
 .ctrl {
@@ -138,16 +129,6 @@ section {
   font-size: 13px;
 }
 
-.CodeMirror {
-  height: 100% !important;
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  font-size: 14px;
-  padding: 20px;
-  width: 100% !important;
-  font-family: "PingFang SC", BlinkMacSystemFont, Roboto, "Helvetica Neue",
-    sans-serif !important;
-}
-
 /* ele ui */
 .el-form-item {
   margin-bottom: 0 !important;
@@ -178,12 +159,14 @@ section {
   background-color: rgba(144, 146, 152, 0.5);
 }
 
-.CodeMirror-vscrollbar:focus {
-  outline: none;
-}
-
-.CodeMirror-scroll,
 .preview-wrapper {
   overflow: unset;
   overflow-y: scroll;
+}
+
+uni-page-body,uni-page-refresh {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
 }

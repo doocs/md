@@ -81,38 +81,37 @@ const mutations = {
         });
     },
     initEditorEntity(state) {
-        state.editor = CodeMirror.fromTextArea(
-            document.getElementById("editor"),
-            {
-                value: "",
-                mode: "text/x-markdown",
-                theme: "xq-light",
-                lineNumbers: false,
-                lineWrapping: true,
-                styleActiveLine: true,
-                autoCloseBrackets: true,
-                extraKeys: {
-                    "Ctrl-F": function autoFormat(editor) {
-                        const doc = formatDoc(editor.getValue(0));
-                        localStorage.setItem("__editor_content", doc);
-                        editor.setValue(doc);
-                    },
-                    "Ctrl-S": function save(editor) {},
-                },
-            }
-        );
+        const editorDom = document.getElementById("editor");
 
-        // 如果有编辑器内容被保存则读取，否则加载默认内容
-        state.editor.setValue(
-            localStorage.getItem("__editor_content") ||
-                formatDoc(DEFAULT_CONTENT)
-        );
+        if (!editorDom.value) {
+            editorDom.value = localStorage.getItem("__editor_content") || formatDoc(DEFAULT_CONTENT);
+        }
+        state.editor = CodeMirror.fromTextArea(editorDom, {
+            mode: "text/x-markdown",
+            theme: "xq-light",
+            lineNumbers: false,
+            lineWrapping: true,
+            styleActiveLine: true,
+            autoCloseBrackets: true,
+            extraKeys: {
+                "Ctrl-F": function autoFormat(editor) {
+                    const doc = formatDoc(editor.getValue(0));
+                    localStorage.setItem("__editor_content", doc);
+                    editor.setValue(doc);
+                },
+                "Ctrl-S": function save(editor) {},
+            }
+        });
     },
     initCssEditorEntity(state) {
+        const cssEditorDom = document.getElementById("cssEditor");
+
+        if (!cssEditorDom.value) {
+            cssEditorDom.value = localStorage.getItem("__css_content") || DEFAULT_CSS_CONTENT;
+        }
         state.cssEditor = CodeMirror.fromTextArea(
-            document.getElementById("cssEditor"),
+            cssEditorDom,
             {
-                value: "",
                 mode: "css",
                 theme: "style-mirror",
                 lineNumbers: false,
@@ -128,11 +127,6 @@ const mutations = {
                     "Ctrl-S": function save(editor) {},
                 },
             }
-        );
-
-        // 如果有编辑器内容被保存则读取，否则加载默认内容
-        state.cssEditor.setValue(
-            localStorage.getItem("__css_content") || DEFAULT_CSS_CONTENT
         );
     },
     editorRefresh(state) {
@@ -152,6 +146,7 @@ const mutations = {
     },
     clearEditorToDefault(state) {
         const doc = formatDoc(DEFAULT_CONTENT);
+
         state.editor.setValue(doc);
         state.cssEditor.setValue(DEFAULT_CSS_CONTENT);
     },

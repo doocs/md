@@ -1,43 +1,17 @@
-<template>
-    <transition name="fade" v-if="loading">
-        <loading />
-    </transition>
-    <codemirror-editor v-else />
-</template>
-
 <script>
-import Loading from "./components/Loading";
-import CodemirrorEditor from "./view/CodemirrorEditor";
-export default {
-    name: "App",
-    components: {
-        Loading,
-        CodemirrorEditor,
-    },
-    data() {
-        return {
-            loading: true,
-        };
-    },
-    mounted() {
-        setTimeout(() => {
-            this.loading = false;
-        }, 100);
-    },
-};
+	export default {
+		onLaunch: function() {
+			console.log('App Launch')
+		},
+		onShow: function() {
+			console.log('App Show')
+		},
+		onHide: function() {
+			console.log('App Hide')
+		}
+	}
 </script>
 
-<style lang="scss" scoped>
-.fade-enter,
-.fade-leave-to {
-    opacity: 0;
-}
-.fade-enter-to,
-.fade-leave {
-    opacity: 1;
-}
-.fade-enter-active,
-.fade-leave-active {
-    transition: all 1s;
-}
+<style>
+	/*每个页面公共css */
 </style>

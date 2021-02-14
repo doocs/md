@@ -11,6 +11,7 @@
 @nightButtonHoverColor: #84868b;
 @nightLineColor: #84868b;
 
+
 .container_night {
   background-color: @nightBgColor;
 
@@ -129,3 +130,34 @@
     background-color: @nightCodeMirrorColor;
   }
 }
+
+.CodeMirror {
+  padding-bottom: 0;
+  height: 100% !important;
+  width: 100% !important;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+  font-family: "PingFang SC", BlinkMacSystemFont, Roboto, "Helvetica Neue",
+    sans-serif !important;
+}
+
+.CodeMirror-vscrollbar:focus {
+  outline: none;
+}
+
+.CodeMirror-scroll {
+  padding: 20px;
+  overflow-x: hidden!important;
+  overflow-y: scroll!important;
+}
+
+.CodeMirror-vscrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.codeMirror-wrapper {
+  height: 100%!important;
+}
+
+

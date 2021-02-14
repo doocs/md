@@ -1,115 +1,109 @@
 <template>
     <el-container class="top is-dark">
-        <!-- 图片上传 -->
-        <el-tooltip
-            :effect="effect"
-            content="上传图片"
-            placement="bottom-start"
-        >
-            <i
-                class="el-icon-upload"
-                size="medium"
-                @click="$emit('show-dialog-upload-img')"
-            ></i>
-        </el-tooltip>
-        <!-- 下载文本文档 -->
-        <el-tooltip
-            class="header__item"
-            :effect="effect"
-            content="下载 Markdown 文档"
-            placement="bottom-start"
-        >
-            <i
-                class="el-icon-download"
-                size="medium"
-                @click="$emit('download')"
-            ></i>
-        </el-tooltip>
-        <!-- 页面重置 -->
-        <el-tooltip
-            class="header__item"
-            :effect="effect"
-            content="重置页面"
-            placement="bottom-start"
-        >
-            <i
-                class="el-icon-refresh"
-                size="medium"
-                @click="showResetConfirm = true"
-            ></i>
-        </el-tooltip>
-        <!-- 插入表格 -->
-        <el-tooltip
-            class="header__item header__item_last"
-            :effect="effect"
-            content="插入表格"
-            placement="bottom-start"
-        >
-            <i
-                class="el-icon-s-grid"
-                size="medium"
-                @click="$emit('show-dialog-form')"
-            ></i>
-        </el-tooltip>
-        <el-form size="mini" class="ctrl" :inline="true">
-            <el-form-item>
-                <el-select
-                    v-model="selectFont"
-                    size="mini"
-                    placeholder="选择字体"
-                    clearable
-                    @change="fontChanged"
+        <div class="left-side">
+            <!-- 图片上传 -->
+            <el-tooltip
+                :effect="effect"
+                content="上传图片"
+                placement="bottom-start"
+            >
+                <i
+                    class="el-icon-upload"
+                    size="medium"
+                    @click="$emit('show-dialog-upload-img')"
+                ></i>
+            </el-tooltip>
+            <!-- 下载文本文档 -->
+            <el-tooltip
+                class="header__item"
+                :effect="effect"
+                content="下载 Markdown 文档"
+                placement="bottom-start"
+            >
+                <i
+                    class="el-icon-download"
+                    size="medium"
+                    @click="$emit('download')"
+                ></i>
+            </el-tooltip>
+            <!-- 页面重置 -->
+            <el-tooltip
+                class="header__item"
+                :effect="effect"
+                content="重置页面"
+                placement="bottom-start"
+            >
+                <i
+                    class="el-icon-refresh"
+                    size="medium"
+                    @click="showResetConfirm = true"
+                ></i>
+            </el-tooltip>
+            <!-- 插入表格 -->
+            <el-tooltip
+                class="header__item header__item_last"
+                :effect="effect"
+                content="插入表格"
+                placement="bottom-start"
+            >
+                <i
+                    class="el-icon-s-grid"
+                    size="medium"
+                    @click="$emit('show-dialog-form')"
+                ></i>
+            </el-tooltip>
+            <el-select
+                v-model="selectFont"
+                size="mini"
+                placeholder="选择字体"
+                clearable
+                @change="fontChanged"
+            >
+                <el-option
+                    v-for="font in config.builtinFonts"
+                    :style="{ fontFamily: font.value }"
+                    :key="font.value"
+                    :label="font.label"
+                    :value="font.value"
                 >
-                    <el-option
-                        v-for="font in config.builtinFonts"
-                        :style="{ fontFamily: font.value }"
-                        :key="font.value"
-                        :label="font.label"
-                        :value="font.value"
-                    >
-                        <span class="select-item-left">{{ font.label }}</span>
-                        <span class="select-item-right">Abc</span>
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-select
-                    v-model="selectSize"
-                    size="mini"
-                    placeholder="选择段落字号"
-                    clearable
-                    @change="sizeChanged"
+                    <span class="select-item-left">{{ font.label }}</span>
+                    <span class="select-item-right">Abc</span>
+                </el-option>
+            </el-select>
+            <el-select
+                v-model="selectSize"
+                size="mini"
+                placeholder="选择段落字号"
+                clearable
+                @change="sizeChanged"
+            >
+                <el-option
+                    v-for="size in config.sizeOption"
+                    :key="size.value"
+                    :label="size.label"
+                    :value="size.value"
                 >
-                    <el-option
-                        v-for="size in config.sizeOption"
-                        :key="size.value"
-                        :label="size.label"
-                        :value="size.value"
-                    >
-                        <span class="select-item-left">{{ size.label }}</span>
-                        <span class="select-item-right">{{ size.desc }}</span>
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item>
-                <el-select
-                    v-model="selectColor"
-                    size="mini"
-                    placeholder="选择颜色"
-                    clearable
-                    @change="colorChanged"
+                    <span class="select-item-left">{{ size.label }}</span>
+                    <span class="select-item-right">{{ size.desc }}</span>
+                </el-option>
+            </el-select>
+            <el-select
+                v-model="selectColor"
+                size="mini"
+                placeholder="选择颜色"
+                clearable
+                @change="colorChanged"
+            >
+                <el-option
+                    v-for="color in config.colorOption"
+                    :key="color.value"
+                    :label="color.label"
+                    :value="color.value"
                 >
-                    <el-option
-                        v-for="color in config.colorOption"
-                        :key="color.value"
-                        :label="color.label"
-                        :value="color.value"
-                    >
-                        <span class="select-item-left">{{ color.label }}</span>
-                        <span class="select-item-right">{{ color.desc }}</span>
-                    </el-option>
-                </el-select>
-            </el-form-item>
+                    <span class="select-item-left">{{ color.label }}</span>
+                    <span class="select-item-right">{{ color.desc }}</span>
+                </el-option>
+            </el-select>
             <el-tooltip content="自定义颜色" :effect="effect" placement="top">
                 <el-color-picker
                     v-model="selectColor"
@@ -132,49 +126,52 @@
                 >
                 </el-switch>
             </el-tooltip>
-        </el-form>
-        <el-tooltip
-            class="item"
-            :effect="effect"
-            content="自定义CSS样式"
-            placement="left"
-        >
+        </div>
+        <div class="right-side">
+
+            <el-tooltip
+                class="item"
+                :effect="effect"
+                content="自定义CSS样式"
+                placement="left"
+            >
+                <el-button
+                    :type="btnType"
+                    plain
+                    size="medium"
+                    icon="el-icon-setting"
+                    @click="customStyle"
+                ></el-button>
+            </el-tooltip>
             <el-button
                 :type="btnType"
                 plain
                 size="medium"
-                icon="el-icon-setting"
-                @click="customStyle"
-            ></el-button>
-        </el-tooltip>
-        <el-button
-            :type="btnType"
-            plain
-            size="medium"
-            @click="copy"
-            placement="bottom-start"
-            >复制</el-button
-        >
-        <el-button
-            :type="btnType"
-            plain
-            size="medium"
-            class="about"
-            @click="$emit('show-about-dialog')"
-            >关于</el-button
-        >
-        <el-tooltip
-            :content="btnContent"
-            :effect="effect"
-            placement="bottom-start"
-        >
-            <div
-                class="mode__switch mode__switch_black"
-                v-if="nightMode"
-                @click="themeChanged"
-            ></div>
-            <div class="mode__switch" v-else @click="themeChanged"></div>
-        </el-tooltip>
+                @click="copy"
+                placement="bottom-start"
+                >复制</el-button
+            >
+            <el-button
+                :type="btnType"
+                plain
+                size="medium"
+                class="about"
+                @click="$emit('show-about-dialog')"
+                >关于</el-button
+            >
+            <el-tooltip
+                :content="btnContent"
+                :effect="effect"
+                placement="bottom-start"
+            >
+                <div
+                    class="mode__switch mode__switch_black"
+                    v-if="nightMode"
+                    @click="themeChanged"
+                ></div>
+                <div class="mode__switch" v-else @click="themeChanged"></div>
+            </el-tooltip>
+        </div>
         <resetDialog
             :showResetConfirm="showResetConfirm"
             @confirm="confirmReset"
@@ -375,6 +372,7 @@ export default {
 }
 .mode__switch {
     margin-left: 24px;
+    margin-right: 24px;
     width: 24px;
     height: 24px;
     background: url("../../assets/images/night.png") no-repeat;
@@ -386,6 +384,22 @@ export default {
     background-size: cover;
 }
 .top {
+    height: 60px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
     margin-right: 0;
+}
+.el-select {
+    margin-right: 12px;
+}
+.left-side {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+.right-side {
+    display: flex;
+    align-items: center;
 }
 </style>
