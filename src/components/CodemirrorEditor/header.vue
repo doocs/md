@@ -297,7 +297,6 @@ export default {
                 this.$emit("refresh");
                 this.$emit("endCopy");
             }, 350);
-            e.target.blur();
         },
         // 自定义CSS样式
         async customStyle() {
@@ -401,5 +400,20 @@ export default {
 .right-side {
     display: flex;
     align-items: center;
+}
+
+/* 
+.preview table tr:nth-child(even){
+  background: rgb(250, 250, 250);
+}
+ */
+.select-item-left {
+  float: left;
+}
+
+.select-item-right {
+  float: right;
+  color: #8492a6;
+  font-size: 13px;
 }
 </style>

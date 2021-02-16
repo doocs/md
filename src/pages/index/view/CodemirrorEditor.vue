@@ -441,6 +441,7 @@ export default {
 }
 #output-wrapper {
     position: relative;
+    user-select: text;
 }
 .loading-mask {
     position: absolute;
