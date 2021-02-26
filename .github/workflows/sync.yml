@@ -1,17 +1,16 @@
 name: Sync
 
-on:
-  page_build
+on: page_build
 
 jobs:
   build:
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
-    - name: Sync to Gitee
-      uses: wearerequired/git-mirror-action@master
-      env:
+      - name: Sync to Gitee
+        uses: wearerequired/git-mirror-action@master
+        env:
           SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
-      with:
+        with:
           source-repo: git@github.com:doocs/md.git
           destination-repo: git@gitee.com:Doocs/md.git
