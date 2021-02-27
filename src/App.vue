@@ -12,9 +12,10 @@
 	}
 </script>
 
-<style>
-/*每个页面公共css */
+<style lang="less">
+/* 每个页面公共css */
 @import url("./assets/less/style-mirror.css");
+@import url("./assets/less/theme.less");
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;

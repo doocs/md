@@ -13,7 +13,6 @@ import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/hint/show-hint.js";
 import "codemirror/addon/hint/css-hint.js";
-import "./assets/less/theme.less";
 
 Vue.use(ElementUI);
 

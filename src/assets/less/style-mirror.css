@@ -11,8 +11,15 @@
 .cm-s-style-mirror.CodeMirror {
   color: #444;
   font-size: 16px;
-  padding: 20px;
   line-height: 25px;
+}
+
+.cm-s-style-mirror .CodeMirror-scroll {
+  padding: 20px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden!important;
+  overflow-y: scroll!important;
 }
 
 .cm-s-style-mirror div.CodeMirror-selected {

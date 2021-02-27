@@ -59,7 +59,12 @@
                         name="custom-classes-transition"
                         enter-active-class="bounceInRight"
                     >
-                        <el-col id="cssBox" :span="12" v-show="showCssEditor">
+                        <el-col
+                            id="cssBox"
+                            v-show="showCssEditor"
+                            :span="12"
+                            class="cssEditor-wrapper"
+                        >
                             <textarea
                                 id="cssEditor"
                                 type="textarea"
@@ -476,6 +481,11 @@ export default {
     animation-duration: 1s;
     animation-fill-mode: both;
 }
+.cssEditor-wrapper {
+    /deep/ .CodeMirror {
+    }
+}
+
 @keyframes bounceInRight {
     0%,
     60%,
