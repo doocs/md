@@ -23,7 +23,7 @@
         </el-select>
         <el-upload
           drag
-          action
+          action=""
           :headers="{ 'Content-Type': 'multipart/form-data' }"
           :show-file-list="false"
           :multiple="true"
