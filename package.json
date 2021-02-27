@@ -1,6 +1,6 @@
 {
-  "name": "md-uni",
-  "version": "0.1.0",
+  "name": "md",
+  "version": "1.5.0",
   "private": true,
   "scripts": {
     "serve": "npm run dev:h5",

@@ -14,7 +14,7 @@
 
 <style>
 /*每个页面公共css */
-
+@import url("./assets/less/style-mirror.css");
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
