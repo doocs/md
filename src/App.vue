@@ -1,15 +1,15 @@
 <script>
-	export default {
-		onLaunch: function() {
-			console.log('App Launch')
-		},
-		onShow: function() {
-			console.log('App Show')
-		},
-		onHide: function() {
-			console.log('App Hide')
-		}
-	}
+export default {
+  onLaunch: function () {
+    console.log("App Launch");
+  },
+  onShow: function () {
+    console.log("App Show");
+  },
+  onHide: function () {
+    console.log("App Hide");
+  },
+};
 </script>
 
 <style lang="less">
@@ -38,40 +38,39 @@
 }
 /* CSS-hints */
 .CodeMirror-hints {
-	position: absolute;
-	z-index: 10;
-	overflow: hidden;
-	list-style: none;
+  position: absolute;
+  z-index: 10;
+  overflow: hidden;
+  list-style: none;
 
-	margin: 0;
-	padding: 2px;
+  margin: 0;
+  padding: 2px;
 
-	
-	border-radius: 4px;
-    background-color: #ffffff;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
-    min-width: 200px;
-    font-size: 12px;
-	font-family: monospace;
+  border-radius: 4px;
+  background-color: #ffffff;
+  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  min-width: 200px;
+  font-size: 12px;
+  font-family: monospace;
 
-	max-height: 20em;
-	overflow-y: auto;
-    color: #333333;
+  max-height: 20em;
+  overflow-y: auto;
+  color: #333333;
 }
 
 .CodeMirror-hint {
-	margin: 0;
-    margin-top: 10px;
-	padding: 4px 6px;
-	border-radius: 2px;
-	white-space: pre;
-	color: black;
-	cursor: pointer;
+  margin: 0;
+  margin-top: 10px;
+  padding: 4px 6px;
+  border-radius: 2px;
+  white-space: pre;
+  color: black;
+  cursor: pointer;
 }
 .CodeMirror-hint:first-of-type {
-	margin-top: 0;
+  margin-top: 0;
 }
 .CodeMirror-hint:hover {
-	background: #f0f0f0;
+  background: #f0f0f0;
 }
 </style>

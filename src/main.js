@@ -1,5 +1,5 @@
-import Vue from 'vue'
-import App from './App'
+import Vue from "vue";
+import App from "./App";
 import store from "./store";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
@@ -16,12 +16,12 @@ import "codemirror/addon/hint/css-hint.js";
 
 Vue.use(ElementUI);
 
-Vue.config.productionTip = false
+Vue.config.productionTip = false;
 
-App.mpType = 'app'
+App.mpType = "app";
 
 const app = new Vue({
-    store,
-    ...App
-})
-app.$mount()
+  store,
+  ...App,
+});
+app.$mount();
