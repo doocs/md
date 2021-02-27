@@ -404,10 +404,6 @@ export default {
 .textarea-wrapper {
   height: 100%;
 }
-.preview {
-  transition: background 0s;
-  transition-delay: 0.2s;
-}
 .preview-wrapper_night {
   overflow-y: inherit;
   position: relative;
@@ -453,9 +449,8 @@ export default {
   animation-duration: 1s;
   animation-fill-mode: both;
 }
-.cssEditor-wrapper {
-  /deep/ .CodeMirror {
-  }
+/deep/ .preview-table {
+  border-spacing: 0px;
 }
 
 @keyframes bounceInRight {
