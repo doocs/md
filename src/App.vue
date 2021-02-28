@@ -16,6 +16,7 @@ export default {
 /* 每个页面公共css */
 @import url("./assets/less/style-mirror.css");
 @import url("./assets/less/theme.less");
+@import url("./assets/less/code-theme.less");
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
