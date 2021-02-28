@@ -1,5 +1,5 @@
 import Vue from "vue";
-import App from "./App.vue";
+import App from "./App";
 import store from "./store";
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
@@ -13,13 +13,15 @@ import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/hint/show-hint.js";
 import "codemirror/addon/hint/css-hint.js";
-import "./assets/less/theme.less";
 
 Vue.use(ElementUI);
 
 Vue.config.productionTip = false;
 
-new Vue({
-    store,
-    render: (h) => h(App),
-}).$mount("#app");
+App.mpType = "app";
+
+const app = new Vue({
+  store,
+  ...App,
+});
+app.$mount();
