@@ -7,7 +7,8 @@ function writeManifestJson() {
     const strData = data.toString();
     const manifest = JSON.parse(strData);
 
-    manifest.h5.publicPath = process.env.SERVER_ENV !== 'NETLIFY' ? "/md/": "/";
+    manifest.h5.publicPath =
+      process.env.SERVER_ENV !== "NETLIFY" ? "/md/" : "/";
     const result = JSON.stringify(manifest, null, 4);
 
     fs.writeFile("./src/manifest.json", result, function (err) {
