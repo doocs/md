@@ -1,6 +1,8 @@
 name: Sync
 
-on: page_build
+on:
+  push:
+    branches: [main]
 
 jobs:
   build:
