@@ -18,8 +18,8 @@
   padding: 20px;
   width: 100%;
   box-sizing: border-box;
-  overflow-x: hidden!important;
-  overflow-y: scroll!important;
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
 }
 
 .cm-s-style-mirror div.CodeMirror-selected {
