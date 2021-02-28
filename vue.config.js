@@ -7,7 +7,6 @@ function writeManifestJson() {
     const strData = data.toString();
     const manifest = JSON.parse(strData);
 
-    console.log('process.env.DIR_ENV', process.env.DIR_ENV)
     manifest.h5.publicPath = process.env.DIR_ENV ? "/md/": "/";
     const result = JSON.stringify(manifest, null, 4);
 
