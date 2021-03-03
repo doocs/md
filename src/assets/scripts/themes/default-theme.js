@@ -60,9 +60,9 @@ export default {
       "font-style": "normal",
       "border-left": "none",
       padding: "1em",
-      "border-radius": "4px",
-      color: "#FEEEED",
-      background: "rgba(27,31,35,.05)",
+      "border-radius": "8px",
+      color: "rgba(0,0,0,0.5)",
+      background: "#f7f7f7",
       margin: "2em 8px",
     },
 
