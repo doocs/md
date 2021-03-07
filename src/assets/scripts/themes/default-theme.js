@@ -79,7 +79,7 @@ export default {
       color: "#333",
       "white-space": "pre",
       background: "rgb(247, 247, 247)",
-      "border-radius": "2px",
+      "border-radius": "8px",
       padding: "10px",
       "line-height": "1.5",
       border: "1px solid rgb(236,236,236)",
