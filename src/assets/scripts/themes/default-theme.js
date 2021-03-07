@@ -63,7 +63,7 @@ export default {
       "border-radius": "4px",
       color: "#FEEEED",
       background: "rgba(27,31,35,.05)",
-      margin: "2em 8px",
+      margin: "2em 0",
     },
 
     blockquote_p: {
