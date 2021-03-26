@@ -164,6 +164,20 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
       </a>
     </td>
   </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/udU2ZICg60HbspgWTQdYpg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/15-ApachePulsar.jpg" style="width: 40px;"><br>
+        <sub>ApachePulsar</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/fqNxIRxTkn6QEPmi4atW9w">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/16-%E7%94%9F%E5%8C%96%E7%8E%AF%E6%9D%90.jpg" style="width: 40px;"><br>
+        <sub>生化环材</sub>
+      </a>
+    </td>
+  </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/discussions/5) 留言。
