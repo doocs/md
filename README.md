@@ -61,6 +61,10 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ![doocs-md-upload-image](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542512-0769a336-b9eb-4d58-83c1-29db7b54f71b.gif)
 
+## 注意事项
+
+如果你使用了某些浏览器脚本修改了网页背景色，可能导致渲染后的文章出现背景色分块的现象，详见 [#63](https://github.com/doocs/md/issues/63)。
+
 ## 谁在使用
 
 <table>
@@ -161,6 +165,20 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
       <a href="https://mp.weixin.qq.com/s/6BO977YG5e_4qYxL4oVQJw">
         <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/15-%E6%88%91%E7%9A%84Beta%E4%B8%96%E7%95%8C.jpg" style="width: 40px;"><br>
         <sub>我的 Beta 世界</sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/udU2ZICg60HbspgWTQdYpg">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/15-ApachePulsar.jpg" style="width: 40px;"><br>
+        <sub>ApachePulsar</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/fqNxIRxTkn6QEPmi4atW9w">
+        <img src="https://gitee.com/yanglbme/resource/raw/master/doocs-md/16-%E7%94%9F%E5%8C%96%E7%8E%AF%E6%9D%90.jpg" style="width: 40px;"><br>
+        <sub>生化环材</sub>
       </a>
     </td>
   </tr>
