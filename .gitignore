@@ -1,4 +1,4 @@
-  
+
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
@@ -42,5 +42,5 @@ yarn-error.log*
 *.sln
 *.sw?
 
-#Electron-builder output
+# Electron-builder output
 /dist_electron

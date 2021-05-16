@@ -6,7 +6,7 @@
   "versionCode": "100",
   "transformPx": false,
   "h5": {
-    "publicPath": "/"
+    "publicPath": "/md/"
   },
   "app-plus": {
     "usingComponents": true,
