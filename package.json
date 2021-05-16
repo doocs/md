@@ -116,5 +116,6 @@
   ],
   "uni-app": {
     "scripts": {}
-  }
+  },
+  "main": "main.js"
 }
