@@ -4,7 +4,7 @@ const package = require("./package.json");
 
 switch (process.env.SERVER_ENV) {
   case 'NETLIFY':
-    manifest.h5.publicPath = '/md/';
+    manifest.h5.publicPath = '/';
     package.main = 'main.js';
     break;
   case 'ELECTRON':
@@ -12,7 +12,7 @@ switch (process.env.SERVER_ENV) {
     package.main = 'background.js';
     break;
   default:
-    manifest.h5.publicPath = '/';
+    manifest.h5.publicPath = '/md/';
     package.main = 'main.js';
     break;
 }
