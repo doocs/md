@@ -159,14 +159,8 @@ async function qiniuUpload(file) {
 
 async function aliOSSFileUpload(content, filename) {
   const dateFilename = getDateFilename(filename);
-  const {
-    region,
-    bucket,
-    accessKeyId,
-    accessKeySecret,
-    cdnHost,
-    path,
-  } = JSON.parse(localStorage.getItem("aliOSSConfig"));
+  const { region, bucket, accessKeyId, accessKeySecret, cdnHost, path } =
+    JSON.parse(localStorage.getItem("aliOSSConfig"));
   const buffer = Buffer(content, "base64");
   const dir = `${path}/${dateFilename}`;
   const client = new OSS({
