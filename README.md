@@ -171,7 +171,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
   <tr>
     <td align="center" style="width: 60px;">
       <a href="https://mp.weixin.qq.com/s/udU2ZICg60HbspgWTQdYpg">
-        <img src="https://cdn.jsdelivr.net/gh/filess/img18@main/2021/05/30/1622376511570-210e6702-a9c5-495e-883b-3ea0c6257da1.jpg" style="width: 40px;"><br>
+        <img src="https://cdn.jsdelivr.net/gh/filess/img2@main/2021/08/22/1629604090568-c1b0d718-a0ca-4b25-983d-73591bbc5556.png" style="width: 40px;"><br>
         <sub>ApachePulsar</sub>
       </a>
     </td>
