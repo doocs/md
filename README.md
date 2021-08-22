@@ -187,6 +187,36 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
         <sub>秀宇笔记</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/UU3cH8LvpO_3aeAkkYvZZQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img4@main/2021/08/22/1629605202587-a69e9e86-5078-4faf-8de1-1f273ee0421d.jpg" style="width: 40px;"><br>
+        <sub>IT王小二</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/49wUuhOEYG-OZPbFc6_NrQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img13@main/2021/08/22/1629605348059-33be5c96-3a99-43cf-bf49-e0d2a79e3b53.jpg" style="width: 40px;"><br>
+        <sub>小二来碗饭</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/YDUZ0t_spzeqXiE_Idv3OA">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img6@main/2021/08/22/1629605468074-9e37a662-29b7-409c-a295-2420e9e82ff2.jpg" style="width: 40px;"><br>
+        <sub>青年技术宅</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/oinGHCmer1vNE6Hg2OsH1g">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img6@main/2021/08/22/1629605628076-2f06908d-ccdb-44ad-ab2e-06645534dbbc.jpg" style="width: 40px;"><br>
+        <sub>路引科研</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/ap_JhwgmfxgqFAIcTF3nKQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img8@main/2021/08/22/1629605991393-9a362483-60ff-4b36-ad4c-901c33d743a4.jpg" style="width: 40px;"><br>
+        <sub>凯文有事找你</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
