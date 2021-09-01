@@ -218,6 +218,14 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
       </a>
     </td>
   </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/itkJtMY-1IkZjIn5fWtShw">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img16@main/2021/09/01/1630509994812-dea5c24f-fdca-42e0-b6cf-adab8f5ed889.jpg" style="width: 40px;"><br>
+        <sub>软件部落库</sub>
+      </a>
+    </td>
+  </tr>
 </table>
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/discussions/5) 留言。
