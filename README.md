@@ -225,6 +225,12 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
         <sub>软件部落库</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/_44Ya309DeQzemXLnJUNdQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img4@main/2021/09/18/1631947087260-320f3919-f9fa-4c25-8fc1-5020b892f338.jpg" style="width: 40px;"><br>
+        <sub>网文小密圈</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
