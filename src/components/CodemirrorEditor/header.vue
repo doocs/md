@@ -22,6 +22,19 @@
           @click="$emit('download')"
         ></i>
       </el-tooltip>
+      <!-- 导出 HTML -->
+      <el-tooltip
+        class="header__item"
+        :effect="effect"
+        content="导出 HTML"
+        placement="bottom-start"
+      >
+        <i
+          class="el-icon-document"
+          size="medium"
+          @click="$emit('export')"
+        ></i>
+      </el-tooltip>
       <!-- 页面重置 -->
       <el-tooltip
         class="header__item"
