@@ -7,6 +7,7 @@
           @refresh="onEditorRefresh"
           @cssChanged="cssChanged"
           @download="downloadEditorContent"
+          @export="exportEditorContent"
           @showCssEditor="showCssEditor = !showCssEditor"
           @show-about-dialog="aboutDialogVisible = true"
           @show-dialog-form="dialogFormVisible = true"
@@ -101,6 +102,7 @@ import uploadImgDialog from "../../../components/CodemirrorEditor/uploadImgDialo
 import {
   css2json,
   downloadMD,
+  exportHTML,
   formatDoc,
   setFontSize,
   saveEditorContent,
@@ -330,6 +332,10 @@ export default {
     downloadEditorContent() {
       downloadMD(this.editor.getValue(0));
     },
+    // 导出编辑器内容为 HTML，并且下载到本地
+    exportEditorContent() {
+      exportHTML(this.output);
+    },
     // 格式化文档
     formatContent() {
       const doc = formatDoc(this.editor.getValue(0));
@@ -360,6 +366,9 @@ export default {
           break;
         case "download":
           this.downloadEditorContent();
+          break;
+        case "export":
+          this.exportEditorContent();
           break;
         case "insertTable":
           this.dialogFormVisible = true;
