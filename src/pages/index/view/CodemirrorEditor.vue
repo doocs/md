@@ -367,6 +367,9 @@ export default {
         case "download":
           this.downloadEditorContent();
           break;
+        case "export":
+          this.exportEditorContent();
+          break;
         case "insertTable":
           this.dialogFormVisible = true;
           break;
