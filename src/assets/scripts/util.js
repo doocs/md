@@ -240,11 +240,11 @@ export function downloadMD(doc) {
  * @param {HTML生成内容} htmlStr
  */
 export function exportHTML(htmlStr) {
-  const downLink = document.createElement('a')
+  const downLink = document.createElement("a");
 
-  downLink.download = 'content.html';
+  downLink.download = "content.html";
   downLink.style.display = "none";
-  let blob = new Blob([`<html><body>${htmlStr}</body></html>`])
+  let blob = new Blob([`<html><body>${htmlStr}</body></html>`]);
 
   downLink.href = URL.createObjectURL(blob);
   document.body.appendChild(downLink);
