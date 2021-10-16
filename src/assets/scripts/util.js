@@ -244,7 +244,7 @@ export function exportHTML(htmlStr) {
 
   downLink.download = 'content.html';
   downLink.style.display = "none";
-  let blob = new Blob([`<html><body>${htmlStr}</body></html>`])
+  let blob = new Blob([`<html><head><meta charset="utf-8" /></head><body><div style="width: 750px; margin: auto;">${htmlStr}</div></body></html>`])
 
   downLink.href = URL.createObjectURL(blob);
   document.body.appendChild(downLink);
