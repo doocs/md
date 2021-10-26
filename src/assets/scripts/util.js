@@ -88,14 +88,8 @@ export function customCssWithTemplate(jsonString, color, theme) {
     custom_theme.inline.wx_link,
     jsonString.wx_link
   );
-  custom_theme.block.ul = Object.assign(
-    custom_theme.block.ul,
-    jsonString.ul
-  );
-  custom_theme.block.ol = Object.assign(
-    custom_theme.block.ol,
-    jsonString.ol
-  );
+  custom_theme.block.ul = Object.assign(custom_theme.block.ul, jsonString.ul);
+  custom_theme.block.ol = Object.assign(custom_theme.block.ol, jsonString.ol);
   custom_theme.inline.listitem = Object.assign(
     custom_theme.inline.listitem,
     jsonString.li
