@@ -37,5 +37,14 @@ link {
 /* 微信链接样式 */
 wx_link {
 }
+/* 有序列表样式 */
+ol {
+}
+/* 无序列表样式 */
+ul {
+}
+/* 列表项样式 */
+li {
+}
 `;
 export default DEFAULT_CSS_CONTENT;
