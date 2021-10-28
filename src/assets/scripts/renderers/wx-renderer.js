@@ -19,14 +19,14 @@ class WxRenderer {
         "font-family": this.opts.fonts,
         "font-size": this.opts.size,
       });
-      let base_block = merge(base, {});
       for (let ele in themeTpl.inline) {
         if (themeTpl.inline.hasOwnProperty(ele)) {
           let style = themeTpl.inline[ele];
-          mapping[ele] = merge(base, style);
+          mapping[ele] = merge(themeTpl.BASE, style);
         }
       }
 
+      let base_block = merge(base, {});
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
