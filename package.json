@@ -1,6 +1,6 @@
 {
   "name": "md",
-  "version": "1.5.0",
+  "version": "1.5.5",
   "private": false,
   "scripts": {
     "serve": "node manifest.js & npm run dev:h5",

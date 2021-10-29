@@ -186,7 +186,6 @@
 
 <script>
 import {
-  downloadMD,
   setFontSize,
   fixCodeWhiteSpace,
   setColorWithCustomTemplate,
@@ -287,7 +286,6 @@ export default {
         document.execCommand("copy");
         window.getSelection().removeAllRanges();
         fixCodeWhiteSpace("normal");
-
         clipboardDiv.innerHTML = this.output;
         // 输出提示
         this.$notify({
