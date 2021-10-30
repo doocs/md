@@ -246,7 +246,7 @@ export function downloadMD(doc) {
 export function exportHTML() {
   const element = document.querySelector("#output");
   setStyles(element);
-  const htmlStr = element.innerHTML
+  const htmlStr = element.innerHTML;
 
   const downLink = document.createElement("a");
 
@@ -263,21 +263,45 @@ export function exportHTML() {
 
   function setStyles(element) {
     switch (true) {
-      case element.tagName === "SECTION" &&
-        Array.from(element.classList).includes("code-snippet__github"):
-      case element.tagName === "PRE" &&
-        Array.from(element.classList).includes("code__pre"):
-      case element.tagName === "CODE" &&
-        Array.from(element.classList).includes("prettyprint"):
-      case element.tagName === "SPAN" &&
-        element.parentElement.tagName === "CODE":
-      case element.tagName === "SPAN" &&
-        element.parentElement.parentElement.tagName === "CODE":
+      case isSection(element):
+      case isPre(element):
+      case isCode(element):
+      case isSpan(element):
         element.setAttribute("style", getElementStyles(element));
       default:
     }
     if (element.children.length) {
       Array.from(element.children).forEach((child) => setStyles(child));
+    }
+
+    // 判断是否是包裹代码块的 section 元素
+    function isSection(element) {
+      return (
+        element.tagName === "SECTION" &&
+        Array.from(element.classList).includes("code-snippet__github")
+      );
+    }
+    // 判断是否是包裹代码块的 pre 元素
+    function isPre(element) {
+      return (
+        element.tagName === "PRE" &&
+        Array.from(element.classList).includes("code__pre")
+      );
+    }
+    // 判断是否是包裹代码块的 code 元素
+    function isCode(element) {
+      return (
+        element.tagName === "CODE" &&
+        Array.from(element.classList).includes("prettyprint")
+      );
+    }
+    // 判断是否是包裹代码字符的 span 元素
+    function isSpan(element) {
+      return (
+        element.tagName === "SPAN" &&
+        (isCode(element.parentElement) ||
+          isCode(element.parentElement.parentElement))
+      );
     }
   }
 }
@@ -346,10 +370,7 @@ export function checkImage(file) {
 function getElementStyles(element, excludes = ["width", "height"]) {
   const styles = getComputedStyle(element, null);
   return Object.entries(styles)
-    .filter(
-      ([key]) =>
-        styles.getPropertyValue(key) && !excludes.includes(key)
-    )
+    .filter(([key]) => styles.getPropertyValue(key) && !excludes.includes(key))
     .map(([key, value]) => `${key}:${value};`)
     .join("");
 }
