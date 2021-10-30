@@ -334,7 +334,12 @@ export default {
     },
     // 导出编辑器内容为 HTML，并且下载到本地
     exportEditorContent() {
-      exportHTML(this.output);
+
+
+      this.$nextTick(() => {
+        exportHTML();
+      })
+
     },
     // 格式化文档
     formatContent() {

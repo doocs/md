@@ -242,9 +242,12 @@ export function downloadMD(doc) {
 
 /**
  * 导出 HTML 生成内容
- * @param {HTML生成内容} htmlStr
  */
-export function exportHTML(htmlStr) {
+export function exportHTML() {
+  const element = document.querySelector("#output");
+  setStyles(element);
+  const htmlStr = element.innerHTML
+
   const downLink = document.createElement("a");
 
   downLink.download = "content.html";
@@ -257,6 +260,26 @@ export function exportHTML(htmlStr) {
   document.body.appendChild(downLink);
   downLink.click();
   document.body.removeChild(downLink);
+
+  function setStyles(element) {
+    switch (true) {
+      case element.tagName === "SECTION" &&
+        Array.from(element.classList).includes("code-snippet__github"):
+      case element.tagName === "PRE" &&
+        Array.from(element.classList).includes("code__pre"):
+      case element.tagName === "CODE" &&
+        Array.from(element.classList).includes("prettyprint"):
+      case element.tagName === "SPAN" &&
+        element.parentElement.tagName === "CODE":
+      case element.tagName === "SPAN" &&
+        element.parentElement.parentElement.tagName === "CODE":
+        element.setAttribute("style", getElementStyles(element));
+      default:
+    }
+    if (element.children.length) {
+      Array.from(element.children).forEach((child) => setStyles(child));
+    }
+  }
 }
 
 /**
@@ -312,4 +335,21 @@ export function checkImage(file) {
     };
   }
   return { ok: true };
+}
+
+/**
+ * 获取一个 DOM 元素的所有样式，
+ * @param {DOM 元素} element DOM 元素
+ * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
+ * @returns 行内样式拼接结果
+ */
+function getElementStyles(element, excludes = ["width", "height"]) {
+  const styles = getComputedStyle(element, null);
+  return Object.entries(styles)
+    .filter(
+      ([key]) =>
+        styles.getPropertyValue(key) && !excludes.includes(key)
+    )
+    .map(([key, value]) => `${key}:${value};`)
+    .join("");
 }
