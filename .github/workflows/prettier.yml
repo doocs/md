@@ -14,9 +14,7 @@ jobs:
           ref: ${{ github.head_ref }}
 
       - name: Prettify code
-        uses: creyD/prettier_action@v3.3
+        uses: creyD/prettier_action@v4.0
         with:
           prettier_options: --write **/*.{html,js,md,vue,less,css}
           commit_message: "style: prettify code"
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
