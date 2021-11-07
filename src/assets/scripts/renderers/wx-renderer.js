@@ -179,11 +179,14 @@ class WxRenderer {
             "wx_link"
           )}>${text}</a>`;
         }
-        if (href === text || !status) {
+        if (href === text) {
           return text;
         }
-        let ref = addFootnote(title || text, href);
-        return `<span ${getStyles("link")}>${text}<sup>[${ref}]</sup></span>`;
+        if (status) {
+          let ref = addFootnote(title || text, href);
+          return `<span ${getStyles("link")}>${text}<sup>[${ref}]</sup></span>`;
+        }
+        return `<span ${getStyles("link")}>${text}</span>`;
       };
       renderer.strong = (text) =>
         `<strong ${getStyles("strong")}>${text}</strong>`;
