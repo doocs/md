@@ -130,7 +130,7 @@ class WxRenderer {
           .map(
             (line) =>
               `<code class="prettyprint"><span class="code-snippet_outer">${
-                line || "<br>"
+                line || " "
               }</span></code>`
           );
         const codeTheme = "github";
