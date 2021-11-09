@@ -58,7 +58,7 @@
     "@dcloudio/uni-stat": "^2.0.0-31820210406002",
     "@vue/shared": "^3.0.11",
     "ali-oss": "^6.15.2",
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "buffer-from": "^1.1.1",
     "codemirror": "^5.61.0",
     "core-js": "^3.11.0",
