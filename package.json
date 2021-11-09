@@ -81,6 +81,7 @@
   "devDependencies": {
     "@dcloudio/types": "*",
     "@dcloudio/uni-automator": "^2.0.0-31820210406002",
+    "@dcloudio/uni-cli-i18n": "^2.0.0-32920211029004",
     "@dcloudio/uni-cli-shared": "^2.0.0-31820210406002",
     "@dcloudio/uni-migration": "^2.0.0-31820210406002",
     "@dcloudio/uni-template-compiler": "^2.0.0-31820210406002",
