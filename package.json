@@ -16,7 +16,6 @@
     "cos-js-sdk-v5": "^1.2.9",
     "crypto-js": "^4.0.0",
     "element-ui": "^2.15.1",
-    "flyio": "^0.6.14",
     "jquery": "^3.6.0",
     "juice": "^7.0.0",
     "marked": "^2.0.3",
