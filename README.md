@@ -32,6 +32,18 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
+## 如何开发和部署
+``` sh
+# 安装依赖
+npm i
+
+# 启动开发模式
+npm run serve
+
+# 输出部署版本
+npm run build
+```
+
 ## 功能特性
 
 - [x] 支持自定义 CSS 样式
