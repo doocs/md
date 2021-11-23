@@ -9,11 +9,11 @@
           @click="$emit('show-dialog-upload-img')"
         ></i>
       </el-tooltip>
-      <!-- 下载文本文档 -->
+      <!-- 导出 Markdown 文档 -->
       <el-tooltip
         class="header__item"
         :effect="effect"
-        content="下载 Markdown 文档"
+        content="导出 Markdown 文档"
         placement="bottom-start"
       >
         <i
@@ -26,7 +26,7 @@
       <el-tooltip
         class="header__item"
         :effect="effect"
-        content="导出 HTML"
+        content="导出 HTML 页面"
         placement="bottom-start"
       >
         <i class="el-icon-document" size="medium" @click="$emit('export')"></i>
