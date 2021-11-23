@@ -6,7 +6,7 @@
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
     "build": "vue-cli-service build",
-    "mm": "npx mockm static=dist"
+    "mm": "npx mockm"
   },
   "dependencies": {
     "@vue/shared": "^3.0.11",

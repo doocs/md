@@ -46,14 +46,14 @@ npm run build
 
 ## 测试
 ``` sh
-# 启动接口服务
+# 启动模拟服务
 npm run mm
+```
 
-# 编译到 dist/md
+``` sh
 npm run build
 # 访问 http://127.0.0.1:9000/md
 
-# 编译到 dist
 npm run build:h5-netlify
 # 访问 http://127.0.0.1:9000/
 ```
