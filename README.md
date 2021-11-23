@@ -33,7 +33,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
 ## 如何开发和部署
-``` sh
+
+```sh
 # 安装依赖
 npm i
 
@@ -45,12 +46,13 @@ npm run build
 ```
 
 ## 测试
-``` sh
+
+```sh
 # 启动模拟服务
 npm run mm
 ```
 
-``` sh
+```sh
 npm run build
 # 访问 http://127.0.0.1:9000/md
 
