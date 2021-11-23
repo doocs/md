@@ -398,6 +398,13 @@ export default {
   },
 };
 </script>
+
+<style lang="less" scoped>
+.editor__header {
+  padding: 0;
+}
+</style>
+
 <style lang="less" scoped>
 .main-body {
   padding-top: 12px;

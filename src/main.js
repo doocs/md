@@ -13,6 +13,7 @@ import "codemirror/addon/edit/matchbrackets";
 import "codemirror/addon/selection/active-line";
 import "codemirror/addon/hint/show-hint.js";
 import "codemirror/addon/hint/css-hint.js";
+import router from './router';
 
 Vue.use(ElementUI);
 
@@ -21,7 +22,8 @@ Vue.config.productionTip = false;
 App.mpType = "app";
 
 const app = new Vue({
+  router,
   store,
   ...App,
 });
-app.$mount();
+app.$mount("#app");

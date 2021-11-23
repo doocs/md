@@ -1,3 +1,21 @@
+<template>
+  <div id="app">
+    <router-view />
+  </div>
+</template>
+
+<style lang="less">
+// 仿 uniapp 外层全屏
+html,
+body,
+#app {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+</style>
+
 <style lang="less">
 /* 每个页面公共css */
 @import url("./assets/less/style-mirror.css");
