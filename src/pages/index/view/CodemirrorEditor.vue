@@ -346,7 +346,6 @@ export default {
       input.name = "filename";
       input.accept = ".doc,.docs,.md";
       menu.appendChild(input);
-      input.click();
       input.onchange = () => {
         if (!input.files) {
           return;
@@ -360,9 +359,11 @@ export default {
           if (txt) {
             localStorage.setItem("__editor_content", txt);
             this.editor.setValue(txt);
+            this.$message.success("文档导入成功");
           }
         };
       };
+      input.click();
       menu.removeChild(input);
     },
     // 格式化文档
