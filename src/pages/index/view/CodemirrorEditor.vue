@@ -328,7 +328,7 @@ export default {
         this.isCoping = false;
       }, 800);
     },
-    // 下载编辑器内容到本地
+    // 导出编辑器内容到本地
     downloadEditorContent() {
       downloadMD(this.editor.getValue(0));
     },
@@ -337,6 +337,33 @@ export default {
       this.$nextTick(() => {
         exportHTML();
       });
+    },
+    // 导入 Markdown 文档
+    importMarkdownContent() {
+      let menu = document.getElementById("menu");
+      let input = document.createElement("input");
+      input.type = "file";
+      input.name = "filename";
+      input.accept = ".doc,.docs,.md";
+      menu.appendChild(input);
+      input.click();
+      input.onchange = () => {
+        if (!input.files) {
+          return;
+        }
+        const file = input.files[0];
+        const reader = new FileReader();
+        reader.readAsText(file);
+        reader.onload = (event) => {
+          let txt = event.target.result;
+          txt = formatDoc(txt);
+          if (txt) {
+            localStorage.setItem("__editor_content", txt);
+            this.editor.setValue(txt);
+          }
+        };
+      };
+      menu.removeChild(input);
     },
     // 格式化文档
     formatContent() {
@@ -374,6 +401,9 @@ export default {
           break;
         case "insertTable":
           this.dialogFormVisible = true;
+          break;
+        case "importMarkdown":
+          this.importMarkdownContent();
           break;
         case "formatMarkdown":
           this.formatContent();

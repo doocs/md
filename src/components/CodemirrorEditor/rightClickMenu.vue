@@ -53,11 +53,15 @@ export default {
         ],
         [
           {
-            text: "下载 Markdown 文档",
+            text: '导入 Markdown 文档',
+            key: 'importMarkdown',
+          },
+          {
+            text: "导出 Markdown 文档",
             key: "download",
           },
           {
-            text: "导出 HTML",
+            text: "导出 HTML 页面",
             key: "export",
           },
           {
