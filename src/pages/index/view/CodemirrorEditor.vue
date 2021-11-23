@@ -344,13 +344,17 @@ export default {
       let input = document.createElement("input");
       input.type = "file";
       input.name = "filename";
-      input.accept = ".doc,.docs,.md";
+      input.accept = ".txt,.md";
       menu.appendChild(input);
       input.onchange = () => {
         if (!input.files) {
           return;
         }
         const file = input.files[0];
+        if (!/\.(txt|TXT|MD|md)$/.test(file.name)) {
+          this.$message.error("不支持的文档格式");
+          return;
+        }
         const reader = new FileReader();
         reader.readAsText(file);
         reader.onload = (event) => {
