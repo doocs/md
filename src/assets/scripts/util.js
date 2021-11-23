@@ -274,13 +274,6 @@ export function exportHTML() {
       Array.from(element.children).forEach((child) => setStyles(child));
     }
 
-    // 判断是否是包裹代码块的 section 元素
-    function isSection(element) {
-      return (
-        element.tagName === "SECTION" &&
-        Array.from(element.classList).includes("code-snippet__github")
-      );
-    }
     // 判断是否是包裹代码块的 pre 元素
     function isPre(element) {
       return (

@@ -98,6 +98,7 @@ import aboutDialog from "../../../components/CodemirrorEditor/aboutDialog";
 import insertFormDialog from "../../../components/CodemirrorEditor/insertForm";
 import rightClickMenu from "../../../components/CodemirrorEditor/rightClickMenu";
 import uploadImgDialog from "../../../components/CodemirrorEditor/uploadImgDialog";
+import config from "../../../assets/scripts/config";
 
 import {
   css2json,
@@ -149,6 +150,7 @@ export default {
       currentColor: (state) => state.currentColor,
       nightMode: (state) => state.nightMode,
       rightClickMenuVisible: (state) => state.rightClickMenuVisible,
+      codeTheme: (state) => state.codeTheme,
     }),
   },
   created() {
@@ -222,6 +224,20 @@ export default {
         theme: theme,
       });
       this.onEditorRefresh();
+    },
+    codeThemeChanged(theme) {
+      let cssUrl = config.codeThemeCssUrl + theme + ".min.css"
+      let el = document.getElementById('hljs')
+      if (el != undefined) {
+        el.setAttribute('href', cssUrl);
+      } else {
+        var link = document.createElement('link');
+        link.setAttribute('type','text/css');
+        link.setAttribute('rel','stylesheet');
+        link.setAttribute('href',cssUrl);
+        link.setAttribute('id','hljs');
+        document.head.appendChild(link);
+      }
     },
     beforeUpload(file) {
       // validate image
@@ -319,6 +335,7 @@ export default {
     // 更新编辑器
     onEditorRefresh() {
       this.editorRefresh();
+      this.codeThemeChanged(this.codeTheme);
       setTimeout(() => PR.prettyPrint(), 0);
     },
     // 复制结束

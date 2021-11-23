@@ -1,4 +1,6 @@
 import marked from "marked";
+import hljs from 'highlight.js';
+
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
@@ -125,22 +127,8 @@ class WxRenderer {
       };
       renderer.code = (text, lang) => {
         text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const codeLines = text
-          .split("\n")
-          .map(
-            (line) =>
-              `<code class="prettyprint"><span class="code-snippet_outer">${
-                line || " "
-              }</span></code>`
-          );
-        const codeTheme = "github";
-        return `
-                <section class="code-snippet__${codeTheme}">
-                    <pre class="code__pre" data-lang="${lang}">
-                        ${codeLines.join("")}
-                    </pre>
-                </section>
-            `;
+        text = hljs.highlight(text, {language: lang}).value;
+        return `<pre class="code-container hljs"><code class="language-${lang}">${text}</code></pre>`
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;

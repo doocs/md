@@ -55,16 +55,17 @@ export default {
       desc: "热情活泼",
     },
   ],
+  codeThemeCssUrl: "https://lib.baomitu.com/highlight.js/11.3.1/styles/",
   codeThemeOption: [
     {
-      label: "微信",
-      value: "wechat",
-      desc: "默认样式",
+      label: "atom-one-dark",
+      value: "atom-one-dark",
+      desc: "atom-one-dark",
     },
     {
-      label: "GitHub",
-      value: "github",
-      desc: "精简风格",
+      label: "obsidian",
+      value: "obsidian",
+      desc: "obsidian",
     },
   ],
   form: {

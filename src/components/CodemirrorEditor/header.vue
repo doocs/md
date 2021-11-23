@@ -109,6 +109,22 @@
           <span class="select-item-right">{{ color.desc }}</span>
         </el-option>
       </el-select>
+      <el-select
+        v-model="selectCodeTheme"
+        size="mini"
+        placeholder="代码主题"
+        clearable
+        @change="codeThemeChanged"
+      >
+        <el-option
+          v-for="code in config.codeThemeOption"
+          :key="code.value"
+          :label="code.label"
+          :value="code.value"
+        >
+          <span class="select-item-left">{{ code.label }}</span>
+        </el-option>
+      </el-select>
       <el-tooltip content="自定义颜色" :effect="effect" placement="top">
         <el-color-picker
           v-model="selectColor"
@@ -205,7 +221,7 @@ export default {
       selectFont: "",
       selectSize: "",
       selectColor: "",
-      selectCodeTheme: "github",
+      selectCodeTheme: config.codeThemeOption[0].value
     };
   },
   components: {
@@ -326,6 +342,7 @@ export default {
       this.fontChanged(this.config.builtinFonts[0].value);
       this.colorChanged(this.config.colorOption[0].value);
       this.sizeChanged(this.config.sizeOption[2].value);
+      this.codeThemeChanged(this.config.codeThemeOption[0].value)
       this.$emit("cssChanged");
       this.selectFont = this.currentFont;
       this.selectSize = this.currentSize;

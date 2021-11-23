@@ -21,7 +21,7 @@ const state = {
   currentColor: "",
   citeStatus: 0,
   nightMode: false,
-  codeTheme: "github",
+  codeTheme: config.codeThemeOption[0].value,
   rightClickMenuVisible: false,
 };
 const mutations = {
