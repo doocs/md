@@ -44,6 +44,20 @@ npm run serve
 npm run build
 ```
 
+## 测试
+``` sh
+# 启动接口服务
+npm run mm
+
+# 编译到 dist/md
+npm run build
+# 访问 http://127.0.0.1:9000/md
+
+# 编译到 dist
+npm run build:h5-netlify
+# 访问 http://127.0.0.1:9000/
+```
+
 ## 功能特性
 
 - [x] 支持自定义 CSS 样式

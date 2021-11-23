@@ -5,7 +5,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
-    "build": "vue-cli-service build"
+    "build": "vue-cli-service build",
+    "mm": "npx mockm static=dist"
   },
   "dependencies": {
     "@vue/shared": "^3.0.11",
@@ -40,6 +41,7 @@
     "less-loader": "^5.0.0",
     "mini-types": "*",
     "miniprogram-api-typings": "*",
+    "mockm": "^1.1.25",
     "postcss-comment": "^2.0.0",
     "sass-loader": "^11.0.1",
     "vue-template-compiler": "^2.6.12"
