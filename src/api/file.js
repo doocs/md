@@ -85,8 +85,8 @@ async function ghFileUpload(content, filename) {
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`;
   const cdnResourceUrl = `cdn.jsdelivr.net/gh/${username}/${repo}@${branch}/`;
   return useDefault
-    ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
-    : res.content.download_url;
+    ? res.data.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+    : res.data.content.download_url;
 }
 
 //-----------------------------------------------------------------------
@@ -112,7 +112,7 @@ async function giteeUpload(content, filename) {
       message: `Upload by ${window.location.href}`,
     },
   });
-  return encodeURI(res.content.download_url);
+  return encodeURI(res.data.content.download_url);
 }
 
 //-----------------------------------------------------------------------
