@@ -20,17 +20,7 @@ jobs:
           node-version: "12"
           check-latest: true
 
-      - name: Cache node modules
-        uses: actions/cache@v2
-        id: cache
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
       - name: Install dependencies
-        if: steps.cache.outputs.cache-hit != 'true'
         run: npm install
 
       - name: Build
