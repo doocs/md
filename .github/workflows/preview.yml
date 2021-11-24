@@ -1,0 +1,22 @@
+name: Surge Preview
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+  push:
+
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: afc163/surge-preview@main
+        with:
+          surge_token: ${{ secrets.SURGE_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dist: dist
+          teardown: 'true'
+          build: |
+            npm install
+            npm run build
