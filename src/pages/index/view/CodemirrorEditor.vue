@@ -225,7 +225,9 @@ export default {
       });
       this.onEditorRefresh();
     },
-    codeThemeChanged(theme) {
+    // 切换 highlight.js 代码主题
+    codeThemeChanged() {
+      let theme = this.codeTheme;
       let cssUrl = config.codeThemeCssUrl + theme + ".min.css"
       let el = document.getElementById('hljs')
       if (el != undefined) {
@@ -334,8 +336,8 @@ export default {
     },
     // 更新编辑器
     onEditorRefresh() {
-      this.editorRefresh();
       this.codeThemeChanged(this.codeTheme);
+      this.editorRefresh();
       setTimeout(() => PR.prettyPrint(), 0);
     },
     // 复制结束
@@ -513,6 +515,9 @@ export default {
   100% {
     transform: none;
   }
+}
+.codeMirror-wrapper {
+  overflow-x: auto;
 }
 </style>
 <style lang="less" scoped>
