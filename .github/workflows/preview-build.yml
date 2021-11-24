@@ -25,11 +25,11 @@ jobs:
           path: dist
           retention-days: 5
 
-      - name: Save PR number
+      - name: save PR number
         if: ${{ always() }}
         run: echo ${{ github.event.number }} > ./pr-id.txt
 
-      - name: Upload PR number
+      - name: upload PR number
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:
