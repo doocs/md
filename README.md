@@ -81,7 +81,7 @@ npm run build:h5-netlify
 | 4   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                             |
 | 5   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数            | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 | 6   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数 | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
-| -   | 自定义上传逻辑                                  | 是                                                               | 参考[自定义上传逻辑参数详情](https://github.com/doocs/md#自定义上传逻辑)                                               |
+| -   | 自定义上传逻辑                                  | 是                                                               | 参考[自定义上传逻辑参数详情](#自定义上传逻辑)                                               |
 
 ![select-and-change-color-theme](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542281-a8c99fa7-c11e-4e43-98da-e36012f54dc8.gif)
 
