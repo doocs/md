@@ -1,6 +1,8 @@
 name: Surge Preview
 
-on: [pull_request]
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
 
 jobs:
   preview:
@@ -12,7 +14,7 @@ jobs:
         with:
           surge_token: ${{ secrets.SURGE_TOKEN }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          dist: public
+          dist: dist
           build: |
             npm install
-            npm run build
+            npm run build:h5-netlify
