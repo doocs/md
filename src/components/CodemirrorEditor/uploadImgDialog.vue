@@ -5,7 +5,7 @@
     :visible="value"
     @close="$emit('close')"
   >
-    <el-tabs type="activeName" :value="'upload'">
+    <el-tabs type="activeName" v-model="activeName">
       <el-tab-pane class="upload-panel" label="选择上传" name="upload">
         <el-select
           v-model="imgHost"
@@ -288,12 +288,42 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
+        <el-form
+          class="setting-form"
+          :model="formCustom"
+          label-position="right"
+        >
+          <el-form-item label="" :required="true">
+            <el-input
+              class="formCustomElInput"
+              ref="formCustomElInput"
+              type="textarea"
+              resize="none"
+              placeholder="Your custom code here."
+              v-model="formCustom.code">
+            </el-input>
+            <el-link
+              type="primary"
+              href="https://github.com/doocs/md#自定义上传逻辑"
+              target="_blank"
+              >参数详情？</el-link
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="formCustomSave"
+              >保存配置</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
     </el-tabs>
   </el-dialog>
 </template>
 
 <script>
-import { checkImage } from "../../assets/scripts/util";
+import { checkImage, removeLeft } from "../../assets/scripts/util";
+import CodeMirror from "codemirror/lib/codemirror";
 
 export default {
   props: {
@@ -304,6 +334,8 @@ export default {
   },
   data() {
     return {
+      activeName: `upload`,
+      
       formGitHub: {
         repo: "",
         branch: "",
@@ -337,6 +369,21 @@ export default {
         domain: "",
         region: "",
       },
+      formCustom: {
+        code: localStorage.getItem(`formCustomConfig`) || removeLeft(`
+          const {file, util, okCb, errCb} = CUSTOM_ARG
+          const param = new FormData()
+          param.append('file', file)
+          util.axios.post('http://127.0.0.1:9000/upload', param, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+          }).then(res => {
+            okCb(res.url)
+          }).catch(err => {
+            errCb(err)
+          })
+        `).trim(),
+        editor: undefined,
+      },
       options: [
         {
           value: "default",
@@ -361,6 +408,10 @@ export default {
         {
           value: "qiniu",
           label: "七牛云",
+        },
+        {
+          value: "formCustom",
+          label: "自定义代码",
         },
       ],
       imgHost: "default",
@@ -454,6 +505,11 @@ export default {
       localStorage.setItem("qiniuConfig", JSON.stringify(this.formQiniu));
       this.$message.success("保存成功");
     },
+    formCustomSave() {
+      const str = this.formCustom.editor.getValue()
+      localStorage.setItem(`formCustomConfig`, str)
+      this.$message.success(`保存成功`)
+    },
 
     beforeImageUpload(file) {
       // check image
@@ -478,6 +534,25 @@ export default {
     uploadImage(params) {
       this.$emit("uploadImage", params.file);
     },
+  },
+  watch: {
+    activeName: {
+      immediate: true,
+      handler(val) {
+        if(val === `formCustom`) {
+          this.$nextTick(() => {
+            const textarea = this.$refs.formCustomElInput.$el.querySelector(`textarea`)
+            this.formCustom.editor = this.formCustom.editor || CodeMirror.fromTextArea(textarea, {
+              mode: `javascript`,
+            })
+            this.formCustom.editor.setValue(this.formCustom.code)
+          })
+        }
+      },
+    },
+  },
+  mounted() {
+    
   },
 };
 </script>
@@ -518,6 +593,20 @@ export default {
 .github-panel {
   display: flex;
   justify-content: center;
+  &.formCustom {
+    width: 100%;
+  }
+  .formCustomElInput {
+    /deep/ .CodeMirror {
+      border: 1px solid #eee;
+      height: 300px !important;
+      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace !important;
+      line-height: 20px;
+      .CodeMirror-scroll {
+        padding: 10px;
+      }
+    }
+  }
 }
 
 .setting-form {
