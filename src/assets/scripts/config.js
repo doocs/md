@@ -58,14 +58,29 @@ export default {
   codeThemeCssUrl: "https://lib.baomitu.com/highlight.js/11.3.1/styles/",
   codeThemeOption: [
     {
+      label: "github",
+      value: "github",
+      desc: "light",
+    },
+    {
+      label: "solarized-light",
+      value: "base16/solarized-light",
+      desc: "light",
+    },
+    {
       label: "atom-one-dark",
       value: "atom-one-dark",
-      desc: "atom-one-dark",
+      desc: "dark",
     },
     {
       label: "obsidian",
       value: "obsidian",
-      desc: "obsidian",
+      desc: "dark",
+    },
+    {
+      label: "vs2015",
+      value: "vs2015",
+      desc: "dark",
     },
   ],
   form: {

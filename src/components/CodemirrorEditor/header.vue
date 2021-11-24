@@ -123,6 +123,7 @@
           :value="code.value"
         >
           <span class="select-item-left">{{ code.label }}</span>
+          <span class="select-item-right">{{ code.desc }}</span>
         </el-option>
       </el-select>
       <el-tooltip content="自定义颜色" :effect="effect" placement="top">
