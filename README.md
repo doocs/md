@@ -100,20 +100,19 @@ npm run build:h5-netlify
 示例代码:
 
 ```js
-async ({file, util, okCb, errCb}) => {
-  const param = new FormData()
-  param.append('file', file)
-  util.axios.post('http://127.0.0.1:9000/upload', param, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }).then(res => {
-    okCb(res.url)
-  }).catch(err => {
-    errCb(err)
-  })
-}
+const {file, util, okCb, errCb} = CUSTOM_ARG
+const param = new FormData()
+param.append('file', file)
+util.axios.post('http://127.0.0.1:9000/upload', param, {
+  headers: { 'Content-Type': 'multipart/form-data' }
+}).then(res => {
+  okCb(res.url)
+}).catch(err => {
+  errCb(err)
+})
 
 // 提供的可用参数:
-// arg = {
+// CUSTOM_ARG = {
 //   content, // 待上传图片的 base64
 //   file, // 待上传图片的 file 对象
 //   util: {
@@ -132,6 +131,8 @@ async ({file, util, okCb, errCb}) => {
 //   errCb: reject, // 上传失败调用的函数
 // }
 ```
+
+如果你创建了适用于其他第三方图床的上传代码，我们非常欢迎你分享它。
 
 ## 注意事项
 
