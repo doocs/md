@@ -100,6 +100,18 @@ const mutations = {
           editor.setValue(doc);
         },
         "Ctrl-S": function save(editor) {},
+        "Ctrl-B": function bold(editor) {
+          const selected = editor.getSelection();
+          editor.replaceSelection(`**${selected}**`);
+        },
+        "Ctrl-D": function del(editor) {
+          const selected = editor.getSelection();
+          editor.replaceSelection(`~~${selected}~~`);
+        },
+        "Ctrl-I": function italic(editor) {
+          const selected = editor.getSelection();
+          editor.replaceSelection(`*${selected}*`);
+        }
       },
     });
   },
