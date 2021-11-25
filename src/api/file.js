@@ -58,7 +58,7 @@ function getDir() {
 /**
  * 根据文件名获取它以 `时间戳+uuid` 的形式
  * @param {string} filename 文件名
- * @returns 
+ * @returns
  */
 function getDateFilename(filename) {
   const currentTimestamp = new Date().getTime();
@@ -91,12 +91,12 @@ async function ghFileUpload(content, filename) {
       message: `Upload by ${window.location.href}`,
     },
   });
-
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`;
   const cdnResourceUrl = `cdn.jsdelivr.net/gh/${username}/${repo}@${branch}/`;
+  res.content = res.data?.content || res.content;
   return useDefault
-    ? res.data.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
-    : res.data.content.download_url;
+    ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+    : res.content.download_url;
 }
 
 //-----------------------------------------------------------------------
@@ -122,7 +122,8 @@ async function giteeUpload(content, filename) {
       message: `Upload by ${window.location.href}`,
     },
   });
-  return encodeURI(res.data.content.download_url);
+  res.content = res.data?.content || res.content;
+  return encodeURI(res.content.download_url);
 }
 
 //-----------------------------------------------------------------------
@@ -235,7 +236,7 @@ async function formCustomUpload(content, file) {
     async (CUSTOM_ARG) => {
       ${localStorage.getItem(`formCustomConfig`)}
     }
-  `
+  `;
   return new Promise((resolve, reject) => {
     const exportObj = {
       content, // 待上传图片的 base64
@@ -254,11 +255,11 @@ async function formCustomUpload(content, file) {
       },
       okCb: resolve, // 重要: 上传成功后给此回调传 url 即可
       errCb: reject, // 上传失败调用的函数
-    }
-    eval(str)(exportObj).catch(err => {
-      console.error(err)
-      reject(err)
-    })
+    };
+    eval(str)(exportObj).catch((err) => {
+      console.error(err);
+      reject(err);
+    });
   });
 }
 
