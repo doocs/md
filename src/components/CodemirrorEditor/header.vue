@@ -113,7 +113,6 @@
         v-model="selectCodeTheme"
         size="mini"
         placeholder="代码主题"
-        clearable
         @change="codeThemeChanged"
       >
         <el-option

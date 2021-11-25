@@ -55,31 +55,30 @@ export default {
       desc: "热情活泼",
     },
   ],
-  codeThemeCssUrl: "https://lib.baomitu.com/highlight.js/11.3.1/styles/",
   codeThemeOption: [
     {
       label: "github",
-      value: "github",
+      value: "https://lib.baomitu.com/highlight.js/10.7.3/styles/github.min.css",
       desc: "light",
     },
     {
       label: "solarized-light",
-      value: "base16/solarized-light",
+      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/base16/solarized-light.min.css",
       desc: "light",
     },
     {
       label: "atom-one-dark",
-      value: "atom-one-dark",
+      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/atom-one-dark.min.css",
       desc: "dark",
     },
     {
       label: "obsidian",
-      value: "obsidian",
+      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/obsidian.min.css",
       desc: "dark",
     },
     {
       label: "vs2015",
-      value: "vs2015",
+      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/vs2015.min.css",
       desc: "dark",
     },
   ],

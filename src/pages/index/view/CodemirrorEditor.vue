@@ -98,7 +98,6 @@ import aboutDialog from "../../../components/CodemirrorEditor/aboutDialog";
 import insertFormDialog from "../../../components/CodemirrorEditor/insertForm";
 import rightClickMenu from "../../../components/CodemirrorEditor/rightClickMenu";
 import uploadImgDialog from "../../../components/CodemirrorEditor/uploadImgDialog";
-import config from "../../../assets/scripts/config";
 
 import {
   css2json,
@@ -227,8 +226,7 @@ export default {
     },
     // 切换 highlight.js 代码主题
     codeThemeChanged() {
-      let theme = this.codeTheme;
-      let cssUrl = config.codeThemeCssUrl + theme + ".min.css"
+      let cssUrl = this.codeTheme;
       let el = document.getElementById('hljs')
       if (el != undefined) {
         el.setAttribute('href', cssUrl);
