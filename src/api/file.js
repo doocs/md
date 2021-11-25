@@ -58,7 +58,7 @@ function getDir() {
 /**
  * 根据文件名获取它以 `时间戳+uuid` 的形式
  * @param {string} filename 文件名
- * @returns 
+ * @returns
  */
 function getDateFilename(filename) {
   const currentTimestamp = new Date().getTime();
@@ -95,8 +95,8 @@ async function ghFileUpload(content, filename) {
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`;
   const cdnResourceUrl = `cdn.jsdelivr.net/gh/${username}/${repo}@${branch}/`;
   return useDefault
-    ? res.data.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
-    : res.data.content.download_url;
+    ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+    : res.content.download_url;
 }
 
 //-----------------------------------------------------------------------
@@ -122,7 +122,7 @@ async function giteeUpload(content, filename) {
       message: `Upload by ${window.location.href}`,
     },
   });
-  return encodeURI(res.data.content.download_url);
+  return encodeURI(res.content.download_url);
 }
 
 //-----------------------------------------------------------------------
