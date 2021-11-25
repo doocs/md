@@ -45,3 +45,6 @@ yarn-error.log*
 httpData
 
 package-lock.json
+public/upload/**
+!public/upload/*.gitkeep
+

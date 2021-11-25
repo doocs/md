@@ -44,6 +44,7 @@
     "miniprogram-api-typings": "*",
     "mockm": "^1.1.25",
     "postcss-comment": "^2.0.0",
+    "raw-loader": "^4.0.2",
     "sass-loader": "^11.0.1",
     "vue-template-compiler": "^2.6.12"
   },

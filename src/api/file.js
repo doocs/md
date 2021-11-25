@@ -7,6 +7,7 @@ import Buffer from "buffer-from";
 import { v4 as uuidv4 } from "uuid";
 import * as qiniu from "qiniu-js";
 import { utf16to8, base64encode, safe64 } from "../assets/scripts/tokenTools";
+import * as tokenTools from "../assets/scripts/tokenTools";
 
 function getConfig(useDefault, platform) {
   if (useDefault) {
@@ -42,6 +43,10 @@ function getConfig(useDefault, platform) {
   };
 }
 
+/**
+ * 获取 `年/月/日` 形式的目录
+ * @returns string
+ */
 function getDir() {
   const date = new Date();
   const year = date.getFullYear();
@@ -50,6 +55,11 @@ function getDir() {
   return `${year}/${month}/${day}`;
 }
 
+/**
+ * 根据文件名获取它以 `时间戳+uuid` 的形式
+ * @param {string} filename 文件名
+ * @returns 
+ */
 function getDateFilename(filename) {
   const currentTimestamp = new Date().getTime();
   const fileSuffix = filename.split(".")[1];
@@ -216,6 +226,42 @@ async function txCOSFileUpload(file) {
   });
 }
 
+//-----------------------------------------------------------------------
+// formCustom File Upload
+//-----------------------------------------------------------------------
+
+async function formCustomUpload(content, file) {
+  const str = `
+    async (CUSTOM_ARG) => {
+      ${localStorage.getItem(`formCustomConfig`)}
+    }
+  `
+  return new Promise((resolve, reject) => {
+    const exportObj = {
+      content, // 待上传图片的 base64
+      file, // 待上传图片的 file 对象
+      util: {
+        axios: fetch, // axios 实例
+        CryptoJS, // 加密库
+        OSS, // ali-oss
+        COS, // cos-js-sdk-v5
+        Buffer, // buffer-from
+        uuidv4, // uuid
+        qiniu, // qiniu-js
+        tokenTools, // 一些编码转换函数
+        getDir, // 获取 年/月/日 形式的目录
+        getDateFilename, // 根据文件名获取它以 时间戳+uuid 的形式
+      },
+      okCb: resolve, // 重要: 上传成功后给此回调传 url 即可
+      errCb: reject, // 上传失败调用的函数
+    }
+    eval(str)(exportObj).catch(err => {
+      console.error(err)
+      reject(err)
+    })
+  });
+}
+
 function fileUpload(content, file) {
   const imgHost = localStorage.getItem("imgHost");
   !imgHost && localStorage.setItem("imgHost", "default");
@@ -230,6 +276,8 @@ function fileUpload(content, file) {
       return giteeUpload(content, file.name);
     case "github":
       return ghFileUpload(content, file.name);
+    case "formCustom":
+      return formCustomUpload(content, file);
     default:
       // return file.size / 1024 < 1024
       //     ? giteeUpload(content, file.name)
