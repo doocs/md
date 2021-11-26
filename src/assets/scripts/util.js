@@ -254,7 +254,6 @@ export function exportHTML() {
 
   function setStyles(element) {
     switch (true) {
-      case isSection(element):
       case isPre(element):
       case isCode(element):
       case isSpan(element):

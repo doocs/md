@@ -132,7 +132,7 @@ class WxRenderer {
                      return str.replace(/\s/g, '&nbsp;')
                    });
 
-        return `<pre class="hljs" ${getStyles("code_pre")}><code class="language-${lang}" ${getStyles("code")}>${text}</code></pre>`
+        return `<pre class="hljs code__pre" ${getStyles("code_pre")}><code class="prettyprint language-${lang}" ${getStyles("code")}>${text}</code></pre>`
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;
