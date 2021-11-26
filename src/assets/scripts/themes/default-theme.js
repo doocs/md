@@ -5,9 +5,6 @@ export default {
     "text-align": "left",
     "line-height": "1.75"
   },
-  BASE_BLOCK: {
-    margin: "1em 8px",
-  },
   block: {
     // 一级标题样式
     h1: {
@@ -82,6 +79,7 @@ export default {
       "border-radius": "8px",
       padding: "1em",
       "line-height": "1.5",
+      margin: "10px 8px"
     },
     code: {
       "margin": 0,

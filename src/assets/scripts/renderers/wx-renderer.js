@@ -25,7 +25,7 @@ class WxRenderer {
         }
       }
 
-      let base_block = merge(base, themeTpl.BASE_BLOCK);
+      let base_block = merge(base,  {});
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
