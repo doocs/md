@@ -10,9 +10,6 @@ class WxRenderer {
     let footnoteIndex = 0;
     let styleMapping = null;
 
-    const CODE_FONT_FAMILY =
-      "Menlo, Operator Mono, Consolas, Monaco, monospace";
-
     let merge = (base, extend) => Object.assign({}, base, extend);
 
     this.buildTheme = (themeTpl) => {
@@ -28,13 +25,10 @@ class WxRenderer {
         }
       }
 
-      let base_block = merge(base, {});
+      let base_block = merge(base, themeTpl.BASE_BLOCK);
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
-          if (ele === "code") {
-            style["font-family"] = CODE_FONT_FAMILY;
-          }
           mapping[ele] = merge(base_block, style);
         }
       }
@@ -129,8 +123,16 @@ class WxRenderer {
         if (lang == "") {
           lang = "text";
         }
+
         text = hljs.highlight(text, {language: lang}).value;
-        return `<pre class="code-container hljs"><code class="language-${lang}">${text}</code></pre>`
+
+        text = text.replace(/\r\n/g,"<br/>")
+                   .replace(/\n/g,"<br/>")
+                   .replace(/(>[^<]+)|(^[^<]+)/g, function(str) {
+                     return str.replace(/\s/g, '&nbsp;')
+                   });
+
+        return `<pre class="hljs" ${getStyles("code_pre")}><code class="language-${lang}" ${getStyles("code")}>${text}</code></pre>`
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;

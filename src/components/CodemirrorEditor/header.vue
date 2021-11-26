@@ -290,7 +290,6 @@ export default {
       setTimeout(() => {
         let clipboardDiv = document.getElementById("output");
         solveWeChatImage();
-        fixCodeWhiteSpace();
         solveHtml();
         clipboardDiv.focus();
         window.getSelection().removeAllRanges();
@@ -301,7 +300,6 @@ export default {
         window.getSelection().addRange(range);
         document.execCommand("copy");
         window.getSelection().removeAllRanges();
-        fixCodeWhiteSpace("normal");
         clipboardDiv.innerHTML = this.output;
         // 输出提示
         this.$notify({

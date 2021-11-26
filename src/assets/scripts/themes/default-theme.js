@@ -1,8 +1,9 @@
+let baseColor = "#3f3f3f"
+
 export default {
   BASE: {
     "text-align": "left",
-    color: "#3f3f3f",
-    "line-height": "1.75",
+    "line-height": "1.75"
   },
   BASE_BLOCK: {
     margin: "1em 8px",
@@ -17,6 +18,7 @@ export default {
       margin: "2em auto 1em",
       padding: "0 1em",
       "border-bottom": "2px solid rgba(0, 152, 116, 0.9)",
+      color: baseColor,
     },
 
     // 二级标题样式
@@ -39,6 +41,7 @@ export default {
       "line-height": "1.2",
       "padding-left": "8px",
       "border-left": "3px solid rgba(0, 152, 116, 0.9)",
+      color: baseColor,
     },
 
     // 四级标题样式
@@ -53,6 +56,7 @@ export default {
     p: {
       margin: "1.5em 8px",
       "letter-spacing": "0.1em",
+      color: baseColor,
     },
 
     // 引用样式
@@ -72,20 +76,19 @@ export default {
       "font-size": "1em",
       display: "block",
     },
-
-    code: {
-      "font-size": "80%",
-      overflow: "auto",
-      color: "#333",
-      "white-space": "pre",
-      background: "rgb(247, 247, 247)",
+    code_pre: {
+      "font-size": "14px",
+      "overflow-x": "auto",
       "border-radius": "8px",
-      padding: "10px",
+      padding: "1em",
       "line-height": "1.5",
-      border: "1px solid rgb(236,236,236)",
-      margin: "20px 0",
     },
-
+    code: {
+      "margin": 0,
+      "white-space": "nowrap",
+      "font-family": "Menlo, Operator Mono, Consolas, Monaco, monospace"
+    },
+  
     image: {
       "border-radius": "4px",
       display: "block",
@@ -101,21 +104,25 @@ export default {
     ol: {
       "margin-left": "0",
       "padding-left": "1em",
+      color: baseColor,
     },
 
     ul: {
       "margin-left": "0",
       "padding-left": "1em",
       "list-style": "circle",
+      color: baseColor,
     },
 
     footnotes: {
       margin: "0.5em 8px",
       "font-size": "80%",
+      color: baseColor,
     },
 
     figure: {
       margin: "1.5em 8px",
+      color: baseColor,
     },
   },
   inline: {
@@ -123,6 +130,7 @@ export default {
       "text-indent": "-1em",
       display: "block",
       margin: "0.2em 8px",
+      color: baseColor,
     },
 
     codespan: {
@@ -153,20 +161,24 @@ export default {
       "border-collapse": "collapse",
       "text-align": "center",
       margin: "1em 8px",
+      color: baseColor,
     },
 
     thead: {
       background: "rgba(0, 0, 0, 0.05)",
       "font-weight": "bold",
+      color: baseColor,
     },
 
     td: {
       border: "1px solid #dfdfdf",
       padding: "0.25em 0.5em",
+      color: baseColor,
     },
 
     footnote: {
       "font-size": "12px",
+      color: baseColor,
     },
 
     figcaption: {
