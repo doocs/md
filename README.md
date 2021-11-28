@@ -32,6 +32,31 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
+## 快速搭建私有服务
+通过我们的 npm cli 你可以轻易搭建属于自己的 markdown 微信编辑器。
+
+``` sh
+# 安装
+npm i -g @doocs/md-cli
+
+# 启动
+md-cli
+
+# 访问
+open http://127.0.0.1:8800/md/
+```
+
+支持命令行参数:
+- `port` 指定端口号，默认 8800，如果被占用会随机使用一个新端口。
+- `spaceId` dcloud 服务空间配置
+- `clientSecret` dcloud 服务空间配置
+
+参数示例：
+
+```sh
+md-cli port=8899
+```
+
 ## 如何开发和部署
 
 ```sh
