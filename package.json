@@ -3,6 +3,7 @@
   "version": "1.5.6",
   "private": false,
   "scripts": {
+    "start": "run-p serve mm",
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
     "build": "vue-cli-service build",
@@ -42,6 +43,7 @@
     "mini-types": "*",
     "miniprogram-api-typings": "*",
     "mockm": "^1.1.25",
+    "npm-run-all": "^4.1.5",
     "postcss-comment": "^2.0.0",
     "raw-loader": "^4.0.2",
     "sass-loader": "^11.0.1",
