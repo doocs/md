@@ -120,9 +120,7 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
-        if (lang == "") {
-          lang = "text";
-        }
+        lang = hljs.getLanguage(lang) ? lang : 'plaintext';
 
         text = hljs.highlight(text, {language: lang}).value;
 
