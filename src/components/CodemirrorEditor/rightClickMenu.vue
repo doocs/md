@@ -47,8 +47,8 @@ export default {
             key: "insertTable",
           },
           {
-            text: "页面重置",
-            key: "pageReset",
+            text: "恢复默认样式",
+            key: "resetStyle",
           },
         ],
         [

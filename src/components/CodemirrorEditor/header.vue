@@ -31,11 +31,11 @@
       >
         <i class="el-icon-document" size="medium" @click="$emit('export')"></i>
       </el-tooltip>
-      <!-- 页面重置 -->
+      <!-- 样式重置 -->
       <el-tooltip
         class="header__item"
         :effect="effect"
-        content="重置页面"
+        content="重置样式"
         placement="bottom-start"
       >
         <i
@@ -316,11 +316,10 @@ export default {
         this.setCssEditorValue(DEFAULT_CSS_CONTENT);
       }
     },
-    // 重置页面
+    // 重置样式
     confirmReset() {
       localStorage.clear();
-      this.clearEditorToDefault();
-      this.editor.focus();
+      this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
       this.citeStatus = false;
       this.statusChanged(false);
       this.fontChanged(this.config.builtinFonts[0].value);
@@ -337,7 +336,6 @@ export default {
       this.editor.focus();
     },
     ...mapMutations([
-      "clearEditorToDefault",
       "setCurrentColor",
       "setCiteStatus",
       "themeChanged",

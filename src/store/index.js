@@ -154,12 +154,6 @@ const mutations = {
     }
     state.output = output;
   },
-  clearEditorToDefault(state) {
-    const doc = formatDoc(DEFAULT_CONTENT);
-
-    state.editor.setValue(doc);
-    state.cssEditor.setValue(DEFAULT_CSS_CONTENT);
-  },
 };
 
 export default new Vuex.Store({
