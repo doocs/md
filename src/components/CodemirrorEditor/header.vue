@@ -346,6 +346,7 @@ export default {
       this.selectSize = this.currentSize;
       this.selectColor = this.currentColor;
       this.showResetConfirm = false;
+      this.selectCodeTheme = this.codeTheme;
     },
     cancelReset() {
       this.showResetConfirm = false;
