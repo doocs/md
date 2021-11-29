@@ -392,7 +392,7 @@ export default {
     },
     onMenuEvent(type, info = {}) {
       switch (type) {
-        case "pageReset":
+        case "resetStyle":
           this.$refs.header.showResetConfirm = true;
           break;
         case "insertPic":
