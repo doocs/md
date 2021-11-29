@@ -47,7 +47,7 @@ module.exports = util => {
       { // 测试 gitee/github 部署
         fileDir: `../dist`,
         path: `/md`,
-      },,
+      },
       { // 访问公共目录
         fileDir: `../public`,
         path: `/public`,

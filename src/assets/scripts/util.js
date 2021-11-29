@@ -333,9 +333,9 @@ export function checkImage(file) {
   }
 
   // check file size
-  const maxSize = 5;
-  const isLt5M = file.size / 1024 / 1024 <= maxSize;
-  if (!isLt5M) {
+  const maxSize = 10;
+  const valid = file.size / 1024 / 1024 <= maxSize;
+  if (!valid) {
     return {
       ok: false,
       msg: `由于公众号限制，图片大小不能超过 ${maxSize}M`,
@@ -360,8 +360,8 @@ function getElementStyles(element, excludes = ["width", "height"]) {
 
 /**
  * 移除左边多余空格
- * @param {*} str 
- * @returns 
+ * @param {*} str
+ * @returns
  */
 export function removeLeft(str) {
   const lines = str.split('\n')

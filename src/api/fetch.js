@@ -3,7 +3,7 @@ import axios from "axios";
 // 创建axios实例
 const service = axios.create({
   baseURL: "",
-  timeout: 10 * 1000, // 请求超时时间
+  timeout: 30 * 1000, // 请求超时时间
 });
 
 service.interceptors.request.use(

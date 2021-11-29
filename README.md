@@ -32,6 +32,33 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
+## 快速搭建私有服务
+
+通过我们的 npm cli 你可以轻易搭建属于自己的 markdown 微信编辑器。
+
+```sh
+# 安装
+npm i -g @doocs/md-cli
+
+# 启动
+md-cli
+
+# 访问
+open http://127.0.0.1:8800/md/
+```
+
+支持命令行参数:
+
+- `port` 指定端口号，默认 8800，如果被占用会随机使用一个新端口。
+- `spaceId` dcloud 服务空间配置
+- `clientSecret` dcloud 服务空间配置
+
+参数示例：
+
+```sh
+md-cli port=8899
+```
+
 ## 如何开发和部署
 
 ```sh
@@ -39,23 +66,13 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 npm i
 
 # 启动开发模式
-npm run serve
+npm start
 
-# 输出部署版本
-npm run build
-```
-
-## 测试
-
-```sh
-# 启动模拟服务
-npm run mm
-```
-
-```sh
+# 部署在 /md 目录
 npm run build
 # 访问 http://127.0.0.1:9000/md
 
+# 部署在根目录
 npm run build:h5-netlify
 # 访问 http://127.0.0.1:9000/
 ```
@@ -81,7 +98,7 @@ npm run build:h5-netlify
 | 4   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数 | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                             |
 | 5   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数            | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 | 6   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数 | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
-| -   | 自定义上传逻辑                                  | 是                                                               | 参考[自定义上传逻辑参数详情](#自定义上传逻辑)                                               |
+| -   | 自定义上传逻辑                                  | 是                                                               | 参考[自定义上传逻辑参数详情](#自定义上传逻辑)                                                                          |
 
 ![select-and-change-color-theme](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542281-a8c99fa7-c11e-4e43-98da-e36012f54dc8.gif)
 
@@ -100,16 +117,19 @@ npm run build:h5-netlify
 示例代码:
 
 ```js
-const {file, util, okCb, errCb} = CUSTOM_ARG
-const param = new FormData()
-param.append('file', file)
-util.axios.post('http://127.0.0.1:9000/upload', param, {
-  headers: { 'Content-Type': 'multipart/form-data' }
-}).then(res => {
-  okCb(res.url)
-}).catch(err => {
-  errCb(err)
-})
+const { file, util, okCb, errCb } = CUSTOM_ARG;
+const param = new FormData();
+param.append("file", file);
+util.axios
+  .post("http://127.0.0.1:9000/upload", param, {
+    headers: { "Content-Type": "multipart/form-data" },
+  })
+  .then((res) => {
+    okCb(res.url);
+  })
+  .catch((err) => {
+    errCb(err);
+  });
 
 // 提供的可用参数:
 // CUSTOM_ARG = {
