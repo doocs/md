@@ -76,7 +76,6 @@ const mutations = {
       theme: setColor(state.currentColor),
       fonts: state.currentFont,
       size: state.currentSize,
-      status: state.citeStatus,
     });
   },
   initEditorEntity(state) {
