@@ -1,4 +1,5 @@
-import marked from "marked";
+import { Renderer } from "marked";
+
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
@@ -96,7 +97,7 @@ class WxRenderer {
       footnoteIndex = 0;
 
       styleMapping = this.buildTheme(this.opts.theme);
-      let renderer = new marked.Renderer();
+      let renderer = new Renderer();
 
       renderer.heading = (text, level) => {
         switch (level) {
