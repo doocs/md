@@ -112,6 +112,15 @@ export default {
     figure: {
       margin: "1.5em 8px",
     },
+    hr: {
+      "border-style": "solid",
+      "border-width": "1px 0 0",
+      "border-color": "rgba(0,0,0,0.1)",
+      "-webkit-transform-origin": "0 0",
+      "-webkit-transform": "scale(1, 0.5)",
+      "transform-origin": "0 0",
+      transform: "scale(1, 0.5)",
+    },
   },
   inline: {
     listitem: {
@@ -168,15 +177,6 @@ export default {
       "text-align": "center",
       color: "#888",
       "font-size": "0.8em",
-    },
-    hr: {
-      "border-style": "solid",
-      "border-width": "1px 0 0",
-      "border-color": "rgba(0,0,0,0.1)",
-      "-webkit-transform-origin": "0 0",
-      "-webkit-transform": "scale(1, 0.5)",
-      "transform-origin": "0 0",
-      transform: "scale(1, 0.5)",
     },
   },
 };
