@@ -3,11 +3,9 @@ import { Renderer } from "marked";
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
-    let ENV_STRETCH_IMAGE = true;
-
     let footnotes = [];
     let footnoteIndex = 0;
-    let styleMapping = null;
+    let styleMapping = new Map();
 
     const CODE_FONT_FAMILY =
       "Menlo, Operator Mono, Consolas, Monaco, monospace";
@@ -62,6 +60,9 @@ class WxRenderer {
         }
         return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`;
       });
+      if (!footnoteArray.length) {
+        return "";
+      }
       return `<h4 ${getStyles("h4")}>引用链接</h4><p ${getStyles(
         "footnotes"
       )}>${footnoteArray.join("\n")}</p>`;
@@ -171,7 +172,7 @@ class WxRenderer {
           )}>${text}</figcaption>`;
         }
         let figureStyles = getStyles("figure");
-        let imgStyles = getStyles(ENV_STRETCH_IMAGE ? "image" : "image_org");
+        let imgStyles = getStyles("image");
         return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`;
       };
       renderer.link = (href, title, text) => {
@@ -199,8 +200,7 @@ class WxRenderer {
         )}>${header}</thead><tbody>${body}</tbody></table></section>`;
       renderer.tablecell = (text, flags) =>
         `<td ${getStyles("td")}>${text}</td>`;
-      renderer.hr = () =>
-        `<hr style="border-style: solid;border-width: 1px 0 0;border-color: rgba(0,0,0,0.1);-webkit-transform-origin: 0 0;-webkit-transform: scale(1, 0.5);transform-origin: 0 0;transform: scale(1, 0.5);">`;
+      renderer.hr = () => `<hr ${getStyles("hr")}>`;
       return renderer;
     };
   }
