@@ -171,7 +171,7 @@ export default {
     },
     hr: {
       "border-style": "solid",
-      "border-width": "10px 0 0",
+      "border-width": "1px 0 0",
       "border-color": "rgba(0,0,0,0.1)",
       "-webkit-transform-origin": "0 0",
       "-webkit-transform": "scale(1, 0.5)",
