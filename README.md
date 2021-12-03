@@ -324,6 +324,12 @@ md-cli 支持以下命令行参数:
         <sub>网文小密圈</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/k9WbW0zmxl0S2WX2CXQ6cQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img6@main/2021/12/03/1638523595283-d702b1eb-a817-4ecf-8e3d-a63131259fa0.jpg" style="width: 40px;"><br>
+        <sub>潇洒哥和黑大帅</sub>
+      </a>
+    </td>
   </tr>
 </table>
 

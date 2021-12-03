@@ -11,30 +11,30 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
     steps:
-      - name: download PR artifact
+      - name: Download PR artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: pr
 
-      - name: save PR id
+      - name: Save PR id
         id: pr
         run: echo "::set-output name=id::$(<pr-id.txt)"
 
-      - name: download dist artifact
+      - name: Download dist artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           workflow_conclusion: success
           name: dist
 
-      - name: upload surge service
+      - name: Upload surge service
         id: deploy
         run: |
           export DEPLOY_DOMAIN=https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh
           npx surge --project ./ --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
 
-      - name: update status comment
+      - name: Upload status comment
         uses: actions-cool/maintain-one-comment@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -65,13 +65,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure'
     steps:
-      - name: download PR artifact
+      - name: Download PR artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           name: pr
 
-      - name: save PR id
+      - name: Save PR id
         id: pr
         run: echo "::set-output name=id::$(<pr-id.txt)"
 
