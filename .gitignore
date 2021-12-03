@@ -43,5 +43,8 @@ yarn-error.log*
 
 # mockm
 httpData
+
+package-lock.json
 public/upload/**
 !public/upload/*.gitkeep
+

@@ -13,6 +13,12 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      - name: set up node
+        uses: actions/setup-node@v2
+        with:
+          node-version: "12"
+          check-latest: true
+
       - name: build
         run: |
           npm install

@@ -149,6 +149,7 @@ export default {
       currentColor: (state) => state.currentColor,
       nightMode: (state) => state.nightMode,
       rightClickMenuVisible: (state) => state.rightClickMenuVisible,
+      codeTheme: (state) => state.codeTheme,
     }),
   },
   created() {
@@ -222,6 +223,21 @@ export default {
         theme: theme,
       });
       this.onEditorRefresh();
+    },
+    // 切换 highlight.js 代码主题
+    codeThemeChanged() {
+      let cssUrl = this.codeTheme;
+      let el = document.getElementById('hljs')
+      if (el != undefined) {
+        el.setAttribute('href', cssUrl);
+      } else {
+        var link = document.createElement('link');
+        link.setAttribute('type','text/css');
+        link.setAttribute('rel','stylesheet');
+        link.setAttribute('href',cssUrl);
+        link.setAttribute('id','hljs');
+        document.head.appendChild(link);
+      }
     },
     beforeUpload(file) {
       // validate image
@@ -318,6 +334,7 @@ export default {
     },
     // 更新编辑器
     onEditorRefresh() {
+      this.codeThemeChanged(this.codeTheme);
       this.editorRefresh();
       setTimeout(() => PR.prettyPrint(), 0);
     },
@@ -532,8 +549,10 @@ export default {
     transform: none;
   }
 }
+.codeMirror-wrapper {
+  overflow-x: auto;
+}
 </style>
 <style lang="less" scoped>
 @import url("../../../assets/less/app.less");
-@import url("../../../assets/less/github-v2.min.css");
 </style>

@@ -1,4 +1,5 @@
 import { Renderer } from "marked";
+import hljs from 'highlight.js';
 
 class WxRenderer {
   constructor(opts) {
@@ -6,9 +7,6 @@ class WxRenderer {
     let footnotes = [];
     let footnoteIndex = 0;
     let styleMapping = new Map();
-
-    const CODE_FONT_FAMILY =
-      "Menlo, Operator Mono, Consolas, Monaco, monospace";
 
     let merge = (base, extend) => Object.assign({}, base, extend);
 
@@ -25,13 +23,10 @@ class WxRenderer {
         }
       }
 
-      let base_block = merge(base, {});
+      let base_block = merge(base,  {});
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
-          if (ele === "code") {
-            style["font-family"] = CODE_FONT_FAMILY;
-          }
           mapping[ele] = merge(base_block, style);
         }
       }
@@ -126,23 +121,17 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
-        text = text.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-        const codeLines = text
-          .split("\n")
-          .map(
-            (line) =>
-              `<code class="prettyprint"><span class="code-snippet_outer">${
-                line || " "
-              }</span></code>`
-          );
-        const codeTheme = "github";
-        return `
-                <section class="code-snippet__${codeTheme}">
-                    <pre class="code__pre" data-lang="${lang}">
-                        ${codeLines.join("")}
-                    </pre>
-                </section>
-            `;
+        lang = hljs.getLanguage(lang) ? lang : 'plaintext';
+
+        text = hljs.highlight(text, {language: lang}).value;
+
+        text = text.replace(/\r\n/g,"<br/>")
+                   .replace(/\n/g,"<br/>")
+                   .replace(/(>[^<]+)|(^[^<]+)/g, function(str) {
+                     return str.replace(/\s/g, '&nbsp;')
+                   });
+
+        return `<pre class="hljs code__pre" ${getStyles("code_pre")}><code class="prettyprint language-${lang}" ${getStyles("code")}>${text}</code></pre>`
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;
