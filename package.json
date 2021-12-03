@@ -49,7 +49,6 @@
     "npm-run-all": "^4.1.5",
     "postcss-comment": "^2.0.0",
     "raw-loader": "^4.0.2",
-    "sass-loader": "^12.3.0",
     "shx": "^0.3.3",
     "vue-template-compiler": "^2.6.14"
   }
