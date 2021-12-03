@@ -24,7 +24,7 @@
     "jquery": "^3.6.0",
     "juice": "^8.0.0",
     "marked": "^4.0.5",
-    "node-fetch": "3.1.0",
+    "node-fetch": "^3.1.0",
     "prettier": "^2.5.0",
     "prettify": "^0.1.7",
     "qiniu-js": "^3.4.0",
