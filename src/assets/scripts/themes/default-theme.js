@@ -94,11 +94,6 @@ export default {
       width: "100% !important",
     },
 
-    image_org: {
-      "border-radius": "4px",
-      display: "block",
-    },
-
     ol: {
       "margin-left": "0",
       "padding-left": "1em",
@@ -121,6 +116,15 @@ export default {
     figure: {
       margin: "1.5em 8px",
       color: baseColor,
+    },
+    hr: {
+      "border-style": "solid",
+      "border-width": "1px 0 0",
+      "border-color": "rgba(0,0,0,0.1)",
+      "-webkit-transform-origin": "0 0",
+      "-webkit-transform": "scale(1, 0.5)",
+      "transform-origin": "0 0",
+      transform: "scale(1, 0.5)",
     },
   },
   inline: {

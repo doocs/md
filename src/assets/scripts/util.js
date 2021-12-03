@@ -1,4 +1,4 @@
-import default_theme from "./themes/default-theme";
+import defaultTheme from "./themes/default-theme";
 import prettier from "prettier/standalone";
 import prettierMarkdown from "prettier/parser-markdown";
 import prettierCss from "prettier/parser-postcss";
@@ -6,13 +6,13 @@ import prettierCss from "prettier/parser-postcss";
 // 设置自定义颜色
 export function setColorWithTemplate(template) {
   return function (color) {
-    let custom_theme = JSON.parse(JSON.stringify(template));
-    custom_theme.block.h1["border-bottom"] = `2px solid ${color}`;
-    custom_theme.block.h2["background"] = color;
-    custom_theme.block.h3["border-left"] = `3px solid ${color}`;
-    custom_theme.block.h4["color"] = color;
-    custom_theme.inline.strong["color"] = color;
-    return custom_theme;
+    let customTheme = JSON.parse(JSON.stringify(template));
+    customTheme.block.h1["border-bottom"] = `2px solid ${color}`;
+    customTheme.block.h2["background"] = color;
+    customTheme.block.h3["border-left"] = `3px solid ${color}`;
+    customTheme.block.h4["color"] = color;
+    customTheme.inline.strong["color"] = color;
+    return customTheme;
   };
 }
 
@@ -20,81 +20,82 @@ export const setColorWithCustomTemplate = function setColorWithCustomTemplate(
   template,
   color
 ) {
-  let custom_theme = JSON.parse(JSON.stringify(template));
-  custom_theme.block.h1["border-bottom"] = `2px solid ${color}`;
-  custom_theme.block.h2["background"] = color;
-  custom_theme.block.h3["border-left"] = `3px solid ${color}`;
-  custom_theme.block.h4["color"] = color;
-  custom_theme.inline.strong["color"] = color;
-  return custom_theme;
+  let customTheme = JSON.parse(JSON.stringify(template));
+  customTheme.block.h1["border-bottom"] = `2px solid ${color}`;
+  customTheme.block.h2["background"] = color;
+  customTheme.block.h3["border-left"] = `3px solid ${color}`;
+  customTheme.block.h4["color"] = color;
+  customTheme.inline.strong["color"] = color;
+  return customTheme;
 };
 
 // 设置自定义字体大小
 export function setFontSizeWithTemplate(template) {
   return function (fontSize) {
-    let custom_theme = JSON.parse(JSON.stringify(template));
-    custom_theme.block.h1["font-size"] = `${fontSize * 1.14}px`;
-    custom_theme.block.h2["font-size"] = `${fontSize * 1.1}px`;
-    custom_theme.block.h3["font-size"] = `${fontSize}px`;
-    custom_theme.block.h4["font-size"] = `${fontSize}px`;
-    return custom_theme;
+    let customTheme = JSON.parse(JSON.stringify(template));
+    customTheme.block.h1["font-size"] = `${fontSize * 1.14}px`;
+    customTheme.block.h2["font-size"] = `${fontSize * 1.1}px`;
+    customTheme.block.h3["font-size"] = `${fontSize}px`;
+    customTheme.block.h4["font-size"] = `${fontSize}px`;
+    return customTheme;
   };
 }
 
-export const setColor = setColorWithTemplate(default_theme);
-export const setFontSize = setFontSizeWithTemplate(default_theme);
+export const setColor = setColorWithTemplate(defaultTheme);
+export const setFontSize = setFontSizeWithTemplate(defaultTheme);
 
 export function customCssWithTemplate(jsonString, color, theme) {
-  let custom_theme = JSON.parse(JSON.stringify(theme));
+  let customTheme = JSON.parse(JSON.stringify(theme));
   // block
-  custom_theme.block.h1["border-bottom"] = `2px solid ${color}`;
-  custom_theme.block.h2["background"] = color;
-  custom_theme.block.h3["border-left"] = `3px solid ${color}`;
-  custom_theme.block.h4["color"] = color;
-  custom_theme.inline.strong["color"] = color;
+  customTheme.block.h1["border-bottom"] = `2px solid ${color}`;
+  customTheme.block.h2["background"] = color;
+  customTheme.block.h3["border-left"] = `3px solid ${color}`;
+  customTheme.block.h4["color"] = color;
+  customTheme.inline.strong["color"] = color;
 
-  custom_theme.block.h1 = Object.assign(custom_theme.block.h1, jsonString.h1);
-  custom_theme.block.h2 = Object.assign(custom_theme.block.h2, jsonString.h2);
-  custom_theme.block.h3 = Object.assign(custom_theme.block.h3, jsonString.h3);
-  custom_theme.block.h4 = Object.assign(custom_theme.block.h4, jsonString.h4);
-  custom_theme.block.p = Object.assign(custom_theme.block.p, jsonString.p);
-  custom_theme.block.blockquote = Object.assign(
-    custom_theme.block.blockquote,
+  customTheme.block.h1 = Object.assign(customTheme.block.h1, jsonString.h1);
+  customTheme.block.h2 = Object.assign(customTheme.block.h2, jsonString.h2);
+  customTheme.block.h3 = Object.assign(customTheme.block.h3, jsonString.h3);
+  customTheme.block.h4 = Object.assign(customTheme.block.h4, jsonString.h4);
+  customTheme.block.p = Object.assign(customTheme.block.p, jsonString.p);
+  customTheme.block.hr = Object.assign(customTheme.block.hr, jsonString.hr);
+  customTheme.block.blockquote = Object.assign(
+    customTheme.block.blockquote,
     jsonString.blockquote
   );
-  custom_theme.block.blockquote_p = Object.assign(
-    custom_theme.block.blockquote_p,
+  customTheme.block.blockquote_p = Object.assign(
+    customTheme.block.blockquote_p,
     jsonString.blockquote_p
   );
-  custom_theme.block.image = Object.assign(
-    custom_theme.block.image,
+  customTheme.block.image = Object.assign(
+    customTheme.block.image,
     jsonString.image
   );
 
   // inline
-  custom_theme.inline.strong = Object.assign(
-    custom_theme.inline.strong,
+  customTheme.inline.strong = Object.assign(
+    customTheme.inline.strong,
     jsonString.strong
   );
-  custom_theme.inline.codespan = Object.assign(
-    custom_theme.inline.codespan,
+  customTheme.inline.codespan = Object.assign(
+    customTheme.inline.codespan,
     jsonString.codespan
   );
-  custom_theme.inline.link = Object.assign(
-    custom_theme.inline.link,
+  customTheme.inline.link = Object.assign(
+    customTheme.inline.link,
     jsonString.link
   );
-  custom_theme.inline.wx_link = Object.assign(
-    custom_theme.inline.wx_link,
+  customTheme.inline.wx_link = Object.assign(
+    customTheme.inline.wx_link,
     jsonString.wx_link
   );
-  custom_theme.block.ul = Object.assign(custom_theme.block.ul, jsonString.ul);
-  custom_theme.block.ol = Object.assign(custom_theme.block.ol, jsonString.ol);
-  custom_theme.inline.listitem = Object.assign(
-    custom_theme.inline.listitem,
+  customTheme.block.ul = Object.assign(customTheme.block.ul, jsonString.ul);
+  customTheme.block.ol = Object.assign(customTheme.block.ol, jsonString.ol);
+  customTheme.inline.listitem = Object.assign(
+    customTheme.inline.listitem,
     jsonString.li
   );
-  return custom_theme;
+  return customTheme;
 }
 
 /**

@@ -2,7 +2,7 @@ import Vue from "vue";
 import Vuex from "vuex";
 import config from "../assets/scripts/config";
 import WxRenderer from "../assets/scripts/renderers/wx-renderer";
-import marked from "marked";
+import { marked } from "marked";
 import CodeMirror from "codemirror/lib/codemirror";
 import DEFAULT_CONTENT from "@/assets/example/markdown.md";
 import DEFAULT_CSS_CONTENT from "@/assets/example/theme-css.txt";
@@ -76,7 +76,6 @@ const mutations = {
       theme: setColor(state.currentColor),
       fonts: state.currentFont,
       size: state.currentSize,
-      status: state.citeStatus,
     });
   },
   initEditorEntity(state) {
@@ -111,7 +110,7 @@ const mutations = {
         "Ctrl-I": function italic(editor) {
           const selected = editor.getSelection();
           editor.replaceSelection(`*${selected}*`);
-        }
+        },
       },
     });
   },
@@ -140,9 +139,9 @@ const mutations = {
     });
   },
   editorRefresh(state) {
-    let output = marked(state.editor.getValue(0), {
-      renderer: state.wxRenderer.getRenderer(state.citeStatus),
-    });
+    let renderer = state.wxRenderer.getRenderer(state.citeStatus);
+    marked.setOptions({ renderer });
+    let output = marked.parse(state.editor.getValue(0));
 
     // 去除第一行的 margin-top
     output = output.replace(/(style=".*?)"/, '$1;margin-top: 0"');

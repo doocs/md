@@ -246,6 +246,7 @@ export default {
       currentColor: (state) => state.currentColor,
       codeTheme: (state) => state.codeTheme,
       nightMode: (state) => state.nightMode,
+      currentCiteStatus: (state) => state.citeStatus,
     }),
   },
   methods: {
@@ -367,6 +368,7 @@ export default {
     this.selectSize = this.currentSize;
     this.selectColor = this.currentColor;
     this.selectCodeTheme = this.codeTheme;
+    this.citeStatus = this.currentCiteStatus;
   },
 };
 </script>
