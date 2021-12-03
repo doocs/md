@@ -215,15 +215,6 @@ export function formatCss(content) {
   return doc;
 }
 
-export function fixCodeWhiteSpace(value = "pre") {
-  const preDomList = document.getElementsByClassName("code__pre");
-  if (preDomList.length > 0) {
-    preDomList.forEach((pre) => {
-      pre.style.whiteSpace = value;
-    });
-  }
-}
-
 /**
  * 导出原始 Markdown 文档
  * @param {文档内容} doc
@@ -264,7 +255,6 @@ export function exportHTML() {
 
   function setStyles(element) {
     switch (true) {
-      case isSection(element):
       case isPre(element):
       case isCode(element):
       case isSpan(element):
@@ -275,13 +265,6 @@ export function exportHTML() {
       Array.from(element.children).forEach((child) => setStyles(child));
     }
 
-    // 判断是否是包裹代码块的 section 元素
-    function isSection(element) {
-      return (
-        element.tagName === "SECTION" &&
-        Array.from(element.classList).includes("code-snippet__github")
-      );
-    }
     // 判断是否是包裹代码块的 pre 元素
     function isPre(element) {
       return (
