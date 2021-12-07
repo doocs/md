@@ -330,6 +330,12 @@ md-cli 支持以下命令行参数:
         <sub>潇洒哥和黑大帅</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/qFQBBpjUoqdfnmCeOGqRJQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img3@main/2021/12/07/1638868463901-1646dcb8-212e-4179-a81a-14d78ceb551c.jpg" style="width: 40px;"><br>
+        <sub>云原生指北</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
