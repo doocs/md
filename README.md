@@ -336,6 +336,12 @@ md-cli 支持以下命令行参数:
         <sub>云原生指北</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/i7hTPuuJAtcK9G55tep0Uw">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img10@main/2022/01/08/1641608709678-77ffd9a8-1d4f-4401-b4ae-0e16b9b53cb1.jpg" style="width: 40px;"><br>
+        <sub>全栈民工</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
