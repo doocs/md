@@ -342,6 +342,12 @@ md-cli 支持以下命令行参数:
         <sub>全栈民工</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/14HNDbDIvfDnV7ePEfbyuQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img0@main/2022/01/17/1642383591942-72fefd93-0825-4665-bc52-4612063bfb80.jpg" style="width: 40px;"><br>
+        <sub>睡不醒的鲤鱼</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
