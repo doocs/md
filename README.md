@@ -154,7 +154,7 @@ md-cli port=8899
 open http://127.0.0.1:8899/md/
 ```
 
-md-cli 支持以下命令行参数:
+md-cli 支持以下命令行参数：
 
 - `port` 指定端口号，默认 8800，如果被占用会随机使用一个新端口。
 - `spaceId` dcloud 服务空间配置
@@ -165,12 +165,12 @@ md-cli 支持以下命令行参数:
 如果你是 Docker 用户，也可以直接使用一条命令，启动完全属于你的、私有化运行的实例。
 
 ```sh
-docker run -d -p 8080:8080 soulteary/wechat-markdown-editor:1.5.7
+docker run -d -p 8080:80 doocs/md:latest
 ```
 
 容器运行起来之后，打开浏览器，访问 http://localhost:8080 即可。
 
-关于本项目 Docker 镜像的更多详细信息，可以访问 https://github.com/soulteary/docker-wechat-markdown-editor
+关于本项目 Docker 镜像的更多详细信息，可以关注 https://github.com/doocs/docker-md
 
 ## 谁在使用
 
