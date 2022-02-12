@@ -3,6 +3,22 @@ const FormData = require(`form-data`)
 
 
 /**
+ * 判断端口是否可用
+ * @param {string|array} port 多个端口用数组
+ */
+function portIsOk (port) {
+  if(typeof(port) === `object`) { // 判断多个端口
+    return Promise.all(port.map(item => portIsOk(item)))
+  }
+  return new Promise(resolve => {
+    const net = require(`net`)
+    const server = net.createServer().listen(port)
+    server.on(`listening`, () => server.close(resolve(true)))
+    server.on(`error`, () => resolve(port))
+  })
+}
+
+/**
  * 处理不同系统的命令行空格差异, 在 cp.spawn 中的参数中, 如果包含空格, win 平台需要使用双引号包裹, unix 不需要
  * @param {string} str 
  */
@@ -193,6 +209,7 @@ function dcloud(spaceInfo) {
 }
 
 module.exports = {
+  portIsOk,
   handleSpace,
   colors: colors(),
   spawn,
