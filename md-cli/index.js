@@ -2,6 +2,8 @@
 
 const getPort = require(`get-port`)
 const {
+  portIsOk,
+  handleSpace,
   colors,
   spawn,
   parseArgv,
@@ -19,15 +21,24 @@ new Promise(async () => {
     port,
     testPort,
     replayPort,
-    '--config': `"${__dirname}/mm.config.js"`,
+    '--config': handleSpace(`${__dirname}/mm.config.js`),
   }).map(([key, val]) => `${key}=${val}`).join(` `)
-  const cliArg = [`"${__dirname}/node_modules/mockm/run.js"`, `--log-line`, line]
+  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, line]
   spawn(`node`, cliArg)
-  setTimeout(() => {
-    // process.stdout.write('\33c\33[3J')
+  setTimeout(async () => {
     console.log(``)
-    console.log(`doocs/md 服务已启动:`)
-    console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
+    console.log(`doocs/md-cli v${require(`./package.json`).version}`)
+    console.log(``)
+    try {
+      if(await portIsOk(port) === true) {
+        throw new Error(`服务 ${port} 初始化失败`)
+      }
+      console.log(`服务已启动:`)
+      console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
+    } catch (error) {
+      console.error(`启动错误 ${error}`)
+      process.exit()
+    }
     console.log(``)
   }, 3*1e3);
-})
+}).catch(err => console.log(err))
