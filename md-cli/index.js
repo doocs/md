@@ -2,6 +2,7 @@
 
 const getPort = require(`get-port`)
 const {
+  portIsOk,
   handleSpace,
   colors,
   spawn,
@@ -24,11 +25,17 @@ new Promise(async () => {
   }).map(([key, val]) => `${key}=${val}`).join(` `)
   const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, line]
   spawn(`node`, cliArg)
-  setTimeout(() => {
-    // process.stdout.write('\33c\33[3J')
-    console.log(``)
-    console.log(`doocs/md 服务已启动:`)
-    console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
+  setTimeout(async () => {
+    try {
+      if(await portIsOk(port) === true) {
+        throw new Error(`服务 ${port} 初始化失败`)
+      }
+      console.log(`doocs/md 服务已启动:`)
+      console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
+    } catch (error) {
+      console.error(`启动错误 ${error}`)
+      process.exit()
+    }
     console.log(``)
   }, 3*1e3);
-})
+}).catch(err => console.log(err))
