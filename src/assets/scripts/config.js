@@ -58,27 +58,27 @@ export default {
   codeThemeOption: [
     {
       label: "github",
-      value: "https://lib.baomitu.com/highlight.js/10.7.3/styles/github.min.css",
+      value: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/github.min.css",
       desc: "light",
     },
     {
       label: "solarized-light",
-      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/base16/solarized-light.min.css",
+      value: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/base16/solarized-light.min.css",
       desc: "light",
     },
     {
       label: "atom-one-dark",
-      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/atom-one-dark.min.css",
+      value: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/atom-one-dark.min.css",
       desc: "dark",
     },
     {
       label: "obsidian",
-      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/obsidian.min.css",
+      value: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/obsidian.min.css",
       desc: "dark",
     },
     {
       label: "vs2015",
-      value: "https://lib.baomitu.com/highlight.js/11.3.1/styles/vs2015.min.css",
+      value: "https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.4.0/styles/vs2015.min.css",
       desc: "dark",
     },
   ],

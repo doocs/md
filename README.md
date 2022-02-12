@@ -133,6 +133,8 @@ npm run build:h5-netlify
 
 ## 快速搭建私有服务
 
+### 方式 1. 使用 npm cli
+
 通过我们的 npm cli 你可以轻易搭建属于自己的微信 Markdown 编辑器。
 
 ```sh
@@ -152,11 +154,23 @@ md-cli port=8899
 open http://127.0.0.1:8899/md/
 ```
 
-md-cli 支持以下命令行参数:
+md-cli 支持以下命令行参数：
 
 - `port` 指定端口号，默认 8800，如果被占用会随机使用一个新端口。
 - `spaceId` dcloud 服务空间配置
 - `clientSecret` dcloud 服务空间配置
+
+### 方式 2. 使用 Docker 镜像
+
+如果你是 Docker 用户，也可以直接使用一条命令，启动完全属于你的、私有化运行的实例。
+
+```sh
+docker run -d -p 8080:80 doocs/md:latest
+```
+
+容器运行起来之后，打开浏览器，访问 http://localhost:8080 即可。
+
+关于本项目 Docker 镜像的更多详细信息，可以关注 https://github.com/doocs/docker-md
 
 ## 谁在使用
 
@@ -322,6 +336,36 @@ md-cli 支持以下命令行参数:
       <a href="https://mp.weixin.qq.com/s/_44Ya309DeQzemXLnJUNdQ">
         <img src="https://cdn.jsdelivr.net/gh/filess/img4@main/2021/09/18/1631947087260-320f3919-f9fa-4c25-8fc1-5020b892f338.jpg" style="width: 40px;"><br>
         <sub>网文小密圈</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/k9WbW0zmxl0S2WX2CXQ6cQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img6@main/2021/12/03/1638523595283-d702b1eb-a817-4ecf-8e3d-a63131259fa0.jpg" style="width: 40px;"><br>
+        <sub>潇洒哥和黑大帅</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/qFQBBpjUoqdfnmCeOGqRJQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img3@main/2021/12/07/1638868463901-1646dcb8-212e-4179-a81a-14d78ceb551c.jpg" style="width: 40px;"><br>
+        <sub>云原生指北</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/i7hTPuuJAtcK9G55tep0Uw">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img10@main/2022/01/08/1641608709678-77ffd9a8-1d4f-4401-b4ae-0e16b9b53cb1.jpg" style="width: 40px;"><br>
+        <sub>全栈民工</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/14HNDbDIvfDnV7ePEfbyuQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img0@main/2022/01/17/1642383591942-72fefd93-0825-4665-bc52-4612063bfb80.jpg" style="width: 40px;"><br>
+        <sub>睡不醒的鲤鱼</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/4QeZsTL84lbN_HO3kCwEwg">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img16@main/2022/01/30/1643545315140-74a6b958-e175-44cc-a751-877c8cb997f7.png" style="width: 40px;"><br>
+        <sub>Dmego</sub>
       </a>
     </td>
   </tr>

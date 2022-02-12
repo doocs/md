@@ -13,29 +13,29 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
-      - name: set up node
+      - name: Set up node
         uses: actions/setup-node@v2
         with:
           node-version: "12"
           check-latest: true
 
-      - name: build
+      - name: Build
         run: |
           npm install
           npm run build:h5-netlify
 
-      - name: upload dist artifact
+      - name: Upload dist artifact
         uses: actions/upload-artifact@v2
         with:
           name: dist
           path: dist
           retention-days: 5
 
-      - name: save PR number
+      - name: Save PR number
         if: ${{ always() }}
         run: echo ${{ github.event.number }} > ./pr-id.txt
 
-      - name: upload PR number
+      - name: Upload PR number
         if: ${{ always() }}
         uses: actions/upload-artifact@v2
         with:

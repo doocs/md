@@ -6,7 +6,7 @@ jobs:
   preview:
     runs-on: ubuntu-latest
     steps:
-      - name: create
+      - name: Create
         uses: actions-cool/maintain-one-comment@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}

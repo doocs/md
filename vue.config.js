@@ -1,3 +1,5 @@
+const isProd = process.env.NODE_ENV === `production`
+
 module.exports = {
   publicPath: process.env.SERVER_ENV === `NETLIFY` ? `/` : `/md/`, // 基本路径, 建议以绝对路径跟随访问目录
   configureWebpack: (config) => {
@@ -8,7 +10,8 @@ module.exports = {
       }]
     })
   },
+  productionSourceMap: !isProd,
   css: {
-    sourceMap: true,
+    sourceMap: !isProd,
   },
 }

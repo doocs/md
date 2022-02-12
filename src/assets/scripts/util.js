@@ -57,6 +57,7 @@ export function customCssWithTemplate(jsonString, color, theme) {
   customTheme.block.h2 = Object.assign(customTheme.block.h2, jsonString.h2);
   customTheme.block.h3 = Object.assign(customTheme.block.h3, jsonString.h3);
   customTheme.block.h4 = Object.assign(customTheme.block.h4, jsonString.h4);
+  customTheme.block.code = Object.assign(customTheme.block.code, jsonString.code);
   customTheme.block.p = Object.assign(customTheme.block.p, jsonString.p);
   customTheme.block.hr = Object.assign(customTheme.block.hr, jsonString.hr);
   customTheme.block.blockquote = Object.assign(
