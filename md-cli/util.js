@@ -1,6 +1,16 @@
 const fetch = (...args) => import(`node-fetch`).then(({default: fetch}) => fetch(...args))
 const FormData = require(`form-data`)
 
+
+/**
+ * 处理不同系统的命令行空格差异, 在 cp.spawn 中的参数中, 如果包含空格, win 平台需要使用双引号包裹, unix 不需要
+ * @param {string} str 
+ */
+function handleSpace(str = ``) {
+  const newStr = require('os').type() === 'Windows_NT' ? `"${str}"` : str
+  return newStr
+}
+
 /**
 * 自定义控制台颜色
 * https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
@@ -183,6 +193,7 @@ function dcloud(spaceInfo) {
 }
 
 module.exports = {
+  handleSpace,
   colors: colors(),
   spawn,
   parseArgv,

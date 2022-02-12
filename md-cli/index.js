@@ -2,6 +2,7 @@
 
 const getPort = require(`get-port`)
 const {
+  handleSpace,
   colors,
   spawn,
   parseArgv,
@@ -19,9 +20,9 @@ new Promise(async () => {
     port,
     testPort,
     replayPort,
-    '--config': `"${__dirname}/mm.config.js"`,
+    '--config': handleSpace(`${__dirname}/mm.config.js`),
   }).map(([key, val]) => `${key}=${val}`).join(` `)
-  const cliArg = [`"${__dirname}/node_modules/mockm/run.js"`, `--log-line`, line]
+  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, line]
   spawn(`node`, cliArg)
   setTimeout(() => {
     // process.stdout.write('\33c\33[3J')
