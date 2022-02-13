@@ -305,9 +305,8 @@
             <el-input
               type="number"
               v-model.trim="minioOSS.port"
-              placeholder="如：9000"
+              placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
             ></el-input>
-            如果是 80 或者 443 则保持 0 同时设置好 UseSSL 即可
           </el-form-item>
           <el-form-item label="UseSSL" :required="true">
             <el-switch
