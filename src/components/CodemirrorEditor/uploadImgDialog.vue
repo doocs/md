@@ -288,7 +288,70 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
+      <el-tab-pane class="github-panel" label="MinIO" name="minio">
+        <el-form
+          class="setting-form"
+          :model="minioOSS"
+          label-position="right"
+          label-width="140px"
+        >
+          <el-form-item label="Endpoint" :required="true">
+            <el-input
+              v-model.trim="minioOSS.endpoint"
+              placeholder="如：play.min.io"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Port" :required="false">
+            <el-input
+              type="number"
+              v-model.trim="minioOSS.port"
+              placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="UseSSL" :required="true">
+            <el-switch
+              v-model="minioOSS.useSSL"
+              active-text="是"
+              inactive-text="否"
+            >
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="Bucket" :required="true">
+            <el-input
+              v-model.trim="minioOSS.bucket"
+              placeholder="如：doocs"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="AccessKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.accessKey"
+              placeholder="如：zhangsan"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="SecretKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.secretKey"
+              placeholder="如：asdasdasd"
+            ></el-input>
+            <el-link
+              type="primary"
+              href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
+              target="_blank"
+              >如何使用 MinIO？</el-link
+            >
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveMinioOSSConfiguration"
+              >保存配置</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
+      <el-tab-pane
+        class="github-panel formCustom"
+        label="自定义代码"
+        name="formCustom"
+      >
         <el-form
           class="setting-form"
           :model="formCustom"
@@ -301,7 +364,8 @@
               type="textarea"
               resize="none"
               placeholder="Your custom code here."
-              v-model="formCustom.code">
+              v-model="formCustom.code"
+            >
             </el-input>
             <el-link
               type="primary"
@@ -335,7 +399,7 @@ export default {
   data() {
     return {
       activeName: `upload`,
-      
+
       formGitHub: {
         repo: "",
         branch: "",
@@ -354,6 +418,14 @@ export default {
         path: "",
         cdnHost: "",
       },
+      minioOSS: {
+        endpoint: "",
+        port: "",
+        useSSL: true,
+        bucket: "",
+        accessKey: "",
+        secretKey: "",
+      },
       formTxCOS: {
         secretId: "",
         secretKey: "",
@@ -370,7 +442,9 @@ export default {
         region: "",
       },
       formCustom: {
-        code: localStorage.getItem(`formCustomConfig`) || removeLeft(`
+        code:
+          localStorage.getItem(`formCustomConfig`) ||
+          removeLeft(`
           const {file, util, okCb, errCb} = CUSTOM_ARG
           const param = new FormData()
           param.append('file', file)
@@ -410,6 +484,10 @@ export default {
           label: "七牛云",
         },
         {
+          value: "minio",
+          label: "MinIO",
+        },
+        {
           value: "formCustom",
           label: "自定义代码",
         },
@@ -426,6 +504,9 @@ export default {
     }
     if (localStorage.getItem("aliOSSConfig")) {
       this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
+    }
+    if (localStorage.getItem("minioConfig")) {
+      this.minioOSS = JSON.parse(localStorage.getItem("minioConfig"));
     }
     if (localStorage.getItem("txCOSConfig")) {
       this.formTxCOS = JSON.parse(localStorage.getItem("txCOSConfig"));
@@ -472,7 +553,21 @@ export default {
       localStorage.setItem("aliOSSConfig", JSON.stringify(this.formAliOSS));
       this.$message.success("保存成功");
     },
-
+    saveMinioOSSConfiguration() {
+      if (
+        !(
+          this.minioOSS.endpoint &&
+          this.minioOSS.bucket &&
+          this.minioOSS.accessKey &&
+          this.minioOSS.secretKey
+        )
+      ) {
+        this.$message.error(`MinIO 参数配置不全`);
+        return;
+      }
+      localStorage.setItem("minioConfig", JSON.stringify(this.minioOSS));
+      this.$message.success("保存成功");
+    },
     saveTxCOSConfiguration() {
       if (
         !(
@@ -506,9 +601,9 @@ export default {
       this.$message.success("保存成功");
     },
     formCustomSave() {
-      const str = this.formCustom.editor.getValue()
-      localStorage.setItem(`formCustomConfig`, str)
-      this.$message.success(`保存成功`)
+      const str = this.formCustom.editor.getValue();
+      localStorage.setItem(`formCustomConfig`, str);
+      this.$message.success(`保存成功`);
     },
 
     beforeImageUpload(file) {
@@ -539,21 +634,22 @@ export default {
     activeName: {
       immediate: true,
       handler(val) {
-        if(val === `formCustom`) {
+        if (val === `formCustom`) {
           this.$nextTick(() => {
-            const textarea = this.$refs.formCustomElInput.$el.querySelector(`textarea`)
-            this.formCustom.editor = this.formCustom.editor || CodeMirror.fromTextArea(textarea, {
-              mode: `javascript`,
-            })
-            this.formCustom.editor.setValue(this.formCustom.code)
-          })
+            const textarea =
+              this.$refs.formCustomElInput.$el.querySelector(`textarea`);
+            this.formCustom.editor =
+              this.formCustom.editor ||
+              CodeMirror.fromTextArea(textarea, {
+                mode: `javascript`,
+              });
+            this.formCustom.editor.setValue(this.formCustom.code);
+          });
         }
       },
     },
   },
-  mounted() {
-    
-  },
+  mounted() {},
 };
 </script>
 
@@ -600,7 +696,8 @@ export default {
     /deep/ .CodeMirror {
       border: 1px solid #eee;
       height: 300px !important;
-      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace !important;
+      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas,
+        "Liberation Mono", Monaco, "Lucida Console", monospace !important;
       line-height: 20px;
       .CodeMirror-scroll {
         padding: 10px;

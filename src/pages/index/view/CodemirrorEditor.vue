@@ -267,6 +267,7 @@ export default {
           fileApi
             .fileUpload(base64Content, file)
             .then((url) => {
+              console.log(url)
               this.uploaded(url);
             })
             .catch((err) => {
@@ -280,6 +281,7 @@ export default {
     },
     // 图片上传结束
     uploaded(response) {
+      console.log("图片上传之后: ", response)
       if (!response) {
         this.$message.error("上传图片未知异常");
         return;
