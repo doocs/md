@@ -461,16 +461,16 @@ export default {
           label: "阿里云",
         },
         {
-          value: "minio",
-          label: "MinIO",
-        },
-        {
           value: "txCOS",
           label: "腾讯云",
         },
         {
           value: "qiniu",
           label: "七牛云",
+        },
+        {
+          value: "minio",
+          label: "MinIO",
         },
         {
           value: "formCustom",
