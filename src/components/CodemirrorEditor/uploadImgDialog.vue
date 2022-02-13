@@ -334,6 +334,12 @@
               v-model.trim="minioOSS.secretKey"
               placeholder="如：asdasdasd"
             ></el-input>
+            <el-link
+              type="primary"
+              href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
+              target="_blank"
+              >如何使用 MinIO？</el-link
+            >
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="saveMinioOSSConfiguration"
