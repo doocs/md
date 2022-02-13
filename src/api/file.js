@@ -2,7 +2,7 @@ import fetch from "./fetch";
 import { githubConfig, giteeConfig } from "./config";
 import CryptoJS from "crypto-js";
 import OSS from "ali-oss";
-import * as Minio from 'minio';
+import * as Minio from "minio";
 import COS from "cos-js-sdk-v5";
 import Buffer from "buffer-from";
 import { v4 as uuidv4 } from "uuid";
@@ -234,35 +234,38 @@ async function txCOSFileUpload(file) {
 
 async function minioFileUpload(content, filename) {
   const dateFilename = getDateFilename(filename);
-  const { endpoint,port,useSSL, bucket, accessKey, secretKey } =
-    JSON.parse(localStorage.getItem("minioConfig"));
+  const { endpoint, port, useSSL, bucket, accessKey, secretKey } = JSON.parse(
+    localStorage.getItem("minioConfig")
+  );
   const buffer = Buffer(content, "base64");
   const conf = {
     endPoint: endpoint,
     useSSL: useSSL,
     accessKey: accessKey,
-    secretKey: secretKey
-  }
+    secretKey: secretKey,
+  };
   if (port > 0 && port !== 80 && port !== 443) {
-    conf.port = port
+    conf.port = port;
   }
   return new Promise((resolve, reject) => {
     const minioClient = new Minio.Client(conf);
     try {
       minioClient.putObject(bucket, dateFilename, buffer, function (e) {
         if (e) {
-          reject(e)
+          reject(e);
         }
-        const host = `${useSSL ? 'https://' : 'http://'}${endpoint}${(port > 0 && port !== 80 && port !== 443) ? ':port' : ''}`
-        const url = `${host}/${bucket}/${dateFilename}`
+        const host = `${useSSL ? "https://" : "http://"}${endpoint}${
+          port > 0 && port !== 80 && port !== 443 ? ":port" : ""
+        }`;
+        const url = `${host}/${bucket}/${dateFilename}`;
         // console.log("文件上传成功: ", url)
-        resolve(url)
+        resolve(url);
         // return `${endpoint}/${bucket}/${dateFilename}`;
       });
     } catch (e) {
-      reject(e)
+      reject(e);
     }
-  })
+  });
 }
 
 //-----------------------------------------------------------------------
