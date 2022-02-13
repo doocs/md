@@ -255,7 +255,7 @@ async function minioFileUpload(content, filename) {
           reject(e);
         }
         const host = `${useSSL ? "https://" : "http://"}${endpoint}${
-          port > 0 && port !== 80 && port !== 443 ? ":port" : ""
+          port > 0 && port !== 80 && port !== 443 ? ":" + port : ""
         }`;
         const url = `${host}/${bucket}/${dateFilename}`;
         // console.log("文件上传成功: ", url)
