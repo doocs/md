@@ -420,7 +420,7 @@ export default {
       },
       minioOSS: {
         endpoint: "",
-        port: 0,
+        port: "",
         useSSL: true,
         bucket: "",
         accessKey: "",
