@@ -302,17 +302,19 @@
             ></el-input>
           </el-form-item>
           <el-form-item label="Port" :required="false">
-            <el-input type="number"
-                      v-model.trim="minioOSS.port"
-                      placeholder="如：9000"
+            <el-input
+              type="number"
+              v-model.trim="minioOSS.port"
+              placeholder="如：9000"
             ></el-input>
-            如果是80或者443则保持0同时设置好UseSSL即可
+            如果是 80 或者 443 则保持 0 同时设置好 UseSSL 即可
           </el-form-item>
           <el-form-item label="UseSSL" :required="true">
             <el-switch
               v-model="minioOSS.useSSL"
               active-text="是"
-              inactive-text="否">
+              inactive-text="否"
+            >
             </el-switch>
           </el-form-item>
           <el-form-item label="Bucket" :required="true">
@@ -335,12 +337,16 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="saveMinioOSSConfiguration"
-            >保存配置</el-button
+              >保存配置</el-button
             >
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
+      <el-tab-pane
+        class="github-panel formCustom"
+        label="自定义代码"
+        name="formCustom"
+      >
         <el-form
           class="setting-form"
           :model="formCustom"
@@ -353,7 +359,8 @@
               type="textarea"
               resize="none"
               placeholder="Your custom code here."
-              v-model="formCustom.code">
+              v-model="formCustom.code"
+            >
             </el-input>
             <el-link
               type="primary"
@@ -430,7 +437,9 @@ export default {
         region: "",
       },
       formCustom: {
-        code: localStorage.getItem(`formCustomConfig`) || removeLeft(`
+        code:
+          localStorage.getItem(`formCustomConfig`) ||
+          removeLeft(`
           const {file, util, okCb, errCb} = CUSTOM_ARG
           const param = new FormData()
           param.append('file', file)
@@ -545,7 +554,7 @@ export default {
           this.minioOSS.endpoint &&
           this.minioOSS.bucket &&
           this.minioOSS.accessKey &&
-            this.minioOSS.secretKey
+          this.minioOSS.secretKey
         )
       ) {
         this.$message.error(`MinIO 参数配置不全`);
@@ -587,9 +596,9 @@ export default {
       this.$message.success("保存成功");
     },
     formCustomSave() {
-      const str = this.formCustom.editor.getValue()
-      localStorage.setItem(`formCustomConfig`, str)
-      this.$message.success(`保存成功`)
+      const str = this.formCustom.editor.getValue();
+      localStorage.setItem(`formCustomConfig`, str);
+      this.$message.success(`保存成功`);
     },
 
     beforeImageUpload(file) {
@@ -620,21 +629,22 @@ export default {
     activeName: {
       immediate: true,
       handler(val) {
-        if(val === `formCustom`) {
+        if (val === `formCustom`) {
           this.$nextTick(() => {
-            const textarea = this.$refs.formCustomElInput.$el.querySelector(`textarea`)
-            this.formCustom.editor = this.formCustom.editor || CodeMirror.fromTextArea(textarea, {
-              mode: `javascript`,
-            })
-            this.formCustom.editor.setValue(this.formCustom.code)
-          })
+            const textarea =
+              this.$refs.formCustomElInput.$el.querySelector(`textarea`);
+            this.formCustom.editor =
+              this.formCustom.editor ||
+              CodeMirror.fromTextArea(textarea, {
+                mode: `javascript`,
+              });
+            this.formCustom.editor.setValue(this.formCustom.code);
+          });
         }
       },
     },
   },
-  mounted() {
-
-  },
+  mounted() {},
 };
 </script>
 
@@ -681,7 +691,8 @@ export default {
     /deep/ .CodeMirror {
       border: 1px solid #eee;
       height: 300px !important;
-      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas, "Liberation Mono", Monaco, "Lucida Console", monospace !important;
+      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas,
+        "Liberation Mono", Monaco, "Lucida Console", monospace !important;
       line-height: 20px;
       .CodeMirror-scroll {
         padding: 10px;
