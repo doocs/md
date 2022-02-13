@@ -306,8 +306,9 @@
                       v-model.trim="minioOSS.port"
                       placeholder="如：9000"
             ></el-input>
+            如果是80或者443则保持0同时设置好UseSSL即可
           </el-form-item>
-          <el-form-item label="Port" :required="true">
+          <el-form-item label="UseSSL" :required="true">
             <el-switch
               v-model="minioOSS.useSSL"
               active-text="是"
@@ -320,13 +321,13 @@
               placeholder="如：doocs"
             ></el-input>
           </el-form-item>
-          <el-form-item label="accessKey" :required="true">
+          <el-form-item label="AccessKey" :required="true">
             <el-input
               v-model.trim="minioOSS.accessKey"
               placeholder="如：zhangsan"
             ></el-input>
           </el-form-item>
-          <el-form-item label="secretKey" :required="true">
+          <el-form-item label="SecretKey" :required="true">
             <el-input
               v-model.trim="minioOSS.secretKey"
               placeholder="如：asdasdasd"
