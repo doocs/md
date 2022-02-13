@@ -174,6 +174,57 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane class="github-panel" label="MinIO" name="minio">
+        <el-form
+          class="setting-form"
+          :model="minioOSS"
+          label-position="right"
+          label-width="140px"
+        >
+          <el-form-item label="Endpoint" :required="true">
+            <el-input
+              v-model.trim="minioOSS.endpoint"
+              placeholder="如：play.min.io"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Port" :required="false">
+            <el-input type="number"
+              v-model.trim="minioOSS.port"
+              placeholder="如：9000"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Port" :required="true">
+            <el-switch
+              v-model="minioOSS.ssl"
+              active-text="是"
+              inactive-text="否">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="Bucket" :required="true">
+            <el-input
+              v-model.trim="minioOSS.bucket"
+              placeholder="如：doocs"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="accessKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.accessKey"
+              placeholder="如：zhangsan"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="secretKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.secretKey"
+              placeholder="如：asdasdasd"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveMinioOSSConfiguration"
+            >保存配置</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
       <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
         <el-form
           class="setting-form"
@@ -335,7 +386,7 @@ export default {
   data() {
     return {
       activeName: `upload`,
-      
+
       formGitHub: {
         repo: "",
         branch: "",
@@ -353,6 +404,14 @@ export default {
         region: "",
         path: "",
         cdnHost: "",
+      },
+      minioOSS: {
+        endpoint: "",
+        port: 0,
+        ssl: true,
+        bucket: "",
+        accessKey: "",
+        secretKey: "",
       },
       formTxCOS: {
         secretId: "",
@@ -402,6 +461,10 @@ export default {
           label: "阿里云",
         },
         {
+          value: "minio",
+          label: "MinIO",
+        },
+        {
           value: "txCOS",
           label: "腾讯云",
         },
@@ -426,6 +489,9 @@ export default {
     }
     if (localStorage.getItem("aliOSSConfig")) {
       this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
+    }
+    if (localStorage.getItem("minioConfig")) {
+      this.minioOSS = JSON.parse(localStorage.getItem("minioConfig"));
     }
     if (localStorage.getItem("txCOSConfig")) {
       this.formTxCOS = JSON.parse(localStorage.getItem("txCOSConfig"));
@@ -472,7 +538,21 @@ export default {
       localStorage.setItem("aliOSSConfig", JSON.stringify(this.formAliOSS));
       this.$message.success("保存成功");
     },
-
+    saveMinioOSSConfiguration() {
+      if (
+        !(
+          this.minioOSS.endpoint &&
+          this.minioOSS.bucket &&
+          this.minioOSS.accessKey &&
+            this.minioOSS.secretKey
+        )
+      ) {
+        this.$message.error(`MinIO 参数配置不全`);
+        return;
+      }
+      localStorage.setItem("minioConfig", JSON.stringify(this.minioOSS));
+      this.$message.success("保存成功");
+    },
     saveTxCOSConfiguration() {
       if (
         !(
@@ -552,7 +632,7 @@ export default {
     },
   },
   mounted() {
-    
+
   },
 };
 </script>
