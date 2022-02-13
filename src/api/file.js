@@ -244,8 +244,10 @@ async function minioFileUpload(content, filename) {
     accessKey: accessKey,
     secretKey: secretKey,
   };
-  if (port > 0 && port !== 80 && port !== 443) {
-    conf.port = port;
+  const p = Number(port || 0);
+  const isCustomPort = p > 0 && p !== 80 && p !== 443;
+  if (isCustomPort) {
+    conf.port = p;
   }
   return new Promise((resolve, reject) => {
     const minioClient = new Minio.Client(conf);
@@ -255,7 +257,7 @@ async function minioFileUpload(content, filename) {
           reject(e);
         }
         const host = `${useSSL ? "https://" : "http://"}${endpoint}${
-          port > 0 && port !== 80 && port !== 443 ? ":" + port : ""
+          isCustomPort ? ":" + port : ""
         }`;
         const url = `${host}/${bucket}/${dateFilename}`;
         // console.log("文件上传成功: ", url)
