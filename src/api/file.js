@@ -191,43 +191,6 @@ async function aliOSSFileUpload(content, filename) {
 }
 
 //-----------------------------------------------------------------------
-// Minio File Upload
-//-----------------------------------------------------------------------
-
-async function minioFileUpload(content, filename) {
-  const dateFilename = getDateFilename(filename);
-  const { endpoint,port,ssl, bucket, accessKey, secretKey } =
-    JSON.parse(localStorage.getItem("minioConfig"));
-  const buffer = Buffer(content, "base64");
-  const conf = {
-    endPoint: endpoint,
-    useSSL: ssl,
-    accessKey: accessKey,
-    secretKey: secretKey
-  }
-  if (port > 0 && port !== 80 && port !== 443) {
-    conf.port = port
-  }
-  return new Promise((resolve, reject) => {
-    const minioClient = new Minio.Client(conf);
-    try {
-      minioClient.putObject(bucket, dateFilename, buffer, function (e) {
-        if (e) {
-          reject(e)
-        }
-        const host = `${ssl ? 'https://' : 'http://'}${endpoint}${(port > 0 && port !== 80 && port !== 443) ? ':port' : ''}`
-        const url = `${host}/${bucket}/${dateFilename}`
-        // console.log("文件上传成功: ", url)
-        resolve(url)
-        // return `${endpoint}/${bucket}/${dateFilename}`;
-      });
-    } catch (e) {
-      reject(e)
-    }
-  })
-}
-
-//-----------------------------------------------------------------------
 // TxCOS File Upload
 //-----------------------------------------------------------------------
 
@@ -263,6 +226,43 @@ async function txCOSFileUpload(file) {
       }
     );
   });
+}
+
+//-----------------------------------------------------------------------
+// Minio File Upload
+//-----------------------------------------------------------------------
+
+async function minioFileUpload(content, filename) {
+  const dateFilename = getDateFilename(filename);
+  const { endpoint,port,useSSL, bucket, accessKey, secretKey } =
+    JSON.parse(localStorage.getItem("minioConfig"));
+  const buffer = Buffer(content, "base64");
+  const conf = {
+    endPoint: endpoint,
+    useSSL: useSSL,
+    accessKey: accessKey,
+    secretKey: secretKey
+  }
+  if (port > 0 && port !== 80 && port !== 443) {
+    conf.port = port
+  }
+  return new Promise((resolve, reject) => {
+    const minioClient = new Minio.Client(conf);
+    try {
+      minioClient.putObject(bucket, dateFilename, buffer, function (e) {
+        if (e) {
+          reject(e)
+        }
+        const host = `${useSSL ? 'https://' : 'http://'}${endpoint}${(port > 0 && port !== 80 && port !== 443) ? ':port' : ''}`
+        const url = `${host}/${bucket}/${dateFilename}`
+        // console.log("文件上传成功: ", url)
+        resolve(url)
+        // return `${endpoint}/${bucket}/${dateFilename}`;
+      });
+    } catch (e) {
+      reject(e)
+    }
+  })
 }
 
 //-----------------------------------------------------------------------

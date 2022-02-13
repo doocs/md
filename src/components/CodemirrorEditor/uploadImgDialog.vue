@@ -174,57 +174,6 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
-      <el-tab-pane class="github-panel" label="MinIO" name="minio">
-        <el-form
-          class="setting-form"
-          :model="minioOSS"
-          label-position="right"
-          label-width="140px"
-        >
-          <el-form-item label="Endpoint" :required="true">
-            <el-input
-              v-model.trim="minioOSS.endpoint"
-              placeholder="如：play.min.io"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="Port" :required="false">
-            <el-input type="number"
-              v-model.trim="minioOSS.port"
-              placeholder="如：9000"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="Port" :required="true">
-            <el-switch
-              v-model="minioOSS.ssl"
-              active-text="是"
-              inactive-text="否">
-            </el-switch>
-          </el-form-item>
-          <el-form-item label="Bucket" :required="true">
-            <el-input
-              v-model.trim="minioOSS.bucket"
-              placeholder="如：doocs"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="accessKey" :required="true">
-            <el-input
-              v-model.trim="minioOSS.accessKey"
-              placeholder="如：zhangsan"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="secretKey" :required="true">
-            <el-input
-              v-model.trim="minioOSS.secretKey"
-              placeholder="如：asdasdasd"
-            ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" @click="saveMinioOSSConfiguration"
-            >保存配置</el-button
-            >
-          </el-form-item>
-        </el-form>
-      </el-tab-pane>
       <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
         <el-form
           class="setting-form"
@@ -339,6 +288,57 @@
           </el-form-item>
         </el-form>
       </el-tab-pane>
+      <el-tab-pane class="github-panel" label="MinIO" name="minio">
+        <el-form
+          class="setting-form"
+          :model="minioOSS"
+          label-position="right"
+          label-width="140px"
+        >
+          <el-form-item label="Endpoint" :required="true">
+            <el-input
+              v-model.trim="minioOSS.endpoint"
+              placeholder="如：play.min.io"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Port" :required="false">
+            <el-input type="number"
+                      v-model.trim="minioOSS.port"
+                      placeholder="如：9000"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="Port" :required="true">
+            <el-switch
+              v-model="minioOSS.useSSL"
+              active-text="是"
+              inactive-text="否">
+            </el-switch>
+          </el-form-item>
+          <el-form-item label="Bucket" :required="true">
+            <el-input
+              v-model.trim="minioOSS.bucket"
+              placeholder="如：doocs"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="accessKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.accessKey"
+              placeholder="如：zhangsan"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="secretKey" :required="true">
+            <el-input
+              v-model.trim="minioOSS.secretKey"
+              placeholder="如：asdasdasd"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="saveMinioOSSConfiguration"
+            >保存配置</el-button
+            >
+          </el-form-item>
+        </el-form>
+      </el-tab-pane>
       <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
         <el-form
           class="setting-form"
@@ -408,7 +408,7 @@ export default {
       minioOSS: {
         endpoint: "",
         port: 0,
-        ssl: true,
+        useSSL: true,
         bucket: "",
         accessKey: "",
         secretKey: "",
