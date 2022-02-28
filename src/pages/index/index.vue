@@ -6,10 +6,10 @@
 </template>
 
 <script>
-import Loading from "../../components/Loading";
-import CodemirrorEditor from "./view/CodemirrorEditor";
+import Loading from '../../components/Loading'
+import CodemirrorEditor from './view/CodemirrorEditor'
 export default {
-  name: "App",
+  name: `App`,
   components: {
     Loading,
     CodemirrorEditor,
@@ -17,14 +17,14 @@ export default {
   data() {
     return {
       loading: true,
-    };
+    }
   },
   mounted() {
     setTimeout(() => {
-      this.loading = false;
-    }, 100);
+      this.loading = false
+    }, 100)
   },
-};
+}
 </script>
 
 <style scoped>

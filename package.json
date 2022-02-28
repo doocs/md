@@ -3,12 +3,51 @@
   "version": "1.5.7",
   "private": false,
   "scripts": {
+    "prepare": "husky install",
+    "lint": "vue-cli-service lint src && vue-cli-service lint mm",
     "start": "run-p serve mm",
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
     "build": "vue-cli-service build",
     "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
     "mm": "npx mockm --cwd=mm"
+  },
+  "eslintConfig": {
+    "root": true,
+    "env": {
+      "node": true
+    },
+    "extends": [
+      "plugin:vue/essential",
+      "eslint:recommended",
+      "@vue/prettier"
+    ],
+    "parserOptions": {
+      "parser": "babel-eslint"
+    },
+    "ignorePatterns": [
+      "src/assets/scripts/renderers"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "error",
+        {
+          "singleQuote": true,
+          "semi": false
+        }
+      ],
+      "semi": [
+        "error",
+        "never"
+      ],
+      "quotes": [
+        "error",
+        "backtick"
+      ],
+      "no-unused-vars": "off",
+      "no-console": "off",
+      "no-debugger": "off"
+    }
   },
   "dependencies": {
     "@vue/shared": "^3.2.26",
@@ -37,6 +76,15 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@vue/cli-plugin-eslint": "^4.5.12",
+    "@vue/cli-plugin-router": "^4.5.12",
+    "@vue/cli-plugin-vuex": "^4.5.12",
+    "@vue/eslint-config-prettier": "^6.0.0",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^6.8.0",
+    "eslint-plugin-prettier": "^3.4.0",
+    "eslint-plugin-vue": "^6.2.2",
+    "husky": "^7.0.4",
     "@vue/cli-plugin-babel": "~4.5.15",
     "@vue/cli-service": "~4.5.15",
     "async-validator": "^4.0.7",

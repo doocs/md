@@ -41,7 +41,7 @@
   display: inline-block;
   width: 100px;
   height: 100px;
-  background: url("../assets/images/favicon.png") no-repeat;
+  background: url('../assets/images/favicon.png') no-repeat;
   background-size: cover;
 }
 </style>

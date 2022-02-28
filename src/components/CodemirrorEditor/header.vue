@@ -1,22 +1,32 @@
 <template>
   <el-container class="top is-dark">
-    <el-dialog
-      title="发布"
-      :visible.sync="form.dialogVisible"
-      >
+    <el-dialog title="发布" :visible.sync="form.dialogVisible">
       <div class="postInfo">
         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="封面">
-            <el-input v-model="form.thumb" placeholder="自动提取第一张图"></el-input>
+            <el-input
+              v-model="form.thumb"
+              placeholder="自动提取第一张图"
+            ></el-input>
           </el-form-item>
           <el-form-item label="标题">
-            <el-input v-model="form.title" placeholder="自动提取第一个标题"></el-input>
+            <el-input
+              v-model="form.title"
+              placeholder="自动提取第一个标题"
+            ></el-input>
           </el-form-item>
           <el-form-item label="描述">
-            <el-input type="textarea" :rows="4" v-model="form.desc" placeholder="自动提取第一个段落"></el-input>
+            <el-input
+              type="textarea"
+              :rows="4"
+              v-model="form.desc"
+              placeholder="自动提取第一个段落"
+            ></el-input>
           </el-form-item>
           <el-form-item>
-            <div class="info">注：此功能由第三方浏览器插件支持，本平台不保证安全性。</div>
+            <div class="info">
+              注：此功能由第三方浏览器插件支持，本平台不保证安全性。
+            </div>
           </el-form-item>
         </el-form>
       </div>
@@ -238,14 +248,14 @@ import {
   setFontSize,
   fixCodeWhiteSpace,
   setColorWithCustomTemplate,
-} from "../../assets/scripts/util";
-import { solveWeChatImage, solveHtml } from "../../assets/scripts/converter";
-import config from "../../assets/scripts/config";
-import DEFAULT_CSS_CONTENT from "@/assets/example/theme-css.txt";
-import resetDialog from "./resetDialog";
-import { mapState, mapMutations } from "vuex";
+} from '../../assets/scripts/util'
+import { solveWeChatImage, solveHtml } from '../../assets/scripts/converter'
+import config from '../../assets/scripts/config'
+import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
+import resetDialog from './resetDialog'
+import { mapState, mapMutations } from 'vuex'
 export default {
-  name: "editor-header",
+  name: `editor-header`,
   data() {
     return {
       form: {
@@ -258,24 +268,24 @@ export default {
       config: config,
       citeStatus: false,
       showResetConfirm: false,
-      selectFont: "",
-      selectSize: "",
-      selectColor: "",
-      selectCodeTheme: config.codeThemeOption[0].value
-    };
+      selectFont: ``,
+      selectSize: ``,
+      selectColor: ``,
+      selectCodeTheme: config.codeThemeOption[0].value,
+    }
   },
   components: {
     resetDialog,
   },
   computed: {
     effect() {
-      return this.nightMode ? "dark" : "light";
+      return this.nightMode ? `dark` : `light`
     },
     btnContent() {
-      return this.nightMode ? "浅色模式" : "暗黑模式";
+      return this.nightMode ? `浅色模式` : `暗黑模式`
     },
     btnType() {
-      return this.nightMode ? "default" : "primary";
+      return this.nightMode ? `default` : `primary`
     },
     ...mapState({
       output: (state) => state.output,
@@ -295,7 +305,9 @@ export default {
       try {
         auto = {
           thumb: document.querySelector(`#output img`).src,
-          title: [1,2,3,4,5,6].map(h => document.querySelector(`#output h${h}`)).filter(h => h)[0].innerText,
+          title: [1, 2, 3, 4, 5, 6]
+            .map((h) => document.querySelector(`#output h${h}`))
+            .filter((h) => h)[0].innerText,
           desc: document.querySelector(`#output p`).innerText,
           content: this.output,
         }
@@ -321,124 +333,124 @@ export default {
     fontChanged(fonts) {
       this.setWxRendererOptions({
         fonts: fonts,
-      });
-      this.setCurrentFont(fonts);
-      this.$emit("refresh");
+      })
+      this.setCurrentFont(fonts)
+      this.$emit(`refresh`)
     },
     sizeChanged(size) {
-      let theme = setFontSize(size.replace("px", ""));
-      theme = setColorWithCustomTemplate(theme, this.currentColor);
+      let theme = setFontSize(size.replace(`px`, ``))
+      theme = setColorWithCustomTemplate(theme, this.currentColor)
       this.setWxRendererOptions({
         size: size,
         theme: theme,
-      });
-      this.setCurrentSize(size);
-      this.$emit("refresh");
+      })
+      this.setCurrentSize(size)
+      this.$emit(`refresh`)
     },
     colorChanged(color) {
-      let theme = setFontSize(this.currentSize.replace("px", ""));
+      let theme = setFontSize(this.currentSize.replace(`px`, ``))
 
-      theme = setColorWithCustomTemplate(theme, color);
+      theme = setColorWithCustomTemplate(theme, color)
       this.setWxRendererOptions({
         theme: theme,
-      });
-      this.setCurrentColor(color);
-      this.$emit("refresh");
+      })
+      this.setCurrentColor(color)
+      this.$emit(`refresh`)
     },
     codeThemeChanged(theme) {
-      this.setCurrentCodeTheme(theme);
-      this.$emit("refresh");
+      this.setCurrentCodeTheme(theme)
+      this.$emit(`refresh`)
     },
     statusChanged(val) {
-      this.setCiteStatus(val);
-      this.$emit("refresh");
+      this.setCiteStatus(val)
+      this.$emit(`refresh`)
     },
     // 复制到微信公众号
     copy(e) {
-      this.$emit("startCopy");
+      this.$emit(`startCopy`)
       setTimeout(() => {
-        let clipboardDiv = document.getElementById("output");
-        solveWeChatImage();
-        solveHtml();
-        clipboardDiv.focus();
-        window.getSelection().removeAllRanges();
-        let range = document.createRange();
+        let clipboardDiv = document.getElementById(`output`)
+        solveWeChatImage()
+        solveHtml()
+        clipboardDiv.focus()
+        window.getSelection().removeAllRanges()
+        let range = document.createRange()
 
-        range.setStartBefore(clipboardDiv.firstChild);
-        range.setEndAfter(clipboardDiv.lastChild);
-        window.getSelection().addRange(range);
-        document.execCommand("copy");
-        window.getSelection().removeAllRanges();
-        clipboardDiv.innerHTML = this.output;
+        range.setStartBefore(clipboardDiv.firstChild)
+        range.setEndAfter(clipboardDiv.lastChild)
+        window.getSelection().addRange(range)
+        document.execCommand(`copy`)
+        window.getSelection().removeAllRanges()
+        clipboardDiv.innerHTML = this.output
         // 输出提示
         this.$notify({
           showClose: true,
-          message: "已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴",
+          message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
           offset: 80,
           duration: 1600,
-          type: "success",
-        });
-        this.$emit("refresh");
-        this.$emit("endCopy");
-      }, 350);
+          type: `success`,
+        })
+        this.$emit(`refresh`)
+        this.$emit(`endCopy`)
+      }, 350)
     },
     // 自定义CSS样式
     async customStyle() {
-      this.$emit("showCssEditor");
+      this.$emit(`showCssEditor`)
       this.$nextTick(() => {
         if (!this.cssEditor) {
-          this.cssEditor.refresh();
+          this.cssEditor.refresh()
         }
-      });
+      })
       setTimeout(() => {
-        this.cssEditor.refresh();
-      }, 50);
+        this.cssEditor.refresh()
+      }, 50)
 
-      let flag = await localStorage.getItem("__css_content");
+      let flag = await localStorage.getItem(`__css_content`)
       if (!flag) {
-        this.setCssEditorValue(DEFAULT_CSS_CONTENT);
+        this.setCssEditorValue(DEFAULT_CSS_CONTENT)
       }
     },
     // 重置样式
     confirmReset() {
-      localStorage.clear();
-      this.cssEditor.setValue(DEFAULT_CSS_CONTENT);
-      this.citeStatus = false;
-      this.statusChanged(false);
-      this.fontChanged(this.config.builtinFonts[0].value);
-      this.colorChanged(this.config.colorOption[0].value);
-      this.sizeChanged(this.config.sizeOption[2].value);
+      localStorage.clear()
+      this.cssEditor.setValue(DEFAULT_CSS_CONTENT)
+      this.citeStatus = false
+      this.statusChanged(false)
+      this.fontChanged(this.config.builtinFonts[0].value)
+      this.colorChanged(this.config.colorOption[0].value)
+      this.sizeChanged(this.config.sizeOption[2].value)
       this.codeThemeChanged(this.config.codeThemeOption[0].value)
-      this.$emit("cssChanged");
-      this.selectFont = this.currentFont;
-      this.selectSize = this.currentSize;
-      this.selectColor = this.currentColor;
-      this.showResetConfirm = false;
-      this.selectCodeTheme = this.codeTheme;
+      this.$emit(`cssChanged`)
+      this.selectFont = this.currentFont
+      this.selectSize = this.currentSize
+      this.selectColor = this.currentColor
+      this.showResetConfirm = false
+      this.selectCodeTheme = this.codeTheme
     },
     cancelReset() {
-      this.showResetConfirm = false;
-      this.editor.focus();
+      this.showResetConfirm = false
+      this.editor.focus()
     },
     ...mapMutations([
-      "setCurrentColor",
-      "setCiteStatus",
-      "themeChanged",
-      "setCurrentFont",
-      "setCurrentSize",
-      "setCssEditorValue",
-      "setCurrentCodeTheme",
-      "setWxRendererOptions",
+      `setCurrentColor`,
+      `setCiteStatus`,
+      `themeChanged`,
+      `setCurrentFont`,
+      `setCurrentSize`,
+      `setCssEditorValue`,
+      `setCurrentCodeTheme`,
+      `setWxRendererOptions`,
     ]),
   },
   mounted() {
-    this.selectFont = this.currentFont;
-    this.selectSize = this.currentSize;
-    this.selectColor = this.currentColor;
-    this.selectCodeTheme = this.codeTheme;
-    this.citeStatus = this.currentCiteStatus;
+    this.selectFont = this.currentFont
+    this.selectSize = this.currentSize
+    this.selectColor = this.currentColor
+    this.selectCodeTheme = this.codeTheme
+    this.citeStatus = this.currentCiteStatus
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -459,12 +471,12 @@ export default {
   margin-right: 24px;
   width: 24px;
   height: 24px;
-  background: url("../../assets/images/night.png") no-repeat;
+  background: url('../../assets/images/night.png') no-repeat;
   background-size: cover;
   transition: all 0.3s;
 }
 .mode__switch_black {
-  background: url("../../assets/images/light.png") no-repeat;
+  background: url('../../assets/images/light.png') no-repeat;
   background-size: cover;
 }
 .top {

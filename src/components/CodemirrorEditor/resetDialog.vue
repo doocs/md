@@ -16,7 +16,7 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 export default {
   props: {
     showResetConfirm: {
@@ -26,13 +26,13 @@ export default {
   },
   computed: {
     btnType() {
-      return this.nightMode ? "default" : "primary";
+      return this.nightMode ? `default` : `primary`
     },
     ...mapState({
       nightMode: (state) => state.nightMode,
     }),
   },
-};
+}
 </script>
 
 <style lang="less" scoped>

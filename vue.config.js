@@ -5,9 +5,11 @@ module.exports = {
   configureWebpack: (config) => {
     config.module.rules.push({
       test: /\.(txt|md)$/i,
-      use: [{
-        loader: 'raw-loader',
-      }]
+      use: [
+        {
+          loader: `raw-loader`,
+        },
+      ],
     })
   },
   productionSourceMap: !isProd,

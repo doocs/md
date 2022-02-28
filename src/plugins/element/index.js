@@ -1,10 +1,7 @@
-import Vue from "vue";
-import {
-  Loading,
-  Message,
-} from "element-ui";
+import Vue from 'vue'
+import { Loading, Message } from 'element-ui'
 
-Vue.component(Message.name, Message);
+Vue.component(Message.name, Message)
 
-Vue.prototype.$loading = Loading.service;
-Vue.prototype.$message = Message;
+Vue.prototype.$loading = Loading.service
+Vue.prototype.$message = Message
