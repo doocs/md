@@ -386,8 +386,8 @@
 </template>
 
 <script>
-import { checkImage, removeLeft } from "../../assets/scripts/util";
-import CodeMirror from "codemirror/lib/codemirror";
+import { checkImage, removeLeft } from '../../assets/scripts/util'
+import CodeMirror from 'codemirror/lib/codemirror'
 
 export default {
   props: {
@@ -401,45 +401,45 @@ export default {
       activeName: `upload`,
 
       formGitHub: {
-        repo: "",
-        branch: "",
-        accessToken: "",
+        repo: ``,
+        branch: ``,
+        accessToken: ``,
       },
       formGitee: {
-        repo: "",
-        branch: "",
-        accessToken: "",
+        repo: ``,
+        branch: ``,
+        accessToken: ``,
       },
       formAliOSS: {
-        accessKeyId: "",
-        accessKeySecret: "",
-        bucket: "",
-        region: "",
-        path: "",
-        cdnHost: "",
+        accessKeyId: ``,
+        accessKeySecret: ``,
+        bucket: ``,
+        region: ``,
+        path: ``,
+        cdnHost: ``,
       },
       minioOSS: {
-        endpoint: "",
-        port: "",
+        endpoint: ``,
+        port: ``,
         useSSL: true,
-        bucket: "",
-        accessKey: "",
-        secretKey: "",
+        bucket: ``,
+        accessKey: ``,
+        secretKey: ``,
       },
       formTxCOS: {
-        secretId: "",
-        secretKey: "",
-        bucket: "",
-        region: "",
-        path: "",
-        cdnHost: "",
+        secretId: ``,
+        secretKey: ``,
+        bucket: ``,
+        region: ``,
+        path: ``,
+        cdnHost: ``,
       },
       formQiniu: {
-        accessKey: "",
-        secretKey: "",
-        bucket: "",
-        domain: "",
-        region: "",
+        accessKey: ``,
+        secretKey: ``,
+        bucket: ``,
+        domain: ``,
+        region: ``,
       },
       formCustom: {
         code:
@@ -460,83 +460,83 @@ export default {
       },
       options: [
         {
-          value: "default",
-          label: "默认",
+          value: `default`,
+          label: `默认`,
         },
         {
-          value: "gitee",
-          label: "Gitee",
+          value: `gitee`,
+          label: `Gitee`,
         },
         {
-          value: "github",
-          label: "GitHub",
+          value: `github`,
+          label: `GitHub`,
         },
         {
-          value: "aliOSS",
-          label: "阿里云",
+          value: `aliOSS`,
+          label: `阿里云`,
         },
         {
-          value: "txCOS",
-          label: "腾讯云",
+          value: `txCOS`,
+          label: `腾讯云`,
         },
         {
-          value: "qiniu",
-          label: "七牛云",
+          value: `qiniu`,
+          label: `七牛云`,
         },
         {
-          value: "minio",
-          label: "MinIO",
+          value: `minio`,
+          label: `MinIO`,
         },
         {
-          value: "formCustom",
-          label: "自定义代码",
+          value: `formCustom`,
+          label: `自定义代码`,
         },
       ],
-      imgHost: "default",
-    };
+      imgHost: `default`,
+    }
   },
   created() {
-    if (localStorage.getItem("githubConfig")) {
-      this.formGitHub = JSON.parse(localStorage.getItem("githubConfig"));
+    if (localStorage.getItem(`githubConfig`)) {
+      this.formGitHub = JSON.parse(localStorage.getItem(`githubConfig`))
     }
-    if (localStorage.getItem("giteeConfig")) {
-      this.formGitee = JSON.parse(localStorage.getItem("giteeConfig"));
+    if (localStorage.getItem(`giteeConfig`)) {
+      this.formGitee = JSON.parse(localStorage.getItem(`giteeConfig`))
     }
-    if (localStorage.getItem("aliOSSConfig")) {
-      this.formAliOSS = JSON.parse(localStorage.getItem("aliOSSConfig"));
+    if (localStorage.getItem(`aliOSSConfig`)) {
+      this.formAliOSS = JSON.parse(localStorage.getItem(`aliOSSConfig`))
     }
-    if (localStorage.getItem("minioConfig")) {
-      this.minioOSS = JSON.parse(localStorage.getItem("minioConfig"));
+    if (localStorage.getItem(`minioConfig`)) {
+      this.minioOSS = JSON.parse(localStorage.getItem(`minioConfig`))
     }
-    if (localStorage.getItem("txCOSConfig")) {
-      this.formTxCOS = JSON.parse(localStorage.getItem("txCOSConfig"));
+    if (localStorage.getItem(`txCOSConfig`)) {
+      this.formTxCOS = JSON.parse(localStorage.getItem(`txCOSConfig`))
     }
-    if (localStorage.getItem("imgHost")) {
-      this.imgHost = localStorage.getItem("imgHost");
+    if (localStorage.getItem(`imgHost`)) {
+      this.imgHost = localStorage.getItem(`imgHost`)
     }
   },
   methods: {
     changeImgHost() {
-      localStorage.setItem("imgHost", this.imgHost);
-      this.$message.success("已成功切换图床");
+      localStorage.setItem(`imgHost`, this.imgHost)
+      this.$message.success(`已成功切换图床`)
     },
     saveGitHubConfiguration() {
       if (!(this.formGitHub.repo && this.formGitHub.accessToken)) {
-        const blankElement = this.formGitHub.repo ? "token" : "GitHub 仓库";
-        this.$message.error(`参数「​${blankElement}」不能为空`);
-        return;
+        const blankElement = this.formGitHub.repo ? `token` : `GitHub 仓库`
+        this.$message.error(`参数「${blankElement}」不能为空`)
+        return
       }
-      localStorage.setItem("githubConfig", JSON.stringify(this.formGitHub));
-      this.$message.success("保存成功");
+      localStorage.setItem(`githubConfig`, JSON.stringify(this.formGitHub))
+      this.$message.success(`保存成功`)
     },
     saveGiteeConfiguration() {
       if (!(this.formGitee.repo && this.formGitee.accessToken)) {
-        const blankElement = this.formGitee.repo ? "私人令牌" : "Gitee 仓库";
-        this.$message.error(`参数「​${blankElement}」不能为空`);
-        return;
+        const blankElement = this.formGitee.repo ? `私人令牌` : `Gitee 仓库`
+        this.$message.error(`参数「${blankElement}」不能为空`)
+        return
       }
-      localStorage.setItem("giteeConfig", JSON.stringify(this.formGitee));
-      this.$message.success("保存成功");
+      localStorage.setItem(`giteeConfig`, JSON.stringify(this.formGitee))
+      this.$message.success(`保存成功`)
     },
     saveAliOSSConfiguration() {
       if (
@@ -547,11 +547,11 @@ export default {
           this.formAliOSS.region
         )
       ) {
-        this.$message.error(`阿里云 OSS 参数配置不全`);
-        return;
+        this.$message.error(`阿里云 OSS 参数配置不全`)
+        return
       }
-      localStorage.setItem("aliOSSConfig", JSON.stringify(this.formAliOSS));
-      this.$message.success("保存成功");
+      localStorage.setItem(`aliOSSConfig`, JSON.stringify(this.formAliOSS))
+      this.$message.success(`保存成功`)
     },
     saveMinioOSSConfiguration() {
       if (
@@ -562,11 +562,11 @@ export default {
           this.minioOSS.secretKey
         )
       ) {
-        this.$message.error(`MinIO 参数配置不全`);
-        return;
+        this.$message.error(`MinIO 参数配置不全`)
+        return
       }
-      localStorage.setItem("minioConfig", JSON.stringify(this.minioOSS));
-      this.$message.success("保存成功");
+      localStorage.setItem(`minioConfig`, JSON.stringify(this.minioOSS))
+      this.$message.success(`保存成功`)
     },
     saveTxCOSConfiguration() {
       if (
@@ -577,11 +577,11 @@ export default {
           this.formTxCOS.region
         )
       ) {
-        this.$message.error(`腾讯云 COS 参数配置不全`);
-        return;
+        this.$message.error(`腾讯云 COS 参数配置不全`)
+        return
       }
-      localStorage.setItem("txCOSConfig", JSON.stringify(this.formTxCOS));
-      this.$message.success("保存成功");
+      localStorage.setItem(`txCOSConfig`, JSON.stringify(this.formTxCOS))
+      this.$message.success(`保存成功`)
     },
 
     saveQiniuConfiguration() {
@@ -594,40 +594,40 @@ export default {
           this.formQiniu.region
         )
       ) {
-        this.$message.error(`七牛云 Kodo 参数配置不全`);
-        return;
+        this.$message.error(`七牛云 Kodo 参数配置不全`)
+        return
       }
-      localStorage.setItem("qiniuConfig", JSON.stringify(this.formQiniu));
-      this.$message.success("保存成功");
+      localStorage.setItem(`qiniuConfig`, JSON.stringify(this.formQiniu))
+      this.$message.success(`保存成功`)
     },
     formCustomSave() {
-      const str = this.formCustom.editor.getValue();
-      localStorage.setItem(`formCustomConfig`, str);
-      this.$message.success(`保存成功`);
+      const str = this.formCustom.editor.getValue()
+      localStorage.setItem(`formCustomConfig`, str)
+      this.$message.success(`保存成功`)
     },
 
     beforeImageUpload(file) {
       // check image
-      const checkResult = checkImage(file);
+      const checkResult = checkImage(file)
       if (!checkResult.ok) {
-        this.$message.error(checkResult.msg);
-        return false;
+        this.$message.error(checkResult.msg)
+        return false
       }
       // check image host
-      let imgHost = localStorage.getItem("imgHost");
-      imgHost = imgHost ? imgHost : "default";
-      localStorage.setItem("imgHost", imgHost);
+      let imgHost = localStorage.getItem(`imgHost`)
+      imgHost = imgHost ? imgHost : `default`
+      localStorage.setItem(`imgHost`, imgHost)
 
-      const config = localStorage.getItem(`${imgHost}Config`);
-      const isValidHost = imgHost == "default" || config;
+      const config = localStorage.getItem(`${imgHost}Config`)
+      const isValidHost = imgHost == `default` || config
       if (!isValidHost) {
-        this.$message.error(`请先配置 ${imgHost} 图床参数`);
-        return false;
+        this.$message.error(`请先配置 ${imgHost} 图床参数`)
+        return false
       }
-      return true;
+      return true
     },
     uploadImage(params) {
-      this.$emit("uploadImage", params.file);
+      this.$emit(`uploadImage`, params.file)
     },
   },
   watch: {
@@ -637,20 +637,20 @@ export default {
         if (val === `formCustom`) {
           this.$nextTick(() => {
             const textarea =
-              this.$refs.formCustomElInput.$el.querySelector(`textarea`);
+              this.$refs.formCustomElInput.$el.querySelector(`textarea`)
             this.formCustom.editor =
               this.formCustom.editor ||
               CodeMirror.fromTextArea(textarea, {
                 mode: `javascript`,
-              });
-            this.formCustom.editor.setValue(this.formCustom.code);
-          });
+              })
+            this.formCustom.editor.setValue(this.formCustom.code)
+          })
         }
       },
     },
   },
   mounted() {},
-};
+}
 </script>
 
 <style lang="less" scoped>
@@ -696,8 +696,8 @@ export default {
     /deep/ .CodeMirror {
       border: 1px solid #eee;
       height: 300px !important;
-      font-family: "Fira Mono", "DejaVu Sans Mono", Menlo, Consolas,
-        "Liberation Mono", Monaco, "Lucida Console", monospace !important;
+      font-family: 'Fira Mono', 'DejaVu Sans Mono', Menlo, Consolas,
+        'Liberation Mono', Monaco, 'Lucida Console', monospace !important;
       line-height: 20px;
       .CodeMirror-scroll {
         padding: 10px;

@@ -39,49 +39,49 @@ export default {
       menu: [
         [
           {
-            text: "上传图片",
-            key: "insertPic",
+            text: `上传图片`,
+            key: `insertPic`,
           },
           {
-            text: "插入表格",
-            key: "insertTable",
+            text: `插入表格`,
+            key: `insertTable`,
           },
           {
-            text: "恢复默认样式",
-            key: "resetStyle",
+            text: `恢复默认样式`,
+            key: `resetStyle`,
           },
         ],
         [
           {
-            text: '导入 Markdown 文档',
-            key: 'importMarkdown',
+            text: `导入 Markdown 文档`,
+            key: `importMarkdown`,
           },
           {
-            text: "导出 Markdown 文档",
-            key: "download",
+            text: `导出 Markdown 文档`,
+            key: `download`,
           },
           {
-            text: "导出 HTML 页面",
-            key: "export",
+            text: `导出 HTML 页面`,
+            key: `export`,
           },
           {
-            text: "格式化 Markdown 文档",
-            key: "formatMarkdown",
+            text: `格式化 Markdown 文档`,
+            key: `formatMarkdown`,
           },
         ],
       ],
-    };
+    }
   },
   methods: {
     closeCB() {
-      this.$emit("input", false);
+      this.$emit(`input`, false)
     },
     onMouseDown(key) {
-      this.$emit("menuTick", key);
-      this.$emit("closeMenu", false);
+      this.$emit(`menuTick`, key)
+      this.$emit(`closeMenu`, false)
     },
   },
-};
+}
 </script>
 
 <style lang="less" scoped>

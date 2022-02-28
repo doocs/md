@@ -53,9 +53,9 @@
 </template>
 
 <script>
-import config from "../../assets/scripts/config";
-import { createTable } from "../../assets/scripts/util";
-import { mapState, mapMutations } from "vuex";
+import config from '../../assets/scripts/config'
+import { createTable } from '../../assets/scripts/util'
+import { mapState, mapMutations } from 'vuex'
 export default {
   props: {
     value: {
@@ -69,11 +69,11 @@ export default {
       rowNum: 3,
       colNum: 3,
       tableData: {},
-    };
+    }
   },
   computed: {
     btnType() {
-      return this.nightMode ? "default" : "primary";
+      return this.nightMode ? `default` : `primary`
     },
     ...mapState({
       nightMode: (state) => state.nightMode,
@@ -83,23 +83,23 @@ export default {
   methods: {
     // 插入表格
     insertTable() {
-      const cursor = this.editor.getCursor();
+      const cursor = this.editor.getCursor()
       const table = createTable({
         data: this.tableData,
         rows: this.rowNum,
         cols: this.colNum,
-      });
+      })
 
-      this.tableData = {};
-      this.rowNum = 3;
-      this.colNum = 3;
-      this.editor.replaceSelection(`\n${table}\n`, "end");
-      this.$emit("input", false);
-      this.editorRefresh();
+      this.tableData = {}
+      this.rowNum = 3
+      this.colNum = 3
+      this.editor.replaceSelection(`\n${table}\n`, `end`)
+      this.$emit(`input`, false)
+      this.editorRefresh()
     },
-    ...mapMutations(["editorRefresh"]),
+    ...mapMutations([`editorRefresh`]),
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
