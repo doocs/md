@@ -1,5 +1,30 @@
 <template>
   <el-container class="top is-dark">
+    <el-dialog
+      title="发布"
+      :visible.sync="form.dialogVisible"
+      >
+      <div class="postInfo">
+        <el-form ref="form" :model="form" label-width="80px">
+          <el-form-item label="封面">
+            <el-input v-model="form.thumb" placeholder="自动提取第一张图"></el-input>
+          </el-form-item>
+          <el-form-item label="标题">
+            <el-input v-model="form.title" placeholder="自动提取第一个标题"></el-input>
+          </el-form-item>
+          <el-form-item label="描述">
+            <el-input type="textarea" :rows="4" v-model="form.desc" placeholder="自动提取第一个段落"></el-input>
+          </el-form-item>
+          <el-form-item>
+            <div class="info">注：此功能由第三方浏览器插件支持，本平台不保证安全性。</div>
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="form.dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="post">确 定</el-button>
+      </span>
+    </el-dialog>
     <div class="left-side">
       <!-- 图片上传 -->
       <el-tooltip :effect="effect" content="上传图片" placement="bottom-start">
@@ -175,6 +200,14 @@
         :type="btnType"
         plain
         size="medium"
+        @click="prePost"
+        placement="bottom-start"
+        >发布</el-button
+      >
+      <el-button
+        :type="btnType"
+        plain
+        size="medium"
         class="about"
         @click="$emit('show-about-dialog')"
         >关于</el-button
@@ -215,6 +248,13 @@ export default {
   name: "editor-header",
   data() {
     return {
+      form: {
+        dialogVisible: false,
+        title: ``,
+        desc: ``,
+        thumb: ``,
+        content: ``,
+      },
       config: config,
       citeStatus: false,
       showResetConfirm: false,
@@ -250,6 +290,34 @@ export default {
     }),
   },
   methods: {
+    prePost() {
+      let auto = {}
+      try {
+        auto = {
+          thumb: document.querySelector(`#output img`).src,
+          title: [1,2,3,4,5,6].map(h => document.querySelector(`#output h${h}`)).filter(h => h)[0].innerText,
+          desc: document.querySelector(`#output p`).innerText,
+          content: this.output,
+        }
+      } catch (error) {
+        console.log(`error`, error)
+      }
+      this.form = {
+        dialogVisible: true,
+        ...auto,
+        auto,
+      }
+    },
+    post() {
+      this.form.dialogVisible = false
+      // 使用 window.$syncer 可以检测是否安装插件
+      window.syncPost({
+        title: this.form.title || this.form.auto.title,
+        desc: this.form.desc || this.form.auto.desc,
+        content: this.form.content || this.form.auto.content,
+        thumb: this.form.thumb || this.form.auto.thumb,
+      })
+    },
     fontChanged(fonts) {
       this.setWxRendererOptions({
         fonts: fonts,
