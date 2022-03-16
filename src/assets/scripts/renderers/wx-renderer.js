@@ -136,22 +136,22 @@ class WxRenderer {
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;
       renderer.listitem = (text) =>
-        `<span ${getStyles(
+        `<li ${getStyles(
           "listitem"
-        )}><span style="margin-right: 10px;"><%s/></span>${text}</span>`;
+        )}><span><%s/></span>${text}</li>`;
 
       renderer.list = (text, ordered, start) => {
         text = text.replace(/<\/*p.*?>/g, "");
         let segments = text.split(`<%s/>`);
         if (!ordered) {
-          text = segments.join("•");
-          return `<p ${getStyles("ul")}>${text}</p>`;
+          text = segments.join("• ");
+          return `<ul ${getStyles("ul")}>${text}</ul>`;
         }
         text = segments[0];
         for (let i = 1; i < segments.length; i++) {
-          text = text + i + "." + segments[i];
+          text = text + i + ". " + segments[i];
         }
-        return `<p ${getStyles("ol")}>${text}</p>`;
+        return `<ol ${getStyles("ol")}>${text}</ol>`;
       };
       renderer.image = (href, title, text) => {
         let subText = "";
