@@ -5,7 +5,7 @@
   "scripts": {
     "prepare": "husky install",
     "lint": "vue-cli-service lint src && vue-cli-service lint mm",
-    "start": "run-p serve mm",
+    "start": "npm run lint -- --fix && run-p serve mm",
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
     "build": "vue-cli-service build",
