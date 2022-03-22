@@ -93,7 +93,7 @@
   </div>
 </template>
 <script>
-import editorHeader from '../../../components/CodemirrorEditor/header'
+import editorHeader from '../../../components/CodemirrorEditor/editorHeader'
 import aboutDialog from '../../../components/CodemirrorEditor/aboutDialog'
 import insertFormDialog from '../../../components/CodemirrorEditor/insertForm'
 import rightClickMenu from '../../../components/CodemirrorEditor/rightClickMenu'

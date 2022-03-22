@@ -183,6 +183,7 @@
         </el-switch>
       </el-tooltip>
     </div>
+    <!-- 顶部右侧菜单 -->
     <div class="right-side">
       <el-tooltip
         class="item"
@@ -248,9 +249,9 @@ import {
   setFontSize,
   fixCodeWhiteSpace,
   setColorWithCustomTemplate,
-} from '../../assets/scripts/util'
-import { solveWeChatImage, solveHtml } from '../../assets/scripts/converter'
-import config from '../../assets/scripts/config'
+} from '../../../assets/scripts/util'
+import { solveWeChatImage, solveHtml } from '../../../assets/scripts/converter'
+import config from '../../../assets/scripts/config'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import resetDialog from './resetDialog'
 import { mapState, mapMutations } from 'vuex'
@@ -471,12 +472,12 @@ export default {
   margin-right: 24px;
   width: 24px;
   height: 24px;
-  background: url('../../assets/images/night.png') no-repeat;
+  background: url('../../../assets/images/night.png') no-repeat;
   background-size: cover;
   transition: all 0.3s;
 }
 .mode__switch_black {
-  background: url('../../assets/images/light.png') no-repeat;
+  background: url('../../../assets/images/light.png') no-repeat;
   background-size: cover;
 }
 .top {
