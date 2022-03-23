@@ -28,8 +28,7 @@
               type="textarea"
               placeholder="Your markdown text here."
               v-model="source"
-            >
-            </textarea>
+            ></textarea>
           </el-col>
           <el-col
             :span="12"
@@ -67,8 +66,7 @@
                 id="cssEditor"
                 type="textarea"
                 placeholder="Your custom css here."
-              >
-              </textarea>
+              ></textarea>
             </el-col>
           </transition>
         </el-row>
@@ -115,6 +113,7 @@ import fileApi from '../../../api/file'
 
 require(`codemirror/mode/javascript/javascript`)
 import { mapState, mapMutations } from 'vuex'
+
 export default {
   data() {
     return {
@@ -464,30 +463,37 @@ export default {
   padding-top: 12px;
   overflow: hidden;
 }
+
 .el-main {
   transition: all 0.3s;
   padding: 0;
   margin: 20px;
   margin-top: 0;
 }
+
 .container {
   transition: all 0.3s;
 }
+
 .textarea-wrapper {
   height: 100%;
 }
+
 .preview-wrapper_night {
   overflow-y: inherit;
   position: relative;
   left: -3px;
+
   .preview {
     background-color: #fff;
   }
 }
+
 #output-wrapper {
   position: relative;
   user-select: text;
 }
+
 .loading-mask {
   position: absolute;
   top: 50%;
@@ -499,6 +505,7 @@ export default {
   font-size: 15px;
   color: gray;
   background-color: #1e1e1e;
+
   .loading__img {
     position: absolute;
     left: 50%;
@@ -509,6 +516,7 @@ export default {
     background: url('../../../assets/images/favicon.png') no-repeat;
     background-size: cover;
   }
+
   span {
     position: absolute;
     left: 50%;
@@ -516,11 +524,13 @@ export default {
     transform: translate(-50%, -50%);
   }
 }
+
 .bounceInRight {
   animation-name: bounceInRight;
   animation-duration: 1s;
   animation-fill-mode: both;
 }
+
 /deep/ .preview-table {
   border-spacing: 0px;
 }
@@ -551,6 +561,7 @@ export default {
     transform: none;
   }
 }
+
 .codeMirror-wrapper {
   overflow-x: auto;
 }
