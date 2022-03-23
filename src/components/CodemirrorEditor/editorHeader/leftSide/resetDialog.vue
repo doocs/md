@@ -8,9 +8,7 @@
     <div class="text">此操作将丢失本地自定义样式，是否继续?</div>
     <div slot="footer" class="dialog-footer">
       <el-button :type="btnType" @click="$emit('close')" plain>取 消</el-button>
-      <el-button :type="btnType" @click="$emit('confirm')" plain
-        >确 定</el-button
-      >
+      <el-button :type="btnType" @click="$emit('confirm')" plain>确 定</el-button>
     </div>
   </el-dialog>
 </template>
