@@ -21,6 +21,7 @@
           <el-col
             :span="12"
             class="codeMirror-wrapper"
+            ref="codeMirrorWrapper"
             @contextmenu.prevent.native="openMenu($event)"
           >
             <textarea
@@ -158,9 +159,104 @@ export default {
       this.initEditor()
       this.initCssEditor()
       this.onEditorRefresh()
+      this.mdLocalToRemote()
     })
   },
   methods: {
+    // 转换 markdown 中的本地图片为线上图片
+    // todo 处理事件覆盖
+    mdLocalToRemote() {
+      const vm = this
+      const dom = this.$refs.codeMirrorWrapper.$el
+
+      dom.ondragover = (evt) => evt.preventDefault()
+      dom.ondrop = async (evt) => {
+        evt.preventDefault()
+        for (const item of evt.dataTransfer.items) {
+          item.getAsFileSystemHandle().then(async (handle) => {
+            if (handle.kind === `directory`) {
+              const list = await showFileStructure(handle)
+              const md = await getMd({ list })
+              uploadMdImg({ md, list })
+            } else {
+              const file = await handle.getFile()
+              console.log(`file`, file)
+            }
+          })
+        }
+      }
+
+      // 从文件列表中查找一个 md 文件并解析
+      async function getMd({ list }) {
+        return new Promise((resolve, reject) => {
+          const { path, file } = list.find((item) => item.path.match(/\.md$/))
+          const reader = new FileReader()
+          reader.readAsText(file, `UTF-8`)
+          reader.onload = (evt) => {
+            resolve({
+              str: evt.target.result,
+              file,
+              path,
+            })
+          }
+        })
+      }
+
+      // 上传 md 中的图片
+      async function uploadMdImg({ md, list }) {
+        const mdImgList = [
+          ...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/gm) || []),
+        ].filter((item) => {
+          return item // 获取所有相对地址的图片
+        })
+        const root = md.path.match(/.+?\//)[0]
+        const resList = await Promise.all(
+          mdImgList.map((item) => {
+            return new Promise((resolve, reject) => {
+              const [, , matchStr] = item
+              const { file } =
+                list.find((f) => f.path === `${root}${matchStr}`) || {}
+              vm.uploadImage(file, (url) => {
+                resolve({ matchStr, url })
+              })
+            })
+          })
+        )
+        resList.forEach((item) => {
+          md.str = md.str.replace(`](${item.matchStr})`, `](${item.url})`)
+        })
+        vm.editor.setValue(md.str)
+        console.log(`resList`, resList, md.str)
+      }
+
+      // 转换文件系统句柄中的文件为文件列表
+      async function showFileStructure(root) {
+        const result = []
+        let cwd = ``
+        try {
+          const dirs = [root]
+          for (const dir of dirs) {
+            cwd += dir.name + `/`
+            for await (const [, handle] of dir) {
+              if (handle.kind === `file`) {
+                result.push({
+                  path: cwd + handle.name,
+                  file: await handle.getFile(),
+                })
+              } else {
+                result.push({
+                  path: cwd + handle.name + `/`,
+                })
+                dirs.push(handle)
+              }
+            }
+          }
+        } catch (err) {
+          console.error(err)
+        }
+        return result
+      }
+    },
     initEditor() {
       this.initEditorEntity()
       this.editor.on(`change`, (cm, e) => {
@@ -260,7 +356,7 @@ export default {
       }
       return true
     },
-    uploadImage(file) {
+    uploadImage(file, cb) {
       this.isImgLoading = true
       toBase64(file)
         .then((base64Content) => {
@@ -268,7 +364,7 @@ export default {
             .fileUpload(base64Content, file)
             .then((url) => {
               console.log(url)
-              this.uploaded(url)
+              cb ? cb(url) : this.uploaded(url)
             })
             .catch((err) => {
               this.$message.error(err.message)
