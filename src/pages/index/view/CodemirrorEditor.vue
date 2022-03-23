@@ -213,7 +213,8 @@ export default {
         const resList = await Promise.all(
           mdImgList.map((item) => {
             return new Promise((resolve, reject) => {
-              const [, , matchStr] = item
+              let [, , matchStr] = item
+              matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
               const { file } =
                 list.find((f) => f.path === `${root}${matchStr}`) || {}
               vm.uploadImage(file, (url) => {
@@ -223,7 +224,9 @@ export default {
           })
         )
         resList.forEach((item) => {
-          md.str = md.str.replace(`](${item.matchStr})`, `](${item.url})`)
+          md.str = md.str
+            .replace(`](./${item.matchStr})`, `](${item.url})`)
+            .replace(`](${item.matchStr})`, `](${item.url})`)
         })
         vm.editor.setValue(md.str)
         console.log(`resList`, resList, md.str)
