@@ -38,7 +38,7 @@
       @click="$emit('show-about-dialog')"
       >关于</el-button
     >
-    <!--   右侧灯泡 -->
+    <!--右侧灯泡 -->
     <el-tooltip :content="btnContent" :effect="effect" placement="bottom-start">
       <div
         class="mode__switch mode__switch_black"
@@ -115,6 +115,8 @@ export default {
       return this.nightMode ? `default` : `primary`
     },
     ...mapState({
+      output: (state) => state.output,
+      cssEditor: (state) => state.cssEditor,
       nightMode: (state) => state.nightMode,
     }),
   },
@@ -197,7 +199,7 @@ export default {
       }
     },
     // 重置样式
-    ...mapMutations([`themeChanged`]),
+    ...mapMutations([`themeChanged`, `setCssEditorValue`]),
   },
 }
 </script>
@@ -213,13 +215,13 @@ export default {
   margin-right: 24px;
   width: 24px;
   height: 24px;
-  background: url('../../../assets/images/night.png') no-repeat;
+  background: url('../../../../assets/images/night.png') no-repeat;
   background-size: cover;
   transition: all 0.3s;
 }
 
 .mode__switch_black {
-  background: url('../../../assets/images/light.png') no-repeat;
+  background: url('../../../../assets/images/light.png') no-repeat;
   background-size: cover;
 }
 </style>

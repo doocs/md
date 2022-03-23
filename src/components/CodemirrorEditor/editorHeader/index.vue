@@ -1,7 +1,18 @@
 <template>
   <el-container class="top is-dark">
-    <left-side @refresh="refresh"></left-side>
-    <right-side></right-side>
+    <left-side
+      @show-dialog-upload-img="showDialogUploadImg"
+      @download="download"
+      @export="exportEditorContent"
+      @refresh="refresh"
+      @show-dialog-form="showDialogForm"
+    ></left-side>
+    <right-side
+      @refresh="refresh"
+      @showCssEditor="showCssEditor"
+      @show-about-dialog="showAboutDialog"
+      @endCopy="endCopy"
+    ></right-side>
   </el-container>
 </template>
 
@@ -16,8 +27,29 @@ export default {
     RightSide,
   },
   methods: {
+    showDialogUploadImg() {
+      this.$emit(`show-dialog-upload-img`)
+    },
+    download() {
+      this.$emit(`download`)
+    },
+    exportEditorContent() {
+      this.$emit(`export`)
+    },
     refresh() {
       this.$emit(`refresh`)
+    },
+    showDialogForm() {
+      this.$emit(`show-dialog-form`)
+    },
+    showCssEditor() {
+      this.$emit(`showCssEditor`)
+    },
+    endCopy() {
+      this.$emit(`endCopy`)
+    },
+    showAboutDialog() {
+      this.$emit(`show-about-dialog`)
     },
   },
 }
