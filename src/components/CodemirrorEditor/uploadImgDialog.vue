@@ -39,7 +39,7 @@
           </div>
         </el-upload>
       </el-tab-pane>
-      <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
+      <!-- <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
         <el-form
           class="setting-form"
           :model="formGitee"
@@ -77,7 +77,7 @@
             >
           </el-form-item>
         </el-form>
-      </el-tab-pane>
+      </el-tab-pane> -->
       <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
         <el-form
           class="setting-form"
@@ -405,11 +405,11 @@ export default {
         branch: ``,
         accessToken: ``,
       },
-      formGitee: {
-        repo: ``,
-        branch: ``,
-        accessToken: ``,
-      },
+      // formGitee: {
+      //   repo: ``,
+      //   branch: ``,
+      //   accessToken: ``,
+      // },
       formAliOSS: {
         accessKeyId: ``,
         accessKeySecret: ``,
@@ -463,10 +463,10 @@ export default {
           value: `default`,
           label: `默认`,
         },
-        {
-          value: `gitee`,
-          label: `Gitee`,
-        },
+        // {
+        //   value: `gitee`,
+        //   label: `Gitee`,
+        // },
         {
           value: `github`,
           label: `GitHub`,
@@ -499,9 +499,9 @@ export default {
     if (localStorage.getItem(`githubConfig`)) {
       this.formGitHub = JSON.parse(localStorage.getItem(`githubConfig`))
     }
-    if (localStorage.getItem(`giteeConfig`)) {
-      this.formGitee = JSON.parse(localStorage.getItem(`giteeConfig`))
-    }
+    // if (localStorage.getItem(`giteeConfig`)) {
+    //   this.formGitee = JSON.parse(localStorage.getItem(`giteeConfig`))
+    // }
     if (localStorage.getItem(`aliOSSConfig`)) {
       this.formAliOSS = JSON.parse(localStorage.getItem(`aliOSSConfig`))
     }
@@ -529,15 +529,15 @@ export default {
       localStorage.setItem(`githubConfig`, JSON.stringify(this.formGitHub))
       this.$message.success(`保存成功`)
     },
-    saveGiteeConfiguration() {
-      if (!(this.formGitee.repo && this.formGitee.accessToken)) {
-        const blankElement = this.formGitee.repo ? `私人令牌` : `Gitee 仓库`
-        this.$message.error(`参数「${blankElement}」不能为空`)
-        return
-      }
-      localStorage.setItem(`giteeConfig`, JSON.stringify(this.formGitee))
-      this.$message.success(`保存成功`)
-    },
+    // saveGiteeConfiguration() {
+    //   if (!(this.formGitee.repo && this.formGitee.accessToken)) {
+    //     const blankElement = this.formGitee.repo ? `私人令牌` : `Gitee 仓库`
+    //     this.$message.error(`参数「${blankElement}」不能为空`)
+    //     return
+    //   }
+    //   localStorage.setItem(`giteeConfig`, JSON.stringify(this.formGitee))
+    //   this.$message.success(`保存成功`)
+    // },
     saveAliOSSConfiguration() {
       if (
         !(
