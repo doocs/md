@@ -2,19 +2,22 @@
   <div class="container" :class="{ container_night: nightMode }">
     <el-container>
       <el-header class="editor__header">
-        <editor-header
-          ref="header"
-          @refresh="onEditorRefresh"
-          @cssChanged="cssChanged"
-          @download="downloadEditorContent"
-          @export="exportEditorContent"
-          @showCssEditor="showCssEditor = !showCssEditor"
-          @show-about-dialog="aboutDialogVisible = true"
-          @show-dialog-form="dialogFormVisible = true"
-          @show-dialog-upload-img="dialogUploadImgVisible = true"
-          @startCopy=";(isCoping = true), (backLight = true)"
-          @endCopy="endCopy"
-        />
+        <el-container class="top is-dark" ref="header">
+          <left-side
+            @refresh="onEditorRefresh"
+            @download="downloadEditorContent"
+            @css-changed="cssChanged"
+            @export="exportEditorContent"
+            @show-dialog-upload-img="dialogUploadImgVisible = true"
+            @show-dialog-form="dialogFormVisible = true"
+          ></left-side>
+          <right-side
+            @refresh="onEditorRefresh"
+            @end-copy="endCopy"
+            @show-css-editor="showCssEditor = !showCssEditor"
+            @start-copy="; (isCoping = true), (backLight = true)"
+          ></right-side>
+        </el-container>
       </el-header>
       <el-main class="main-body">
         <el-row class="main-section">
@@ -39,10 +42,7 @@
               'preview-wrapper_night': nightMode && isCoping,
             }"
           >
-            <section
-              id="output-wrapper"
-              :class="{ output_night: nightMode && !backLight }"
-            >
+            <section id="output-wrapper" :class="{ output_night: nightMode && !backLight }">
               <div class="preview">
                 <section id="output" v-html="output"></section>
                 <div class="loading-mask" v-if="nightMode && isCoping">
@@ -52,21 +52,9 @@
               </div>
             </section>
           </el-col>
-          <transition
-            name="custom-classes-transition"
-            enter-active-class="bounceInRight"
-          >
-            <el-col
-              id="cssBox"
-              v-show="showCssEditor"
-              :span="12"
-              class="cssEditor-wrapper"
-            >
-              <textarea
-                id="cssEditor"
-                type="textarea"
-                placeholder="Your custom css here."
-              ></textarea>
+          <transition name="custom-classes-transition" enter-active-class="bounceInRight">
+            <el-col id="cssBox" v-show="showCssEditor" :span="12" class="cssEditor-wrapper">
+              <textarea id="cssEditor" type="textarea" placeholder="Your custom css here."></textarea>
             </el-col>
           </transition>
         </el-row>
@@ -79,7 +67,6 @@
       @uploadImage="uploadImage"
       @uploaded="uploaded"
     />
-    <about-dialog v-model="aboutDialogVisible" />
     <insert-form-dialog v-model="dialogFormVisible" />
     <right-click-menu
       v-model="rightClickMenuVisible"
@@ -91,11 +78,11 @@
   </div>
 </template>
 <script>
-import editorHeader from '../../../components/CodemirrorEditor/editorHeader'
-import aboutDialog from '../../../components/CodemirrorEditor/aboutDialog'
-import insertFormDialog from '../../../components/CodemirrorEditor/insertForm'
-import rightClickMenu from '../../../components/CodemirrorEditor/rightClickMenu'
-import uploadImgDialog from '../../../components/CodemirrorEditor/uploadImgDialog'
+import insertFormDialog from '@/components/CodemirrorEditor/insertForm'
+import rightClickMenu from '@/components/CodemirrorEditor/rightClickMenu'
+import uploadImgDialog from '@/components/CodemirrorEditor/uploadImgDialog'
+import LeftSide from '@/components/CodemirrorEditor/leftSide'
+import RightSide from '@/components/CodemirrorEditor/rightSide'
 
 import {
   css2json,
@@ -106,9 +93,9 @@ import {
   saveEditorContent,
   customCssWithTemplate,
   checkImage,
-} from '../../../assets/scripts/util'
+  toBase64,
+} from '@/assets/scripts/util'
 
-import { toBase64 } from '../../../assets/scripts/util'
 import fileApi from '../../../api/file'
 
 require(`codemirror/mode/javascript/javascript`)
@@ -118,7 +105,6 @@ export default {
   data() {
     return {
       showCssEditor: false,
-      aboutDialogVisible: false,
       dialogUploadImgVisible: false,
       dialogFormVisible: false,
       isCoping: false,
@@ -132,8 +118,8 @@ export default {
     }
   },
   components: {
-    editorHeader,
-    aboutDialog,
+    LeftSide,
+    RightSide,
     insertFormDialog,
     rightClickMenu,
     uploadImgDialog,
@@ -513,7 +499,7 @@ export default {
     width: 50px;
     height: 50px;
     transform: translate(-50%, -50%);
-    background: url('../../../assets/images/favicon.png') no-repeat;
+    background: url("../../../assets/images/favicon.png") no-repeat;
     background-size: cover;
   }
 
@@ -565,7 +551,15 @@ export default {
 .codeMirror-wrapper {
   overflow-x: auto;
 }
+
+.top {
+  height: 60px;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  margin-right: 0;
+}
 </style>
 <style lang="less" scoped>
-@import url('../../../assets/less/app.less');
+@import url("../../../assets/less/app.less");
 </style>

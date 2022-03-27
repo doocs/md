@@ -2,11 +2,7 @@
   <div class="left-side">
     <!-- 图片上传 -->
     <el-tooltip :effect="effect" content="上传图片" placement="bottom-start">
-      <i
-        class="el-icon-upload"
-        size="medium"
-        @click="$emit('show-dialog-upload-img')"
-      ></i>
+      <i class="el-icon-upload" size="medium" @click="$emit('show-dialog-upload-img')"></i>
     </el-tooltip>
     <!-- 导出 Markdown 文档 -->
     <el-tooltip
@@ -18,26 +14,12 @@
       <i class="el-icon-download" size="medium" @click="$emit('download')"></i>
     </el-tooltip>
     <!-- 导出 HTML -->
-    <el-tooltip
-      class="header__item"
-      :effect="effect"
-      content="导出 HTML 页面"
-      placement="bottom-start"
-    >
+    <el-tooltip class="header__item" :effect="effect" content="导出 HTML 页面" placement="bottom-start">
       <i class="el-icon-document" size="medium" @click="$emit('export')"></i>
     </el-tooltip>
     <!-- 样式重置 -->
-    <el-tooltip
-      class="header__item"
-      :effect="effect"
-      content="重置样式"
-      placement="bottom-start"
-    >
-      <i
-        class="el-icon-refresh"
-        size="medium"
-        @click="showResetConfirm = true"
-      ></i>
+    <el-tooltip class="header__item" :effect="effect" content="重置样式" placement="bottom-start">
+      <i class="el-icon-refresh" size="medium" @click="showResetConfirm = true"></i>
     </el-tooltip>
     <!-- 插入表格 -->
     <el-tooltip
@@ -46,19 +28,9 @@
       content="插入表格"
       placement="bottom-start"
     >
-      <i
-        class="el-icon-s-grid"
-        size="medium"
-        @click="$emit('show-dialog-form')"
-      ></i>
+      <i class="el-icon-s-grid" size="medium" @click="$emit('show-dialog-form')"></i>
     </el-tooltip>
-    <el-select
-      v-model="selectFont"
-      size="mini"
-      placeholder="选择字体"
-      clearable
-      @change="fontChanged"
-    >
+    <el-select v-model="selectFont" size="mini" placeholder="选择字体" clearable @change="fontChanged">
       <el-option
         v-for="font in config.builtinFonts"
         :style="{ fontFamily: font.value }"
@@ -104,12 +76,7 @@
         <span class="select-item-right">{{ color.desc }}</span>
       </el-option>
     </el-select>
-    <el-select
-      v-model="selectCodeTheme"
-      size="mini"
-      placeholder="代码主题"
-      @change="codeThemeChanged"
-    >
+    <el-select v-model="selectCodeTheme" size="mini" placeholder="代码主题" @change="codeThemeChanged">
       <el-option
         v-for="code in config.codeThemeOption"
         :key="code.value"
@@ -121,18 +88,9 @@
       </el-option>
     </el-select>
     <el-tooltip content="自定义颜色" :effect="effect" placement="top">
-      <el-color-picker
-        v-model="selectColor"
-        size="mini"
-        show-alpha
-        @change="colorChanged"
-      ></el-color-picker>
+      <el-color-picker v-model="selectColor" size="mini" show-alpha @change="colorChanged"></el-color-picker>
     </el-tooltip>
-    <el-tooltip
-      content="微信外链自动转为文末引用"
-      :effect="effect"
-      placement="top"
-    >
+    <el-tooltip content="微信外链自动转为文末引用" :effect="effect" placement="top">
       <el-switch
         class="header__switch"
         v-model="citeStatus"
