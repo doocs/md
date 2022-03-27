@@ -1,20 +1,50 @@
 <template>
   <div class="right-side">
-    <el-tooltip class="item" :effect="effect" content="自定义CSS样式" placement="left">
-      <el-button :type="btnType" plain size="medium" icon="el-icon-setting" @click="customStyle"></el-button>
+    <el-tooltip
+      class="item"
+      :effect="effect"
+      content="自定义CSS样式"
+      placement="left"
+    >
+      <el-button
+        :type="btnType"
+        plain
+        size="medium"
+        icon="el-icon-setting"
+        @click="customStyle"
+      ></el-button>
     </el-tooltip>
-    <el-button :type="btnType" plain size="medium" @click="copy" placement="bottom-start">复制</el-button>
-    <el-button :type="btnType" plain size="medium" @click="prePost" placement="bottom-start">发布</el-button>
+    <el-button
+      :type="btnType"
+      plain
+      size="medium"
+      @click="copy"
+      placement="bottom-start"
+      >复制</el-button
+    >
+    <el-button
+      :type="btnType"
+      plain
+      size="medium"
+      @click="prePost"
+      placement="bottom-start"
+      >发布</el-button
+    >
     <el-button
       :type="btnType"
       plain
       size="medium"
       class="about"
       @click="aboutDialogVisible = true"
-    >关于</el-button>
+      >关于</el-button
+    >
     <!--右侧灯泡 -->
     <el-tooltip :content="btnContent" :effect="effect" placement="bottom-start">
-      <div class="mode__switch mode__switch_black" v-if="nightMode" @click="themeChanged"></div>
+      <div
+        class="mode__switch mode__switch_black"
+        v-if="nightMode"
+        @click="themeChanged"
+      ></div>
       <div class="mode__switch" v-else @click="themeChanged"></div>
     </el-tooltip>
     <!--发布弹窗-->
@@ -22,16 +52,29 @@
       <div class="postInfo">
         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="封面">
-            <el-input v-model="form.thumb" placeholder="自动提取第一张图"></el-input>
+            <el-input
+              v-model="form.thumb"
+              placeholder="自动提取第一张图"
+            ></el-input>
           </el-form-item>
           <el-form-item label="标题">
-            <el-input v-model="form.title" placeholder="自动提取第一个标题"></el-input>
+            <el-input
+              v-model="form.title"
+              placeholder="自动提取第一个标题"
+            ></el-input>
           </el-form-item>
           <el-form-item label="描述">
-            <el-input type="textarea" :rows="4" v-model="form.desc" placeholder="自动提取第一个段落"></el-input>
+            <el-input
+              type="textarea"
+              :rows="4"
+              v-model="form.desc"
+              placeholder="自动提取第一个段落"
+            ></el-input>
           </el-form-item>
           <el-form-item>
-            <div class="info">注：此功能由第三方浏览器插件支持，本平台不保证安全性。</div>
+            <div class="info">
+              注：此功能由第三方浏览器插件支持，本平台不保证安全性。
+            </div>
           </el-form-item>
         </el-form>
       </div>
@@ -49,7 +92,7 @@
 import { solveHtml, solveWeChatImage } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import { mapMutations, mapState } from 'vuex'
-import AboutDialog from "@/components/CodemirrorEditor/rightSide/aboutDialog";
+import AboutDialog from '@/components/CodemirrorEditor/rightSide/aboutDialog'
 
 export default {
   name: `rightSide`,
@@ -177,13 +220,13 @@ export default {
   margin-right: 24px;
   width: 24px;
   height: 24px;
-  background: url("../../../assets/images/night.png") no-repeat;
+  background: url('../../../assets/images/night.png') no-repeat;
   background-size: cover;
   transition: all 0.3s;
 }
 
 .mode__switch_black {
-  background: url("../../../assets/images/light.png") no-repeat;
+  background: url('../../../assets/images/light.png') no-repeat;
   background-size: cover;
 }
 </style>

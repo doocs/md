@@ -15,7 +15,7 @@
             @refresh="onEditorRefresh"
             @end-copy="endCopy"
             @show-css-editor="showCssEditor = !showCssEditor"
-            @start-copy="; (isCoping = true), (backLight = true)"
+            @start-copy=";[isCoping, backLight] = [true, true]"
           ></right-side>
         </el-container>
       </el-header>
@@ -42,7 +42,10 @@
               'preview-wrapper_night': nightMode && isCoping,
             }"
           >
-            <section id="output-wrapper" :class="{ output_night: nightMode && !backLight }">
+            <section
+              id="output-wrapper"
+              :class="{ output_night: nightMode && !backLight }"
+            >
               <div class="preview">
                 <section id="output" v-html="output"></section>
                 <div class="loading-mask" v-if="nightMode && isCoping">
@@ -52,9 +55,21 @@
               </div>
             </section>
           </el-col>
-          <transition name="custom-classes-transition" enter-active-class="bounceInRight">
-            <el-col id="cssBox" v-show="showCssEditor" :span="12" class="cssEditor-wrapper">
-              <textarea id="cssEditor" type="textarea" placeholder="Your custom css here."></textarea>
+          <transition
+            name="custom-classes-transition"
+            enter-active-class="bounceInRight"
+          >
+            <el-col
+              id="cssBox"
+              v-show="showCssEditor"
+              :span="12"
+              class="cssEditor-wrapper"
+            >
+              <textarea
+                id="cssEditor"
+                type="textarea"
+                placeholder="Your custom css here."
+              ></textarea>
             </el-col>
           </transition>
         </el-row>
@@ -66,15 +81,15 @@
       @beforeUpload="beforeUpload"
       @uploadImage="uploadImage"
       @uploaded="uploaded"
-    />
-    <insert-form-dialog v-model="dialogFormVisible" />
+    ></upload-img-dialog>
+    <insert-form-dialog v-model="dialogFormVisible"></insert-form-dialog>
     <right-click-menu
       v-model="rightClickMenuVisible"
       :left="mouseLeft"
       :top="mouseTop"
       @menuTick="onMenuEvent"
       @closeMenu="closeRightClickMenu"
-    />
+    ></right-click-menu>
   </div>
 </template>
 <script>
@@ -499,7 +514,7 @@ export default {
     width: 50px;
     height: 50px;
     transform: translate(-50%, -50%);
-    background: url("../../../assets/images/favicon.png") no-repeat;
+    background: url('../../../assets/images/favicon.png') no-repeat;
     background-size: cover;
   }
 
@@ -561,5 +576,5 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-@import url("../../../assets/less/app.less");
+@import url('../../../assets/less/app.less');
 </style>
