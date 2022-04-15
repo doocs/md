@@ -368,6 +368,20 @@ docker run -d -p 8080:80 doocs/md:latest
         <sub>Dmego</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/_cNyKqRr8E1ENg9r7IO70Q">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img7@main/2022/04/15/1649987014805-5603399b-a3c0-4f28-b569-b08d64e7187a.png" style="width: 40px;"><br>
+        <sub>红岸</sub>
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/ekCoyhT-JjbYsysKBgdJzQ">
+        <img src="https://cdn.jsdelivr.net/gh/filess/img6@main/2022/04/15/1649987014808-6091327c-d2ea-4e9d-9dcc-ce91f18fb2e0.png" style="width: 40px;"><br>
+        <sub>HelloCoder</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
