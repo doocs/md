@@ -62,6 +62,7 @@
     "form-data": "4.0.0",
     "highlight.js": "^11.3.1",
     "jquery": "^3.6.0",
+    "cheerio": "1.0.0-rc.10",
     "juice": "^8.0.0",
     "marked": "^4.0.10",
     "minio": "^7.0.26",
