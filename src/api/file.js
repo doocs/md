@@ -93,7 +93,7 @@ async function ghFileUpload(content, filename) {
     },
   })
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
-  const cdnResourceUrl = `cdn.jsdelivr.net/gh/${username}/${repo}@${branch}/`
+  const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
   res.content = res.data?.content || res.content
   return useDefault
     ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)

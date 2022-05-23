@@ -13,7 +13,7 @@
     <div style="text-align: center; margin-top: 10px">
       <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
       <img
-        src="https://cdn.jsdelivr.net/gh/filess/img10@main/2022/03/26/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
+        src="https://fastly.jsdelivr.net/gh/filess/img10@main/2022/03/26/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
         style="width: 40%; display: block; margin: 20px auto 10px"
       />
     </div>
