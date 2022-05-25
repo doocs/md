@@ -1,6 +1,6 @@
 {
   "name": "md",
-  "version": "1.5.7",
+  "version": "1.5.8",
   "private": false,
   "scripts": {
     "prepare": "husky install",
