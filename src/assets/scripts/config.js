@@ -56,27 +56,27 @@ export default {
   codeThemeOption: [
     {
       label: `github`,
-      value: `https://fastly.jsdelivr.net/npm/highlight.js@11.5.1/styles/github.min.css`,
+      value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/github.min.css`,
       desc: `light`,
     },
     {
       label: `solarized-light`,
-      value: `https://fastly.jsdelivr.net/npm/highlight.js@11.5.1/styles/base16/solarized-light.min.css`,
+      value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/solarized-light.min.css`,
       desc: `light`,
     },
     {
       label: `atom-one-dark`,
-      value: `https://fastly.jsdelivr.net/npm/highlight.js@11.5.1/styles/atom-one-dark.min.css`,
+      value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/atom-one-dark.min.css`,
       desc: `dark`,
     },
     {
       label: `obsidian`,
-      value: `https://fastly.jsdelivr.net/npm/highlight.js@11.5.1/styles/obsidian.min.css`,
+      value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/obsidian.min.css`,
       desc: `dark`,
     },
     {
       label: `vs2015`,
-      value: `https://fastly.jsdelivr.net/npm/highlight.js@11.5.1/styles/vs2015.min.css`,
+      value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/vs2015.min.css`,
       desc: `dark`,
     },
   ],

@@ -1,6 +1,6 @@
 <div align="center">
 
-[![doocs-md](https://fastly.jsdelivr.net/gh/doocs/md/public/assets/images/logo-2.png)](https://github.com/doocs/md)
+[![doocs-md](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/logo-2.png)](https://github.com/doocs/md)
 
 </div>
 

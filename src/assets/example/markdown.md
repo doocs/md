@@ -6,7 +6,7 @@
 
 Google 搜索的自动补全功能可以在 Google 搜索应用的大多数位置使用，包括 [Google](https://www.google.com/) 主页、适用于 IOS 和 Android 的 Google 应用，我们只需要在 Google 搜索框上开始键入关键字，就可以看到联想词了。
 
-![](https://fastly.jsdelivr.net/gh/filess/img2@main/2022/03/26/1648303019705-c161ce00-d245-446a-b81c-42ec91474a40.gif)
+![](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303019705-c161ce00-d245-446a-b81c-42ec91474a40.gif)
 
 在上图示例中，我们可以看到，输入关键字 `juej`，Google 搜索会联想到“掘金”、“掘金小册”、“绝句”等等，好处就是，我们无须输入完整的关键字即可轻松完成针对这些 topics 的搜索。
 
@@ -22,7 +22,7 @@ Google 官方将自动补全功能称之为“预测”，而不是“建议”�
 
 另外，这些“预测”也会随着我们键入的关键字的变更而更改。例如，当我们把键入的关键字从 `juej` 更改为 `juex` 时，与“掘金”相关的预测会“消失”，同时，与“觉醒”、“决心”相关联的词会出现。
 
-![](https://fastly.jsdelivr.net/gh/filess/img6@main/2022/03/26/1648303068169-386a99cb-143b-4ded-a859-1b7a4c4b5bd3.gif)
+![](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303068169-386a99cb-143b-4ded-a859-1b7a4c4b5bd3.gif)
 
 ## 为什么看不到某些联想词？
 
@@ -38,7 +38,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 
 我们作为 Google 搜索的用户，如果认定某条预测违反了相关的搜索自动补全政策，可以进行举报反馈，点击右下角“**举报不当的联想查询**”并勾选相关选项即可。
 
-![](https://fastly.jsdelivr.net/gh/filess/img3@main/2022/03/26/1648303098026-cac215dc-42c9-462a-a359-dcfb12ed3234.gif)
+![](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303098026-cac215dc-42c9-462a-a359-dcfb12ed3234.gif)
 
 ## 如何实现自动补全算法？
 
@@ -61,7 +61,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 通常来说，许多词汇都以相同的前缀开头，比如 `need`、`nested` 都以 `ne` 开头，`seed`、`speed` 都以 `s` 开头。要是为每个单词分别存储公共前缀似乎很浪费。
 
 
-![](https://fastly.jsdelivr.net/gh/filess/img5@main/2022/03/26/1648303128008-93cf798d-2662-4eec-8f80-2e07436aebfe.png)
+![](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303128008-93cf798d-2662-4eec-8f80-2e07436aebfe.png)
 
 
 前缀树是一种利用公共前缀来加速补全速度的数据结构。前缀树在节点树中排列一组单词，单词沿着从根节点到叶子节点的路径存储，树的层次对应于前缀的字母位置。
@@ -75,7 +75,7 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 有没有一种方法可以更加节省存储空间呢？有的，那就是 DFA。
 
 <center>
-<img src="https://fastly.jsdelivr.net/gh/filess/img4@main/2022/03/26/1648303158478-66a96e2d-6424-43d6-8cb3-2f7a39f960b8.gif" style="width: 50%;"></center>
+<img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303158478-66a96e2d-6424-43d6-8cb3-2f7a39f960b8.gif" style="width: 50%;"></center>
 
 在上面的例子中，单词 `need`、`nested`、`seed` 和 `speed` 仅由 9 个节点组成，而上一张图中的前缀树包含了 17 个节点。
 
@@ -105,5 +105,5 @@ Google 拥有专门设计的系统，可以自动捕获不适当的预测结果�
 欢迎关注我的公众号“**Doocs**”，原创技术文章第一时间推送。
 
 <center>
-    <img src="https://fastly.jsdelivr.net/gh/filess/img10@main/2022/03/26/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png" style="width: 100px;">
+    <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png" style="width: 100px;">
 </center>
