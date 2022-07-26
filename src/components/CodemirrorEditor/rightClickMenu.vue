@@ -1,21 +1,21 @@
 <template>
-  <ul
-    v-show="value"
+  <div
     id="menu"
     class="menu"
+    v-show="value"
     :style="`left: ${left}px;top: ${top}px;`"
   >
-    <div class="menu__group" v-for="(menuItem, index) in menu" :key="index">
+    <ul class="menu__group" v-for="(menuItem, index) in menu" :key="index">
       <li
-        v-for="item of menuItem"
-        :key="item.key"
         class="menu_item"
-        @mousedown="onMouseDown(item.key)"
+        v-for="{ key, text } of menuItem"
+        :key="key"
+        @mousedown="onMouseDown(key)"
       >
-        <span>{{ item.text }}</span>
+        {{ text }}
       </li>
-    </div>
-  </ul>
+    </ul>
+  </div>
 </template>
 
 <script>
@@ -94,54 +94,36 @@ export default {
 }
 
 .menu_item {
+  list-style: none;
+  box-sizing: border-box;
+  padding: 4px 0 4px 24px;
   margin-top: 10px;
   min-width: 200px;
   font-size: 12px;
   line-height: 20px;
   color: #333333;
   cursor: pointer;
+
   &:first-of-type {
     margin-top: 0;
   }
+
   &:hover {
     background: #f0f0f0;
   }
-  span,
-  .btn-upload {
-    display: inline-block;
-    padding: 4px 0;
-    padding-left: 24px;
-    width: 100%;
-  }
-  .btn-upload {
-    margin: 0;
-    border: none;
-    outline: none;
-    background: transparent;
-  }
-  .btn-upload:hover {
-    background: #aaaaaa;
-  }
+
   ::v-deep .el-upload {
     width: 100%;
   }
 }
 
 .menu__group {
-  padding-top: 6px;
-  padding-bottom: 6px;
+  margin: 0;
+  padding: 6px 0;
   border-bottom: 1px solid #eeeeee;
+
   &:last-of-type {
     border-bottom: none;
   }
-}
-
-li:hover {
-  background-color: #1790ff;
-}
-
-li {
-  font-size: 15px;
-  list-style: none;
 }
 </style>
