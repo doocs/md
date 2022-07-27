@@ -304,18 +304,15 @@ export function exportHTML() {
  */
 export function createTable({ data, rows, cols }) {
   let table = ``
-  let currRow = []
   for (let i = 0; i < rows + 2; ++i) {
-    table += `|\t`
-    currRow = []
+    table += `| `
+    const currRow = []
     for (let j = 0; j < cols; ++j) {
       const rowIdx = i > 1 ? i - 1 : i
-      i === 1
-        ? currRow.push(`---\t`)
-        : currRow.push(data[`k_${rowIdx}_${j}`] || ``)
+      currRow.push(i === 1 ? `---` : data[`k_${rowIdx}_${j}`] || `     `)
     }
-    table += currRow.join(`\t|\t`)
-    table += `\t|\n`
+    table += currRow.join(` | `)
+    table += ` |\n`
   }
 
   return table
