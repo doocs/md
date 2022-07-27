@@ -94,11 +94,11 @@
   </div>
 </template>
 <script>
-import editorHeader from '../../../components/CodemirrorEditor/header'
-import aboutDialog from '../../../components/CodemirrorEditor/aboutDialog'
-import insertFormDialog from '../../../components/CodemirrorEditor/insertForm'
-import rightClickMenu from '../../../components/CodemirrorEditor/rightClickMenu'
-import uploadImgDialog from '../../../components/CodemirrorEditor/uploadImgDialog'
+import editorHeader from '../components/CodemirrorEditor/header'
+import aboutDialog from '../components/CodemirrorEditor/aboutDialog'
+import insertFormDialog from '../components/CodemirrorEditor/insertForm'
+import rightClickMenu from '../components/CodemirrorEditor/rightClickMenu'
+import uploadImgDialog from '../components/CodemirrorEditor/uploadImgDialog'
 
 import {
   css2json,
@@ -109,10 +109,10 @@ import {
   saveEditorContent,
   customCssWithTemplate,
   checkImage,
-} from '../../../assets/scripts/util'
+} from '../assets/scripts/util'
 
-import { toBase64 } from '../../../assets/scripts/util'
-import fileApi from '../../../api/file'
+import { toBase64 } from '../assets/scripts/util'
+import fileApi from '../api/file'
 
 require(`codemirror/mode/javascript/javascript`)
 import { mapState, mapMutations } from 'vuex'
@@ -605,7 +605,7 @@ export default {
     width: 50px;
     height: 50px;
     transform: translate(-50%, -50%);
-    background: url('../../../assets/images/favicon.png') no-repeat;
+    background: url('../assets/images/favicon.png') no-repeat;
     background-size: cover;
   }
   span {
@@ -655,5 +655,5 @@ export default {
 }
 </style>
 <style lang="less" scoped>
-@import url('../../../assets/less/app.less');
+@import url('../assets/less/app.less');
 </style>
