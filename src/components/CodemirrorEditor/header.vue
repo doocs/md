@@ -101,86 +101,153 @@
         </el-dropdown-menu>
       </el-dropdown>
 
-      <el-dropdown trigger="click">
+      <el-dropdown trigger="click" :hide-on-click="false">
         <span class="el-dropdown-link">
           样式<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item>
-            <el-select
-              v-model="selectFont"
-              size="mini"
-              placeholder="选择字体"
-              clearable
-              @change="fontChanged"
-            >
-              <el-option
-                v-for="font in config.builtinFonts"
-                :style="{ fontFamily: font.value }"
-                :key="font.value"
-                :label="font.label"
-                :value="font.value"
+            <el-dropdown placement="right" class="style-option-menu">
+              <div
+                class="el-dropdown-link"
               >
-                <span class="select-item-left">{{ font.label }}</span>
-                <span class="select-item-right">Abc</span>
-              </el-option>
-            </el-select>
+                字体
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  label="default"
+                  @click.native="fontChanged('')"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectFont === '' ? 1 : 0 }"
+                  ></i>
+                  <span>default</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                  v-for="font in config.builtinFonts"
+                  :style="{ fontFamily: font.value }"
+                  :key="font.value"
+                  :label="font.label"
+                  :value="font.value"
+                  @click.native="fontChanged(font.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectFont === font.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ font.label }}</span>
+                  <span class="select-item-right">Abc</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item>
-            <el-select
-              v-model="selectSize"
-              size="mini"
-              placeholder="选择段落字号"
-              clearable
-              @change="sizeChanged"
-            >
-              <el-option
-                v-for="size in config.sizeOption"
-                :key="size.value"
-                :label="size.label"
-                :value="size.value"
+            <el-dropdown placement="right" class="style-option-menu">
+              <div
+                class="el-dropdown-link"
               >
-                <span class="select-item-left">{{ size.label }}</span>
-                <span class="select-item-right">{{ size.desc }}</span>
-              </el-option>
-            </el-select>
+                字号
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  label="default"
+                  @click.native="sizeChanged('')"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectSize === '' ? 1 : 0 }"
+                  ></i>
+                  <span>default</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                  v-for="size in config.sizeOption"
+                  :key="size.value"
+                  :label="size.label"
+                  :value="size.value"
+                  @click.native="sizeChanged(size.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectSize === size.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ size.label }}</span>
+                  <span class="select-item-right">{{ size.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item>
-            <el-select
-              v-model="selectColor"
-              size="mini"
-              placeholder="选择颜色"
-              clearable
-              @change="colorChanged"
-            >
-              <el-option
-                v-for="color in config.colorOption"
-                :key="color.value"
-                :label="color.label"
-                :value="color.value"
+            <el-dropdown placement="right" class="style-option-menu">
+              <div
+                class="el-dropdown-link"
               >
-                <span class="select-item-left">{{ color.label }}</span>
-                <span class="select-item-right">{{ color.desc }}</span>
-              </el-option>
-            </el-select>
+                颜色
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  label="default"
+                  @click.native="colorChanged('')"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectColor === '' ? 1 : 0 }"
+                  ></i>
+                  <span>default</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                  v-for="color in config.colorOption"
+                  :key="color.value"
+                  :label="color.label"
+                  :value="color.value"
+                  @click.native="colorChanged(color.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectColor === color.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ color.label }}</span>
+                  <span class="select-item-right">{{ color.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-dropdown-item>
           <el-dropdown-item>
-            <el-select
-              v-model="selectCodeTheme"
-              size="mini"
-              placeholder="代码主题"
-              @change="codeThemeChanged"
-            >
-              <el-option
-                v-for="code in config.codeThemeOption"
-                :key="code.value"
-                :label="code.label"
-                :value="code.value"
-              >
-                <span class="select-item-left">{{ code.label }}</span>
-                <span class="select-item-right">{{ code.desc }}</span>
-              </el-option>
-            </el-select>
+            <el-dropdown placement="right" class="style-option-menu">
+              <div class="el-dropdown-link">
+                代码主题
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  label="default"
+                  @click.native="codeThemeChanged('')"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectCodeTheme === '' ? 1 : 0 }"
+                  ></i>
+                  <span>default</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                  v-for="code in config.codeThemeOption"
+                  :key="code.value"
+                  :label="code.label"
+                  :value="code.value"
+                  @click.native="codeThemeChanged(code.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectCodeTheme === code.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ code.label }}</span>
+                  <span class="select-item-right">{{ code.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-dropdown-item>
           <!-- TODO 体验不佳，需要点击右侧的小图标 -->
           <el-dropdown-item divided>
@@ -346,6 +413,7 @@ export default {
         fonts: fonts,
       })
       this.setCurrentFont(fonts)
+      this.selectFont = fonts
       this.$emit(`refresh`)
     },
     sizeChanged(size) {
@@ -356,6 +424,7 @@ export default {
         theme: theme,
       })
       this.setCurrentSize(size)
+      this.selectSize = size
       this.$emit(`refresh`)
     },
     colorChanged(color) {
@@ -366,10 +435,12 @@ export default {
         theme: theme,
       })
       this.setCurrentColor(color)
+      this.selectColor = color
       this.$emit(`refresh`)
     },
     codeThemeChanged(theme) {
       this.setCurrentCodeTheme(theme)
+      this.selectCodeTheme = theme
       this.$emit(`refresh`)
     },
     statusChanged() {
@@ -529,5 +600,19 @@ export default {
 
 .el-dropdown {
   margin: 0 10px;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+}
+
+.style-option-menu {
+  margin: 0;
+  width: 150px;
+  .el-dropdown-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 }
 </style>
