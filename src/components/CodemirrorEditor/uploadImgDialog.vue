@@ -107,13 +107,13 @@
               type="primary"
               href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
               target="_blank"
-              >如何获取 GitHub Token？</el-link
-            >
+              >如何获取 GitHub Token？
+            </el-link>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="saveGitHubConfiguration"
-              >保存配置</el-button
-            >
+              >保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -164,13 +164,13 @@
               type="primary"
               href="https://help.aliyun.com/document_detail/31883.html"
               target="_blank"
-              >如何使用阿里云 OSS？</el-link
-            >
+              >如何使用阿里云 OSS？
+            </el-link>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="saveAliOSSConfiguration"
-              >保存配置</el-button
-            >
+            <el-button type="primary" @click="saveAliOSSConfiguration">
+              保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -221,13 +221,13 @@
               type="primary"
               href="https://cloud.tencent.com/document/product/436/38484"
               target="_blank"
-              >如何使用腾讯云 COS？</el-link
-            >
+              >如何使用腾讯云 COS？
+            </el-link>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="saveTxCOSConfiguration"
-              >保存配置</el-button
-            >
+            <el-button type="primary" @click="saveTxCOSConfiguration">
+              保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -278,13 +278,13 @@
               type="primary"
               href="https://developer.qiniu.com/kodo"
               target="_blank"
-              >如何使用七牛云 Kodo？</el-link
-            >
+              >如何使用七牛云 Kodo？
+            </el-link>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="saveQiniuConfiguration"
-              >保存配置</el-button
-            >
+            <el-button type="primary" @click="saveQiniuConfiguration">
+              保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -337,13 +337,13 @@
               type="primary"
               href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
               target="_blank"
-              >如何使用 MinIO？</el-link
-            >
+              >如何使用 MinIO？
+            </el-link>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="saveMinioOSSConfiguration"
-              >保存配置</el-button
-            >
+            <el-button type="primary" @click="saveMinioOSSConfiguration">
+              保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -371,13 +371,13 @@
               type="primary"
               href="https://github.com/doocs/md#自定义上传逻辑"
               target="_blank"
-              >参数详情？</el-link
-            >
+              >参数详情？
+            </el-link>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="formCustomSave"
-              >保存配置</el-button
-            >
+              >保存配置
+            </el-button>
           </el-form-item>
         </el-form>
       </el-tab-pane>
@@ -654,24 +654,34 @@ export default {
 </script>
 
 <style lang="less" scoped>
+.upload__dialog {
+  display: flex;
+}
+
 /deep/ .el-dialog {
   width: 55%;
-  min-height: 615px;
   min-width: 640px;
+  min-height: 615px;
+  // 消除固定的行内样式，配合 flex 布局居中元素
+  margin: auto !important;
 }
+
 /deep/ .el-upload-dragger {
   display: flex;
   flex-flow: column;
   justify-content: center;
   width: 500px;
   height: 360px;
+
   .el-icon-upload {
     margin-top: 0;
   }
 }
+
 /deep/ .el-dialog__body {
   padding-bottom: 50px;
 }
+
 .upload-panel {
   display: flex;
   flex-direction: column;
@@ -689,9 +699,11 @@ export default {
 .github-panel {
   display: flex;
   justify-content: center;
+
   &.formCustom {
     width: 100%;
   }
+
   .formCustomElInput {
     /deep/ .CodeMirror {
       border: 1px solid #eee;
@@ -699,6 +711,7 @@ export default {
       font-family: 'Fira Mono', 'DejaVu Sans Mono', Menlo, Consolas,
         'Liberation Mono', Monaco, 'Lucida Console', monospace !important;
       line-height: 20px;
+
       .CodeMirror-scroll {
         padding: 10px;
       }
