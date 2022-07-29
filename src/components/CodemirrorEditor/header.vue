@@ -54,6 +54,13 @@
             <i class="el-icon-document" size="medium"></i>
             导出 .html
           </el-dropdown-item>
+          <el-dropdown-item divided @click.native="themeChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: nightMode ? 1 : 0 }"
+            ></i>
+            暗黑模式
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
 
@@ -252,19 +259,6 @@
         placement="bottom-start"
         >发布
       </el-button>
-
-      <el-tooltip
-        :content="btnContent"
-        :effect="effect"
-        placement="bottom-start"
-      >
-        <div
-          class="mode__switch mode__switch_black"
-          v-if="nightMode"
-          @click="themeChanged"
-        ></div>
-        <div class="mode__switch" v-else @click="themeChanged"></div>
-      </el-tooltip>
     </div>
     <resetDialog
       :showResetConfirm="showResetConfirm"
@@ -563,6 +557,7 @@ export default {
 .style-option-menu {
   margin: 0;
   width: 150px;
+
   .el-dropdown-link {
     display: flex;
     align-items: center;
