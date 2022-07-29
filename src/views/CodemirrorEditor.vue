@@ -6,6 +6,7 @@
           ref="header"
           @refresh="onEditorRefresh"
           @cssChanged="cssChanged"
+          @import-md="importMD"
           @download="downloadEditorContent"
           @export="exportEditorContent"
           @showCssEditor="showCssEditor = !showCssEditor"
@@ -109,6 +110,7 @@ import {
   saveEditorContent,
   customCssWithTemplate,
   checkImage,
+  importMD,
 } from '../assets/scripts/util'
 
 import { toBase64 } from '../assets/scripts/util'
@@ -445,6 +447,10 @@ export default {
       setTimeout(() => {
         this.isCoping = false
       }, 800)
+    },
+    importMD(md) {
+      this.editor.setValue(md)
+      this.onEditorRefresh()
     },
     // 导出编辑器内容到本地
     downloadEditorContent() {

@@ -42,9 +42,10 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <!-- TODO 导入功能待完成 -->
-          <el-dropdown-item disabled>
+          <el-dropdown-item @click.native="refClick">
             <i class="el-icon-upload2" size="medium"></i>
             导入 .md
+            <input hidden type="file" ref="fileInput" accept=".md" />
           </el-dropdown-item>
           <el-dropdown-item @click.native="$emit('download')">
             <i class="el-icon-download" size="medium"></i>
@@ -86,7 +87,10 @@
             格式化
           </el-dropdown-item>
           <el-dropdown-item @click.native="statusChanged">
-            <i :class="citeStatus ? 'el-icon-check' : 'el-icon-close'"></i>
+            <i
+              class="el-icon-check"
+              :style="{ opacity: citeStatus ? 1 : 0 }"
+            ></i>
             微信外链转底部引用
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -326,6 +330,9 @@ export default {
     }),
   },
   methods: {
+    refClick() {
+      this.$refs.fileInput.click()
+    },
     prePost() {
       let auto = {}
       try {
@@ -480,6 +487,19 @@ export default {
     this.selectColor = this.currentColor
     this.selectCodeTheme = this.codeTheme
     this.citeStatus = this.currentCiteStatus
+
+    const fileInput = this.$refs.fileInput
+    fileInput.onchange = () => {
+      const file = fileInput.files[0]
+      if (file == null) {
+        return
+      }
+      const read = new FileReader()
+      read.readAsText(file)
+      read.onload = () => {
+        this.$emit(`import-md`, read.result)
+      }
+    }
   },
 }
 </script>
