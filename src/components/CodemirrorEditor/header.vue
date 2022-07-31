@@ -74,30 +74,35 @@
             @click.native="$emit('addFormat', '**')"
           >
             加粗
+            <kbd> Ctrl + B </kbd>
           </el-dropdown-item>
           <el-dropdown-item
             class="format-item"
             @click.native="$emit('addFormat', '*')"
           >
             斜体
+            <kbd> Ctrl + I </kbd>
           </el-dropdown-item>
           <el-dropdown-item
             class="format-item"
             @click.native="$emit('addFormat', '~~')"
           >
             删除线
+            <kbd> Alt + Shift + U </kbd>
           </el-dropdown-item>
           <el-dropdown-item
             class="format-item"
             @click.native="$emit('addFormat', '[', ']()')"
           >
             超链接
+            <kbd> Alt + Shift + K </kbd>
           </el-dropdown-item>
           <el-dropdown-item
             class="format-item"
             @click.native="$emit('formatContent')"
           >
             格式化
+            <kbd> Ctrl + Alt + L </kbd>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="statusChanged">
             <i
@@ -603,5 +608,12 @@ export default {
 
 .format-item {
   padding-left: 3em;
+  width: 180px;
+
+  kbd {
+    font-size: 0.75em;
+    float: right;
+    color: #666;
+  }
 }
 </style>

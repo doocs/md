@@ -1,5 +1,11 @@
 <template>
-  <div class="container" :class="{ container_night: nightMode }">
+  <div
+    class="container"
+    :class="{ container_night: nightMode }"
+    @keydown.alt.shift.k="addFormat('[', ']()')"
+    @keydown.alt.shift.u="addFormat('~~')"
+    @keydown.ctrl.alt.l="formatContent()"
+  >
     <el-container>
       <el-header class="editor__header">
         <editor-header
@@ -112,7 +118,6 @@ import {
   saveEditorContent,
   customCssWithTemplate,
   checkImage,
-  importMD,
 } from '../assets/scripts/util'
 import { toBase64 } from '../assets/scripts/util'
 import fileApi from '../api/file'
