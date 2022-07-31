@@ -227,11 +227,11 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <!-- TODO 体验不佳，需要点击右侧的小图标 -->
-          <el-dropdown-item divided>
+          <el-dropdown-item divided @click.native="showPicker()">
             自定义颜色
             <el-color-picker
               show-alpha
+              ref="colorPicker"
               size="mini"
               style="float: right; margin-top: 3px"
               v-model="selectColor"
@@ -345,6 +345,9 @@ export default {
   methods: {
     refClick() {
       this.$refs.fileInput.click()
+    },
+    showPicker() {
+      this.$refs.colorPicker.showPicker = true
     },
     prePost() {
       let auto = {}
