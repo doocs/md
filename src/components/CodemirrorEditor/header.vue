@@ -41,7 +41,6 @@
           文件<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <!-- TODO 导入功能待完成 -->
           <el-dropdown-item @click.native="refClick">
             <i class="el-icon-upload2" size="medium"></i>
             导入 .md
@@ -69,24 +68,38 @@
         <span class="el-dropdown-link">
           格式<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
-        <!-- TODO 待实现格式功能  -->
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item disabled style="padding-left: 3em">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '**')"
+          >
             加粗
           </el-dropdown-item>
-          <el-dropdown-item disabled style="padding-left: 3em">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '*')"
+          >
             斜体
           </el-dropdown-item>
-          <el-dropdown-item disabled style="padding-left: 3em">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '~~')"
+          >
             删除线
           </el-dropdown-item>
-          <el-dropdown-item disabled style="padding-left: 3em">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '[', ']()')"
+          >
             超链接
           </el-dropdown-item>
-          <el-dropdown-item disabled style="padding-left: 3em">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('formatContent')"
+          >
             格式化
           </el-dropdown-item>
-          <el-dropdown-item @click.native="statusChanged">
+          <el-dropdown-item divided @click.native="statusChanged">
             <i
               class="el-icon-check"
               :style="{ opacity: citeStatus ? 1 : 0 }"
@@ -583,5 +596,9 @@ export default {
     align-items: center;
     justify-content: space-between;
   }
+}
+
+.format-item {
+  padding-left: 3em;
 }
 </style>

@@ -4,6 +4,8 @@
       <el-header class="editor__header">
         <editor-header
           ref="header"
+          @addFormat="addFormat"
+          @formatContent="formatContent"
           @refresh="onEditorRefresh"
           @cssChanged="cssChanged"
           @import-md="importMD"
@@ -112,12 +114,12 @@ import {
   checkImage,
   importMD,
 } from '../assets/scripts/util'
-
 import { toBase64 } from '../assets/scripts/util'
 import fileApi from '../api/file'
+import { mapState, mapMutations } from 'vuex'
 
 require(`codemirror/mode/javascript/javascript`)
-import { mapState, mapMutations } from 'vuex'
+
 export default {
   data() {
     return {
@@ -448,6 +450,60 @@ export default {
         this.isCoping = false
       }, 800)
     },
+    // 工具函数，添加格式
+    addFormat(before, after = before) {
+      const { head, anchor } = this.editor.doc.sel.ranges[0]
+      let start
+      let end
+      // 确定起始关系
+      if (head.line === anchor.line) {
+        if (head.ch < anchor.ch) {
+          start = head
+          end = anchor
+        } else {
+          start = anchor
+          end = head
+        }
+      } else if (head.line < anchor.line) {
+        start = head
+        end = anchor
+      } else {
+        start = head
+        end = anchor
+      }
+
+      const rows = []
+      let row = ``
+      for (const c of this.editor.getValue()) {
+        if (c === `\n`) {
+          rows.push(row)
+          row = ``
+        } else {
+          row += c
+        }
+      }
+      rows.push(row)
+
+      let txt = ``
+      for (let i = 0; i < rows.length; i++) {
+        const row = rows[i]
+        for (let j = 0; j < row.length; j++) {
+          if (i === start.line && j === start.ch) {
+            txt += before
+          }
+          if (i === end.line && j === end.ch) {
+            txt += after
+          }
+          txt += row[j]
+        }
+        //* 特殊情况，结束光标在末尾，无法遍历到
+        if (i === end.line && row.length === end.ch) {
+          txt += after
+        }
+        txt += `\n`
+      }
+      this.editor.setValue(txt)
+    },
     importMD(md) {
       this.editor.setValue(md)
       this.onEditorRefresh()
@@ -569,30 +625,37 @@ export default {
   padding-top: 12px;
   overflow: hidden;
 }
+
 .el-main {
   transition: all 0.3s;
   padding: 0;
   margin: 20px;
   margin-top: 0;
 }
+
 .container {
   transition: all 0.3s;
 }
+
 .textarea-wrapper {
   height: 100%;
 }
+
 .preview-wrapper_night {
   overflow-y: inherit;
   position: relative;
   left: -3px;
+
   .preview {
     background-color: #fff;
   }
 }
+
 #output-wrapper {
   position: relative;
   user-select: text;
 }
+
 .loading-mask {
   position: absolute;
   top: 50%;
@@ -604,6 +667,7 @@ export default {
   font-size: 15px;
   color: gray;
   background-color: #1e1e1e;
+
   .loading__img {
     position: absolute;
     left: 50%;
@@ -614,6 +678,7 @@ export default {
     background: url('../assets/images/favicon.png') no-repeat;
     background-size: cover;
   }
+
   span {
     position: absolute;
     left: 50%;
@@ -621,11 +686,13 @@ export default {
     transform: translate(-50%, -50%);
   }
 }
+
 .bounceInRight {
   animation-name: bounceInRight;
   animation-duration: 1s;
   animation-fill-mode: both;
 }
+
 /deep/ .preview-table {
   border-spacing: 0px;
 }
@@ -656,6 +723,7 @@ export default {
     transform: none;
   }
 }
+
 .codeMirror-wrapper {
   overflow-x: auto;
 }
