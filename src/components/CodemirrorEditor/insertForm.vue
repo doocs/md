@@ -44,18 +44,19 @@
       </tr>
     </table>
     <div slot="footer" class="dialog-footer">
-      <el-button :type="btnType" plain @click="$emit('input', false)"
-        >取 消</el-button
-      >
-      <el-button :type="btnType" @click="insertTable" plain>确 定</el-button>
+      <el-button :type="btnType" @click="$emit('input', false)" plain>
+        取 消
+      </el-button>
+      <el-button :type="btnType" @click="insertTable" plain> 确 定 </el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
-import config from '../../assets/scripts/config'
-import { createTable } from '../../assets/scripts/util'
+import config from '@/assets/scripts/config'
+import { createTable } from '@/assets/scripts/util'
 import { mapState, mapMutations } from 'vuex'
+
 export default {
   props: {
     value: {
@@ -108,6 +109,7 @@ export default {
   min-height: 375px;
   min-width: 440px;
 }
+
 .tb-options {
   margin-bottom: 20px;
 }

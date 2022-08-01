@@ -118,8 +118,8 @@ import {
   saveEditorContent,
   customCssWithTemplate,
   checkImage,
-} from '../assets/scripts/util'
-import { toBase64 } from '../assets/scripts/util'
+  toBase64,
+} from '@/assets/scripts/util'
 import fileApi from '../api/file'
 import { mapState, mapMutations } from 'vuex'
 
@@ -339,7 +339,7 @@ export default {
       if (el != undefined) {
         el.setAttribute(`href`, cssUrl)
       } else {
-        var link = document.createElement(`link`)
+        const link = document.createElement(`link`)
         link.setAttribute(`type`, `text/css`)
         link.setAttribute(`rel`, `stylesheet`)
         link.setAttribute(`href`, cssUrl)
@@ -699,7 +699,7 @@ export default {
 }
 
 /deep/ .preview-table {
-  border-spacing: 0px;
+  border-spacing: 0;
 }
 
 @keyframes bounceInRight {

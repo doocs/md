@@ -1,26 +1,10 @@
-import defaultTheme from './themes/default-theme'
 import prettier from 'prettier/standalone'
-import prettierMarkdown from 'prettier/parser-markdown'
 import prettierCss from 'prettier/parser-postcss'
+import prettierMarkdown from 'prettier/parser-markdown'
+import defaultTheme from './themes/default-theme'
 
-// 设置自定义颜色
-export function setColorWithTemplate(template) {
-  return function (color) {
-    let customTheme = JSON.parse(JSON.stringify(template))
-    customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
-    customTheme.block.h2[`background`] = color
-    customTheme.block.h3[`border-left`] = `3px solid ${color}`
-    customTheme.block.h4[`color`] = color
-    customTheme.inline.strong[`color`] = color
-    return customTheme
-  }
-}
-
-export const setColorWithCustomTemplate = function setColorWithCustomTemplate(
-  template,
-  color
-) {
-  let customTheme = JSON.parse(JSON.stringify(template))
+const createCustomTheme = (theme, color) => {
+  const customTheme = JSON.parse(JSON.stringify(theme))
   customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
   customTheme.block.h2[`background`] = color
   customTheme.block.h3[`border-left`] = `3px solid ${color}`
@@ -29,10 +13,21 @@ export const setColorWithCustomTemplate = function setColorWithCustomTemplate(
   return customTheme
 }
 
+// 设置自定义颜色
+export function setColorWithTemplate(theme) {
+  return (color) => {
+    return createCustomTheme(theme, color)
+  }
+}
+
+export function setColorWithCustomTemplate(theme, color) {
+  return createCustomTheme(theme, color)
+}
+
 // 设置自定义字体大小
 export function setFontSizeWithTemplate(template) {
   return function (fontSize) {
-    let customTheme = JSON.parse(JSON.stringify(template))
+    const customTheme = JSON.parse(JSON.stringify(template))
     customTheme.block.h1[`font-size`] = `${fontSize * 1.14}px`
     customTheme.block.h2[`font-size`] = `${fontSize * 1.1}px`
     customTheme.block.h3[`font-size`] = `${fontSize}px`
@@ -45,13 +40,8 @@ export const setColor = setColorWithTemplate(defaultTheme)
 export const setFontSize = setFontSizeWithTemplate(defaultTheme)
 
 export function customCssWithTemplate(jsonString, color, theme) {
-  let customTheme = JSON.parse(JSON.stringify(theme))
   // block
-  customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
-  customTheme.block.h2[`background`] = color
-  customTheme.block.h3[`border-left`] = `3px solid ${color}`
-  customTheme.block.h4[`color`] = color
-  customTheme.inline.strong[`color`] = color
+  const customTheme = createCustomTheme(theme, color)
 
   customTheme.block.h1 = Object.assign(customTheme.block.h1, jsonString.h1)
   customTheme.block.h2 = Object.assign(customTheme.block.h2, jsonString.h2)
@@ -105,7 +95,7 @@ export function customCssWithTemplate(jsonString, color, theme) {
 /**
  * 将CSS形式的字符串转换为JSON
  *
- * @param {css字符串} css
+ * @param {string} css - css字符串
  */
 export function css2json(css) {
   // 移除CSS所有注释
@@ -137,8 +127,7 @@ export function css2json(css) {
       array.forEach((e) => {
         const index = e.indexOf(`:`)
         const property = e.substring(0, index).trim()
-        const value = e.substring(index + 1).trim()
-        ret[property] = value
+        ret[property] = e.substring(index + 1).trim()
       })
       return ret
     }
@@ -198,38 +187,36 @@ export function saveEditorContent(editor, name) {
 
 /**
  * 格式化文档
- * @param {文档内容} content
+ * @param {string} content - 文档内容
  */
 export function formatDoc(content) {
-  const doc = prettier.format(content, {
+  return prettier.format(content, {
     parser: `markdown`,
     plugins: [prettierMarkdown],
   })
-  return doc
 }
 
 /**
  * 格式化css
- * @param {css内容}} content
+ * @param {string} content - css内容
  */
 export function formatCss(content) {
-  const doc = prettier.format(content, {
+  return prettier.format(content, {
     parser: `css`,
     plugins: [prettierCss],
   })
-  return doc
 }
 
 /**
  * 导出原始 Markdown 文档
- * @param {文档内容} doc
+ * @param {string} doc - 文档内容
  */
 export function downloadMD(doc) {
-  let downLink = document.createElement(`a`)
+  const downLink = document.createElement(`a`)
 
   downLink.download = `content.md`
   downLink.style.display = `none`
-  let blob = new Blob([doc])
+  const blob = new Blob([doc])
 
   downLink.href = URL.createObjectURL(blob)
   document.body.appendChild(downLink)
@@ -259,6 +246,22 @@ export function exportHTML() {
   document.body.removeChild(downLink)
 
   function setStyles(element) {
+    /**
+     * 获取一个 DOM 元素的所有样式，
+     * @param {DOM 元素} element DOM 元素
+     * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
+     * @returns 行内样式拼接结果
+     */
+    function getElementStyles(element, excludes = [`width`, `height`]) {
+      const styles = getComputedStyle(element, null)
+      return Object.entries(styles)
+        .filter(
+          ([key]) => styles.getPropertyValue(key) && !excludes.includes(key)
+        )
+        .map(([key, value]) => `${key}:${value};`)
+        .join(``)
+    }
+
     switch (true) {
       case isPre(element):
       case isCode(element):
@@ -278,6 +281,7 @@ export function exportHTML() {
         Array.from(element.classList).includes(`code__pre`)
       )
     }
+
     // 判断是否是包裹代码块的 code 元素
     function isCode(element) {
       return (
@@ -285,6 +289,7 @@ export function exportHTML() {
         Array.from(element.classList).includes(`prettyprint`)
       )
     }
+
     // 判断是否是包裹代码字符的 span 元素
     function isSpan(element) {
       return (
@@ -318,13 +323,14 @@ export function createTable({ data, rows, cols }) {
   return table
 }
 
-export const toBase64 = (file) =>
-  new Promise((resolve, reject) => {
+export function toBase64(file) {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = () => resolve(reader.result.split(`,`).pop())
     reader.onerror = (error) => reject(error)
   })
+}
 
 export function checkImage(file) {
   // check filename suffix
@@ -349,20 +355,6 @@ export function checkImage(file) {
 }
 
 /**
- * 获取一个 DOM 元素的所有样式，
- * @param {DOM 元素} element DOM 元素
- * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
- * @returns 行内样式拼接结果
- */
-function getElementStyles(element, excludes = [`width`, `height`]) {
-  const styles = getComputedStyle(element, null)
-  return Object.entries(styles)
-    .filter(([key]) => styles.getPropertyValue(key) && !excludes.includes(key))
-    .map(([key, value]) => `${key}:${value};`)
-    .join(``)
-}
-
-/**
  * 移除左边多余空格
  * @param {*} str
  * @returns
@@ -375,6 +367,5 @@ export function removeLeft(str) {
     .map((item) => item.match(/(^\s+)?/)[0].length)
     .sort((a, b) => a - b)[0]
   // 删除空白符
-  const newStr = lines.map((item) => item.slice(minSpaceNum)).join(`\n`)
-  return newStr
+  return lines.map((item) => item.slice(minSpaceNum)).join(`\n`)
 }
