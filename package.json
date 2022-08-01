@@ -12,43 +12,6 @@
     "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
     "mm": "npx mockm --cwd=mm"
   },
-  "eslintConfig": {
-    "root": true,
-    "env": {
-      "node": true
-    },
-    "extends": [
-      "plugin:vue/essential",
-      "eslint:recommended",
-      "@vue/prettier"
-    ],
-    "parserOptions": {
-      "parser": "babel-eslint"
-    },
-    "ignorePatterns": [
-      "src/assets/scripts/renderers"
-    ],
-    "rules": {
-      "prettier/prettier": [
-        "error",
-        {
-          "singleQuote": true,
-          "semi": false
-        }
-      ],
-      "semi": [
-        "error",
-        "never"
-      ],
-      "quotes": [
-        "error",
-        "backtick"
-      ],
-      "no-unused-vars": "off",
-      "no-console": "off",
-      "no-debugger": "off"
-    }
-  },
   "dependencies": {
     "@vue/shared": "^3.2.26",
     "ali-oss": "^6.16.0",
