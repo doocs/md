@@ -135,7 +135,7 @@
           样式<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
             <el-dropdown placement="right" class="style-option-menu">
               <div class="el-dropdown-link">
                 字体
@@ -160,7 +160,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
             <el-dropdown placement="right" class="style-option-menu">
               <div class="el-dropdown-link">
                 字号
@@ -184,7 +184,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
             <el-dropdown placement="right" class="style-option-menu">
               <div class="el-dropdown-link">
                 颜色
@@ -208,7 +208,7 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
             <el-dropdown placement="right" class="style-option-menu">
               <div class="el-dropdown-link">
                 代码主题
@@ -232,7 +232,11 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item divided @click.native="showPicker()">
+          <el-dropdown-item
+            divided
+            class="padding-left-3"
+            @click.native="showPicker()"
+          >
             自定义颜色
             <el-color-picker
               show-alpha
@@ -243,10 +247,14 @@
               @change="colorChanged"
             ></el-color-picker>
           </el-dropdown-item>
-          <el-dropdown-item @click.native="customStyle">
+          <el-dropdown-item class="padding-left-3" @click.native="customStyle">
             自定义 CSS
           </el-dropdown-item>
-          <el-dropdown-item divided @click.native="showResetConfirm = true">
+          <el-dropdown-item
+            divided
+            class="padding-left-3"
+            @click.native="showResetConfirm = true"
+          >
             重置
           </el-dropdown-item>
         </el-dropdown-menu>
@@ -606,8 +614,27 @@ export default {
   }
 }
 
-.format-item {
+.padding-left-3 {
   padding-left: 3em;
+}
+
+// 添加边距影响了 divided 行的移入效果，此处做一个兼容处理
+.el-dropdown-menu__item--divided.padding-left-3 {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3em;
+    height: 6px;
+    background: white;
+  }
+}
+
+.format-item {
+  .padding-left-3;
   width: 180px;
 
   kbd {
