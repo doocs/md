@@ -299,14 +299,10 @@
 </template>
 
 <script>
-import {
-  setFontSize,
-  fixCodeWhiteSpace,
-  setColorWithCustomTemplate,
-} from '../../assets/scripts/util'
-import { solveWeChatImage, solveHtml } from '../../assets/scripts/converter'
-import config from '../../assets/scripts/config'
+import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
+import { solveWeChatImage, solveHtml } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
+import config from '@/assets/scripts/config'
 import resetDialog from './resetDialog'
 import { mapState, mapMutations } from 'vuex'
 
@@ -473,7 +469,7 @@ export default {
         this.cssEditor.refresh()
       }, 50)
 
-      let flag = await localStorage.getItem(`__css_content`)
+      let flag = localStorage.getItem(`__css_content`)
       if (!flag) {
         this.setCssEditorValue(DEFAULT_CSS_CONTENT)
       }
