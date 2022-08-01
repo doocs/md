@@ -36,204 +36,259 @@
       </span>
     </el-dialog>
     <div class="left-side">
-      <!-- 图片上传 -->
-      <el-tooltip :effect="effect" content="上传图片" placement="bottom-start">
-        <i
-          class="el-icon-upload"
-          size="medium"
-          @click="$emit('show-dialog-upload-img')"
-        ></i>
-      </el-tooltip>
-      <!-- 导出 Markdown 文档 -->
-      <el-tooltip
-        class="header__item"
-        :effect="effect"
-        content="导出 Markdown 文档"
-        placement="bottom-start"
-      >
-        <i
-          class="el-icon-download"
-          size="medium"
-          @click="$emit('download')"
-        ></i>
-      </el-tooltip>
-      <!-- 导出 HTML -->
-      <el-tooltip
-        class="header__item"
-        :effect="effect"
-        content="导出 HTML 页面"
-        placement="bottom-start"
-      >
-        <i class="el-icon-document" size="medium" @click="$emit('export')"></i>
-      </el-tooltip>
-      <!-- 样式重置 -->
-      <el-tooltip
-        class="header__item"
-        :effect="effect"
-        content="重置样式"
-        placement="bottom-start"
-      >
-        <i
-          class="el-icon-refresh"
-          size="medium"
-          @click="showResetConfirm = true"
-        ></i>
-      </el-tooltip>
-      <!-- 插入表格 -->
-      <el-tooltip
-        class="header__item header__item_last"
-        :effect="effect"
-        content="插入表格"
-        placement="bottom-start"
-      >
-        <i
-          class="el-icon-s-grid"
-          size="medium"
-          @click="$emit('show-dialog-form')"
-        ></i>
-      </el-tooltip>
-      <el-select
-        v-model="selectFont"
-        size="mini"
-        placeholder="选择字体"
-        clearable
-        @change="fontChanged"
-      >
-        <el-option
-          v-for="font in config.builtinFonts"
-          :style="{ fontFamily: font.value }"
-          :key="font.value"
-          :label="font.label"
-          :value="font.value"
-        >
-          <span class="select-item-left">{{ font.label }}</span>
-          <span class="select-item-right">Abc</span>
-        </el-option>
-      </el-select>
-      <el-select
-        v-model="selectSize"
-        size="mini"
-        placeholder="选择段落字号"
-        clearable
-        @change="sizeChanged"
-      >
-        <el-option
-          v-for="size in config.sizeOption"
-          :key="size.value"
-          :label="size.label"
-          :value="size.value"
-        >
-          <span class="select-item-left">{{ size.label }}</span>
-          <span class="select-item-right">{{ size.desc }}</span>
-        </el-option>
-      </el-select>
-      <el-select
-        v-model="selectColor"
-        size="mini"
-        placeholder="选择颜色"
-        clearable
-        @change="colorChanged"
-      >
-        <el-option
-          v-for="color in config.colorOption"
-          :key="color.value"
-          :label="color.label"
-          :value="color.value"
-        >
-          <span class="select-item-left">{{ color.label }}</span>
-          <span class="select-item-right">{{ color.desc }}</span>
-        </el-option>
-      </el-select>
-      <el-select
-        v-model="selectCodeTheme"
-        size="mini"
-        placeholder="代码主题"
-        @change="codeThemeChanged"
-      >
-        <el-option
-          v-for="code in config.codeThemeOption"
-          :key="code.value"
-          :label="code.label"
-          :value="code.value"
-        >
-          <span class="select-item-left">{{ code.label }}</span>
-          <span class="select-item-right">{{ code.desc }}</span>
-        </el-option>
-      </el-select>
-      <el-tooltip content="自定义颜色" :effect="effect" placement="top">
-        <el-color-picker
-          v-model="selectColor"
-          size="mini"
-          show-alpha
-          @change="colorChanged"
-        ></el-color-picker>
-      </el-tooltip>
-      <el-tooltip
-        content="微信外链自动转为文末引用"
-        :effect="effect"
-        placement="top"
-      >
-        <el-switch
-          class="header__switch"
-          v-model="citeStatus"
-          active-color="#67c23a"
-          inactive-color="#dcdfe6"
-          @change="statusChanged"
-        >
-        </el-switch>
-      </el-tooltip>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          文件<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="refClick">
+            <i class="el-icon-upload2" size="medium"></i>
+            导入 .md
+            <input hidden type="file" ref="fileInput" accept=".md" />
+          </el-dropdown-item>
+          <el-dropdown-item @click.native="$emit('download')">
+            <i class="el-icon-download" size="medium"></i>
+            导出 .md
+          </el-dropdown-item>
+          <el-dropdown-item @click.native="$emit('export')">
+            <i class="el-icon-document" size="medium"></i>
+            导出 .html
+          </el-dropdown-item>
+          <el-dropdown-item divided @click.native="themeChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: nightMode ? 1 : 0 }"
+            ></i>
+            暗黑模式
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          格式<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '**')"
+          >
+            加粗
+            <kbd> Ctrl + B </kbd>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '*')"
+          >
+            斜体
+            <kbd> Ctrl + I </kbd>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '~~')"
+          >
+            删除线
+            <kbd> Alt + Shift + U </kbd>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('addFormat', '[', ']()')"
+          >
+            超链接
+            <kbd> Alt + Shift + K </kbd>
+          </el-dropdown-item>
+          <el-dropdown-item
+            class="format-item"
+            @click.native="$emit('formatContent')"
+          >
+            格式化
+            <kbd> Ctrl + Alt + L </kbd>
+          </el-dropdown-item>
+          <el-dropdown-item divided @click.native="statusChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: citeStatus ? 1 : 0 }"
+            ></i>
+            微信外链转底部引用
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          编辑<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="$emit('show-dialog-upload-img')">
+            <i class="el-icon-upload" size="medium"></i>
+            上传图片
+          </el-dropdown-item>
+          <el-dropdown-item @click.native="$emit('show-dialog-form')">
+            <i class="el-icon-s-grid" size="medium"></i>
+            插入表格
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          样式<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item class="padding-left-3">
+            <el-dropdown placement="right" class="style-option-menu">
+              <div class="el-dropdown-link">
+                字体
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  v-for="font in config.builtinFonts"
+                  :style="{ fontFamily: font.value }"
+                  :key="font.value"
+                  :label="font.label"
+                  :value="font.value"
+                  @click.native="fontChanged(font.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectFont === font.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ font.label }}</span>
+                  <span class="select-item-right">Abc</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
+            <el-dropdown placement="right" class="style-option-menu">
+              <div class="el-dropdown-link">
+                字号
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  v-for="size in config.sizeOption"
+                  :key="size.value"
+                  :label="size.label"
+                  :value="size.value"
+                  @click.native="sizeChanged(size.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectSize === size.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ size.label }}</span>
+                  <span class="select-item-right">{{ size.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
+            <el-dropdown placement="right" class="style-option-menu">
+              <div class="el-dropdown-link">
+                颜色
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  v-for="color in config.colorOption"
+                  :key="color.value"
+                  :label="color.label"
+                  :value="color.value"
+                  @click.native="colorChanged(color.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectColor === color.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ color.label }}</span>
+                  <span class="select-item-right">{{ color.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item class="padding-left-3">
+            <el-dropdown placement="right" class="style-option-menu">
+              <div class="el-dropdown-link">
+                代码主题
+                <i class="el-icon-arrow-right el-icon--right"></i>
+              </div>
+              <el-dropdown-menu slot="dropdown" style="width: 200px">
+                <el-dropdown-item
+                  v-for="code in config.codeThemeOption"
+                  :key="code.value"
+                  :label="code.label"
+                  :value="code.value"
+                  @click.native="codeThemeChanged(code.value)"
+                >
+                  <i
+                    class="el-icon-check"
+                    :style="{ opacity: selectCodeTheme === code.value ? 1 : 0 }"
+                  ></i>
+                  <span>{{ code.label }}</span>
+                  <span class="select-item-right">{{ code.desc }}</span>
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
+          <el-dropdown-item
+            divided
+            class="padding-left-3"
+            @click.native="showPicker()"
+          >
+            自定义颜色
+            <el-color-picker
+              show-alpha
+              ref="colorPicker"
+              size="mini"
+              style="float: right; margin-top: 3px"
+              v-model="selectColor"
+              @change="colorChanged"
+            ></el-color-picker>
+          </el-dropdown-item>
+          <el-dropdown-item class="padding-left-3" @click.native="customStyle">
+            自定义 CSS
+          </el-dropdown-item>
+          <el-dropdown-item
+            divided
+            class="padding-left-3"
+            @click.native="showResetConfirm = true"
+          >
+            重置
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          帮助<i class="el-icon-arrow-down el-icon--right"></i>
+        </span>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item @click.native="$emit('show-about-dialog')">
+            关于
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
     </div>
+
     <div class="right-side">
-      <el-tooltip
-        class="item"
-        :effect="effect"
-        content="自定义CSS样式"
-        placement="left"
-      >
-        <el-button
-          :type="btnType"
-          plain
-          size="medium"
-          icon="el-icon-setting"
-          @click="customStyle"
-        ></el-button>
-      </el-tooltip>
       <el-button
         :type="btnType"
         plain
         size="medium"
         @click="copy"
         placement="bottom-start"
-        >复制</el-button
-      >
+        >复制
+      </el-button>
       <el-button
         :type="btnType"
         plain
         size="medium"
         @click="prePost"
         placement="bottom-start"
-        >发布</el-button
-      >
-      <el-button
-        :type="btnType"
-        plain
-        size="medium"
-        class="about"
-        @click="$emit('show-about-dialog')"
-        >关于</el-button
-      >
-      <el-tooltip
-        :content="btnContent"
-        :effect="effect"
-        placement="bottom-start"
-      >
-        <div
-          class="mode__switch mode__switch_black"
-          v-if="nightMode"
-          @click="themeChanged"
-        ></div>
-        <div class="mode__switch" v-else @click="themeChanged"></div>
-      </el-tooltip>
+        >发布
+      </el-button>
     </div>
     <resetDialog
       :showResetConfirm="showResetConfirm"
@@ -254,6 +309,7 @@ import config from '../../assets/scripts/config'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import resetDialog from './resetDialog'
 import { mapState, mapMutations } from 'vuex'
+
 export default {
   name: `editor-header`,
   data() {
@@ -300,6 +356,12 @@ export default {
     }),
   },
   methods: {
+    refClick() {
+      this.$refs.fileInput.click()
+    },
+    showPicker() {
+      this.$refs.colorPicker.showPicker = true
+    },
     prePost() {
       let auto = {}
       try {
@@ -335,6 +397,7 @@ export default {
         fonts: fonts,
       })
       this.setCurrentFont(fonts)
+      this.selectFont = fonts
       this.$emit(`refresh`)
     },
     sizeChanged(size) {
@@ -345,6 +408,7 @@ export default {
         theme: theme,
       })
       this.setCurrentSize(size)
+      this.selectSize = size
       this.$emit(`refresh`)
     },
     colorChanged(color) {
@@ -355,14 +419,17 @@ export default {
         theme: theme,
       })
       this.setCurrentColor(color)
+      this.selectColor = color
       this.$emit(`refresh`)
     },
     codeThemeChanged(theme) {
       this.setCurrentCodeTheme(theme)
+      this.selectCodeTheme = theme
       this.$emit(`refresh`)
     },
-    statusChanged(val) {
-      this.setCiteStatus(val)
+    statusChanged() {
+      this.citeStatus = !this.citeStatus
+      this.setCiteStatus(this.citeStatus)
       this.$emit(`refresh`)
     },
     // 复制到微信公众号
@@ -449,6 +516,19 @@ export default {
     this.selectColor = this.currentColor
     this.selectCodeTheme = this.codeTheme
     this.citeStatus = this.currentCiteStatus
+
+    const fileInput = this.$refs.fileInput
+    fileInput.onchange = () => {
+      const file = fileInput.files[0]
+      if (file == null) {
+        return
+      }
+      const read = new FileReader()
+      read.readAsText(file)
+      read.onload = () => {
+        this.$emit(`import-md`, read.result)
+      }
+    }
   },
 }
 </script>
@@ -457,15 +537,11 @@ export default {
 .editor__header {
   width: 100%;
 }
-.header__item {
-  margin: 0 3px;
-}
-.header__item_last {
-  margin-right: 8px;
-}
+
 .header__switch {
   margin-left: 8px;
 }
+
 .mode__switch {
   margin-left: 24px;
   margin-right: 24px;
@@ -475,10 +551,12 @@ export default {
   background-size: cover;
   transition: all 0.3s;
 }
+
 .mode__switch_black {
   background: url('../../assets/images/light.png') no-repeat;
   background-size: cover;
 }
+
 .top {
   height: 60px;
   padding: 10px 20px;
@@ -486,14 +564,17 @@ export default {
   align-items: center;
   margin-right: 0;
 }
+
 .el-select {
   margin-right: 12px;
 }
+
 .left-side {
   display: flex;
   align-items: center;
   flex: 1;
 }
+
 .right-side {
   display: flex;
   align-items: center;
@@ -512,5 +593,54 @@ export default {
   float: right;
   color: #8492a6;
   font-size: 13px;
+}
+
+.el-dropdown {
+  margin: 0 10px;
+}
+
+.el-dropdown-link {
+  cursor: pointer;
+}
+
+.style-option-menu {
+  margin: 0;
+  width: 150px;
+
+  .el-dropdown-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.padding-left-3 {
+  padding-left: 3em;
+}
+
+// 添加边距影响了 divided 行的移入效果，此处做一个兼容处理
+.el-dropdown-menu__item--divided.padding-left-3 {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 3em;
+    height: 6px;
+    background: white;
+  }
+}
+
+.format-item {
+  .padding-left-3;
+  width: 180px;
+
+  kbd {
+    font-size: 0.75em;
+    float: right;
+    color: #666;
+  }
 }
 </style>
