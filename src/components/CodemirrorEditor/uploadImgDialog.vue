@@ -448,7 +448,7 @@ export default {
           const {file, util, okCb, errCb} = CUSTOM_ARG
           const param = new FormData()
           param.append('file', file)
-          util.axios.post('http://127.0.0.1:9000/upload', param, {
+          util.axios.post('${window.location.origin}/upload', param, {
             headers: { 'Content-Type': 'multipart/form-data' }
           }).then(res => {
             okCb(res.url)
