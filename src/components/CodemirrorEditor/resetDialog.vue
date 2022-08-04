@@ -4,16 +4,19 @@
     class="reset__dialog"
     :visible="showResetConfirm"
     @close="$emit('close')"
+    center
   >
-    <div class="text">此操作将丢失本地自定义样式，是否继续?</div>
-    <div slot="footer" class="dialog-footer">
+    <div style="text-align: center">
+      此操作将丢失本地自定义样式，是否继续?
+    </div>
+    <template slot="footer">
       <el-button :type="btnType" @click="$emit('close')" plain>
         取 消
       </el-button>
       <el-button :type="btnType" @click="$emit('confirm')" plain>
         确 定
       </el-button>
-    </div>
+    </template>
   </el-dialog>
 </template>
 
@@ -41,17 +44,5 @@ export default {
 <style lang="less" scoped>
 /deep/ .el-dialog {
   min-width: 440px;
-}
-
-.reset__dialog {
-  text-align: center;
-}
-
-.text {
-  text-align: center;
-}
-
-.dialog-footer {
-  text-align: center;
 }
 </style>

@@ -28,19 +28,4 @@ export default {
 }
 </script>
 
-<style scoped>
-.fade-enter,
-.fade-leave-to {
-  opacity: 0;
-}
-
-.fade-enter-to,
-.fade-leave {
-  opacity: 1;
-}
-
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 1s;
-}
-</style>
+<style scoped></style>
