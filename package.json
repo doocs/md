@@ -29,7 +29,7 @@
     "juice": "^8.0.0",
     "marked": "^4.0.10",
     "minio": "^7.0.26",
-    "node-fetch": "^3.1.0",
+    "node-fetch": "^3.2.10",
     "prettier": "2.5.1",
     "prettify": "^0.1.7",
     "qiniu-js": "^3.4.0",

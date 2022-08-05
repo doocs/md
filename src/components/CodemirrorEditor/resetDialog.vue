@@ -6,9 +6,7 @@
     @close="$emit('close')"
     center
   >
-    <div style="text-align: center">
-      此操作将丢失本地自定义样式，是否继续?
-    </div>
+    <div style="text-align: center">此操作将丢失本地自定义样式，是否继续?</div>
     <template slot="footer">
       <el-button :type="btnType" @click="$emit('close')" plain>
         取 消
