@@ -7,12 +7,12 @@
     width="30%"
     center
   >
-    <div style="text-align: center;">
+    <div style="text-align: center">
       <h3>一款高度简洁的微信 Markdown 编辑器</h3>
-      <p>扫码关注我的公众号，原创技术文章第一时间推送！</p>
+      <p>扫码关注公众号 Doocs，原创技术文章第一时间推送！</p>
       <img
         src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
-        style="width: 40%;"
+        style="width: 40%"
       />
     </div>
     <template slot="footer">
