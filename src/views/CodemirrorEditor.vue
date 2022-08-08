@@ -100,14 +100,16 @@
       @menuTick="onMenuEvent"
       @closeMenu="closeRightClickMenu"
     />
+    <loading></loading>
   </div>
 </template>
 <script>
-import editorHeader from '../components/CodemirrorEditor/header'
-import aboutDialog from '../components/CodemirrorEditor/aboutDialog'
-import insertFormDialog from '../components/CodemirrorEditor/insertForm'
-import rightClickMenu from '../components/CodemirrorEditor/rightClickMenu'
-import uploadImgDialog from '../components/CodemirrorEditor/uploadImgDialog'
+import editorHeader from '@/components/CodemirrorEditor/header'
+import aboutDialog from '@/components/CodemirrorEditor/aboutDialog'
+import insertFormDialog from '@/components/CodemirrorEditor/insertForm'
+import rightClickMenu from '@/components/CodemirrorEditor/rightClickMenu'
+import uploadImgDialog from '@/components/CodemirrorEditor/uploadImgDialog'
+import Loading from '@/components/Loading'
 
 import {
   css2json,
@@ -143,6 +145,7 @@ export default {
     }
   },
   components: {
+    Loading,
     editorHeader,
     aboutDialog,
     insertFormDialog,
@@ -710,20 +713,25 @@ export default {
   100% {
     transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
   }
+
   0% {
     opacity: 0;
     transform: translate3d(3000px, 0, 0);
   }
+
   60% {
     opacity: 1;
     transform: translate3d(-25px, 0, 0);
   }
+
   75% {
     transform: translate3d(10px, 0, 0);
   }
+
   90% {
     transform: translate3d(-5px, 0, 0);
   }
+
   100% {
     transform: none;
   }
@@ -733,6 +741,7 @@ export default {
   overflow-x: auto;
 }
 </style>
+
 <style lang="less" scoped>
 @import url('../assets/less/app.less');
 </style>
