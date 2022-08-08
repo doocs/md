@@ -1,8 +1,8 @@
 <template>
-  <transition name="fade" v-if="loading">
+  <div>
     <loading />
-  </transition>
-  <codemirror-editor v-else />
+    <codemirror-editor />
+  </div>
 </template>
 
 <script>
@@ -14,16 +14,6 @@ export default {
   components: {
     Loading,
     CodemirrorEditor,
-  },
-  data() {
-    return {
-      loading: true,
-    }
-  },
-  mounted() {
-    setTimeout(() => {
-      this.loading = false
-    }, 100)
   },
 }
 </script>

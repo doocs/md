@@ -1,13 +1,29 @@
 <template>
-  <div class="loading" id="loading">
-    <div class="loading-wrapper">
-      <div class="loading-anim"></div>
-      <div class="loading-text">致力于让 Markdown 编辑更简单</div>
+  <transition name="fade" v-if="loading">
+    <div class="loading">
+      <div class="loading-wrapper">
+        <div class="loading-anim"></div>
+        <div class="loading-text">致力于让 Markdown 编辑更简单</div>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
-<script></script>
+<script>
+export default {
+  name: `Loading`,
+  data() {
+    return {
+      loading: true,
+    }
+  },
+  mounted() {
+    setTimeout(() => {
+      this.loading = false
+    }, 100)
+  },
+}
+</script>
 
 <style lang="less" scoped>
 .loading-wrapper {
@@ -16,6 +32,7 @@
   left: 50%;
   transform: translateX(-50%) translateY(-50%);
 }
+
 .loading {
   text-align: center;
   position: fixed;
@@ -30,6 +47,14 @@
   background-color: #303133;
 }
 
+.loading-anim {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  background: url('../assets/images/favicon.png') no-repeat;
+  background-size: cover;
+}
+
 .loading-text {
   font-size: 18px;
   font-weight: bold;
@@ -37,11 +62,18 @@
   color: #303133;
 }
 
-.loading-anim {
-  display: inline-block;
-  width: 100px;
-  height: 100px;
-  background: url('../assets/images/favicon.png') no-repeat;
-  background-size: cover;
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-to,
+.fade-leave {
+  opacity: 1;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s;
 }
 </style>
