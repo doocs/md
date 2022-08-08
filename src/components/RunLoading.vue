@@ -11,7 +11,7 @@
 
 <script>
 export default {
-  name: `Loading`,
+  name: `RunLoading`,
   data() {
     return {
       loading: true,

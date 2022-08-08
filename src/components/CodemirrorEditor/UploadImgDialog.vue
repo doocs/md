@@ -375,8 +375,8 @@
             </el-link>
           </el-form-item>
           <el-form-item>
-            <el-button type="primary" @click="formCustomSave"
-              >保存配置
+            <el-button type="primary" @click="formCustomSave">
+              保存配置
             </el-button>
           </el-form-item>
         </el-form>
@@ -386,7 +386,7 @@
 </template>
 
 <script>
-import { checkImage, removeLeft } from '../../assets/scripts/util'
+import { checkImage, removeLeft } from '@/assets/scripts/util'
 import CodeMirror from 'codemirror/lib/codemirror'
 
 export default {

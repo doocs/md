@@ -290,11 +290,12 @@
         >发布
       </el-button>
     </div>
-    <resetDialog
+
+    <reset-dialog
       :showResetConfirm="showResetConfirm"
       @confirm="confirmReset"
       @close="cancelReset"
-    />
+    ></reset-dialog>
   </el-container>
 </template>
 
@@ -303,7 +304,7 @@ import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
 import { solveWeChatImage, solveHtml } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import config from '@/assets/scripts/config'
-import resetDialog from './resetDialog'
+import ResetDialog from './ResetDialog'
 import { mapState, mapMutations } from 'vuex'
 
 export default {
@@ -327,7 +328,7 @@ export default {
     }
   },
   components: {
-    resetDialog,
+    ResetDialog,
   },
   computed: {
     effect() {

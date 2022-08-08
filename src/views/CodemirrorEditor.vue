@@ -23,7 +23,7 @@
           @show-dialog-upload-img="dialogUploadImgVisible = true"
           @startCopy=";(isCoping = true), (backLight = true)"
           @endCopy="endCopy"
-        />
+        ></editor-header>
       </el-header>
       <el-main class="main-body">
         <el-row class="main-section">
@@ -84,32 +84,34 @@
         </el-row>
       </el-main>
     </el-container>
+
     <upload-img-dialog
       v-model="dialogUploadImgVisible"
       @close="dialogUploadImgVisible = false"
       @beforeUpload="beforeUpload"
       @uploadImage="uploadImage"
       @uploaded="uploaded"
-    />
-    <about-dialog v-model="aboutDialogVisible" />
-    <insert-form-dialog v-model="dialogFormVisible" />
+    ></upload-img-dialog>
+    <about-dialog v-model="aboutDialogVisible"></about-dialog>
+    <insert-form-dialog v-model="dialogFormVisible"></insert-form-dialog>
+
     <right-click-menu
       v-model="rightClickMenuVisible"
       :left="mouseLeft"
       :top="mouseTop"
       @menuTick="onMenuEvent"
       @closeMenu="closeRightClickMenu"
-    />
-    <loading></loading>
+    ></right-click-menu>
+    <run-loading></run-loading>
   </div>
 </template>
 <script>
-import editorHeader from '@/components/CodemirrorEditor/header'
-import aboutDialog from '@/components/CodemirrorEditor/aboutDialog'
-import insertFormDialog from '@/components/CodemirrorEditor/insertForm'
-import rightClickMenu from '@/components/CodemirrorEditor/rightClickMenu'
-import uploadImgDialog from '@/components/CodemirrorEditor/uploadImgDialog'
-import Loading from '@/components/Loading'
+import EditorHeader from '@/components/CodemirrorEditor/EditorHeader'
+import AboutDialog from '@/components/CodemirrorEditor/AboutDialog'
+import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog'
+import RightClickMenu from '@/components/CodemirrorEditor/RightClickMenu'
+import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog'
+import RunLoading from '@/components/RunLoading'
 
 import {
   css2json,
@@ -145,12 +147,12 @@ export default {
     }
   },
   components: {
-    Loading,
-    editorHeader,
-    aboutDialog,
-    insertFormDialog,
-    rightClickMenu,
-    uploadImgDialog,
+    RunLoading,
+    EditorHeader,
+    AboutDialog,
+    InsertFormDialog,
+    RightClickMenu,
+    UploadImgDialog,
   },
   computed: {
     ...mapState({
