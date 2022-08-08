@@ -26,15 +26,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.loading-wrapper {
-  position: fixed;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-}
-
 .loading {
-  text-align: center;
   position: fixed;
   width: 100%;
   height: 100%;
@@ -45,6 +37,14 @@ export default {
 
 .loading_night {
   background-color: #303133;
+}
+
+.loading-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  text-align: center;
 }
 
 .loading-anim {
