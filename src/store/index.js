@@ -6,7 +6,7 @@ import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
-import { setColor, formatDoc, formatCss } from '../assets/scripts/util'
+import { setColor, formatDoc, formatCss } from '@/assets/scripts/util'
 
 Vue.use(Vuex)
 
@@ -22,7 +22,6 @@ const state = {
   citeStatus: 0,
   nightMode: false,
   codeTheme: config.codeThemeOption[0].value,
-  rightClickMenuVisible: false,
 }
 const mutations = {
   setEditorValue(state, data) {
@@ -53,9 +52,6 @@ const mutations = {
   setCurrentCodeTheme(state, data) {
     state.codeTheme = data
     localStorage.setItem(`codeTheme`, data)
-  },
-  setRightClickMenuVisible(state, data) {
-    state.rightClickMenuVisible = data
   },
   themeChanged(state) {
     state.nightMode = !state.nightMode
