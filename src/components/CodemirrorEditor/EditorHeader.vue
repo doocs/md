@@ -42,16 +42,16 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="refClick">
-            <i class="el-icon-upload2" size="medium"></i>
+            <i class="el-icon-upload2"></i>
             导入 .md
             <input hidden type="file" ref="fileInput" accept=".md" />
           </el-dropdown-item>
           <el-dropdown-item @click.native="$emit('download')">
-            <i class="el-icon-download" size="medium"></i>
+            <i class="el-icon-download"></i>
             导出 .md
           </el-dropdown-item>
           <el-dropdown-item @click.native="$emit('export')">
-            <i class="el-icon-document" size="medium"></i>
+            <i class="el-icon-document"></i>
             导出 .html
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="themeChanged">
@@ -63,7 +63,6 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
       <el-dropdown>
         <span class="el-dropdown-link">
           格式<i class="el-icon-arrow-down el-icon--right"></i>
@@ -113,23 +112,21 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
       <el-dropdown>
         <span class="el-dropdown-link">
           编辑<i class="el-icon-arrow-down el-icon--right"></i>
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item @click.native="$emit('show-dialog-upload-img')">
-            <i class="el-icon-upload" size="medium"></i>
+            <i class="el-icon-upload"></i>
             上传图片
           </el-dropdown-item>
           <el-dropdown-item @click.native="$emit('show-dialog-form')">
-            <i class="el-icon-s-grid" size="medium"></i>
+            <i class="el-icon-s-grid"></i>
             插入表格
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
       <el-dropdown>
         <span class="el-dropdown-link">
           样式<i class="el-icon-arrow-down el-icon--right"></i>
@@ -259,7 +256,6 @@
           </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
-
       <el-dropdown>
         <span class="el-dropdown-link">
           帮助<i class="el-icon-arrow-down el-icon--right"></i>
@@ -273,26 +269,16 @@
     </div>
 
     <div class="right-side">
-      <el-button
-        :type="btnType"
-        plain
-        size="medium"
-        @click="copy"
-        placement="bottom-start"
-        >复制
+      <el-button plain size="medium" :type="btnType" @click="copy">
+        复制
       </el-button>
-      <el-button
-        :type="btnType"
-        plain
-        size="medium"
-        @click="prePost"
-        placement="bottom-start"
-        >发布
+      <el-button plain size="medium" :type="btnType" @click="prePost">
+        发布
       </el-button>
     </div>
 
     <reset-dialog
-      :showResetConfirm="showResetConfirm"
+      :show-reset-confirm="showResetConfirm"
       @confirm="confirmReset"
       @close="cancelReset"
     ></reset-dialog>
@@ -430,7 +416,7 @@ export default {
       this.$emit(`refresh`)
     },
     // 复制到微信公众号
-    copy(e) {
+    copy() {
       this.$emit(`startCopy`)
       setTimeout(() => {
         let clipboardDiv = document.getElementById(`output`)
