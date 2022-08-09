@@ -1,15 +1,19 @@
 <template>
   <transition name="fade" v-if="loading">
-    <div class="loading">
-      <div class="loading-wrapper">
-        <div class="loading-anim"></div>
-        <div class="loading-text">致力于让 Markdown 编辑更简单</div>
-      </div>
+    <div
+      class="loading"
+      :class="{
+        loading_night: nightMode,
+      }"
+    >
+      <strong>致力于让 Markdown 编辑更简单</strong>
     </div>
   </transition>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
   name: `RunLoading`,
   data() {
@@ -22,44 +26,44 @@ export default {
       this.loading = false
     }, 100)
   },
+  computed: {
+    ...mapState({
+      nightMode: ({ nightMode }) => nightMode,
+    }),
+  },
 }
 </script>
 
 <style lang="less" scoped>
+@light-color: #303133;
+@light-background-color: #f2f2f2;
+@night-color: #bbbbbb;
+@night-background-color: #303133;
+
 .loading {
   position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
   z-index: 99999;
-  background-color: #f2f2f2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100vw;
+  height: 100vh;
+  font-size: 18px;
+  color: @light-color;
+  background-color: @light-background-color;
+
+  &::before {
+    content: url('../assets/images/favicon.png');
+    width: 100px;
+    height: 100px;
+    margin-bottom: 26px;
+  }
 }
 
 .loading_night {
-  background-color: #303133;
-}
-
-.loading-wrapper {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translateX(-50%) translateY(-50%);
-  text-align: center;
-}
-
-.loading-anim {
-  display: inline-block;
-  width: 100px;
-  height: 100px;
-  background: url('../assets/images/favicon.png') no-repeat;
-  background-size: cover;
-}
-
-.loading-text {
-  font-size: 18px;
-  font-weight: bold;
-  margin-top: 26px;
-  color: #303133;
+  color: @night-color;
+  background-color: @night-background-color;
 }
 
 .fade-enter,
