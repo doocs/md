@@ -2,13 +2,13 @@
   <div
     id="menu"
     class="menu"
-    v-show="value"
+    v-show="visible"
     :style="`left: ${left}px;top: ${top}px;`"
   >
     <ul class="menu__group" v-for="(menuItem, index) in menu" :key="index">
       <li
         class="menu_item"
-        v-for="{ key, text } of menuItem"
+        v-for="{ key, text } in menuItem"
         :key="key"
         @mousedown="onMouseDown(key)"
       >
@@ -21,7 +21,7 @@
 <script>
 export default {
   props: {
-    value: {
+    visible: {
       type: Boolean,
       default: false,
     },
@@ -73,9 +73,6 @@ export default {
     }
   },
   methods: {
-    closeCB() {
-      this.$emit(`input`, false)
-    },
     onMouseDown(key) {
       this.$emit(`menuTick`, key)
       this.$emit(`closeMenu`, false)

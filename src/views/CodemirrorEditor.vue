@@ -31,7 +31,7 @@
             :span="12"
             class="codeMirror-wrapper"
             ref="codeMirrorWrapper"
-            @contextmenu.prevent.native="openMenu($event)"
+            @contextmenu.prevent.native="openMenu"
           >
             <textarea
               id="editor"
@@ -96,7 +96,7 @@
     <insert-form-dialog v-model="dialogFormVisible"></insert-form-dialog>
 
     <right-click-menu
-      v-model="rightClickMenuVisible"
+      :visible="rightClickMenuVisible"
       :left="mouseLeft"
       :top="mouseTop"
       @menuTick="onMenuEvent"
@@ -144,6 +144,7 @@ export default {
       source: ``,
       mouseLeft: 0,
       mouseTop: 0,
+      rightClickMenuVisible: false,
     }
   },
   components: {
@@ -163,7 +164,6 @@ export default {
       currentSize: (state) => state.currentSize,
       currentColor: (state) => state.currentColor,
       nightMode: (state) => state.nightMode,
-      rightClickMenuVisible: (state) => state.rightClickMenuVisible,
       codeTheme: (state) => state.codeTheme,
     }),
   },
@@ -304,14 +304,14 @@ export default {
       })
 
       this.editor.on(`mousedown`, () => {
-        this.$store.commit(`setRightClickMenuVisible`, false)
+        this.rightClickMenuVisible = false
       })
       this.editor.on(`blur`, () => {
         //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
-        this.$store.commit(`setRightClickMenuVisible`, false)
+        this.rightClickMenuVisible = false
       })
       this.editor.on(`scroll`, () => {
-        this.$store.commit(`setRightClickMenuVisible`, false)
+        this.rightClickMenuVisible = false
       })
     },
     initCssEditor() {
@@ -575,10 +575,10 @@ export default {
       const left = e.clientX - offsetLeft
       this.mouseLeft = Math.min(maxLeft, left)
       this.mouseTop = e.clientY + 10
-      this.$store.commit(`setRightClickMenuVisible`, true)
+      this.rightClickMenuVisible = true
     },
     closeRightClickMenu() {
-      this.$store.commit(`setRightClickMenuVisible`, false)
+      this.rightClickMenuVisible = false
     },
     onMenuEvent(type, info = {}) {
       switch (type) {
