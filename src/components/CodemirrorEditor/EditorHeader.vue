@@ -1,41 +1,6 @@
 <template>
-  <el-container class="top is-dark">
-    <el-dialog title="发布" :visible.sync="form.dialogVisible">
-      <div class="postInfo">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="封面">
-            <el-input
-              v-model="form.thumb"
-              placeholder="自动提取第一张图"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="标题">
-            <el-input
-              v-model="form.title"
-              placeholder="自动提取第一个标题"
-            ></el-input>
-          </el-form-item>
-          <el-form-item label="描述">
-            <el-input
-              type="textarea"
-              :rows="4"
-              v-model="form.desc"
-              placeholder="自动提取第一个段落"
-            ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <div class="info">
-              注：此功能由第三方浏览器插件支持，本平台不保证安全性。
-            </div>
-          </el-form-item>
-        </el-form>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="form.dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="post">确 定</el-button>
-      </span>
-    </el-dialog>
-    <div class="left-side">
+  <el-container class="header-container is-dark">
+    <div class="dropdowns">
       <el-dropdown>
         <span class="el-dropdown-link">
           文件<i class="el-icon-arrow-down el-icon--right"></i>
@@ -267,16 +232,48 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <el-button plain size="medium" :type="btnType" @click="copy">
+      复制
+    </el-button>
+    <el-button plain size="medium" :type="btnType" @click="prePost">
+      发布
+    </el-button>
 
-    <div class="right-side">
-      <el-button plain size="medium" :type="btnType" @click="copy">
-        复制
-      </el-button>
-      <el-button plain size="medium" :type="btnType" @click="prePost">
-        发布
-      </el-button>
-    </div>
-
+    <el-dialog title="发布" :visible.sync="form.dialogVisible">
+      <div class="postInfo">
+        <el-form ref="form" :model="form" label-width="80px">
+          <el-form-item label="封面">
+            <el-input
+              v-model="form.thumb"
+              placeholder="自动提取第一张图"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="标题">
+            <el-input
+              v-model="form.title"
+              placeholder="自动提取第一个标题"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="描述">
+            <el-input
+              type="textarea"
+              :rows="4"
+              v-model="form.desc"
+              placeholder="自动提取第一个段落"
+            ></el-input>
+          </el-form-item>
+          <el-form-item>
+            <div class="info">
+              注：此功能由第三方浏览器插件支持，本平台不保证安全性。
+            </div>
+          </el-form-item>
+        </el-form>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="form.dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="post">确 定</el-button>
+      </span>
+    </el-dialog>
     <reset-dialog
       :show-reset-confirm="showResetConfirm"
       @confirm="confirmReset"
@@ -517,59 +514,13 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.editor__header {
-  width: 100%;
-}
-
-.header__switch {
-  margin-left: 8px;
-}
-
-.mode__switch {
-  margin-left: 24px;
-  margin-right: 24px;
-  width: 24px;
-  height: 24px;
-  background: url('../../assets/images/night.png') no-repeat;
-  background-size: cover;
-  transition: all 0.3s;
-}
-
-.mode__switch_black {
-  background: url('../../assets/images/light.png') no-repeat;
-  background-size: cover;
-}
-
-.top {
-  height: 60px;
+.header-container {
   padding: 10px 20px;
-  display: flex;
   align-items: center;
-  margin-right: 0;
 }
 
-.el-select {
-  margin-right: 12px;
-}
-
-.left-side {
-  display: flex;
-  align-items: center;
+.dropdowns {
   flex: 1;
-}
-
-.right-side {
-  display: flex;
-  align-items: center;
-}
-
-/*
-.preview table tr:nth-child(even){
-  background: rgb(250, 250, 250);
-}
- */
-.select-item-left {
-  float: left;
 }
 
 .select-item-right {
