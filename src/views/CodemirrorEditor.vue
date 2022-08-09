@@ -31,7 +31,7 @@
             :span="12"
             class="codeMirror-wrapper"
             ref="codeMirrorWrapper"
-            @contextmenu.prevent.native="openMenu($event)"
+            @contextmenu.prevent.native="openMenu"
           >
             <textarea
               id="editor"
@@ -96,7 +96,7 @@
     <insert-form-dialog v-model="dialogFormVisible"></insert-form-dialog>
 
     <right-click-menu
-      v-model="rightClickMenuVisible"
+      :visible="rightClickMenuVisible"
       :left="mouseLeft"
       :top="mouseTop"
       @menuTick="onMenuEvent"
