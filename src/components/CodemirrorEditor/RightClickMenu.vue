@@ -90,14 +90,24 @@ export default {
   z-index: 9999;
 }
 
+.menu__group {
+  margin: 0;
+  padding: 6px 0;
+  border-bottom: 1px solid #eeeeee;
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
 .menu_item {
   list-style: none;
   box-sizing: border-box;
   padding: 4px 0 4px 24px;
   margin-top: 10px;
   min-width: 200px;
-  font-size: 12px;
   line-height: 20px;
+  font-size: 12px;
   color: #333333;
   cursor: pointer;
 
@@ -111,16 +121,6 @@ export default {
 
   ::v-deep .el-upload {
     width: 100%;
-  }
-}
-
-.menu__group {
-  margin: 0;
-  padding: 6px 0;
-  border-bottom: 1px solid #eeeeee;
-
-  &:last-of-type {
-    border-bottom: none;
   }
 }
 </style>
