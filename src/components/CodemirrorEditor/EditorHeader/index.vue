@@ -226,7 +226,7 @@
 
 <script>
 import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
-import { solveWeChatImage, solveHtml } from '@/assets/scripts/converter'
+import { solveWeChatImage, mergeCss } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
@@ -367,26 +367,11 @@ export default {
     copy() {
       this.$emit(`startCopy`)
       setTimeout(() => {
-        const clipboardDiv = document.getElementById(`output`)
-        if (/^<pre/.test(clipboardDiv.innerHTML)) {
-          this.$message({
-            type: `warning`,
-            message: `在文章顶层直接使用代码块存在风险，为保证格式正确，我们在复制后的内容顶部添加了些内容，请注意删除。`,
-            duration: 0,
-            showClose: true,
-          })
-          clipboardDiv.innerHTML =
-            `<p>Powered by Doocs</p>` + clipboardDiv.innerHTML
-        }
-        if (this.isMacCodeBlock) {
-          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
-            /(<pre.+?>)/g,
-            `$1<svg xmlns="http://www.w3.org/2000/svg" width="54" height="14" viewBox="0 0 54 14" style="display: block;position: sticky;left: 0;top: 0;"><g fill="none" fill-rule="evenodd" transform="translate(1 1)"><circle cx="6" cy="6" r="4" fill="#FF5F56" stroke="#E0443E" stroke-width=".5"></circle><circle cx="20" cy="6" r="4" fill="#FFBD2E" stroke="#DEA123" stroke-width=".5"></circle><circle cx="34" cy="6" r="4" fill="#27C93F" stroke="#1AAB29" stroke-width=".5"></circle></g></svg>`
-          )
-        }
-
         solveWeChatImage()
-        solveHtml()
+        const element = document.getElementById(`output-wrapper`)
+        element.innerHTML = mergeCss(element.innerHTML)
+
+        const clipboardDiv = document.getElementById(`output`)
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
         let range = document.createRange()
