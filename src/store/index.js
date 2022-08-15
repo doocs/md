@@ -54,13 +54,13 @@ const mutations = {
     state.codeTheme = data
     localStorage.setItem(`codeTheme`, data)
   },
+  setIsMacCodeBlock(state, data) {
+    state.isMacCodeBlock = data
+    localStorage.setItem(`isMacCodeBlock`, data)
+  },
   themeChanged(state) {
     state.nightMode = !state.nightMode
     localStorage.setItem(`nightMode`, state.nightMode)
-  },
-  macCodeBlockChanged(state) {
-    state.isMacCodeBlock = !state.isMacCodeBlock
-    localStorage.setItem(`isMacCodeBlock`, state.isMacCodeBlock)
   },
   initEditorState(state) {
     state.currentFont =

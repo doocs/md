@@ -360,7 +360,7 @@ export default {
     },
     codeBlockChanged() {
       this.isMacCodeBlock = !this.isMacCodeBlock
-      this.macCodeBlockChanged()
+      this.setIsMacCodeBlock(this.isMacCodeBlock)
       this.$emit(`refresh`)
     },
     // 复制到微信公众号
@@ -417,7 +417,7 @@ export default {
     },
     // 重置样式
     confirmReset() {
-      // TODO 代码块未重置
+      this.showResetConfirm = false
       localStorage.clear()
       this.cssEditor.setValue(DEFAULT_CSS_CONTENT)
       this.citeStatus = false
@@ -430,9 +430,10 @@ export default {
       this.selectFont = this.currentFont
       this.selectSize = this.currentSize
       this.selectColor = this.currentColor
-      this.showResetConfirm = false
-      this.isMacCodeBlock = true
       this.selectCodeTheme = this.codeTheme
+
+      this.isMacCodeBlock = false
+      this.codeBlockChanged()
     },
     cancelReset() {
       this.showResetConfirm = false
@@ -447,7 +448,7 @@ export default {
       `setCssEditorValue`,
       `setCurrentCodeTheme`,
       `setWxRendererOptions`,
-      `macCodeBlockChanged`,
+      `setIsMacCodeBlock`,
     ]),
   },
   mounted() {
