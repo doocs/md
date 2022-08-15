@@ -22,6 +22,7 @@ const state = {
   citeStatus: false,
   nightMode: false,
   codeTheme: config.codeThemeOption[0].value,
+  isMacCodeBlock: true,
 }
 const mutations = {
   setEditorValue(state, data) {
@@ -57,6 +58,10 @@ const mutations = {
     state.nightMode = !state.nightMode
     localStorage.setItem(`nightMode`, state.nightMode)
   },
+  macCodeBlockChanged(state) {
+    state.isMacCodeBlock = !state.isMacCodeBlock
+    localStorage.setItem(`isMacCodeBlock`, state.isMacCodeBlock)
+  },
   initEditorState(state) {
     state.currentFont =
       localStorage.getItem(`fonts`) || config.builtinFonts[0].value
@@ -68,6 +73,7 @@ const mutations = {
       localStorage.getItem(`codeTheme`) || config.codeThemeOption[0].value
     state.citeStatus = localStorage.getItem(`citeStatus`) === `true`
     state.nightMode = localStorage.getItem(`nightMode`) === `true`
+    state.isMacCodeBlock = !(localStorage.getItem(`isMacCodeBlock`) === `false`)
     state.wxRenderer = new WxRenderer({
       theme: setColor(state.currentColor),
       fonts: state.currentFont,
@@ -147,25 +153,27 @@ const mutations = {
       // 附加的一些 style
       output += state.wxRenderer.buildAddition()
     }
-    // test
-    output += `
-      <style>
-        .hljs.code__pre::before {
 
-          position: initial;
-          padding: 0;
+    if (state.isMacCodeBlock) {
+      output += `
+        <style>
+          .hljs.code__pre::before {
+            /* 重置继承的样式 */
+            position: initial;
+            padding: initial;
 
-          content: '';
-          display: block;
-          height: 30px;
-          width: 100%;
-          margin-bottom: -7px;
-          border-radius: 5px;
-          background: transparent url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNDUwcHgiIGhlaWdodD0iMTMwcHgiPgogIDxlbGxpcHNlIGN4PSI2NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgc3Ryb2tlPSJyZ2IoMjIwLDYwLDU0KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJyZ2IoMjM3LDEwOCw5NikiLz4KICA8ZWxsaXBzZSBjeD0iMjI1IiBjeT0iNjUiIHJ4PSI1MCIgcnk9IjUyIiAgc3Ryb2tlPSJyZ2IoMjE4LDE1MSwzMykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDI0NywxOTMsODEpIi8+CiAgPGVsbGlwc2UgY3g9IjM4NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgIHN0cm9rZT0icmdiKDI3LDE2MSwzNykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDEwMCwyMDAsODYpIi8+Cjwvc3ZnPg==") no-repeat 0px 5px;
-          background-size: 40px;
-        }
-      </style>
-    `
+            content: '';
+            display: block;
+            height: 25px;
+            background-color: transparent;
+            background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNDUwcHgiIGhlaWdodD0iMTMwcHgiPgogIDxlbGxpcHNlIGN4PSI2NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgc3Ryb2tlPSJyZ2IoMjIwLDYwLDU0KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJyZ2IoMjM3LDEwOCw5NikiLz4KICA8ZWxsaXBzZSBjeD0iMjI1IiBjeT0iNjUiIHJ4PSI1MCIgcnk9IjUyIiAgc3Ryb2tlPSJyZ2IoMjE4LDE1MSwzMykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDI0NywxOTMsODEpIi8+CiAgPGVsbGlwc2UgY3g9IjM4NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgIHN0cm9rZT0icmdiKDI3LDE2MSwzNykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDEwMCwyMDAsODYpIi8+Cjwvc3ZnPg==");
+            background-position: 0 5px;
+            background-repeat: no-repeat;
+            background-size: 40px;
+          }
+        </style>
+      `
+    }
     state.output = output
   },
 }

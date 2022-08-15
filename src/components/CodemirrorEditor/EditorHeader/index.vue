@@ -147,6 +147,13 @@
           <el-dropdown-item class="padding-left-3" @click.native="customStyle">
             自定义 CSS
           </el-dropdown-item>
+          <el-dropdown-item divided @click.native="codeBlockChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: isMacCodeBlock ? 1 : 0 }"
+            ></i>
+            Mac 代码块
+          </el-dropdown-item>
           <el-dropdown-item
             divided
             class="padding-left-3"
@@ -239,6 +246,7 @@ export default {
       },
       config: config,
       citeStatus: false,
+      isMacCodeBlock: true,
       showResetConfirm: false,
       selectFont: ``,
       selectSize: ``,
@@ -270,6 +278,7 @@ export default {
       codeTheme: (state) => state.codeTheme,
       nightMode: (state) => state.nightMode,
       currentCiteStatus: (state) => state.citeStatus,
+      currentIsMacCodeBlock: (state) => state.isMacCodeBlock,
     }),
   },
   methods: {
@@ -349,11 +358,31 @@ export default {
       this.setCiteStatus(this.citeStatus)
       this.$emit(`refresh`)
     },
+    codeBlockChanged() {
+      this.isMacCodeBlock = !this.isMacCodeBlock
+      this.macCodeBlockChanged()
+      this.$emit(`refresh`)
+    },
     // 复制到微信公众号
     copy() {
       this.$emit(`startCopy`)
       setTimeout(() => {
-        let clipboardDiv = document.getElementById(`output`)
+        const clipboardDiv = document.getElementById(`output`)
+        if (this.isMacCodeBlock) {
+          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replace(
+            /(<pre.+?>)/g,
+            `$1
+            <span style="
+            display: block;
+            height: 20px;
+            transform: translate(0px, -100%);
+            background-color: transparent;
+            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNDUwcHgiIGhlaWdodD0iMTMwcHgiPgogIDxlbGxpcHNlIGN4PSI2NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgc3Ryb2tlPSJyZ2IoMjIwLDYwLDU0KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJyZ2IoMjM3LDEwOCw5NikiLz4KICA8ZWxsaXBzZSBjeD0iMjI1IiBjeT0iNjUiIHJ4PSI1MCIgcnk9IjUyIiAgc3Ryb2tlPSJyZ2IoMjE4LDE1MSwzMykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDI0NywxOTMsODEpIi8+CiAgPGVsbGlwc2UgY3g9IjM4NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgIHN0cm9rZT0icmdiKDI3LDE2MSwzNykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDEwMCwyMDAsODYpIi8+Cjwvc3ZnPg==');
+            background-position: 0 5px;
+            background-repeat: no-repeat;
+            background-size: 40px;"></span>`
+          )
+        }
         solveWeChatImage()
         solveHtml()
         clipboardDiv.focus()
@@ -410,6 +439,7 @@ export default {
       this.selectSize = this.currentSize
       this.selectColor = this.currentColor
       this.showResetConfirm = false
+      this.isMacCodeBlock = true
       this.selectCodeTheme = this.codeTheme
     },
     cancelReset() {
@@ -425,6 +455,7 @@ export default {
       `setCssEditorValue`,
       `setCurrentCodeTheme`,
       `setWxRendererOptions`,
+      `macCodeBlockChanged`,
     ]),
   },
   mounted() {
@@ -433,6 +464,7 @@ export default {
     this.selectColor = this.currentColor
     this.selectCodeTheme = this.codeTheme
     this.citeStatus = this.currentCiteStatus
+    this.isMacCodeBlock = this.currentIsMacCodeBlock
 
     const fileInput = this.$refs.fileInput
     fileInput.onchange = () => {
