@@ -98,101 +98,36 @@
         </span>
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item class="padding-left-3">
-            <el-dropdown placement="right" class="style-option-menu">
-              <div class="el-dropdown-link">
-                字体
-                <i class="el-icon-arrow-right el-icon--right"></i>
-              </div>
-              <el-dropdown-menu slot="dropdown" style="width: 200px">
-                <el-dropdown-item
-                  v-for="font in config.builtinFonts"
-                  :style="{ fontFamily: font.value }"
-                  :key="font.value"
-                  :label="font.label"
-                  :value="font.value"
-                  @click.native="fontChanged(font.value)"
-                >
-                  <i
-                    class="el-icon-check"
-                    :style="{ opacity: selectFont === font.value ? 1 : 0 }"
-                  ></i>
-                  <span>{{ font.label }}</span>
-                  <span class="select-item-right">Abc</span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <style-option-menu
+              label="字体"
+              :options="config.builtinFonts"
+              :current="selectFont"
+              :charge="fontChanged"
+            ></style-option-menu>
           </el-dropdown-item>
           <el-dropdown-item class="padding-left-3">
-            <el-dropdown placement="right" class="style-option-menu">
-              <div class="el-dropdown-link">
-                字号
-                <i class="el-icon-arrow-right el-icon--right"></i>
-              </div>
-              <el-dropdown-menu slot="dropdown" style="width: 200px">
-                <el-dropdown-item
-                  v-for="size in config.sizeOption"
-                  :key="size.value"
-                  :label="size.label"
-                  :value="size.value"
-                  @click.native="sizeChanged(size.value)"
-                >
-                  <i
-                    class="el-icon-check"
-                    :style="{ opacity: selectSize === size.value ? 1 : 0 }"
-                  ></i>
-                  <span>{{ size.label }}</span>
-                  <span class="select-item-right">{{ size.desc }}</span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <style-option-menu
+              label="字号"
+              :options="config.sizeOption"
+              :current="selectSize"
+              :charge="sizeChanged"
+            ></style-option-menu>
           </el-dropdown-item>
           <el-dropdown-item class="padding-left-3">
-            <el-dropdown placement="right" class="style-option-menu">
-              <div class="el-dropdown-link">
-                颜色
-                <i class="el-icon-arrow-right el-icon--right"></i>
-              </div>
-              <el-dropdown-menu slot="dropdown" style="width: 200px">
-                <el-dropdown-item
-                  v-for="color in config.colorOption"
-                  :key="color.value"
-                  :label="color.label"
-                  :value="color.value"
-                  @click.native="colorChanged(color.value)"
-                >
-                  <i
-                    class="el-icon-check"
-                    :style="{ opacity: selectColor === color.value ? 1 : 0 }"
-                  ></i>
-                  <span>{{ color.label }}</span>
-                  <span class="select-item-right">{{ color.desc }}</span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <style-option-menu
+              label="颜色"
+              :options="config.colorOption"
+              :current="selectColor"
+              :charge="colorChanged"
+            ></style-option-menu>
           </el-dropdown-item>
           <el-dropdown-item class="padding-left-3">
-            <el-dropdown placement="right" class="style-option-menu">
-              <div class="el-dropdown-link">
-                代码主题
-                <i class="el-icon-arrow-right el-icon--right"></i>
-              </div>
-              <el-dropdown-menu slot="dropdown" style="width: 200px">
-                <el-dropdown-item
-                  v-for="code in config.codeThemeOption"
-                  :key="code.value"
-                  :label="code.label"
-                  :value="code.value"
-                  @click.native="codeThemeChanged(code.value)"
-                >
-                  <i
-                    class="el-icon-check"
-                    :style="{ opacity: selectCodeTheme === code.value ? 1 : 0 }"
-                  ></i>
-                  <span>{{ code.label }}</span>
-                  <span class="select-item-right">{{ code.desc }}</span>
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
+            <style-option-menu
+              label="代码主题"
+              :options="config.codeThemeOption"
+              :current="selectCodeTheme"
+              :charge="codeThemeChanged"
+            ></style-option-menu>
           </el-dropdown-item>
           <el-dropdown-item
             divided
@@ -288,6 +223,7 @@ import { solveWeChatImage, solveHtml } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
+import StyleOptionMenu from './StyleOptionMenu'
 import { mapState, mapMutations } from 'vuex'
 
 export default {
@@ -311,6 +247,7 @@ export default {
     }
   },
   components: {
+    StyleOptionMenu,
     ResetDialog,
   },
   computed: {
@@ -523,29 +460,12 @@ export default {
   flex: 1;
 }
 
-.select-item-right {
-  float: right;
-  color: #8492a6;
-  font-size: 13px;
-}
-
 .el-dropdown {
   margin: 0 10px;
 }
 
 .el-dropdown-link {
   cursor: pointer;
-}
-
-.style-option-menu {
-  margin: 0;
-  width: 150px;
-
-  .el-dropdown-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
 }
 
 .padding-left-3 {
