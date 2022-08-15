@@ -106,7 +106,7 @@
   </div>
 </template>
 <script>
-import EditorHeader from '@/components/CodemirrorEditor/EditorHeader'
+import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index'
 import AboutDialog from '@/components/CodemirrorEditor/AboutDialog'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog'
 import RightClickMenu from '@/components/CodemirrorEditor/RightClickMenu'
