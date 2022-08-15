@@ -48,7 +48,7 @@ export default {
 </script>
 
 <style lang="less" scoped>
-.style-option-menu {
+.style-option-menu.el-dropdown {
   margin: 0;
   width: 150px;
 
