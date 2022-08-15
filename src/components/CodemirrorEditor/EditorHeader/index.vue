@@ -369,18 +369,9 @@ export default {
       setTimeout(() => {
         const clipboardDiv = document.getElementById(`output`)
         if (this.isMacCodeBlock) {
-          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replace(
+          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
             /(<pre.+?>)/g,
-            `$1
-            <span style="
-            display: block;
-            height: 20px;
-            transform: translate(0px, -100%);
-            background-color: transparent;
-            background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgIHg9IjBweCIgeT0iMHB4IiB3aWR0aD0iNDUwcHgiIGhlaWdodD0iMTMwcHgiPgogIDxlbGxpcHNlIGN4PSI2NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgc3Ryb2tlPSJyZ2IoMjIwLDYwLDU0KSIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJyZ2IoMjM3LDEwOCw5NikiLz4KICA8ZWxsaXBzZSBjeD0iMjI1IiBjeT0iNjUiIHJ4PSI1MCIgcnk9IjUyIiAgc3Ryb2tlPSJyZ2IoMjE4LDE1MSwzMykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDI0NywxOTMsODEpIi8+CiAgPGVsbGlwc2UgY3g9IjM4NSIgY3k9IjY1IiByeD0iNTAiIHJ5PSI1MiIgIHN0cm9rZT0icmdiKDI3LDE2MSwzNykiIHN0cm9rZS13aWR0aD0iMiIgZmlsbD0icmdiKDEwMCwyMDAsODYpIi8+Cjwvc3ZnPg==');
-            background-position: 0 5px;
-            background-repeat: no-repeat;
-            background-size: 40px;"></span>`
+            `$1<svg xmlns="http://www.w3.org/2000/svg" width="54" height="14" viewBox="0 0 54 14" style="display: block"><g fill="none" fill-rule="evenodd" transform="translate(1 1)"><circle cx="6" cy="6" r="4" fill="#FF5F56" stroke="#E0443E" stroke-width=".5"></circle><circle cx="20" cy="6" r="4" fill="#FFBD2E" stroke="#DEA123" stroke-width=".5"></circle><circle cx="34" cy="6" r="4" fill="#27C93F" stroke="#1AAB29" stroke-width=".5"></circle></g></svg>`
           )
         }
         solveWeChatImage()
@@ -426,6 +417,7 @@ export default {
     },
     // 重置样式
     confirmReset() {
+      // TODO 代码块未重置
       localStorage.clear()
       this.cssEditor.setValue(DEFAULT_CSS_CONTENT)
       this.citeStatus = false
