@@ -3,10 +3,12 @@ export default {
     {
       label: `无衬线`,
       value: `-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif`,
+      desc: `Abc`,
     },
     {
       label: `衬线`,
       value: `Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif`,
+      desc: `Abc`,
     },
   ],
   sizeOption: [
