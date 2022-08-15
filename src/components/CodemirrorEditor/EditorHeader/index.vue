@@ -368,10 +368,10 @@ export default {
       this.$emit(`startCopy`)
       setTimeout(() => {
         solveWeChatImage()
-        const element = document.getElementById(`output-wrapper`)
-        element.innerHTML = mergeCss(element.innerHTML)
 
         const clipboardDiv = document.getElementById(`output`)
+        clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
+        
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
         let range = document.createRange()
