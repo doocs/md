@@ -372,7 +372,7 @@ export default {
         const clipboardDiv = document.getElementById(`output`)
         clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
         if (this.isMacCodeBlock) {
-          clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML).replaceAll(
+          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
             /(<code class="prettyprint.+?(?<=style="))/g,
             `$1font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
           )
