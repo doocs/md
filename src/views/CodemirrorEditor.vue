@@ -526,6 +526,7 @@ export default {
     exportEditorContent() {
       this.$nextTick(() => {
         exportHTML()
+        document.getElementById(`output`).innerHTML = this.output
       })
     },
     // 导入 Markdown 文档

@@ -147,6 +147,13 @@
           <el-dropdown-item class="padding-left-3" @click.native="customStyle">
             自定义 CSS
           </el-dropdown-item>
+          <el-dropdown-item divided @click.native="codeBlockChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: isMacCodeBlock ? 1 : 0 }"
+            ></i>
+            Mac 代码块
+          </el-dropdown-item>
           <el-dropdown-item
             divided
             class="padding-left-3"
@@ -219,7 +226,7 @@
 
 <script>
 import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
-import { solveWeChatImage, solveHtml } from '@/assets/scripts/converter'
+import { solveWeChatImage, mergeCss } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
@@ -239,11 +246,12 @@ export default {
       },
       config: config,
       citeStatus: false,
+      isMacCodeBlock: true,
       showResetConfirm: false,
       selectFont: ``,
       selectSize: ``,
       selectColor: ``,
-      selectCodeTheme: config.codeThemeOption[0].value,
+      selectCodeTheme: config.codeThemeOption[2].value,
     }
   },
   components: {
@@ -270,6 +278,7 @@ export default {
       codeTheme: (state) => state.codeTheme,
       nightMode: (state) => state.nightMode,
       currentCiteStatus: (state) => state.citeStatus,
+      currentIsMacCodeBlock: (state) => state.isMacCodeBlock,
     }),
   },
   methods: {
@@ -349,13 +358,25 @@ export default {
       this.setCiteStatus(this.citeStatus)
       this.$emit(`refresh`)
     },
+    codeBlockChanged() {
+      this.isMacCodeBlock = !this.isMacCodeBlock
+      this.setIsMacCodeBlock(this.isMacCodeBlock)
+      this.$emit(`refresh`)
+    },
     // 复制到微信公众号
     copy() {
       this.$emit(`startCopy`)
       setTimeout(() => {
-        let clipboardDiv = document.getElementById(`output`)
         solveWeChatImage()
-        solveHtml()
+
+        const clipboardDiv = document.getElementById(`output`)
+        clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
+        if (this.isMacCodeBlock) {
+          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
+            /(<code class="prettyprint.+?(?<=style="))/g,
+            `$1font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
+          )
+        }
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
         let range = document.createRange()
@@ -397,6 +418,7 @@ export default {
     },
     // 重置样式
     confirmReset() {
+      this.showResetConfirm = false
       localStorage.clear()
       this.cssEditor.setValue(DEFAULT_CSS_CONTENT)
       this.citeStatus = false
@@ -404,13 +426,15 @@ export default {
       this.fontChanged(this.config.builtinFonts[0].value)
       this.colorChanged(this.config.colorOption[0].value)
       this.sizeChanged(this.config.sizeOption[2].value)
-      this.codeThemeChanged(this.config.codeThemeOption[0].value)
+      this.codeThemeChanged(this.config.codeThemeOption[2].value)
       this.$emit(`cssChanged`)
       this.selectFont = this.currentFont
       this.selectSize = this.currentSize
       this.selectColor = this.currentColor
-      this.showResetConfirm = false
       this.selectCodeTheme = this.codeTheme
+
+      this.isMacCodeBlock = false
+      this.codeBlockChanged()
     },
     cancelReset() {
       this.showResetConfirm = false
@@ -425,6 +449,7 @@ export default {
       `setCssEditorValue`,
       `setCurrentCodeTheme`,
       `setWxRendererOptions`,
+      `setIsMacCodeBlock`,
     ]),
   },
   mounted() {
@@ -433,6 +458,7 @@ export default {
     this.selectColor = this.currentColor
     this.selectCodeTheme = this.codeTheme
     this.citeStatus = this.currentCiteStatus
+    this.isMacCodeBlock = this.currentIsMacCodeBlock
 
     const fileInput = this.$refs.fileInput
     fileInput.onchange = () => {

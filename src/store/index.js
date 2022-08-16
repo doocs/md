@@ -19,9 +19,10 @@ const state = {
   currentFont: ``,
   currentSize: ``,
   currentColor: ``,
-  citeStatus: 0,
+  citeStatus: false,
   nightMode: false,
-  codeTheme: config.codeThemeOption[0].value,
+  codeTheme: config.codeThemeOption[2].value,
+  isMacCodeBlock: true,
 }
 const mutations = {
   setEditorValue(state, data) {
@@ -53,6 +54,10 @@ const mutations = {
     state.codeTheme = data
     localStorage.setItem(`codeTheme`, data)
   },
+  setIsMacCodeBlock(state, data) {
+    state.isMacCodeBlock = data
+    localStorage.setItem(`isMacCodeBlock`, data)
+  },
   themeChanged(state) {
     state.nightMode = !state.nightMode
     localStorage.setItem(`nightMode`, state.nightMode)
@@ -65,9 +70,10 @@ const mutations = {
     state.currentSize =
       localStorage.getItem(`size`) || config.sizeOption[2].value
     state.codeTheme =
-      localStorage.getItem(`codeTheme`) || config.codeThemeOption[0].value
+      localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
     state.citeStatus = localStorage.getItem(`citeStatus`) === `true`
     state.nightMode = localStorage.getItem(`nightMode`) === `true`
+    state.isMacCodeBlock = !(localStorage.getItem(`isMacCodeBlock`) === `false`)
     state.wxRenderer = new WxRenderer({
       theme: setColor(state.currentColor),
       fonts: state.currentFont,
@@ -135,7 +141,7 @@ const mutations = {
     })
   },
   editorRefresh(state) {
-    let renderer = state.wxRenderer.getRenderer(state.citeStatus)
+    const renderer = state.wxRenderer.getRenderer(state.citeStatus)
     marked.setOptions({ renderer })
     let output = marked.parse(state.editor.getValue(0))
 
@@ -146,6 +152,35 @@ const mutations = {
       output += state.wxRenderer.buildFootnotes()
       // 附加的一些 style
       output += state.wxRenderer.buildAddition()
+    }
+
+    if (state.isMacCodeBlock) {
+      output += `
+        <style>
+          .hljs.code__pre::before {
+            position: initial;
+            padding: initial;
+            content: '';
+            display: block;
+            height: 25px;
+            background-color: transparent;
+            background-image: url("https://doocs.oss-cn-shenzhen.aliyuncs.com/img/123.svg");
+            background-position: 14px 10px;
+            background-repeat: no-repeat;
+            background-size: 40px;
+          }
+
+          .hljs.code__pre {
+            padding: 0!important;
+          }
+
+          .hljs.code__pre code {
+            display: -webkit-box;
+            padding: 0.5em 1em 1em;
+            overflow-x: auto;
+          }
+        </style>
+      `
     }
     state.output = output
   },

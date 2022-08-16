@@ -13,13 +13,10 @@ export function solveWeChatImage() {
     image.style.height = height
   }
 }
-export function solveHtml() {
-  const element = document.getElementById(`output-wrapper`)
-  let html = element.innerHTML
-  let res = ``
-  res = juice.inlineContent(html, {
+
+export function mergeCss(html) {
+  return juice(html, {
     inlinePseudoElements: true,
     preserveImportant: true,
   })
-  return res
 }
