@@ -19,7 +19,7 @@
           @export="exportEditorContent"
           @showCssEditor="showCssEditor = !showCssEditor"
           @show-about-dialog="aboutDialogVisible = true"
-          @show-dialog-form="dialogFormVisible = true"
+          @show-dialog-form="insertFormDialogVisible = true"
           @show-dialog-upload-img="dialogUploadImgVisible = true"
           @startCopy=";(isCoping = true), (backLight = true)"
           @endCopy="endCopy"
@@ -86,21 +86,27 @@
     </el-container>
 
     <upload-img-dialog
-      v-model="dialogUploadImgVisible"
+      :visible="dialogUploadImgVisible"
       @close="dialogUploadImgVisible = false"
       @beforeUpload="beforeUpload"
       @uploadImage="uploadImage"
       @uploaded="uploaded"
     ></upload-img-dialog>
-    <about-dialog v-model="aboutDialogVisible"></about-dialog>
-    <insert-form-dialog v-model="dialogFormVisible"></insert-form-dialog>
+    <about-dialog
+      :visible="aboutDialogVisible"
+      @close="aboutDialogVisible = false"
+    ></about-dialog>
+    <insert-form-dialog
+      :visible="insertFormDialogVisible"
+      @close="insertFormDialogVisible = false"
+    ></insert-form-dialog>
 
     <right-click-menu
       :visible="rightClickMenuVisible"
       :left="mouseLeft"
       :top="mouseTop"
       @menuTick="onMenuEvent"
-      @closeMenu="closeRightClickMenu"
+      @closeMenu="rightClickMenuVisible = false"
     ></right-click-menu>
     <run-loading></run-loading>
   </div>
@@ -135,7 +141,7 @@ export default {
       showCssEditor: false,
       aboutDialogVisible: false,
       dialogUploadImgVisible: false,
-      dialogFormVisible: false,
+      insertFormDialogVisible: false,
       isCoping: false,
       isImgLoading: false,
       backLight: false,
@@ -303,9 +309,6 @@ export default {
         }
       })
 
-      this.editor.on(`mousedown`, () => {
-        this.rightClickMenuVisible = false
-      })
       this.editor.on(`blur`, () => {
         //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
         this.rightClickMenuVisible = false
@@ -578,10 +581,7 @@ export default {
       this.mouseTop = e.clientY + 10
       this.rightClickMenuVisible = true
     },
-    closeRightClickMenu() {
-      this.rightClickMenuVisible = false
-    },
-    onMenuEvent(type, info = {}) {
+    onMenuEvent(type) {
       switch (type) {
         case `resetStyle`:
           this.$refs.header.showResetConfirm = true
@@ -596,7 +596,7 @@ export default {
           this.exportEditorContent()
           break
         case `insertTable`:
-          this.dialogFormVisible = true
+          this.insertFormDialogVisible = true
           break
         case `importMarkdown`:
           this.importMarkdownContent()

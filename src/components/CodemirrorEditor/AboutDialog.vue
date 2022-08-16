@@ -2,8 +2,8 @@
   <el-dialog
     title="关于"
     class="about__dialog"
-    :visible="value"
-    @close="$emit('input', false)"
+    :visible="visible"
+    @close="$emit('close')"
     width="30%"
     center
   >
@@ -37,7 +37,7 @@
 <script>
 export default {
   props: {
-    value: {
+    visible: {
       type: Boolean,
       default: false,
     },

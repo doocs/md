@@ -2,8 +2,8 @@
   <el-dialog
     title="插入表格"
     class="insert__dialog"
-    :visible="value"
-    @close="$emit('input', false)"
+    :visible="visible"
+    @close="$emit('close')"
     border
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">
@@ -44,7 +44,7 @@
       </tr>
     </table>
     <div slot="footer" class="dialog-footer">
-      <el-button :type="btnType" @click="$emit('input', false)" plain>
+      <el-button :type="btnType" @click="$emit('close')" plain>
         取 消
       </el-button>
       <el-button :type="btnType" @click="insertTable" plain> 确 定 </el-button>
@@ -59,7 +59,7 @@ import { mapState, mapMutations } from 'vuex'
 
 export default {
   props: {
-    value: {
+    visible: {
       type: Boolean,
       default: false,
     },
@@ -95,7 +95,7 @@ export default {
       this.rowNum = 3
       this.colNum = 3
       this.editor.replaceSelection(`\n${table}\n`, `end`)
-      this.$emit(`input`, false)
+      this.$emit(`close`)
       this.editorRefresh()
     },
     ...mapMutations([`editorRefresh`]),

@@ -75,7 +75,7 @@ export default {
   methods: {
     onMouseDown(key) {
       this.$emit(`menuTick`, key)
-      this.$emit(`closeMenu`, false)
+      this.$emit(`closeMenu`)
     },
   },
 }
