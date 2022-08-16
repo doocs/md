@@ -63,24 +63,7 @@
               </div>
             </section>
           </el-col>
-          <transition
-            name="custom-classes-transition"
-            enter-active-class="bounceInRight"
-          >
-            <el-col
-              id="cssBox"
-              v-show="showCssEditor"
-              :span="12"
-              class="cssEditor-wrapper"
-            >
-              <textarea
-                id="cssEditor"
-                type="textarea"
-                placeholder="Your custom css here."
-              >
-              </textarea>
-            </el-col>
-          </transition>
+          <css-editor :show-css-editor="showCssEditor"></css-editor>
         </el-row>
       </el-main>
     </el-container>
@@ -111,6 +94,7 @@ import AboutDialog from '@/components/CodemirrorEditor/AboutDialog'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog'
 import RightClickMenu from '@/components/CodemirrorEditor/RightClickMenu'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog'
+import CssEditor from '@/components/CodemirrorEditor/CssEditor'
 import RunLoading from '@/components/RunLoading'
 
 import {
@@ -148,6 +132,7 @@ export default {
     }
   },
   components: {
+    CssEditor,
     RunLoading,
     EditorHeader,
     AboutDialog,
@@ -698,46 +683,8 @@ export default {
   }
 }
 
-.bounceInRight {
-  animation-name: bounceInRight;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
 /deep/ .preview-table {
   border-spacing: 0;
-}
-
-@keyframes bounceInRight {
-  0%,
-  60%,
-  75%,
-  90%,
-  100% {
-    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-
-  0% {
-    opacity: 0;
-    transform: translate3d(3000px, 0, 0);
-  }
-
-  60% {
-    opacity: 1;
-    transform: translate3d(-25px, 0, 0);
-  }
-
-  75% {
-    transform: translate3d(10px, 0, 0);
-  }
-
-  90% {
-    transform: translate3d(-5px, 0, 0);
-  }
-
-  100% {
-    transform: none;
-  }
 }
 
 .codeMirror-wrapper {
