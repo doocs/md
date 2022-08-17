@@ -53,19 +53,19 @@ export default {
         ],
         [
           {
-            text: `导入 Markdown 文档`,
+            text: `导入 .md 文档`,
             key: `importMarkdown`,
           },
           {
-            text: `导出 Markdown 文档`,
+            text: `导出 .md 文档`,
             key: `download`,
           },
           {
-            text: `导出 HTML 页面`,
+            text: `导出 .html`,
             key: `export`,
           },
           {
-            text: `格式化 Markdown 文档`,
+            text: `格式化`,
             key: `formatMarkdown`,
           },
         ],
