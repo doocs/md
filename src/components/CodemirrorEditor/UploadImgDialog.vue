@@ -2,7 +2,7 @@
   <el-dialog
     title="本地上传"
     class="upload__dialog"
-    :visible="value"
+    :visible="visible"
     @close="$emit('close')"
   >
     <el-tabs type="activeName" v-model="activeName">
@@ -391,7 +391,7 @@ import CodeMirror from 'codemirror/lib/codemirror'
 
 export default {
   props: {
-    value: {
+    visible: {
       type: Boolean,
       default: false,
     },
