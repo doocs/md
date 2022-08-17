@@ -309,6 +309,9 @@ export default {
         }
       })
 
+      this.editor.on(`mousedown`, () => {
+        this.rightClickMenuVisible = false
+      })
       this.editor.on(`blur`, () => {
         //!影响到右键菜单的点击事件，右键菜单的点击事件在组件内通过mousedown触发
         this.rightClickMenuVisible = false
