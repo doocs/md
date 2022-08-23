@@ -465,12 +465,14 @@ export default {
           start = anchor
           end = head
         }
-      } else if (head.line < anchor.line) {
-        start = head
-        end = anchor
       } else {
-        start = head
-        end = anchor
+        if (head.line < anchor.line) {
+          start = head
+          end = anchor
+        } else {
+          start = anchor
+          end = head
+        }
       }
 
       const rows = []
