@@ -35,38 +35,12 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             class="format-item"
-            @click.native="$emit('addFormat', '**')"
+            v-for="{ label, kbd, emitArgs } in formatItems"
+            :key="kbd"
+            @click.native="$emit(...emitArgs)"
           >
-            加粗
-            <kbd> Ctrl + B </kbd>
-          </el-dropdown-item>
-          <el-dropdown-item
-            class="format-item"
-            @click.native="$emit('addFormat', '*')"
-          >
-            斜体
-            <kbd> Ctrl + I </kbd>
-          </el-dropdown-item>
-          <el-dropdown-item
-            class="format-item"
-            @click.native="$emit('addFormat', '~~')"
-          >
-            删除线
-            <kbd> Alt + Shift + U </kbd>
-          </el-dropdown-item>
-          <el-dropdown-item
-            class="format-item"
-            @click.native="$emit('addFormat', '[', ']()')"
-          >
-            超链接
-            <kbd> Alt + Shift + K </kbd>
-          </el-dropdown-item>
-          <el-dropdown-item
-            class="format-item"
-            @click.native="$emit('formatContent')"
-          >
-            格式化
-            <kbd> Ctrl + Alt + L </kbd>
+            {{ label }}
+            <kbd>{{ kbd }}</kbd>
           </el-dropdown-item>
           <el-dropdown-item divided @click.native="statusChanged">
             <i
@@ -209,14 +183,7 @@ export default {
   name: `editor-header`,
   data() {
     return {
-      form: {
-        dialogVisible: false,
-        title: ``,
-        desc: ``,
-        thumb: ``,
-        content: ``,
-      },
-      config: config,
+      config,
       citeStatus: false,
       isMacCodeBlock: true,
       showResetConfirm: false,
@@ -224,6 +191,40 @@ export default {
       selectSize: ``,
       selectColor: ``,
       selectCodeTheme: config.codeThemeOption[2].value,
+      form: {
+        dialogVisible: false,
+        title: ``,
+        desc: ``,
+        thumb: ``,
+        content: ``,
+      },
+      formatItems: [
+        {
+          label: `加粗`,
+          kbd: `Ctrl + B`,
+          emitArgs: [`addFormat`, `**`],
+        },
+        {
+          label: `斜体`,
+          kbd: `Ctrl + I`,
+          emitArgs: [`addFormat`, `*`],
+        },
+        {
+          label: `删除线`,
+          kbd: `Alt + Shift + U`,
+          emitArgs: [`addFormat`, `~~`],
+        },
+        {
+          label: `超链接`,
+          kbd: `Alt + Shift + K`,
+          emitArgs: [`addFormat`, `[`, `]()`],
+        },
+        {
+          label: `格式化`,
+          kbd: `Alt + Shift + L`,
+          emitArgs: [`formatContent`],
+        },
+      ],
     }
   },
   components: {
@@ -232,12 +233,6 @@ export default {
     ResetDialog,
   },
   computed: {
-    effect() {
-      return this.nightMode ? `dark` : `light`
-    },
-    btnContent() {
-      return this.nightMode ? `浅色模式` : `暗黑模式`
-    },
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
