@@ -141,7 +141,7 @@ class WxRenderer {
         )}><span><%s/></span>${text}</li>`;
 
       renderer.list = (text, ordered, start) => {
-        text = text.replace(/<\/*p.*?>/g, "");
+        text = text.replace(/<\/*p .*?>/g, "").replace(/<\/*p>/g, "");
         let segments = text.split(`<%s/>`);
         if (!ordered) {
           text = segments.join("• ");

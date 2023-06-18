@@ -178,6 +178,7 @@ const mutations = {
             display: -webkit-box;
             padding: 0.5em 1em 1em;
             overflow-x: auto;
+            text-indent: 0;
           }
         </style>
       `
