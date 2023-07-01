@@ -389,6 +389,24 @@ docker run -d -p 8080:80 doocs/md:latest
         <sub>前端黑板报</sub>
       </a>
     </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/eLuC6e93RR1zCD3w2FgpVA">
+        <img src="https://fastly.jsdelivr.net/gh/filess/img17@main/2023/07/01/1688177430099-850bccff-2986-4744-a751-5523313428a1.jpg" style="width: 40px;"><br>
+        <sub>Web3HackerWorld</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/fKKQrsatC9en3PwWiCL-KQ">
+        <img src="https://fastly.jsdelivr.net/gh/filess/img18@main/2023/07/01/1688177587965-34e6be88-7ae3-42ee-ba69-59ed47b90fd7.jpg" style="width: 40px;"><br>
+        <sub>StruggleYang</sub>
+      </a>
+    </td>
+    <td align="center" style="width: 60px;">
+      <a href="https://mp.weixin.qq.com/s/DYzzci2paf10CgW22pkyUQ">
+        <img src="https://fastly.jsdelivr.net/gh/filess/img8@main/2023/07/01/1688177647740-abd287e4-9ab0-46f7-a4aa-9c166782dc30.jpg" style="width: 40px;"><br>
+        <sub>比心技术</sub>
+      </a>
+    </td>
   </tr>
 </table>
 
