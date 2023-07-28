@@ -28,7 +28,7 @@
     "cheerio": "1.0.0-rc.10",
     "juice": "^8.0.0",
     "marked": "^4.0.18",
-    "minio": "^7.0.29",
+    "minio": "7.0.33",
     "node-fetch": "^3.2.10",
     "prettier": "2.7.1",
     "prettify": "^0.1.7",
