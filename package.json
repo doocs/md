@@ -30,7 +30,6 @@
     "qiniu-js": "^3.4.1",
     "uuid": "^8.3.2",
     "vue": "^2.7.14",
-    "vue-router": "^3.5.4",
     "vuex": "^3.6.2"
   },
   "devDependencies": {

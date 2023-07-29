@@ -1,8 +1,12 @@
 <template>
   <div id="app">
-    <router-view></router-view>
+    <codemirror-editor />
   </div>
 </template>
+
+<script setup>
+import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
+</script>
 
 <style lang="less">
 // 仿 uniapp 外层全屏
