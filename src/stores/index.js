@@ -1,16 +1,18 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
-import config from '../assets/scripts/config'
-import WxRenderer from '../assets/scripts/renderers/wx-renderer'
+// import Vue from 'vue'
+// import Vuex from 'vuex'
+import { defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
+
+import config from '../assets/scripts/config'
+import WxRenderer from '../assets/scripts/renderers/wx-renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import { setColor, formatDoc, formatCss } from '@/assets/scripts/util'
 
-Vue.use(Vuex)
+// Vue.use(Vuex)
 
-const state = {
+const state = () => ({
   wxRenderer: null,
   output: ``,
   html: ``,
@@ -23,71 +25,71 @@ const state = {
   nightMode: false,
   codeTheme: config.codeThemeOption[2].value,
   isMacCodeBlock: true,
-}
-const mutations = {
-  setEditorValue(state, data) {
-    state.editor.setValue(data)
+})
+const actions = {
+  setEditorValue(data) {
+    this.editor.setValue(data)
   },
-  setCssEditorValue(state, data) {
-    state.cssEditor.setValue(data)
+  setCssEditorValue(data) {
+    this.cssEditor.setValue(data)
   },
-  setWxRendererOptions(state, data) {
-    state.wxRenderer.setOptions(data)
+  setWxRendererOptions(data) {
+    this.wxRenderer.setOptions(data)
   },
-  setCiteStatus(state, data) {
-    state.citeStatus = data
+  setCiteStatus(data) {
+    this.citeStatus = data
     localStorage.setItem(`citeStatus`, data)
   },
-  setCurrentFont(state, data) {
-    state.currentFont = data
+  setCurrentFont(data) {
+    this.currentFont = data
     localStorage.setItem(`fonts`, data)
   },
-  setCurrentSize(state, data) {
-    state.currentSize = data
+  setCurrentSize(data) {
+    this.currentSize = data
     localStorage.setItem(`size`, data)
   },
-  setCurrentColor(state, data) {
-    state.currentColor = data
+  setCurrentColor(data) {
+    this.currentColor = data
     localStorage.setItem(`color`, data)
   },
-  setCurrentCodeTheme(state, data) {
-    state.codeTheme = data
+  setCurrentCodeTheme(data) {
+    this.codeTheme = data
     localStorage.setItem(`codeTheme`, data)
   },
-  setIsMacCodeBlock(state, data) {
-    state.isMacCodeBlock = data
+  setIsMacCodeBlock(data) {
+    this.isMacCodeBlock = data
     localStorage.setItem(`isMacCodeBlock`, data)
   },
-  themeChanged(state) {
-    state.nightMode = !state.nightMode
-    localStorage.setItem(`nightMode`, state.nightMode)
+  themeChanged() {
+    this.nightMode = !this.nightMode
+    localStorage.setItem(`nightMode`, this.nightMode)
   },
-  initEditorState(state) {
-    state.currentFont =
+  initEditorState() {
+    this.currentFont =
       localStorage.getItem(`fonts`) || config.builtinFonts[0].value
-    state.currentColor =
+    this.currentColor =
       localStorage.getItem(`color`) || config.colorOption[0].value
-    state.currentSize =
+    this.currentSize =
       localStorage.getItem(`size`) || config.sizeOption[2].value
-    state.codeTheme =
+    this.codeTheme =
       localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
-    state.citeStatus = localStorage.getItem(`citeStatus`) === `true`
-    state.nightMode = localStorage.getItem(`nightMode`) === `true`
-    state.isMacCodeBlock = !(localStorage.getItem(`isMacCodeBlock`) === `false`)
-    state.wxRenderer = new WxRenderer({
-      theme: setColor(state.currentColor),
-      fonts: state.currentFont,
-      size: state.currentSize,
+    this.citeStatus = localStorage.getItem(`citeStatus`) === `true`
+    this.nightMode = localStorage.getItem(`nightMode`) === `true`
+    this.isMacCodeBlock = !(localStorage.getItem(`isMacCodeBlock`) === `false`)
+    this.wxRenderer = new WxRenderer({
+      theme: setColor(this.currentColor),
+      fonts: this.currentFont,
+      size: this.currentSize,
     })
   },
-  initEditorEntity(state) {
+  initEditorEntity() {
     const editorDom = document.getElementById(`editor`)
 
     if (!editorDom.value) {
       editorDom.value =
         localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
     }
-    state.editor = CodeMirror.fromTextArea(editorDom, {
+    this.editor = CodeMirror.fromTextArea(editorDom, {
       mode: `text/x-markdown`,
       theme: `xq-light`,
       lineNumbers: false,
@@ -116,14 +118,14 @@ const mutations = {
       },
     })
   },
-  initCssEditorEntity(state) {
+  initCssEditorEntity() {
     const cssEditorDom = document.getElementById(`cssEditor`)
 
     if (!cssEditorDom.value) {
       cssEditorDom.value =
         localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
     }
-    state.cssEditor = CodeMirror.fromTextArea(cssEditorDom, {
+    this.cssEditor = CodeMirror.fromTextArea(cssEditorDom, {
       mode: `css`,
       theme: `style-mirror`,
       lineNumbers: false,
@@ -140,21 +142,21 @@ const mutations = {
       },
     })
   },
-  editorRefresh(state) {
-    const renderer = state.wxRenderer.getRenderer(state.citeStatus)
+  editorRefresh() {
+    const renderer = this.wxRenderer.getRenderer(this.citeStatus)
     marked.setOptions({ renderer })
-    let output = marked.parse(state.editor.getValue(0))
+    let output = marked.parse(this.editor.getValue(0))
 
     // 去除第一行的 margin-top
     output = output.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-    if (state.citeStatus) {
+    if (this.citeStatus) {
       // 引用脚注
-      output += state.wxRenderer.buildFootnotes()
+      output += this.wxRenderer.buildFootnotes()
       // 附加的一些 style
-      output += state.wxRenderer.buildAddition()
+      output += this.wxRenderer.buildAddition()
     }
 
-    if (state.isMacCodeBlock) {
+    if (this.isMacCodeBlock) {
       output += `
         <style>
           .hljs.code__pre::before {
@@ -183,12 +185,11 @@ const mutations = {
         </style>
       `
     }
-    state.output = output
+    this.output = output
   },
 }
 
-export default new Vuex.Store({
+export const useStore = defineStore(`store`, {
   state,
-  mutations,
-  actions: {},
+  actions,
 })

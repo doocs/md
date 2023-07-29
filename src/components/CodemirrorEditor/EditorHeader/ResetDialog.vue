@@ -19,7 +19,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
+import { mapState } from 'pinia'
+import { useStore } from '@/stores'
 
 export default {
   props: {
@@ -32,7 +34,7 @@ export default {
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
-    ...mapState({
+    ...mapState(useStore, {
       nightMode: (state) => state.nightMode,
     }),
   },

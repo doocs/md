@@ -115,7 +115,9 @@ import {
   toBase64,
 } from '@/assets/scripts/util'
 import fileApi from '../api/file'
-import { mapState, mapMutations } from 'vuex'
+// import { mapState, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'pinia'
+import { useStore } from '@/stores'
 
 require(`codemirror/mode/javascript/javascript`)
 
@@ -147,7 +149,7 @@ export default {
     UploadImgDialog,
   },
   computed: {
-    ...mapState({
+    ...mapState(useStore, {
       wxRenderer: (state) => state.wxRenderer,
       output: (state) => state.output,
       editor: (state) => state.editor,
@@ -598,7 +600,7 @@ export default {
           break
       }
     },
-    ...mapMutations([
+    ...mapActions(useStore, [
       `initEditorState`,
       `initEditorEntity`,
       `setWxRendererOptions`,

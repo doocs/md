@@ -12,7 +12,9 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+// import { mapState } from 'vuex'
+import { mapState } from 'pinia'
+import { useStore } from '@/stores'
 
 export default {
   name: `RunLoading`,
@@ -27,7 +29,7 @@ export default {
     }, 100)
   },
   computed: {
-    ...mapState({
+    ...mapState(useStore, {
       nightMode: ({ nightMode }) => nightMode,
     }),
   },

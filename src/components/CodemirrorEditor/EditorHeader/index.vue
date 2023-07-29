@@ -177,7 +177,9 @@ import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
 import StyleOptionMenu from './StyleOptionMenu'
 import PostInfoDialog from './PostInfoDialog'
-import { mapState, mapMutations } from 'vuex'
+// import { mapState, mapMutations } from 'vuex'
+import { mapState, mapActions } from 'pinia'
+import { useStore } from '@/stores'
 
 export default {
   name: `editor-header`,
@@ -236,7 +238,7 @@ export default {
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
-    ...mapState({
+    ...mapState(useStore, {
       output: (state) => state.output,
       editor: (state) => state.editor,
       cssEditor: (state) => state.cssEditor,
@@ -408,7 +410,7 @@ export default {
       this.showResetConfirm = false
       this.editor.focus()
     },
-    ...mapMutations([
+    ...mapActions(useStore, [
       `setCurrentColor`,
       `setCiteStatus`,
       `themeChanged`,
