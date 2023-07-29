@@ -12,7 +12,6 @@
 </template>
 
 <script>
-// import { mapState } from 'vuex'
 import { mapState } from 'pinia'
 import { useStore } from '@/stores'
 

@@ -30,14 +30,11 @@
     "prettify": "^0.1.7",
     "qiniu-js": "^3.4.1",
     "uuid": "^8.3.2",
-    "vue": "^2.7.14",
-    "vuex": "^3.6.2"
+    "vue": "^2.7.14"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-eslint": "^4.5.19",
-    "@vue/cli-plugin-router": "^4.5.19",
-    "@vue/cli-plugin-vuex": "^4.5.12",
     "@vue/cli-service": "^4.5.15",
     "@vue/eslint-config-prettier": "^6.0.0",
     "async-validator": "^4.0.7",

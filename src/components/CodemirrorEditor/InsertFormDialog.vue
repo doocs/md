@@ -53,11 +53,11 @@
 </template>
 
 <script>
-import config from '@/assets/scripts/config'
-import { createTable } from '@/assets/scripts/util'
-// import { mapState, mapMutations } from 'vuex'
 import { mapState, mapActions } from 'pinia'
 import { useStore } from '@/stores'
+
+import config from '@/assets/scripts/config'
+import { createTable } from '@/assets/scripts/util'
 
 export default {
   props: {

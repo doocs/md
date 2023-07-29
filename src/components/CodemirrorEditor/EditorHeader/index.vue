@@ -170,6 +170,9 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useStore } from '@/stores'
+
 import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
 import { solveWeChatImage, mergeCss } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
@@ -177,9 +180,6 @@ import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
 import StyleOptionMenu from './StyleOptionMenu'
 import PostInfoDialog from './PostInfoDialog'
-// import { mapState, mapMutations } from 'vuex'
-import { mapState, mapActions } from 'pinia'
-import { useStore } from '@/stores'
 
 export default {
   name: `editor-header`,
