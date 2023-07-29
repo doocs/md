@@ -170,6 +170,9 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useStore } from '@/stores'
+
 import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
 import { solveWeChatImage, mergeCss } from '@/assets/scripts/converter'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
@@ -177,7 +180,6 @@ import config from '@/assets/scripts/config'
 import ResetDialog from './ResetDialog'
 import StyleOptionMenu from './StyleOptionMenu'
 import PostInfoDialog from './PostInfoDialog'
-import { mapState, mapMutations } from 'vuex'
 
 export default {
   name: `editor-header`,
@@ -236,7 +238,7 @@ export default {
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
-    ...mapState({
+    ...mapState(useStore, {
       output: (state) => state.output,
       editor: (state) => state.editor,
       cssEditor: (state) => state.cssEditor,
@@ -408,7 +410,7 @@ export default {
       this.showResetConfirm = false
       this.editor.focus()
     },
-    ...mapMutations([
+    ...mapActions(useStore, [
       `setCurrentColor`,
       `setCiteStatus`,
       `themeChanged`,

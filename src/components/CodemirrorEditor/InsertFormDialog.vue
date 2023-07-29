@@ -53,9 +53,11 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'pinia'
+import { useStore } from '@/stores'
+
 import config from '@/assets/scripts/config'
 import { createTable } from '@/assets/scripts/util'
-import { mapState, mapMutations } from 'vuex'
 
 export default {
   props: {
@@ -76,7 +78,7 @@ export default {
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
-    ...mapState({
+    ...mapState(useStore, {
       nightMode: (state) => state.nightMode,
       editor: (state) => state.editor,
     }),
@@ -98,7 +100,7 @@ export default {
       this.$emit(`close`)
       this.editorRefresh()
     },
-    ...mapMutations([`editorRefresh`]),
+    ...mapActions(useStore, [`editorRefresh`]),
   },
 }
 </script>
