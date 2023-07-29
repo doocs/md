@@ -340,10 +340,9 @@ export default {
         const clipboardDiv = document.getElementById(`output`)
         clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
         if (this.isMacCodeBlock) {
-          // FIXME 正则语法无法兼容低版本 safari
           clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
-            /(<code class="prettyprint.+?(?<=style="))/g,
-            `$1font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
+            /(<code class="prettyprint[^>]*)(style=")/g,
+            `$1style="font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
           )
         }
         clipboardDiv.focus()
