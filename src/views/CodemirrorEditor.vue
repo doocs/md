@@ -622,9 +622,7 @@ export default {
 .editor__header {
   padding: 0;
 }
-</style>
 
-<style lang="less" scoped>
 .main-body {
   padding-top: 12px;
   overflow: hidden;
@@ -698,8 +696,4 @@ export default {
 .codeMirror-wrapper {
   overflow-x: auto;
 }
-</style>
-
-<style lang="less" scoped>
-@import url('../assets/less/app.less');
 </style>
