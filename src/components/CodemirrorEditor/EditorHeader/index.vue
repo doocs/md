@@ -484,8 +484,7 @@ export default {
 }
 
 .format-item {
-  .padding-left-3;
-  width: 180px;
+  width: 220px;
 
   kbd {
     font-size: 0.75em;
