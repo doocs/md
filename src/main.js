@@ -8,7 +8,6 @@ import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/xq-light.css'
 
 /* 每个页面公共css */
-import './assets/less/app.less'
 import './assets/less/theme.less'
 import './assets/less/style-mirror.less'
 

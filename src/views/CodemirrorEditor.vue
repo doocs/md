@@ -619,6 +619,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import url('../assets/less/app.less');
+</style>
+
+<style lang="less" scoped>
 .editor__header {
   padding: 0;
 }
