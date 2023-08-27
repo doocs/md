@@ -509,7 +509,7 @@ export default {
       this.formTxCOS = JSON.parse(localStorage.getItem(`txCOSConfig`))
     }
     if (localStorage.getItem(`qiniuConfig`)) {
-      this.formTxCOS = JSON.parse(localStorage.getItem(`qiniuConfig`))
+      this.formQiniu= JSON.parse(localStorage.getItem(`qiniuConfig`))
     }
     if (localStorage.getItem(`minioConfig`)) {
       this.minioOSS = JSON.parse(localStorage.getItem(`minioConfig`))
