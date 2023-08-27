@@ -418,14 +418,6 @@ export default {
         path: ``,
         cdnHost: ``,
       },
-      minioOSS: {
-        endpoint: ``,
-        port: ``,
-        useSSL: true,
-        bucket: ``,
-        accessKey: ``,
-        secretKey: ``,
-      },
       formTxCOS: {
         secretId: ``,
         secretKey: ``,
@@ -440,6 +432,14 @@ export default {
         bucket: ``,
         domain: ``,
         region: ``,
+      },
+      minioOSS: {
+        endpoint: ``,
+        port: ``,
+        useSSL: true,
+        bucket: ``,
+        accessKey: ``,
+        secretKey: ``,
       },
       formCustom: {
         code:
@@ -505,11 +505,14 @@ export default {
     if (localStorage.getItem(`aliOSSConfig`)) {
       this.formAliOSS = JSON.parse(localStorage.getItem(`aliOSSConfig`))
     }
-    if (localStorage.getItem(`minioConfig`)) {
-      this.minioOSS = JSON.parse(localStorage.getItem(`minioConfig`))
-    }
     if (localStorage.getItem(`txCOSConfig`)) {
       this.formTxCOS = JSON.parse(localStorage.getItem(`txCOSConfig`))
+    }
+    if (localStorage.getItem(`qiniuConfig`)) {
+      this.formTxCOS = JSON.parse(localStorage.getItem(`qiniuConfig`))
+    }
+    if (localStorage.getItem(`minioConfig`)) {
+      this.minioOSS = JSON.parse(localStorage.getItem(`minioConfig`))
     }
     if (localStorage.getItem(`imgHost`)) {
       this.imgHost = localStorage.getItem(`imgHost`)
