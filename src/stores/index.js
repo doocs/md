@@ -88,6 +88,9 @@ export const useStore = defineStore(`store`, {
         editorDom.value =
           localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
       }
+      const defaultKeyMap = CodeMirror.keyMap[`default`]
+      const modPrefix =
+        defaultKeyMap === CodeMirror.keyMap[`macDefault`] ? `Cmd` : `Ctrl`
       this.editor = CodeMirror.fromTextArea(editorDom, {
         mode: `text/x-markdown`,
         theme: `xq-light`,
@@ -96,23 +99,26 @@ export const useStore = defineStore(`store`, {
         styleActiveLine: true,
         autoCloseBrackets: true,
         extraKeys: {
-          'Ctrl-F': function autoFormat(editor) {
+          [`${modPrefix}-F`]: function autoFormat(editor) {
             const doc = formatDoc(editor.getValue(0))
             localStorage.setItem(`__editor_content`, doc)
             editor.setValue(doc)
           },
-          'Ctrl-S': function save(editor) {},
-          'Ctrl-B': function bold(editor) {
+          [[`${modPrefix}-B`]]: function bold(editor) {
             const selected = editor.getSelection()
             editor.replaceSelection(`**${selected}**`)
           },
-          'Ctrl-D': function del(editor) {
+          [`${modPrefix}-D`]: function del(editor) {
             const selected = editor.getSelection()
             editor.replaceSelection(`~~${selected}~~`)
           },
-          'Ctrl-I': function italic(editor) {
+          [`${modPrefix}-I`]: function italic(editor) {
             const selected = editor.getSelection()
             editor.replaceSelection(`*${selected}*`)
+          },
+          [`${modPrefix}-L`]: function code(editor) {
+            const selected = editor.getSelection()
+            editor.replaceSelection(`\`${selected}\``)
           },
         },
       })
