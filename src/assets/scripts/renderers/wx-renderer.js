@@ -123,7 +123,7 @@ class WxRenderer {
       renderer.code = (text, lang) => {
         if (lang === "katex") {
           const html = katex.renderToString(text);
-          return `<center>${html}</center>`;
+          return `${html}`;
         }
         if (lang.startsWith("mermaid")) {
           setTimeout(() => {
