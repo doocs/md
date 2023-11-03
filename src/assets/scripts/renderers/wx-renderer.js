@@ -1,5 +1,5 @@
 import { Renderer } from "marked";
-import hljs from 'highlight.js';
+import hljs from "highlight.js";
 
 class WxRenderer {
   constructor(opts) {
@@ -23,7 +23,7 @@ class WxRenderer {
         }
       }
 
-      let base_block = merge(base,  {});
+      let base_block = merge(base, {});
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
@@ -121,24 +121,30 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
-        lang = hljs.getLanguage(lang) ? lang : 'plaintext';
+        if (lang.startsWith("mermaid")) {
+          return `<pre class="mermaid">${text}</pre>`;
+        }
+        lang = hljs.getLanguage(lang) ? lang : "plaintext";
 
-        text = hljs.highlight(text, {language: lang}).value;
+        text = hljs.highlight(text, { language: lang }).value;
 
-        text = text.replace(/\r\n/g,"<br/>")
-                   .replace(/\n/g,"<br/>")
-                   .replace(/(>[^<]+)|(^[^<]+)/g, function(str) {
-                     return str.replace(/\s/g, '&nbsp;')
-                   });
+        text = text
+          .replace(/\r\n/g, "<br/>")
+          .replace(/\n/g, "<br/>")
+          .replace(/(>[^<]+)|(^[^<]+)/g, function (str) {
+            return str.replace(/\s/g, "&nbsp;");
+          });
 
-        return `<pre class="hljs code__pre" ${getStyles("code_pre")}><code class="prettyprint language-${lang}" ${getStyles("code")}>${text}</code></pre>`
+        return `<pre class="hljs code__pre" ${getStyles(
+          "code_pre"
+        )}><code class="prettyprint language-${lang}" ${getStyles(
+          "code"
+        )}>${text}</code></pre>`;
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;
       renderer.listitem = (text) =>
-        `<li ${getStyles(
-          "listitem"
-        )}><span><%s/></span>${text}</li>`;
+        `<li ${getStyles("listitem")}><span><%s/></span>${text}</li>`;
 
       renderer.list = (text, ordered, start) => {
         text = text.replace(/<\/*p .*?>/g, "").replace(/<\/*p>/g, "");
