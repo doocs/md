@@ -1,15 +1,12 @@
 import { Renderer } from "marked";
 import hljs from "highlight.js";
 import katex from "katex";
-import mermaid from "mermaid";
-
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
     let footnotes = [];
     let footnoteIndex = 0;
     let styleMapping = new Map();
-    mermaid.initialize({ startOnLoad: true });
 
     let merge = (base, extend) => Object.assign({}, base, extend);
 
