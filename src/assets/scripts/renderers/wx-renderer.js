@@ -126,7 +126,7 @@ class WxRenderer {
           return `<center>${html}</center>`;
         }
         if (lang.startsWith("mermaid")) {
-          mermaid.run();
+          window.mermaid?.run();
           return `<center><pre class="mermaid">${text}</pre></center>`;
         }
         lang = hljs.getLanguage(lang) ? lang : "plaintext";
