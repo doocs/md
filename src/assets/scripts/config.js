@@ -87,4 +87,4 @@ export default {
     rows: 1,
     cols: 1,
   },
-};
+}
