@@ -54,6 +54,7 @@ export default {
       value: `rgba(250, 81, 81, 1)`,
       desc: `热情活泼`,
     },
+    // { label: `微信绿`, value: `rgb(26, 173, 25,1)`, desc: `经典微信绿` },
   ],
   codeThemeOption: [
     {
@@ -86,4 +87,4 @@ export default {
     rows: 1,
     cols: 1,
   },
-}
+};
