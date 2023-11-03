@@ -1,6 +1,7 @@
 import { Renderer } from "marked";
 import hljs from "highlight.js";
 import katex from "katex";
+import mermaid from "mermaid";
 
 class WxRenderer {
   constructor(opts) {
@@ -8,6 +9,7 @@ class WxRenderer {
     let footnotes = [];
     let footnoteIndex = 0;
     let styleMapping = new Map();
+    mermaid.initialize({ startOnLoad: true });
 
     let merge = (base, extend) => Object.assign({}, base, extend);
 
@@ -121,12 +123,13 @@ class WxRenderer {
         text = text.replace(/<p.*?>/g, `<p ${getStyles("blockquote_p")}>`);
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
-      renderer.code = (text, lang) => {
+      renderer.code = async (text, lang) => {
         if (lang === "katex") {
-          const html = katex.renderToString("\\ce{CO2 + C -> 2 C0}");
-          return html;
+          const html = katex.renderToString(text);
+          return `<center>${html}</center>`;
         }
         if (lang.startsWith("mermaid")) {
+          await mermaid.run();
           return `<center><pre class="mermaid">${text}</pre></center>`;
         }
         lang = hljs.getLanguage(lang) ? lang : "plaintext";
