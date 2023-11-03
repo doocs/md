@@ -120,13 +120,13 @@ class WxRenderer {
         text = text.replace(/<p.*?>/g, `<p ${getStyles("blockquote_p")}>`);
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
-      renderer.code = async (text, lang) => {
+      renderer.code = (text, lang) => {
         if (lang === "katex") {
           const html = katex.renderToString(text);
           return `<center>${html}</center>`;
         }
         if (lang.startsWith("mermaid")) {
-          await mermaid.run();
+          mermaid.run();
           return `<center><pre class="mermaid">${text}</pre></center>`;
         }
         lang = hljs.getLanguage(lang) ? lang : "plaintext";
