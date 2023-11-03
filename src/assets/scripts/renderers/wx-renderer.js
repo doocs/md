@@ -1,5 +1,6 @@
 import { Renderer } from "marked";
 import hljs from "highlight.js";
+import katex from "katex";
 
 class WxRenderer {
   constructor(opts) {
@@ -121,6 +122,10 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
+        if (lang === "katex") {
+          const html = katex.renderToString("\\ce{CO2 + C -> 2 C0}");
+          return html;
+        }
         if (lang.startsWith("mermaid")) {
           return `<center><pre class="mermaid">${text}</pre></center>`;
         }
