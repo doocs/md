@@ -2,9 +2,12 @@
   <div
     class="container"
     :class="{ container_night: nightMode }"
-    @keydown.alt.shift.k="addFormat('[', ']()')"
-    @keydown.alt.shift.u="addFormat('~~')"
-    @keydown.ctrl.alt.l="formatContent()"
+    @keydown.ctrl.k="addFormat('[', ']()')"
+    @keydown.meta.k="addFormat('[', ']()')"
+    @keydown.ctrl.d="addFormat('~~')"
+    @keydown.meta.d="addFormat('~~')"
+    @keydown.ctrl.f="formatContent()"
+    @keydown.meta.f="formatContent()"
   >
     <el-container>
       <el-header class="editor__header">
