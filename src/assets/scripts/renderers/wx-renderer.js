@@ -1,6 +1,6 @@
 import { Renderer } from "marked";
-import hljs from 'highlight.js';
-
+import hljs from "highlight.js";
+import katex from "katex";
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
@@ -23,7 +23,7 @@ class WxRenderer {
         }
       }
 
-      let base_block = merge(base,  {});
+      let base_block = merge(base, {});
       for (let ele in themeTpl.block) {
         if (themeTpl.block.hasOwnProperty(ele)) {
           let style = themeTpl.block[ele];
@@ -121,24 +121,37 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
-        lang = hljs.getLanguage(lang) ? lang : 'plaintext';
+        if (lang === "katex") {
+          const html = katex.renderToString(text);
+          return `${html}`;
+        }
+        if (lang.startsWith("mermaid")) {
+          setTimeout(() => {
+            window.mermaid?.run();
+          }, 0);
+          return `<center><pre class="mermaid">${text}</pre></center>`;
+        }
+        lang = hljs.getLanguage(lang) ? lang : "plaintext";
 
-        text = hljs.highlight(text, {language: lang}).value;
+        text = hljs.highlight(text, { language: lang }).value;
 
-        text = text.replace(/\r\n/g,"<br/>")
-                   .replace(/\n/g,"<br/>")
-                   .replace(/(>[^<]+)|(^[^<]+)/g, function(str) {
-                     return str.replace(/\s/g, '&nbsp;')
-                   });
+        text = text
+          .replace(/\r\n/g, "<br/>")
+          .replace(/\n/g, "<br/>")
+          .replace(/(>[^<]+)|(^[^<]+)/g, function (str) {
+            return str.replace(/\s/g, "&nbsp;");
+          });
 
-        return `<pre class="hljs code__pre" ${getStyles("code_pre")}><code class="prettyprint language-${lang}" ${getStyles("code")}>${text}</code></pre>`
+        return `<pre class="hljs code__pre" ${getStyles(
+          "code_pre"
+        )}><code class="prettyprint language-${lang}" ${getStyles(
+          "code"
+        )}>${text}</code></pre>`;
       };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles("codespan")}>${text}</code>`;
       renderer.listitem = (text) =>
-        `<li ${getStyles(
-          "listitem"
-        )}><span><%s/></span>${text}</li>`;
+        `<li ${getStyles("listitem")}><span><%s/></span>${text}</li>`;
 
       renderer.list = (text, ordered, start) => {
         text = text.replace(/<\/*p .*?>/g, "").replace(/<\/*p>/g, "");

@@ -8,6 +8,10 @@ import DEFAULT_CONTENT from '@/assets/example/markdown.md'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
 import { setColor, formatDoc, formatCss } from '@/assets/scripts/util'
 
+const defaultKeyMap = CodeMirror.keyMap[`default`]
+const modPrefix =
+  defaultKeyMap === CodeMirror.keyMap[`macDefault`] ? `Cmd` : `Ctrl`
+
 export const useStore = defineStore(`store`, {
   state: () => ({
     wxRenderer: null,
@@ -88,9 +92,6 @@ export const useStore = defineStore(`store`, {
         editorDom.value =
           localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
       }
-      const defaultKeyMap = CodeMirror.keyMap[`default`]
-      const modPrefix =
-        defaultKeyMap === CodeMirror.keyMap[`macDefault`] ? `Cmd` : `Ctrl`
       this.editor = CodeMirror.fromTextArea(editorDom, {
         mode: `text/x-markdown`,
         theme: `xq-light`,
@@ -104,7 +105,7 @@ export const useStore = defineStore(`store`, {
             localStorage.setItem(`__editor_content`, doc)
             editor.setValue(doc)
           },
-          [[`${modPrefix}-B`]]: function bold(editor) {
+          [`${modPrefix}-B`]: function bold(editor) {
             const selected = editor.getSelection()
             editor.replaceSelection(`**${selected}**`)
           },
@@ -115,6 +116,10 @@ export const useStore = defineStore(`store`, {
           [`${modPrefix}-I`]: function italic(editor) {
             const selected = editor.getSelection()
             editor.replaceSelection(`*${selected}*`)
+          },
+          [`${modPrefix}-K`]: function italic(editor) {
+            const selected = editor.getSelection()
+            editor.replaceSelection(`[${selected}]()`)
           },
           [`${modPrefix}-L`]: function code(editor) {
             const selected = editor.getSelection()
@@ -138,12 +143,12 @@ export const useStore = defineStore(`store`, {
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-          'Ctrl-F': function autoFormat(editor) {
+          [`${modPrefix}-F`]: function autoFormat(editor) {
             const doc = formatCss(editor.getValue(0))
             localStorage.setItem(`__css_content`, doc)
             editor.setValue(doc)
           },
-          'Ctrl-S': function save(editor) {},
+          [`${modPrefix}-S`]: function save(editor) {},
         },
       })
     },

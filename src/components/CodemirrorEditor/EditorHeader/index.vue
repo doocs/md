@@ -203,27 +203,27 @@ export default {
       formatItems: [
         {
           label: `加粗`,
-          kbd: `Ctrl + B`,
+          kbd: `Ctrl/Command + B`,
           emitArgs: [`addFormat`, `**`],
         },
         {
           label: `斜体`,
-          kbd: `Ctrl + I`,
+          kbd: `Ctrl/Command + I`,
           emitArgs: [`addFormat`, `*`],
         },
         {
           label: `删除线`,
-          kbd: `Alt + Shift + U`,
+          kbd: `Ctrl/Command + D`,
           emitArgs: [`addFormat`, `~~`],
         },
         {
           label: `超链接`,
-          kbd: `Alt + Shift + K`,
+          kbd: `Ctrl/Command + K`,
           emitArgs: [`addFormat`, `[`, `]()`],
         },
         {
           label: `格式化`,
-          kbd: `Alt + Shift + L`,
+          kbd: `Ctrl/Command + F`,
           emitArgs: [`formatContent`],
         },
       ],

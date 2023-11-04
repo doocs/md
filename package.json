@@ -23,6 +23,7 @@
     "form-data": "4.0.0",
     "highlight.js": "^11.6.0",
     "juice": "^8.0.0",
+    "katex": "^0.16.9",
     "marked": "^4.0.18",
     "minio": "7.0.33",
     "node-fetch": "^3.2.10",
