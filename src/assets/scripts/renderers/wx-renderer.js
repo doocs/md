@@ -1,6 +1,11 @@
-import { Renderer } from "marked";
+import marked, { Renderer } from "marked";
 import hljs from "highlight.js";
-import katex from "katex";
+import markedKatex from "marked-katex-extension";
+
+marked.use(markedKatex({
+  throwOnError: false
+}));
+
 class WxRenderer {
   constructor(opts) {
     this.opts = opts;
@@ -121,10 +126,6 @@ class WxRenderer {
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
       renderer.code = (text, lang) => {
-        if (lang === "katex") {
-          const html = katex.renderToString(text);
-          return `${html}`;
-        }
         if (lang.startsWith("mermaid")) {
           setTimeout(() => {
             window.mermaid?.run();

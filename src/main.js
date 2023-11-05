@@ -19,6 +19,8 @@ import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/css-hint'
 
+import 'katex/dist/katex.min.css'
+
 import './plugins/element'
 import App from './App'
 
