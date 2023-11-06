@@ -3,7 +3,8 @@ import hljs from "highlight.js";
 import markedKatex from "marked-katex-extension";
 
 marked.use(markedKatex({
-  throwOnError: false
+  throwOnError: false,
+  output: `html`
 }));
 
 class WxRenderer {
