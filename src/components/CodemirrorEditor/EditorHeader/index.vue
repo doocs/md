@@ -343,7 +343,13 @@ export default {
         clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
 
         // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
-        clipboardDiv.innerHTML = clipboardDiv.innerHTML.replace(/class="base"( style="display: inline")*/g, `class="base" style="display: inline"`)
+        clipboardDiv.innerHTML = clipboardDiv.innerHTML
+          .replace(
+            /class="base"( style="display: inline")*/g,
+            `class="base" style="display: inline"`
+          )
+          // 公众号不支持 position， 转换为等价的 translateY
+          .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
 
         if (this.isMacCodeBlock) {
           clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
