@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "ali-oss": "^6.17.1",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "buffer-from": "^1.1.2",
     "codemirror": "^5.65.7",
     "cos-js-sdk-v5": "^1.3.9",
