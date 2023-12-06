@@ -20,6 +20,7 @@
   "author": "wll8",
   "license": "ISC",
   "dependencies": {
+    "@wll8/process-manager": "^1.0.1",
     "form-data": "2.3.3",
     "get-port": "5.1.1",
     "mockm": "^1.1.27-alpha.2",
