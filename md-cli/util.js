@@ -23,7 +23,7 @@ function portIsOk (port) {
  * @param {string} str 
  */
 function handleSpace(str = ``) {
-  const newStr = require('os').type() === 'Windows_NT' ? `"${str}"` : str
+  const newStr = require('os').type() === 'Windows_NT' && str.match(` `) ? `"${str}"` : str
   return newStr
 }
 
