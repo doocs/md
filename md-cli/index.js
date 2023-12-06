@@ -22,8 +22,8 @@ new Promise(async () => {
     testPort,
     replayPort,
     '--config': handleSpace(`${__dirname}/mm.config.js`),
-  }).map(([key, val]) => `${key}=${val}`).join(` `)
-  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, line]
+  }).map(([key, val]) => `${key}=${val}`)
+  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, ...line]
   spawn(`node`, cliArg)
   let oldTime = Date.now()
   console.log(`服务启动中...`)
