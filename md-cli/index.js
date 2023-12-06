@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 
+const { ProcessManager } = require(`@wll8/process-manager`);
 const getPort = require(`get-port`)
 const {
-  portIsOk,
   handleSpace,
   colors,
-  spawn,
   parseArgv,
 } = require(`./util.js`)
 
@@ -22,21 +21,18 @@ new Promise(async () => {
     testPort,
     replayPort,
     '--config': handleSpace(`${__dirname}/mm.config.js`),
-  }).map(([key, val]) => `${key}=${val}`).join(` `)
-  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, line]
-  spawn(`node`, cliArg)
-  let oldTime = Date.now()
-  console.log(`服务启动中...`)
+  }).map(([key, val]) => `${key}=${val}`)
+  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, ...line]
   console.log(`doocs/md-cli v${require(`./package.json`).version}`)
-  let timer = setInterval(async () => {
-    if((await portIsOk(port)) !== true) { // 服务启动成功
-      clearInterval(timer)
+  console.log(`服务启动中...`)
+  const cp = new ProcessManager(cliArg)
+  cp.on(`stdout`, (info = ``) => {
+    if(info.match(`:${port}/`)) {
       console.log(`服务已启动:`)
       console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
-    } else if(Date.now() - oldTime > 10 * 1e3) {
-      clearInterval(timer)
-      console.log(`服务 ${port} 初始化失败, 请重试.`)
+    }
+    if(info.match(`Port is occupied`)) {
       process.exit()
     }
-  }, 1e3);
+  })
 }).catch(err => console.log(err))
