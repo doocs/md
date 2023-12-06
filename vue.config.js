@@ -1,18 +1,18 @@
 const isProd = process.env.NODE_ENV === `production`
 
-const crypto = require('crypto');
+const crypto = require(`crypto`)
 
 /**
  * md4 algorithm is not available anymore in NodeJS 17+ (because of lib SSL 3).
  * In that case, silently replace md4 by md5 algorithm.
  */
 try {
-  crypto.createHash('md4');
+  crypto.createHash(`md4`)
 } catch (e) {
-  const origCreateHash = crypto.createHash;
+  const origCreateHash = crypto.createHash
   crypto.createHash = (alg, opts) => {
-    return origCreateHash(alg === 'md4' ? 'md5' : alg, opts);
-  };
+    return origCreateHash(alg === `md4` ? `md5` : alg, opts)
+  }
 }
 
 module.exports = {

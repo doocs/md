@@ -4,13 +4,12 @@
   "private": false,
   "scripts": {
     "prepare": "husky install",
-    "lint": "vue-cli-service lint src && vue-cli-service lint mm",
-    "start": "npm run lint -- --fix && run-p serve mm",
+    "lint": "vue-cli-service lint src && vue-cli-service lint",
+    "start": "npm run lint -- --fix && run-p serve",
     "serve": "vue-cli-service serve",
     "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
     "build": "vue-cli-service build",
-    "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
-    "mm": "npx mockm --cwd=mm"
+    "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack"
   },
   "dependencies": {
     "ali-oss": "^6.17.1",
@@ -52,7 +51,6 @@
     "less-loader": "^7.3.0",
     "mini-types": "*",
     "miniprogram-api-typings": "*",
-    "mockm": "^1.1.26-alpha.29",
     "npm-run-all": "^4.1.5",
     "postcss-comment": "^2.0.0",
     "prettier": "^2.8.8",
