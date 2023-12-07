@@ -3,7 +3,7 @@
   "version": "1.6.0",
   "private": false,
   "scripts": {
-    "release": "node ./bin/release.js",
+    "release:cli": "node ./bin/release.js",
     "prepare": "husky install",
     "lint": "vue-cli-service lint src",
     "start": "npm run lint -- --fix && run-p serve",
