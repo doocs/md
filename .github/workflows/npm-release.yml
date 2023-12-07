@@ -1,5 +1,4 @@
-
-name: Public Npm
+name: Create Cli Release
 
 on:
   push:
