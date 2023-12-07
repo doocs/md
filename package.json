@@ -1,8 +1,9 @@
 {
   "name": "md",
-  "version": "1.5.9",
+  "version": "1.6.0",
   "private": false,
   "scripts": {
+    "release:cli": "node ./bin/release.js",
     "prepare": "husky install",
     "lint": "vue-cli-service lint src",
     "start": "npm run lint -- --fix && run-p serve",
@@ -16,6 +17,7 @@
     "axios": "^1.6.0",
     "buffer-from": "^1.1.2",
     "codemirror": "^5.65.7",
+    "core-js": "^3.34.0",
     "cos-js-sdk-v5": "^1.3.9",
     "crypto-js": "^4.2.0",
     "element-ui": "^2.15.9",
