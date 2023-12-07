@@ -13,7 +13,7 @@
     "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack"
   },
   "dependencies": {
-    "ali-oss": "^6.17.1",
+    "ali-oss": "^6.18.1",
     "axios": "^1.6.0",
     "buffer-from": "^1.1.2",
     "codemirror": "^5.65.7",
@@ -27,7 +27,7 @@
     "katex": "^0.16.9",
     "marked": "^4.0.18",
     "marked-katex-extension": "^4.0.3",
-    "minio": "7.0.33",
+    "minio": "7.1.3",
     "node-fetch": "^3.2.10",
     "pinia": "^2.1.6",
     "prettify": "^0.1.7",
