@@ -5,6 +5,7 @@ on: pull_request_target
 jobs:
   preview:
     runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
     steps:
       - name: Create
         uses: actions-cool/maintain-one-comment@v3
