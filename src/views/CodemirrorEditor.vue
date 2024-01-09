@@ -22,6 +22,7 @@
       <el-main class="main-body">
         <el-row class="main-section">
           <el-col
+            :style="{ order: store.isEditOnLeft ? 0 : 1 }"
             :span="12"
             class="codeMirror-wrapper"
             ref="codeMirrorWrapper"
@@ -608,6 +609,13 @@ export default {
       this.leftAndRightScroll()
       window.PR.prettyPrint()
     }, 300)
+  },
+  setup() {
+    const store = useStore()
+
+    return {
+      store,
+    }
   },
 }
 </script>

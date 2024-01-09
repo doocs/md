@@ -26,6 +26,7 @@ export const useStore = defineStore(`store`, {
     nightMode: false,
     codeTheme: config.codeThemeOption[2].value,
     isMacCodeBlock: true,
+    isEditOnLeft: true,
   }),
   actions: {
     setEditorValue(data) {
@@ -61,6 +62,10 @@ export const useStore = defineStore(`store`, {
       this.isMacCodeBlock = data
       localStorage.setItem(`isMacCodeBlock`, data)
     },
+    setIsEditOnLeft(data) {
+      this.isEditOnLeft = data
+      localStorage.setItem(`isEditOnLeft`, data)
+    },
     themeChanged() {
       this.nightMode = !this.nightMode
       localStorage.setItem(`nightMode`, this.nightMode)
@@ -79,6 +84,7 @@ export const useStore = defineStore(`store`, {
       this.isMacCodeBlock = !(
         localStorage.getItem(`isMacCodeBlock`) === `false`
       )
+      this.isEditOnLeft = !(localStorage.getItem(`isEditOnLeft`) === `false`)
       this.wxRenderer = new WxRenderer({
         theme: setColor(this.currentColor),
         fonts: this.currentFont,

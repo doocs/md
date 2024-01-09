@@ -26,6 +26,13 @@
             ></i>
             暗黑模式
           </el-dropdown-item>
+          <el-dropdown-item divided @click.native="isEditOnLeftChanged">
+            <i
+              class="el-icon-check"
+              :style="{ opacity: isEditOnLeft ? 1 : 0 }"
+            ></i>
+            左侧编辑
+          </el-dropdown-item>
         </el-dropdown-menu>
       </el-dropdown>
       <el-dropdown>
@@ -188,6 +195,7 @@ export default {
       config,
       citeStatus: false,
       isMacCodeBlock: true,
+      isEditOnLeft: true,
       showResetConfirm: false,
       selectFont: ``,
       selectSize: ``,
@@ -249,6 +257,7 @@ export default {
       nightMode: (state) => state.nightMode,
       currentCiteStatus: (state) => state.citeStatus,
       currentIsMacCodeBlock: (state) => state.isMacCodeBlock,
+      currentIsEditOnLeft: (state) => state.isEditOnLeft,
     }),
   },
   methods: {
@@ -332,6 +341,10 @@ export default {
       this.isMacCodeBlock = !this.isMacCodeBlock
       this.setIsMacCodeBlock(this.isMacCodeBlock)
       this.$emit(`refresh`)
+    },
+    isEditOnLeftChanged() {
+      this.isEditOnLeft = !this.isEditOnLeft
+      this.setIsEditOnLeft(this.isEditOnLeft)
     },
     // 复制到微信公众号
     copy() {
@@ -430,6 +443,7 @@ export default {
       `setCurrentCodeTheme`,
       `setWxRendererOptions`,
       `setIsMacCodeBlock`,
+      `setIsEditOnLeft`,
     ]),
   },
   mounted() {
@@ -439,6 +453,7 @@ export default {
     this.selectCodeTheme = this.codeTheme
     this.citeStatus = this.currentCiteStatus
     this.isMacCodeBlock = this.currentIsMacCodeBlock
+    this.isEditOnLeft = this.currentIsEditOnLeft
 
     const fileInput = this.$refs.fileInput
     fileInput.onchange = () => {
