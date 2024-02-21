@@ -126,7 +126,7 @@ class WxRenderer {
         text = text.replace(/<p.*?>/g, `<p ${getStyles("blockquote_p")}>`);
         return `<blockquote ${getStyles("blockquote")}>${text}</blockquote>`;
       };
-      renderer.code = (text, lang) => {
+      renderer.code = (text, lang = "") => {
         if (lang.startsWith("mermaid")) {
           setTimeout(() => {
             window.mermaid?.run();
