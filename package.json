@@ -24,7 +24,7 @@
     "form-data": "4.0.0",
     "highlight.js": "^11.6.0",
     "juice": "^8.0.0",
-    "katex": "^0.16.9",
+    "katex": "^0.16.10",
     "marked": "^4.0.18",
     "marked-katex-extension": "^4.0.3",
     "minio": "7.0.33",
