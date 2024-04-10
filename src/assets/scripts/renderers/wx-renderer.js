@@ -133,10 +133,9 @@ class WxRenderer {
           }, 0);
           return `<center><pre class="mermaid">${text}</pre></center>`;
         }
+        lang = lang.split(" ")[0];
         lang = hljs.getLanguage(lang) ? lang : "plaintext";
-
         text = hljs.highlight(text, { language: lang }).value;
-
         text = text
           .replace(/\r\n/g, "<br/>")
           .replace(/\n/g, "<br/>")
