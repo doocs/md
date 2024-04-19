@@ -183,9 +183,9 @@ export const useStore = defineStore(`store`, {
               height: 25px;
               background-color: transparent;
               background-image: url("https://doocs.oss-cn-shenzhen.aliyuncs.com/img/123.svg");
-              background-position: 14px 10px;
+              background-position: 14px 10px!important;
               background-repeat: no-repeat;
-              background-size: 40px;
+              background-size: 40px!important;
             }
 
             .hljs.code__pre {
