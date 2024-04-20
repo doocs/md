@@ -17,7 +17,9 @@
           :style="{ opacity: current === value ? 1 : 0 }"
         ></i>
         {{ label }}
-        <span class="select-item-right">{{ desc }}</span>
+        <span class="select-item-right" :style="{ fontFamily: value }">{{
+          desc
+        }}</span>
       </el-dropdown-item>
     </el-dropdown-menu>
   </el-dropdown>
