@@ -25,6 +25,7 @@ export const useStore = defineStore(`store`, {
     citeStatus: false,
     nightMode: false,
     codeTheme: config.codeThemeOption[2].value,
+    legend: config.legendOption[3].value,
     isMacCodeBlock: true,
     isEditOnLeft: true,
   }),
@@ -58,6 +59,10 @@ export const useStore = defineStore(`store`, {
       this.codeTheme = data
       localStorage.setItem(`codeTheme`, data)
     },
+    setCurrentLegend(data) {
+      this.legend = data
+      localStorage.setItem(`legend`, data)
+    },
     setIsMacCodeBlock(data) {
       this.isMacCodeBlock = data
       localStorage.setItem(`isMacCodeBlock`, data)
@@ -79,6 +84,8 @@ export const useStore = defineStore(`store`, {
         localStorage.getItem(`size`) || config.sizeOption[2].value
       this.codeTheme =
         localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
+      this.legend =
+        localStorage.getItem(`legend`) || config.legendOption[3].value
       this.citeStatus = localStorage.getItem(`citeStatus`) === `true`
       this.nightMode = localStorage.getItem(`nightMode`) === `true`
       this.isMacCodeBlock = !(

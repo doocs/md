@@ -88,6 +88,33 @@ export default {
       desc: `dark`,
     },
   ],
+  legendOption: [
+    {
+      label: `title 优先`,
+      value: `title-alt`,
+      desc: ``,
+    },
+    {
+      label: `alt 优先`,
+      value: `alt-title`,
+      desc: ``,
+    },
+    {
+      label: `只显示 title`,
+      value: `title`,
+      desc: ``,
+    },
+    {
+      label: `只显示 alt`,
+      value: `alt`,
+      desc: ``,
+    },
+    {
+      label: `不显示`,
+      value: `none`,
+      desc: ``,
+    },
+  ],
   form: {
     rows: 1,
     cols: 1,

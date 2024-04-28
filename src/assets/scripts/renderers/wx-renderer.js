@@ -175,8 +175,22 @@ class WxRenderer {
 
           return `<figcaption ${getStyles("figcaption")}>${s}</figcaption>`;
         };
-
-        const subText = createSubText(title || text);
+        const transform = (title, alt) => {
+          const legend = localStorage.getItem("legend");
+          switch (legend) {
+            case "alt":
+              return alt;
+            case "title":
+              return title;
+            case "alt-title":
+              return alt || title;
+            case "title-alt":
+              return title || alt;
+            default:
+              return "";
+          }
+        };
+        const subText = createSubText(transform(title, text));
         const figureStyles = getStyles("figure");
         const imgStyles = getStyles("image");
         return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`;
