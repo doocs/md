@@ -168,14 +168,17 @@ class WxRenderer {
         return `<ol ${getStyles("ol")}>${text}</ol>`;
       };
       renderer.image = (href, title, text) => {
-        let subText = "";
-        if (text) {
-          subText = `<figcaption ${getStyles(
-            "figcaption"
-          )}>${text}</figcaption>`;
-        }
-        let figureStyles = getStyles("figure");
-        let imgStyles = getStyles("image");
+        const createSubText = (s) => {
+          if (!s) {
+            return "";
+          }
+
+          return `<figcaption ${getStyles("figcaption")}>${s}</figcaption>`;
+        };
+
+        const subText = createSubText(title || text);
+        const figureStyles = getStyles("figure");
+        const imgStyles = getStyles("image");
         return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`;
       };
       renderer.link = (href, title, text) => {
