@@ -365,10 +365,29 @@ export default {
     copy() {
       this.$emit(`startCopy`)
       setTimeout(() => {
+        function modifyHtmlStructure(htmlString) {
+          // 创建一个 div 元素来暂存原始 HTML 字符串
+          const tempDiv = document.createElement(`div`)
+          tempDiv.innerHTML = htmlString
+
+          const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
+
+          originalItems.forEach((originalItem) => {
+            originalItem.parentElement.insertAdjacentElement(
+              `afterend`,
+              originalItem
+            )
+          })
+
+          // 返回修改后的 HTML 字符串
+          return tempDiv.innerHTML
+        }
+
         solveWeChatImage()
 
         const clipboardDiv = document.getElementById(`output`)
         clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
+        clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
 
         // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
         clipboardDiv.innerHTML = clipboardDiv.innerHTML
