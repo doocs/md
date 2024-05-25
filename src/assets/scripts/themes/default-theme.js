@@ -141,7 +141,7 @@ export default {
       background: `rgba(27,31,35,.05)`,
       padding: `3px 5px`,
       'border-radius': `4px`,
-      'word-break': `break-all`,
+      // 'word-break': `break-all`,
     },
 
     link: {
