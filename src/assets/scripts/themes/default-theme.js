@@ -54,7 +54,7 @@ export default {
       margin: `1.5em 8px`,
       'letter-spacing': `0.1em`,
       color: baseColor,
-      'text-align': 'justify'
+      'text-align': `justify`,
     },
 
     // 引用样式
