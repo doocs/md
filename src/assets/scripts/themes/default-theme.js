@@ -54,6 +54,7 @@ export default {
       margin: `1.5em 8px`,
       'letter-spacing': `0.1em`,
       color: baseColor,
+      'text-align': `justify`,
     },
 
     // 引用样式
@@ -141,7 +142,7 @@ export default {
       background: `rgba(27,31,35,.05)`,
       padding: `3px 5px`,
       'border-radius': `4px`,
-      'word-break': `break-all`,
+      // 'word-break': `break-all`,
     },
 
     link: {
