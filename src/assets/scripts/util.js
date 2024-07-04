@@ -285,8 +285,7 @@ export function exportHTML() {
     // 判断是否是包裹代码块的 code 元素
     function isCode(element) {
       return (
-        element.tagName === `CODE` &&
-        Array.from(element.classList).includes(`prettyprint`)
+        element.tagName === `CODE`
       )
     }
 

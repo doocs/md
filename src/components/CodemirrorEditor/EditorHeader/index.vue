@@ -397,13 +397,6 @@ export default {
           )
           // 公众号不支持 position， 转换为等价的 translateY
           .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
-
-        if (this.isMacCodeBlock) {
-          clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
-            /(<code class="prettyprint[^>]*)(style=")/g,
-            `$1style="font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
-          )
-        }
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
         let range = document.createRange()
