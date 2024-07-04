@@ -31,16 +31,3 @@ jobs:
         with:
           branch: gh-pages
           folder: dist
-
-  sync-to-gitee:
-    runs-on: ubuntu-latest
-    if: github.repository == 'doocs/md'
-    needs: build-and-deploy
-    steps:
-      - name: Sync to Gitee
-        uses: wearerequired/git-mirror-action@v1
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
-        with:
-          source-repo: git@github.com:doocs/md.git
-          destination-repo: git@gitee.com:Doocs/md.git
