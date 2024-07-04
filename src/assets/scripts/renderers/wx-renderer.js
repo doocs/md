@@ -145,7 +145,7 @@ class WxRenderer {
 
         return `<pre class="hljs code__pre" ${getStyles(
           "code_pre"
-        )}><code class="prettyprint language-${lang}" ${getStyles(
+        )}><code class="language-${lang}" ${getStyles(
           "code"
         )}>${text}</code></pre>`;
       };
