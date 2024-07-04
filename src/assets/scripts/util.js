@@ -288,7 +288,6 @@ export function exportHTML() {
     function isCode(element) {
       return (
         element.tagName === `CODE`
-        && Array.from(element.classList).includes(`prettyprint`)
       )
     }
 

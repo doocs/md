@@ -145,11 +145,11 @@ class WxRenderer {
           })
 
         return `<pre class="hljs code__pre" ${getStyles(
-          'code_pre',
-        )}><code class="prettyprint language-${lang}" ${getStyles(
-          'code',
-        )}>${text}</code></pre>`
-      }
+          "code_pre"
+        )}><code class="language-${lang}" ${getStyles(
+          "code"
+        )}>${text}</code></pre>`;
+      };
       renderer.codespan = (text, lang) =>
         `<code ${getStyles('codespan')}>${text}</code>`
       renderer.listitem = text =>

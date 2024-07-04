@@ -366,7 +366,6 @@ export default {
     onEditorRefresh() {
       this.codeThemeChanged(this.codeTheme)
       this.editorRefresh()
-      setTimeout(() => window.PR.prettyPrint(), 0)
     },
     // 复制结束
     endCopy() {
