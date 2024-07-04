@@ -3,13 +3,13 @@ import prettierCss from 'prettier/parser-postcss'
 import prettierMarkdown from 'prettier/parser-markdown'
 import defaultTheme from './themes/default-theme'
 
-const createCustomTheme = (theme, color) => {
+function createCustomTheme(theme, color) {
   const customTheme = JSON.parse(JSON.stringify(theme))
   customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
-  customTheme.block.h2[`background`] = color
+  customTheme.block.h2.background = color
   customTheme.block.h3[`border-left`] = `3px solid ${color}`
-  customTheme.block.h4[`color`] = color
-  customTheme.inline.strong[`color`] = color
+  customTheme.block.h4.color = color
+  customTheme.inline.strong.color = color
   return customTheme
 }
 
@@ -49,45 +49,45 @@ export function customCssWithTemplate(jsonString, color, theme) {
   customTheme.block.h4 = Object.assign(customTheme.block.h4, jsonString.h4)
   customTheme.block.code = Object.assign(
     customTheme.block.code,
-    jsonString.code
+    jsonString.code,
   )
   customTheme.block.p = Object.assign(customTheme.block.p, jsonString.p)
   customTheme.block.hr = Object.assign(customTheme.block.hr, jsonString.hr)
   customTheme.block.blockquote = Object.assign(
     customTheme.block.blockquote,
-    jsonString.blockquote
+    jsonString.blockquote,
   )
   customTheme.block.blockquote_p = Object.assign(
     customTheme.block.blockquote_p,
-    jsonString.blockquote_p
+    jsonString.blockquote_p,
   )
   customTheme.block.image = Object.assign(
     customTheme.block.image,
-    jsonString.image
+    jsonString.image,
   )
 
   // inline
   customTheme.inline.strong = Object.assign(
     customTheme.inline.strong,
-    jsonString.strong
+    jsonString.strong,
   )
   customTheme.inline.codespan = Object.assign(
     customTheme.inline.codespan,
-    jsonString.codespan
+    jsonString.codespan,
   )
   customTheme.inline.link = Object.assign(
     customTheme.inline.link,
-    jsonString.link
+    jsonString.link,
   )
   customTheme.inline.wx_link = Object.assign(
     customTheme.inline.wx_link,
-    jsonString.wx_link
+    jsonString.wx_link,
   )
   customTheme.block.ul = Object.assign(customTheme.block.ul, jsonString.ul)
   customTheme.block.ol = Object.assign(customTheme.block.ol, jsonString.ol)
   customTheme.inline.listitem = Object.assign(
     customTheme.inline.listitem,
-    jsonString.li
+    jsonString.li,
   )
   return customTheme
 }
@@ -101,16 +101,16 @@ export function css2json(css) {
   // 移除CSS所有注释
   let open, close
   while (
-    (open = css.indexOf(`/*`)) !== -1 &&
-    (close = css.indexOf(`*/`)) !== -1
+    (open = css.indexOf(`/*`)) !== -1
+    && (close = css.indexOf(`*/`)) !== -1
   ) {
     css = css.substring(0, open) + css.substring(close + 2)
   }
 
   // 初始化返回值
-  let json = {}
+  const json = {}
 
-  while (css.length > 0 && css.indexOf(`{`) !== -1 && css.indexOf(`}`) !== -1) {
+  while (css.length > 0 && css.includes(`{`) && css.includes(`}`)) {
     // 存储第一个左/右花括号的下标
     const lbracket = css.indexOf(`{`)
     const rbracket = css.indexOf(`}`)
@@ -121,9 +121,9 @@ export function css2json(css) {
     // `{"font": "'Times New Roman' 1em", "color": "#ff0000", "margin-top": "1em"}`
 
     // 辅助方法：将array转为object
-    // eslint-disable-next-line no-inner-declarations
+
     function toObject(array) {
-      let ret = {}
+      const ret = {}
       array.forEach((e) => {
         const index = e.indexOf(`:`)
         const property = e.substring(0, index).trim()
@@ -136,8 +136,8 @@ export function css2json(css) {
     let declarations = css
       .substring(lbracket + 1, rbracket)
       .split(`;`)
-      .map((e) => e.trim())
-      .filter((e) => e.length > 0) // 移除所有""空值
+      .map(e => e.trim())
+      .filter(e => e.length > 0) // 移除所有""空值
 
     // 转为Object对象
     declarations = toObject(declarations)
@@ -147,16 +147,17 @@ export function css2json(css) {
     // ==>
     // {"h1": {color: red}, "p#bar": {color: red}}
 
-    let selectors = css
+    const selectors = css
       .substring(0, lbracket)
       // 以,切割，并移除空格：`"h1, p#bar, span.foo"` => ["h1", "p#bar", "span.foo"]
       .split(`,`)
-      .map((selector) => selector.trim())
+      .map(selector => selector.trim())
 
     // 迭代赋值
     selectors.forEach((selector) => {
       // 若不存在，则先初始化
-      if (!json[selector]) json[selector] = {}
+      if (!json[selector])
+        json[selector] = {}
       // 赋值到JSON
       Object.keys(declarations).forEach((key) => {
         json[selector][key] = declarations[key]
@@ -180,7 +181,8 @@ export function saveEditorContent(editor, name) {
   const content = editor.getValue(0)
   if (content) {
     localStorage.setItem(name, content)
-  } else {
+  }
+  else {
     localStorage.removeItem(name)
   }
 }
@@ -236,7 +238,7 @@ export function exportHTML() {
 
   downLink.download = `content.html`
   downLink.style.display = `none`
-  let blob = new Blob([
+  const blob = new Blob([
     `<html><head><meta charset="utf-8" /></head><body><div style="width: 750px; margin: auto;">${htmlStr}</div></body></html>`,
   ])
 
@@ -256,7 +258,7 @@ export function exportHTML() {
       const styles = getComputedStyle(element, null)
       return Object.entries(styles)
         .filter(
-          ([key]) => styles.getPropertyValue(key) && !excludes.includes(key)
+          ([key]) => styles.getPropertyValue(key) && !excludes.includes(key),
         )
         .map(([key, value]) => `${key}:${value};`)
         .join(``)
@@ -271,31 +273,31 @@ export function exportHTML() {
       default:
     }
     if (element.children.length) {
-      Array.from(element.children).forEach((child) => setStyles(child))
+      Array.from(element.children).forEach(child => setStyles(child))
     }
 
     // 判断是否是包裹代码块的 pre 元素
     function isPre(element) {
       return (
-        element.tagName === `PRE` &&
-        Array.from(element.classList).includes(`code__pre`)
+        element.tagName === `PRE`
+        && Array.from(element.classList).includes(`code__pre`)
       )
     }
 
     // 判断是否是包裹代码块的 code 元素
     function isCode(element) {
       return (
-        element.tagName === `CODE` &&
-        Array.from(element.classList).includes(`prettyprint`)
+        element.tagName === `CODE`
+        && Array.from(element.classList).includes(`prettyprint`)
       )
     }
 
     // 判断是否是包裹代码字符的 span 元素
     function isSpan(element) {
       return (
-        element.tagName === `SPAN` &&
-        (isCode(element.parentElement) ||
-          isCode(element.parentElement.parentElement))
+        element.tagName === `SPAN`
+        && (isCode(element.parentElement)
+        || isCode(element.parentElement.parentElement))
       )
     }
   }
@@ -328,7 +330,7 @@ export function toBase64(file) {
     const reader = new FileReader()
     reader.readAsDataURL(file)
     reader.onload = () => resolve(reader.result.split(`,`).pop())
-    reader.onerror = (error) => reject(error)
+    reader.onerror = error => reject(error)
   })
 }
 
@@ -363,9 +365,9 @@ export function removeLeft(str) {
   const lines = str.split(`\n`)
   // 获取应该删除的空白符数量
   const minSpaceNum = lines
-    .filter((item) => item.trim())
-    .map((item) => item.match(/(^\s+)?/)[0].length)
+    .filter(item => item.trim())
+    .map(item => item.match(/(^\s+)?/)[0].length)
     .sort((a, b) => a - b)[0]
   // 删除空白符
-  return lines.map((item) => item.slice(minSpaceNum)).join(`\n`)
+  return lines.map(item => item.slice(minSpaceNum)).join(`\n`)
 }

@@ -1,203 +1,24 @@
-<template>
-  <el-container class="header-container is-dark">
-    <div class="dropdowns">
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          文件<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="refClick">
-            <i class="el-icon-upload2"></i>
-            导入 .md
-            <input hidden type="file" ref="fileInput" accept=".md" />
-          </el-dropdown-item>
-          <el-dropdown-item @click.native="$emit('download')">
-            <i class="el-icon-download"></i>
-            导出 .md
-          </el-dropdown-item>
-          <el-dropdown-item @click.native="$emit('export')">
-            <i class="el-icon-document"></i>
-            导出 .html
-          </el-dropdown-item>
-          <el-dropdown-item divided @click.native="themeChanged">
-            <i
-              class="el-icon-check"
-              :style="{ opacity: nightMode ? 1 : 0 }"
-            ></i>
-            暗黑模式
-          </el-dropdown-item>
-          <el-dropdown-item divided @click.native="isEditOnLeftChanged">
-            <i
-              class="el-icon-check"
-              :style="{ opacity: isEditOnLeft ? 1 : 0 }"
-            ></i>
-            左侧编辑
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          格式<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item
-            class="format-item"
-            v-for="{ label, kbd, emitArgs } in formatItems"
-            :key="kbd"
-            @click.native="$emit(...emitArgs)"
-          >
-            {{ label }}
-            <kbd>{{ kbd }}</kbd>
-          </el-dropdown-item>
-          <el-dropdown-item divided @click.native="statusChanged">
-            <i
-              class="el-icon-check"
-              :style="{ opacity: citeStatus ? 1 : 0 }"
-            ></i>
-            微信外链转底部引用
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          编辑<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="$emit('show-dialog-upload-img')">
-            <i class="el-icon-upload"></i>
-            上传图片
-          </el-dropdown-item>
-          <el-dropdown-item @click.native="$emit('show-dialog-form')">
-            <i class="el-icon-s-grid"></i>
-            插入表格
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          样式<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item class="padding-left-3">
-            <style-option-menu
-              label="字体"
-              :options="config.builtinFonts"
-              :current="selectFont"
-              :charge="fontChanged"
-            ></style-option-menu>
-          </el-dropdown-item>
-          <el-dropdown-item class="padding-left-3">
-            <style-option-menu
-              label="字号"
-              :options="config.sizeOption"
-              :current="selectSize"
-              :charge="sizeChanged"
-            ></style-option-menu>
-          </el-dropdown-item>
-          <el-dropdown-item class="padding-left-3">
-            <style-option-menu
-              label="颜色"
-              :options="config.colorOption"
-              :current="selectColor"
-              :charge="colorChanged"
-            ></style-option-menu>
-          </el-dropdown-item>
-          <el-dropdown-item class="padding-left-3">
-            <style-option-menu
-              label="代码主题"
-              :options="config.codeThemeOption"
-              :current="selectCodeTheme"
-              :charge="codeThemeChanged"
-            ></style-option-menu>
-          </el-dropdown-item>
-          <el-dropdown-item class="padding-left-3">
-            <style-option-menu
-              label="图注格式"
-              :options="config.legendOption"
-              :current="selectLegend"
-              :charge="legendChanged"
-            ></style-option-menu>
-          </el-dropdown-item>
-          <el-dropdown-item
-            divided
-            class="padding-left-3"
-            @click.native="showPicker()"
-          >
-            自定义颜色
-            <el-color-picker
-              show-alpha
-              ref="colorPicker"
-              size="mini"
-              style="float: right; margin-top: 3px"
-              v-model="selectColor"
-              @change="colorChanged"
-            ></el-color-picker>
-          </el-dropdown-item>
-          <el-dropdown-item class="padding-left-3" @click.native="customStyle">
-            自定义 CSS
-          </el-dropdown-item>
-          <el-dropdown-item divided @click.native="codeBlockChanged">
-            <i
-              class="el-icon-check"
-              :style="{ opacity: isMacCodeBlock ? 1 : 0 }"
-            ></i>
-            Mac 代码块
-          </el-dropdown-item>
-          <el-dropdown-item
-            divided
-            class="padding-left-3"
-            @click.native="showResetConfirm = true"
-          >
-            重置
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          帮助<i class="el-icon-arrow-down el-icon--right"></i>
-        </span>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item @click.native="$emit('show-about-dialog')">
-            关于
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </div>
-    <el-button plain size="medium" :type="btnType" @click="copy">
-      复制
-    </el-button>
-    <el-button plain size="medium" :type="btnType" @click="prePost">
-      发布
-    </el-button>
-
-    <post-info-dialog
-      :form="form"
-      @post="post"
-      @close="form.dialogVisible = false"
-    >
-    </post-info-dialog>
-    <reset-dialog
-      :show-reset-confirm="showResetConfirm"
-      @confirm="confirmReset"
-      @close="cancelReset"
-    ></reset-dialog>
-  </el-container>
-</template>
-
 <script>
-import { mapState, mapActions } from 'pinia'
+import { nextTick } from 'vue'
+import { mapActions, mapState } from 'pinia'
+import ResetDialog from './ResetDialog.vue'
+import StyleOptionMenu from './StyleOptionMenu.vue'
+import PostInfoDialog from './PostInfoDialog.vue'
 import { useStore } from '@/stores'
 
-import { setFontSize, setColorWithCustomTemplate } from '@/assets/scripts/util'
-import { solveWeChatImage, mergeCss } from '@/assets/scripts/converter'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
+import { setColorWithCustomTemplate, setFontSize } from '@/assets/scripts/util'
+import { mergeCss, solveWeChatImage } from '@/assets/scripts/converter'
+import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import config from '@/assets/scripts/config'
-import ResetDialog from './ResetDialog'
-import StyleOptionMenu from './StyleOptionMenu'
-import PostInfoDialog from './PostInfoDialog'
 
 export default {
-  name: `editor-header`,
+  name: `EditorHeader`,
+  components: {
+    PostInfoDialog,
+    StyleOptionMenu,
+    ResetDialog,
+  },
+  emits: ['refresh', 'startCopy', 'endCopy', 'showCssEditor', 'cssChanged', 'import-md', 'download', 'export', 'show-dialog-upload-img', 'show-dialog-form', 'show-about-dialog'],
   data() {
     return {
       config,
@@ -246,29 +67,47 @@ export default {
       ],
     }
   },
-  components: {
-    PostInfoDialog,
-    StyleOptionMenu,
-    ResetDialog,
-  },
   computed: {
     btnType() {
       return this.nightMode ? `default` : `primary`
     },
     ...mapState(useStore, {
-      output: (state) => state.output,
-      editor: (state) => state.editor,
-      cssEditor: (state) => state.cssEditor,
-      currentFont: (state) => state.currentFont,
-      currentSize: (state) => state.currentSize,
-      currentColor: (state) => state.currentColor,
-      codeTheme: (state) => state.codeTheme,
-      legend: (state) => state.legend,
-      nightMode: (state) => state.nightMode,
-      currentCiteStatus: (state) => state.citeStatus,
-      currentIsMacCodeBlock: (state) => state.isMacCodeBlock,
-      currentIsEditOnLeft: (state) => state.isEditOnLeft,
+      output: state => state.output,
+      editor: state => state.editor,
+      cssEditor: state => state.cssEditor,
+      currentFont: state => state.currentFont,
+      currentSize: state => state.currentSize,
+      currentColor: state => state.currentColor,
+      codeTheme: state => state.codeTheme,
+      legend: state => state.legend,
+      nightMode: state => state.nightMode,
+      currentCiteStatus: state => state.citeStatus,
+      currentIsMacCodeBlock: state => state.isMacCodeBlock,
+      currentIsEditOnLeft: state => state.isEditOnLeft,
     }),
+  },
+  mounted() {
+    this.selectFont = this.currentFont
+    this.selectSize = this.currentSize
+    this.selectColor = this.currentColor
+    this.selectCodeTheme = this.codeTheme
+    this.selectLegend = this.legend
+    this.citeStatus = this.currentCiteStatus
+    this.isMacCodeBlock = this.currentIsMacCodeBlock
+    this.isEditOnLeft = this.currentIsEditOnLeft
+
+    const fileInput = this.$refs.fileInput
+    fileInput.onchange = () => {
+      const file = fileInput.files[0]
+      if (file === null) {
+        return
+      }
+      const read = new FileReader()
+      read.readAsText(file)
+      read.onload = () => {
+        this.$emit(`import-md`, read.result)
+      }
+    }
   },
   methods: {
     refClick() {
@@ -283,12 +122,13 @@ export default {
         auto = {
           thumb: document.querySelector(`#output img`).src,
           title: [1, 2, 3, 4, 5, 6]
-            .map((h) => document.querySelector(`#output h${h}`))
-            .filter((h) => h)[0].innerText,
-          desc: document.querySelector(`#output p`).innerText,
+            .map(h => document.querySelector(`#output h${h}`))
+            .filter(h => h)[0].textContent,
+          desc: document.querySelector(`#output p`).textContent,
           content: this.output,
         }
-      } catch (error) {
+      }
+      catch (error) {
         console.log(`error`, error)
       }
       this.form = {
@@ -309,7 +149,7 @@ export default {
     },
     fontChanged(fonts) {
       this.setWxRendererOptions({
-        fonts: fonts,
+        fonts,
       })
       this.setCurrentFont(fonts)
       this.selectFont = fonts
@@ -319,8 +159,8 @@ export default {
       let theme = setFontSize(size.replace(`px`, ``))
       theme = setColorWithCustomTemplate(theme, this.currentColor)
       this.setWxRendererOptions({
-        size: size,
-        theme: theme,
+        size,
+        theme,
       })
       this.setCurrentSize(size)
       this.selectSize = size
@@ -331,7 +171,7 @@ export default {
 
       theme = setColorWithCustomTemplate(theme, color)
       this.setWxRendererOptions({
-        theme: theme,
+        theme,
       })
       this.setCurrentColor(color)
       this.selectColor = color
@@ -375,7 +215,7 @@ export default {
           originalItems.forEach((originalItem) => {
             originalItem.parentElement.insertAdjacentElement(
               `afterend`,
-              originalItem
+              originalItem,
             )
           })
 
@@ -393,7 +233,7 @@ export default {
         clipboardDiv.innerHTML = clipboardDiv.innerHTML
           .replace(
             /class="base"( style="display: inline")*/g,
-            `class="base" style="display: inline"`
+            `class="base" style="display: inline"`,
           )
           // 公众号不支持 position， 转换为等价的 translateY
           .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
@@ -401,12 +241,12 @@ export default {
         if (this.isMacCodeBlock) {
           clipboardDiv.innerHTML = clipboardDiv.innerHTML.replaceAll(
             /(<code class="prettyprint[^>]*)(style=")/g,
-            `$1style="font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`
+            `$1style="font-family: Menlo, 'Operator Mono', Consolas, Monaco, monospace;`,
           )
         }
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
-        let range = document.createRange()
+        const range = document.createRange()
 
         range.setStartBefore(clipboardDiv.firstChild)
         range.setEndAfter(clipboardDiv.lastChild)
@@ -429,7 +269,7 @@ export default {
     // 自定义CSS样式
     async customStyle() {
       this.$emit(`showCssEditor`)
-      this.$nextTick(() => {
+      nextTick(() => {
         if (!this.cssEditor) {
           this.cssEditor.refresh()
         }
@@ -438,7 +278,7 @@ export default {
         this.cssEditor.refresh()
       }, 50)
 
-      let flag = localStorage.getItem(`__css_content`)
+      const flag = localStorage.getItem(`__css_content`)
       if (!flag) {
         this.setCssEditorValue(DEFAULT_CSS_CONTENT)
       }
@@ -482,31 +322,196 @@ export default {
       `setIsEditOnLeft`,
     ]),
   },
-  mounted() {
-    this.selectFont = this.currentFont
-    this.selectSize = this.currentSize
-    this.selectColor = this.currentColor
-    this.selectCodeTheme = this.codeTheme
-    this.selectLegend = this.legend
-    this.citeStatus = this.currentCiteStatus
-    this.isMacCodeBlock = this.currentIsMacCodeBlock
-    this.isEditOnLeft = this.currentIsEditOnLeft
-
-    const fileInput = this.$refs.fileInput
-    fileInput.onchange = () => {
-      const file = fileInput.files[0]
-      if (file == null) {
-        return
-      }
-      const read = new FileReader()
-      read.readAsText(file)
-      read.onload = () => {
-        this.$emit(`import-md`, read.result)
-      }
-    }
-  },
 }
 </script>
+
+<template>
+  <el-container class="header-container is-dark">
+    <div class="dropdowns">
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          文件<el-icon><ElIconArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="refClick">
+              <el-icon><ElIconUpload /></el-icon>
+              导入 .md
+              <input ref="fileInput" hidden type="file" accept=".md">
+            </el-dropdown-item>
+            <el-dropdown-item @click="$emit('download')">
+              <el-icon><ElIconDownload /></el-icon>
+              导出 .md
+            </el-dropdown-item>
+            <el-dropdown-item @click="$emit('export')">
+              <el-icon><ElIconDocument /></el-icon>
+              导出 .html
+            </el-dropdown-item>
+            <el-dropdown-item divided @click="themeChanged">
+              <el-icon :style="{ opacity: +!!nightMode }">
+                <ElIconCheck />
+              </el-icon>
+              暗黑模式
+            </el-dropdown-item>
+            <el-dropdown-item divided @click="isEditOnLeftChanged">
+              <el-icon :style="{ opacity: +isEditOnLeft }">
+                <ElIconCheck />
+              </el-icon>
+              左侧编辑
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          格式<el-icon><ElIconArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item
+              v-for="{ label, kbd, emitArgs } in formatItems"
+              :key="kbd"
+              class="format-item"
+              @click="$emit(...emitArgs)"
+            >
+              {{ label }}
+              <kbd>{{ kbd }}</kbd>
+            </el-dropdown-item>
+            <el-dropdown-item divided @click="statusChanged">
+              <el-icon><ElIconCheck /></el-icon>
+              微信外链转底部引用
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          编辑<el-icon><ElIconArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="$emit('show-dialog-upload-img')">
+              <el-icon><ElIconUpload /></el-icon>
+              上传图片
+            </el-dropdown-item>
+            <el-dropdown-item @click="$emit('show-dialog-form')">
+              <el-icon><ElIconGrid /></el-icon>
+              插入表格
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          样式<el-icon><ElIconArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item class="padding-left-3">
+              <StyleOptionMenu
+                label="字体"
+                :options="config.builtinFonts"
+                :current="selectFont"
+                :charge="fontChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item class="padding-left-3">
+              <StyleOptionMenu
+                label="字号"
+                :options="config.sizeOption"
+                :current="selectSize"
+                :charge="sizeChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item class="padding-left-3">
+              <StyleOptionMenu
+                label="颜色"
+                :options="config.colorOption"
+                :current="selectColor"
+                :charge="colorChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item class="padding-left-3">
+              <StyleOptionMenu
+                label="代码主题"
+                :options="config.codeThemeOption"
+                :current="selectCodeTheme"
+                :charge="codeThemeChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item class="padding-left-3">
+              <StyleOptionMenu
+                label="图注格式"
+                :options="config.legendOption"
+                :current="selectLegend"
+                :charge="legendChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item
+              divided
+              class="padding-left-3"
+              @click="showPicker()"
+            >
+              自定义颜色
+              <el-color-picker
+                ref="colorPicker"
+                v-model="selectColor"
+                show-alpha
+                style="float: right; margin-top: 3px"
+                @change="colorChanged"
+              />
+            </el-dropdown-item>
+            <el-dropdown-item class="padding-left-3" @click="customStyle">
+              自定义 CSS
+            </el-dropdown-item>
+            <el-dropdown-item divided @click="codeBlockChanged">
+              <el-icon :style="{ opacity: +isMacCodeBlock }">
+                <ElIconCheck />
+              </el-icon>
+              Mac 代码块
+            </el-dropdown-item>
+            <el-dropdown-item
+              divided
+              class="padding-left-3"
+              @click="showResetConfirm = true"
+            >
+              重置
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+      <el-dropdown>
+        <span class="el-dropdown-link">
+          帮助<el-icon><ElIconArrowDown /></el-icon>
+        </span>
+        <template #dropdown>
+          <el-dropdown-menu>
+            <el-dropdown-item @click="$emit('show-about-dialog')">
+              关于
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
+    </div>
+    <el-button plain size="default" :type="btnType" @click="copy">
+      复制
+    </el-button>
+    <el-button plain size="default" :type="btnType" @click="prePost">
+      发布
+    </el-button>
+
+    <PostInfoDialog
+      :form="form"
+      @post="post"
+      @close="form.dialogVisible = false"
+    />
+    <ResetDialog
+      :show-reset-confirm="showResetConfirm"
+      @confirm="confirmReset"
+      @close="cancelReset"
+    />
+  </el-container>
+</template>
 
 <style lang="less" scoped>
 .header-container {

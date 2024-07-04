@@ -1,16 +1,16 @@
-import { defineStore } from 'pinia'
+import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
 
 import config from '../assets/scripts/config'
 import WxRenderer from '../assets/scripts/renderers/wx-renderer'
-import DEFAULT_CONTENT from '@/assets/example/markdown.md'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
-import { setColor, formatDoc, formatCss } from '@/assets/scripts/util'
+import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+import { formatCss, formatDoc, setColor } from '@/assets/scripts/util'
 
-const defaultKeyMap = CodeMirror.keyMap[`default`]
-const modPrefix =
-  defaultKeyMap === CodeMirror.keyMap[`macDefault`] ? `Cmd` : `Ctrl`
+const defaultKeyMap = CodeMirror.keyMap.default
+const modPrefix
+  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
 export const useStore = defineStore(`store`, {
   state: () => ({
@@ -76,16 +76,16 @@ export const useStore = defineStore(`store`, {
       localStorage.setItem(`nightMode`, this.nightMode)
     },
     initEditorState() {
-      this.currentFont =
-        localStorage.getItem(`fonts`) || config.builtinFonts[0].value
-      this.currentColor =
-        localStorage.getItem(`color`) || config.colorOption[0].value
-      this.currentSize =
-        localStorage.getItem(`size`) || config.sizeOption[2].value
-      this.codeTheme =
-        localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
-      this.legend =
-        localStorage.getItem(`legend`) || config.legendOption[3].value
+      this.currentFont
+        = localStorage.getItem(`fonts`) || config.builtinFonts[0].value
+      this.currentColor
+        = localStorage.getItem(`color`) || config.colorOption[0].value
+      this.currentSize
+        = localStorage.getItem(`size`) || config.sizeOption[2].value
+      this.codeTheme
+        = localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
+      this.legend
+        = localStorage.getItem(`legend`) || config.legendOption[3].value
       this.citeStatus = localStorage.getItem(`citeStatus`) === `true`
       this.nightMode = localStorage.getItem(`nightMode`) === `true`
       this.isMacCodeBlock = !(
@@ -102,8 +102,8 @@ export const useStore = defineStore(`store`, {
       const editorDom = document.getElementById(`editor`)
 
       if (!editorDom.value) {
-        editorDom.value =
-          localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
+        editorDom.value
+          = localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
       }
       this.editor = CodeMirror.fromTextArea(editorDom, {
         mode: `text/x-markdown`,
@@ -145,8 +145,8 @@ export const useStore = defineStore(`store`, {
       const cssEditorDom = document.getElementById(`cssEditor`)
 
       if (!cssEditorDom.value) {
-        cssEditorDom.value =
-          localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
+        cssEditorDom.value
+          = localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
       }
       this.cssEditor = CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
@@ -161,7 +161,7 @@ export const useStore = defineStore(`store`, {
             localStorage.setItem(`__css_content`, doc)
             editor.setValue(doc)
           },
-          [`${modPrefix}-S`]: function save(editor) {},
+          [`${modPrefix}-S`]: function save(_editor) {},
         },
       })
     },
@@ -212,3 +212,5 @@ export const useStore = defineStore(`store`, {
     },
   },
 })
+
+export default createPinia()

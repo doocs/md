@@ -1,16 +1,3 @@
-<template>
-  <transition enter-active-class="bounceInRight">
-    <el-col :span="12" v-show="showCssEditor" class="cssEditor-wrapper">
-      <textarea
-        id="cssEditor"
-        type="textarea"
-        placeholder="Your custom css here."
-      >
-      </textarea>
-    </el-col>
-  </transition>
-</template>
-
 <script>
 export default {
   name: `CssEditor`,
@@ -22,6 +9,18 @@ export default {
   },
 }
 </script>
+
+<template>
+  <transition enter-active-class="bounceInRight">
+    <el-col v-show="showCssEditor" :span="12" class="cssEditor-wrapper">
+      <textarea
+        id="cssEditor"
+        type="textarea"
+        placeholder="Your custom css here."
+      />
+    </el-col>
+  </transition>
+</template>
 
 <style lang="less" scoped>
 .bounceInRight {

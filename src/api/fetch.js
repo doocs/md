@@ -17,14 +17,14 @@ service.interceptors.request.use(
   },
   (error) => {
     Promise.reject(error)
-  }
+  },
 )
 
 service.interceptors.response.use(
   (res) => {
     return res.data ? res.data : Promise.reject(res)
   },
-  (error) => Promise.reject(error)
+  error => Promise.reject(error),
 )
 
 export default service

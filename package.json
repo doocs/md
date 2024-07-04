@@ -1,18 +1,23 @@
 {
   "name": "md",
-  "version": "1.6.0",
   "private": false,
+  "version": "1.6.0",
+  "type": "module",
   "scripts": {
+    "dev": "vite --host",
+    "build": "run-p type-check \"build:only {@}\" --",
+    "build:only": "vite build",
+    "build:h5-netlify": "vite build --mode netlify",
+    "build:cli": "pnpm build && pnpm shx rm -rf md-cli/dist && pnpm shx rm -rf dist/**/*.map && pnpm shx cp -r dist md-cli/ && cd md-cli && pnpm pack",
+    "preview": "pnpm build && vite preview",
     "release:cli": "node ./bin/release.js",
-    "prepare": "husky install",
-    "lint": "vue-cli-service lint src",
-    "start": "npm run lint -- --fix && run-p serve",
-    "serve": "vue-cli-service serve",
-    "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vue-cli-service build",
-    "build": "vue-cli-service build",
-    "build-cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack"
+    "lint": "eslint . --fix",
+    "type-check": "vue-tsc --build --force",
+    "preinstall": "npx only-allow pnpm",
+    "postinstall": "simple-git-hooks"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.1",
     "ali-oss": "^6.17.1",
     "axios": "^1.6.0",
     "buffer-from": "^1.1.2",
@@ -20,7 +25,7 @@
     "core-js": "^3.34.0",
     "cos-js-sdk-v5": "^1.3.9",
     "crypto-js": "^4.2.0",
-    "element-ui": "^2.15.9",
+    "element-plus": "^2.7.6",
     "form-data": "4.0.0",
     "highlight.js": "^11.6.0",
     "juice": "^8.0.0",
@@ -33,9 +38,10 @@
     "prettify": "^0.1.7",
     "qiniu-js": "^3.4.1",
     "uuid": "^8.3.2",
-    "vue": "^2.7.14"
+    "vue": "^3.4.29"
   },
   "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
     "@vue/cli-plugin-babel": "^4.5.19",
     "@vue/cli-plugin-eslint": "^4.5.19",
     "@vue/cli-service": "^4.5.15",
@@ -58,6 +64,15 @@
     "prettier": "^2.8.8",
     "raw-loader": "^4.0.2",
     "shx": "^0.3.4",
-    "vue-template-compiler": "^2.7.14"
+    "typescript": "^5.2.2",
+    "vite": "^5.3.1",
+    "vite-plugin-node-polyfills": "^0.22.0",
+    "vue-tsc": "^2.0.21"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "pnpm lint"
   }
 }

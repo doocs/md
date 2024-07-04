@@ -1,30 +1,3 @@
-<template>
-  <el-dropdown placement="right" class="style-option-menu">
-    <div class="el-dropdown-link">
-      {{ label }}
-      <i class="el-icon-arrow-right el-icon--right"></i>
-    </div>
-    <el-dropdown-menu slot="dropdown" style="width: 200px">
-      <el-dropdown-item
-        v-for="{ value, label, desc } in options"
-        :key="value"
-        :label="label"
-        :value="value"
-        @click.native="charge(value)"
-      >
-        <i
-          class="el-icon-check"
-          :style="{ opacity: current === value ? 1 : 0 }"
-        ></i>
-        {{ label }}
-        <span class="select-item-right" :style="{ fontFamily: value }">{{
-          desc
-        }}</span>
-      </el-dropdown-item>
-    </el-dropdown-menu>
-  </el-dropdown>
-</template>
-
 <script>
 export default {
   name: `StyleOptionMenu`,
@@ -48,6 +21,34 @@ export default {
   },
 }
 </script>
+
+<template>
+  <el-dropdown placement="right" class="style-option-menu">
+    <div class="el-dropdown-link">
+      {{ label }}
+      <el-icon><ElIconArrowRight /></el-icon>
+    </div>
+    <template #dropdown>
+      <el-dropdown-menu style="width: 200px">
+        <el-dropdown-item
+          v-for="{ value, label, desc } in options"
+          :key="value"
+          :label="label"
+          :model-value="value"
+          @click="charge(value)"
+        >
+          <el-icon :style="{ opacity: +(current === value) }">
+            <ElIconCheck />
+          </el-icon>
+          {{ label }}
+          <span class="select-item-right" :style="{ fontFamily: value }">{{
+            desc
+          }}</span>
+        </el-dropdown-item>
+      </el-dropdown-menu>
+    </template>
+  </el-dropdown>
+</template>
 
 <style lang="less" scoped>
 .style-option-menu.el-dropdown {

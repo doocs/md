@@ -1,59 +1,5 @@
-<template>
-  <el-dialog
-    title="插入表格"
-    class="insert__dialog"
-    :visible="visible"
-    @close="$emit('close')"
-    border
-  >
-    <el-row class="tb-options" type="flex" align="middle" :gutter="10">
-      <el-col>
-        行数：
-        <el-input-number
-          v-model="rowNum"
-          controls-position="right"
-          :min="1"
-          :max="100"
-          size="small"
-        ></el-input-number>
-      </el-col>
-      <el-col>
-        列数：
-        <el-input-number
-          v-model="colNum"
-          controls-position="right"
-          :min="1"
-          :max="100"
-          size="small"
-        ></el-input-number>
-      </el-col>
-    </el-row>
-    <table style="border-collapse: collapse" class="input-table">
-      <tr
-        :class="{ 'head-style': row === 1 }"
-        v-for="row in rowNum + 1"
-        :key="row"
-      >
-        <td v-for="col in colNum" :key="col">
-          <el-input
-            align="center"
-            v-model="tableData[`k_${row - 1}_${col - 1}`]"
-            :placeholder="row === 1 ? '表头' : ''"
-          />
-        </td>
-      </tr>
-    </table>
-    <div slot="footer" class="dialog-footer">
-      <el-button :type="btnType" @click="$emit('close')" plain>
-        取 消
-      </el-button>
-      <el-button :type="btnType" @click="insertTable" plain> 确 定 </el-button>
-    </div>
-  </el-dialog>
-</template>
-
 <script>
-import { mapState, mapActions } from 'pinia'
+import { mapActions, mapState } from 'pinia'
 import { useStore } from '@/stores'
 
 import config from '@/assets/scripts/config'
@@ -66,9 +12,10 @@ export default {
       default: false,
     },
   },
+  emits: ['close'],
   data() {
     return {
-      config: config,
+      config,
       rowNum: 3,
       colNum: 3,
       tableData: {},
@@ -79,8 +26,8 @@ export default {
       return this.nightMode ? `default` : `primary`
     },
     ...mapState(useStore, {
-      nightMode: (state) => state.nightMode,
-      editor: (state) => state.editor,
+      nightMode: state => state.nightMode,
+      editor: state => state.editor,
     }),
   },
   methods: {
@@ -105,8 +52,66 @@ export default {
 }
 </script>
 
+<template>
+  <el-dialog
+    title="插入表格"
+    class="insert__dialog"
+    :model-value="visible"
+    border
+    @close="$emit('close')"
+  >
+    <el-row class="tb-options" type="flex" align="middle" :gutter="10">
+      <el-col>
+        行数：
+        <el-input-number
+          v-model="rowNum"
+          controls-position="right"
+          :min="1"
+          :max="100"
+          size="small"
+        />
+      </el-col>
+      <el-col>
+        列数：
+        <el-input-number
+          v-model="colNum"
+          controls-position="right"
+          :min="1"
+          :max="100"
+          size="small"
+        />
+      </el-col>
+    </el-row>
+    <table style="border-collapse: collapse" class="input-table">
+      <tr
+        v-for="row in rowNum + 1"
+        :key="row"
+        :class="{ 'head-style': row === 1 }"
+      >
+        <td v-for="col in colNum" :key="col">
+          <el-input
+            v-model="tableData[`k_${row - 1}_${col - 1}`]"
+            align="center"
+            :placeholder="row === 1 ? '表头' : ''"
+          />
+        </td>
+      </tr>
+    </table>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button :type="btnType" plain @click="$emit('close')">
+          取 消
+        </el-button>
+        <el-button :type="btnType" plain @click="insertTable">
+          确 定
+        </el-button>
+      </div>
+    </template>
+  </el-dialog>
+</template>
+
 <style lang="less" scoped>
-/deep/ .el-dialog {
+:deep(.el-dialog) {
   width: 55%;
   min-height: 375px;
   min-width: 440px;
@@ -116,11 +121,11 @@ export default {
   margin-bottom: 20px;
 }
 
-.input-table ::v-deep .el-input__inner {
+.input-table :deep(.el-input__inner) {
   border-radius: 0;
 }
 
-.head-style /deep/ .el-input__inner {
+.head-style :deep(.el-input__inner) {
   background-color: #f2f2f2;
 }
 </style>

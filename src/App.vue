@@ -1,12 +1,12 @@
-<template>
-  <div id="app">
-    <codemirror-editor />
-  </div>
-</template>
-
 <script setup>
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 </script>
+
+<template>
+  <div id="app">
+    <CodemirrorEditor />
+  </div>
+</template>
 
 <style lang="less">
 // 仿 uniapp 外层全屏
@@ -50,7 +50,9 @@ body,
 
   color: #333333;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
 .CodeMirror-hint {

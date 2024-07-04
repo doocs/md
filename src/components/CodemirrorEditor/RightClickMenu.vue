@@ -1,23 +1,3 @@
-<template>
-  <div
-    id="menu"
-    class="menu"
-    v-show="visible"
-    :style="`left: ${left}px;top: ${top}px;`"
-  >
-    <ul class="menu__group" v-for="(menuItem, index) in menu" :key="index">
-      <li
-        class="menu_item"
-        v-for="{ key, text } in menuItem"
-        :key="key"
-        @mousedown="onMouseDown(key)"
-      >
-        {{ text }}
-      </li>
-    </ul>
-  </div>
-</template>
-
 <script>
 export default {
   props: {
@@ -34,6 +14,7 @@ export default {
       default: 0,
     },
   },
+  emits: ['menuTick', 'closeMenu'],
   data() {
     return {
       menu: [
@@ -81,12 +62,34 @@ export default {
 }
 </script>
 
+<template>
+  <div
+    v-show="visible"
+    id="menu"
+    class="menu"
+    :style="`left: ${left}px;top: ${top}px;`"
+  >
+    <ul v-for="(menuItem, index) in menu" :key="index" class="menu__group">
+      <li
+        v-for="{ key, text } in menuItem"
+        :key="key"
+        class="menu_item"
+        @mousedown="onMouseDown(key)"
+      >
+        {{ text }}
+      </li>
+    </ul>
+  </div>
+</template>
+
 <style lang="less" scoped>
 .menu {
   position: absolute;
   border-radius: 4px;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px 0 rgba(0, 0, 0, 0.08);
   z-index: 9999;
 }
 
@@ -119,7 +122,7 @@ export default {
     background: #f0f0f0;
   }
 
-  ::v-deep .el-upload {
+  :deep(.el-upload) {
     width: 100%;
   }
 }

@@ -118,11 +118,13 @@
     }
   }
 
-  ::v-deep .el-icon-upload,
-  .el-icon-download,
-  .el-icon-refresh,
-  .el-icon-s-grid,
-  .el-icon-document {
+  :deep(
+      .el-icon-upload,
+      .el-icon-download,
+      .el-icon-refresh,
+      .el-icon-s-grid,
+      .el-icon-document
+    ) {
     color: @nightWhiteColor;
   }
 
@@ -136,7 +138,7 @@
   height: 100% !important;
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
   font-size: 14px;
-  font-family: "PingFang SC", BlinkMacSystemFont, Roboto, "Helvetica Neue",
+  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue',
     sans-serif !important;
 }
 
