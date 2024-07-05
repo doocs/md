@@ -8,12 +8,11 @@
     "build": "run-p type-check \"build:only {@}\" --",
     "build:only": "vite build",
     "build:h5-netlify": "vite build --mode netlify",
-    "build:cli": "pnpm build && pnpm shx rm -rf md-cli/dist && pnpm shx rm -rf dist/**/*.map && pnpm shx cp -r dist md-cli/ && cd md-cli && pnpm pack",
-    "preview": "pnpm build && vite preview",
+    "build:cli": "npm run build && npm run shx rm -rf md-cli/dist && npm run shx rm -rf dist/**/*.map && npm run shx cp -r dist md-cli/ && cd md-cli && npm run pack",
+    "preview": "npm run build && vite preview",
     "release:cli": "node ./bin/release.js",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
-    "preinstall": "npx only-allow pnpm",
     "postinstall": "simple-git-hooks"
   },
   "dependencies": {
@@ -69,9 +68,9 @@
     "vue-tsc": "^2.0.21"
   },
   "simple-git-hooks": {
-    "pre-commit": "pnpm lint-staged"
+    "pre-commit": "npm run lint-staged"
   },
   "lint-staged": {
-    "*": "pnpm lint"
+    "*": "npm run lint"
   }
 }
