@@ -83,7 +83,6 @@ export default {
   mounted() {
     setTimeout(() => {
       this.leftAndRightScroll()
-      window.PR.prettyPrint()
     }, 300)
   },
   methods: {
