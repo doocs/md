@@ -61,13 +61,14 @@
     "prettier": "^2.8.8",
     "raw-loader": "^4.0.2",
     "shx": "^0.3.4",
+    "simple-git-hooks": "^2.11.1",
     "typescript": "^5.2.2",
     "vite": "^5.3.1",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vue-tsc": "^2.0.21"
   },
   "simple-git-hooks": {
-    "pre-commit": "npm run lint-staged"
+    "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
     "*": "npm run lint"
