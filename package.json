@@ -52,7 +52,6 @@
     "eslint": "^6.8.0",
     "eslint-plugin-prettier": "^3.4.1",
     "eslint-plugin-vue": "^6.2.2",
-    "husky": "^8.0.3",
     "less": "^4.1.2",
     "less-loader": "^7.3.0",
     "mini-types": "*",
