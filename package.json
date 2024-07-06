@@ -47,6 +47,7 @@
     "cache-loader": "^4.1.0",
     "cross-env": "^7.0.3",
     "eslint": "^8.57.0",
+    "eslint-plugin-format": "^0.1.2",
     "less": "^4.1.2",
     "less-loader": "^7.3.0",
     "mini-types": "*",

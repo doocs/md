@@ -4,6 +4,7 @@ export default antfu({
   vue: true,
   unocss: true,
   typescript: true,
+  formatters: true,
   ignores: [`src/assets/scripts/renderers`],
   rules: {
     'semi': [`error`, `never`],
