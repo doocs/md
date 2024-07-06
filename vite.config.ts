@@ -2,6 +2,7 @@ import { URL, fileURLToPath } from 'node:url'
 import process from 'node:process'
 
 import { defineConfig } from 'vite'
+import UnoCSS from 'unocss/vite'
 import vue from '@vitejs/plugin-vue'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
 
@@ -16,6 +17,7 @@ export default defineConfig(({ mode }) => {
     },
     plugins: [
       vue(),
+      UnoCSS(),
       nodePolyfills({
         include: ['path', 'util', 'timers', 'stream', 'fs'],
         overrides: {

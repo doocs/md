@@ -3,6 +3,7 @@ import Store from './stores'
 import ElementPlus from './element'
 import App from './App.vue'
 
+import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/xq-light.css'
 
