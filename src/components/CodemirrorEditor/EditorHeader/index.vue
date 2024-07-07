@@ -18,7 +18,7 @@ export default {
     StyleOptionMenu,
     ResetDialog,
   },
-  emits: ['refresh', 'startCopy', 'endCopy', 'showCssEditor', 'cssChanged', 'import-md', 'download', 'export', 'show-dialog-upload-img', 'show-dialog-form', 'show-about-dialog'],
+  emits: [`refresh`, `startCopy`, `endCopy`, `showCssEditor`, `cssChanged`, `importMd`, `download`, `export`, `showDialogUploadImg`, `showDialogForm`, `showAboutDialog`],
   data() {
     return {
       config,
@@ -105,7 +105,7 @@ export default {
       const read = new FileReader()
       read.readAsText(file)
       read.onload = () => {
-        this.$emit(`import-md`, read.result)
+        this.$emit(`importMd`, read.result)
       }
     }
   },
@@ -383,11 +383,11 @@ export default {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="$emit('show-dialog-upload-img')">
+            <el-dropdown-item @click="$emit('showDialogUploadImg')">
               <el-icon><ElIconUpload /></el-icon>
               上传图片
             </el-dropdown-item>
-            <el-dropdown-item @click="$emit('show-dialog-form')">
+            <el-dropdown-item @click="$emit('showDialogForm')">
               <el-icon><ElIconGrid /></el-icon>
               插入表格
             </el-dropdown-item>
@@ -479,7 +479,7 @@ export default {
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="$emit('show-about-dialog')">
+            <el-dropdown-item @click="$emit('showAboutDialog')">
               关于
             </el-dropdown-item>
           </el-dropdown-menu>

@@ -101,7 +101,7 @@ export default {
         const root = md.path.match(/.+?\//)[0]
         const resList = await Promise.all(
           mdImgList.map((item) => {
-            return new Promise((resolve, reject) => {
+            return new Promise((resolve) => {
               let [, , matchStr] = item
               matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
               const { file }
@@ -141,7 +141,7 @@ export default {
 
       // 从文件列表中查找一个 md 文件并解析
       async function getMd({ list }) {
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
           const { path, file } = list.find(item => item.path.match(/\.md$/))
           const reader = new FileReader()
           reader.readAsText(file, `UTF-8`)
@@ -187,7 +187,7 @@ export default {
     },
     initEditor() {
       this.initEditorEntity()
-      this.editor.on(`change`, (cm, e) => {
+      this.editor.on(`change`, () => {
         if (this.changeTimer)
           clearTimeout(this.changeTimer)
         this.changeTimer = setTimeout(() => {
@@ -234,7 +234,7 @@ export default {
           cm.showHint(e)
         }
       })
-      this.cssEditor.on(`update`, (instance) => {
+      this.cssEditor.on(`update`, () => {
         this.cssChanged()
         saveEditorContent(this.cssEditor, `__css_content`)
       })
@@ -461,7 +461,7 @@ export default {
           return
         }
         const file = input.files[0]
-        if (!/\.(txt|TXT|MD|md)$/.test(file.name)) {
+        if (!/\.(?:txt|TXT|MD|md)$/.test(file.name)) {
           this.$message.error(`不支持的文档格式`)
           return
         }

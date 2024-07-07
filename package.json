@@ -1,8 +1,8 @@
 {
   "name": "md",
-  "private": false,
-  "version": "1.6.0",
   "type": "module",
+  "version": "1.6.0",
+  "private": false,
   "scripts": {
     "dev": "vite --host",
     "build": "run-p type-check \"build:only {@}\" --",

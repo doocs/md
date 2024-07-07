@@ -12,7 +12,7 @@ export default {
       default: false,
     },
   },
-  emits: ['close'],
+  emits: [`close`],
   data() {
     return {
       config,
@@ -33,7 +33,7 @@ export default {
   methods: {
     // 插入表格
     insertTable() {
-      const cursor = this.editor.getCursor()
+      // const cursor = this.editor.getCursor()
       const table = createTable({
         data: this.tableData,
         rows: this.rowNum,

@@ -6,7 +6,7 @@ export default {
       default: false,
     },
   },
-  emits: ['close'],
+  emits: [`close`],
   methods: {
     onRedirect(url) {
       window.open(url)

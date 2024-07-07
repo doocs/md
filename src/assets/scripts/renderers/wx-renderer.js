@@ -43,11 +43,11 @@ class WxRenderer {
       const arr = []
       const dict = styleMapping[tokenName]
       if (!dict)
-        return ''
+        return ``
       for (const key in dict) {
         arr.push(`${key}:${dict[key]}`)
       }
-      return `style="${arr.join(';') + (addition || '')}"`
+      return `style="${arr.join(`;`) + (addition || ``)}"`
     }
 
     const addFootnote = (title, link) => {
@@ -63,11 +63,11 @@ class WxRenderer {
         return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`
       })
       if (!footnoteArray.length) {
-        return ''
+        return ``
       }
-      return `<h4 ${getStyles('h4')}>引用链接</h4><p ${getStyles(
-        'footnotes',
-      )}>${footnoteArray.join('\n')}</p>`
+      return `<h4 ${getStyles(`h4`)}>引用链接</h4><p ${getStyles(
+        `footnotes`,
+      )}>${footnoteArray.join(`\n`)}</p>`
     }
 
     this.buildAddition = () => {
@@ -105,101 +105,101 @@ class WxRenderer {
       renderer.heading = (text, level) => {
         switch (level) {
           case 1:
-            return `<h1 ${getStyles('h1')}>${text}</h1>`
+            return `<h1 ${getStyles(`h1`)}>${text}</h1>`
           case 2:
-            return `<h2 ${getStyles('h2')}>${text}</h2>`
+            return `<h2 ${getStyles(`h2`)}>${text}</h2>`
           case 3:
-            return `<h3 ${getStyles('h3')}>${text}</h3>`
+            return `<h3 ${getStyles(`h3`)}>${text}</h3>`
           default:
-            return `<h4 ${getStyles('h4')}>${text}</h4>`
+            return `<h4 ${getStyles(`h4`)}>${text}</h4>`
         }
       }
       renderer.paragraph = (text) => {
-        if (text.includes('<figure') && text.includes('<img')) {
+        if (text.includes(`<figure`) && text.includes(`<img`)) {
           return text
         }
-        return text.replace(/ /g, '') === ''
-          ? ''
-          : `<p ${getStyles('p')}>${text}</p>`
+        return text.replace(/ /g, ``) === ``
+          ? ``
+          : `<p ${getStyles(`p`)}>${text}</p>`
       }
 
       renderer.blockquote = (text) => {
-        text = text.replace(/<p.*?>/g, `<p ${getStyles('blockquote_p')}>`)
-        return `<blockquote ${getStyles('blockquote')}>${text}</blockquote>`
+        text = text.replace(/<p.*?>/g, `<p ${getStyles(`blockquote_p`)}>`)
+        return `<blockquote ${getStyles(`blockquote`)}>${text}</blockquote>`
       }
-      renderer.code = (text, lang = '') => {
-        if (lang.startsWith('mermaid')) {
+      renderer.code = (text, lang = ``) => {
+        if (lang.startsWith(`mermaid`)) {
           setTimeout(() => {
             window.mermaid?.run()
           }, 0)
           return `<center><pre class="mermaid">${text}</pre></center>`
         }
-        lang = lang.split(' ')[0]
-        lang = hljs.getLanguage(lang) ? lang : 'plaintext'
+        lang = lang.split(` `)[0]
+        lang = hljs.getLanguage(lang) ? lang : `plaintext`
         text = hljs.highlight(text, { language: lang }).value
         text = text
-          .replace(/\r\n/g, '<br/>')
-          .replace(/\n/g, '<br/>')
+          .replace(/\r\n/g, `<br/>`)
+          .replace(/\n/g, `<br/>`)
           .replace(/(>[^<]+)|(^[^<]+)/g, (str) => {
-            return str.replace(/\s/g, '&nbsp;')
+            return str.replace(/\s/g, `&nbsp;`)
           })
 
         return `<pre class="hljs code__pre" ${getStyles(
-          "code_pre"
+          `code_pre`,
         )}><code class="language-${lang}" ${getStyles(
-          "code"
-        )}>${text}</code></pre>`;
-      };
+          `code`,
+        )}>${text}</code></pre>`
+      }
       renderer.codespan = (text, lang) =>
-        `<code ${getStyles('codespan')}>${text}</code>`
+        `<code ${getStyles(`codespan`)}>${text}</code>`
       renderer.listitem = text =>
-        `<li ${getStyles('listitem')}><span><%s/></span>${text}</li>`
+        `<li ${getStyles(`listitem`)}><span><%s/></span>${text}</li>`
 
       renderer.list = (text, ordered, start) => {
-        text = text.replace(/<\/*p .*?>/g, '').replace(/<\/*p>/g, '')
+        text = text.replace(/<\/*p .*?>/g, ``).replace(/<\/*p>/g, ``)
         const segments = text.split(`<%s/>`)
         if (!ordered) {
-          text = segments.join('• ')
-          return `<ul ${getStyles('ul')}>${text}</ul>`
+          text = segments.join(`• `)
+          return `<ul ${getStyles(`ul`)}>${text}</ul>`
         }
         text = segments[0]
         for (let i = 1; i < segments.length; i++) {
           text = `${text + i}. ${segments[i]}`
         }
-        return `<ol ${getStyles('ol')}>${text}</ol>`
+        return `<ol ${getStyles(`ol`)}>${text}</ol>`
       }
       renderer.image = (href, title, text) => {
         const createSubText = (s) => {
           if (!s) {
-            return ''
+            return ``
           }
 
-          return `<figcaption ${getStyles('figcaption')}>${s}</figcaption>`
+          return `<figcaption ${getStyles(`figcaption`)}>${s}</figcaption>`
         }
         const transform = (title, alt) => {
-          const legend = localStorage.getItem('legend')
+          const legend = localStorage.getItem(`legend`)
           switch (legend) {
-            case 'alt':
+            case `alt`:
               return alt
-            case 'title':
+            case `title`:
               return title
-            case 'alt-title':
+            case `alt-title`:
               return alt || title
-            case 'title-alt':
+            case `title-alt`:
               return title || alt
             default:
-              return ''
+              return ``
           }
         }
         const subText = createSubText(transform(title, text))
-        const figureStyles = getStyles('figure')
-        const imgStyles = getStyles('image')
+        const figureStyles = getStyles(`figure`)
+        const imgStyles = getStyles(`image`)
         return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
       }
       renderer.link = (href, title, text) => {
-        if (href.startsWith('https://mp.weixin.qq.com')) {
+        if (href.startsWith(`https://mp.weixin.qq.com`)) {
           return `<a href="${href}" title="${title || text}" ${getStyles(
-            'wx_link',
+            `wx_link`,
           )}>${text}</a>`
         }
         if (href === text) {
@@ -207,21 +207,21 @@ class WxRenderer {
         }
         if (status) {
           const ref = addFootnote(title || text, href)
-          return `<span ${getStyles('link')}>${text}<sup>[${ref}]</sup></span>`
+          return `<span ${getStyles(`link`)}>${text}<sup>[${ref}]</sup></span>`
         }
-        return `<span ${getStyles('link')}>${text}</span>`
+        return `<span ${getStyles(`link`)}>${text}</span>`
       }
       renderer.strong = text =>
-        `<strong ${getStyles('strong')}>${text}</strong>`
+        `<strong ${getStyles(`strong`)}>${text}</strong>`
       renderer.em = text =>
         `<span style="font-style: italic;">${text}</span>`
       renderer.table = (header, body) =>
         `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles(
-          'thead',
+          `thead`,
         )}>${header}</thead><tbody>${body}</tbody></table></section>`
       renderer.tablecell = (text, flags) =>
-        `<td ${getStyles('td')}>${text}</td>`
-      renderer.hr = () => `<hr ${getStyles('hr')}>`
+        `<td ${getStyles(`td`)}>${text}</td>`
+      renderer.hr = () => `<hr ${getStyles(`hr`)}>`
       return renderer
     }
   }

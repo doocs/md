@@ -10,7 +10,7 @@ export default {
       default: false,
     },
   },
-  emits: ['uploadImage', 'close'],
+  emits: [`uploadImage`, `close`],
   data() {
     return {
       activeName: `upload`,

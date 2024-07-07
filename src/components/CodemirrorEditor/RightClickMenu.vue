@@ -14,7 +14,7 @@ export default {
       default: 0,
     },
   },
-  emits: ['menuTick', 'closeMenu'],
+  emits: [`menuTick`, `closeMenu`],
   data() {
     return {
       menu: [

@@ -9,7 +9,7 @@ export default {
       default: false,
     },
   },
-  emits: ['close', 'confirm'],
+  emits: [`close`, `confirm`],
   computed: {
     btnType() {
       return this.nightMode ? `default` : `primary`

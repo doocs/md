@@ -6,7 +6,7 @@ export default {
       type: Object,
     },
   },
-  emits: ['close', 'post'],
+  emits: [`close`, `post`],
 }
 </script>
 

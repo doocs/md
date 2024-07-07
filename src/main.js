@@ -24,4 +24,4 @@ const app = createApp(App)
 app.use(Store)
 app.use(ElementPlus)
 
-app.mount('#app')
+app.mount(`#app`)

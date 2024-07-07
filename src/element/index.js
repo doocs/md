@@ -4,7 +4,7 @@ import 'element-plus/dist/index.css'
 
 export default {
   install(app) {
-    app.use(ElementPlus, { size: 'default' })
+    app.use(ElementPlus, { size: `default` })
 
     app.config.globalProperties.$loading = ElLoading.service
     app.config.globalProperties.$message = ElMessage
