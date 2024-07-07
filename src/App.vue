@@ -70,4 +70,14 @@ body,
     background: #f0f0f0;
   }
 }
+
+// 修复分栏线负数 margin 导致的轴向滚动条
+.el-dropdown-menu__item--divided:before {
+  margin: 0;
+}
+
+// 修复颜色选择器下拉箭头位置
+.el-icon.el-color-picker__icon.is-icon-arrow-down {
+  position: absolute;
+}
 </style>

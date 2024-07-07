@@ -323,30 +323,30 @@ export default {
     <div class="dropdowns">
       <el-dropdown>
         <span class="el-dropdown-link">
-          文件<el-icon><ElIconArrowDown /></el-icon>
+          文件<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="refClick">
+            <el-dropdown-item class="leading-8" @click="refClick">
               <el-icon><ElIconUpload /></el-icon>
               导入 .md
               <input ref="fileInput" hidden type="file" accept=".md">
             </el-dropdown-item>
-            <el-dropdown-item @click="$emit('download')">
+            <el-dropdown-item class="leading-8" @click="$emit('download')">
               <el-icon><ElIconDownload /></el-icon>
               导出 .md
             </el-dropdown-item>
-            <el-dropdown-item @click="$emit('export')">
+            <el-dropdown-item class="leading-8" @click="$emit('export')">
               <el-icon><ElIconDocument /></el-icon>
               导出 .html
             </el-dropdown-item>
-            <el-dropdown-item divided @click="themeChanged">
-              <el-icon :style="{ opacity: +!!nightMode }">
+            <el-dropdown-item divided class="leading-8" @click="themeChanged">
+              <el-icon :style="{ opacity: +nightMode }">
                 <ElIconCheck />
               </el-icon>
               暗黑模式
             </el-dropdown-item>
-            <el-dropdown-item divided @click="isEditOnLeftChanged">
+            <el-dropdown-item divided class="leading-8" @click="isEditOnLeftChanged">
               <el-icon :style="{ opacity: +isEditOnLeft }">
                 <ElIconCheck />
               </el-icon>
@@ -357,20 +357,23 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          格式<el-icon><ElIconArrowDown /></el-icon>
+          格式<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
         </span>
         <template #dropdown>
-          <el-dropdown-menu>
+          <el-dropdown-menu class="format-list">
             <el-dropdown-item
               v-for="{ label, kbd, emitArgs } in formatItems"
               :key="kbd"
-              class="format-item"
+              class="leading-8 format-item"
               @click="$emit(...emitArgs)"
             >
+              <el-icon class="opacity-0">
+                <ElIconCheck />
+              </el-icon>
               {{ label }}
-              <kbd>{{ kbd }}</kbd>
+              <kbd class="ml-auto">{{ kbd }}</kbd>
             </el-dropdown-item>
-            <el-dropdown-item divided @click="statusChanged">
+            <el-dropdown-item divided class="leading-8" @click="statusChanged">
               <el-icon><ElIconCheck /></el-icon>
               微信外链转底部引用
             </el-dropdown-item>
@@ -379,15 +382,21 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          编辑<el-icon><ElIconArrowDown /></el-icon>
+          编辑<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="$emit('showDialogUploadImg')">
+            <el-dropdown-item
+              class="leading-8"
+              @click="$emit('showDialogUploadImg')"
+            >
               <el-icon><ElIconUpload /></el-icon>
               上传图片
             </el-dropdown-item>
-            <el-dropdown-item @click="$emit('showDialogForm')">
+            <el-dropdown-item
+              class="leading-8"
+              @click="$emit('showDialogForm')"
+            >
               <el-icon><ElIconGrid /></el-icon>
               插入表格
             </el-dropdown-item>
@@ -396,11 +405,11 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          样式<el-icon><ElIconArrowDown /></el-icon>
+          样式<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item class="padding-left-3">
+            <el-dropdown-item class="leading-8">
               <StyleOptionMenu
                 label="字体"
                 :options="config.builtinFonts"
@@ -408,7 +417,7 @@ export default {
                 :charge="fontChanged"
               />
             </el-dropdown-item>
-            <el-dropdown-item class="padding-left-3">
+            <el-dropdown-item class="leading-8">
               <StyleOptionMenu
                 label="字号"
                 :options="config.sizeOption"
@@ -416,7 +425,7 @@ export default {
                 :charge="sizeChanged"
               />
             </el-dropdown-item>
-            <el-dropdown-item class="padding-left-3">
+            <el-dropdown-item class="leading-8">
               <StyleOptionMenu
                 label="颜色"
                 :options="config.colorOption"
@@ -424,7 +433,7 @@ export default {
                 :charge="colorChanged"
               />
             </el-dropdown-item>
-            <el-dropdown-item class="padding-left-3">
+            <el-dropdown-item class="leading-8">
               <StyleOptionMenu
                 label="代码主题"
                 :options="config.codeThemeOption"
@@ -432,7 +441,7 @@ export default {
                 :charge="codeThemeChanged"
               />
             </el-dropdown-item>
-            <el-dropdown-item class="padding-left-3">
+            <el-dropdown-item class="leading-8">
               <StyleOptionMenu
                 label="图注格式"
                 :options="config.legendOption"
@@ -442,22 +451,29 @@ export default {
             </el-dropdown-item>
             <el-dropdown-item
               divided
-              class="padding-left-3"
+              class="leading-8"
               @click="showPicker()"
             >
+              <el-icon class="opacity-0">
+                <ElIconCheck />
+              </el-icon>
               自定义颜色
               <el-color-picker
                 ref="colorPicker"
                 v-model="selectColor"
                 show-alpha
-                style="float: right; margin-top: 3px"
+                class="ml-auto"
+                style="height: 2em"
                 @change="colorChanged"
               />
             </el-dropdown-item>
-            <el-dropdown-item class="padding-left-3" @click="customStyle">
+            <el-dropdown-item class="leading-8" @click="customStyle">
+              <el-icon class="opacity-0">
+                <ElIconCheck />
+              </el-icon>
               自定义 CSS
             </el-dropdown-item>
-            <el-dropdown-item divided @click="codeBlockChanged">
+            <el-dropdown-item divided class="leading-8" @click="codeBlockChanged">
               <el-icon :style="{ opacity: +isMacCodeBlock }">
                 <ElIconCheck />
               </el-icon>
@@ -465,9 +481,12 @@ export default {
             </el-dropdown-item>
             <el-dropdown-item
               divided
-              class="padding-left-3"
+              class="leading-8"
               @click="showResetConfirm = true"
             >
+              <el-icon class="opacity-0">
+                <ElIconCheck />
+              </el-icon>
               重置
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -475,11 +494,14 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          帮助<el-icon><ElIconArrowDown /></el-icon>
+          帮助<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item @click="$emit('showAboutDialog')">
+            <el-dropdown-item
+              class="leading-8"
+              @click="$emit('showAboutDialog')"
+            >
               关于
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -521,6 +543,8 @@ export default {
 }
 
 .el-dropdown-link {
+  display: flex;
+  align-items: center;
   cursor: pointer;
 }
 
@@ -543,14 +567,23 @@ export default {
   }
 }
 
-.format-item {
-  .padding-left-3;
-  width: 180px;
+.format-list {
+  width: 250px;
+}
 
+.format-item {
   kbd {
     font-size: 0.75em;
     float: right;
     color: #666;
   }
+}
+
+// .md-dropdown-item&:extend(.flex) {
+.md-dropdown-item {
+  // .flex;
+  // .leading-8;
+
+  line-height: 20em;
 }
 </style>

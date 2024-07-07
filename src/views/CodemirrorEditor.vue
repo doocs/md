@@ -648,6 +648,8 @@ export default {
 }
 
 .container {
+  // 覆盖默认设定
+  min-width: 100%;
   transition: all 0.3s;
 }
 

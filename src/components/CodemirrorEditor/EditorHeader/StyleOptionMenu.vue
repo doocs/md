@@ -19,14 +19,26 @@ export default {
       required: true,
     },
   },
+  setup(props) {
+    // 暂时以别名形式使用，后续需要修改
+    const title = props.label
+    return {
+      title,
+    }
+  },
 }
 </script>
 
 <template>
-  <el-dropdown placement="right" class="style-option-menu">
-    <div class="el-dropdown-link">
-      {{ label }}
-      <el-icon><ElIconArrowRight /></el-icon>
+  <el-dropdown placement="right" class="style-option-menu" style="margin: 0;">
+    <div class="el-dropdown-link leading-8 flex items-center">
+      <el-icon class="opacity-0">
+        <ElIconCheck />
+      </el-icon>
+      {{ title }}
+      <el-icon class="ml-auto">
+        <ElIconArrowRight />
+      </el-icon>
     </div>
     <template #dropdown>
       <el-dropdown-menu style="width: 200px">
@@ -41,9 +53,18 @@ export default {
             <ElIconCheck />
           </el-icon>
           {{ label }}
-          <span class="select-item-right" :style="{ fontFamily: value }">{{
-            desc
-          }}</span>
+          <span v-if="title === '字体'" class="ml-auto" :style="{ fontFamily: value }">
+            {{ desc }}
+          </span>
+          <span v-else-if="title === '字号'" class="ml-auto" :style="{ fontSize: value }">
+            {{ desc }}
+          </span>
+          <span v-else-if="title === '颜色'" class="ml-auto" :style="{ color: value }">
+            {{ desc }}
+          </span>
+          <span v-else class="ml-auto">
+            {{ desc }}
+          </span>
         </el-dropdown-item>
       </el-dropdown-menu>
     </template>
@@ -51,14 +72,12 @@ export default {
 </template>
 
 <style lang="less" scoped>
-.style-option-menu.el-dropdown {
+.style-option-menu {
   margin: 0;
-  width: 150px;
+  width: 180px;
 
   .el-dropdown-link {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    width: 100%;
   }
 }
 
