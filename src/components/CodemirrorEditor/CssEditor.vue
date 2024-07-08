@@ -12,7 +12,7 @@ export default {
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="showCssEditor" :span="8" class="cssEditor-wrapper">
+    <el-col v-show="showCssEditor" :span="8" class="cssEditor-wrapper h-full">
       <textarea
         id="cssEditor"
         type="textarea"
