@@ -1,3 +1,4 @@
+import { markRaw } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
@@ -148,7 +149,7 @@ export const useStore = defineStore(`store`, {
         cssEditorDom.value
           = localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
       }
-      this.cssEditor = CodeMirror.fromTextArea(cssEditorDom, {
+      this.cssEditor = markRaw(CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
         theme: `style-mirror`,
         lineNumbers: false,
@@ -163,7 +164,7 @@ export const useStore = defineStore(`store`, {
           },
           [`${modPrefix}-S`]: function save(_editor) {},
         },
-      })
+      }))
     },
     editorRefresh() {
       const renderer = this.wxRenderer.getRenderer(this.citeStatus)
