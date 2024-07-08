@@ -561,7 +561,7 @@ export default {
           <el-col
             ref="codeMirrorWrapper"
             :style="{ order: store.isEditOnLeft ? 0 : 1 }"
-            :span="12"
+            :span="showCssEditor ? 8 : 12"
             class="codeMirror-wrapper"
             @contextmenu.prevent="openMenu"
           >
@@ -575,7 +575,7 @@ export default {
           <el-col
             id="preview"
             ref="preview"
-            :span="12"
+            :span="showCssEditor ? 8 : 12"
             class="preview-wrapper"
             :class="{
               'preview-wrapper_night': nightMode && isCoping,
