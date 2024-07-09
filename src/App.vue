@@ -80,4 +80,9 @@ body,
 .el-icon.el-color-picker__icon.is-icon-arrow-down {
   position: absolute;
 }
+
+// 参见：https://github.com/element-plus/element-plus/issues/11662
+.el-dropdown-link:focus-visible {
+  outline: unset;
+}
 </style>
