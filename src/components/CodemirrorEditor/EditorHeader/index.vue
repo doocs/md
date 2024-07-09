@@ -320,7 +320,7 @@ export default {
 
 <template>
   <el-container class="header-container is-dark">
-    <div class="dropdowns">
+    <div class="dropdowns flex">
       <el-dropdown>
         <span class="el-dropdown-link">
           文件<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
@@ -454,18 +454,25 @@ export default {
               class="leading-8"
               @click="showPicker()"
             >
-              <el-icon class="opacity-0">
-                <ElIconCheck />
-              </el-icon>
-              自定义颜色
-              <el-color-picker
-                ref="colorPicker"
-                v-model="selectColor"
-                show-alpha
-                class="ml-auto"
-                style="height: 2em"
-                @change="colorChanged"
-              />
+              <el-tooltip placement="right" effect="light">
+                <template #content>
+                  <el-color-picker
+                    ref="colorPicker"
+                    v-model="selectColor"
+                    :teleported="false"
+                    show-alpha
+                    class="ml-auto"
+                    style="height: 2em"
+                    @change="colorChanged"
+                  />
+                </template>
+                <div class="flex">
+                  <el-icon class="opacity-0">
+                    <ElIconCheck />
+                  </el-icon>
+                  自定义颜色
+                </div>
+              </el-tooltip>
             </el-dropdown-item>
             <el-dropdown-item class="leading-8" @click="customStyle">
               <el-icon class="opacity-0">
