@@ -7,7 +7,7 @@
     "dev": "vite --host",
     "build": "run-p type-check \"build:only {@}\" --",
     "build:only": "vite build",
-    "build:h5-netlify": "vite build --mode netlify",
+    "build:h5-netlify": "cross-env SERVER_ENV=NETLIFY vite build",
     "build:cli": "npm run build && npm run shx rm -rf md-cli/dist && npm run shx rm -rf dist/**/*.map && npm run shx cp -r dist md-cli/ && cd md-cli && npm run pack",
     "preview": "npm run build && vite preview",
     "release:cli": "node ./bin/release.js",
