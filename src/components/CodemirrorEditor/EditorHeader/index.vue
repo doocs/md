@@ -114,7 +114,7 @@ export default {
       this.$refs.fileInput.click()
     },
     showPicker() {
-      this.$refs.colorPicker.showPicker = true
+      this.$refs.colorPicker.show()
     },
     prePost() {
       let auto = {}
@@ -364,7 +364,7 @@ export default {
             <el-dropdown-item
               v-for="{ label, kbd, emitArgs } in formatItems"
               :key="kbd"
-              class="leading-8 format-item"
+              class="format-item leading-8"
               @click="$emit(...emitArgs)"
             >
               <el-icon class="opacity-0">
@@ -466,7 +466,7 @@ export default {
                     @change="colorChanged"
                   />
                 </template>
-                <div class="flex">
+                <div class="flex w-full">
                   <el-icon class="opacity-0">
                     <ElIconCheck />
                   </el-icon>
