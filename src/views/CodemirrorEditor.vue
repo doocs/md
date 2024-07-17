@@ -613,6 +613,7 @@ export default {
     <InsertFormDialog
       :visible="insertFormDialogVisible"
       @close="insertFormDialogVisible = false"
+      @format-content="formatContent"
     />
 
     <RightClickMenu

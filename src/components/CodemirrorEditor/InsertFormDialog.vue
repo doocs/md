@@ -12,7 +12,7 @@ export default {
       default: false,
     },
   },
-  emits: [`close`],
+  emits: [`close`, `formatContent`],
   data() {
     return {
       config,
@@ -46,6 +46,7 @@ export default {
       this.editor.replaceSelection(`\n${table}\n`, `end`)
       this.$emit(`close`)
       this.editorRefresh()
+      this.$emit(`formatContent`)
     },
     ...mapActions(useStore, [`editorRefresh`]),
   },
@@ -61,7 +62,7 @@ export default {
     @close="$emit('close')"
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">
-      <el-col>
+      <el-col :span="12">
         行数：
         <el-input-number
           v-model="rowNum"
@@ -71,7 +72,7 @@ export default {
           size="small"
         />
       </el-col>
-      <el-col>
+      <el-col :span="12">
         列数：
         <el-input-number
           v-model="colNum"
@@ -125,7 +126,7 @@ export default {
   border-radius: 0;
 }
 
-.head-style :deep(.el-input__inner) {
+.head-style :deep(.el-input__wrapper) {
   background-color: #f2f2f2;
 }
 </style>
