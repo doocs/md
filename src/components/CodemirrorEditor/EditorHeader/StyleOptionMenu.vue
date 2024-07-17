@@ -47,6 +47,7 @@ export default {
           :key="value"
           :label="label"
           :model-value="value"
+          class="leading-8"
           @click="charge(value)"
         >
           <el-icon :style="{ opacity: +(current === value) }">
