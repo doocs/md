@@ -1,9 +1,14 @@
 <script>
 import { nextTick } from 'vue'
 import CodeMirror from 'codemirror/lib/codemirror'
+import { UploadFilled } from '@element-plus/icons-vue'
+
 import { checkImage, removeLeft } from '@/assets/scripts/util'
 
 export default {
+  components: {
+    UploadFilled,
+  },
   props: {
     visible: {
       type: Boolean,
@@ -277,7 +282,7 @@ export default {
     :model-value="visible"
     @close="$emit('close')"
   >
-    <el-tabs v-model="activeName" type="activeName">
+    <el-tabs v-model="activeName">
       <el-tab-pane class="upload-panel" label="选择上传" name="upload">
         <el-select
           v-model="imgHost"
@@ -294,16 +299,18 @@ export default {
         </el-select>
         <el-upload
           drag
+          multiple
           action=""
           :headers="{ 'Content-Type': 'multipart/form-data' }"
           :show-file-list="false"
-          :multiple="true"
           accept=".jpg, .jpeg, .png, .gif"
           name="file"
           :before-upload="beforeImageUpload"
           :http-request="uploadImage"
         >
-          <el-icon><ElIconUpload /></el-icon>
+          <el-icon class="el-icon--upload">
+            <UploadFilled />
+          </el-icon>
           <div class="el-upload__text">
             将图片拖到此处，或
             <em>点击上传</em>
@@ -394,7 +401,7 @@ export default {
           class="setting-form"
           :model="formAliOSS"
           label-position="right"
-          label-width="140px"
+          label-width="150px"
         >
           <el-form-item label="AccessKey ID" :required="true">
             <el-input
@@ -677,6 +684,7 @@ export default {
   display: flex;
   flex-flow: column;
   justify-content: center;
+  align-items: center;
   width: 500px;
   height: 360px;
 
