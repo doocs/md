@@ -374,7 +374,9 @@ export default {
               <kbd class="ml-auto">{{ kbd }}</kbd>
             </el-dropdown-item>
             <el-dropdown-item divided class="leading-8" @click="statusChanged">
-              <el-icon><ElIconCheck /></el-icon>
+              <el-icon :style="{ opacity: citeStatus ? 1 : 0 }">
+                <ElIconCheck />
+              </el-icon>
               微信外链转底部引用
             </el-dropdown-item>
           </el-dropdown-menu>
