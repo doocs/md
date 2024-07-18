@@ -322,7 +322,7 @@ export default {
             class="setting-form"
             :model="formGitee"
             label-position="right"
-            label-width="140px"
+            label-width="150px"
           >
             <el-form-item label="Gitee 仓库" :required="true">
               <el-input
@@ -361,7 +361,7 @@ export default {
           class="setting-form"
           :model="formGitHub"
           label-position="right"
-          label-width="140px"
+          label-width="150px"
         >
           <el-form-item label="GitHub 仓库" :required="true">
             <el-input
@@ -459,7 +459,7 @@ export default {
           class="setting-form"
           :model="formTxCOS"
           label-position="right"
-          label-width="140px"
+          label-width="150px"
         >
           <el-form-item label="SecretId" :required="true">
             <el-input
@@ -517,7 +517,7 @@ export default {
           class="setting-form"
           :model="formQiniu"
           label-position="right"
-          label-width="140px"
+          label-width="150px"
         >
           <el-form-item label="AccessKey" :required="true">
             <el-input
@@ -575,7 +575,7 @@ export default {
           class="setting-form"
           :model="minioOSS"
           label-position="right"
-          label-width="140px"
+          label-width="150px"
         >
           <el-form-item label="Endpoint" :required="true">
             <el-input
