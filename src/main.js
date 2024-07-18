@@ -1,9 +1,9 @@
-import Vue from 'vue'
-import ElementUI from 'element-ui'
-import { createPinia, PiniaVuePlugin } from 'pinia'
+import { createApp } from 'vue'
+import Store from './stores'
+import ElementPlus from './element'
+import App from './App.vue'
 
-import 'element-ui/lib/theme-chalk/index.css'
-
+import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/xq-light.css'
 
@@ -19,16 +19,9 @@ import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/css-hint'
 
-import './plugins/element'
-import App from './App'
+const app = createApp(App)
 
-Vue.use(ElementUI).use(PiniaVuePlugin)
+app.use(Store)
+app.use(ElementPlus)
 
-Vue.config.productionTip = false
-
-App.mpType = `app`
-
-new Vue({
-  ...App,
-  pinia: createPinia(),
-}).$mount(`#app`)
+app.mount(`#app`)

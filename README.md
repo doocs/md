@@ -76,19 +76,19 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 示例代码：
 
 ```js
-const { file, util, okCb, errCb } = CUSTOM_ARG;
-const param = new FormData();
-param.append("file", file);
+const { file, util, okCb, errCb } = CUSTOM_ARG
+const param = new FormData()
+param.append(`file`, file)
 util.axios
-  .post("http://127.0.0.1:9000/upload", param, {
-    headers: { "Content-Type": "multipart/form-data" },
+  .post(`http://127.0.0.1:9000/upload`, param, {
+    headers: { 'Content-Type': `multipart/form-data` },
   })
   .then((res) => {
-    okCb(res.url);
+    okCb(res.url)
   })
   .catch((err) => {
-    errCb(err);
-  });
+    errCb(err)
+  })
 
 // 提供的可用参数:
 // CUSTOM_ARG = {

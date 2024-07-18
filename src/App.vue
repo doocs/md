@@ -1,12 +1,12 @@
-<template>
-  <div id="app">
-    <codemirror-editor />
-  </div>
-</template>
-
 <script setup>
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 </script>
+
+<template>
+  <div id="app">
+    <CodemirrorEditor />
+  </div>
+</template>
 
 <style lang="less">
 // 仿 uniapp 外层全屏
@@ -50,7 +50,9 @@ body,
 
   color: #333333;
   background-color: #ffffff;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.12), 0 2px 4px 0 rgba(0, 0, 0, 0.08);
+  box-shadow:
+    0 4px 8px 0 rgba(0, 0, 0, 0.12),
+    0 2px 4px 0 rgba(0, 0, 0, 0.08);
 }
 
 .CodeMirror-hint {
@@ -67,5 +69,20 @@ body,
   &:hover {
     background: #f0f0f0;
   }
+}
+
+// 修复分栏线负数 margin 导致的轴向滚动条
+.el-dropdown-menu__item--divided:before {
+  margin: 0;
+}
+
+// 修复颜色选择器下拉箭头位置
+.el-icon.el-color-picker__icon.is-icon-arrow-down {
+  position: absolute;
+}
+
+// 参见：https://github.com/element-plus/element-plus/issues/11662
+.el-dropdown-link:focus-visible {
+  outline: unset;
 }
 </style>

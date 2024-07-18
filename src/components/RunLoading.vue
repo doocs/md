@@ -1,16 +1,3 @@
-<template>
-  <transition name="fade" v-if="loading">
-    <div
-      class="loading"
-      :class="{
-        loading_night: nightMode,
-      }"
-    >
-      <strong>致力于让 Markdown 编辑更简单</strong>
-    </div>
-  </transition>
-</template>
-
 <script>
 import { mapState } from 'pinia'
 import { useStore } from '@/stores'
@@ -22,18 +9,32 @@ export default {
       loading: true,
     }
   },
-  mounted() {
-    setTimeout(() => {
-      this.loading = false
-    }, 100)
-  },
   computed: {
     ...mapState(useStore, {
       nightMode: ({ nightMode }) => nightMode,
     }),
   },
+  mounted() {
+    setTimeout(() => {
+      this.loading = false
+    }, 100)
+  },
 }
 </script>
+
+<template>
+  <transition name="fade">
+    <div
+      v-if="loading"
+      class="loading"
+      :class="{
+        loading_night: nightMode,
+      }"
+    >
+      <strong>致力于让 Markdown 编辑更简单</strong>
+    </div>
+  </transition>
+</template>
 
 <style lang="less" scoped>
 @light-color: #303133;
