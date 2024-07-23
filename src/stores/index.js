@@ -6,7 +6,12 @@ import config from '../assets/scripts/config'
 import WxRenderer from '../assets/scripts/renderers/wx-renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt'
-import { setColor, formatDoc, formatCss } from '@/assets/scripts/util'
+import {
+  formatDoc,
+  formatCss,
+  setFontSize,
+  setColorWithCustomTemplate,
+} from '@/assets/scripts/util'
 
 const defaultKeyMap = CodeMirror.keyMap[`default`]
 const modPrefix =
@@ -92,8 +97,10 @@ export const useStore = defineStore(`store`, {
         localStorage.getItem(`isMacCodeBlock`) === `false`
       )
       this.isEditOnLeft = !(localStorage.getItem(`isEditOnLeft`) === `false`)
+
+      const theme = setFontSize(this.currentSize.replace(`px`, ``))
       this.wxRenderer = new WxRenderer({
-        theme: setColor(this.currentColor),
+        theme: setColorWithCustomTemplate(theme, this.currentColor),
         fonts: this.currentFont,
         size: this.currentSize,
       })

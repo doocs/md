@@ -28,9 +28,9 @@ export function setColorWithCustomTemplate(theme, color) {
 export function setFontSizeWithTemplate(template) {
   return function (fontSize) {
     const customTheme = JSON.parse(JSON.stringify(template))
-    customTheme.block.h1[`font-size`] = `${fontSize * 1.14}px`
-    customTheme.block.h2[`font-size`] = `${fontSize * 1.1}px`
-    customTheme.block.h3[`font-size`] = `${fontSize}px`
+    customTheme.block.h1[`font-size`] = `${fontSize * 1.2}px`
+    customTheme.block.h2[`font-size`] = `${fontSize * 1.2}px`
+    customTheme.block.h3[`font-size`] = `${fontSize * 1.1}px`
     customTheme.block.h4[`font-size`] = `${fontSize}px`
     return customTheme
   }
@@ -284,9 +284,7 @@ export function exportHTML() {
 
     // 判断是否是包裹代码块的 code 元素
     function isCode(element) {
-      return (
-        element.tagName === `CODE`
-      )
+      return element.tagName === `CODE`
     }
 
     // 判断是否是包裹代码字符的 span 元素
