@@ -1,18 +1,15 @@
-<script>
-export default {
-  name: `CssEditor`,
-  props: {
-    showCssEditor: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+const props = defineProps({
+  showCssEditor: {
+    type: Boolean,
+    default: false,
   },
-}
+})
 </script>
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="showCssEditor" :span="8" class="cssEditor-wrapper h-full">
+    <el-col v-show="props.showCssEditor" :span="8" class="cssEditor-wrapper h-full">
       <textarea
         id="cssEditor"
         type="textarea"

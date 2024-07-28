@@ -1,17 +1,15 @@
-<script>
-export default {
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
   },
-  emits: [`close`],
-  methods: {
-    onRedirect(url) {
-      window.open(url)
-    },
-  },
+})
+
+defineEmits([`close`])
+
+function onRedirect(url) {
+  window.open(url)
 }
 </script>
 
@@ -19,7 +17,7 @@ export default {
   <el-dialog
     title="关于"
     class="about__dialog"
-    :model-value="visible"
+    :model-value="props.visible"
     width="30%"
     center
     @close="$emit('close')"

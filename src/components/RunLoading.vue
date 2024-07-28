@@ -1,25 +1,16 @@
-<script>
-import { mapState } from 'pinia'
+<script setup>
+import { onMounted, ref } from 'vue'
 import { useStore } from '@/stores'
 
-export default {
-  name: `RunLoading`,
-  data() {
-    return {
-      loading: true,
-    }
-  },
-  computed: {
-    ...mapState(useStore, {
-      nightMode: ({ nightMode }) => nightMode,
-    }),
-  },
-  mounted() {
-    setTimeout(() => {
-      this.loading = false
-    }, 100)
-  },
-}
+const loading = ref(true)
+
+const nightMode = useStore().nightMode
+
+onMounted(() => {
+  setTimeout(() => {
+    loading.value = false
+  }, 100)
+})
 </script>
 
 <template>
