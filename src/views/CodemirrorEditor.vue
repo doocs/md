@@ -4,7 +4,6 @@ import fileApi from '../api/file'
 import { useStore } from '@/stores'
 
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
-import AboutDialog from '@/components/CodemirrorEditor/AboutDialog.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
 import RightClickMenu from '@/components/CodemirrorEditor/RightClickMenu.vue'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
@@ -30,7 +29,6 @@ export default {
     CssEditor,
     RunLoading,
     EditorHeader,
-    AboutDialog,
     InsertFormDialog,
     RightClickMenu,
     UploadImgDialog,
@@ -45,7 +43,6 @@ export default {
   data() {
     return {
       showCssEditor: false,
-      aboutDialogVisible: false,
       dialogUploadImgVisible: false,
       insertFormDialogVisible: false,
       isCoping: false,
@@ -549,7 +546,6 @@ export default {
           @download="downloadEditorContent"
           @export="exportEditorContent"
           @show-css-editor="showCssEditor = !showCssEditor"
-          @show-about-dialog="aboutDialogVisible = true"
           @show-dialog-form="insertFormDialogVisible = true"
           @show-dialog-upload-img="dialogUploadImgVisible = true"
           @start-copy=";(isCoping = true), (backLight = true)"
@@ -606,10 +602,7 @@ export default {
       @upload-image="uploadImage"
       @uploaded="uploaded"
     />
-    <AboutDialog
-      :visible="aboutDialogVisible"
-      @close="aboutDialogVisible = false"
-    />
+
     <InsertFormDialog
       :visible="insertFormDialogVisible"
       @close="insertFormDialogVisible = false"

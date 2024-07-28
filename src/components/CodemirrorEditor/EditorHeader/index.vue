@@ -4,6 +4,7 @@ import { mapActions, mapState } from 'pinia'
 import ResetDialog from './ResetDialog.vue'
 import StyleOptionMenu from './StyleOptionMenu.vue'
 import PostInfoDialog from './PostInfoDialog.vue'
+import HelpDropdown from './HelpDropdown.vue'
 import { useStore } from '@/stores'
 
 import { setColorWithCustomTemplate, setFontSize } from '@/assets/scripts/util'
@@ -17,6 +18,7 @@ export default {
     PostInfoDialog,
     StyleOptionMenu,
     ResetDialog,
+    HelpDropdown,
   },
   emits: [`refresh`, `startCopy`, `endCopy`, `showCssEditor`, `cssChanged`, `importMd`, `download`, `export`, `showDialogUploadImg`, `showDialogForm`, `showAboutDialog`],
   data() {
@@ -501,23 +503,9 @@ export default {
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          帮助<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item
-              class="leading-8"
-              @click="$emit('showAboutDialog')"
-            >
-              关于
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
-    <el-button plain size="default" :type="btnType" @click="copy">
+      <HelpDropdown />
+    </el-space>
+    <el-button plain :type="btnType" @click="copy">
       复制
     </el-button>
     <el-button plain size="default" :type="btnType" @click="prePost">
