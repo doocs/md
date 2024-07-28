@@ -321,8 +321,8 @@ export default {
 </script>
 
 <template>
-  <el-container class="header-container is-dark">
-    <div class="dropdowns flex">
+  <el-container class="is-dark header-container">
+    <el-space class="dropdowns flex-auto" size="large">
       <el-dropdown>
         <span class="el-dropdown-link">
           文件<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
@@ -508,7 +508,7 @@ export default {
     <el-button plain :type="btnType" @click="copy">
       复制
     </el-button>
-    <el-button plain size="default" :type="btnType" @click="prePost">
+    <el-button plain :type="btnType" @click="prePost">
       发布
     </el-button>
 
@@ -529,14 +529,6 @@ export default {
 .header-container {
   padding: 10px 20px;
   align-items: center;
-}
-
-.dropdowns {
-  flex: 1;
-}
-
-.el-dropdown {
-  margin: 0 10px;
 }
 
 .el-dropdown-link {
