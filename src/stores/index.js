@@ -1,4 +1,4 @@
-import { markRaw } from 'vue'
+import { markRaw, ref } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
@@ -13,143 +13,142 @@ const defaultKeyMap = CodeMirror.keyMap.default
 const modPrefix
   = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
-export const useStore = defineStore(`store`, {
-  state: () => ({
-    wxRenderer: null,
-    output: ``,
-    html: ``,
-    editor: null,
-    cssEditor: null,
-    currentFont: ``,
-    currentSize: ``,
-    currentColor: ``,
-    citeStatus: false,
-    nightMode: false,
-    codeTheme: config.codeThemeOption[2].value,
-    legend: config.legendOption[3].value,
-    isMacCodeBlock: true,
-    isEditOnLeft: true,
-  }),
-  actions: {
-    setEditorValue(data) {
-      this.editor.setValue(data)
-    },
-    setCssEditorValue(data) {
-      this.cssEditor.setValue(data)
-    },
-    setWxRendererOptions(data) {
-      this.wxRenderer.setOptions(data)
-    },
-    setCiteStatus(data) {
-      this.citeStatus = data
-      localStorage.setItem(`citeStatus`, data)
-    },
-    setCurrentFont(data) {
-      this.currentFont = data
-      localStorage.setItem(`fonts`, data)
-    },
-    setCurrentSize(data) {
-      this.currentSize = data
-      localStorage.setItem(`size`, data)
-    },
-    setCurrentColor(data) {
-      this.currentColor = data
-      localStorage.setItem(`color`, data)
-    },
-    setCurrentCodeTheme(data) {
-      this.codeTheme = data
-      localStorage.setItem(`codeTheme`, data)
-    },
-    setCurrentLegend(data) {
-      this.legend = data
-      localStorage.setItem(`legend`, data)
-    },
-    setIsMacCodeBlock(data) {
-      this.isMacCodeBlock = data
-      localStorage.setItem(`isMacCodeBlock`, data)
-    },
-    setIsEditOnLeft(data) {
-      this.isEditOnLeft = data
-      localStorage.setItem(`isEditOnLeft`, data)
-    },
-    themeChanged() {
-      this.nightMode = !this.nightMode
-      localStorage.setItem(`nightMode`, this.nightMode)
-    },
-    initEditorState() {
-      this.currentFont
-        = localStorage.getItem(`fonts`) || config.builtinFonts[0].value
-      this.currentColor
-        = localStorage.getItem(`color`) || config.colorOption[0].value
-      this.currentSize
-        = localStorage.getItem(`size`) || config.sizeOption[2].value
-      this.codeTheme
-        = localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
-      this.legend
-        = localStorage.getItem(`legend`) || config.legendOption[3].value
-      this.citeStatus = localStorage.getItem(`citeStatus`) === `true`
-      this.nightMode = localStorage.getItem(`nightMode`) === `true`
-      this.isMacCodeBlock = !(
-        localStorage.getItem(`isMacCodeBlock`) === `false`
-      )
-      this.isEditOnLeft = !(localStorage.getItem(`isEditOnLeft`) === `false`)
-      this.wxRenderer = new WxRenderer({
-        theme: setColor(this.currentColor),
-        fonts: this.currentFont,
-        size: this.currentSize,
-      })
-    },
-    initEditorEntity() {
-      const editorDom = document.getElementById(`editor`)
+export const useStore = defineStore(`store`, () => {
+  const wxRenderer = ref(null)
+  const output = ref(``)
+  const html = ref(``)
+  const editor = ref(null)
+  const cssEditor = ref(null)
+  const currentFont = ref(``)
+  const currentSize = ref(``)
+  const currentColor = ref(``)
+  const citeStatus = ref(false)
+  const nightMode = ref(false)
+  const codeTheme = ref(config.codeThemeOption[2].value)
+  const legend = ref(config.legendOption[3].value)
+  const isMacCodeBlock = ref(true)
+  const isEditOnLeft = ref(true)
 
-      if (!editorDom.value) {
-        editorDom.value
-          = localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
-      }
-      this.editor = CodeMirror.fromTextArea(editorDom, {
-        mode: `text/x-markdown`,
-        theme: `xq-light`,
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        autoCloseBrackets: true,
-        extraKeys: {
-          [`${modPrefix}-F`]: function autoFormat(editor) {
-            const doc = formatDoc(editor.getValue(0))
-            localStorage.setItem(`__editor_content`, doc)
-            editor.setValue(doc)
-          },
-          [`${modPrefix}-B`]: function bold(editor) {
-            const selected = editor.getSelection()
-            editor.replaceSelection(`**${selected}**`)
-          },
-          [`${modPrefix}-D`]: function del(editor) {
-            const selected = editor.getSelection()
-            editor.replaceSelection(`~~${selected}~~`)
-          },
-          [`${modPrefix}-I`]: function italic(editor) {
-            const selected = editor.getSelection()
-            editor.replaceSelection(`*${selected}*`)
-          },
-          [`${modPrefix}-K`]: function italic(editor) {
-            const selected = editor.getSelection()
-            editor.replaceSelection(`[${selected}]()`)
-          },
-          [`${modPrefix}-L`]: function code(editor) {
-            const selected = editor.getSelection()
-            editor.replaceSelection(`\`${selected}\``)
-          },
+  const setEditorValue = (data) => {
+    editor.value.setValue(data)
+  }
+  const setCssEditorValue = (data) => {
+    cssEditor.value.setValue(data)
+  }
+  const setWxRendererOptions = (data) => {
+    wxRenderer.value.setOptions(data)
+  }
+  const setCiteStatus = (data) => {
+    citeStatus.value = data
+    localStorage.setItem(`citeStatus`, data)
+  }
+  const setCurrentFont = (data) => {
+    currentFont.value = data
+    localStorage.setItem(`fonts`, data)
+  }
+  const setCurrentSize = (data) => {
+    currentSize.value = data
+    localStorage.setItem(`size`, data)
+  }
+  const setCurrentColor = (data) => {
+    currentColor.value = data
+    localStorage.setItem(`color`, data)
+  }
+  const setCurrentCodeTheme = (data) => {
+    codeTheme.value = data
+    localStorage.setItem(`codeTheme`, data)
+  }
+  const setCurrentLegend = (data) => {
+    legend.value = data
+    localStorage.setItem(`legend`, data)
+  }
+  const setIsMacCodeBlock = (data) => {
+    isMacCodeBlock.value = data
+    localStorage.setItem(`isMacCodeBlock`, data)
+  }
+  const setIsEditOnLeft = (data) => {
+    isEditOnLeft.value = data
+    localStorage.setItem(`isEditOnLeft`, data)
+  }
+  const themeChanged = () => {
+    nightMode.value = !nightMode.value
+    localStorage.setItem(`nightMode`, nightMode.value)
+  }
+  const initEditorState = () => {
+    currentFont.value
+      = localStorage.getItem(`fonts`) || config.builtinFonts[0].value
+    currentColor.value
+      = localStorage.getItem(`color`) || config.colorOption[0].value
+    currentSize.value
+      = localStorage.getItem(`size`) || config.sizeOption[2].value
+    codeTheme.value
+      = localStorage.getItem(`codeTheme`) || config.codeThemeOption[2].value
+    legend.value
+      = localStorage.getItem(`legend`) || config.legendOption[3].value
+    citeStatus.value = localStorage.getItem(`citeStatus`) === `true`
+    nightMode.value = localStorage.getItem(`nightMode`) === `true`
+    isMacCodeBlock.value = !(
+      localStorage.getItem(`isMacCodeBlock`) === `false`
+    )
+    isEditOnLeft.value = !(localStorage.getItem(`isEditOnLeft`) === `false`)
+    wxRenderer.value = new WxRenderer({
+      theme: setColor(currentColor.value),
+      fonts: currentFont.value,
+      size: currentSize.value,
+    })
+  }
+  const initEditorEntity = () => {
+    const editorDom = document.getElementById(`editor`)
+
+    if (!editorDom.value) {
+      editorDom.value
+        = localStorage.getItem(`__editor_content`) || formatDoc(DEFAULT_CONTENT)
+    }
+    editor.value = CodeMirror.fromTextArea(editorDom, {
+      mode: `text/x-markdown`,
+      theme: `xq-light`,
+      lineNumbers: false,
+      lineWrapping: true,
+      styleActiveLine: true,
+      autoCloseBrackets: true,
+      extraKeys: {
+        [`${modPrefix}-F`]: function autoFormat(editor) {
+          const doc = formatDoc(editor.getValue(0))
+          localStorage.setItem(`__editor_content`, doc)
+          editor.setValue(doc)
         },
-      })
-    },
-    initCssEditorEntity() {
-      const cssEditorDom = document.getElementById(`cssEditor`)
+        [`${modPrefix}-B`]: function bold(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`**${selected}**`)
+        },
+        [`${modPrefix}-D`]: function del(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`~~${selected}~~`)
+        },
+        [`${modPrefix}-I`]: function italic(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`*${selected}*`)
+        },
+        [`${modPrefix}-K`]: function italic(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`[${selected}]()`)
+        },
+        [`${modPrefix}-L`]: function code(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`\`${selected}\``)
+        },
+      },
+    })
+  }
+  const initCssEditorEntity = () => {
+    const cssEditorDom = document.getElementById(`cssEditor`)
 
-      if (!cssEditorDom.value) {
-        cssEditorDom.value
-          = localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
-      }
-      this.cssEditor = markRaw(CodeMirror.fromTextArea(cssEditorDom, {
+    if (!cssEditorDom.value) {
+      cssEditorDom.value
+        = localStorage.getItem(`__css_content`) || DEFAULT_CSS_CONTENT
+    }
+    cssEditor.value = markRaw(
+      CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
         theme: `style-mirror`,
         lineNumbers: false,
@@ -164,24 +163,25 @@ export const useStore = defineStore(`store`, {
           },
           [`${modPrefix}-S`]: function save(_editor) {},
         },
-      }))
-    },
-    editorRefresh() {
-      const renderer = this.wxRenderer.getRenderer(this.citeStatus)
-      marked.setOptions({ renderer })
-      let output = marked.parse(this.editor.getValue(0))
+      }),
+    )
+  }
+  const editorRefresh = () => {
+    const renderer = wxRenderer.value.getRenderer(citeStatus.value)
+    marked.setOptions({ renderer })
+    let outputTemp = marked.parse(editor.value.getValue(0))
 
-      // 去除第一行的 margin-top
-      output = output.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-      if (this.citeStatus) {
-        // 引用脚注
-        output += this.wxRenderer.buildFootnotes()
-        // 附加的一些 style
-        output += this.wxRenderer.buildAddition()
-      }
+    // 去除第一行的 margin-top
+    outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+    if (citeStatus.value) {
+      // 引用脚注
+      outputTemp += wxRenderer.value.buildFootnotes()
+      // 附加的一些 style
+      outputTemp += wxRenderer.value.buildAddition()
+    }
 
-      if (this.isMacCodeBlock) {
-        output += `
+    if (isMacCodeBlock.value) {
+      outputTemp += `
           <style>
             .hljs.code__pre::before {
               position: initial;
@@ -208,10 +208,42 @@ export const useStore = defineStore(`store`, {
             }
           </style>
         `
-      }
-      this.output = output
-    },
-  },
+    }
+    output.value = outputTemp
+  }
+
+  return {
+    wxRenderer,
+    output,
+    html,
+    editor,
+    cssEditor,
+    currentFont,
+    currentSize,
+    currentColor,
+    citeStatus,
+    nightMode,
+    codeTheme,
+    legend,
+    isMacCodeBlock,
+    isEditOnLeft,
+    setEditorValue,
+    setCssEditorValue,
+    setWxRendererOptions,
+    setCiteStatus,
+    setCurrentFont,
+    setCurrentSize,
+    setCurrentColor,
+    setCurrentCodeTheme,
+    setCurrentLegend,
+    setIsMacCodeBlock,
+    setIsEditOnLeft,
+    themeChanged,
+    initEditorState,
+    initEditorEntity,
+    initCssEditorEntity,
+    editorRefresh,
+  }
 })
 
 export default createPinia()
