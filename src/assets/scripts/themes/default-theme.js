@@ -15,7 +15,7 @@ export default {
       'margin': `2em auto 1em`,
       'padding': `0 1em`,
       'border-bottom': `2px solid rgba(0, 152, 116, 0.9)`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     // 二级标题样式
@@ -38,7 +38,7 @@ export default {
       'line-height': `1.2`,
       'padding-left': `8px`,
       'border-left': `3px solid rgba(0, 152, 116, 0.9)`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     // 四级标题样式
@@ -53,7 +53,7 @@ export default {
     p: {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
       'text-align': `justify`,
     },
 
@@ -98,25 +98,25 @@ export default {
     ol: {
       'margin-left': `0`,
       'padding-left': `1em`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     ul: {
       'margin-left': `0`,
       'padding-left': `1em`,
       'list-style': `circle`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     footnotes: {
       'margin': `0.5em 8px`,
       'font-size': `80%`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     figure: {
       margin: `1.5em 8px`,
-      color: baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
     hr: {
       'border-style': `solid`,
@@ -133,7 +133,7 @@ export default {
       'text-indent': `-1em`,
       'display': `block`,
       'margin': `0.2em 8px`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     codespan: {
@@ -164,13 +164,13 @@ export default {
       'border-collapse': `collapse`,
       'text-align': `center`,
       'margin': `1em 8px`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     thead: {
       'background': `rgba(0, 0, 0, 0.05)`,
       'font-weight': `bold`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     td: {
@@ -181,7 +181,7 @@ export default {
 
     footnote: {
       'font-size': `12px`,
-      'color': baseColor,
+      'color': 'var(--el-text-color-regular)',
     },
 
     figcaption: {

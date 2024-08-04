@@ -77,13 +77,12 @@ section {
 }
 
 .preview-wrapper {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
-  padding: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
-  display: flex;
-  //word-break: break-all;
+  padding: 0;
   overflow-y: scroll;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
 .main-section {
@@ -104,7 +103,9 @@ section {
   font-size: 14px;
   box-sizing: border-box;
   outline: none;
-  box-shadow: 0 0 60px rgba(0, 0, 0, 0.1);
+  color: var(--el-text-color-regular);
+  background: var(--el-bg-color);
+  box-shadow: var(--el-box-shadow);
 }
 
 .preview table {

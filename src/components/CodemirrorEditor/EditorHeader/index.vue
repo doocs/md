@@ -70,9 +70,6 @@ export default {
     }
   },
   computed: {
-    btnType() {
-      return this.nightMode ? `default` : `primary`
-    },
     ...mapState(useStore, {
       output: state => state.output,
       editor: state => state.editor,
@@ -225,6 +222,12 @@ export default {
           return tempDiv.innerHTML
         }
 
+        // 如果是暗黑模式，复制之前需要先切换到白天模式
+        const isDark = this.nightMode;
+        if (isDark) {
+          this.themeChanged()
+        }
+
         solveWeChatImage()
 
         const clipboardDiv = document.getElementById(`output`)
@@ -239,6 +242,8 @@ export default {
           )
           // 公众号不支持 position， 转换为等价的 translateY
           .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
+          // 适配主题中的颜色变量
+          .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
         clipboardDiv.focus()
         window.getSelection().removeAllRanges()
         const range = document.createRange()
@@ -249,6 +254,11 @@ export default {
         document.execCommand(`copy`)
         window.getSelection().removeAllRanges()
         clipboardDiv.innerHTML = this.output
+
+        if (isDark) {
+          this.themeChanged()
+        }
+
         // 输出提示
         this.$notify({
           showClose: true,
@@ -257,6 +267,7 @@ export default {
           duration: 1600,
           type: `success`,
         })
+
         this.$emit(`refresh`)
         this.$emit(`endCopy`)
       }, 350)
@@ -505,10 +516,10 @@ export default {
       </el-dropdown>
       <HelpDropdown />
     </el-space>
-    <el-button plain :type="btnType" @click="copy">
+    <el-button plain type="primary" @click="copy">
       复制
     </el-button>
-    <el-button plain :type="btnType" @click="prePost">
+    <el-button plain type="primary" @click="prePost">
       发布
     </el-button>
 

@@ -2,6 +2,7 @@ import { markRaw, ref } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
+import { useDark, useToggle } from '@vueuse/core'
 
 import config from '../assets/scripts/config'
 import WxRenderer from '../assets/scripts/renderers/wx-renderer'
@@ -14,6 +15,9 @@ const modPrefix
   = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
 export const useStore = defineStore(`store`, () => {
+  const isDark = useDark()
+  const toggleDark = useToggle(isDark)
+
   const wxRenderer = ref(null)
   const output = ref(``)
   const html = ref(``)
@@ -23,7 +27,7 @@ export const useStore = defineStore(`store`, () => {
   const currentSize = ref(``)
   const currentColor = ref(``)
   const citeStatus = ref(false)
-  const nightMode = ref(false)
+  const nightMode = ref(isDark.value)
   const codeTheme = ref(config.codeThemeOption[2].value)
   const legend = ref(config.legendOption[3].value)
   const isMacCodeBlock = ref(true)
@@ -71,6 +75,7 @@ export const useStore = defineStore(`store`, () => {
     localStorage.setItem(`isEditOnLeft`, data)
   }
   const themeChanged = () => {
+    toggleDark()
     nightMode.value = !nightMode.value
     localStorage.setItem(`nightMode`, nightMode.value)
   }

@@ -22,11 +22,7 @@ export default {
     }
   },
   computed: {
-    btnType() {
-      return this.nightMode ? `default` : `primary`
-    },
     ...mapState(useStore, {
-      nightMode: state => state.nightMode,
       editor: state => state.editor,
     }),
   },
@@ -100,10 +96,10 @@ export default {
     </table>
     <template #footer>
       <div class="dialog-footer">
-        <el-button :type="btnType" plain @click="$emit('close')">
+        <el-button plain @click="$emit('close')">
           取 消
         </el-button>
-        <el-button :type="btnType" plain @click="insertTable">
+        <el-button type="primary" plain @click="insertTable">
           确 定
         </el-button>
       </div>
@@ -124,9 +120,5 @@ export default {
 
 .input-table :deep(.el-input__inner) {
   border-radius: 0;
-}
-
-.head-style :deep(.el-input__wrapper) {
-  background-color: #f2f2f2;
 }
 </style>
