@@ -64,7 +64,6 @@ export default {
       cssEditor: state => state.cssEditor,
       currentSize: state => state.currentSize,
       currentColor: state => state.currentColor,
-      nightMode: state => state.nightMode,
       codeTheme: state => state.codeTheme,
     }),
   },
@@ -533,7 +532,7 @@ export default {
 </script>
 
 <template>
-  <div class="container" :class="{ container_night: nightMode }">
+  <div class="container">
     <el-container>
       <el-header class="editor__header">
         <EditorHeader
@@ -573,17 +572,14 @@ export default {
             ref="preview"
             :span="showCssEditor ? 8 : 12"
             class="preview-wrapper"
-            :class="{
-              'preview-wrapper_night': nightMode && isCoping,
-            }"
           >
             <section
               id="output-wrapper"
-              :class="{ output_night: nightMode && !backLight }"
+              :class="{ output_night: !backLight }"
             >
               <div class="preview">
                 <section id="output" v-html="output" />
-                <div v-if="nightMode && isCoping" class="loading-mask">
+                <div v-if="isCoping" class="loading-mask">
                   <div class="loading__img" />
                   <span>正在生成</span>
                 </div>
@@ -651,16 +647,6 @@ export default {
   height: 100%;
 }
 
-.preview-wrapper_night {
-  overflow-y: inherit;
-  position: relative;
-  left: -3px;
-
-  .preview {
-    background-color: #fff;
-  }
-}
-
 #output-wrapper {
   position: relative;
   user-select: text;
@@ -675,8 +661,8 @@ export default {
   height: 101%;
   padding-top: 1px;
   font-size: 15px;
-  color: gray;
-  background-color: #1e1e1e;
+  color: var(--el-text-color-regular);
+  background-color: var(--el-bg-color);
 
   .loading__img {
     position: absolute;

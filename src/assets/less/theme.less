@@ -11,125 +11,127 @@
 @nightButtonHoverColor: #84868b;
 @nightLineColor: #84868b;
 
-.container_night {
-  background-color: @nightBgColor;
-
-  .el-main {
+.dark {
+  .container {
     background-color: @nightBgColor;
-  }
 
-  .CodeMirror {
-    caret-color: @nightFontColor;
-    color: @nightFontColor;
-    background-color: @nightCodeMirrorColor;
-    box-shadow: inset 0 0 0 1px rgba(100, 37, 37, 0.102);
-  }
-
-  .output_night {
-    .preview {
-      background-color: @nightPreviewColor;
-      box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
+    .el-main {
+      background-color: @nightBgColor;
     }
 
-    .preview-wrapper {
+    .CodeMirror {
+      caret-color: @nightFontColor;
+      color: @nightFontColor;
       background-color: @nightCodeMirrorColor;
-      box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+      box-shadow: inset 0 0 0 1px rgba(100, 37, 37, 0.102);
     }
 
-    .code-snippet__fix {
-      background-color: rgb(238, 238, 238);
+    .output_night {
+      .preview {
+        background-color: @nightPreviewColor;
+        box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
+      }
+
+      .preview-wrapper {
+        background-color: @nightCodeMirrorColor;
+        box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+      }
+
+      .code-snippet__fix {
+        background-color: rgb(238, 238, 238);
+      }
     }
-  }
 
-  .cm-s-style-mirror .CodeMirror-matchingbracket {
-    color: @nightWhiteColor !important;
-    background: rgb(30, 30, 30) !important;
-  }
+    .cm-s-style-mirror .CodeMirror-matchingbracket {
+      color: @nightWhiteColor !important;
+      background: rgb(30, 30, 30) !important;
+    }
 
-  .cm-s-xq-light span.cm-variable-2,
-  .cm-s-style-mirror span.cm-tag {
-    color: @nightFontColor;
-  }
+    .cm-s-xq-light span.cm-variable-2,
+    .cm-s-style-mirror span.cm-tag {
+      color: @nightFontColor;
+    }
 
-  .cm-s-xq-light .CodeMirror-activeline-background {
-    background-color: transparent;
-  }
+    .cm-s-xq-light .CodeMirror-activeline-background {
+      background-color: transparent;
+    }
 
-  .cm-s-xq-light span.cm-string {
-    color: @nightLinkColor;
-  }
+    .cm-s-xq-light span.cm-string {
+      color: @nightLinkColor;
+    }
 
-  .cm-s-xq-light span.cm-link {
-    color: @nightLinkTextColor;
-  }
+    .cm-s-xq-light span.cm-link {
+      color: @nightLinkTextColor;
+    }
 
-  .editor__header {
-    background-color: @nightHeaderColor;
-  }
+    .editor__header {
+      background-color: @nightHeaderColor;
+    }
 
-  // .el-button {
-  //   color: @nightWhiteColor;
-  //   background-color: @nightCodeMirrorColor;
-  //   border: 1px solid transparent;
-  // }
+    // .el-button {
+    //   color: @nightWhiteColor;
+    //   background-color: @nightCodeMirrorColor;
+    //   border: 1px solid transparent;
+    // }
 
-  // .el-button.is-plain:focus,
-  // .el-button.is-plain:hover {
-  //   background: @nightButtonBg;
-  //   color: @nightWhiteColor;
-  //   border: 1px solid @nightWhiteColor;
+    // .el-button.is-plain:focus,
+    // .el-button.is-plain:hover {
+    //   background: @nightButtonBg;
+    //   color: @nightWhiteColor;
+    //   border: 1px solid @nightWhiteColor;
 
-  //   i {
-  //     color: @nightWhiteColor;
-  //   }
-  // }
+    //   i {
+    //     color: @nightWhiteColor;
+    //   }
+    // }
 
-  // .insert__dialog,
-  // .about__dialog,
-  // .reset__dialog,
-  // .upload__dialog {
-  //   .el-dialog {
-  //     background-color: @nightBgColor;
-  //   }
+    // .insert__dialog,
+    // .about__dialog,
+    // .reset__dialog,
+    // .upload__dialog {
+    //   .el-dialog {
+    //     background-color: @nightBgColor;
+    //   }
 
-  //   .el-dialog__body {
-  //     color: @nightWhiteColor;
-  //   }
+    //   .el-dialog__body {
+    //     color: @nightWhiteColor;
+    //   }
 
-  //   .el-dialog__title,
-  //   .el-form-item__label {
-  //     color: @nightWhiteColor;
-  //   }
+    //   .el-dialog__title,
+    //   .el-form-item__label {
+    //     color: @nightWhiteColor;
+    //   }
 
-  //   .el-tabs__item {
-  //     color: @nightActiveCodeMirrorColor;
-  //   }
+    //   .el-tabs__item {
+    //     color: @nightActiveCodeMirrorColor;
+    //   }
 
-  //   .el-tabs__nav-wrap::after {
-  //     background-color: @nightLineColor;
-  //   }
+    //   .el-tabs__nav-wrap::after {
+    //     background-color: @nightLineColor;
+    //   }
 
-  //   .is-active {
-  //     color: @nightWhiteColor;
-  //   }
+    //   .is-active {
+    //     color: @nightWhiteColor;
+    //   }
 
-  //   .el-upload-dragger {
-  //     background-color: @nightButtonBg;
-  //   }
-  // }
+    //   .el-upload-dragger {
+    //     background-color: @nightButtonBg;
+    //   }
+    // }
 
-  // :deep(
-  //     .el-icon-upload,
-  //     .el-icon-download,
-  //     .el-icon-refresh,
-  //     .el-icon-s-grid,
-  //     .el-icon-document
-  //   ) {
-  //   color: @nightWhiteColor;
-  // }
+    // :deep(
+    //     .el-icon-upload,
+    //     .el-icon-download,
+    //     .el-icon-refresh,
+    //     .el-icon-s-grid,
+    //     .el-icon-document
+    //   ) {
+    //   color: @nightWhiteColor;
+    // }
 
-  ::-webkit-scrollbar {
-    background-color: @nightCodeMirrorColor;
+    ::-webkit-scrollbar {
+      background-color: @nightCodeMirrorColor;
+    }
   }
 }
 
