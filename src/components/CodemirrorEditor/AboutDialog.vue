@@ -18,7 +18,7 @@ function onRedirect(url) {
     title="关于"
     class="about__dialog"
     :model-value="props.visible"
-    width="30%"
+    width="380"
     center
     @close="$emit('close')"
   >
@@ -48,9 +48,3 @@ function onRedirect(url) {
     </template>
   </el-dialog>
 </template>
-
-<style lang="less" scoped>
-:deep(.el-dialog) {
-  min-width: 420px;
-}
-</style>

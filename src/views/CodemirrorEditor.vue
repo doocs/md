@@ -551,8 +551,8 @@ export default {
           @end-copy="endCopy"
         />
       </el-header>
-      <el-main class="main-body">
-        <el-row class="main-section">
+      <el-main class="container-main">
+        <el-row class="container-main-section">
           <el-col
             ref="codeMirrorWrapper"
             :style="{ order: store.isEditOnLeft ? 0 : 1 }"
@@ -573,7 +573,7 @@ export default {
             :span="showCssEditor ? 8 : 12"
             class="preview-wrapper"
           >
-            <section
+            <div
               id="output-wrapper"
               :class="{ output_night: !backLight }"
             >
@@ -584,7 +584,7 @@ export default {
                   <span>正在生成</span>
                 </div>
               </div>
-            </section>
+            </div>
           </el-col>
           <CssEditor :show-css-editor="showCssEditor" />
         </el-row>
@@ -621,35 +621,23 @@ export default {
 </style>
 
 <style lang="less" scoped>
-.editor__header {
-  padding: 0;
-}
-
-.main-body {
-  padding-top: 12px;
-  overflow: hidden;
-}
-
-.el-main {
-  transition: all 0.3s;
-  padding: 0;
-  margin: 20px;
-  margin-top: 0;
-}
-
 .container {
-  // 覆盖默认设定
-  min-width: 100%;
-  transition: all 0.3s;
+  height: 100%;
 }
 
-.textarea-wrapper {
+.container-main {
+  padding: 20px;
+  padding-top: 0;
+}
+
+.container-main-section {
   height: 100%;
 }
 
 #output-wrapper {
   position: relative;
   user-select: text;
+  height: 100%;
 }
 
 .loading-mask {

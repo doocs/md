@@ -4,6 +4,13 @@
   padding: 0;
 }
 
+html,
+body {
+  height: 100%;
+  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue',
+    sans-serif;
+}
+
 input,
 button,
 textarea {
@@ -23,21 +30,13 @@ em {
   font-style: normal !important;
 }
 
-html,
-body {
+section {
   height: 100%;
-  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue',
-    sans-serif;
 }
+
 
 .el-message__icon {
   display: none;
-}
-
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .web-title {
@@ -51,21 +50,11 @@ body {
 }
 
 #editor {
-  height: 100%;
   display: block;
-  border: none;
+  height: 100%;
   width: 100%;
   padding: 10px;
-}
-
-section {
-  height: 100%;
-}
-
-.main-body {
-  display: flex;
-  flex-direction: column;
-  padding-top: 0;
+  border: none;
 }
 
 .ctrl {
@@ -85,11 +74,6 @@ section {
   box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
 }
 
-.main-section {
-  display: flex;
-  height: 100%;
-}
-
 .hint {
   opacity: 0.6;
   margin: 20px 0;
@@ -104,7 +88,6 @@ section {
   box-sizing: border-box;
   outline: none;
   color: var(--el-text-color-regular);
-  background: var(--el-bg-color);
   box-shadow: var(--el-box-shadow);
 }
 

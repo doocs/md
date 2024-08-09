@@ -1,25 +1,23 @@
-<script>
-export default {
-  props: {
-    showResetConfirm: {
-      type: Boolean,
-      default: false,
-    },
+<script setup>
+const props = defineProps({
+  showResetConfirm: {
+    type: Boolean,
+    default: false,
   },
-  emits: [`close`, `confirm`],
-}
+})
+defineEmits(`close`, `confirm`)
 </script>
 
 <template>
   <el-dialog
     title="提示"
     class="reset__dialog"
-    width="30%"
-    :model-value="showResetConfirm"
+    width="380"
+    :model-value="props.showResetConfirm"
     center
     @close="$emit('close')"
   >
-    <div style="text-align: center">
+    <div class="text-center">
       此操作将丢失本地自定义样式，是否继续?
     </div>
     <template #footer>
@@ -32,9 +30,3 @@ export default {
     </template>
   </el-dialog>
 </template>
-
-<style lang="less" scoped>
-:deep(.el-dialog) {
-  min-width: 440px;
-}
-</style>

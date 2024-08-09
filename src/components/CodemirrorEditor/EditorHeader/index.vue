@@ -223,7 +223,7 @@ export default {
         }
 
         // 如果是暗黑模式，复制之前需要先切换到白天模式
-        const isDark = this.nightMode;
+        const isDark = this.nightMode
         if (isDark) {
           this.themeChanged()
         }
@@ -332,7 +332,7 @@ export default {
 </script>
 
 <template>
-  <el-container class="is-dark header-container">
+  <div class="header-container">
     <el-space class="dropdowns flex-auto" size="large">
       <el-dropdown>
         <span class="el-dropdown-link">
@@ -481,7 +481,7 @@ export default {
                     @change="colorChanged"
                   />
                 </template>
-                <div class="flex w-full">
+                <div class="w-full flex">
                   <el-icon class="opacity-0">
                     <ElIconCheck />
                   </el-icon>
@@ -533,38 +533,21 @@ export default {
       @confirm="confirmReset"
       @close="cancelReset"
     />
-  </el-container>
+  </div>
 </template>
 
 <style lang="less" scoped>
 .header-container {
-  padding: 10px 20px;
+  display: flex;
   align-items: center;
+  height: 100%;
+  padding: 0 20px;
 }
 
 .el-dropdown-link {
   display: flex;
   align-items: center;
   cursor: pointer;
-}
-
-.padding-left-3 {
-  padding-left: 3em;
-}
-
-// 添加边距影响了 divided 行的移入效果，此处做一个兼容处理
-.el-dropdown-menu__item--divided.padding-left-3 {
-  position: relative;
-
-  &::after {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 3em;
-    height: 6px;
-    background: white;
-  }
 }
 
 .format-list {
@@ -577,13 +560,5 @@ export default {
     float: right;
     color: #666;
   }
-}
-
-// .md-dropdown-item&:extend(.flex) {
-.md-dropdown-item {
-  // .flex;
-  // .leading-8;
-
-  line-height: 20em;
 }
 </style>
