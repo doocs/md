@@ -1,51 +1,46 @@
-<script>
-import { mapActions, mapState } from 'pinia'
+<script setup>
+import { ref } from 'vue'
 import { useStore } from '@/stores'
-
-import config from '@/assets/scripts/config'
 import { createTable } from '@/assets/scripts/util'
 
-export default {
-  props: {
-    visible: {
-      type: Boolean,
-      default: false,
-    },
+const props = defineProps({
+  visible: {
+    type: Boolean,
+    default: false,
   },
-  emits: [`close`, `formatContent`],
-  data() {
-    return {
-      config,
-      rowNum: 3,
-      colNum: 3,
-      tableData: {},
-    }
-  },
-  computed: {
-    ...mapState(useStore, {
-      editor: state => state.editor,
-    }),
-  },
-  methods: {
-    // 插入表格
-    insertTable() {
-      // const cursor = this.editor.getCursor()
-      const table = createTable({
-        data: this.tableData,
-        rows: this.rowNum,
-        cols: this.colNum,
-      })
+})
 
-      this.tableData = {}
-      this.rowNum = 3
-      this.colNum = 3
-      this.editor.replaceSelection(`\n${table}\n`, `end`)
-      this.$emit(`close`)
-      this.editorRefresh()
-      this.$emit(`formatContent`)
-    },
-    ...mapActions(useStore, [`editorRefresh`]),
-  },
+const emit = defineEmits([`close`])
+
+const rowNum = ref(3)
+const colNum = ref(3)
+const tableData = ref({})
+
+const store = useStore()
+
+const { formatContent } = store
+
+function resetVal() {
+  rowNum.value = 3
+  colNum.value = 3
+  tableData.value = {}
+}
+
+// 插入表格
+function insertTable() {
+  const table = createTable({
+    rows: rowNum.value,
+    cols: colNum.value,
+    data: tableData.value,
+  })
+
+  store.editor.replaceSelection(`\n${table}\n`, `end`)
+  store.editorRefresh()
+
+  resetVal()
+
+  formatContent()
+  emit(`close`)
 }
 </script>
 
@@ -53,8 +48,7 @@ export default {
   <el-dialog
     title="插入表格"
     class="insert__dialog"
-    :model-value="visible"
-    border
+    :model-value="props.visible"
     @close="$emit('close')"
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">

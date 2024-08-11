@@ -1,41 +1,44 @@
-<script>
-export default {
-  name: `StyleOptionMenu`,
-  props: {
-    label: {
-      type: String,
-      required: true,
-    },
-    options: {
-      type: Array,
-      required: true,
-    },
-    current: {
-      type: String,
-      required: true,
-    },
-    charge: {
-      type: Function,
-      required: true,
-    },
+<script setup>
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
   },
-  setup(props) {
-    // 暂时以别名形式使用，后续需要修改
-    const title = props.label
-    return {
-      title,
-    }
+  options: {
+    type: Array,
+    required: true,
   },
+  current: {
+    type: String,
+    required: true,
+  },
+  change: {
+    type: Function,
+    required: true,
+  },
+})
+
+function setStyle(title, value) {
+  switch (title) {
+    case `字体`:
+      return { fontFamily: value }
+    case `字号`:
+      return { fontSize: value }
+    case `颜色`:
+      return { color: value }
+    default:
+      return {}
+  }
 }
 </script>
 
 <template>
-  <el-dropdown placement="right" class="style-option-menu" style="margin: 0;">
+  <el-dropdown placement="right" class="style-option-menu">
     <div class="el-dropdown-link leading-8 flex items-center">
       <el-icon class="opacity-0">
         <ElIconCheck />
       </el-icon>
-      {{ title }}
+      {{ props.title }}
       <el-icon class="ml-auto">
         <ElIconArrowRight />
       </el-icon>
@@ -43,27 +46,18 @@ export default {
     <template #dropdown>
       <el-dropdown-menu style="width: 200px">
         <el-dropdown-item
-          v-for="{ value, label, desc } in options"
+          v-for="{ label, value, desc } in options"
           :key="value"
           :label="label"
           :model-value="value"
           class="leading-8"
-          @click="charge(value)"
+          @click="change(value)"
         >
           <el-icon :style="{ opacity: +(current === value) }">
             <ElIconCheck />
           </el-icon>
           {{ label }}
-          <span v-if="title === '字体'" class="ml-auto" :style="{ fontFamily: value }">
-            {{ desc }}
-          </span>
-          <span v-else-if="title === '字号'" class="ml-auto" :style="{ fontSize: value }">
-            {{ desc }}
-          </span>
-          <span v-else-if="title === '颜色'" class="ml-auto" :style="{ color: value }">
-            {{ desc }}
-          </span>
-          <span v-else class="ml-auto">
+          <span class="ml-auto" :style="setStyle(title, value)">
             {{ desc }}
           </span>
         </el-dropdown-item>
@@ -80,11 +74,5 @@ export default {
   .el-dropdown-link {
     width: 100%;
   }
-}
-
-.select-item-right {
-  float: right;
-  color: #8492a6;
-  font-size: 13px;
 }
 </style>

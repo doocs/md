@@ -1,4 +1,5 @@
 export default {
+  prefix: `MD`,
   builtinFonts: [
     {
       label: `无衬线`,
@@ -115,8 +116,4 @@ export default {
       desc: ``,
     },
   ],
-  form: {
-    rows: 1,
-    cols: 1,
-  },
 }

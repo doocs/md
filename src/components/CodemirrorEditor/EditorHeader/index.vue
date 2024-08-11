@@ -1,376 +1,208 @@
-<script>
-import { nextTick } from 'vue'
-import { mapActions, mapState } from 'pinia'
+<script setup>
+import { nextTick, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ElNotification } from 'element-plus'
+
 import ResetDialog from './ResetDialog.vue'
 import StyleOptionMenu from './StyleOptionMenu.vue'
-import PostInfoDialog from './PostInfoDialog.vue'
+import PostInfo from './PostInfo.vue'
 import HelpDropdown from './HelpDropdown.vue'
+import FileDropdown from './FileDropdown.vue'
+
+import { mergeCss, solveWeChatImage } from '@/assets/scripts/converter'
+import config from '@/config'
 import { useStore } from '@/stores'
 
-import { setColorWithCustomTemplate, setFontSize } from '@/assets/scripts/util'
-import { mergeCss, solveWeChatImage } from '@/assets/scripts/converter'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import config from '@/assets/scripts/config'
+const emit = defineEmits([
+  `addFormat`,
+  `formatContent`,
+  `startCopy`,
+  `endCopy`,
+  `showCssEditor`,
+  `showDialogUploadImg`,
+  `showDialogForm`,
+])
 
-export default {
-  name: `EditorHeader`,
-  components: {
-    PostInfoDialog,
-    StyleOptionMenu,
-    ResetDialog,
-    HelpDropdown,
+const formatItems = [
+  {
+    label: `加粗`,
+    kbd: `Ctrl/Command + B`,
+    emitArgs: [`addFormat`, `**`],
   },
-  emits: [`refresh`, `startCopy`, `endCopy`, `showCssEditor`, `cssChanged`, `importMd`, `download`, `export`, `showDialogUploadImg`, `showDialogForm`, `showAboutDialog`],
-  data() {
-    return {
-      config,
-      citeStatus: false,
-      isMacCodeBlock: true,
-      isEditOnLeft: true,
-      showResetConfirm: false,
-      selectFont: ``,
-      selectSize: ``,
-      selectColor: ``,
-      selectCodeTheme: config.codeThemeOption[2].value,
-      selectLegend: ``,
-      form: {
-        dialogVisible: false,
-        title: ``,
-        desc: ``,
-        thumb: ``,
-        content: ``,
-      },
-      formatItems: [
-        {
-          label: `加粗`,
-          kbd: `Ctrl/Command + B`,
-          emitArgs: [`addFormat`, `**`],
-        },
-        {
-          label: `斜体`,
-          kbd: `Ctrl/Command + I`,
-          emitArgs: [`addFormat`, `*`],
-        },
-        {
-          label: `删除线`,
-          kbd: `Ctrl/Command + D`,
-          emitArgs: [`addFormat`, `~~`],
-        },
-        {
-          label: `超链接`,
-          kbd: `Ctrl/Command + K`,
-          emitArgs: [`addFormat`, `[`, `]()`],
-        },
-        {
-          label: `格式化`,
-          kbd: `Ctrl/Command + F`,
-          emitArgs: [`formatContent`],
-        },
-      ],
+  {
+    label: `斜体`,
+    kbd: `Ctrl/Command + I`,
+    emitArgs: [`addFormat`, `*`],
+  },
+  {
+    label: `删除线`,
+    kbd: `Ctrl/Command + D`,
+    emitArgs: [`addFormat`, `~~`],
+  },
+  {
+    label: `超链接`,
+    kbd: `Ctrl/Command + K`,
+    emitArgs: [`addFormat`, `[`, `]()`],
+  },
+  {
+    label: `格式化`,
+    kbd: `Ctrl/Command + F`,
+    emitArgs: [`formatContent`],
+  },
+]
+
+const store = useStore()
+
+const {
+  fontFamily,
+  fontSize,
+  fontColor,
+  codeBlockTheme,
+  legend,
+  isDark,
+  isCiteStatus,
+  isMacCodeBlock,
+  output,
+  cssEditor,
+  editor,
+} = storeToRefs(store)
+
+const {
+  toggleDark,
+  resetStyle,
+  editorRefresh,
+
+  fontChanged,
+  sizeChanged,
+  colorChanged,
+  codeBlockThemeChanged,
+  legendChanged,
+  macCodeBlockChanged,
+  citeStatusChanged,
+} = store
+
+const colorPicker = ref(null)
+
+function showPicker() {
+  colorPicker.value.show()
+}
+
+// 复制到微信公众号
+function copy() {
+  emit(`startCopy`)
+  setTimeout(() => {
+    function modifyHtmlStructure(htmlString) {
+      // 创建一个 div 元素来暂存原始 HTML 字符串
+      const tempDiv = document.createElement(`div`)
+      tempDiv.innerHTML = htmlString
+
+      const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
+
+      originalItems.forEach((originalItem) => {
+        originalItem.parentElement.insertAdjacentElement(
+          `afterend`,
+          originalItem,
+        )
+      })
+
+      // 返回修改后的 HTML 字符串
+      return tempDiv.innerHTML
     }
-  },
-  computed: {
-    ...mapState(useStore, {
-      output: state => state.output,
-      editor: state => state.editor,
-      cssEditor: state => state.cssEditor,
-      currentFont: state => state.currentFont,
-      currentSize: state => state.currentSize,
-      currentColor: state => state.currentColor,
-      codeTheme: state => state.codeTheme,
-      legend: state => state.legend,
-      nightMode: state => state.nightMode,
-      currentCiteStatus: state => state.citeStatus,
-      currentIsMacCodeBlock: state => state.isMacCodeBlock,
-      currentIsEditOnLeft: state => state.isEditOnLeft,
-    }),
-  },
-  mounted() {
-    this.selectFont = this.currentFont
-    this.selectSize = this.currentSize
-    this.selectColor = this.currentColor
-    this.selectCodeTheme = this.codeTheme
-    this.selectLegend = this.legend
-    this.citeStatus = this.currentCiteStatus
-    this.isMacCodeBlock = this.currentIsMacCodeBlock
-    this.isEditOnLeft = this.currentIsEditOnLeft
 
-    const fileInput = this.$refs.fileInput
-    fileInput.onchange = () => {
-      const file = fileInput.files[0]
-      if (file === null) {
-        return
-      }
-      const read = new FileReader()
-      read.readAsText(file)
-      read.onload = () => {
-        this.$emit(`importMd`, read.result)
-      }
+    // 如果是深色模式，复制之前需要先切换到白天模式
+    const isBeforeDark = isDark.value
+    if (isBeforeDark) {
+      toggleDark()
     }
-  },
-  methods: {
-    refClick() {
-      this.$refs.fileInput.click()
-    },
-    showPicker() {
-      this.$refs.colorPicker.show()
-    },
-    prePost() {
-      let auto = {}
-      try {
-        auto = {
-          thumb: document.querySelector(`#output img`).src,
-          title: [1, 2, 3, 4, 5, 6]
-            .map(h => document.querySelector(`#output h${h}`))
-            .filter(h => h)[0].textContent,
-          desc: document.querySelector(`#output p`).textContent,
-          content: this.output,
-        }
-      }
-      catch (error) {
-        console.log(`error`, error)
-      }
-      this.form = {
-        dialogVisible: true,
-        ...auto,
-        auto,
-      }
-    },
-    post() {
-      this.form.dialogVisible = false
-      // 使用 window.$syncer 可以检测是否安装插件
-      window.syncPost({
-        title: this.form.title || this.form.auto.title,
-        desc: this.form.desc || this.form.auto.desc,
-        content: this.form.content || this.form.auto.content,
-        thumb: this.form.thumb || this.form.auto.thumb,
-      })
-    },
-    fontChanged(fonts) {
-      this.setWxRendererOptions({
-        fonts,
-      })
-      this.setCurrentFont(fonts)
-      this.selectFont = fonts
-      this.$emit(`refresh`)
-    },
-    sizeChanged(size) {
-      let theme = setFontSize(size.replace(`px`, ``))
-      theme = setColorWithCustomTemplate(theme, this.currentColor)
-      this.setWxRendererOptions({
-        size,
-        theme,
-      })
-      this.setCurrentSize(size)
-      this.selectSize = size
-      this.$emit(`refresh`)
-    },
-    colorChanged(color) {
-      let theme = setFontSize(this.currentSize.replace(`px`, ``))
 
-      theme = setColorWithCustomTemplate(theme, color)
-      this.setWxRendererOptions({
-        theme,
-      })
-      this.setCurrentColor(color)
-      this.selectColor = color
-      this.$emit(`refresh`)
-    },
-    codeThemeChanged(theme) {
-      this.setCurrentCodeTheme(theme)
-      this.selectCodeTheme = theme
-      this.$emit(`refresh`)
-    },
-    legendChanged(legend) {
-      this.setCurrentLegend(legend)
-      this.selectLegend = legend
-      this.$emit(`refresh`)
-    },
-    statusChanged() {
-      this.citeStatus = !this.citeStatus
-      this.setCiteStatus(this.citeStatus)
-      this.$emit(`refresh`)
-    },
-    codeBlockChanged() {
-      this.isMacCodeBlock = !this.isMacCodeBlock
-      this.setIsMacCodeBlock(this.isMacCodeBlock)
-      this.$emit(`refresh`)
-    },
-    isEditOnLeftChanged() {
-      this.isEditOnLeft = !this.isEditOnLeft
-      this.setIsEditOnLeft(this.isEditOnLeft)
-    },
-    // 复制到微信公众号
-    copy() {
-      this.$emit(`startCopy`)
-      setTimeout(() => {
-        function modifyHtmlStructure(htmlString) {
-          // 创建一个 div 元素来暂存原始 HTML 字符串
-          const tempDiv = document.createElement(`div`)
-          tempDiv.innerHTML = htmlString
+    solveWeChatImage()
 
-          const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
+    const clipboardDiv = document.getElementById(`output`)
+    clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
+    clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
 
-          originalItems.forEach((originalItem) => {
-            originalItem.parentElement.insertAdjacentElement(
-              `afterend`,
-              originalItem,
-            )
-          })
+    // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
+    clipboardDiv.innerHTML = clipboardDiv.innerHTML
+      .replace(
+        /class="base"( style="display: inline")*/g,
+        `class="base" style="display: inline"`,
+      )
+      // 公众号不支持 position， 转换为等价的 translateY
+      .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
+      // 适配主题中的颜色变量
+      .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+    clipboardDiv.focus()
+    window.getSelection().removeAllRanges()
+    const range = document.createRange()
 
-          // 返回修改后的 HTML 字符串
-          return tempDiv.innerHTML
-        }
+    range.setStartBefore(clipboardDiv.firstChild)
+    range.setEndAfter(clipboardDiv.lastChild)
+    window.getSelection().addRange(range)
+    document.execCommand(`copy`)
+    window.getSelection().removeAllRanges()
+    clipboardDiv.innerHTML = output.value
 
-        // 如果是暗黑模式，复制之前需要先切换到白天模式
-        const isDark = this.nightMode
-        if (isDark) {
-          this.themeChanged()
-        }
+    if (isBeforeDark) {
+      toggleDark()
+    }
 
-        solveWeChatImage()
+    // 输出提示
+    ElNotification({
+      showClose: true,
+      message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
+      offset: 80,
+      duration: 1600,
+      type: `success`,
+    })
 
-        const clipboardDiv = document.getElementById(`output`)
-        clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
-        clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
+    editorRefresh()
+    emit(`endCopy`)
+  }, 350)
+}
 
-        // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
-        clipboardDiv.innerHTML = clipboardDiv.innerHTML
-          .replace(
-            /class="base"( style="display: inline")*/g,
-            `class="base" style="display: inline"`,
-          )
-          // 公众号不支持 position， 转换为等价的 translateY
-          .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
-          // 适配主题中的颜色变量
-          .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
-        clipboardDiv.focus()
-        window.getSelection().removeAllRanges()
-        const range = document.createRange()
+// 自定义CSS样式
+function customStyle() {
+  emit(`showCssEditor`)
+  nextTick(() => {
+    if (!cssEditor.value) {
+      cssEditor.value.refresh()
+    }
+  })
+  setTimeout(() => {
+    cssEditor.value.refresh()
+  }, 50)
+}
 
-        range.setStartBefore(clipboardDiv.firstChild)
-        range.setEndAfter(clipboardDiv.lastChild)
-        window.getSelection().addRange(range)
-        document.execCommand(`copy`)
-        window.getSelection().removeAllRanges()
-        clipboardDiv.innerHTML = this.output
+const showResetConfirm = ref(false)
 
-        if (isDark) {
-          this.themeChanged()
-        }
+// 重置样式
+function confirmReset() {
+  showResetConfirm.value = false
+  resetStyle()
+  ElNotification({
+    showClose: true,
+    message: `已重置样式`,
+    offset: 80,
+    duration: 1600,
+    type: `success`,
+  })
+}
 
-        // 输出提示
-        this.$notify({
-          showClose: true,
-          message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
-          offset: 80,
-          duration: 1600,
-          type: `success`,
-        })
-
-        this.$emit(`refresh`)
-        this.$emit(`endCopy`)
-      }, 350)
-    },
-    // 自定义CSS样式
-    async customStyle() {
-      this.$emit(`showCssEditor`)
-      nextTick(() => {
-        if (!this.cssEditor) {
-          this.cssEditor.refresh()
-        }
-      })
-      setTimeout(() => {
-        this.cssEditor.refresh()
-      }, 50)
-
-      const flag = localStorage.getItem(`__css_content`)
-      if (!flag) {
-        this.setCssEditorValue(DEFAULT_CSS_CONTENT)
-      }
-    },
-    // 重置样式
-    confirmReset() {
-      this.showResetConfirm = false
-      localStorage.clear()
-      this.cssEditor.setValue(DEFAULT_CSS_CONTENT)
-      this.citeStatus = false
-      this.statusChanged(false)
-      this.fontChanged(this.config.builtinFonts[0].value)
-      this.colorChanged(this.config.colorOption[0].value)
-      this.sizeChanged(this.config.sizeOption[2].value)
-      this.codeThemeChanged(this.config.codeThemeOption[2].value)
-      this.legendChanged(this.config.legendOption[3].value)
-      this.$emit(`cssChanged`)
-      this.selectFont = this.currentFont
-      this.selectSize = this.currentSize
-      this.selectColor = this.currentColor
-      this.selectCodeTheme = this.codeTheme
-
-      this.isMacCodeBlock = false
-      this.codeBlockChanged()
-    },
-    cancelReset() {
-      this.showResetConfirm = false
-      this.editor.focus()
-    },
-    ...mapActions(useStore, [
-      `setCurrentColor`,
-      `setCiteStatus`,
-      `themeChanged`,
-      `setCurrentFont`,
-      `setCurrentSize`,
-      `setCssEditorValue`,
-      `setCurrentCodeTheme`,
-      `setCurrentLegend`,
-      `setWxRendererOptions`,
-      `setIsMacCodeBlock`,
-      `setIsEditOnLeft`,
-    ]),
-  },
+function cancelReset() {
+  showResetConfirm.value = false
+  editor.value.focus()
 }
 </script>
 
 <template>
   <div class="header-container">
     <el-space class="dropdowns flex-auto" size="large">
+      <FileDropdown />
       <el-dropdown>
         <span class="el-dropdown-link">
-          文件<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item class="leading-8" @click="refClick">
-              <el-icon><ElIconUpload /></el-icon>
-              导入 .md
-              <input ref="fileInput" hidden type="file" accept=".md">
-            </el-dropdown-item>
-            <el-dropdown-item class="leading-8" @click="$emit('download')">
-              <el-icon><ElIconDownload /></el-icon>
-              导出 .md
-            </el-dropdown-item>
-            <el-dropdown-item class="leading-8" @click="$emit('export')">
-              <el-icon><ElIconDocument /></el-icon>
-              导出 .html
-            </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="themeChanged">
-              <el-icon :style="{ opacity: +nightMode }">
-                <ElIconCheck />
-              </el-icon>
-              暗黑模式
-            </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="isEditOnLeftChanged">
-              <el-icon :style="{ opacity: +isEditOnLeft }">
-                <ElIconCheck />
-              </el-icon>
-              左侧编辑
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          格式<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
+          格式<el-icon class="ml-2">
+            <ElIconArrowDown />
+          </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu class="format-list">
@@ -386,8 +218,8 @@ export default {
               {{ label }}
               <kbd class="ml-auto">{{ kbd }}</kbd>
             </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="statusChanged">
-              <el-icon :style="{ opacity: citeStatus ? 1 : 0 }">
+            <el-dropdown-item divided class="leading-8" @click="citeStatusChanged">
+              <el-icon :class="{ 'opacity-0': !isCiteStatus }">
                 <ElIconCheck />
               </el-icon>
               微信外链转底部引用
@@ -397,22 +229,22 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          编辑<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
+          编辑<el-icon class="ml-2">
+            <ElIconArrowDown />
+          </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
-            <el-dropdown-item
-              class="leading-8"
-              @click="$emit('showDialogUploadImg')"
-            >
-              <el-icon><ElIconUpload /></el-icon>
+            <el-dropdown-item class="leading-8" @click="$emit('showDialogUploadImg')">
+              <el-icon>
+                <ElIconUpload />
+              </el-icon>
               上传图片
             </el-dropdown-item>
-            <el-dropdown-item
-              class="leading-8"
-              @click="$emit('showDialogForm')"
-            >
-              <el-icon><ElIconGrid /></el-icon>
+            <el-dropdown-item class="leading-8" @click="$emit('showDialogForm')">
+              <el-icon>
+                <ElIconGrid />
+              </el-icon>
               插入表格
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -420,60 +252,43 @@ export default {
       </el-dropdown>
       <el-dropdown>
         <span class="el-dropdown-link">
-          样式<el-icon class="ml-2"><ElIconArrowDown /></el-icon>
+          样式<el-icon class="ml-2">
+            <ElIconArrowDown />
+          </el-icon>
         </span>
         <template #dropdown>
           <el-dropdown-menu>
             <el-dropdown-item class="leading-8">
-              <StyleOptionMenu
-                label="字体"
-                :options="config.builtinFonts"
-                :current="selectFont"
-                :charge="fontChanged"
-              />
+              <StyleOptionMenu title="字体" :options="config.builtinFonts" :current="fontFamily" :change="fontChanged" />
+            </el-dropdown-item>
+            <el-dropdown-item class="leading-8">
+              <StyleOptionMenu title="字号" :options="config.sizeOption" :current="fontSize" :change="sizeChanged" />
             </el-dropdown-item>
             <el-dropdown-item class="leading-8">
               <StyleOptionMenu
-                label="字号"
-                :options="config.sizeOption"
-                :current="selectSize"
-                :charge="sizeChanged"
-              />
-            </el-dropdown-item>
-            <el-dropdown-item class="leading-8">
-              <StyleOptionMenu
-                label="颜色"
+                title="颜色"
                 :options="config.colorOption"
-                :current="selectColor"
-                :charge="colorChanged"
+                :current="fontColor"
+                :change="colorChanged"
               />
             </el-dropdown-item>
             <el-dropdown-item class="leading-8">
               <StyleOptionMenu
-                label="代码主题"
+                title="代码主题"
                 :options="config.codeThemeOption"
-                :current="selectCodeTheme"
-                :charge="codeThemeChanged"
+                :current="codeBlockTheme"
+                :change="codeBlockThemeChanged"
               />
             </el-dropdown-item>
             <el-dropdown-item class="leading-8">
-              <StyleOptionMenu
-                label="图注格式"
-                :options="config.legendOption"
-                :current="selectLegend"
-                :charge="legendChanged"
-              />
+              <StyleOptionMenu title="图注格式" :options="config.legendOption" :current="legend" :change="legendChanged" />
             </el-dropdown-item>
-            <el-dropdown-item
-              divided
-              class="leading-8"
-              @click="showPicker()"
-            >
+            <el-dropdown-item divided class="leading-8" @click="showPicker()">
               <el-tooltip placement="right" effect="light">
                 <template #content>
                   <el-color-picker
                     ref="colorPicker"
-                    v-model="selectColor"
+                    v-model="fontColor"
                     :teleported="false"
                     show-alpha
                     class="ml-auto"
@@ -481,7 +296,7 @@ export default {
                     @change="colorChanged"
                   />
                 </template>
-                <div class="w-full flex">
+                <div class="flex w-full">
                   <el-icon class="opacity-0">
                     <ElIconCheck />
                   </el-icon>
@@ -495,17 +310,13 @@ export default {
               </el-icon>
               自定义 CSS
             </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="codeBlockChanged">
-              <el-icon :style="{ opacity: +isMacCodeBlock }">
+            <el-dropdown-item divided class="leading-8" @click="macCodeBlockChanged">
+              <el-icon :class="{ 'opacity-0': !isMacCodeBlock }">
                 <ElIconCheck />
               </el-icon>
               Mac 代码块
             </el-dropdown-item>
-            <el-dropdown-item
-              divided
-              class="leading-8"
-              @click="showResetConfirm = true"
-            >
+            <el-dropdown-item divided class="leading-8" @click="showResetConfirm = true">
               <el-icon class="opacity-0">
                 <ElIconCheck />
               </el-icon>
@@ -519,20 +330,10 @@ export default {
     <el-button plain type="primary" @click="copy">
       复制
     </el-button>
-    <el-button plain type="primary" @click="prePost">
-      发布
-    </el-button>
 
-    <PostInfoDialog
-      :form="form"
-      @post="post"
-      @close="form.dialogVisible = false"
-    />
-    <ResetDialog
-      :show-reset-confirm="showResetConfirm"
-      @confirm="confirmReset"
-      @close="cancelReset"
-    />
+    <PostInfo />
+
+    <ResetDialog :show-reset-confirm="showResetConfirm" @confirm="confirmReset" @close="cancelReset" />
   </div>
 </template>
 

@@ -12,13 +12,8 @@ import RunLoading from '@/components/RunLoading.vue'
 
 import {
   checkImage,
-  css2json,
-  customCssWithTemplate,
-  downloadMD,
-  exportHTML,
   formatDoc,
   saveEditorContent,
-  setFontSize,
   toBase64,
 } from '@/assets/scripts/util'
 
@@ -58,20 +53,13 @@ export default {
   },
   computed: {
     ...mapState(useStore, {
-      wxRenderer: state => state.wxRenderer,
       output: state => state.output,
       editor: state => state.editor,
-      cssEditor: state => state.cssEditor,
-      currentSize: state => state.currentSize,
-      currentColor: state => state.currentColor,
-      codeTheme: state => state.codeTheme,
     }),
   },
   created() {
-    this.initEditorState()
     this.$nextTick(() => {
       this.initEditor()
-      this.initCssEditor()
       this.onEditorRefresh()
       this.mdLocalToRemote()
     })
@@ -222,45 +210,6 @@ export default {
         this.rightClickMenuVisible = false
       })
     },
-    initCssEditor() {
-      this.initCssEditorEntity()
-      // 自动提示
-      this.cssEditor.on(`keyup`, (cm, e) => {
-        if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-          cm.showHint(e)
-        }
-      })
-      this.cssEditor.on(`update`, () => {
-        this.cssChanged()
-        saveEditorContent(this.cssEditor, `__css_content`)
-      })
-    },
-    cssChanged() {
-      const json = css2json(this.cssEditor.getValue(0))
-      let theme = setFontSize(this.currentSize.replace(`px`, ``))
-
-      theme = customCssWithTemplate(json, this.currentColor, theme)
-      this.setWxRendererOptions({
-        theme,
-      })
-      this.onEditorRefresh()
-    },
-    // 切换 highlight.js 代码主题
-    codeThemeChanged() {
-      const cssUrl = this.codeTheme
-      const el = document.getElementById(`hljs`)
-      if (el) {
-        el.setAttribute(`href`, cssUrl)
-      }
-      else {
-        const link = document.createElement(`link`)
-        link.setAttribute(`type`, `text/css`)
-        link.setAttribute(`rel`, `stylesheet`)
-        link.setAttribute(`href`, cssUrl)
-        link.setAttribute(`id`, `hljs`)
-        document.head.appendChild(link)
-      }
-    },
     beforeUpload(file) {
       // validate image
       const checkResult = checkImage(file)
@@ -359,7 +308,6 @@ export default {
     },
     // 更新编辑器
     onEditorRefresh() {
-      this.codeThemeChanged(this.codeTheme)
       this.editorRefresh()
     },
     // 复制结束
@@ -433,20 +381,9 @@ export default {
       this.editor.setValue(md)
       this.onEditorRefresh()
     },
-    // 导出编辑器内容到本地
-    downloadEditorContent() {
-      downloadMD(this.editor.getValue(0))
-    },
-    // 导出编辑器内容为 HTML，并且下载到本地
-    exportEditorContent() {
-      this.$nextTick(() => {
-        exportHTML()
-        document.getElementById(`output`).innerHTML = this.output
-      })
-    },
     // 导入 Markdown 文档
     importMarkdownContent() {
-      const menu = document.getElementById(`menu`)
+      const menu = document.querySelector(`#menu`)
       const input = document.createElement(`input`)
       input.type = `file`
       input.name = `filename`
@@ -475,12 +412,6 @@ export default {
       }
       input.click()
       menu.removeChild(input)
-    },
-    // 格式化文档
-    formatContent() {
-      const doc = formatDoc(this.editor.getValue(0))
-      localStorage.setItem(`__editor_content`, doc)
-      this.editor.setValue(doc)
     },
     // 右键菜单
     openMenu(e) {
@@ -521,11 +452,11 @@ export default {
       }
     },
     ...mapActions(useStore, [
-      `initEditorState`,
       `initEditorEntity`,
-      `setWxRendererOptions`,
       `editorRefresh`,
-      `initCssEditorEntity`,
+      `exportEditorContent`,
+      `downloadEditorContent`,
+      `formatContent`,
     ]),
   },
 }
@@ -539,11 +470,6 @@ export default {
           ref="header"
           @add-format="addFormat"
           @format-content="formatContent"
-          @refresh="onEditorRefresh"
-          @css-changed="cssChanged"
-          @import-md="importMD"
-          @download="downloadEditorContent"
-          @export="exportEditorContent"
           @show-css-editor="showCssEditor = !showCssEditor"
           @show-dialog-form="insertFormDialogVisible = true"
           @show-dialog-upload-img="dialogUploadImgVisible = true"
@@ -602,7 +528,6 @@ export default {
     <InsertFormDialog
       :visible="insertFormDialogVisible"
       @close="insertFormDialogVisible = false"
-      @format-content="formatContent"
     />
 
     <RightClickMenu

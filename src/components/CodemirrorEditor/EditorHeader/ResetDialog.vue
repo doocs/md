@@ -5,7 +5,7 @@ const props = defineProps({
     default: false,
   },
 })
-defineEmits(`close`, `confirm`)
+defineEmits([`close`, `confirm`])
 </script>
 
 <template>

@@ -22,7 +22,7 @@ function onRedirect(url) {
     center
     @close="$emit('close')"
   >
-    <div style="text-align: center">
+    <div class="text-center">
       <h3>一款高度简洁的微信 Markdown 编辑器</h3>
       <p>扫码关注公众号 Doocs，原创技术文章第一时间推送！</p>
       <img

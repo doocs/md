@@ -1,6 +1,5 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useStore } from '@/stores'
 
 const loading = ref(true)
 
