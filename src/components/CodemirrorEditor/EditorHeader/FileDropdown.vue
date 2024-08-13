@@ -1,5 +1,4 @@
 <script setup>
-import { onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 
 import { useStore } from '@/stores'
@@ -14,30 +13,10 @@ const {
 const {
   toggleDark,
   toggleEditOnLeft,
-  exportEditorContent,
-  downloadEditorContent,
+  exportEditorContent2HTML,
+  exportEditorContent2MD,
+  importMarkdownContent,
 } = store
-
-const fileInput = ref(null)
-
-onMounted(() => {
-  fileInput.value.onchange = () => {
-    const file = fileInput.value.files[0]
-    if (file === null) {
-      return
-    }
-    const read = new FileReader()
-    read.readAsText(file)
-    read.onload = () => {
-      editor.value.setValue(read.result)
-      editorRefresh()
-    }
-  }
-})
-
-function refClick() {
-  fileInput.value.click()
-}
 </script>
 
 <template>
@@ -49,20 +28,19 @@ function refClick() {
     </span>
     <template #dropdown>
       <el-dropdown-menu>
-        <el-dropdown-item class="leading-8" @click="refClick()">
+        <el-dropdown-item class="leading-8" @click="importMarkdownContent()">
           <el-icon>
             <ElIconUpload />
           </el-icon>
           导入 .md
-          <input ref="fileInput" hidden type="file" accept=".md">
         </el-dropdown-item>
-        <el-dropdown-item class="leading-8" @click="downloadEditorContent()">
+        <el-dropdown-item class="leading-8" @click="exportEditorContent2MD()">
           <el-icon>
             <ElIconDownload />
           </el-icon>
           导出 .md
         </el-dropdown-item>
-        <el-dropdown-item class="leading-8" @click="exportEditorContent()">
+        <el-dropdown-item class="leading-8" @click="exportEditorContent2HTML()">
           <el-icon>
             <ElIconDocument />
           </el-icon>

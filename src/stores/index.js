@@ -3,6 +3,7 @@ import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror/lib/codemirror'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 import config from '@/config'
 import WxRenderer from '@/assets/scripts/renderers/wx-renderer'
@@ -54,56 +55,12 @@ export const useStore = defineStore(`store`, () => {
   const editorContent = useStorage(`__editor_content`, formatDoc(DEFAULT_CONTENT))
 
   const editor = ref(null)
+
   // 格式化文档
   const formatContent = () => {
     const doc = formatDoc(editor.value.getValue())
     editorContent.value = doc
     editor.value.setValue(doc)
-  }
-
-  // 初始化编辑器
-  const initEditorEntity = () => {
-    const editorDom = document.querySelector(`#editor`)
-
-    if (!editorDom.value) {
-      editorDom.value
-        = editorContent.value
-    }
-    editor.value = CodeMirror.fromTextArea(editorDom, {
-      mode: `text/x-markdown`,
-      theme: `xq-light`,
-      lineNumbers: false,
-      lineWrapping: true,
-      styleActiveLine: true,
-      autoCloseBrackets: true,
-      extraKeys: {
-        [`${modPrefix}-F`]: function autoFormat(editor) {
-          const doc = formatDoc(editor.getValue(0))
-          localStorage.setItem(`__editor_content`, doc)
-          editor.setValue(doc)
-        },
-        [`${modPrefix}-B`]: function bold(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`**${selected}**`)
-        },
-        [`${modPrefix}-D`]: function del(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`~~${selected}~~`)
-        },
-        [`${modPrefix}-I`]: function italic(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`*${selected}*`)
-        },
-        [`${modPrefix}-K`]: function italic(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`[${selected}]()`)
-        },
-        [`${modPrefix}-L`]: function code(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`\`${selected}\``)
-        },
-      },
-    })
   }
 
   // 切换 highlight.js 代码主题
@@ -185,6 +142,11 @@ export const useStore = defineStore(`store`, () => {
     wxRenderer.setOptions({
       theme,
     })
+    editorRefresh()
+  }
+
+  const setEditorContent = (val) => {
+    editor.value.setValue(val)
     editorRefresh()
   }
 
@@ -297,14 +259,64 @@ export const useStore = defineStore(`store`, () => {
   })
 
   // 导出编辑器内容为 HTML，并且下载到本地
-  const exportEditorContent = () => {
+  const exportEditorContent2HTML = () => {
     exportHTML()
     document.querySelector(`#output`).innerHTML = output.value
   }
 
   // 导出编辑器内容到本地
-  const downloadEditorContent = () => {
+  const exportEditorContent2MD = () => {
     downloadMD(editor.value.getValue())
+  }
+
+  // 导入 Markdown 文档
+  const importMarkdownContent = () => {
+    const body = document.body
+    const input = document.createElement(`input`)
+    input.type = `file`
+    input.name = `filename`
+    input.accept = `.md`
+    input.onchange = () => {
+      const file = input.files[0]
+      if (!file) {
+        return
+      }
+
+      const reader = new FileReader()
+      reader.readAsText(file)
+      reader.onload = (event) => {
+        editor.value.setValue(formatDoc(event.target.result))
+        ElMessage.success(`文档导入成功`)
+      }
+    }
+
+    body.appendChild(input)
+    input.click()
+    body.removeChild(input)
+  }
+
+  // 重置样式
+  const resetStyleConfirm = () => {
+    ElMessageBox.confirm(
+      `此操作将丢失本地自定义样式，是否继续？`,
+      `提示`,
+      {
+        confirmButtonText: `确定`,
+        cancelButtonText: `取消`,
+        type: `warning`,
+        center: true,
+      },
+    )
+      .then(() => {
+        resetStyle()
+        ElMessage({
+          type: `success`,
+          message: `样式重置成功~`,
+        })
+      })
+      .catch(() => {
+        editor.value.focus()
+      })
   }
 
   return {
@@ -327,11 +339,10 @@ export const useStore = defineStore(`store`, () => {
     codeBlockTheme,
     legend,
 
-    initEditorEntity,
     editorRefresh,
+    setEditorContent,
 
     updateCss,
-    resetStyle,
 
     fontChanged,
     sizeChanged,
@@ -341,8 +352,13 @@ export const useStore = defineStore(`store`, () => {
     macCodeBlockChanged,
 
     formatContent,
-    exportEditorContent,
-    downloadEditorContent,
+    exportEditorContent2HTML,
+    exportEditorContent2MD,
+
+    importMarkdownContent,
+
+    resetStyleConfirm,
+    editorContent,
   }
 })
 

@@ -1,9 +1,8 @@
 <script setup>
-import { nextTick, onMounted, ref } from 'vue'
+import { nextTick, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
 
-import ResetDialog from './ResetDialog.vue'
 import StyleOptionMenu from './StyleOptionMenu.vue'
 import PostInfo from './PostInfo.vue'
 import HelpDropdown from './HelpDropdown.vue'
@@ -64,12 +63,11 @@ const {
   isMacCodeBlock,
   output,
   cssEditor,
-  editor,
 } = storeToRefs(store)
 
 const {
   toggleDark,
-  resetStyle,
+  resetStyleConfirm,
   editorRefresh,
 
   fontChanged,
@@ -173,25 +171,6 @@ function customStyle() {
   }, 50)
 }
 
-const showResetConfirm = ref(false)
-
-// 重置样式
-function confirmReset() {
-  showResetConfirm.value = false
-  resetStyle()
-  ElNotification({
-    showClose: true,
-    message: `已重置样式`,
-    offset: 80,
-    duration: 1600,
-    type: `success`,
-  })
-}
-
-function cancelReset() {
-  showResetConfirm.value = false
-  editor.value.focus()
-}
 </script>
 
 <template>
@@ -296,7 +275,7 @@ function cancelReset() {
                     @change="colorChanged"
                   />
                 </template>
-                <div class="flex w-full">
+                <div class="w-full flex">
                   <el-icon class="opacity-0">
                     <ElIconCheck />
                   </el-icon>
@@ -316,7 +295,7 @@ function cancelReset() {
               </el-icon>
               Mac 代码块
             </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="showResetConfirm = true">
+            <el-dropdown-item divided class="leading-8" @click="resetStyleConfirm">
               <el-icon class="opacity-0">
                 <ElIconCheck />
               </el-icon>
@@ -332,8 +311,6 @@ function cancelReset() {
     </el-button>
 
     <PostInfo />
-
-    <ResetDialog :show-reset-confirm="showResetConfirm" @confirm="confirmReset" @close="cancelReset" />
   </div>
 </template>
 

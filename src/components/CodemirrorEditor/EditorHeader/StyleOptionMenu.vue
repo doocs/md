@@ -34,7 +34,7 @@ function setStyle(title, value) {
 
 <template>
   <el-dropdown placement="right" class="style-option-menu">
-    <div class="el-dropdown-link leading-8 flex items-center">
+    <div class="el-dropdown-link flex items-center leading-8">
       <el-icon class="opacity-0">
         <ElIconCheck />
       </el-icon>

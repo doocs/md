@@ -38,11 +38,11 @@ const menu = [
     },
     {
       text: `导出 .md 文档`,
-      key: `download`,
+      key: `exportMarkdown`,
     },
     {
       text: `导出 .html`,
-      key: `export`,
+      key: `exportHtml`,
     },
     {
       text: `格式化`,
