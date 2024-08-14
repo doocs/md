@@ -60,7 +60,8 @@ export function utf8to16(str) {
 }
 
 const base64EncodeChars = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_`
-const base64DecodeChars = new Array(
+
+const base64DecodeChars = [
   -1,
   -1,
   -1,
@@ -189,7 +190,8 @@ const base64DecodeChars = new Array(
   -1,
   -1,
   -1,
-)
+]
+
 export function base64encode(str) {
   let out, i, len
   let c1, c2, c3

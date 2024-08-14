@@ -1,15 +1,15 @@
 import { markRaw, onMounted, ref } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
-import CodeMirror from 'codemirror/lib/codemirror'
+import CodeMirror from 'codemirror'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-import config from '@/config'
-import WxRenderer from '@/assets/scripts/renderers/wx-renderer'
+import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, githubConfig, legendOptions } from '@/config'
+import WxRenderer from '@/utils/wx-renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColor, setColorWithCustomTemplate, setFontSize } from '@/assets/scripts/util'
+import { css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColor, setColorWithCustomTemplate, setFontSize } from '@/utils'
 
 const defaultKeyMap = CodeMirror.keyMap.default
 const modPrefix
@@ -35,15 +35,15 @@ export const useStore = defineStore(`store`, () => {
   const output = ref(``)
 
   // 文本字体
-  const fontFamily = useStorage(`fonts`, config.builtinFonts[0].value)
+  const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
   // 文本大小
-  const fontSize = useStorage(`size`, config.sizeOption[2].value)
+  const fontSize = useStorage(`size`, fontSizeOptions[2].value)
   // 文本颜色
-  const fontColor = useStorage(`color`, config.colorOption[0].value)
+  const fontColor = useStorage(`color`, colorOptions[0].value)
   // 代码块主题
-  const codeBlockTheme = useStorage(`codeBlockTheme`, config.codeThemeOption[2].value)
+  const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[2].value)
   // 图注格式
-  const legend = useStorage(`legend`, config.legendOption[3].value)
+  const legend = useStorage(`legend`, legendOptions[3].value)
 
   const wxRenderer = new WxRenderer({
     theme: setColor(fontColor.value),
@@ -51,10 +51,10 @@ export const useStore = defineStore(`store`, () => {
     size: fontSize.value,
   })
 
+  // 内容编辑器编辑器
+  const editor = ref(null)
   // 编辑区域内容
   const editorContent = useStorage(`__editor_content`, formatDoc(DEFAULT_CONTENT))
-
-  const editor = ref(null)
 
   // 格式化文档
   const formatContent = () => {
@@ -130,6 +130,7 @@ export const useStore = defineStore(`store`, () => {
     output.value = outputTemp
   }
 
+  // 自义定 CSS 编辑器
   const cssEditor = ref(null)
   // 自定义 CSS 内容
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
@@ -144,12 +145,6 @@ export const useStore = defineStore(`store`, () => {
     })
     editorRefresh()
   }
-
-  const setEditorContent = (val) => {
-    editor.value.setValue(val)
-    editorRefresh()
-  }
-
   // 初始化 CSS 编辑器
   onMounted(() => {
     const cssEditorDom = document.querySelector(`#cssEditor`)
@@ -192,11 +187,11 @@ export const useStore = defineStore(`store`, () => {
     isCiteStatus.value = false
     isMacCodeBlock.value = true
 
-    fontFamily.value = config.builtinFonts[0].value
-    fontSize.value = config.sizeOption[2].value
-    fontColor.value = config.colorOption[0].value
-    codeBlockTheme.value = config.codeThemeOption[2].value
-    legend.value = config.legendOption[3].value
+    fontFamily.value = fontFamilyOptions[0].value
+    fontSize.value = fontSizeOptions[2].value
+    fontColor.value = colorOptions[0].value
+    codeBlockTheme.value = codeBlockThemeOptions[2].value
+    legend.value = legendOptions[3].value
 
     cssEditor.value.setValue(DEFAULT_CSS_CONTENT)
 
@@ -319,7 +314,23 @@ export const useStore = defineStore(`store`, () => {
       })
   }
 
+  const isShowCssEditor = ref(false)
+  const toggleShowCssEditor = useToggle(isShowCssEditor)
+
+  const isShowInsertFormDialog = ref(false)
+  const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
+
+  const isShowUploadImgDialog = ref(false)
+  const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
+
   return {
+    isShowCssEditor,
+    toggleShowCssEditor,
+    isShowInsertFormDialog,
+    toggleShowInsertFormDialog,
+    isShowUploadImgDialog,
+    toggleShowUploadImgDialog,
+
     isDark,
     toggleDark,
 
@@ -340,9 +351,6 @@ export const useStore = defineStore(`store`, () => {
     legend,
 
     editorRefresh,
-    setEditorContent,
-
-    updateCss,
 
     fontChanged,
     sizeChanged,

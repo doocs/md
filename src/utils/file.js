@@ -5,10 +5,11 @@ import COS from 'cos-js-sdk-v5'
 import Buffer from 'buffer-from'
 import { v4 as uuidv4 } from 'uuid'
 import * as qiniu from 'qiniu-js'
-import { base64encode, safe64, utf16to8 } from '../assets/scripts/tokenTools'
-import * as tokenTools from '../assets/scripts/tokenTools'
-import { giteeConfig, githubConfig } from './config'
-import fetch from './fetch'
+
+import fetch from '@/utils/fetch'
+import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
+import * as tokenTools from '@/utils/tokenTools'
+import { giteeConfig, githubConfig } from '@/config'
 
 function getConfig(useDefault, platform) {
   if (useDefault) {

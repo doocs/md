@@ -1,24 +1,15 @@
 <script setup>
 import { ref } from 'vue'
 import { useStore } from '@/stores'
-import { createTable } from '@/assets/scripts/util'
+import { createTable } from '@/utils'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-})
+const store = useStore()
 
-const emit = defineEmits([`close`])
+const { formatContent, toggleShowInsertFormDialog } = store
 
 const rowNum = ref(3)
 const colNum = ref(3)
 const tableData = ref({})
-
-const store = useStore()
-
-const { formatContent } = store
 
 function resetVal() {
   rowNum.value = 3
@@ -40,7 +31,7 @@ function insertTable() {
   resetVal()
 
   formatContent()
-  emit(`close`)
+  toggleShowInsertFormDialog()
 }
 </script>
 
@@ -48,8 +39,8 @@ function insertTable() {
   <el-dialog
     title="插入表格"
     class="insert__dialog"
-    :model-value="props.visible"
-    @close="$emit('close')"
+    :model-value="store.isShowInsertFormDialog"
+    @close="toggleShowInsertFormDialog(false)"
   >
     <el-row class="tb-options" type="flex" align="middle" :gutter="10">
       <el-col :span="12">
@@ -90,7 +81,7 @@ function insertTable() {
     </table>
     <template #footer>
       <div class="dialog-footer">
-        <el-button plain @click="$emit('close')">
+        <el-button plain @click="toggleShowInsertFormDialog(false)">
           取 消
         </el-button>
         <el-button type="primary" plain @click="insertTable">

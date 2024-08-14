@@ -229,4 +229,5 @@ class WxRenderer {
     }
   }
 }
+
 export default WxRenderer

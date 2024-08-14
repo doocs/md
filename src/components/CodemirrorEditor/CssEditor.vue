@@ -1,15 +1,12 @@
 <script setup>
-const props = defineProps({
-  showCssEditor: {
-    type: Boolean,
-    default: false,
-  },
-})
+import { useStore } from '@/stores'
+
+const store = useStore()
 </script>
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="props.showCssEditor" :span="8" class="cssEditor-wrapper h-full">
+    <el-col v-show="store.isShowCssEditor" :span="8" class="cssEditor-wrapper h-full">
       <textarea
         id="cssEditor"
         type="textarea"

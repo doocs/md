@@ -4,8 +4,6 @@ import { storeToRefs } from 'pinia'
 
 import { useStore } from '@/stores'
 
-defineEmits([`close`, `post`])
-
 const store = useStore()
 const { output } = storeToRefs(store)
 

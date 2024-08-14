@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import AboutDialog from '@/components/CodemirrorEditor/AboutDialog.vue'
+import AboutDialog from './AboutDialog.vue'
 
 const aboutDialogVisible = ref(false)
 </script>

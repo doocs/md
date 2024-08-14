@@ -4,7 +4,7 @@ import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import CodeMirror from 'codemirror'
 
-import fileApi from '@/api/file'
+import fileApi from '@/utils/file'
 import { useStore } from '@/stores'
 
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
@@ -18,7 +18,7 @@ import {
   checkImage,
   formatDoc,
   toBase64,
-} from '@/assets/scripts/util'
+} from '@/utils'
 
 import 'codemirror/mode/javascript/javascript'
 
@@ -27,7 +27,7 @@ const modPrefix
   = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
 const store = useStore()
-const { output, editor, editorContent } = storeToRefs(store)
+const { output, editor, editorContent, isShowCssEditor } = storeToRefs(store)
 
 const {
   editorRefresh,
@@ -36,11 +36,10 @@ const {
   formatContent,
   importMarkdownContent,
   resetStyleConfirm,
+  toggleShowInsertFormDialog,
+  toggleShowUploadImgDialog,
 } = store
 
-const showCssEditor = ref(false)
-const dialogUploadImgVisible = ref(false)
-const insertFormDialogVisible = ref(false)
 const isImgLoading = ref(false)
 const timeout = ref(0)
 const mouseLeft = ref(0)
@@ -123,10 +122,10 @@ function endCopy() {
 function onMenuEvent(type) {
   switch (type) {
     case `insertPic`:
-      dialogUploadImgVisible.value = true
+      toggleShowUploadImgDialog()
       break
     case `insertTable`:
-      insertFormDialogVisible.value = true
+      toggleShowInsertFormDialog()
       break
     case `resetStyle`:
       resetStyleConfirm()
@@ -176,7 +175,7 @@ function uploaded(imageUrl) {
     ElMessage.error(`上传图片未知异常`)
     return
   }
-  dialogUploadImgVisible.value = false
+  toggleShowUploadImgDialog(false)
   // 上传成功，获取光标
   const cursor = editor.value.getCursor()
   const markdownImage = `![](${imageUrl})`
@@ -224,7 +223,6 @@ function initEditor() {
     extraKeys: {
       [`${modPrefix}-F`]: function autoFormat(editor) {
         const doc = formatDoc(editor.getValue(0))
-        localStorage.setItem(`__editor_content`, doc)
         editor.setValue(doc)
       },
       [`${modPrefix}-B`]: function bold(editor) {
@@ -290,6 +288,7 @@ function initEditor() {
 }
 
 const container = ref(null)
+
 // 右键菜单
 function openMenu(e) {
   const menuMinWidth = 105
@@ -479,9 +478,6 @@ onMounted(() => {
         <EditorHeader
           @add-format="addFormat"
           @format-content="formatContent"
-          @show-css-editor="showCssEditor = !showCssEditor"
-          @show-dialog-form="insertFormDialogVisible = true"
-          @show-dialog-upload-img="dialogUploadImgVisible = true"
           @start-copy="startCopy"
           @end-copy="endCopy"
         />
@@ -491,7 +487,7 @@ onMounted(() => {
           <el-col
             ref="codeMirrorWrapper"
             :style="{ order: store.isEditOnLeft ? 0 : 1 }"
-            :span="showCssEditor ? 8 : 12"
+            :span="isShowCssEditor ? 8 : 12"
             class="codeMirror-wrapper"
             @contextmenu.prevent="openMenu"
           >
@@ -504,7 +500,7 @@ onMounted(() => {
           <el-col
             id="preview"
             ref="preview"
-            :span="showCssEditor ? 8 : 12"
+            :span="isShowCssEditor ? 8 : 12"
             class="preview-wrapper"
           >
             <div id="output-wrapper" :class="{ output_night: !backLight }">
@@ -517,23 +513,18 @@ onMounted(() => {
               </div>
             </div>
           </el-col>
-          <CssEditor :show-css-editor="showCssEditor" />
+          <CssEditor />
         </el-row>
       </el-main>
     </el-container>
 
     <UploadImgDialog
-      :visible="dialogUploadImgVisible"
-      @close="dialogUploadImgVisible = false"
       @before-upload="beforeUpload"
       @upload-image="uploadImage"
       @uploaded="uploaded"
     />
 
-    <InsertFormDialog
-      :visible="insertFormDialogVisible"
-      @close="insertFormDialogVisible = false"
-    />
+    <InsertFormDialog />
 
     <RightClickMenu
       :visible="rightClickMenuVisible"
@@ -542,6 +533,7 @@ onMounted(() => {
       @menu-tick="onMenuEvent"
       @close-menu="rightClickMenuVisible = false"
     />
+
     <RunLoading />
   </div>
 </template>
