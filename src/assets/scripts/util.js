@@ -8,7 +8,10 @@ const createCustomTheme = (theme, color) => {
   customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
   customTheme.block.h2[`background`] = color
   customTheme.block.h3[`border-left`] = `3px solid ${color}`
+  customTheme.block.h3[`border-bottom`] = `1px dashed ${color}`
   customTheme.block.h4[`color`] = color
+  customTheme.block.blockquote[`border-left`] = `4px solid ${color}`
+
   customTheme.inline.strong[`color`] = color
   return customTheme
 }
