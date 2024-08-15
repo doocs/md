@@ -507,8 +507,10 @@ onMounted(() => {
               <div class="preview">
                 <section id="output" v-html="output" />
                 <div v-if="isCoping" class="loading-mask">
-                  <div class="loading__img" />
-                  <span>正在生成</span>
+                  <div class="loading-mask-box">
+                    <div class="loading__img" />
+                    <span>正在生成</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -564,32 +566,26 @@ onMounted(() => {
 
 .loading-mask {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 376px;
-  height: 101%;
-  padding-top: 1px;
-  font-size: 15px;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  text-align: center;
   color: var(--el-text-color-regular);
   background-color: var(--el-bg-color);
 
-  .loading__img {
-    position: absolute;
-    left: 50%;
-    top: 330px;
-    width: 50px;
-    height: 50px;
-    transform: translate(-50%, -50%);
-    background: url('../assets/images/favicon.png') no-repeat;
-    background-size: cover;
-  }
+  .loading-mask-box {
+    position: sticky;
+    top: 50%;
+    transform: translateY(-50%);
 
-  span {
-    position: absolute;
-    left: 50%;
-    top: 390px;
-    transform: translate(-50%, -50%);
+    .loading__img {
+      width: 75px;
+      height: 75px;
+      background: url('../assets/images/favicon.png') no-repeat;
+      margin: 1em auto;
+      background-size: cover;
+    }
   }
 }
 
