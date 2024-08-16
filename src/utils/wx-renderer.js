@@ -2,9 +2,6 @@ import { Renderer, marked } from 'marked'
 import hljs from 'highlight.js'
 import markedKatex from 'marked-katex-extension'
 
-// KaTeX CSS
-import 'katex/dist/katex.min.css'
-
 marked.use(markedKatex({
   throwOnError: false,
   output: `html`,
