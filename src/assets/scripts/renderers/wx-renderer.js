@@ -4,7 +4,8 @@ import markedKatex from "marked-katex-extension";
 
 marked.use(markedKatex({
   throwOnError: false,
-  output: `html`
+  output: `html`,
+  nonStandard: true,
 }));
 
 class WxRenderer {
