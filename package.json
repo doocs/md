@@ -26,7 +26,7 @@
     "juice": "^8.0.0",
     "katex": "^0.16.10",
     "marked": "^4.0.18",
-    "marked-katex-extension": "^4.0.3",
+    "marked-katex-extension": "^5.1.0",
     "minio": "7.0.33",
     "node-fetch": "^3.2.10",
     "pinia": "^2.1.6",
