@@ -1,10 +1,12 @@
-import { URL, fileURLToPath } from 'node:url'
+import path from 'node:path'
 import process from 'node:process'
 
 import { defineConfig } from 'vite'
 import UnoCSS from 'unocss/vite'
 import vue from '@vitejs/plugin-vue'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import tailwind from 'tailwindcss'
+import autoprefixer from 'autoprefixer'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
@@ -28,11 +30,14 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': fileURLToPath(new URL(`./src`, import.meta.url)),
+        '@': path.resolve(__dirname, `./src`),
       },
     },
     css: {
       devSourcemap: !isProd,
+      postcss: {
+        plugins: [tailwind(), autoprefixer()],
+      },
     },
     build: {
       sourcemap: !isProd,
