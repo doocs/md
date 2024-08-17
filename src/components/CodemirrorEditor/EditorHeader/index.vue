@@ -9,6 +9,21 @@ import HelpDropdown from './HelpDropdown.vue'
 import StyleDropdown from './StyleDropdown.vue'
 import EditDropdown from './EditDropdown.vue'
 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuShortcut,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card'
+
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { useStore } from '@/stores'
 
@@ -139,35 +154,30 @@ function copy() {
   <div class="header-container">
     <el-space class="dropdowns flex-auto" size="large">
       <FileDropdown />
-      <el-dropdown>
-        <span class="el-dropdown-link">
-          格式<el-icon class="ml-2">
+      <DropdownMenu>
+        <DropdownMenuTrigger>
+          格式
+          <el-icon class="ml-2">
             <ElIconArrowDown />
           </el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu class="format-list">
-            <el-dropdown-item
-              v-for="{ label, kbd, emitArgs } in formatItems"
-              :key="kbd"
-              class="format-item leading-8"
-              @click="$emit(...emitArgs)"
-            >
-              <el-icon class="opacity-0">
-                <ElIconCheck />
-              </el-icon>
-              {{ label }}
-              <kbd class="ml-auto">{{ kbd }}</kbd>
-            </el-dropdown-item>
-            <el-dropdown-item divided class="leading-8" @click="citeStatusChanged">
-              <el-icon :class="{ 'opacity-0': !isCiteStatus }">
-                <ElIconCheck />
-              </el-icon>
-              微信外链转底部引用
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent class="w-60">
+          <DropdownMenuItem v-for="{ label, kbd, emitArgs } in formatItems" :key="kbd" @click="$emit(...emitArgs)">
+            <el-icon class="mr-2 h-4 w-4" />
+            {{ label }}
+            <DropdownMenuShortcut>
+              {{ kbd }}
+            </DropdownMenuShortcut>
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem @click="citeStatusChanged">
+            <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isCiteStatus }">
+              <ElIconCheck />
+            </el-icon>
+            微信外链转底部引用
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <EditDropdown />
       <StyleDropdown />
       <HelpDropdown />
@@ -186,23 +196,5 @@ function copy() {
   align-items: center;
   height: 100%;
   padding: 0 20px;
-}
-
-.el-dropdown-link {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-.format-list {
-  width: 250px;
-}
-
-.format-item {
-  kbd {
-    font-size: 0.75em;
-    float: right;
-    color: #666;
-  }
 }
 </style>

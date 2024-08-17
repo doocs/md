@@ -547,6 +547,8 @@ onMounted(() => {
 <style lang="less" scoped>
 .container {
   height: 100%;
+  min-width: 100%;
+  padding: 0;
 }
 
 .container-main {

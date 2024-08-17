@@ -1,4 +1,13 @@
 <script setup>
+import {
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuShortcut,
+  DropdownMenuSub,
+  DropdownMenuSubContent,
+  DropdownMenuSubTrigger,
+} from '@/components/ui/dropdown-menu'
+
 const props = defineProps({
   title: {
     type: String,
@@ -24,7 +33,7 @@ function setStyle(title, value) {
       return { fontFamily: value }
     case `字号`:
       return { fontSize: value }
-    case `颜色`:
+    case `主题色`:
       return { color: value }
     default:
       return {}
@@ -33,46 +42,30 @@ function setStyle(title, value) {
 </script>
 
 <template>
-  <el-dropdown placement="right" class="style-option-menu">
-    <div class="el-dropdown-link flex items-center leading-8">
-      <el-icon class="opacity-0">
-        <ElIconCheck />
-      </el-icon>
-      {{ props.title }}
-      <el-icon class="ml-auto">
-        <ElIconArrowRight />
-      </el-icon>
-    </div>
-    <template #dropdown>
-      <el-dropdown-menu style="width: 200px">
-        <el-dropdown-item
+  <DropdownMenuSub>
+    <DropdownMenuSubTrigger>
+      <el-icon class="mr-2 h-4 w-4" />
+      <span>{{ props.title }}</span>
+    </DropdownMenuSubTrigger>
+    <DropdownMenuPortal>
+      <DropdownMenuSubContent>
+        <DropdownMenuItem
           v-for="{ label, value, desc } in options"
           :key="value"
           :label="label"
           :model-value="value"
-          class="leading-8"
+          class="w-50"
           @click="change(value)"
         >
-          <el-icon :style="{ opacity: +(current === value) }">
+          <el-icon class="mr-2 h-4 w-4" :style="{ opacity: +(current === value) }">
             <ElIconCheck />
           </el-icon>
           {{ label }}
-          <span class="ml-auto" :style="setStyle(title, value)">
+          <DropdownMenuShortcut :style="setStyle(title, value)">
             {{ desc }}
-          </span>
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
+          </DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuSubContent>
+    </DropdownMenuPortal>
+  </DropdownMenuSub>
 </template>
-
-<style lang="less" scoped>
-.style-option-menu {
-  margin: 0;
-  width: 180px;
-
-  .el-dropdown-link {
-    width: 100%;
-  }
-}
-</style>

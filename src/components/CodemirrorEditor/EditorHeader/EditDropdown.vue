@@ -1,4 +1,11 @@
 <script setup>
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu'
+
 import { useStore } from '@/stores'
 
 const store = useStore()
@@ -10,35 +17,26 @@ const {
 </script>
 
 <template>
-  <el-dropdown>
-    <span class="el-dropdown-link">
-      编辑<el-icon class="ml-2">
+  <DropdownMenu>
+    <DropdownMenuTrigger>
+      编辑
+      <el-icon class="ml-2">
         <ElIconArrowDown />
       </el-icon>
-    </span>
-    <template #dropdown>
-      <el-dropdown-menu>
-        <el-dropdown-item class="leading-8" @click="toggleShowUploadImgDialog()">
-          <el-icon>
-            <ElIconUpload />
-          </el-icon>
-          上传图片
-        </el-dropdown-item>
-        <el-dropdown-item class="leading-8" @click="toggleShowInsertFormDialog()">
-          <el-icon>
-            <ElIconGrid />
-          </el-icon>
-          插入表格
-        </el-dropdown-item>
-      </el-dropdown-menu>
-    </template>
-  </el-dropdown>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent>
+      <DropdownMenuItem @click="toggleShowUploadImgDialog()">
+        <el-icon class="mr-2 h-4 w-4">
+          <ElIconUpload />
+        </el-icon>
+        上传图片
+      </DropdownMenuItem>
+      <DropdownMenuItem @click="toggleShowInsertFormDialog()">
+        <el-icon class="mr-2 h-4 w-4">
+          <ElIconGrid />
+        </el-icon>
+        插入表格
+      </DropdownMenuItem>
+    </DropdownMenuContent>
+  </DropdownMenu>
 </template>
-
-<style lang="less" scoped>
-.el-dropdown-link {
-  display: flex;
-  align-items: center;
-  cursor: pointer;
-}
-</style>
