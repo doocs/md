@@ -23,7 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 dist
-lib
 
 node_modules
 
