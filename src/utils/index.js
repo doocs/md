@@ -9,7 +9,7 @@ export function addPrefix(str) {
   return `${prefix}__${str}`
 }
 
-function createCustomTheme(theme, color, isDefalut = true) {
+function createCustomTheme(theme, color, isDefault = true) {
   const customTheme = JSON.parse(JSON.stringify(theme))
   customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
   customTheme.block.h2.background = color
@@ -17,7 +17,7 @@ function createCustomTheme(theme, color, isDefalut = true) {
   customTheme.block.h4.color = color
   customTheme.inline.strong.color = color
 
-  if (!isDefalut) {
+  if (!isDefault) {
     customTheme.block.h3[`border-bottom`] = `1px dashed ${color}`
     customTheme.block.blockquote[`border-left`] = `4px solid ${color}`
   }
@@ -32,15 +32,15 @@ export function setColorWithTemplate(theme) {
   }
 }
 
-export function setColorWithCustomTemplate(theme, color, isDefalut = true) {
-  return createCustomTheme(theme, color, isDefalut)
+export function setColorWithCustomTemplate(theme, color, isDefault = true) {
+  return createCustomTheme(theme, color, isDefault)
 }
 
 // 设置自定义字体大小
 export function setFontSizeWithTemplate(template) {
-  return function (fontSize, isDefalut = true) {
+  return function (fontSize, isDefault = true) {
     const customTheme = JSON.parse(JSON.stringify(template))
-    if (isDefalut) {
+    if (isDefault) {
       customTheme.block.h1[`font-size`] = `${fontSize * 1.2}px`
       customTheme.block.h2[`font-size`] = `${fontSize * 1.2}px`
       customTheme.block.h3[`font-size`] = `${fontSize * 1.1}px`
@@ -57,8 +57,8 @@ export function setFontSizeWithTemplate(template) {
   }
 }
 
-export function setTheme(theme, fontSize, color, isDefalut) {
-  return setColorWithCustomTemplate(setFontSizeWithTemplate(theme)(fontSize, isDefalut), color, isDefalut)
+export function setTheme(theme, fontSize, color, isDefault) {
+  return setColorWithCustomTemplate(setFontSizeWithTemplate(theme)(fontSize, isDefault), color, isDefault)
 }
 
 export function customCssWithTemplate(jsonString, color, theme) {
