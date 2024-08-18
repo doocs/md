@@ -5,11 +5,11 @@ import CodeMirror from 'codemirror'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, githubConfig, legendOptions } from '@/config'
+import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions } from '@/config'
 import WxRenderer from '@/utils/wx-renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColor, setColorWithCustomTemplate, setFontSize } from '@/utils'
+import { addPrefix, css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColor, setColorWithCustomTemplate, setFontSize } from '@/utils'
 
 const defaultKeyMap = CodeMirror.keyMap.default
 const modPrefix
@@ -132,8 +132,45 @@ export const useStore = defineStore(`store`, () => {
 
   // 自义定 CSS 编辑器
   const cssEditor = ref(null)
+  const setCssEditorValue = (content) => {
+    cssEditor.value.setValue(content)
+  }
   // 自定义 CSS 内容
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
+  const cssContentConfig = useStorage(addPrefix(`css_content_config`), {
+    active: `方案 1`,
+    tabs: [
+      {
+        title: `方案 1`,
+        name: `方案 1`,
+        // 兼容之前的方案
+        content: cssContent.value || DEFAULT_CSS_CONTENT,
+      },
+    ],
+  })
+  const getCurrentTab = () => cssContentConfig.value.tabs.find((tab) => {
+    return tab.name === cssContentConfig.value.active
+  })
+  const tabChanged = (name) => {
+    cssContentConfig.value.active = name
+    const content = cssContentConfig.value.tabs.find((tab) => {
+      return tab.name === name
+    }).content
+    setCssEditorValue(content)
+  }
+
+  const addCssContentTab = (name) => {
+    cssContentConfig.value.tabs.push({
+      name,
+      title: name,
+      content: DEFAULT_CSS_CONTENT,
+    })
+    cssContentConfig.value.active = name
+    setCssEditorValue(DEFAULT_CSS_CONTENT)
+  }
+  const validatorTabName = (val) => {
+    return cssContentConfig.value.tabs.every(({ name }) => name !== val)
+  }
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
@@ -148,7 +185,7 @@ export const useStore = defineStore(`store`, () => {
   // 初始化 CSS 编辑器
   onMounted(() => {
     const cssEditorDom = document.querySelector(`#cssEditor`)
-    cssEditorDom.value = cssContent.value
+    cssEditorDom.value = getCurrentTab().content
 
     cssEditor.value = markRaw(
       CodeMirror.fromTextArea(cssEditorDom, {
@@ -161,7 +198,7 @@ export const useStore = defineStore(`store`, () => {
         extraKeys: {
           [`${modPrefix}-F`]: function autoFormat(editor) {
             const doc = formatCss(editor.getValue())
-            cssContent.value = doc
+            getCurrentTab().content = doc
             editor.setValue(doc)
           },
         },
@@ -178,7 +215,7 @@ export const useStore = defineStore(`store`, () => {
     // 实时保存
     cssEditor.value.on(`update`, () => {
       updateCss()
-      cssContent.value = cssEditor.value.getValue()
+      getCurrentTab().content = cssEditor.value.getValue()
     })
   })
 
@@ -192,6 +229,18 @@ export const useStore = defineStore(`store`, () => {
     fontColor.value = colorOptions[0].value
     codeBlockTheme.value = codeBlockThemeOptions[2].value
     legend.value = legendOptions[3].value
+
+    cssContentConfig.value = {
+      active: `方案 1`,
+      tabs: [
+        {
+          title: `方案 1`,
+          name: `方案 1`,
+          // 兼容之前的方案
+          content: cssContent.value || DEFAULT_CSS_CONTENT,
+        },
+      ],
+    }
 
     cssEditor.value.setValue(DEFAULT_CSS_CONTENT)
 
@@ -367,6 +416,12 @@ export const useStore = defineStore(`store`, () => {
 
     resetStyleConfirm,
     editorContent,
+
+    cssContentConfig,
+    addCssContentTab,
+    validatorTabName,
+    setCssEditorValue,
+    tabChanged,
   }
 })
 
