@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta
+      name="keywords"
+      content="md,markdown,markdown-editor,wechat,official-account,yanglbme,doocs"
+    />
+    <meta
+      name="description"
+      content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器"
+    />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <title>微信 Markdown 编辑器 | Doocs 开源社区</title>
+    <link
+      rel="shortcut icon"
+      href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/favicon.png"
+    />
+    <link
+      rel="apple-touch-icon-precomposed"
+      href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
+    />
+    <!-- <link
+      rel="stylesheet"
+      href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/styles.css"
+    /> -->
+    <!-- KaTeX CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css"
+      integrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3SV"
+      crossorigin="anonymous"
+    />
+    <style>
+      /**
+        解决公众号复制字体问题
+       */
+      .katex .mathnormal {
+        font-family: 'Times New Roman' !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>
+      <strong>Please enable JavaScript to continue.</strong>
+    </noscript>
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+    <!-- built files will be auto injected -->
+  </body>
+  <script src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/main.js"></script>
+  <!-- 支持一下  mermaid -->
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs'
+    mermaid.initialize({ startOnLoad: true })
+    window.mermaid = mermaid
+  </script>
+</html>

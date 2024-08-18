@@ -23,7 +23,6 @@ yarn-debug.log*
 yarn-error.log*
 
 dist
-lib
 
 node_modules
 
@@ -46,3 +45,8 @@ httpData
 public/upload/**
 !public/upload/*.gitkeep
 .history
+
+# Package manager lock file
+# package-lock.json
+yarn.lock
+pnpm-lock.yaml
