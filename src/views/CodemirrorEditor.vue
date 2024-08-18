@@ -435,9 +435,11 @@ onMounted(() => {
         <el-row class="container-main-section">
           <el-col
             ref="codeMirrorWrapper"
-            :style="{ order: store.isEditOnLeft ? 0 : 1 }"
             :span="isShowCssEditor ? 8 : 12"
             class="codeMirror-wrapper"
+            :class="{
+              'order-1': !store.isEditOnLeft,
+            }"
             @contextmenu.prevent="openMenu"
           >
             <textarea
