@@ -5,11 +5,11 @@ import CodeMirror from 'codemirror'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions } from '@/config'
+import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, themeMap, themeOptions } from '@/config'
 import WxRenderer from '@/utils/wx-renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { addPrefix, css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColor, setColorWithCustomTemplate, setFontSize } from '@/utils'
+import { addPrefix, css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColorWithCustomTemplate, setFontSizeWithTemplate, setTheme } from '@/utils'
 
 const defaultKeyMap = CodeMirror.keyMap.default
 const modPrefix
@@ -35,6 +35,8 @@ export const useStore = defineStore(`store`, () => {
   const output = ref(``)
 
   // 文本字体
+  const theme = useStorage(addPrefix(`theme`), themeOptions[0].value)
+  // 文本字体
   const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
   // 文本大小
   const fontSize = useStorage(`size`, fontSizeOptions[2].value)
@@ -45,8 +47,10 @@ export const useStore = defineStore(`store`, () => {
   // 图注格式
   const legend = useStorage(`legend`, legendOptions[3].value)
 
+  const fontSizeNumber = fontSize.value.replace(`px`, ``)
+
   const wxRenderer = new WxRenderer({
-    theme: setColor(fontColor.value),
+    theme: setTheme(themeMap[theme.value], fontSizeNumber, fontColor.value, theme.value === `default`),
     fonts: fontFamily.value,
     size: fontSize.value,
   })
@@ -174,11 +178,11 @@ export const useStore = defineStore(`store`, () => {
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
-    let theme = setFontSize(fontSize.value.replace(`px`, ``))
+    let t = setFontSizeWithTemplate(themeMap[theme.value])(fontSizeNumber, theme.value === `default`)
 
-    theme = customCssWithTemplate(json, fontColor.value, theme)
+    t = customCssWithTemplate(json, fontColor.value, t)
     wxRenderer.setOptions({
-      theme,
+      theme: t,
     })
     editorRefresh()
   }
@@ -224,6 +228,8 @@ export const useStore = defineStore(`store`, () => {
     isCiteStatus.value = false
     isMacCodeBlock.value = true
 
+    theme.value = themeOptions[0].value
+    fontFamily.value = fontFamilyOptions[0].value
     fontFamily.value = fontFamilyOptions[0].value
     fontSize.value = fontSizeOptions[2].value
     fontColor.value = colorOptions[0].value
@@ -255,9 +261,17 @@ export const useStore = defineStore(`store`, () => {
   }
 
   const getTheme = (size, color) => {
-    const theme = setFontSize(size.replace(`px`, ``))
-    return setColorWithCustomTemplate(theme, color)
+    const t = setFontSizeWithTemplate(themeMap[theme.value])(size.replace(`px`, ``), theme.value === `default`)
+    return setColorWithCustomTemplate(t, color, theme.value === `default`)
   }
+
+  const themeChanged = withAfterRefresh((newTheme) => {
+    wxRenderer.setOptions({
+      theme: setTheme(themeMap[newTheme], fontSizeNumber, fontColor.value, newTheme === `default`),
+    })
+
+    theme.value = newTheme
+  })
 
   const fontChanged = withAfterRefresh((fonts) => {
     wxRenderer.setOptions({
@@ -393,6 +407,7 @@ export const useStore = defineStore(`store`, () => {
     output,
     editor,
     cssEditor,
+    theme,
     fontFamily,
     fontSize,
     fontColor,
@@ -401,6 +416,7 @@ export const useStore = defineStore(`store`, () => {
 
     editorRefresh,
 
+    themeChanged,
     fontChanged,
     sizeChanged,
     colorChanged,
