@@ -45,7 +45,6 @@ function handleTabsEdit(targetName, action) {
         v-model="store.cssContentConfig.active"
         type="card"
         editable
-        class="demo-tabs"
         @edit="handleTabsEdit"
         @tab-change="store.tabChanged"
       >
@@ -104,7 +103,15 @@ function handleTabsEdit(targetName, action) {
   }
 }
 
+.cssEditor-wrapper {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
 :deep(.el-tabs__header) {
   margin: 0;
+}
+
+:deep(.el-tabs__new-tab) {
+  margin-right: 1em;
 }
 </style>
