@@ -2,6 +2,7 @@
 import { nextTick, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
+import CodeMirror from 'codemirror'
 
 import PostInfo from './PostInfo.vue'
 import FileDropdown from './FileDropdown.vue'
@@ -33,31 +34,39 @@ const emit = defineEmits([
   `startCopy`,
   `endCopy`,
 ])
+const defaultKeyMap = CodeMirror.keyMap.default
+const modPrefix
+  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
 const formatItems = [
   {
     label: `加粗`,
-    kbd: `Ctrl/Command + B`,
-    emitArgs: [`addFormat`, `**`],
+    kbd: `${modPrefix} + B`,
+    emitArgs: [`addFormat`, `${modPrefix}-B`],
   },
   {
     label: `斜体`,
-    kbd: `Ctrl/Command + I`,
-    emitArgs: [`addFormat`, `*`],
+    kbd: `${modPrefix} + I`,
+    emitArgs: [`addFormat`, `${modPrefix}-I`],
   },
   {
     label: `删除线`,
-    kbd: `Ctrl/Command + D`,
-    emitArgs: [`addFormat`, `~~`],
+    kbd: `${modPrefix} + D`,
+    emitArgs: [`addFormat`, `${modPrefix}-D`],
   },
   {
     label: `超链接`,
-    kbd: `Ctrl/Command + K`,
-    emitArgs: [`addFormat`, `[`, `]()`],
+    kbd: `${modPrefix} + K`,
+    emitArgs: [`addFormat`, `${modPrefix}-K`],
+  },
+  {
+    label: `行内代码`,
+    kbd: `${modPrefix} + E`,
+    emitArgs: [`addFormat`, `${modPrefix}-E`],
   },
   {
     label: `格式化`,
-    kbd: `Ctrl/Command + F`,
+    kbd: `${modPrefix} + F`,
     emitArgs: [`formatContent`],
   },
 ]

@@ -229,18 +229,23 @@ function initEditor() {
         const selected = editor.getSelection()
         editor.replaceSelection(`**${selected}**`)
       },
-      [`${modPrefix}-D`]: function del(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`~~${selected}~~`)
-      },
       [`${modPrefix}-I`]: function italic(editor) {
         const selected = editor.getSelection()
         editor.replaceSelection(`*${selected}*`)
+      },
+      [`${modPrefix}-D`]: function del(editor) {
+        const selected = editor.getSelection()
+        editor.replaceSelection(`~~${selected}~~`)
       },
       [`${modPrefix}-K`]: function italic(editor) {
         const selected = editor.getSelection()
         editor.replaceSelection(`[${selected}]()`)
       },
+      [`${modPrefix}-E`]: function code(editor) {
+        const selected = editor.getSelection()
+        editor.replaceSelection(`\`${selected}\``)
+      },
+      // 预备弃用
       [`${modPrefix}-L`]: function code(editor) {
         const selected = editor.getSelection()
         editor.replaceSelection(`\`${selected}\``)
@@ -302,64 +307,8 @@ function openMenu(e) {
 }
 
 // 工具函数，添加格式
-function addFormat(before, after = before) {
-  const { head, anchor } = editor.value.doc.sel.ranges[0]
-  let start
-  let end
-  // 确定起始关系
-  if (head.line === anchor.line) {
-    if (head.ch < anchor.ch) {
-      start = head
-      end = anchor
-    }
-    else {
-      start = anchor
-      end = head
-    }
-  }
-  else {
-    if (head.line < anchor.line) {
-      start = head
-      end = anchor
-    }
-    else {
-      start = anchor
-      end = head
-    }
-  }
-
-  const rows = []
-  let row = ``
-  for (const c of editor.value.getValue()) {
-    if (c === `\n`) {
-      rows.push(row)
-      row = ``
-    }
-    else {
-      row += c
-    }
-  }
-  rows.push(row)
-
-  let txt = ``
-  for (let i = 0; i < rows.length; i++) {
-    const row = rows[i]
-    for (let j = 0; j < row.length; j++) {
-      if (i === start.line && j === start.ch) {
-        txt += before
-      }
-      if (i === end.line && j === end.ch) {
-        txt += after
-      }
-      txt += row[j]
-    }
-    //* 特殊情况，结束光标在末尾，无法遍历到
-    if (i === end.line && row.length === end.ch) {
-      txt += after
-    }
-    txt += `\n`
-  }
-  editor.value.setValue(txt)
+function addFormat(cmd) {
+  editor.value.options.extraKeys[cmd](editor.value)
 }
 
 const codeMirrorWrapper = ref(null)

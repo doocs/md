@@ -24,13 +24,12 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-
-  store.editor.replaceSelection(`\n${table}\n`, `end`)
-  store.editorRefresh()
-
+  store.editor.operation(() => {
+    store.editor.replaceSelection(`\n${table}\n`, `end`)
+  })
+  // store.editorRefresh()
   resetVal()
-
-  formatContent()
+  // formatContent()
   toggleShowInsertFormDialog()
 }
 </script>
