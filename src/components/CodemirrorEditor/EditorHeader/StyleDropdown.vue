@@ -18,12 +18,13 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
 
-import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, githubConfig, legendOptions } from '@/config'
+import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, githubConfig, legendOptions, themeOptions } from '@/config'
 import { useStore } from '@/stores'
 
 const store = useStore()
 
 const {
+  theme,
   fontFamily,
   fontSize,
   fontColor,
@@ -35,6 +36,7 @@ const {
 
 const {
   resetStyleConfirm,
+  themeChanged,
   fontChanged,
   sizeChanged,
   colorChanged,
@@ -73,6 +75,8 @@ function customStyle() {
       </el-icon>
     </DropdownMenuTrigger>
     <DropdownMenuContent class="w-56">
+      <StyleOptionMenu title="主题" :options="themeOptions" :current="theme" :change="themeChanged" />
+      <DropdownMenuSeparator />
       <StyleOptionMenu title="字体" :options="fontFamilyOptions" :current="fontFamily" :change="fontChanged" />
       <StyleOptionMenu title="字号" :options="fontSizeOptions" :current="fontSize" :change="sizeChanged" />
       <StyleOptionMenu
@@ -133,7 +137,7 @@ function customStyle() {
         Mac 代码块
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem divided class="leading-8" @click="resetStyleConfirm">
+      <DropdownMenuItem divided @click="resetStyleConfirm">
         <el-icon class="mr-2 h-4 w-4" />
         重置
       </DropdownMenuItem>

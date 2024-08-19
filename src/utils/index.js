@@ -9,13 +9,19 @@ export function addPrefix(str) {
   return `${prefix}__${str}`
 }
 
-function createCustomTheme(theme, color) {
+function createCustomTheme(theme, color, isDefault = true) {
   const customTheme = JSON.parse(JSON.stringify(theme))
   customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
   customTheme.block.h2.background = color
   customTheme.block.h3[`border-left`] = `3px solid ${color}`
   customTheme.block.h4.color = color
   customTheme.inline.strong.color = color
+
+  if (!isDefault) {
+    customTheme.block.h3[`border-bottom`] = `1px dashed ${color}`
+    customTheme.block.blockquote[`border-left`] = `4px solid ${color}`
+  }
+
   return customTheme
 }
 
@@ -26,24 +32,34 @@ export function setColorWithTemplate(theme) {
   }
 }
 
-export function setColorWithCustomTemplate(theme, color) {
-  return createCustomTheme(theme, color)
+export function setColorWithCustomTemplate(theme, color, isDefault = true) {
+  return createCustomTheme(theme, color, isDefault)
 }
 
 // 设置自定义字体大小
 export function setFontSizeWithTemplate(template) {
-  return function (fontSize) {
+  return function (fontSize, isDefault = true) {
     const customTheme = JSON.parse(JSON.stringify(template))
-    customTheme.block.h1[`font-size`] = `${fontSize * 1.2}px`
-    customTheme.block.h2[`font-size`] = `${fontSize * 1.2}px`
-    customTheme.block.h3[`font-size`] = `${fontSize * 1.1}px`
-    customTheme.block.h4[`font-size`] = `${fontSize}px`
+    if (isDefault) {
+      customTheme.block.h1[`font-size`] = `${fontSize * 1.2}px`
+      customTheme.block.h2[`font-size`] = `${fontSize * 1.2}px`
+      customTheme.block.h3[`font-size`] = `${fontSize * 1.1}px`
+      customTheme.block.h4[`font-size`] = `${fontSize}px`
+    }
+    else {
+      customTheme.block.h1[`font-size`] = `${fontSize * 1.4}px`
+      customTheme.block.h2[`font-size`] = `${fontSize * 1.3}px`
+      customTheme.block.h3[`font-size`] = `${fontSize * 1.2}px`
+      customTheme.block.h4[`font-size`] = `${fontSize * 1.1}px`
+    }
+
     return customTheme
   }
 }
 
-export const setColor = setColorWithTemplate(defaultTheme)
-export const setFontSize = setFontSizeWithTemplate(defaultTheme)
+export function setTheme(theme, fontSize, color, isDefault) {
+  return setColorWithCustomTemplate(setFontSizeWithTemplate(theme)(fontSize, isDefault), color, isDefault)
+}
 
 export function customCssWithTemplate(jsonString, color, theme) {
   // block
