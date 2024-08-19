@@ -178,7 +178,7 @@ export const useStore = defineStore(`store`, () => {
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
-    let t = setFontSizeWithTemplate(themeMap[theme.value])(fontSizeNumber, theme.value === `default`)
+    let t = setTheme(themeMap[theme.value], fontSizeNumber, fontColor.value, theme.value === `default`)
 
     t = customCssWithTemplate(json, fontColor.value, t)
     wxRenderer.setOptions({
