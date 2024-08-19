@@ -20,6 +20,10 @@ function handleTabsEdit(targetName, action) {
   }
   else if (action === `remove`) {
     const tabs = store.cssContentConfig.tabs
+    if (tabs.length === 1) {
+      ElMessage.warning(`至少保留一个方案`)
+      return
+    }
     let activeName = store.cssContentConfig.active
     if (activeName === targetName) {
       tabs.forEach((tab, index) => {
