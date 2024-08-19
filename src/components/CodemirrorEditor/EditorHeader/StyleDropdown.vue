@@ -137,7 +137,7 @@ function customStyle() {
         Mac 代码块
       </DropdownMenuItem>
       <DropdownMenuSeparator />
-      <DropdownMenuItem divided class="leading-8" @click="resetStyleConfirm">
+      <DropdownMenuItem divided @click="resetStyleConfirm">
         <el-icon class="mr-2 h-4 w-4" />
         重置
       </DropdownMenuItem>
