@@ -113,48 +113,50 @@ function copy() {
       toggleDark()
     }
 
-    solveWeChatImage()
+    nextTick(() => {
+      solveWeChatImage()
 
-    const clipboardDiv = document.getElementById(`output`)
-    clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
-    clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
+      const clipboardDiv = document.getElementById(`output`)
+      clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
+      clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
 
-    // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
-    clipboardDiv.innerHTML = clipboardDiv.innerHTML
-      .replace(
-        /class="base"( style="display: inline")*/g,
-        `class="base" style="display: inline"`,
-      )
+      // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
+      clipboardDiv.innerHTML = clipboardDiv.innerHTML
+        .replace(
+          /class="base"( style="display: inline")*/g,
+          `class="base" style="display: inline"`,
+        )
       // 公众号不支持 position， 转换为等价的 translateY
-      .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
+        .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
       // 适配主题中的颜色变量
-      .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
-    clipboardDiv.focus()
-    window.getSelection().removeAllRanges()
-    const range = document.createRange()
+        .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+      clipboardDiv.focus()
+      window.getSelection().removeAllRanges()
+      const range = document.createRange()
 
-    range.setStartBefore(clipboardDiv.firstChild)
-    range.setEndAfter(clipboardDiv.lastChild)
-    window.getSelection().addRange(range)
-    document.execCommand(`copy`)
-    window.getSelection().removeAllRanges()
-    clipboardDiv.innerHTML = output.value
+      range.setStartBefore(clipboardDiv.firstChild)
+      range.setEndAfter(clipboardDiv.lastChild)
+      window.getSelection().addRange(range)
+      document.execCommand(`copy`)
+      window.getSelection().removeAllRanges()
+      clipboardDiv.innerHTML = output.value
 
-    if (isBeforeDark) {
-      toggleDark()
-    }
+      if (isBeforeDark) {
+        toggleDark()
+      }
 
-    // 输出提示
-    ElNotification({
-      showClose: true,
-      message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
-      offset: 80,
-      duration: 1600,
-      type: `success`,
+      // 输出提示
+      ElNotification({
+        showClose: true,
+        message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
+        offset: 80,
+        duration: 1600,
+        type: `success`,
+      })
+
+      editorRefresh()
+      emit(`endCopy`)
     })
-
-    editorRefresh()
-    emit(`endCopy`)
   }, 350)
 }
 </script>
