@@ -479,7 +479,6 @@ export const graceTheme = {
       'padding': `1em`,
       'line-height': `1.5`,
       'margin': `10px 8px`,
-      'background': `#f4f4f4`,
       'box-shadow': `inset 0 0 10px rgba(0,0,0,0.05)`,
       'transition': `all 0.3s ease`,
       '&:hover': {
