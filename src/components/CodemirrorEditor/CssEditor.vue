@@ -17,26 +17,20 @@ function handleTabsEdit(targetName, action) {
         store.addCssContentTab(value)
         ElMessage.success(`新建成功~`)
       })
+      .catch(() => {
+      })
   }
   else if (action === `remove`) {
     const tabs = store.cssContentConfig.tabs
-    if (tabs.length === 1) {
+    if (tabs.length < 2) {
       ElMessage.warning(`至少保留一个方案`)
       return
     }
-    let activeName = store.cssContentConfig.active
-    if (activeName === targetName) {
-      tabs.forEach((tab, index) => {
-        if (tab.name === targetName) {
-          const nextTab = tabs[index + 1] || tabs[index - 1]
-          if (nextTab) {
-            activeName = nextTab.name
-          }
-        }
-      })
+    if (store.cssContentConfig.active === targetName) {
+      const currentIndex = tabs.findIndex(tab => tab.name === targetName);
+      const nextTab = tabs[currentIndex + 1] || tabs[currentIndex - 1];
+      store.cssContentConfig.active = nextTab ? nextTab.name : '';
     }
-
-    store.cssContentConfig.active = activeName
     store.cssContentConfig.tabs = tabs.filter(tab => tab.name !== targetName)
   }
 }
