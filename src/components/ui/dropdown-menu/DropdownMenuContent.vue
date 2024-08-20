@@ -10,7 +10,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const props = withDefaults(
-  defineProps<DropdownMenuContentProps & { class?: HTMLAttributes['class'] }>(),
+  defineProps<DropdownMenuContentProps & { class?: HTMLAttributes[`class`] }>(),
   {
     sideOffset: 4,
   },

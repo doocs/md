@@ -24,7 +24,7 @@ class WxRenderer {
         'font-size': this.opts.size,
       })
       for (const ele in themeTpl.inline) {
-        if (themeTpl.inline.hasOwnProperty(ele)) {
+        if (Object.prototype.hasOwnProperty.call(themeTpl.inline, ele)) {
           const style = themeTpl.inline[ele]
           mapping[ele] = merge(themeTpl.BASE, style)
         }
@@ -32,7 +32,7 @@ class WxRenderer {
 
       const base_block = merge(base, {})
       for (const ele in themeTpl.block) {
-        if (themeTpl.block.hasOwnProperty(ele)) {
+        if (Object.prototype.hasOwnProperty.call(themeTpl.block, ele)) {
           const style = themeTpl.block[ele]
           mapping[ele] = merge(base_block, style)
         }
@@ -151,12 +151,12 @@ class WxRenderer {
           `code`,
         )}>${text}</code></pre>`
       }
-      renderer.codespan = (text, lang) =>
+      renderer.codespan = (text, _) =>
         `<code ${getStyles(`codespan`)}>${text}</code>`
       renderer.listitem = text =>
         `<li ${getStyles(`listitem`)}><span><%s/></span>${text}</li>`
 
-      renderer.list = (text, ordered, start) => {
+      renderer.list = (text, ordered, _) => {
         text = text.replace(/<\/*p .*?>/g, ``).replace(/<\/*p>/g, ``)
         const segments = text.split(`<%s/>`)
         if (!ordered) {
@@ -220,7 +220,7 @@ class WxRenderer {
         `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles(
           `thead`,
         )}>${header}</thead><tbody>${body}</tbody></table></section>`
-      renderer.tablecell = (text, flags) =>
+      renderer.tablecell = (text, _) =>
         `<td ${getStyles(`td`)}>${text}</td>`
       renderer.hr = () => `<hr ${getStyles(`hr`)}>`
       return renderer

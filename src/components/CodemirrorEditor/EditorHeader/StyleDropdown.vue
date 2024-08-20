@@ -18,7 +18,7 @@ import {
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
 
-import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, githubConfig, legendOptions, themeOptions } from '@/config'
+import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, themeOptions } from '@/config'
 import { useStore } from '@/stores'
 
 const store = useStore()

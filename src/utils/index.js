@@ -3,7 +3,7 @@ import prettier from 'prettier/standalone'
 import prettierCss from 'prettier/parser-postcss'
 import prettierMarkdown from 'prettier/parser-markdown'
 
-import { defaultTheme, prefix } from '@/config'
+import { prefix } from '@/config'
 
 export function addPrefix(str) {
   return `${prefix}__${str}`
@@ -323,10 +323,13 @@ export function exportHTML() {
 }
 
 /**
- * 生成列表字符串
- * @param {*} data 对应内容集合
- * @param {*} rows 行
- * @param {*} cols 列
+ * 根据数据生成 Markdown 表格
+ *
+ * @param {object} options - 选项
+ * @param {object} options.data - 表格数据
+ * @param {number} options.rows - 行数
+ * @param {number} options.cols - 列数
+ * @returns {string} 生成的 Markdown 表格
  */
 export function createTable({ data, rows, cols }) {
   let table = ``
@@ -354,8 +357,8 @@ export function toBase64(file) {
 }
 
 export function checkImage(file) {
-  // check filename suffix
-  const isValidSuffix = /\.(gif|jpg|jpeg|png|GIF|JPG|PNG)$/.test(file.name)
+  // 检查文件名后缀
+  const isValidSuffix = /\.(gif|jpe?g|png)$/i.test(file.name)
   if (!isValidSuffix) {
     return {
       ok: false,
@@ -363,15 +366,15 @@ export function checkImage(file) {
     }
   }
 
-  // check file size
-  const maxSize = 10
-  const valid = file.size / 1024 / 1024 <= maxSize
-  if (!valid) {
+  // 检查文件大小
+  const maxSizeMB = 10
+  if (file.size > maxSizeMB * 1024 * 1024) {
     return {
       ok: false,
-      msg: `由于公众号限制，图片大小不能超过 ${maxSize}M`,
+      msg: `由于公众号限制，图片大小不能超过 ${maxSizeMB}M`,
     }
   }
+
   return { ok: true }
 }
 
