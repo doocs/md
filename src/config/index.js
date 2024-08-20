@@ -145,7 +145,7 @@ const codeBlockThemeList = [
 export const codeBlockThemeOptions = [
   ...codeBlockThemeList.map((codeBlockTheme) => {
     const url = `${codeBlockUrlPrefix}${codeBlockTheme}`
-    const label = url.split(`/`).at(-1).replace(`.min.css`, ``)
+    const label = codeBlockTheme.replace(`.min.css`, ``)
     return {
       label,
       value: url,
