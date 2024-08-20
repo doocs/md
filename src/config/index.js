@@ -143,37 +143,11 @@ const codeBlockThemeCDNList = [
 ]
 
 export const codeBlockThemeOptions = [
-  {
-    label: `github`,
-    value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/github.min.css`,
-    desc: `light`,
-  },
-  {
-    label: `solarized-light`,
-    value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/solarized-light.min.css`,
-    desc: `light`,
-  },
-  {
-    label: `atom-one-dark`,
-    value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/atom-one-dark.min.css`,
-    desc: `dark`,
-  },
-  {
-    label: `obsidian`,
-    value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/obsidian.min.css`,
-    desc: `dark`,
-  },
-  {
-    label: `vs2015`,
-    value: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlight.js@11.5.1/styles/vs2015.min.css`,
-    desc: `dark`,
-  },
-  ...codeBlockThemeCDNList.map((e) => {
-    const label = e.split(`/`).at(-1).replace(`.min.css`, ``)
+  ...codeBlockThemeCDNList.map((url) => {
+    const label = url.split(`/`).at(-1).replace(`.min.css`, ``)
     return {
       label,
-      value: e,
-      desc: `BETA`,
+      value: url,
     }
   }),
 ]
