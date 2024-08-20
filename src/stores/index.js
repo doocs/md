@@ -163,6 +163,14 @@ export const useStore = defineStore(`store`, () => {
     setCssEditorValue(content)
   }
 
+  // 重命名 css 方案
+  const renameTab = (name) => {
+    const tab = getCurrentTab()
+    tab.title = name
+    tab.name = name
+    cssContentConfig.value.active = name
+  }
+
   const addCssContentTab = (name) => {
     cssContentConfig.value.tabs.push({
       name,
@@ -438,6 +446,7 @@ export const useStore = defineStore(`store`, () => {
     validatorTabName,
     setCssEditorValue,
     tabChanged,
+    renameTab,
   }
 })
 
