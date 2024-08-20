@@ -48,7 +48,7 @@ function setStyle(title, value) {
       <span>{{ props.title }}</span>
     </DropdownMenuSubTrigger>
     <DropdownMenuPortal>
-      <DropdownMenuSubContent>
+      <DropdownMenuSubContent class="max-h-56 overflow-auto">
         <DropdownMenuItem
           v-for="{ label, value, desc } in options"
           :key="value"
