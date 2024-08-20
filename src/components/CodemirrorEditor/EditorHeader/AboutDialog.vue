@@ -6,10 +6,16 @@ const props = defineProps({
   },
 })
 
-defineEmits([`close`])
+const emit = defineEmits([`close`])
+
+const links = [
+  { label: `GitHub 仓库`, url: `https://github.com/doocs/md` },
+  { label: `Gitee 仓库`, url: `https://gitee.com/doocs/md` },
+  { label: `GitCode 仓库`, url: `https://gitcode.com/doocs/md` },
+]
 
 function onRedirect(url) {
-  window.open(url)
+  window.open(url, `_blank`)
 }
 </script>
 
@@ -18,9 +24,9 @@ function onRedirect(url) {
     title="关于"
     class="about__dialog"
     :model-value="props.visible"
-    width="380"
+    width="520"
     center
-    @close="$emit('close')"
+    @close="emit('close')"
   >
     <div class="text-center">
       <h3>一款高度简洁的微信 Markdown 编辑器</h3>
@@ -28,23 +34,19 @@ function onRedirect(url) {
       <img
         class="mx-auto my-5"
         src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
+        alt="Doocs Markdown 编辑器"
         style="width: 40%"
       >
     </div>
     <template #footer>
       <el-button
+        v-for="link in links"
+        :key="link.url"
         type="primary"
         plain
-        @click="onRedirect('https://github.com/doocs/md')"
+        @click="onRedirect(link.url)"
       >
-        GitHub 仓库
-      </el-button>
-      <el-button
-        type="primary"
-        plain
-        @click="onRedirect('https://gitee.com/doocs/md')"
-      >
-        Gitee 仓库
+        {{ link.label }}
       </el-button>
     </template>
   </el-dialog>
