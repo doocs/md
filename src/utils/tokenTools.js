@@ -1,33 +1,36 @@
 export function utf16to8(str) {
-  let out, i, len, c
-  out = ``
-  len = str.length
-  for (i = 0; i < len; i++) {
-    c = str.charCodeAt(i)
+  let out = ``
+  const len = str.length
+
+  for (let i = 0; i < len; i++) {
+    const c = str.charCodeAt(i)
+
     if (c >= 0x0001 && c <= 0x007F) {
       out += str.charAt(i)
     }
     else if (c > 0x07FF) {
       out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F))
       out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F))
-      out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F))
+      out += String.fromCharCode(0x80 | (c & 0x3F))
     }
     else {
       out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F))
-      out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F))
+      out += String.fromCharCode(0x80 | (c & 0x3F))
     }
   }
+
   return out
 }
 
 export function utf8to16(str) {
-  let out, i, len, c
-  let char2, char3
-  out = ``
-  len = str.length
-  i = 0
+  let out = ``
+  let i = 0
+  const len = str.length
+
   while (i < len) {
-    c = str.charCodeAt(i++)
+    const c = str.charCodeAt(i++)
+    let char2, char3
+
     switch (c >> 4) {
       case 0:
       case 1:
@@ -51,11 +54,12 @@ export function utf8to16(str) {
         char2 = str.charCodeAt(i++)
         char3 = str.charCodeAt(i++)
         out += String.fromCharCode(
-          ((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0),
+          ((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | (char3 & 0x3F),
         )
         break
     }
   }
+
   return out
 }
 
@@ -193,77 +197,89 @@ const base64DecodeChars = [
 ]
 
 export function base64encode(str) {
-  let out, i, len
-  let c1, c2, c3
-  len = str.length
-  i = 0
-  out = ``
+  let out = ``
+  let i = 0
+  const len = str.length
+
   while (i < len) {
-    c1 = str.charCodeAt(i++) & 0xFF
-    if (i == len) {
+    const c1 = str.charCodeAt(i++) & 0xFF
+
+    if (i === len) {
       out += base64EncodeChars.charAt(c1 >> 2)
       out += base64EncodeChars.charAt((c1 & 0x3) << 4)
       out += `==`
       break
     }
-    c2 = str.charCodeAt(i++)
-    if (i == len) {
+
+    const c2 = str.charCodeAt(i++)
+
+    if (i === len) {
       out += base64EncodeChars.charAt(c1 >> 2)
       out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4))
       out += base64EncodeChars.charAt((c2 & 0xF) << 2)
       out += `=`
       break
     }
-    c3 = str.charCodeAt(i++)
+
+    const c3 = str.charCodeAt(i++)
+
     out += base64EncodeChars.charAt(c1 >> 2)
     out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4))
     out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6))
     out += base64EncodeChars.charAt(c3 & 0x3F)
   }
+
   return out
 }
 
 export function base64decode(str) {
   let c1, c2, c3, c4
-  let i, len, out
-  len = str.length
-  i = 0
-  out = ``
+  let i = 0
+  const len = str.length
+  let out = ``
+
   while (i < len) {
     /* c1 */
     do {
       c1 = base64DecodeChars[str.charCodeAt(i++) & 0xFF]
-    } while (i < len && c1 == -1)
-    if (c1 == -1)
+    } while (i < len && c1 === -1)
+    if (c1 === -1)
       break
+
     /* c2 */
     do {
       c2 = base64DecodeChars[str.charCodeAt(i++) & 0xFF]
-    } while (i < len && c2 == -1)
-    if (c2 == -1)
+    } while (i < len && c2 === -1)
+    if (c2 === -1)
       break
+
     out += String.fromCharCode((c1 << 2) | ((c2 & 0x30) >> 4))
+
     /* c3 */
     do {
       c3 = str.charCodeAt(i++) & 0xFF
-      if (c3 == 61)
+      if (c3 === 61)
         return out
       c3 = base64DecodeChars[c3]
-    } while (i < len && c3 == -1)
-    if (c3 == -1)
+    } while (i < len && c3 === -1)
+    if (c3 === -1)
       break
+
     out += String.fromCharCode(((c2 & 0xF) << 4) | ((c3 & 0x3C) >> 2))
+
     /* c4 */
     do {
       c4 = str.charCodeAt(i++) & 0xFF
-      if (c4 == 61)
+      if (c4 === 61)
         return out
       c4 = base64DecodeChars[c4]
-    } while (i < len && c4 == -1)
-    if (c4 == -1)
+    } while (i < len && c4 === -1)
+    if (c4 === -1)
       break
+
     out += String.fromCharCode(((c3 & 0x03) << 6) | c4)
   }
+
   return out
 }
 

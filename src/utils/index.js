@@ -115,82 +115,52 @@ export function customCssWithTemplate(jsonString, color, theme) {
 }
 
 /**
- * 将CSS形式的字符串转换为JSON
+ * 将 CSS 字符串转换为 JSON 对象
  *
- * @param {string} css - css字符串
+ * @param {string} css - CSS 字符串
+ * @returns {object} - JSON 格式的 CSS
  */
 export function css2json(css) {
-  // 移除CSS所有注释
-  let open, close
-  while (
-    (open = css.indexOf(`/*`)) !== -1
-    && (close = css.indexOf(`*/`)) !== -1
-  ) {
-    css = css.substring(0, open) + css.substring(close + 2)
-  }
+  // 去除所有 CSS 注释
+  css = css.replace(/\/\*[\s\S]*?\*\//g, ``)
 
-  // 初始化返回值
   const json = {}
 
-  while (css.length > 0 && css.includes(`{`) && css.includes(`}`)) {
-    // 存储第一个左/右花括号的下标
+  // 辅助函数：将声明数组转换为对象
+  const toObject = array =>
+    array.reduce((obj, item) => {
+      const [property, value] = item.split(`:`).map(part => part.trim())
+      if (property)
+        obj[property] = value
+      return obj
+    }, {})
+
+  while (css.includes(`{`) && css.includes(`}`)) {
     const lbracket = css.indexOf(`{`)
     const rbracket = css.indexOf(`}`)
 
-    // 第一步：将声明转换为Object，如：
-    // `font: 'Times New Roman' 1em; color: #ff0000; margin-top: 1em;`
-    //  ==>
-    // `{"font": "'Times New Roman' 1em", "color": "#ff0000", "margin-top": "1em"}`
-
-    // 辅助方法：将array转为object
-
-    function toObject(array) {
-      const ret = {}
-      array.forEach((e) => {
-        const index = e.indexOf(`:`)
-        const property = e.substring(0, index).trim()
-        ret[property] = e.substring(index + 1).trim()
-      })
-      return ret
-    }
-
-    // 切割声明块并移除空白符，然后放入数组中
-    let declarations = css
-      .substring(lbracket + 1, rbracket)
+    // 获取声明块并转换为对象
+    const declarations = css.substring(lbracket + 1, rbracket)
       .split(`;`)
       .map(e => e.trim())
-      .filter(e => e.length > 0) // 移除所有""空值
+      .filter(Boolean)
 
-    // 转为Object对象
-    declarations = toObject(declarations)
-
-    // 第二步：选择器处理，每个选择器会与它对应的声明相关联，如：
-    // `h1, p#bar {color: red}`
-    // ==>
-    // {"h1": {color: red}, "p#bar": {color: red}}
-
-    const selectors = css
-      .substring(0, lbracket)
-      // 以,切割，并移除空格：`"h1, p#bar, span.foo"` => ["h1", "p#bar", "span.foo"]
+    // 获取选择器并去除空格
+    const selectors = css.substring(0, lbracket)
       .split(`,`)
       .map(selector => selector.trim())
 
-    // 迭代赋值
+    const declarationObj = toObject(declarations)
+
+    // 将声明对象关联到相应的选择器
     selectors.forEach((selector) => {
-      // 若不存在，则先初始化
-      if (!json[selector])
-        json[selector] = {}
-      // 赋值到JSON
-      Object.keys(declarations).forEach((key) => {
-        json[selector][key] = declarations[key]
-      })
+      json[selector] = { ...(json[selector] || {}), ...declarationObj }
     })
 
-    // 继续下个声明块
+    // 处理下一个声明块
     css = css.slice(rbracket + 1).trim()
   }
 
-  // 返回JSON形式的结果串
   return json
 }
 
@@ -358,7 +328,7 @@ export function toBase64(file) {
 
 export function checkImage(file) {
   // 检查文件名后缀
-  const isValidSuffix = /\.(gif|jpe?g|png)$/i.test(file.name)
+  const isValidSuffix = /\.(?:gif|jpe?g|png)$/i.test(file.name)
   if (!isValidSuffix) {
     return {
       ok: false,
