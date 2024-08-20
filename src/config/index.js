@@ -120,7 +120,6 @@ const codeBlockThemeList = [
   `panda-syntax-light.min.css`,
   `paraiso-dark.min.css`,
   `paraiso-light.min.css`,
-  `pojoaque.jpg`,
   `pojoaque.min.css`,
   `purebasic.min.css`,
   `qtcreator-dark.min.css`,
