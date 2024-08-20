@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, ref } from 'vue'
+import { nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
 import CodeMirror from 'codemirror'
@@ -18,12 +18,6 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
-
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card'
 
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { useStore } from '@/stores'

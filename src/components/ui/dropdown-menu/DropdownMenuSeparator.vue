@@ -7,7 +7,7 @@ import {
 import { cn } from '@/lib/utils'
 
 const props = defineProps<DropdownMenuSeparatorProps & {
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes[`class`]
 }>()
 
 const delegatedProps = computed(() => {

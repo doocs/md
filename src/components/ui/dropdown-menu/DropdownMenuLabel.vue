@@ -3,7 +3,7 @@ import { type HTMLAttributes, computed } from 'vue'
 import { DropdownMenuLabel, type DropdownMenuLabelProps, useForwardProps } from 'radix-vue'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<DropdownMenuLabelProps & { class?: HTMLAttributes['class'], inset?: boolean }>()
+const props = defineProps<DropdownMenuLabelProps & { class?: HTMLAttributes[`class`], inset?: boolean }>()
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props
