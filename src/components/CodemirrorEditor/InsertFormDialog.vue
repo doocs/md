@@ -27,9 +27,9 @@ function insertTable() {
   store.editor.operation(() => {
     store.editor.replaceSelection(`\n${table}\n`, `end`)
   })
-  // store.editorRefresh()
+  store.editorRefresh()
   resetVal()
-  // formatContent()
+  formatContent()
   toggleShowInsertFormDialog()
 }
 </script>
