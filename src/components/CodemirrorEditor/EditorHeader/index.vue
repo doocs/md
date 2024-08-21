@@ -136,7 +136,7 @@ function copy() {
       clipboardDiv.innerHTML = output.value
 
       if (isBeforeDark) {
-        toggleDark()
+        nextTick(() => toggleDark())
       }
 
       // 输出提示
