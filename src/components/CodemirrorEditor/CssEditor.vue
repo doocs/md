@@ -5,15 +5,38 @@ import { useStore } from '@/stores'
 
 const store = useStore()
 
+function editTabName() {
+  ElMessageBox.prompt(`请输入新的方案名称`, `编辑方案名称`, {
+    confirmButtonText: `确认`,
+    cancelButtonText: `取消`,
+    inputValue: store.cssContentConfig.active,
+    inputErrorMessage: `不能与现有方案重名`,
+    inputValidator: store.validatorTabName,
+  })
+    .then(({ value }) => {
+      if (!(`${value}`).trim()) {
+        ElMessage.error(`修改失败，方案名不可为空`)
+        return
+      }
+      store.renameTab(value)
+      ElMessage.success(`修改成功~`)
+    })
+}
+
 function handleTabsEdit(targetName, action) {
   if (action === `add`) {
     ElMessageBox.prompt(`请输入方案名称`, `新建自定义 CSS`, {
       confirmButtonText: `确认`,
       cancelButtonText: `取消`,
+      inputValue: `方案${store.cssContentConfig.tabs.length + 1}`,
       inputErrorMessage: `不能与现有方案重名`,
       inputValidator: store.validatorTabName,
     })
       .then(({ value }) => {
+        if (!(`${value}`).trim()) {
+          ElMessage.error(`新建失败，方案名不可为空`)
+          return
+        }
         store.addCssContentTab(value)
         ElMessage.success(`新建成功~`)
       })
@@ -36,7 +59,7 @@ function handleTabsEdit(targetName, action) {
       })
     }
 
-    store.cssContentConfig.active = activeName
+    store.tabChanged(activeName)
     store.cssContentConfig.tabs = tabs.filter(tab => tab.name !== targetName)
   }
 }
@@ -47,7 +70,8 @@ function handleTabsEdit(targetName, action) {
     <el-col v-show="store.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col">
       <el-tabs
         v-model="store.cssContentConfig.active"
-        type="card"
+        type="border-card"
+        stretch
         editable
         @edit="handleTabsEdit"
         @tab-change="store.tabChanged"
@@ -55,9 +79,19 @@ function handleTabsEdit(targetName, action) {
         <el-tab-pane
           v-for="item in store.cssContentConfig.tabs"
           :key="item.name"
-          :label="item.title"
           :name="item.name"
-        />
+        >
+          <template #label>
+            {{ item.title }}
+            <el-icon
+              v-if="store.cssContentConfig.active === item.name"
+              class="ml-1"
+              @click="editTabName(item.name)"
+            >
+              <ElIconEditPen />
+            </el-icon>
+          </template>
+        </el-tab-pane>
       </el-tabs>
       <textarea
         id="cssEditor"
@@ -107,12 +141,15 @@ function handleTabsEdit(targetName, action) {
   }
 }
 
-.cssEditor-wrapper {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.1);
+:deep(.el-tabs__content) {
+  padding: 0;
 }
 
-:deep(.el-tabs__header) {
-  margin: 0;
+// 当 tab 为激活状态时，隐藏关闭按钮
+:deep(.el-tabs__item.is-active) {
+  .is-icon-close {
+    display: none;
+  }
 }
 
 :deep(.el-tabs__new-tab) {
