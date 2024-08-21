@@ -1,11 +1,11 @@
 <script setup>
-import { ref } from 'vue'
+import { ref, toRaw } from 'vue'
 import { useStore } from '@/stores'
 import { createTable } from '@/utils'
 
 const store = useStore()
 
-const { formatContent, toggleShowInsertFormDialog } = store
+const { toggleShowInsertFormDialog } = store
 
 const rowNum = ref(3)
 const colNum = ref(3)
@@ -24,12 +24,8 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  store.editor.operation(() => {
-    store.editor.replaceSelection(`\n${table}\n`, `end`)
-  })
-  store.editorRefresh()
+  toRaw(store.editor).replaceSelection(`\n${table}\n`, `end`)
   resetVal()
-  formatContent()
   toggleShowInsertFormDialog()
 }
 </script>

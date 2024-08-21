@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, toRaw } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import CodeMirror from 'codemirror'
@@ -180,10 +180,10 @@ function uploaded(imageUrl) {
   const cursor = editor.value.getCursor()
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  editor.value.replaceSelection(`\n${markdownImage}\n`, cursor)
+  toRaw(store.editor).replaceSelection(`\n${markdownImage}\n`, cursor)
   ElMessage.success(`图片上传成功`)
-  formatContent()
-  onEditorRefresh()
+  // formatContent()
+  // onEditorRefresh()
 }
 function uploadImage(file, cb) {
   isImgLoading.value = true
