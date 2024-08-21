@@ -31,7 +31,7 @@
     "element-plus": "^2.8.0",
     "form-data": "4.0.0",
     "highlight.js": "^11.10.0",
-    "juice": "^10.0.1",
+    "juice": "^8.0.0",
     "katex": "^0.16.11",
     "lucide-vue-next": "^0.428.0",
     "marked": "^4.0.18",
