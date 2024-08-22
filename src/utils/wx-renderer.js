@@ -2,230 +2,211 @@ import { Renderer, marked } from 'marked'
 import hljs from 'highlight.js'
 import markedKatex from 'marked-katex-extension'
 
-marked.use(markedKatex({
-  throwOnError: false,
-  output: `html`,
-  nonStandard: true,
-}))
+marked.use(
+  markedKatex({
+    throwOnError: false,
+    output: `html`,
+    nonStandard: true,
+  }),
+)
 
-class WxRenderer {
+class WxRenderer extends Renderer {
   constructor(opts) {
+    super()
     this.opts = opts
-    let footnotes = []
-    let footnoteIndex = 0
-    let styleMapping = new Map()
-
-    const merge = (base, extend) => Object.assign({}, base, extend)
-
-    this.buildTheme = (themeTpl) => {
-      const mapping = {}
-      const base = merge(themeTpl.BASE, {
-        'font-family': this.opts.fonts,
-        'font-size': this.opts.size,
-      })
-      for (const ele in themeTpl.inline) {
-        if (Object.prototype.hasOwnProperty.call(themeTpl.inline, ele)) {
-          const style = themeTpl.inline[ele]
-          mapping[ele] = merge(themeTpl.BASE, style)
-        }
-      }
-
-      const base_block = merge(base, {})
-      for (const ele in themeTpl.block) {
-        if (Object.prototype.hasOwnProperty.call(themeTpl.block, ele)) {
-          const style = themeTpl.block[ele]
-          mapping[ele] = merge(base_block, style)
-        }
-      }
-      return mapping
-    }
-
-    const getStyles = (tokenName, addition) => {
-      const arr = []
-      const dict = styleMapping[tokenName]
-      if (!dict)
-        return ``
-      for (const key in dict) {
-        arr.push(`${key}:${dict[key]}`)
-      }
-      return `style="${arr.join(`;`) + (addition || ``)}"`
-    }
-
-    const addFootnote = (title, link) => {
-      footnotes.push([++footnoteIndex, title, link])
-      return footnoteIndex
-    }
-
-    this.buildFootnotes = () => {
-      const footnoteArray = footnotes.map((x) => {
-        if (x[1] === x[2]) {
-          return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code>: <i>${x[1]}</i><br/>`
-        }
-        return `<code style="font-size: 90%; opacity: 0.6;">[${x[0]}]</code> ${x[1]}: <i>${x[2]}</i><br/>`
-      })
-      if (!footnoteArray.length) {
-        return ``
-      }
-      return `<h4 ${getStyles(`h4`)}>引用链接</h4><p ${getStyles(
-        `footnotes`,
-      )}>${footnoteArray.join(`\n`)}</p>`
-    }
-
-    this.buildAddition = () => {
-      return `
-            <style>
-            .preview-wrapper pre::before {
-                position: absolute;
-                top: 0;
-                right: 0;
-                color: #ccc;
-                text-align: center;
-                font-size: 0.8em;
-                padding: 5px 10px 0;
-                line-height: 15px;
-                height: 15px;
-                font-weight: 600;
-            }
-            </style>
-        `
-    }
-
-    this.setOptions = (newOpts) => {
-      this.opts = merge(this.opts, newOpts)
-    }
-
-    this.hasFootnotes = () => footnotes.length !== 0
-
-    this.getRenderer = (status) => {
-      footnotes = []
-      footnoteIndex = 0
-
-      styleMapping = this.buildTheme(this.opts.theme)
-      const renderer = new Renderer()
-
-      renderer.heading = (text, level) => {
-        switch (level) {
-          case 1:
-            return `<h1 ${getStyles(`h1`)}>${text}</h1>`
-          case 2:
-            return `<h2 ${getStyles(`h2`)}>${text}</h2>`
-          case 3:
-            return `<h3 ${getStyles(`h3`)}>${text}</h3>`
-          default:
-            return `<h4 ${getStyles(`h4`)}>${text}</h4>`
-        }
-      }
-      renderer.paragraph = (text) => {
-        if (text.includes(`<figure`) && text.includes(`<img`)) {
-          return text
-        }
-        return text.replace(/ /g, ``) === ``
-          ? ``
-          : `<p ${getStyles(`p`)}>${text}</p>`
-      }
-
-      renderer.blockquote = (text) => {
-        text = text.replace(/<p.*?>/g, `<p ${getStyles(`blockquote_p`)}>`)
-        return `<blockquote ${getStyles(`blockquote`)}>${text}</blockquote>`
-      }
-      renderer.code = (text, lang = ``) => {
-        if (lang.startsWith(`mermaid`)) {
-          setTimeout(() => {
-            window.mermaid?.run()
-          }, 0)
-          return `<center><pre class="mermaid">${text}</pre></center>`
-        }
-        lang = lang.split(` `)[0]
-        lang = hljs.getLanguage(lang) ? lang : `plaintext`
-        text = hljs.highlight(text, { language: lang }).value
-        text = text
-          .replace(/\r\n/g, `<br/>`)
-          .replace(/\n/g, `<br/>`)
-          .replace(/(>[^<]+)|(^[^<]+)/g, (str) => {
-            return str.replace(/\s/g, `&nbsp;`)
-          })
-
-        return `<pre class="hljs code__pre" ${getStyles(
-          `code_pre`,
-        )}><code class="language-${lang}" ${getStyles(
-          `code`,
-        )}>${text}</code></pre>`
-      }
-      renderer.codespan = (text, _) =>
-        `<code ${getStyles(`codespan`)}>${text}</code>`
-      renderer.listitem = text =>
-        `<li ${getStyles(`listitem`)}><span><%s/></span>${text}</li>`
-
-      renderer.list = (text, ordered, _) => {
-        text = text.replace(/<\/*p .*?>/g, ``).replace(/<\/*p>/g, ``)
-        const segments = text.split(`<%s/>`)
-        if (!ordered) {
-          text = segments.join(`• `)
-          return `<ul ${getStyles(`ul`)}>${text}</ul>`
-        }
-        text = segments[0]
-        for (let i = 1; i < segments.length; i++) {
-          text = `${text + i}. ${segments[i]}`
-        }
-        return `<ol ${getStyles(`ol`)}>${text}</ol>`
-      }
-      renderer.image = (href, title, text) => {
-        const createSubText = (s) => {
-          if (!s) {
-            return ``
-          }
-
-          return `<figcaption ${getStyles(`figcaption`)}>${s}</figcaption>`
-        }
-        const transform = (title, alt) => {
-          const legend = localStorage.getItem(`legend`)
-          switch (legend) {
-            case `alt`:
-              return alt
-            case `title`:
-              return title
-            case `alt-title`:
-              return alt || title
-            case `title-alt`:
-              return title || alt
-            default:
-              return ``
-          }
-        }
-        const subText = createSubText(transform(title, text))
-        const figureStyles = getStyles(`figure`)
-        const imgStyles = getStyles(`image`)
-        return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
-      }
-      renderer.link = (href, title, text) => {
-        if (href.startsWith(`https://mp.weixin.qq.com`)) {
-          return `<a href="${href}" title="${title || text}" ${getStyles(
-            `wx_link`,
-          )}>${text}</a>`
-        }
-        if (href === text) {
-          return text
-        }
-        if (status) {
-          const ref = addFootnote(title || text, href)
-          return `<span ${getStyles(`link`)}>${text}<sup>[${ref}]</sup></span>`
-        }
-        return `<span ${getStyles(`link`)}>${text}</span>`
-      }
-      renderer.strong = text =>
-        `<strong ${getStyles(`strong`)}>${text}</strong>`
-      renderer.em = text =>
-        `<span style="font-style: italic;">${text}</span>`
-      renderer.table = (header, body) =>
-        `<section style="padding:0 8px;"><table class="preview-table"><thead ${getStyles(
-          `thead`,
-        )}>${header}</thead><tbody>${body}</tbody></table></section>`
-      renderer.tablecell = (text, _) =>
-        `<td ${getStyles(`td`)}>${text}</td>`
-      renderer.hr = () => `<hr ${getStyles(`hr`)}>`
-      return renderer
-    }
+    this.footnotes = []
+    this.footnoteIndex = 0
+    this.styleMapping = this.buildTheme(opts.theme)
   }
+
+  reset = () => {
+    this.footnotes = []
+    this.footnoteIndex = 0
+  }
+
+  merge = (base, extend) => ({ ...base, ...extend })
+
+  buildTheme = (themeTpl) => {
+    const base = this.merge(themeTpl.BASE, {
+      'font-family': this.opts.fonts,
+      'font-size': this.opts.size,
+    })
+
+    const mapping = {
+      ...Object.fromEntries(
+        Object.entries(themeTpl.inline).map(([ele, style]) => [
+          ele,
+          this.merge(base, style),
+        ]),
+      ),
+      ...Object.fromEntries(
+        Object.entries(themeTpl.block).map(([ele, style]) => [
+          ele,
+          this.merge(base, style),
+        ]),
+      ),
+    }
+
+    return mapping
+  }
+
+  getStyles = (tokenName, addition = ``) => {
+    const dict = this.styleMapping[tokenName]
+    if (!dict)
+      return ``
+    const styles = Object.entries(dict)
+      .map(([key, value]) => `${key}:${value}`)
+      .join(`;`)
+    return `style="${styles}${addition}"`
+  }
+
+  addFootnote = (title, link) => {
+    this.footnotes.push([++this.footnoteIndex, title, link])
+    return this.footnoteIndex
+  }
+
+  buildFootnotes = () => {
+    if (!this.footnotes.length)
+      return ``
+    const footnoteArray = this.footnotes
+      .map(([index, title, link]) =>
+        link === title
+          ? `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code>: <i>${title}</i><br/>`
+          : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i>${link}</i><br/>`,
+      )
+      .join(`\n`)
+    return `<h4 ${this.getStyles(`h4`)}>引用链接</h4><p ${this.getStyles(
+      `footnotes`,
+    )}>${footnoteArray}</p>`
+  }
+
+  buildAddition = () => `
+    <style>
+      .preview-wrapper pre::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #ccc;
+        text-align: center;
+        font-size: 0.8em;
+        padding: 5px 10px 0;
+        line-height: 15px;
+        height: 15px;
+        font-weight: 600;
+      }
+    </style>
+  `
+
+  setOptions = (newOpts) => {
+    this.opts = this.merge(this.opts, newOpts)
+    this.styleMapping = this.buildTheme(this.opts.theme)
+  }
+
+  heading = (text, level) => {
+    const tag = `h${level}`
+    return `<${tag} ${this.getStyles(tag)}>${text}</${tag}>`
+  }
+
+  paragraph = (text) => {
+    const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
+    const isEmpty = text.trim() === ``
+    return isFigureImage ? text : isEmpty ? `` : `<p ${this.getStyles(`p`)}>${text}</p>`
+  }
+
+  blockquote = (text) => {
+    text = text.replace(/<p.*?>/g, `<p ${this.getStyles(`blockquote_p`)}>`)
+    return `<blockquote ${this.getStyles(`blockquote`)}>${text}</blockquote>`
+  }
+
+  code = (text, lang = ``) => {
+    if (lang.startsWith(`mermaid`)) {
+      setTimeout(() => {
+        window.mermaid?.run()
+      }, 0)
+      return `<center><pre class="mermaid">${text}</pre></center>`
+    }
+    const langText = lang.split(` `)[0]
+    const language = hljs.getLanguage(langText) ? langText : `plaintext`
+    text = hljs.highlight(text, { language }).value
+    text = text
+      .replace(/\r\n/g, `<br/>`)
+      .replace(/\n/g, `<br/>`)
+      .replace(/(>[^<]+)|(^[^<]+)/g, (str) => {
+        return str.replace(/\s/g, `&nbsp;`)
+      })
+
+    return `<pre class="hljs code__pre" ${this.getStyles(
+      `code_pre`,
+    )}><code class="language-${lang}" ${this.getStyles(
+      `code`,
+    )}>${text}</code></pre>`
+  }
+
+  codespan = text => `<code ${this.getStyles(`codespan`)}>${text}</code>`
+
+  listitem = text => `<li ${this.getStyles(`listitem`)}><span><%s/></span>${text}</li>`
+
+  list = (text, ordered) => {
+    text = text.replace(/<\/*p.*?>/g, ``).replace(/<\/*p>/g, ``)
+
+    const segments = text.split(`<%s/>`)
+
+    if (!ordered) {
+      return `<ul ${this.getStyles(`ul`)}>${segments.join(`• `)}</ul>`
+    }
+
+    const orderedText = segments.map((segment, i) => (i > 0 ? `${i}. ` : ``) + segment).join(``)
+    return `<ol ${this.getStyles(`ol`)}>${orderedText}</ol>`
+  }
+
+  image = (href, title, text) => {
+    const createSubText = s => s ? `<figcaption ${this.getStyles(`figcaption`)}>${s}</figcaption>` : ``
+    const transform = {
+      'alt': () => text,
+      'title': () => title,
+      'alt-title': () => text || title,
+      'title-alt': () => title || text,
+    }[this.opts.legend] || (() => ``)
+
+    const subText = createSubText(transform())
+    const figureStyles = this.getStyles(`figure`)
+    const imgStyles = this.getStyles(`image`)
+
+    return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
+  }
+
+  link = (href, title, text) => {
+    if (href.startsWith(`https://mp.weixin.qq.com`)) {
+      return `<a href="${href}" title="${title || text}" ${this.getStyles(
+        `wx_link`,
+      )}>${text}</a>`
+    }
+    if (href === text)
+      return text
+    if (this.opts.status) {
+      const ref = this.addFootnote(title || text, href)
+      return `<span ${this.getStyles(
+        `link`,
+      )}>${text}<sup>[${ref}]</sup></span>`
+    }
+    return `<span ${this.getStyles(`link`)}>${text}</span>`
+  }
+
+  strong = text => `<strong ${this.getStyles(`strong`)}>${text}</strong>`
+
+  em = text => `<span style="font-style: italic;">${text}</span>`
+
+  table = (header, body) => `
+    <section style="padding:0 8px;">
+      <table class="preview-table">
+        <thead ${this.getStyles(`thead`)}>${header}</thead>
+        <tbody>${body}</tbody>
+      </table>
+    </section>`
+
+  tablecell = text => `<td ${this.getStyles(`td`)}>${text}</td>`
+
+  hr = () => `<hr ${this.getStyles(`hr`)}/>`
 }
 
 export default WxRenderer

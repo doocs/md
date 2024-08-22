@@ -574,8 +574,8 @@ function uploadImage(params) {
     :deep(.CodeMirror) {
       border: 1px solid #eee;
       height: 300px !important;
-      font-family: 'Fira Mono', 'DejaVu Sans Mono', Menlo, Consolas,
-        'Liberation Mono', Monaco, 'Lucida Console', monospace !important;
+      font-family: 'Fira Mono', 'DejaVu Sans Mono', Menlo, Consolas, 'Liberation Mono', Monaco, 'Lucida Console',
+        monospace !important;
       line-height: 20px;
 
       .CodeMirror-scroll {

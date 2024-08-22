@@ -87,8 +87,9 @@ export const useStore = defineStore(`store`, () => {
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-
-    const renderer = wxRenderer.getRenderer(isCiteStatus.value)
+    const renderer = wxRenderer
+    renderer.reset()
+    renderer.setOptions({ status: isCiteStatus.value, legend: legend.value })
     marked.setOptions({ renderer })
     let outputTemp = marked.parse(editor.value.getValue(0))
 
