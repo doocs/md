@@ -66,13 +66,15 @@ class WxRenderer extends Renderer {
   }
 
   buildFootnotes = () => {
-    if (!this.footnotes.length)
+    if (!this.footnotes.length) {
       return ``
+    }
+
     const footnoteArray = this.footnotes
       .map(([index, title, link]) =>
         link === title
-          ? `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code>: <i>${title}</i><br/>`
-          : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i>${link}</i><br/>`,
+          ? `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code>: <i style="word-break: break-all">${title}</i><br/>`
+          : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i style="word-break: break-all">${link}</i><br/>`,
       )
       .join(`\n`)
     return `<h4 ${this.getStyles(`h4`)}>引用链接</h4><p ${this.getStyles(
