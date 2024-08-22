@@ -170,7 +170,6 @@ function beforeUpload(file) {
 
 // 图片上传结束
 function uploaded(imageUrl) {
-  console.log(`图片上传之后: `, imageUrl)
   if (!imageUrl) {
     ElMessage.error(`上传图片未知异常`)
     return
@@ -182,27 +181,27 @@ function uploaded(imageUrl) {
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
   toRaw(store.editor).replaceSelection(`\n${markdownImage}\n`, cursor)
   ElMessage.success(`图片上传成功`)
-  // formatContent()
-  // onEditorRefresh()
 }
 function uploadImage(file, cb) {
   isImgLoading.value = true
+
   toBase64(file)
-    .then((base64Content) => {
-      fileApi
-        .fileUpload(base64Content, file)
-        .then((url) => {
-          console.log(url)
-          cb ? cb(url) : uploaded(url)
-        })
-        .catch((err) => {
-          ElMessage.error(err.message)
-        })
+    .then(base64Content => fileApi.fileUpload(base64Content, file))
+    .then((url) => {
+      console.log(url)
+      if (cb) {
+        cb(url)
+      }
+      else {
+        uploaded(url)
+      }
     })
     .catch((err) => {
       ElMessage.error(err.message)
     })
-  isImgLoading.value = false
+    .finally(() => {
+      isImgLoading.value = false
+    })
 }
 
 const changeTimer = ref(0)
