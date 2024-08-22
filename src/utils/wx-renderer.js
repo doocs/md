@@ -107,10 +107,11 @@ class WxRenderer extends Renderer {
     return `<${tag} ${this.getStyles(tag)}>${text}</${tag}>`
   }
 
-  paragraph = text =>
-    text.includes(`<figure`) && text.includes(`<img>`)
-      ? text
-      : `<p ${this.getStyles(`p`)}>${text}</p>`
+  paragraph = (text) => {
+    const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
+    const isEmpty = text.trim() === ``
+    return isFigureImage ? text : isEmpty ? `` : `<p ${this.getStyles(`p`)}>${text}</p>`
+  }
 
   blockquote = (text) => {
     text = text.replace(/<p.*?>/g, `<p ${this.getStyles(`blockquote_p`)}>`)
@@ -141,13 +142,37 @@ class WxRenderer extends Renderer {
     )}>${text}</code></pre>`
   }
 
+  codespan = text => `<code ${this.getStyles(`codespan`)}>${text}</code>`
+
+  listitem = text => `<li ${this.getStyles(`listitem`)}><span><%s/></span>${text}</li>`
+
+  list = (text, ordered) => {
+    text = text.replace(/<\/*p.*?>/g, ``).replace(/<\/*p>/g, ``)
+
+    const segments = text.split(`<%s/>`)
+
+    if (!ordered) {
+      return `<ul ${this.getStyles(`ul`)}>${segments.join(`• `)}</ul>`
+    }
+
+    const orderedText = segments.map((segment, i) => (i > 0 ? `${i}. ` : ``) + segment).join(``)
+    return `<ol ${this.getStyles(`ol`)}>${orderedText}</ol>`
+  }
+
   image = (href, title, text) => {
-    const subText = `<figcaption ${this.getStyles(`figcaption`)}>${
-      title || text
-    }</figcaption>`
-    return `<figure ${this.getStyles(`figure`)}><img ${this.getStyles(
-      `image`,
-    )} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
+    const createSubText = s => s ? `<figcaption ${this.getStyles(`figcaption`)}>${s}</figcaption>` : ``
+    const transform = {
+      'alt': () => text,
+      'title': () => title,
+      'alt-title': () => text || title,
+      'title-alt': () => title || text,
+    }[this.opts.legend] || (() => ``)
+
+    const subText = createSubText(transform())
+    const figureStyles = this.getStyles(`figure`)
+    const imgStyles = this.getStyles(`image`)
+
+    return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
   }
 
   link = (href, title, text) => {
@@ -160,7 +185,9 @@ class WxRenderer extends Renderer {
       return text
     if (this.opts.status) {
       const ref = this.addFootnote(title || text, href)
-      return `<span ${this.getStyles(`link`)}>${text}<sup>[${ref}]</sup></span>`
+      return `<span ${this.getStyles(
+        `link`,
+      )}>${text}<sup>[${ref}]</sup></span>`
     }
     return `<span ${this.getStyles(`link`)}>${text}</span>`
   }

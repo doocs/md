@@ -89,7 +89,7 @@ export const useStore = defineStore(`store`, () => {
     codeThemeChange()
     const renderer = wxRenderer
     renderer.reset()
-    renderer.setOptions({ status: isCiteStatus.value })
+    renderer.setOptions({ status: isCiteStatus.value, legend: legend.value })
     marked.setOptions({ renderer })
     let outputTemp = marked.parse(editor.value.getValue(0))
 
