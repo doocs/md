@@ -18,7 +18,7 @@ const {
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger>
+    <DropdownMenuTrigger class="flex items-center">
       编辑
       <el-icon class="ml-2">
         <ElIconArrowDown />
