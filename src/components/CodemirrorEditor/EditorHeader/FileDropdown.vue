@@ -29,7 +29,7 @@ const {
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger>
+    <DropdownMenuTrigger class="flex items-center">
       文件
       <el-icon class="ml-2">
         <ElIconArrowDown />

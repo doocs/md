@@ -68,7 +68,7 @@ function customStyle() {
 
 <template>
   <DropdownMenu>
-    <DropdownMenuTrigger>
+    <DropdownMenuTrigger class="flex items-center">
       样式
       <el-icon class="ml-2">
         <ElIconArrowDown />

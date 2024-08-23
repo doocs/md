@@ -160,7 +160,7 @@ function copy() {
     <el-space class="dropdowns flex-auto" size="large">
       <FileDropdown />
       <DropdownMenu>
-        <DropdownMenuTrigger>
+        <DropdownMenuTrigger class="flex items-center">
           格式
           <el-icon class="ml-2">
             <ElIconArrowDown />
