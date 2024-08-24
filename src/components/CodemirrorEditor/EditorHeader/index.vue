@@ -256,6 +256,10 @@ function updateOpen(isOpen) {
   padding: 0 20px;
 }
 
+.dropdowns {
+  user-select: none;
+}
+
 kbd {
   display: inline-flex;
   justify-content: center;
