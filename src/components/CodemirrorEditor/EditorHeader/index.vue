@@ -1,8 +1,9 @@
 <script setup>
-import { nextTick } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
 import CodeMirror from 'codemirror'
+import { Command } from 'lucide-vue-next'
 
 import PostInfo from './PostInfo.vue'
 import FileDropdown from './FileDropdown.vue'
@@ -32,35 +33,38 @@ const defaultKeyMap = CodeMirror.keyMap.default
 const modPrefix
   = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
+const kbdIcon
+  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `⌘` : `Ctrl`
+
 const formatItems = [
   {
     label: `加粗`,
-    kbd: `${modPrefix} + B`,
+    kbd: [kbdIcon, `B`],
     emitArgs: [`addFormat`, `${modPrefix}-B`],
   },
   {
     label: `斜体`,
-    kbd: `${modPrefix} + I`,
+    kbd: [kbdIcon, `I`],
     emitArgs: [`addFormat`, `${modPrefix}-I`],
   },
   {
     label: `删除线`,
-    kbd: `${modPrefix} + D`,
+    kbd: [kbdIcon, `D`],
     emitArgs: [`addFormat`, `${modPrefix}-D`],
   },
   {
     label: `超链接`,
-    kbd: `${modPrefix} + K`,
+    kbd: [kbdIcon, `K`],
     emitArgs: [`addFormat`, `${modPrefix}-K`],
   },
   {
     label: `行内代码`,
-    kbd: `${modPrefix} + E`,
+    kbd: [kbdIcon, `E`],
     emitArgs: [`addFormat`, `${modPrefix}-E`],
   },
   {
     label: `格式化`,
-    kbd: `${modPrefix} + F`,
+    kbd: [kbdIcon, `F`],
     emitArgs: [`formatContent`],
   },
 ]
@@ -153,29 +157,62 @@ function copy() {
     })
   }, 350)
 }
+
+const isClickTrigger = ref(false)
+const isOpenList = reactive(Array.from({ length: 5 }).fill(false))
+function clickTrigger() {
+  isClickTrigger.value = !isClickTrigger.value
+}
+
+function openDropdown(index) {
+  return () => {
+    isOpenList.fill(false)
+    isOpenList[index] = true
+  }
+}
+
+function updateOpen(isOpen) {
+  if (!isOpen) {
+    isOpenList.fill(false)
+    isClickTrigger.value = false
+  }
+}
 </script>
 
 <template>
   <div class="header-container">
-    <el-space class="dropdowns flex-auto" size="large">
-      <FileDropdown />
-      <DropdownMenu>
-        <DropdownMenuTrigger class="flex items-center">
+    <div class="dropdowns flex flex-auto">
+      <FileDropdown
+        :is-open="isClickTrigger && isOpenList[0]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(0)"
+        :update-open="updateOpen"
+      />
+
+      <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
+        <DropdownMenuTrigger
+          class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
+          :class="{
+            'bg-gray-2': isOpenList[1],
+            'dark:bg-stone-9': isOpenList[1],
+          }"
+          @click="clickTrigger()"
+          @mouseenter="openDropdown(1)()"
+        >
           格式
-          <el-icon class="ml-2">
-            <ElIconArrowDown />
-          </el-icon>
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-60">
-          <DropdownMenuItem v-for="{ label, kbd, emitArgs } in formatItems" :key="kbd" @click="$emit(...emitArgs)">
+        <DropdownMenuContent class="w-60" align="start">
+          <DropdownMenuItem v-for="{ label, kbd, emitArgs } in formatItems" :key="kbd" @click="$emit(...emitArgs);">
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
             <DropdownMenuShortcut>
-              {{ kbd }}
+              <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
+                {{ item }}
+              </kbd>
             </DropdownMenuShortcut>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
-          <DropdownMenuItem @click="citeStatusChanged">
+          <DropdownMenuItem @click="citeStatusChanged()">
             <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isCiteStatus }">
               <ElIconCheck />
             </el-icon>
@@ -183,10 +220,26 @@ function copy() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <EditDropdown />
-      <StyleDropdown />
-      <HelpDropdown />
-    </el-space>
+      <EditDropdown
+        :is-open="isClickTrigger && isOpenList[2]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(2)"
+        :update-open="updateOpen"
+      />
+      <StyleDropdown
+
+        :is-open="isClickTrigger && isOpenList[3]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(3)"
+        :update-open="updateOpen"
+      />
+      <HelpDropdown
+        :is-open="isClickTrigger && isOpenList[4]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(4)"
+        :update-open="updateOpen"
+      />
+    </div>
     <el-button plain type="primary" @click="copy">
       复制
     </el-button>
@@ -201,5 +254,18 @@ function copy() {
   align-items: center;
   height: 100%;
   padding: 0 20px;
+}
+
+.dropdowns {
+  user-select: none;
+}
+
+kbd {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #a8a8a8;
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 </style>
