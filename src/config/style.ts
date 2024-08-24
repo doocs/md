@@ -1,4 +1,6 @@
-export const fontFamilyOptions = [
+import type { IConfigOption } from '@/types'
+
+export const fontFamilyOptions: IConfigOption[] = [
   {
     label: `无衬线`,
     value: `-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif`,
@@ -16,7 +18,7 @@ export const fontFamilyOptions = [
   },
 ]
 
-export const fontSizeOptions = [
+export const fontSizeOptions: IConfigOption[] = [
   {
     label: `12px`,
     value: `12px`,
@@ -44,23 +46,42 @@ export const fontSizeOptions = [
   },
 ]
 
-export const colorOptions = [
+export const colorOptions: IConfigOption[] = [
   {
     label: `经典蓝`,
-    value: `rgba(15, 76, 129, 1)`,
+    value: `#0F4C81`,
     desc: `最新流行`,
   },
   {
     label: `翡翠绿`,
-    value: `rgba(0, 152, 116, 1)`,
+    value: `#009874`,
     desc: `优雅清新`,
   },
   {
     label: `活力橘`,
-    value: `rgba(250, 81, 81, 1)`,
+    value: `#FA5151`,
     desc: `热情活泼`,
   },
-  // { label: `微信绿`, value: `rgb(26, 173, 25,1)`, desc: `经典微信绿` },
+  {
+    label: `柠檬黄`,
+    value: `#FECE00`,
+    desc: `明亮温暖`,
+  },
+  {
+    label: `樱桃红`,
+    value: `#FF445F`,
+    desc: `浪漫热情`,
+  },
+  {
+    label: `浅紫色`,
+    value: `#92617E`,
+    desc: `优雅高贵`,
+  },
+  {
+    label: `天空蓝`,
+    value: `#55C9EA`,
+    desc: `清新脱俗`,
+  },
 ]
 
 const codeBlockUrlPrefix = `https://cdn.bootcdn.net/ajax/libs/highlight.js/11.10.0/styles/`
@@ -140,16 +161,15 @@ const codeBlockThemeList = [
   `xt256.min.css`,
 ].sort()
 
-export const codeBlockThemeOptions = [
-  ...codeBlockThemeList.map((codeBlockTheme) => {
-    const url = `${codeBlockUrlPrefix}${codeBlockTheme}`
-    const label = codeBlockTheme.replace(`.min.css`, ``)
-    return {
-      label,
-      value: url,
-    }
-  }),
-]
+export const codeBlockThemeOptions: IConfigOption[] = codeBlockThemeList.map((codeBlockTheme) => {
+  const label = codeBlockTheme.replace(`.min.css`, ``)
+  const value = `${codeBlockUrlPrefix}${codeBlockTheme}`
+  return {
+    label,
+    value,
+    desc: ``,
+  }
+})
 
 export const legendOptions = [
   {
