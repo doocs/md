@@ -191,7 +191,7 @@ function updateOpen(isOpen) {
 
       <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
         <DropdownMenuTrigger
-          class="flex items-center p-2 px-4 hover:bg-gray-2 hover:dark:bg-gray-2"
+          class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
           :class="{
             'bg-gray-2': isOpenList[1],
             'dark:bg-stone-9': isOpenList[1],
@@ -201,12 +201,12 @@ function updateOpen(isOpen) {
         >
           格式
         </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-60">
+        <DropdownMenuContent class="w-60" align="start">
           <DropdownMenuItem v-for="{ label, kbd, emitArgs } in formatItems" :key="kbd" @click="$emit(...emitArgs);">
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
             <DropdownMenuShortcut>
-              <kbd v-for="item in kbd" :key="item" class="mx-1">
+              <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
                 {{ item }}
               </kbd>
             </DropdownMenuShortcut>
@@ -261,7 +261,6 @@ kbd {
   justify-content: center;
   align-items: center;
   border: 1px solid #a8a8a8;
-  background-color: #f4f4f7;
   padding: 1px 4px;
   border-radius: 2px;
 }

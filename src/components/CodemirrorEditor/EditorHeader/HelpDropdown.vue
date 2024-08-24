@@ -18,7 +18,7 @@ const aboutDialogVisible = ref(false)
 <template>
   <DropdownMenu :open="props.isOpen" @update:open="props.updateOpen">
     <DropdownMenuTrigger
-      class="flex items-center p-2 px-4 hover:bg-gray-2 hover:dark:bg-gray-2"
+      class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
       :class="{
         'bg-gray-2': props.isOpen,
         'dark:bg-stone-9': props.isOpen,
@@ -28,7 +28,7 @@ const aboutDialogVisible = ref(false)
     >
       帮助
     </DropdownMenuTrigger>
-    <DropdownMenuContent>
+    <DropdownMenuContent align="start">
       <DropdownMenuItem @click="aboutDialogVisible = true">
         <el-icon class="mr-2 h-4 w-4" />
         <span>关于</span>

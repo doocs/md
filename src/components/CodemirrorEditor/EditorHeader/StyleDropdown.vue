@@ -71,7 +71,7 @@ function customStyle() {
 <template>
   <DropdownMenu :open="props.isOpen" @update:open="props.updateOpen">
     <DropdownMenuTrigger
-      class="flex items-center p-2 px-4 hover:bg-gray-2 hover:dark:bg-gray-2"
+      class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
       :class="{
         'bg-gray-2': props.isOpen,
         'dark:bg-stone-9': props.isOpen,
@@ -81,7 +81,7 @@ function customStyle() {
     >
       样式
     </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56">
+    <DropdownMenuContent class="w-56" align="start">
       <StyleOptionMenu title="主题" :options="themeOptions" :current="theme" :change="themeChanged" />
       <DropdownMenuSeparator />
       <StyleOptionMenu title="字体" :options="fontFamilyOptions" :current="fontFamily" :change="fontChanged" />
