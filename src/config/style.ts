@@ -49,7 +49,7 @@ export const fontSizeOptions: IConfigOption[] = [
 export const colorOptions: IConfigOption[] = [
   {
     label: `经典蓝`,
-    value: `#0f4c81`,
+    value: `#0F4C81`,
     desc: `最新流行`,
   },
   {
@@ -59,7 +59,7 @@ export const colorOptions: IConfigOption[] = [
   },
   {
     label: `活力橘`,
-    value: `#fa5151`,
+    value: `#FA5151`,
     desc: `热情活泼`,
   },
   {
@@ -82,7 +82,6 @@ export const colorOptions: IConfigOption[] = [
     value: `#55C9EA`,
     desc: `清新脱俗`,
   },
-  // { label: `微信绿`, value: `rgb(26, 173, 25,1)`, desc: `经典微信绿` },
 ]
 
 const codeBlockUrlPrefix = `https://cdn.bootcdn.net/ajax/libs/highlight.js/11.10.0/styles/`
@@ -163,11 +162,11 @@ const codeBlockThemeList = [
 ].sort()
 
 export const codeBlockThemeOptions: IConfigOption[] = codeBlockThemeList.map((codeBlockTheme) => {
-  const url = `${codeBlockUrlPrefix}${codeBlockTheme}`
   const label = codeBlockTheme.replace(`.min.css`, ``)
+  const value = `${codeBlockUrlPrefix}${codeBlockTheme}`
   return {
     label,
-    value: url,
+    value,
     desc: ``,
   }
 })
