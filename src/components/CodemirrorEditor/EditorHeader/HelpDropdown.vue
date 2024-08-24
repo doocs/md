@@ -10,16 +10,23 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+const props = defineProps([`isOpen`, `clickTrigger`, `openDropdown`, `updateOpen`])
+
 const aboutDialogVisible = ref(false)
 </script>
 
 <template>
-  <DropdownMenu>
-    <DropdownMenuTrigger class="flex items-center">
+  <DropdownMenu :open="props.isOpen" @update:open="props.updateOpen">
+    <DropdownMenuTrigger
+      class="flex items-center p-2 px-4"
+      :class="{
+        'bg-gray-2': props.isOpen,
+        'dark:bg-stone-9': props.isOpen,
+      }"
+      @click="props.clickTrigger()"
+      @mouseenter="props.openDropdown()"
+    >
       帮助
-      <el-icon class="ml-2">
-        <ElIconArrowDown />
-      </el-icon>
     </DropdownMenuTrigger>
     <DropdownMenuContent>
       <DropdownMenuItem @click="aboutDialogVisible = true">
