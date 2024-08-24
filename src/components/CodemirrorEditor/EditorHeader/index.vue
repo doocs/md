@@ -34,37 +34,37 @@ const modPrefix
   = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
 
 const kbdIcon
-  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `⌘` : `⌃`
+  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `⌘` : `Ctrl`
 
 const formatItems = [
   {
     label: `加粗`,
-    kbd: `${kbdIcon}B`,
+    kbd: [kbdIcon, `B`],
     emitArgs: [`addFormat`, `${modPrefix}-B`],
   },
   {
     label: `斜体`,
-    kbd: `${kbdIcon}I`,
+    kbd: [kbdIcon, `I`],
     emitArgs: [`addFormat`, `${modPrefix}-I`],
   },
   {
     label: `删除线`,
-    kbd: `${kbdIcon}D`,
+    kbd: [kbdIcon, `D`],
     emitArgs: [`addFormat`, `${modPrefix}-D`],
   },
   {
     label: `超链接`,
-    kbd: `${kbdIcon}K`,
+    kbd: [kbdIcon, `K`],
     emitArgs: [`addFormat`, `${modPrefix}-K`],
   },
   {
     label: `行内代码`,
-    kbd: `${kbdIcon}E`,
+    kbd: [kbdIcon, `E`],
     emitArgs: [`addFormat`, `${modPrefix}-E`],
   },
   {
     label: `格式化`,
-    kbd: `${kbdIcon}F`,
+    kbd: [kbdIcon, `F`],
     emitArgs: [`formatContent`],
   },
 ]
@@ -191,7 +191,7 @@ function updateOpen(isOpen) {
 
       <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
         <DropdownMenuTrigger
-          class="flex items-center p-2 px-4"
+          class="flex items-center p-2 px-4 hover:bg-gray-2 hover:dark:bg-gray-2"
           :class="{
             'bg-gray-2': isOpenList[1],
             'dark:bg-stone-9': isOpenList[1],
@@ -206,10 +206,8 @@ function updateOpen(isOpen) {
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
             <DropdownMenuShortcut>
-              <kbd>
-                <span v-for="v in kbd" :key="v" class="ml-1 text-sm">
-                  {{ v }}
-                </span>
+              <kbd v-for="item in kbd" :key="item" class="mx-1">
+                {{ item }}
               </kbd>
             </DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -256,5 +254,15 @@ function updateOpen(isOpen) {
   align-items: center;
   height: 100%;
   padding: 0 20px;
+}
+
+kbd {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #a8a8a8;
+  background-color: #f4f4f7;
+  padding: 1px 4px;
+  border-radius: 2px;
 }
 </style>

@@ -21,7 +21,7 @@ const {
 <template>
   <DropdownMenu :open="props.isOpen" @update:open="props.updateOpen">
     <DropdownMenuTrigger
-      class="flex items-center p-2 px-4"
+      class="flex items-center p-2 px-4 hover:bg-gray-2 hover:dark:bg-gray-2"
       :class="{
         'bg-gray-2': props.isOpen,
         'dark:bg-stone-9': props.isOpen,
