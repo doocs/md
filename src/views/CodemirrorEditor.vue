@@ -428,7 +428,7 @@ onMounted(() => {
                 <ContextMenuItem inset @click="exportEditorContent2HTML()">
                   导出 .html
                 </ContextMenuItem>
-                <ContextMenuItem inset @click="formatContent">
+                <ContextMenuItem inset @click="formatContent()">
                   格式化
                   <ContextMenuShortcut>{{ altSign }} + {{ shiftSign }} + F</ContextMenuShortcut>
                 </ContextMenuItem>
