@@ -20,6 +20,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/config'
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { useStore } from '@/stores'
 
@@ -29,42 +30,36 @@ const emit = defineEmits([
   `startCopy`,
   `endCopy`,
 ])
-const defaultKeyMap = CodeMirror.keyMap.default
-const modPrefix
-  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `Cmd` : `Ctrl`
-
-const kbdIcon
-  = defaultKeyMap === CodeMirror.keyMap.macDefault ? `⌘` : `Ctrl`
 
 const formatItems = [
   {
     label: `加粗`,
-    kbd: [kbdIcon, `B`],
-    emitArgs: [`addFormat`, `${modPrefix}-B`],
+    kbd: [ctrlSign, `B`],
+    emitArgs: [`addFormat`, `${ctrlKey}-B`],
   },
   {
     label: `斜体`,
-    kbd: [kbdIcon, `I`],
-    emitArgs: [`addFormat`, `${modPrefix}-I`],
+    kbd: [ctrlSign, `I`],
+    emitArgs: [`addFormat`, `${ctrlKey}-I`],
   },
   {
     label: `删除线`,
-    kbd: [kbdIcon, `D`],
-    emitArgs: [`addFormat`, `${modPrefix}-D`],
+    kbd: [ctrlSign, `D`],
+    emitArgs: [`addFormat`, `${ctrlKey}-D`],
   },
   {
     label: `超链接`,
-    kbd: [kbdIcon, `K`],
-    emitArgs: [`addFormat`, `${modPrefix}-K`],
+    kbd: [ctrlSign, `K`],
+    emitArgs: [`addFormat`, `${ctrlKey}-K`],
   },
   {
     label: `行内代码`,
-    kbd: [kbdIcon, `E`],
-    emitArgs: [`addFormat`, `${modPrefix}-E`],
+    kbd: [ctrlSign, `E`],
+    emitArgs: [`addFormat`, `${ctrlKey}-E`],
   },
   {
     label: `格式化`,
-    kbd: [kbdIcon, `F`],
+    kbd: [altSign, shiftSign, `F`],
     emitArgs: [`formatContent`],
   },
 ]
@@ -124,9 +119,9 @@ function copy() {
           /class="base"( style="display: inline")*/g,
           `class="base" style="display: inline"`,
         )
-      // 公众号不支持 position， 转换为等价的 translateY
+        // 公众号不支持 position， 转换为等价的 translateY
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
-      // 适配主题中的颜色变量
+        // 适配主题中的颜色变量
         .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
       clipboardDiv.focus()
       window.getSelection().removeAllRanges()
@@ -182,21 +177,16 @@ function updateOpen(isOpen) {
   <div class="header-container">
     <div class="dropdowns flex flex-auto">
       <FileDropdown
-        :is-open="isClickTrigger && isOpenList[0]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(0)"
-        :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[0]" :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(0)" :update-open="updateOpen"
       />
 
       <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
         <DropdownMenuTrigger
-          class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
-          :class="{
-            'bg-gray-2': isOpenList[1],
-            'dark:bg-stone-9': isOpenList[1],
-          }"
-          @click="clickTrigger()"
-          @mouseenter="openDropdown(1)()"
+          class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9" :class="{
+            'bg-gray-2': isClickTrigger && isOpenList[1],
+            'dark:bg-stone-9': isClickTrigger && isOpenList[1],
+          }" @click="clickTrigger()" @mouseenter="openDropdown(1)()"
         >
           格式
         </DropdownMenuTrigger>
@@ -220,23 +210,16 @@ function updateOpen(isOpen) {
         </DropdownMenuContent>
       </DropdownMenu>
       <EditDropdown
-        :is-open="isClickTrigger && isOpenList[2]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(2)"
-        :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[2]" :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(2)" :update-open="updateOpen"
       />
       <StyleDropdown
-
-        :is-open="isClickTrigger && isOpenList[3]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(3)"
-        :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[3]" :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(3)" :update-open="updateOpen"
       />
       <HelpDropdown
-        :is-open="isClickTrigger && isOpenList[4]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(4)"
-        :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[4]" :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(4)" :update-open="updateOpen"
       />
     </div>
     <el-button plain type="primary" @click="copy">
