@@ -149,6 +149,10 @@ export const useStore = defineStore(`store`, () => {
       },
     ],
   })
+  onMounted(() => {
+    // 清空过往历史记录
+    cssContent.value = ``
+  })
   const getCurrentTab = () => cssContentConfig.value.tabs.find((tab) => {
     return tab.name === cssContentConfig.value.active
   })
