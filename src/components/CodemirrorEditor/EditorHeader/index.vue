@@ -59,7 +59,7 @@ const formatItems = [
   },
   {
     label: `格式化`,
-    kbd: [altSign, shiftSign, `L`],
+    kbd: [altSign, shiftSign, `F`],
     emitArgs: [`formatContent`],
   },
 ]
