@@ -168,7 +168,6 @@ function openDropdown(index) {
 
 function updateOpen(isOpen) {
   if (!isOpen) {
-    isOpenList.fill(false)
     isClickTrigger.value = false
   }
 }
