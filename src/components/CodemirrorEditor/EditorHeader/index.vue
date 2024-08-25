@@ -184,7 +184,8 @@ function updateOpen(isOpen) {
       <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
         <DropdownMenuTrigger
           class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9" :class="{
-            'dark:bg-stone-9': isOpenList[1],
+            'bg-gray-2': isClickTrigger && isOpenList[1],
+            'dark:bg-stone-9': isClickTrigger && isOpenList[1],
           }" @click="clickTrigger()" @mouseenter="openDropdown(1)()"
         >
           格式
