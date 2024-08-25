@@ -139,11 +139,11 @@ export const useStore = defineStore(`store`, () => {
   // 自定义 CSS 内容
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
   const cssContentConfig = useStorage(addPrefix(`css_content_config`), {
-    active: `方案 1`,
+    active: `方案1`,
     tabs: [
       {
-        title: `方案 1`,
-        name: `方案 1`,
+        title: `方案1`,
+        name: `方案1`,
         // 兼容之前的方案
         content: cssContent.value || DEFAULT_CSS_CONTENT,
       },
