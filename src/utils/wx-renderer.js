@@ -1,6 +1,7 @@
 import { Renderer, marked } from 'marked'
 import hljs from 'highlight.js'
 import markedKatex from 'marked-katex-extension'
+import mermaid from 'mermaid'
 
 marked.use(
   markedKatex({
@@ -130,12 +131,14 @@ class WxRenderer extends Renderer {
     return this.styledContent(`blockquote`, text)
   }
 
+  codeIndex = 0
   code({ text, lang }) {
     if (lang.startsWith(`mermaid`)) {
-      setTimeout(() => {
-        window.mermaid?.run()
+      clearTimeout(this.codeIndex)
+      this.codeIndex = setTimeout(() => {
+        mermaid.run()
       }, 0)
-      return `<center><pre class="mermaid">${text}</pre></center>`
+      return `<pre class="mermaid">${text}</pre>`
     }
     const langText = lang.split(` `)[0]
     const language = hljs.getLanguage(langText) ? langText : `plaintext`
