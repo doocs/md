@@ -162,14 +162,14 @@ class WxRenderer extends Renderer {
   }
 
   list({ ordered, items }) {
-    const listItems = [];
+    const listItems = []
     for (let i = 0; i < items.length; i++) {
-      const {tokens} = items[i];
-      const prefix = ordered ? `${i + 1}. ` : `• `;
-      listItems.push(this.listitem(tokens, prefix));
+      const { tokens } = items[i]
+      const prefix = ordered ? `${i + 1}. ` : `• `
+      listItems.push(this.listitem(tokens, prefix))
     }
-    const label = ordered ? `ol` : `ul`;
-    return this.styledContent(label, listItems.join(``));
+    const label = ordered ? `ol` : `ul`
+    return this.styledContent(label, listItems.join(``))
   }
 
   image({ href, title, text }) {
@@ -216,7 +216,18 @@ class WxRenderer extends Renderer {
   }
 
   table({ header, rows }) {
-    
+    const headerRow = header.map(cell => this.styledContent(`td`, cell.text)).join(``)
+    const body = rows.map((row) => {
+      const rowContent = row.map(cell => this.styledContent(`td`, cell.text)).join(``)
+      return this.styledContent(`tr`, rowContent)
+    }).join(``)
+    return `
+    <section style="padding:0 8px;">
+      <table class="preview-table">
+        <thead ${this.getStyles(`thead`)}>${headerRow}</thead>
+        <tbody>${body}</tbody>
+      </table>
+    </section>`
   }
 
   tablecell({ text }) {
