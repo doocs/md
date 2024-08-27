@@ -381,7 +381,7 @@ const graceTheme = mergeTheme(defaultTheme, {
     },
 
     thead: {
-      'background': `linear-gradient(45deg, rgba(0, 152, 116, 0.9), rgba(0, 192, 146, 0.9))`,
+      'background': `rgba(0, 0, 0, 0.05)`,
       'color': `#fff`,
       'font-weight': `bold`,
     },
