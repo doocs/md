@@ -8,7 +8,7 @@ import {
 } from 'radix-vue'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<ContextMenuItemProps & { class?: HTMLAttributes['class'], inset?: boolean }>()
+const props = defineProps<ContextMenuItemProps & { class?: HTMLAttributes[`class`], inset?: boolean }>()
 const emits = defineEmits<ContextMenuItemEmits>()
 
 const delegatedProps = computed(() => {

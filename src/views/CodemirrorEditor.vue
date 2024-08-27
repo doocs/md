@@ -15,21 +15,14 @@ import RunLoading from '@/components/RunLoading.vue'
 
 import {
   ContextMenu,
-  ContextMenuCheckboxItem,
   ContextMenuContent,
   ContextMenuItem,
-  ContextMenuLabel,
-  ContextMenuRadioGroup,
-  ContextMenuRadioItem,
   ContextMenuSeparator,
   ContextMenuShortcut,
-  ContextMenuSub,
-  ContextMenuSubContent,
-  ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
 
-import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
+import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
 
 import {
   checkImage,
