@@ -61,8 +61,7 @@ class WxRenderer extends Renderer {
     return `style="${styles}${addition}"`
   }
 
-  styledContent = (styleLabel, content, retLabel = ``) => {
-    const label = retLabel || styleLabel
+  styledContent = (styleLabel, content, label = styleLabel) => {
     return `<${label} ${this.getStyles(styleLabel)}>${content}</${label}>`
   }
 
