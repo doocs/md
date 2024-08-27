@@ -168,7 +168,14 @@ class WxRenderer extends Renderer {
     for (let i = 0; i < items.length; i++) {
       const { tokens } = items[i]
       const prefix = ordered ? `${i + 1}. ` : `• `
-      listItems.push(this.listitem(tokens, prefix))
+      for (const token of tokens) {
+        if (token.type === `list`) {
+          listItems.push(this.list(token))
+        }
+        else {
+          listItems.push(this.listitem([token], prefix))
+        }
+      }
     }
     const label = ordered ? `ol` : `ul`
     return this.styledContent(label, listItems.join(``))
