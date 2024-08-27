@@ -2,8 +2,6 @@
 import { nextTick, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
-import CodeMirror from 'codemirror'
-import { Command } from 'lucide-vue-next'
 
 import PostInfo from './PostInfo.vue'
 import FileDropdown from './FileDropdown.vue'

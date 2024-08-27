@@ -52,12 +52,17 @@ class WxRenderer extends Renderer {
 
   getStyles = (tokenName, addition = ``) => {
     const dict = this.styleMapping[tokenName]
-    if (!dict)
+    if (!dict) {
       return ``
+    }
     const styles = Object.entries(dict)
       .map(([key, value]) => `${key}:${value}`)
       .join(`;`)
     return `style="${styles}${addition}"`
+  }
+
+  styledContent = (styleLabel, content, label = styleLabel) => {
+    return `<${label} ${this.getStyles(styleLabel)}>${content}</${label}>`
   }
 
   addFootnote = (title, link) => {
@@ -77,9 +82,8 @@ class WxRenderer extends Renderer {
           : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i style="word-break: break-all">${link}</i><br/>`,
       )
       .join(`\n`)
-    return `<h4 ${this.getStyles(`h4`)}>引用链接</h4><p ${this.getStyles(
-      `footnotes`,
-    )}>${footnoteArray}</p>`
+
+    return this.styledContent(`h4`, `引用链接`) + this.styledContent(`footnotes`, footnoteArray, `p`)
   }
 
   buildAddition = () => `
@@ -104,23 +108,29 @@ class WxRenderer extends Renderer {
     this.styleMapping = this.buildTheme(this.opts.theme)
   }
 
-  heading = (text, level) => {
-    const tag = `h${level}`
-    return `<${tag} ${this.getStyles(tag)}>${text}</${tag}>`
+  heading({ tokens, depth }) {
+    const text = this.parser.parseInline(tokens)
+    const tag = `h${depth}`
+    return this.styledContent(tag, text)
   }
 
-  paragraph = (text) => {
+  paragraph({ tokens }) {
+    const text = this.parser.parseInline(tokens)
     const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
     const isEmpty = text.trim() === ``
-    return isFigureImage ? text : isEmpty ? `` : `<p ${this.getStyles(`p`)}>${text}</p>`
+    if (isFigureImage || isEmpty) {
+      return text
+    }
+    return this.styledContent(`p`, text)
   }
 
-  blockquote = (text) => {
+  blockquote({ tokens }) {
+    let text = this.parser.parse(tokens)
     text = text.replace(/<p.*?>/g, `<p ${this.getStyles(`blockquote_p`)}>`)
-    return `<blockquote ${this.getStyles(`blockquote`)}>${text}</blockquote>`
+    return this.styledContent(`blockquote`, text)
   }
 
-  code = (text, lang = ``) => {
+  code({ text, lang }) {
     if (lang.startsWith(`mermaid`)) {
       setTimeout(() => {
         window.mermaid?.run()
@@ -129,86 +139,103 @@ class WxRenderer extends Renderer {
     }
     const langText = lang.split(` `)[0]
     const language = hljs.getLanguage(langText) ? langText : `plaintext`
-    text = hljs.highlight(text, { language }).value
-    text = text
+    let highlighted = hljs.highlight(text, { language }).value
+    highlighted = highlighted
       .replace(/\r\n/g, `<br/>`)
       .replace(/\n/g, `<br/>`)
-      .replace(/(>[^<]+)|(^[^<]+)/g, (str) => {
-        return str.replace(/\s/g, `&nbsp;`)
-      })
+      .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
 
     return `<pre class="hljs code__pre" ${this.getStyles(
       `code_pre`,
     )}><code class="language-${lang}" ${this.getStyles(
       `code`,
-    )}>${text}</code></pre>`
+    )}>${highlighted}</code></pre>`
   }
 
-  codespan = text => `<code ${this.getStyles(`codespan`)}>${text}</code>`
+  codespan({ text }) {
+    return this.styledContent(`codespan`, text, `code`)
+  }
 
-  listitem = text => `<li ${this.getStyles(`listitem`)}><span><%s/></span>${text}</li>`
+  listitem(tokens, prefix) {
+    return `<li ${this.getStyles(`listitem`)}>${prefix}${this.parser.parseInline(tokens)}</li>`
+  }
 
-  list = (text, ordered) => {
-    text = text.replace(/<\/*p.*?>/g, ``).replace(/<\/*p>/g, ``)
-
-    const segments = text.split(`<%s/>`)
-
-    if (!ordered) {
-      return `<ul ${this.getStyles(`ul`)}>${segments.join(`• `)}</ul>`
+  list({ ordered, items }) {
+    const listItems = []
+    for (let i = 0; i < items.length; i++) {
+      const { tokens } = items[i]
+      const prefix = ordered ? `${i + 1}. ` : `• `
+      listItems.push(this.listitem(tokens, prefix))
     }
-
-    const orderedText = segments.map((segment, i) => (i > 0 ? `${i}. ` : ``) + segment).join(``)
-    return `<ol ${this.getStyles(`ol`)}>${orderedText}</ol>`
+    const label = ordered ? `ol` : `ul`
+    return this.styledContent(label, listItems.join(``))
   }
 
-  image = (href, title, text) => {
-    const createSubText = s => s ? `<figcaption ${this.getStyles(`figcaption`)}>${s}</figcaption>` : ``
-    const transform = {
-      'alt': () => text,
-      'title': () => title,
-      'alt-title': () => text || title,
-      'title-alt': () => title || text,
-    }[this.opts.legend] || (() => ``)
+  image({ href, title, text }) {
+    const createSubText = s =>
+      s ? `<figcaption ${this.getStyles(`figcaption`)}>${s}</figcaption>` : ``
+    const transform
+      = {
+        'alt': () => text,
+        'title': () => title,
+        'alt-title': () => text || title,
+        'title-alt': () => title || text,
+      }[this.opts.legend] || (() => ``)
 
     const subText = createSubText(transform())
     const figureStyles = this.getStyles(`figure`)
     const imgStyles = this.getStyles(`image`)
-
     return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
   }
 
-  link = (href, title, text) => {
+  link({ href, title, text }) {
     if (href.startsWith(`https://mp.weixin.qq.com`)) {
       return `<a href="${href}" title="${title || text}" ${this.getStyles(
         `wx_link`,
       )}>${text}</a>`
     }
-    if (href === text)
+    if (href === text) {
       return text
+    }
     if (this.opts.status) {
       const ref = this.addFootnote(title || text, href)
       return `<span ${this.getStyles(
         `link`,
       )}>${text}<sup>[${ref}]</sup></span>`
     }
-    return `<span ${this.getStyles(`link`)}>${text}</span>`
+    return this.styledContent(`link`, text, `span`)
   }
 
-  strong = text => `<strong ${this.getStyles(`strong`)}>${text}</strong>`
+  strong({ text }) {
+    return this.styledContent(`strong`, text)
+  }
 
-  em = text => `<span style="font-style: italic;">${text}</span>`
+  em({ text }) {
+    return `<span style="font-style: italic;">${text}</span>`
+  }
 
-  table = (header, body) => `
+  table({ header, rows }) {
+    const headerRow = header.map(cell => this.styledContent(`td`, cell.text)).join(``)
+    const body = rows.map((row) => {
+      const rowContent = row.map(cell => this.styledContent(`td`, cell.text)).join(``)
+      return this.styledContent(`tr`, rowContent)
+    }).join(``)
+    return `
     <section style="padding:0 8px;">
       <table class="preview-table">
-        <thead ${this.getStyles(`thead`)}>${header}</thead>
+        <thead ${this.getStyles(`thead`)}>${headerRow}</thead>
         <tbody>${body}</tbody>
       </table>
     </section>`
+  }
 
-  tablecell = text => `<td ${this.getStyles(`td`)}>${text}</td>`
+  tablecell({ text }) {
+    return this.styledContent(`td`, text)
+  }
 
-  hr = () => `<hr ${this.getStyles(`hr`)}/>`
+  hr(_) {
+    return this.styledContent(`hr`, ``)
+  }
 }
 
 export default WxRenderer
