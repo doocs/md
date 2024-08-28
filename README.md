@@ -20,7 +20,8 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 [https://doocs.github.io/md](https://doocs.github.io/md)
 
-注：推荐使用 Chrome 浏览器，效果最佳。
+> [!TIP]
+> 推荐使用 Chrome 浏览器，效果最佳。
 
 ## 为何二次开发
 
@@ -28,11 +29,14 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
+> [!NOTE]
+> 我们项目最新版本基于 Vue3 开发，基于 Vue2 的旧版本已经不再维护，如果你需要 Vue2 版本，请切换到 [1.x 分支](https://github.com/doocs/md/tree/1.x)。
+
 ## 功能特性
 
 - [x] 支持自定义 CSS 样式
 - [x] 支持 Markdown 所有基础语法
-- [x] 支持浅色、暗黑两种主题模式
+- [x] 支持浅色、深色两种编辑器外观
 - [x] 支持 <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> 快速格式化文档
 - [x] 支持色盘取色，快速替换文章整体色调
 - [x] 支持多图上传，可自定义配置图床
@@ -52,13 +56,13 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 | 6   | [MinIO](https://min.io/)                        | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/minio-client-complete-guide)                                   |
 | 7   | 自定义上传                                      | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                    |
 
-![select-and-change-color-theme](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542281-a8c99fa7-c11e-4e43-98da-e36012f54dc8.gif)
+![demo1](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo1.gif)
 
-![copy-and-paste](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542372-59707c83-2caf-4a96-9bb6-c4effaecf731.gif)
+![demo2](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo2.gif)
 
-![custom](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542180-4d1c48b1-75f6-4794-95f7-e3b877c2b6a2.gif)
+![demo3](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo3.gif)
 
-![doocs-md-upload-image](https://doocs.oss-cn-shenzhen.aliyuncs.com/img//1606034542512-0769a336-b9eb-4d58-83c1-29db7b54f71b.gif)
+![demo4](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo4.gif)
 
 ## 注意事项
 
