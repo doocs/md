@@ -20,8 +20,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 [https://doocs.github.io/md](https://doocs.github.io/md)
 
-> [!TIP]
-> 推荐使用 Chrome 浏览器，效果最佳。
+注：推荐使用 Chrome 浏览器，效果最佳。
 
 ## 为何二次开发
 
@@ -29,7 +28,6 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
-> [!NOTE]
 > 我们项目最新版本基于 Vue3 开发，基于 Vue2 的旧版本已经不再维护，如果你需要 Vue2 版本，请切换到 [1.x 分支](https://github.com/doocs/md/tree/1.x)。
 
 ## 功能特性
