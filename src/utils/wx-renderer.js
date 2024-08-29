@@ -172,7 +172,7 @@ class WxRenderer extends Renderer {
         if (token.type === `list`) {
           listItems.push(this.list(token))
         }
-        else {
+        else if (token.type !== `space`) {
           listItems.push(this.listitem([token], prefix))
         }
       }
