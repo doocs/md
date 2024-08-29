@@ -28,7 +28,7 @@ class WxRenderer extends Renderer {
   merge = (base, extend) => ({ ...base, ...extend })
 
   buildTheme = (themeTpl) => {
-    const base = this.merge(themeTpl.BASE, {
+    const base = this.merge(themeTpl.base, {
       'font-family': this.opts.fonts,
       'font-size': this.opts.size,
     })
