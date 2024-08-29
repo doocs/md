@@ -1,5 +1,5 @@
 interface Theme {
-  BASE: Record<string, string | number>
+  base: Record<string, string | number>
   block: Record<string, Record<string, string | number>>
   inline: Record<string, Record<string, string | number>>
 }
@@ -8,9 +8,9 @@ const baseColor = `#3f3f3f`
 
 function mergeTheme(defaultTheme: Theme, newTheme: Theme) {
   const res: Theme = {
-    BASE: {
-      ...defaultTheme.BASE,
-      ...newTheme.BASE,
+    base: {
+      ...defaultTheme.base,
+      ...newTheme.base,
     },
     block: {},
     inline: {},
@@ -31,7 +31,7 @@ function mergeTheme(defaultTheme: Theme, newTheme: Theme) {
 }
 
 const defaultTheme = {
-  BASE: {
+  base: {
     '--md-primary-color': `#000000`,
     'text-align': `left`,
     'line-height': `1.75`,
@@ -225,7 +225,7 @@ const defaultTheme = {
 }
 
 const graceTheme = mergeTheme(defaultTheme, {
-  BASE: {
+  base: {
   },
   block: {
     h1: {

@@ -12,7 +12,7 @@ export function addPrefix(str) {
 // 设置自定义颜色
 function createCustomTheme(theme, color) {
   const customTheme = JSON.parse(JSON.stringify(theme))
-  customTheme.BASE[`--md-primary-color`] = color
+  customTheme.base[`--md-primary-color`] = color
   return customTheme
 }
 

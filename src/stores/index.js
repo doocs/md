@@ -6,7 +6,7 @@ import { useDark, useStorage, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
-import WxRenderer from '@/utils/wx-renderer'
+import WxRenderer from '@/utils/renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { addPrefix, css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColorWithCustomTemplate, setFontSizeWithTemplate, setTheme } from '@/utils'
