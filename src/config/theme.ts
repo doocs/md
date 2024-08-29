@@ -1,37 +1,29 @@
 interface Theme {
-  BASE: Record<string, string | number>
+  base: Record<string, string | number>
   block: Record<string, Record<string, string | number>>
   inline: Record<string, Record<string, string | number>>
 }
 
 const baseColor = `#3f3f3f`
 
-function mergeTheme(defaultTheme: Theme, newTheme: Theme) {
-  const res: Theme = {
-    BASE: {
-      ...defaultTheme.BASE,
-      ...newTheme.BASE,
-    },
-    block: {},
-    inline: {},
-  }
-  for (const el in defaultTheme.block) {
-    res.block[el] = {
-      ...defaultTheme.block[el],
-      ...newTheme.block[el],
+function mergeTheme(defaultTheme: Theme, newTheme: Theme): Theme {
+  const merge = (defaultObj: Record<string, any>, newObj: Record<string, any>) => {
+    const result: Record<string, any> = {}
+    for (const key in defaultObj) {
+      result[key] = { ...defaultObj[key], ...newObj?.[key] }
     }
+    return result
   }
-  for (const el in defaultTheme.inline) {
-    res.inline[el] = {
-      ...defaultTheme.inline[el],
-      ...newTheme.inline[el],
-    }
+
+  return {
+    base: { ...defaultTheme.base, ...newTheme.base },
+    block: merge(defaultTheme.block, newTheme.block),
+    inline: merge(defaultTheme.inline, newTheme.inline),
   }
-  return res
 }
 
 const defaultTheme = {
-  BASE: {
+  base: {
     '--md-primary-color': `#000000`,
     'text-align': `left`,
     'line-height': `1.75`,
@@ -225,7 +217,7 @@ const defaultTheme = {
 }
 
 const graceTheme = mergeTheme(defaultTheme, {
-  BASE: {
+  base: {
   },
   block: {
     h1: {
