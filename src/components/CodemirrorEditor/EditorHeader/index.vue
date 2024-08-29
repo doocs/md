@@ -68,6 +68,7 @@ const {
   isDark,
   isCiteStatus,
   output,
+  fontColor,
 } = storeToRefs(store)
 
 const {
@@ -121,6 +122,8 @@ function copy() {
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量
         .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+        .replaceAll(`var(--md-primary-color)`, fontColor.value)
+        .replaceAll(/--md-primary-color:.+?;/g, ``)
       clipboardDiv.focus()
       window.getSelection().removeAllRanges()
       const range = document.createRange()
