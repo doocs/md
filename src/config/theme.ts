@@ -39,7 +39,7 @@ const defaultTheme = {
   block: {
     // 一级标题样式
     h1: {
-      'width': `max-content`,
+      'display': `table`,
       'padding': `0 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
       'margin': `2em auto 1em`,
@@ -51,7 +51,7 @@ const defaultTheme = {
 
     // 二级标题样式
     h2: {
-      'width': `max-content`,
+      'display': `table`,
       'padding': `0 0.2em`,
       'margin': `4em auto 2em`,
       'color': `#fff`,
