@@ -9,7 +9,7 @@ import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSiz
 import WxRenderer from '@/utils/renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { addPrefix, css2json, customCssWithTemplate, downloadMD, exportHTML, formatCss, formatDoc, setColorWithCustomTemplate, setFontSizeWithTemplate, setTheme } from '@/utils'
+import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatCss, formatDoc } from '@/utils'
 
 export const useStore = defineStore(`store`, () => {
   // 是否开启深色模式
@@ -46,7 +46,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = fontSize.value.replace(`px`, ``)
 
   const wxRenderer = new WxRenderer({
-    theme: setTheme(themeMap[theme.value], fontSizeNumber, fontColor.value, theme.value === `default`),
+    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }),
     fonts: fontFamily.value,
     size: fontSize.value,
   })
@@ -187,11 +187,9 @@ export const useStore = defineStore(`store`, () => {
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
-    let t = setTheme(themeMap[theme.value], fontSizeNumber, fontColor.value, theme.value === `default`)
-
-    t = customCssWithTemplate(json, fontColor.value, t)
+    const newTheme = customCssWithTemplate(json, fontColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }))
     wxRenderer.setOptions({
-      theme: t,
+      theme: newTheme,
     })
     editorRefresh()
   }
@@ -270,15 +268,15 @@ export const useStore = defineStore(`store`, () => {
   }
 
   const getTheme = (size, color) => {
-    const t = setFontSizeWithTemplate(themeMap[theme.value])(size.replace(`px`, ``), theme.value === `default`)
-    return setColorWithCustomTemplate(t, color, theme.value === `default`)
+    const newTheme = themeMap[theme.value]
+    const fontSize = size.replace(`px`, ``)
+    return customizeTheme(newTheme, { fontSize, color })
   }
 
   const themeChanged = withAfterRefresh((newTheme) => {
     wxRenderer.setOptions({
-      theme: setTheme(themeMap[newTheme], fontSizeNumber, fontColor.value, newTheme === `default`),
+      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber, color: fontColor.value }),
     })
-
     theme.value = newTheme
   })
 
