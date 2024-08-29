@@ -1,35 +1,17 @@
-interface Theme {
-  base: Record<string, string | number>
-  block: Record<string, Record<string, string | number>>
-  inline: Record<string, Record<string, string | number>>
-}
+import { toMerged } from 'es-toolkit'
+
+import type { Theme } from '@/types'
 
 const baseColor = `#3f3f3f`
 
-function mergeTheme(defaultTheme: Theme, newTheme: Theme): Theme {
-  const merge = (defaultObj: Record<string, any>, newObj: Record<string, any>) => {
-    const result: Record<string, any> = {}
-    for (const key in defaultObj) {
-      result[key] = { ...defaultObj[key], ...newObj?.[key] }
-    }
-    return result
-  }
-
-  return {
-    base: { ...defaultTheme.base, ...newTheme.base },
-    block: merge(defaultTheme.block, newTheme.block),
-    inline: merge(defaultTheme.inline, newTheme.inline),
-  }
-}
-
-const defaultTheme = {
+const defaultTheme: Theme = {
   base: {
     '--md-primary-color': `#000000`,
     'text-align': `left`,
     'line-height': `1.75`,
   },
   block: {
-    // 一级标题样式
+    // 一级标题
     h1: {
       'display': `table`,
       'padding': `0 1em`,
@@ -41,7 +23,7 @@ const defaultTheme = {
       'text-align': `center`,
     },
 
-    // 二级标题样式
+    // 二级标题
     h2: {
       'display': `table`,
       'padding': `0 0.2em`,
@@ -53,7 +35,7 @@ const defaultTheme = {
       'text-align': `center`,
     },
 
-    // 三级标题样式
+    // 三级标题
     h3: {
       'padding-left': `8px`,
       'border-left': `3px solid var(--md-primary-color)`,
@@ -64,7 +46,7 @@ const defaultTheme = {
       'line-height': `1.2`,
     },
 
-    // 四级标题样式
+    // 四级标题
     h4: {
       'margin': `2em 8px 0.5em`,
       'color': `var(--md-primary-color)`,
@@ -72,7 +54,7 @@ const defaultTheme = {
       'font-weight': `bold`,
     },
 
-    // 段落样式
+    // 段落
     p: {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
@@ -80,7 +62,7 @@ const defaultTheme = {
       'text-align': `justify`,
     },
 
-    // 引用样式
+    // 引用
     blockquote: {
       'font-style': `normal`,
       'border-left': `none`,
@@ -91,12 +73,15 @@ const defaultTheme = {
       'margin': `2em 8px`,
     },
 
+    // 引用内容
     blockquote_p: {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
       'color': `rgb(80, 80, 80)`,
     },
+
+    // 代码块
     code_pre: {
       'font-size': `14px`,
       'overflow-x': `auto`,
@@ -105,12 +90,15 @@ const defaultTheme = {
       'line-height': `1.5`,
       'margin': `10px 8px`,
     },
+
+    // 行内代码
     code: {
       'margin': 0,
       'white-space': `nowrap`,
       'font-family': `Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
+    // 图片
     image: {
       'display': `block`,
       'width': `100% !important`,
@@ -118,12 +106,14 @@ const defaultTheme = {
       'border-radius': `4px`,
     },
 
+    // 有序列表
     ol: {
       'padding-left': `1em`,
       'margin-left': `0`,
       'color': `var(--el-text-color-regular)`,
     },
 
+    // 无序列表
     ul: {
       'list-style': `circle`,
       'padding-left': `1em`,
@@ -216,7 +206,7 @@ const defaultTheme = {
   },
 }
 
-const graceTheme = mergeTheme(defaultTheme, {
+const graceTheme = toMerged(defaultTheme, {
   base: {
   },
   block: {
@@ -284,6 +274,14 @@ const graceTheme = mergeTheme(defaultTheme, {
       'padding-left': `1.5em`,
     },
 
+    footnotes: {
+
+    },
+
+    figure: {
+
+    },
+
     hr: {
       height: `1px`,
       border: `none`,
@@ -328,6 +326,10 @@ const graceTheme = mergeTheme(defaultTheme, {
 
     footnote: {
       color: `rgba(0,0,0,0.5)`,
+    },
+
+    figcaption: {
+
     },
   },
 })
