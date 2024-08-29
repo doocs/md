@@ -1,12 +1,10 @@
-import CodeMirror from 'codemirror'
-
 export * from './api'
 export * from './style'
 export * from './theme'
 
 export const prefix = `MD`
 
-const isMac = CodeMirror.keyMap.default === CodeMirror.keyMap.macDefault
+const isMac = window.navigator.platform === `MacIntel`
 
 export const ctrlKey = isMac ? `Cmd` : `Ctrl`
 export const altKey = `Alt`
