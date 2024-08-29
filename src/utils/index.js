@@ -9,27 +9,11 @@ export function addPrefix(str) {
   return `${prefix}__${str}`
 }
 
-function createCustomTheme(theme, color, isDefault = true) {
-  const customTheme = JSON.parse(JSON.stringify(theme))
-  customTheme.block.h1[`border-bottom`] = `2px solid ${color}`
-  customTheme.block.h2.background = color
-  customTheme.block.h3[`border-left`] = `3px solid ${color}`
-  customTheme.block.h4.color = color
-  customTheme.inline.strong.color = color
-
-  if (!isDefault) {
-    customTheme.block.h3[`border-bottom`] = `1px dashed ${color}`
-    customTheme.block.blockquote[`border-left`] = `4px solid ${color}`
-  }
-
-  return customTheme
-}
-
 // 设置自定义颜色
-export function setColorWithTemplate(theme) {
-  return (color) => {
-    return createCustomTheme(theme, color)
-  }
+function createCustomTheme(theme, color) {
+  const customTheme = JSON.parse(JSON.stringify(theme))
+  customTheme.BASE[`--md-primary-color`] = color
+  return customTheme
 }
 
 export function setColorWithCustomTemplate(theme, color, isDefault = true) {
@@ -38,21 +22,12 @@ export function setColorWithCustomTemplate(theme, color, isDefault = true) {
 
 // 设置自定义字体大小
 export function setFontSizeWithTemplate(template) {
-  return function (fontSize, isDefault = true) {
+  return function (fontSize) {
     const customTheme = JSON.parse(JSON.stringify(template))
-    if (isDefault) {
-      customTheme.block.h1[`font-size`] = `${fontSize * 1.2}px`
-      customTheme.block.h2[`font-size`] = `${fontSize * 1.2}px`
-      customTheme.block.h3[`font-size`] = `${fontSize * 1.1}px`
-      customTheme.block.h4[`font-size`] = `${fontSize}px`
+    for (let i = 1; i <= 4; i++) {
+      const v = customTheme.block[`h${i}`][`font-size`]
+      customTheme.block[`h${i}`][`font-size`] = `${fontSize * Number.parseFloat(v)}px`
     }
-    else {
-      customTheme.block.h1[`font-size`] = `${fontSize * 1.4}px`
-      customTheme.block.h2[`font-size`] = `${fontSize * 1.3}px`
-      customTheme.block.h3[`font-size`] = `${fontSize * 1.2}px`
-      customTheme.block.h4[`font-size`] = `${fontSize * 1.1}px`
-    }
-
     return customTheme
   }
 }
