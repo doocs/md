@@ -1,6 +1,9 @@
-/*
-  按 Alt/Option + Shift + F 可格式化
-*/
+/**
+ * 按 Alt/Option + Shift + F 可格式化
+ *
+ * 召集令：如果你有好看的主题样式，欢迎分享，让更多人能够使用到你的主题。
+ * 提交区：https://github.com/doocs/md/issues/363
+ */
 /* 一级标题样式 */
 h1 {
 }
