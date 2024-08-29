@@ -54,6 +54,7 @@
     "@types/codemirror": "^5.60.15",
     "@types/marked": "^4.0.0",
     "@types/node": "^22.4.1",
+    "@types/prettier": "^2.7.3",
     "@unocss/eslint-plugin": "^0.62.2",
     "@vitejs/plugin-vue": "^5.1.2",
     "autoprefixer": "^10.4.20",
