@@ -1,8 +1,10 @@
 import juice from 'juice'
-import prettier from 'prettier/standalone'
-import prettierCss from 'prettier/parser-postcss'
-import prettierMarkdown from 'prettier/parser-markdown'
 
+import { format } from 'prettier/standalone'
+import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
+import * as prettierPluginBabel from 'prettier/plugins/babel';
+import * as prettierPluginEstree from 'prettier/plugins/estree';
+import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { prefix } from '@/config'
 
 export function addPrefix(str) {
@@ -25,27 +27,36 @@ export function customizeTheme(theme, options) {
 }
 
 export function customCssWithTemplate(jsonString, color, theme) {
-  const newTheme = customizeTheme(theme, { color });
+  const newTheme = customizeTheme(theme, { color })
 
   const mergeProperties = (target, source, keys) => {
-    keys.forEach(key => {
+    keys.forEach((key) => {
       if (source[key]) {
-        target[key] = Object.assign(target[key] || {}, source[key]);
+        target[key] = Object.assign(target[key] || {}, source[key])
       }
-    });
-  };
+    })
+  }
 
   const blockKeys = [
-    'h1', 'h2', 'h3', 'h4', 'code', 'p', 'hr', 'blockquote',
-    'blockquote_p', 'image', 'ul', 'ol'
-  ];
-  const inlineKeys = ['strong', 'codespan', 'link', 'wx_link', 'listitem'];
+    `h1`,
+    `h2`,
+    `h3`,
+    `h4`,
+    `code`,
+    `p`,
+    `hr`,
+    `blockquote`,
+    `blockquote_p`,
+    `image`,
+    `ul`,
+    `ol`,
+  ]
+  const inlineKeys = [`strong`, `codespan`, `link`, `wx_link`, `listitem`]
 
-  mergeProperties(newTheme.block, jsonString, blockKeys);
-  mergeProperties(newTheme.inline, jsonString, inlineKeys);
-  return newTheme;
+  mergeProperties(newTheme.block, jsonString, blockKeys)
+  mergeProperties(newTheme.inline, jsonString, inlineKeys)
+  return newTheme
 }
-
 
 /**
  * 将 CSS 字符串转换为 JSON 对象
@@ -98,39 +109,21 @@ export function css2json(css) {
 }
 
 /**
- * 将编辑器内容保存到 LocalStorage
- * @param {*} editor
- * @param {*} name
+ * 格式化内容
+ * @param {string} content - 要格式化的内容
+ * @param {'markdown' | 'css'} [type] - 内容类型，决定使用的解析器，默认为'markdown'
+ * @returns {Promise<string>} - 格式化后的内容
  */
-export function saveEditorContent(editor, name) {
-  const content = editor.getValue(0)
-  if (content) {
-    localStorage.setItem(name, content)
+export async function formatDoc(content, type = `markdown`) {
+  const plugins = {
+    markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
+    css: [prettierPluginCss],
   }
-  else {
-    localStorage.removeItem(name)
-  }
-}
 
-/**
- * 格式化文档
- * @param {string} content - 文档内容
- */
-export function formatDoc(content) {
-  return prettier.format(content, {
-    parser: `markdown`,
-    plugins: [prettierMarkdown],
-  })
-}
-
-/**
- * 格式化css
- * @param {string} content - css内容
- */
-export function formatCss(content) {
-  return prettier.format(content, {
-    parser: `css`,
-    plugins: [prettierCss],
+  const parser = type in plugins ? type : `markdown`
+  return await format(content, {
+    parser,
+    plugins: plugins[parser],
   })
 }
 

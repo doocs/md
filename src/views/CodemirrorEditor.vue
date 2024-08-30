@@ -197,8 +197,9 @@ function initEditor() {
     autoCloseBrackets: true,
     extraKeys: {
       [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
-        const doc = formatDoc(editor.getValue(0))
-        editor.setValue(doc)
+        formatDoc(editor.getValue(0)).then((doc) => {
+          editor.setValue(doc)
+        })
       },
       [`${ctrlKey}-B`]: function bold(editor) {
         const selected = editor.getSelection()

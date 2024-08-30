@@ -132,7 +132,7 @@ class WxRenderer extends Renderer {
   }
 
   codeIndex = 0
-  code({ text, lang }) {
+  code({ text, lang = `` }) {
     if (lang.startsWith(`mermaid`)) {
       clearTimeout(this.codeIndex)
       this.codeIndex = setTimeout(() => {

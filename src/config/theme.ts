@@ -2,8 +2,6 @@ import { toMerged } from 'es-toolkit'
 
 import type { Theme } from '@/types'
 
-const baseColor = `#3f3f3f`
-
 const defaultTheme: Theme = {
   base: {
     '--md-primary-color': `#000000`,
@@ -190,7 +188,7 @@ const defaultTheme: Theme = {
     td: {
       border: `1px solid #dfdfdf`,
       padding: `0.25em 0.5em`,
-      color: baseColor,
+      color: `#3f3f3f`,
     },
 
     footnote: {
