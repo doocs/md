@@ -7,7 +7,6 @@ import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 </template>
 
 <style lang="less">
-// 仿 uniapp 外层全屏
 html,
 body,
 #app {
