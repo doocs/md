@@ -33,6 +33,57 @@
       .katex .mathnormal {
         font-family: 'Times New Roman' !important;
       }
+
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        font-size: 18px;
+      }
+
+      .loading::before {
+        content: url('/src/assets/images/favicon.png');
+        width: 100px;
+        height: 100px;
+        margin-bottom: 26px;
+      }
+
+      .loading.dark {
+        color: #ffffff;
+        background-color: #141414;
+      }
+
+      .loading .txt {
+        position: absolute;
+        bottom: 10%;
+      }
+
+      .loading .txt::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+      }
+
+      @keyframes dots {
+        0% {
+          content: ' ';
+        }
+        25% {
+          content: '.';
+        }
+        50% {
+          content: '..';
+        }
+        75% {
+          content: '...';
+        }
+      }
     </style>
   </head>
 
@@ -40,7 +91,18 @@
     <noscript>
       <strong>Please enable JavaScript to continue.</strong>
     </noscript>
-    <div id="app"></div>
+    <div id="app">
+      <div class="loading">
+        <strong>致力于让 Markdown 编辑更简单</strong>
+        <p class="txt">正在加载编辑器</p>
+      </div>
+    </div>
+    <script>
+      const theme = localStorage.getItem('vueuse-color-scheme')
+      if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.querySelector('.loading').classList.add('dark')
+      }
+    </script>
     <script type="module" src="/src/main.js"></script>
     <!-- built files will be auto injected -->
   </body>
