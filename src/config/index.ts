@@ -4,7 +4,7 @@ export * from './theme'
 
 export const prefix = `MD`
 
-const isMac = window.navigator.platform === `MacIntel`
+const isMac = /Mac/i.test(navigator.userAgent)
 
 export const ctrlKey = isMac ? `Cmd` : `Ctrl`
 export const altKey = `Alt`
