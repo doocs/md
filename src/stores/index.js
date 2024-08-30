@@ -9,7 +9,7 @@ import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSiz
 import WxRenderer from '@/utils/renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatCss, formatDoc } from '@/utils'
+import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
 
 export const useStore = defineStore(`store`, () => {
   // 是否开启深色模式
@@ -54,13 +54,14 @@ export const useStore = defineStore(`store`, () => {
   // 内容编辑器编辑器
   const editor = ref(null)
   // 编辑区域内容
-  const editorContent = useStorage(`__editor_content`, formatDoc(DEFAULT_CONTENT))
+  const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
   // 格式化文档
   const formatContent = () => {
-    const doc = formatDoc(editor.value.getValue())
-    editorContent.value = doc
-    editor.value.setValue(doc)
+    formatDoc(editor.value.getValue()).then((doc) => {
+      editorContent.value = doc
+      editor.value.setValue(doc)
+    })
   }
 
   // 切换 highlight.js 代码主题
@@ -208,9 +209,10 @@ export const useStore = defineStore(`store`, () => {
         autofocus: true,
         extraKeys: {
           [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
-            const doc = formatCss(editor.getValue())
-            getCurrentTab().content = doc
-            editor.setValue(doc)
+            formatDoc(editor.getValue(), `css`).then((doc) => {
+              getCurrentTab().content = doc
+              editor.setValue(doc)
+            })
           },
         },
       }),
@@ -350,7 +352,7 @@ export const useStore = defineStore(`store`, () => {
       const reader = new FileReader()
       reader.readAsText(file)
       reader.onload = (event) => {
-        editor.value.setValue(formatDoc(event.target.result))
+        editor.value.setValue(event.target.result)
         ElMessage.success(`文档导入成功`)
       }
     }
