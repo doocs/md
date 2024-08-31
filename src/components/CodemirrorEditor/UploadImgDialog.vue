@@ -381,7 +381,7 @@ function uploadImage(params) {
           <el-form-item label="Bucket 所在区域" :required="true">
             <el-input v-model.trim="formAliOSS.region" placeholder="如：oss-cn-shenzhen" />
           </el-form-item>
-          <el-form-item label="UseSSL" :required="false">
+          <el-form-item label="UseSSL" :required="true">
             <el-switch v-model="formAliOSS.useSSL" active-text="是" inactive-text="否" />
           </el-form-item>
           <el-form-item label="自定义 CDN 域名" :required="false">
