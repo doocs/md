@@ -1,5 +1,5 @@
 import CryptoJS from 'crypto-js'
-import OSS from 'ali-oss'
+import OSS from 'tiny-oss'
 import * as Minio from 'minio'
 import COS from 'cos-js-sdk-v5'
 import Buffer from 'buffer-from'
@@ -167,23 +167,24 @@ async function qiniuUpload(file) {
 // AliOSS File Upload
 // -----------------------------------------------------------------------
 
-async function aliOSSFileUpload(content, filename) {
-  const dateFilename = getDateFilename(filename)
-  const { region, bucket, accessKeyId, accessKeySecret, cdnHost, path }
+async function aliOSSFileUpload(file) {
+  const dateFilename = getDateFilename(file.name)
+  const { region, bucket, accessKeyId, accessKeySecret, useSSL, cdnHost, path }
     = JSON.parse(localStorage.getItem(`aliOSSConfig`))
-  const buffer = Buffer(content, `base64`)
-  const dir = `${path}/${dateFilename}`
+  const dir = path ? `${path}/${dateFilename}` : dateFilename
+  const secure = useSSL === undefined || useSSL
+  const protocol = secure ? `https` : `http`
   const client = new OSS({
     region,
     bucket,
     accessKeyId,
     accessKeySecret,
+    secure,
   })
+
   try {
-    const res = await client.put(dir, buffer)
-    if (cdnHost === ``)
-      return res.url
-    return `${cdnHost}/${path === `` ? dateFilename : dir}`
+    await client.put(dir, file)
+    return cdnHost ? `${cdnHost}/${dir}` : `${protocol}://${bucket}.${region}.aliyuncs.com/${dir}`
   }
   catch (e) {
     return Promise.reject(e)
@@ -290,7 +291,7 @@ async function formCustomUpload(content, file) {
       util: {
         axios: fetch, // axios 实例
         CryptoJS, // 加密库
-        OSS, // ali-oss
+        OSS, // ali-oss(tiny-oss)
         COS, // cos-js-sdk-v5
         Buffer, // buffer-from
         uuidv4, // uuid
@@ -315,7 +316,7 @@ function fileUpload(content, file) {
   !imgHost && localStorage.setItem(`imgHost`, `default`)
   switch (imgHost) {
     case `aliOSS`:
-      return aliOSSFileUpload(content, file.name)
+      return aliOSSFileUpload(file)
     case `minio`:
       return minioFileUpload(content, file.name)
     case `txCOS`:

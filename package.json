@@ -19,7 +19,6 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
     "@vueuse/core": "^11.0.1",
-    "ali-oss": "^6.21.0",
     "axios": "^1.7.4",
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.0",
@@ -46,6 +45,7 @@
     "radix-vue": "^1.9.4",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
+    "tiny-oss": "^0.5.1",
     "uuid": "^10.0.0",
     "vue": "^3.4.38"
   },
