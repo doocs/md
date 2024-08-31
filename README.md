@@ -8,7 +8,8 @@
 
 <div align="center">
 
-[![deploy status](https://github.com/doocs/md/workflows/Build%20and%20Deploy/badge.svg)](https://github.com/doocs/md/actions) [![users](https://badgen.net/badge/Who's/using/green)](#谁在使用) [![PRs Welcome](https://badgen.net/badge/PRs/welcome/green)](../../pulls)<br>[![license](https://badgen.net/github/license/doocs/md)](./LICENSE) [![github](https://badgen.net/badge/⭐/GitHub/blue)](https://github.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/Gitee/blue)](https://gitee.com/doocs/md) [![gitee](https://badgen.net/badge/⭐/GitCode/blue)](https://gitcode.com/doocs/md) [![release](https://img.shields.io/github/v/release/doocs/md.svg)](../../releases)
+[![status](https://img.shields.io/github/actions/workflow/status/doocs/md/build.yml?style=flat-square&labelColor=564341&color=42cc23
+)](https://github.com/doocs/md/actions) [![node](https://img.shields.io/badge/node-%3E%3D20-42cc23?style=flat-square&labelColor=564341)](https://nodejs.org/en/about/previous-releases) [![release](https://img.shields.io/github/v/release/doocs/md?style=flat-square&labelColor=564341&color=42cc23)](https://github.com/doocs/md/releases) [![license](https://img.shields.io/github/license/doocs/md?style=flat-square&labelColor=564341&color=42cc23)](./LICENSE) [![pr](https://img.shields.io/badge/prs-welcome-42cc23?style=flat-square&labelColor=564341)](https://github.com/doocs/md/pulls)<br>[![stars](https://img.shields.io/github/stars/doocs/md?style=flat-square&labelColor=564341&color=42cc23)](https://github.com/doocs/md/stargazers) [![forks](https://img.shields.io/github/forks/doocs/md?style=flat-square&labelColor=564341&color=42cc23)](https://github.com/doocs/md)
 
 </div>
 
@@ -97,7 +98,7 @@ util.axios
 //   util: {
 //     axios, // axios 实例
 //     CryptoJS, // 加密库
-//     OSS, // ali-oss
+//     OSS, // tiny-oss
 //     COS, // cos-js-sdk-v5
 //     Buffer, // buffer-from
 //     uuidv4, // uuid

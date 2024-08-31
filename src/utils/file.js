@@ -291,7 +291,7 @@ async function formCustomUpload(content, file) {
       util: {
         axios: fetch, // axios 实例
         CryptoJS, // 加密库
-        OSS, // ali-oss(tiny-oss)
+        OSS, // tiny-oss
         COS, // cos-js-sdk-v5
         Buffer, // buffer-from
         uuidv4, // uuid

@@ -39,7 +39,7 @@ export const useStore = defineStore(`store`, () => {
   // 文本颜色
   const fontColor = useStorage(`color`, colorOptions[0].value)
   // 代码块主题
-  const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[2].value)
+  const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[23].value)
   // 图注格式
   const legend = useStorage(`legend`, legendOptions[3].value)
 
