@@ -6,7 +6,7 @@ import { useDark, useStorage, useToggle } from '@vueuse/core'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
-import WxRenderer from '@/utils/renderer'
+import { initRenderer } from '@/utils/renderer'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
@@ -45,7 +45,7 @@ export const useStore = defineStore(`store`, () => {
 
   const fontSizeNumber = fontSize.value.replace(`px`, ``)
 
-  const wxRenderer = new WxRenderer({
+  const renderer = initRenderer({
     theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }),
     fonts: fontFamily.value,
     size: fontSize.value,
@@ -84,19 +84,17 @@ export const useStore = defineStore(`store`, () => {
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    const renderer = wxRenderer
     renderer.reset()
     renderer.setOptions({ status: isCiteStatus.value, legend: legend.value })
-    marked.setOptions({ renderer })
     let outputTemp = marked.parse(editor.value.getValue(0))
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
     if (isCiteStatus.value) {
       // 引用脚注
-      outputTemp += wxRenderer.buildFootnotes()
+      outputTemp += renderer.buildFootnotes()
       // 附加的一些 style
-      outputTemp += wxRenderer.buildAddition()
+      outputTemp += renderer.buildAddition()
     }
 
     if (isMacCodeBlock.value) {
@@ -189,7 +187,7 @@ export const useStore = defineStore(`store`, () => {
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
     const newTheme = customCssWithTemplate(json, fontColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }))
-    wxRenderer.setOptions({
+    renderer.setOptions({
       theme: newTheme,
     })
     editorRefresh()
@@ -276,14 +274,14 @@ export const useStore = defineStore(`store`, () => {
   }
 
   const themeChanged = withAfterRefresh((newTheme) => {
-    wxRenderer.setOptions({
+    renderer.setOptions({
       theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber, color: fontColor.value }),
     })
     theme.value = newTheme
   })
 
   const fontChanged = withAfterRefresh((fonts) => {
-    wxRenderer.setOptions({
+    renderer.setOptions({
       fonts,
     })
 
@@ -292,7 +290,7 @@ export const useStore = defineStore(`store`, () => {
 
   const sizeChanged = withAfterRefresh((size) => {
     const theme = getTheme(size, fontColor.value)
-    wxRenderer.setOptions({
+    renderer.setOptions({
       size,
       theme,
     })
@@ -302,7 +300,7 @@ export const useStore = defineStore(`store`, () => {
 
   const colorChanged = withAfterRefresh((newColor) => {
     const theme = getTheme(fontSize.value, newColor)
-    wxRenderer.setOptions({
+    renderer.setOptions({
       theme,
     })
 
