@@ -135,19 +135,15 @@ export function initRenderer(opts: IOpts) {
         return styledContent(tag, text)
       },
 
-      paragraph({ text, tokens }) {
+      paragraph({ tokens }) {
+        const text = this.parser.parseInline(tokens)
         const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
         const isEmpty = text.trim() === ``
         if (isFigureImage || isEmpty) {
           return text
         }
 
-        let res = ``
-        for (const token of tokens) {
-          // TODO 写的太烂，需要重构
-          res += (this[token.type as keyof Renderer] as <T>(token: T) => string)(token)
-        }
-        return styledContent(`p`, res)
+        return styledContent(`p`, text)
       },
 
       blockquote({ text }) {
