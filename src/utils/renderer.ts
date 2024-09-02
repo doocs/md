@@ -39,6 +39,25 @@ function buildTheme(opts: IOpts) {
   }
 }
 
+function buildAddition() {
+  return `
+    <style>
+      .preview-wrapper pre::before {
+        position: absolute;
+        top: 0;
+        right: 0;
+        color: #ccc;
+        text-align: center;
+        font-size: 0.8em;
+        padding: 5px 10px 0;
+        line-height: 15px;
+        height: 15px;
+        font-weight: 600;
+      }
+    </style>
+  `
+}
+
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
@@ -92,23 +111,6 @@ export function initRenderer(opts: IOpts) {
       + styledContent(`footnotes`, footnoteArray, `p`)
     )
   }
-
-  const buildAddition = () => `
-    <style>
-      .preview-wrapper pre::before {
-        position: absolute;
-        top: 0;
-        right: 0;
-        color: #ccc;
-        text-align: center;
-        font-size: 0.8em;
-        padding: 5px 10px 0;
-        line-height: 15px;
-        height: 15px;
-        font-weight: 600;
-      }
-    </style>
-  `
 
   // 用于 Mermaid 渲染
   let codeIndex = 0
