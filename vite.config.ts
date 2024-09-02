@@ -28,7 +28,7 @@ export default defineConfig({
         // fs: 'memfs',
       },
     }),
-    visualizer({
+    process.env.ANALYZE === `true` && visualizer({
       emitFile: true,
       filename: `stats.html`,
     }),
