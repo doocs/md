@@ -39,7 +39,7 @@ function buildTheme(opts: IOpts) {
   }
 }
 
-function buildAddition() {
+function buildAddition(): string {
   return `
     <style>
       .preview-wrapper pre::before {
@@ -63,8 +63,9 @@ export function initRenderer(opts: IOpts) {
   let footnoteIndex: number = 0
   let styleMapping = buildTheme(opts)
 
-  function styledContent(styleLabel: string, content: string, label = styleLabel) {
-    return `<${label} ${getStyles(styleLabel)}>${content}</${label}>`
+  function styledContent(styleLabel: string, content: string, tagName?: string) {
+    const tag = tagName ?? styleLabel;
+    return `<${tag} ${getStyles(styleLabel)}>${content}</${tag}>`;
   }
 
   function addFootnote(title: string, link: string) {
