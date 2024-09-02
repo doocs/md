@@ -32,23 +32,21 @@ export function initRenderer(opts: IOpts) {
       'font-size': opts.size,
     })
 
+    const mergeStyles = (styles: Record<string, any>) =>
+      Object.fromEntries(
+        Object.entries(styles).map(([ele, style]) => [
+          ele,
+          toMerged(base, style),
+        ]),
+      )
+
     return {
-      ...Object.fromEntries(
-        Object.entries(themeTpl.inline).map(([ele, style]) => [
-          ele,
-          toMerged(base, style),
-        ]),
-      ),
-      ...Object.fromEntries(
-        Object.entries(themeTpl.block).map(([ele, style]) => [
-          ele,
-          toMerged(base, style),
-        ]),
-      ),
+      ...mergeStyles(themeTpl.inline),
+      ...mergeStyles(themeTpl.block),
     }
   }
 
-  let footnotes: [number, string, string][] = []
+  const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
 
   function styledContent(styleLabel: string, content: string, label = styleLabel) {
@@ -61,7 +59,7 @@ export function initRenderer(opts: IOpts) {
   }
 
   function reset() {
-    footnotes = []
+    footnotes.length = 0
     footnoteIndex = 0
   }
 
