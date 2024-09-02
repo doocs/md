@@ -4,7 +4,6 @@ import hljs from 'highlight.js'
 import markedKatex from 'marked-katex-extension'
 import mermaid from 'mermaid'
 import { toMerged } from 'es-toolkit'
-import type { KatexOptions } from 'katex'
 
 import type { Theme } from '@/types'
 
@@ -13,8 +12,7 @@ marked.use(
     throwOnError: false,
     output: `html`,
     nonStandard: true,
-    // TODO: 临时方案
-  } as KatexOptions & { nonStandard: boolean }),
+  }),
 )
 
 interface IOpts {
