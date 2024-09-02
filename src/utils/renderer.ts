@@ -23,31 +23,26 @@ interface IOpts {
   status: boolean
 }
 
-type ReturnType<T> = T extends (...arg: any) => infer R ? R : never
+function buildTheme(opts: IOpts) {
+  const { theme, fonts, size } = opts
+  const base = toMerged(theme.base, {
+    'font-family': fonts,
+    'font-size': size,
+  })
+
+  const mergeStyles = (styles: Record<string, any>) =>
+    Object.fromEntries(Object.entries(styles).map(([ele, style]) => [ele, toMerged(base, style)]))
+
+  return {
+    ...mergeStyles(theme.inline),
+    ...mergeStyles(theme.block),
+  }
+}
 
 export function initRenderer(opts: IOpts) {
-  const buildTheme = (themeTpl: Theme) => {
-    const base = toMerged(themeTpl.base, {
-      'font-family': opts.fonts,
-      'font-size': opts.size,
-    })
-
-    const mergeStyles = (styles: Record<string, any>) =>
-      Object.fromEntries(
-        Object.entries(styles).map(([ele, style]) => [
-          ele,
-          toMerged(base, style),
-        ]),
-      )
-
-    return {
-      ...mergeStyles(themeTpl.inline),
-      ...mergeStyles(themeTpl.block),
-    }
-  }
-
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
+  let styleMapping = buildTheme(opts)
 
   function styledContent(styleLabel: string, content: string, label = styleLabel) {
     return `<${label} ${getStyles(styleLabel)}>${content}</${label}>`
@@ -63,11 +58,9 @@ export function initRenderer(opts: IOpts) {
     footnoteIndex = 0
   }
 
-  let styleMapping: ReturnType<typeof buildTheme>
-
   function setOptions(newOpts: IOpts) {
     opts = toMerged(opts, newOpts)
-    styleMapping = buildTheme(opts.theme)
+    styleMapping = buildTheme(opts)
   }
 
   function getStyles(tokenName: string, addition = ``) {
@@ -126,7 +119,8 @@ export function initRenderer(opts: IOpts) {
 
   marked.use({
     renderer: {
-      heading({ depth, text }) {
+      heading({ tokens, depth }) {
+        const text = this.parser.parseInline(tokens)
         const tag = `h${depth}`
         return styledContent(tag, text)
       },
@@ -142,7 +136,8 @@ export function initRenderer(opts: IOpts) {
         return styledContent(`p`, text)
       },
 
-      blockquote({ text }) {
+      blockquote({ tokens }) {
+        let text = this.parser.parse(tokens)
         text = text.replace(/<p.*?>/g, `<p ${getStyles(`blockquote_p`)}>`)
         return styledContent(`blockquote`, text)
       },
