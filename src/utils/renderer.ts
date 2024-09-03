@@ -82,7 +82,7 @@ export function initRenderer(opts: IOpts) {
   }
 
   function setOptions(newOpts: IOpts): void {
-    opts = toMerged(opts, newOpts)
+    opts = { ...opts, ...newOpts }
     styleMapping = buildTheme(opts)
   }
 
