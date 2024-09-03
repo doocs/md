@@ -80,9 +80,13 @@ export function initRenderer(opts: IOpts) {
   let listIndex: number = 0
   let isOrdered: boolean = false
 
+  function styles(tag: string, addition: string = ``): string {
+    return getStyles(styleMapping, tag, addition)
+  }
+
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    return `<${tag} ${getStyles(styleMapping, styleLabel)}>${content}</${tag}>`
+    return `<${tag} ${styles(styleLabel)}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
@@ -132,7 +136,7 @@ export function initRenderer(opts: IOpts) {
 
     blockquote({ tokens }: Tokens.Blockquote) {
       let text = this.parser.parse(tokens)
-      text = text.replace(/<p.*?>/g, `<p ${getStyles(styleMapping, `blockquote_p`)}>`)
+      text = text.replace(/<p.*?>/g, `<p ${styles(`blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
@@ -152,7 +156,7 @@ export function initRenderer(opts: IOpts) {
         .replace(/\n/g, `<br/>`)
         .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
 
-      return `<pre class="hljs code__pre" ${getStyles(styleMapping, `code_pre`)}><code class="language-${lang}" ${getStyles(styleMapping, `code`)}>${highlighted}</code></pre>`
+      return `<pre class="hljs code__pre" ${styles(`code_pre`)}><code class="language-${lang}" ${styles(`code`)}>${highlighted}</code></pre>`
     },
 
     codespan({ text }: Tokens.Codespan) {
@@ -166,7 +170,7 @@ export function initRenderer(opts: IOpts) {
       //   prefix = `<input checked="${token.checked}" disabled type="checkbox"> `
       // }
       // TODO 写的太烂，需要重构
-      return `<li ${getStyles(styleMapping, `listitem`)}>${prefix}${item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
+      return `<li ${styles(`listitem`)}>${prefix}${item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
     },
 
     // TODO
@@ -185,7 +189,7 @@ export function initRenderer(opts: IOpts) {
 
     image({ href, title, text }: Tokens.Image) {
       const createSubText = (s: string | null) =>
-        s ? `<figcaption ${getStyles(styleMapping, `figcaption`)}>${s}</figcaption>` : ``
+        s ? `<figcaption ${styles(`figcaption`)}>${s}</figcaption>` : ``
       const transform
     = {
       'alt': () => text,
@@ -195,21 +199,21 @@ export function initRenderer(opts: IOpts) {
     }[opts.legend] || (() => ``)
 
       const subText = createSubText(transform())
-      const figureStyles = getStyles(styleMapping, `figure`)
-      const imgStyles = getStyles(styleMapping, `image`)
+      const figureStyles = styles(`figure`)
+      const imgStyles = styles(`image`)
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
     link({ href, title, text }: Tokens.Link) {
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
-        return `<a href="${href}" title="${title || text}" ${getStyles(styleMapping, `wx_link`)}>${text}</a>`
+        return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${text}</a>`
       }
       if (href === text) {
         return text
       }
       if (opts.status) {
         const ref = addFootnote(title || text, href)
-        return `<span ${getStyles(styleMapping, `link`)}>${text}<sup>[${ref}]</sup></span>`
+        return `<span ${styles(`link`)}>${text}<sup>[${ref}]</sup></span>`
       }
       return styledContent(`link`, text, `span`)
     },
@@ -237,7 +241,7 @@ export function initRenderer(opts: IOpts) {
       return `
         <section style="padding:0 8px;">
           <table class="preview-table">
-            <thead ${getStyles(styleMapping, `thead`)}>${headerRow}</thead>
+            <thead ${styles(`thead`)}>${headerRow}</thead>
             <tbody>${body}</tbody>
           </table>
         </section>
