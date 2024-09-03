@@ -232,12 +232,12 @@ export function initRenderer(opts: IOpts) {
 
     table({ header, rows }: Tokens.Table): string {
       const headerRow = header
-        .map(cell => styledContent(`td`, cell.text))
+        .map(cell => this.tablecell(cell))
         .join(``)
       const body = rows
         .map((row) => {
           const rowContent = row
-            .map(cell => styledContent(`td`, cell.text))
+            .map(cell => this.tablecell(cell))
             .join(``)
           return styledContent(`tr`, rowContent)
         })
@@ -252,7 +252,8 @@ export function initRenderer(opts: IOpts) {
       `
     },
 
-    tablecell({ text }: Tokens.TableCell): string {
+    tablecell(token: Tokens.TableCell): string {
+      const text = this.parser.parseInline(token.tokens)
       return styledContent(`td`, text)
     },
 

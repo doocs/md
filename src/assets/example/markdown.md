@@ -53,9 +53,9 @@ Markdown 中的段落就是一行接一行的文本。要创建新段落，只�
 - **链接**：用方括号和圆括号创建链接 `[显示文本](链接地址)`。
 - **图片**：和链接类似，只需在前面加上 `!`，如 `![描述文本](图片链接)`。
 
-[访问 Google](https://www.google.com)
+[访问 Doocs](https://github.com/doocs)
 
-![logo](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/logo-2.png)
+![doocs](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/logo-2.png)
 
 轻松实现富媒体内容展示！
 
@@ -78,7 +78,7 @@ Markdown 中的段落就是一行接一行的文本。要创建新段落，只�
 - **代码块**：用三个反引号包裹，并指定语言，如：
 
 ```js
-console.log("Hello, Markdown!");
+console.log("Hello, Doocs!");
 ```
 
 语法高亮让你的代码更易读。
@@ -95,10 +95,10 @@ console.log("Hello, Markdown!");
 
 Markdown 支持简单的表格，用 `|` 和 `-` 分隔单元格和表头。
 
-| 名称   | 年龄 | 职业   |
-| ------ | ---- | ------ |
-| 小明   | 25   | 开发者 |
-| 小红   | 24   | 设计师 |
+| 项目人员   | 邮箱 |
+| ------ | ---- |
+| [yanglbme](https://github.com/yanglbme)   | contact@yanglibin.info   |
+| [YangFong](https://github.com/YangFong)   | yangfong2022@gmail.com   |
 
 这样的表格让数据展示更为清爽！
 
@@ -172,8 +172,6 @@ Markdown 是一种简单、强大且易于掌握的标记语言，通过学习�
 - [2019 GitHub 开源贡献排行榜新鲜出炉！微软谷歌领头，阿里跻身前 12！](https://mp.weixin.qq.com/s/_q812aGD1b9QvZ2WFI0Qgw)
 
 ---
-
-欢迎关注我的公众号“**Doocs**”，原创技术文章第一时间推送。
 
 <center>
     <img src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png" style="width: 100px;">
