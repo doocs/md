@@ -16,6 +16,14 @@ export interface Theme {
   inline: Record<Inline, PropertiesHyphen>
 }
 
+export interface IOpts {
+  theme: Theme
+  fonts: string
+  size: string
+  legend: string
+  status: boolean
+}
+
 export type ThemeStyles = Record<Block | Inline, ExtendedProperties>
 
 export interface IConfigOption {

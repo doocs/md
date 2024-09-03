@@ -6,7 +6,7 @@ import mermaid from 'mermaid'
 import { toMerged } from 'es-toolkit'
 
 import type { PropertiesHyphen } from 'csstype'
-import type { ExtendedProperties, Theme, ThemeStyles } from '@/types'
+import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 
 marked.use(
   markedKatex({
@@ -16,16 +16,7 @@ marked.use(
   }),
 )
 
-interface IOpts {
-  theme: Theme
-  fonts: string
-  size: string
-  legend: string
-  status: boolean
-}
-
-function buildTheme(opts: IOpts): ThemeStyles {
-  const { theme, fonts, size } = opts
+function buildTheme({ theme, fonts, size }: IOpts): ThemeStyles {
   const base = toMerged(theme.base, {
     'font-family': fonts,
     'font-size': size,
@@ -85,6 +76,9 @@ export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
   let styleMapping: ThemeStyles = buildTheme(opts)
+  let codeIndex: number = 0
+  let listIndex: number = 0
+  let isOrdered: boolean = false
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
@@ -117,13 +111,6 @@ export function initRenderer(opts: IOpts) {
       + styledContent(`footnotes`, buildFootnoteArray(footnotes), `p`)
     )
   }
-
-  // 用于 Mermaid 渲染
-  let codeIndex = 0
-
-  // 用于列表渲染
-  let listIndex = 0
-  let isOrdered = false
 
   const renderer: RendererObject = {
     heading({ tokens, depth }) {
