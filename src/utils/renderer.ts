@@ -60,6 +60,27 @@ function buildAddition(): string {
   `
 }
 
+function getStyles(styleMapping: ThemeStyles, tokenName: string, addition: string = ``): string {
+  const dict = styleMapping[tokenName as keyof ThemeStyles]
+  if (!dict) {
+    return ``
+  }
+  const styles = Object.entries(dict)
+    .map(([key, value]) => `${key}:${value}`)
+    .join(`;`)
+  return `style="${styles}${addition}"`
+}
+
+function buildFootnoteArray(footnotes: [number, string, string][]): string {
+  return footnotes
+    .map(([index, title, link]) =>
+      link === title
+        ? `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code>: <i style="word-break: break-all">${title}</i><br/>`
+        : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i style="word-break: break-all">${link}</i><br/>`,
+    )
+    .join(`\n`)
+}
+
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
@@ -67,7 +88,7 @@ export function initRenderer(opts: IOpts) {
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    return `<${tag} ${getStyles(styleLabel)}>${content}</${tag}>`
+    return `<${tag} ${getStyles(styleMapping, styleLabel)}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
@@ -86,33 +107,14 @@ export function initRenderer(opts: IOpts) {
     styleMapping = buildTheme(opts)
   }
 
-  function getStyles(tokenName: string, addition: string = ``): string {
-    const dict = styleMapping[tokenName as keyof ThemeStyles]
-    if (!dict) {
-      return ``
-    }
-    const styles = Object.entries(dict)
-      .map(([key, value]) => `${key}:${value}`)
-      .join(`;`)
-    return `style="${styles}${addition}"`
-  }
-
   const buildFootnotes = () => {
     if (!footnotes.length) {
       return ``
     }
 
-    const footnoteArray = footnotes
-      .map(([index, title, link]) =>
-        link === title
-          ? `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code>: <i style="word-break: break-all">${title}</i><br/>`
-          : `<code style="font-size: 90%; opacity: 0.6;">[${index}]</code> ${title}: <i style="word-break: break-all">${link}</i><br/>`,
-      )
-      .join(`\n`)
-
     return (
       styledContent(`h4`, `引用链接`)
-      + styledContent(`footnotes`, footnoteArray, `p`)
+      + styledContent(`footnotes`, buildFootnoteArray(footnotes), `p`)
     )
   }
 
@@ -143,7 +145,7 @@ export function initRenderer(opts: IOpts) {
 
     blockquote({ tokens }) {
       let text = this.parser.parse(tokens)
-      text = text.replace(/<p.*?>/g, `<p ${getStyles(`blockquote_p`)}>`)
+      text = text.replace(/<p.*?>/g, `<p ${getStyles(styleMapping, `blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
@@ -163,11 +165,7 @@ export function initRenderer(opts: IOpts) {
         .replace(/\n/g, `<br/>`)
         .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
 
-      return `<pre class="hljs code__pre" ${getStyles(
-        `code_pre`,
-      )}><code class="language-${lang}" ${getStyles(
-        `code`,
-      )}>${highlighted}</code></pre>`
+      return `<pre class="hljs code__pre" ${getStyles(styleMapping, `code_pre`)}><code class="language-${lang}" ${getStyles(styleMapping, `code`)}>${highlighted}</code></pre>`
     },
 
     codespan({ text }: Tokens.Codespan) {
@@ -181,7 +179,7 @@ export function initRenderer(opts: IOpts) {
       //   prefix = `<input checked="${token.checked}" disabled type="checkbox"> `
       // }
       // TODO 写的太烂，需要重构
-      return `<li ${getStyles(`listitem`)}>${prefix}${token.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
+      return `<li ${getStyles(styleMapping, `listitem`)}>${prefix}${token.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
     },
 
     // TODO
@@ -200,7 +198,7 @@ export function initRenderer(opts: IOpts) {
 
     image({ href, title, text }) {
       const createSubText = (s: string | null) =>
-        s ? `<figcaption ${getStyles(`figcaption`)}>${s}</figcaption>` : ``
+        s ? `<figcaption ${getStyles(styleMapping, `figcaption`)}>${s}</figcaption>` : ``
       const transform
     = {
       'alt': () => text,
@@ -210,25 +208,21 @@ export function initRenderer(opts: IOpts) {
     }[opts.legend] || (() => ``)
 
       const subText = createSubText(transform())
-      const figureStyles = getStyles(`figure`)
-      const imgStyles = getStyles(`image`)
+      const figureStyles = getStyles(styleMapping, `figure`)
+      const imgStyles = getStyles(styleMapping, `image`)
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
     link({ href, title, text }) {
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
-        return `<a href="${href}" title="${title || text}" ${getStyles(
-          `wx_link`,
-        )}>${text}</a>`
+        return `<a href="${href}" title="${title || text}" ${getStyles(styleMapping, `wx_link`)}>${text}</a>`
       }
       if (href === text) {
         return text
       }
       if (opts.status) {
         const ref = addFootnote(title || text, href)
-        return `<span ${getStyles(
-          `link`,
-        )}>${text}<sup>[${ref}]</sup></span>`
+        return `<span ${getStyles(styleMapping, `link`)}>${text}<sup>[${ref}]</sup></span>`
       }
       return styledContent(`link`, text, `span`)
     },
@@ -256,7 +250,7 @@ export function initRenderer(opts: IOpts) {
       return `
         <section style="padding:0 8px;">
           <table class="preview-table">
-            <thead ${getStyles(`thead`)}>${headerRow}</thead>
+            <thead ${getStyles(styleMapping, `thead`)}>${headerRow}</thead>
             <tbody>${body}</tbody>
           </table>
         </section>
