@@ -5,7 +5,8 @@ import markedKatex from 'marked-katex-extension'
 import mermaid from 'mermaid'
 import { toMerged } from 'es-toolkit'
 
-import type { Theme } from '@/types'
+import type { PropertiesHyphen } from 'csstype'
+import type { ExtendedProperties, Theme, ThemeStyles } from '@/types'
 
 marked.use(
   markedKatex({
@@ -23,20 +24,21 @@ interface IOpts {
   status: boolean
 }
 
-function buildTheme(opts: IOpts) {
+function buildTheme(opts: IOpts): ThemeStyles {
   const { theme, fonts, size } = opts
   const base = toMerged(theme.base, {
     'font-family': fonts,
     'font-size': size,
   })
 
-  const mergeStyles = (styles: Record<string, any>) =>
-    Object.fromEntries(Object.entries(styles).map(([ele, style]) => [ele, toMerged(base, style)]))
-
+  const mergeStyles = (styles: Record<string, PropertiesHyphen>): Record<string, ExtendedProperties> =>
+    Object.fromEntries(
+      Object.entries(styles).map(([ele, style]) => [ele, toMerged(base, style)]),
+    )
   return {
     ...mergeStyles(theme.inline),
     ...mergeStyles(theme.block),
-  }
+  } as ThemeStyles
 }
 
 function buildAddition(): string {
@@ -61,30 +63,31 @@ function buildAddition(): string {
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
-  let styleMapping = buildTheme(opts)
+  let styleMapping: ThemeStyles = buildTheme(opts)
 
-  function styledContent(styleLabel: string, content: string, tagName?: string) {
+  function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
     return `<${tag} ${getStyles(styleLabel)}>${content}</${tag}>`
   }
 
-  function addFootnote(title: string, link: string) {
+  function addFootnote(title: string, link: string): number {
     footnotes.push([++footnoteIndex, title, link])
     return footnoteIndex
   }
 
-  function reset() {
+  function reset(newOpts: IOpts): void {
     footnotes.length = 0
     footnoteIndex = 0
+    setOptions(newOpts)
   }
 
-  function setOptions(newOpts: IOpts) {
+  function setOptions(newOpts: IOpts): void {
     opts = toMerged(opts, newOpts)
     styleMapping = buildTheme(opts)
   }
 
-  function getStyles(tokenName: string, addition = ``) {
-    const dict = styleMapping[tokenName]
+  function getStyles(tokenName: string, addition: string = ``): string {
+    const dict = styleMapping[tokenName as keyof ThemeStyles]
     if (!dict) {
       return ``
     }

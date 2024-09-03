@@ -84,8 +84,7 @@ export const useStore = defineStore(`store`, () => {
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    renderer.reset()
-    renderer.setOptions({ status: isCiteStatus.value, legend: legend.value })
+    renderer.reset({ status: isCiteStatus.value, legend: legend.value })
     let outputTemp = marked.parse(editor.value.getValue(0))
 
     // 去除第一行的 margin-top
