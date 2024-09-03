@@ -72,6 +72,19 @@ function buildFootnoteArray(footnotes: [number, string, string][]): string {
     .join(`\n`)
 }
 
+function transform(legend: string, text: string | null, title: string | null): string {
+  const options = legend.split(`-`)
+  for (const option of options) {
+    if (option === `alt` && text) {
+      return text
+    }
+    if (option === `title` && title) {
+      return title
+    }
+  }
+  return ``
+}
+
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
@@ -85,6 +98,9 @@ export function initRenderer(opts: IOpts) {
   }
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
+    if (!content) {
+      return ``
+    }
     const tag = tagName ?? styleLabel
     return `<${tag} ${styles(styleLabel)}>${content}</${tag}>`
   }
@@ -123,24 +139,23 @@ export function initRenderer(opts: IOpts) {
       return styledContent(tag, text)
     },
 
-    paragraph({ tokens }: Tokens.Paragraph) {
+    paragraph({ tokens }: Tokens.Paragraph): string {
       const text = this.parser.parseInline(tokens)
       const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
       const isEmpty = text.trim() === ``
       if (isFigureImage || isEmpty) {
         return text
       }
-
       return styledContent(`p`, text)
     },
 
-    blockquote({ tokens }: Tokens.Blockquote) {
+    blockquote({ tokens }: Tokens.Blockquote): string {
       let text = this.parser.parse(tokens)
       text = text.replace(/<p.*?>/g, `<p ${styles(`blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
-    code({ text, lang = `` }: Tokens.Code) {
+    code({ text, lang = `` }: Tokens.Code): string {
       if (lang.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
         codeIndex = setTimeout(() => {
@@ -159,11 +174,11 @@ export function initRenderer(opts: IOpts) {
       return `<pre class="hljs code__pre" ${styles(`code_pre`)}><code class="language-${lang}" ${styles(`code`)}>${highlighted}</code></pre>`
     },
 
-    codespan({ text }: Tokens.Codespan) {
+    codespan({ text }: Tokens.Codespan): string {
       return styledContent(`codespan`, text, `code`)
     },
 
-    listitem(item: Tokens.ListItem) {
+    listitem(item: Tokens.ListItem): string {
       const prefix = isOrdered ? `${listIndex + 1}. ` : `• `
       // TODO 预备支持 list
       // if (token.checked != null) {
@@ -174,7 +189,7 @@ export function initRenderer(opts: IOpts) {
     },
 
     // TODO
-    list({ ordered, items }: Tokens.List) {
+    list({ ordered, items }: Tokens.List): string {
       const listItems = []
       isOrdered = ordered
       for (let i = 0; i < items.length; i++) {
@@ -182,29 +197,18 @@ export function initRenderer(opts: IOpts) {
         const item = items[i]
         listItems.push(this.listitem(item))
       }
-
       const label = ordered ? `ol` : `ul`
       return styledContent(label, listItems.join(``))
     },
 
-    image({ href, title, text }: Tokens.Image) {
-      const createSubText = (s: string | null) =>
-        s ? `<figcaption ${styles(`figcaption`)}>${s}</figcaption>` : ``
-      const transform
-    = {
-      'alt': () => text,
-      'title': () => title,
-      'alt-title': () => text || title,
-      'title-alt': () => title || text,
-    }[opts.legend] || (() => ``)
-
-      const subText = createSubText(transform())
+    image({ href, title, text }: Tokens.Image): string {
+      const subText = styledContent(`figcaption`, transform(opts.legend, text, title))
       const figureStyles = styles(`figure`)
       const imgStyles = styles(`image`)
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
-    link({ href, title, text }: Tokens.Link) {
+    link({ href, title, text }: Tokens.Link): string {
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
         return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${text}</a>`
       }
@@ -218,15 +222,15 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`link`, text, `span`)
     },
 
-    strong({ text }: Tokens.Strong) {
+    strong({ text }: Tokens.Strong): string {
       return styledContent(`strong`, text)
     },
 
-    em({ text }: Tokens.Em) {
+    em({ text }: Tokens.Em): string {
       return `<span style="font-style: italic;">${text}</span>`
     },
 
-    table({ header, rows }: Tokens.Table) {
+    table({ header, rows }: Tokens.Table): string {
       const headerRow = header
         .map(cell => styledContent(`td`, cell.text))
         .join(``)
@@ -248,11 +252,11 @@ export function initRenderer(opts: IOpts) {
       `
     },
 
-    tablecell({ text }: Tokens.TableCell) {
+    tablecell({ text }: Tokens.TableCell): string {
       return styledContent(`td`, text)
     },
 
-    hr() {
+    hr(): string {
       return styledContent(`hr`, ``)
     },
   }
