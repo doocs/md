@@ -55,7 +55,7 @@ Markdown 中的段落就是一行接一行的文本。要创建新段落，只�
 
 [访问 Google](https://www.google.com)
 
-![Markdown Logo](https://markdown-here.com/img/icon256.png)
+![demo1](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo1.gif)
 
 轻松实现富媒体内容展示！
 
