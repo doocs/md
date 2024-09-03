@@ -243,7 +243,7 @@ export function initRenderer(opts: IOpts) {
         })
         .join(``)
       return `
-        <section style="padding:0 8px;">
+        <section style="padding:0 8px; max-width: 100%; overflow: auto">
           <table class="preview-table">
             <thead ${styles(`thead`)}>${headerRow}</thead>
             <tbody>${body}</tbody>
