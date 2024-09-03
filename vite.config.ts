@@ -6,6 +6,10 @@ import vue from '@vitejs/plugin-vue'
 import UnoCSS from 'unocss/vite'
 import vueDevTools from 'vite-plugin-vue-devtools'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
+import { visualizer } from 'rollup-plugin-visualizer'
+import AutoImport from 'unplugin-auto-import/vite'
+import Components from 'unplugin-vue-components/vite'
+import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -23,6 +27,16 @@ export default defineConfig({
         // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
         // fs: 'memfs',
       },
+    }),
+    process.env.ANALYZE === `true` && visualizer({
+      emitFile: true,
+      filename: `stats.html`,
+    }),
+    AutoImport({
+      resolvers: [ElementPlusResolver()],
+    }),
+    Components({
+      resolvers: [ElementPlusResolver()],
     }),
   ],
   resolve: {
