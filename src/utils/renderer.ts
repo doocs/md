@@ -113,13 +113,13 @@ export function initRenderer(opts: IOpts) {
   }
 
   const renderer: RendererObject = {
-    heading({ tokens, depth }) {
+    heading({ tokens, depth }: Tokens.Heading) {
       const text = this.parser.parseInline(tokens)
       const tag = `h${depth}`
       return styledContent(tag, text)
     },
 
-    paragraph({ tokens }) {
+    paragraph({ tokens }: Tokens.Paragraph) {
       const text = this.parser.parseInline(tokens)
       const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
       const isEmpty = text.trim() === ``
@@ -130,13 +130,13 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`p`, text)
     },
 
-    blockquote({ tokens }) {
+    blockquote({ tokens }: Tokens.Blockquote) {
       let text = this.parser.parse(tokens)
       text = text.replace(/<p.*?>/g, `<p ${getStyles(styleMapping, `blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
-    code({ text, lang = `` }) {
+    code({ text, lang = `` }: Tokens.Code) {
       if (lang.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
         codeIndex = setTimeout(() => {
@@ -159,21 +159,21 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`codespan`, text, `code`)
     },
 
-    listitem(token) {
+    listitem(item: Tokens.ListItem) {
       const prefix = isOrdered ? `${listIndex + 1}. ` : `• `
       // TODO 预备支持 list
       // if (token.checked != null) {
       //   prefix = `<input checked="${token.checked}" disabled type="checkbox"> `
       // }
       // TODO 写的太烂，需要重构
-      return `<li ${getStyles(styleMapping, `listitem`)}>${prefix}${token.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
+      return `<li ${getStyles(styleMapping, `listitem`)}>${prefix}${item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
     },
 
     // TODO
-    list({ ordered, items }) {
+    list({ ordered, items }: Tokens.List) {
       const listItems = []
+      isOrdered = ordered
       for (let i = 0; i < items.length; i++) {
-        isOrdered = ordered
         listIndex = i
         const item = items[i]
         listItems.push(this.listitem(item))
@@ -183,7 +183,7 @@ export function initRenderer(opts: IOpts) {
       return styledContent(label, listItems.join(``))
     },
 
-    image({ href, title, text }) {
+    image({ href, title, text }: Tokens.Image) {
       const createSubText = (s: string | null) =>
         s ? `<figcaption ${getStyles(styleMapping, `figcaption`)}>${s}</figcaption>` : ``
       const transform
@@ -200,7 +200,7 @@ export function initRenderer(opts: IOpts) {
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
-    link({ href, title, text }) {
+    link({ href, title, text }: Tokens.Link) {
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
         return `<a href="${href}" title="${title || text}" ${getStyles(styleMapping, `wx_link`)}>${text}</a>`
       }
@@ -214,15 +214,15 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`link`, text, `span`)
     },
 
-    strong({ text }) {
+    strong({ text }: Tokens.Strong) {
       return styledContent(`strong`, text)
     },
 
-    em({ text }) {
+    em({ text }: Tokens.Em) {
       return `<span style="font-style: italic;">${text}</span>`
     },
 
-    table({ header, rows }) {
+    table({ header, rows }: Tokens.Table) {
       const headerRow = header
         .map(cell => styledContent(`td`, cell.text))
         .join(``)
@@ -244,7 +244,7 @@ export function initRenderer(opts: IOpts) {
       `
     },
 
-    tablecell({ text }) {
+    tablecell({ text }: Tokens.TableCell) {
       return styledContent(`td`, text)
     },
 
