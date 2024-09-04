@@ -99,10 +99,11 @@ console.log("Hello, Doocs!");
 
 Markdown 支持简单的表格，用 `|` 和 `-` 分隔单元格和表头。
 
-| 项目人员                                | 邮箱                   | 微信号       |
-| --------------------------------------- | ---------------------- | ------------ |
-| [YangFong](https://github.com/YangFong) | yangfong2022@gmail.com | yq2419731931 |
-| [yanglbme](https://github.com/yanglbme) | contact@yanglibin.info | YLB0109      |
+| 项目人员                                    | 邮箱                   | 微信号       |
+| ------------------------------------------- | ---------------------- | ------------ |
+| [yanglbme](https://github.com/yanglbme)     | contact@yanglibin.info | YLB0109      |
+| [YangFong](https://github.com/YangFong)     | yangfong2022@gmail.com | yq2419731931 |
+| [thinkasany](https://github.com/thinkasany) | thinkasany@gmail.com   | thinkasany   |
 
 这样的表格让数据展示更为清爽！
 
