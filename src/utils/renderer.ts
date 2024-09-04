@@ -180,19 +180,14 @@ export function initRenderer(opts: IOpts) {
 
     listitem(item: Tokens.ListItem): string {
       const prefix = isOrdered ? `${listIndex + 1}. ` : `• `
-      // TODO 预备支持 list
-      // if (token.checked != null) {
-      //   prefix = `<input checked="${token.checked}" disabled type="checkbox"> `
-      // }
-      // TODO 写的太烂，需要重构
-      return `<li ${styles(`listitem`)}>${prefix}${item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)}</li>`
+      const content = item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)
+      return styledContent(`listitem`, `${prefix}${content}`, `li`)
     },
 
-    // TODO
     list({ ordered, items }: Tokens.List): string {
       const listItems = []
-      isOrdered = ordered
       for (let i = 0; i < items.length; i++) {
+        isOrdered = ordered
         listIndex = i
         const item = items[i]
         listItems.push(this.listitem(item))
@@ -222,7 +217,7 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`link`, text, `span`)
     },
 
-    strong( {tokens}: Tokens.Strong): string {
+    strong({ tokens }: Tokens.Strong): string {
       return styledContent(`strong`, this.parser.parseInline(tokens))
     },
 
