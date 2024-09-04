@@ -222,12 +222,12 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`link`, text, `span`)
     },
 
-    strong({ text }: Tokens.Strong): string {
-      return styledContent(`strong`, text)
+    strong( {tokens}: Tokens.Strong): string {
+      return styledContent(`strong`, this.parser.parseInline(tokens))
     },
 
-    em({ text }: Tokens.Em): string {
-      return `<span style="font-style: italic;">${text}</span>`
+    em({ tokens }: Tokens.Em): string {
+      return styledContent(`em`, this.parser.parseInline(tokens), `span`)
     },
 
     table({ header, rows }: Tokens.Table): string {

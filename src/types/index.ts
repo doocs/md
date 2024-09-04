@@ -1,7 +1,7 @@
 import type { PropertiesHyphen } from 'csstype'
 
 type Block = `h1` | `h2` | `h3` | `h4` | `p` | `blockquote` | `blockquote_p` | `code_pre` | `code` | `image` | `ol` | `ul` | `footnotes` | `figure` | `hr`
-type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `td` | `footnote` | `figcaption`
+type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `td` | `footnote` | `figcaption` | `em`
 
 interface CustomCSSProperties {
   [`--md-primary-color`]?: string

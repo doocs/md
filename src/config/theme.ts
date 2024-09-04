@@ -157,6 +157,11 @@ const defaultTheme: Theme = {
       // 'word-break': `break-all`,
     },
 
+    em: {
+      'font-style': `italic`,
+      'font-size': `inherit`,
+    },
+
     link: {
       color: `#576b95`,
     },
@@ -295,6 +300,9 @@ const graceTheme = toMerged(defaultTheme, {
     },
 
     codespan: {
+    },
+
+    em: {
     },
 
     link: {
