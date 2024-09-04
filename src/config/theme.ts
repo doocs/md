@@ -170,6 +170,7 @@ const defaultTheme: Theme = {
     strong: {
       'color': `var(--md-primary-color)`,
       'font-weight': `bold`,
+      'font-size': `inherit`,
     },
 
     table: {
