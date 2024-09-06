@@ -28,10 +28,12 @@ function createRenderer(options, newlineAfter) {
   return (token) => {
     window.MathJax.texReset()
     const node = window.MathJax.tex2svg(token.text, { display: newlineAfter })
+    node.firstElementChild.removeAttribute('width')
     if (newlineAfter) {
       node.style = 'overflow: auto; display: block; text-align: center;'
       node.setAttribute('display', 'true')
-      node.firstElementChild.style = 'height: auto; max-width: 300% !important';
+      node.firstElementChild.style = 'height: auto; max-width: 300% !important;';
+
     } else {
       node.firstElementChild.style = 'display: inline-block;';
     }
