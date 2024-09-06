@@ -249,7 +249,7 @@ export function initRenderer(opts: IOpts) {
 
     blockquote({ tokens }: Tokens.Blockquote): string {
       let text = this.parser.parse(tokens)
-      text = text.replace(/<p.*?>/g, `<p ${styles(`blockquote_p`)}>`)
+      text = text.replace(/<p .*?>/g, `<p ${styles(`blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
