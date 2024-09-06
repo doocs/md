@@ -22,13 +22,6 @@
       crossorigin="anonymous"
     />
     <style>
-      /**
-        解决公众号复制字体问题
-       */
-      .katex .mathnormal {
-        font-family: 'Times New Roman' !important;
-      }
-
       .loading {
         position: fixed;
         top: 0;
@@ -101,9 +94,9 @@
     <script>
       MathJax = {
         svg: { fontCache: 'none' },
-        tex: { tags: 'ams' }
-      };
-      </script>
+        tex: { tags: 'ams' },
+      }
+    </script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
