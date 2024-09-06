@@ -26,9 +26,21 @@ function MDKatex(options = {}) {
 
 function createRenderer(options, newlineAfter) {
   return (token) => {
-    console.log(`token.text`, token.text)
-    return window.MathJax.tex2svg(token.text, { display: true }).firstElementChild.outerHTML + (newlineAfter ? `\n` : ``)
-    // return katex.renderToString(token.text, { ...options, displayMode: token.displayMode }) + (newlineAfter ? `\n` : ``)
+    window.MathJax.texReset()
+    const node = window.MathJax.tex2svg(token.text, { display: newlineAfter })
+    if (newlineAfter) {
+      node.style = 'overflow: auto; display: block; text-align: center;'
+      node.setAttribute('display', 'true')
+      node.firstElementChild.style = 'height: auto; max-width: 300% !important';
+    } else {
+      node.firstElementChild.style = 'display: inline-block;';
+    }
+    node.setAttribute('data-formula', token.text)
+    const sp = document.createElement('span')
+    sp.setAttribute('style', 'cursor: pointer;')
+    sp.appendChild(node)
+    sp.innerHTML = sp.innerHTML.replace(/<mjx-assistive-mml.+?<\/mjx-assistive-mml>/g, "");
+    return sp.outerHTML
   }
 }
 
