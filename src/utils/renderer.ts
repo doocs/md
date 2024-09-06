@@ -28,13 +28,15 @@ function createRenderer(options, newlineAfter) {
   return (token) => {
     window.MathJax.texReset()
     const mjxContainer = window.MathJax.tex2svg(token.text, { display: newlineAfter })
-    const svg = mjxContainer.firstChild;
-    const width = svg.style['min-width'] || svg.getAttribute('width')
-    svg.removeAttribute('width')
+    const svg = mjxContainer.firstChild
+    const width = svg.style[`min-width`] || svg.getAttribute(`width`)
+    svg.removeAttribute(`width`)
     svg.style.width = width
     if (newlineAfter) {
-      return `<section style="text-align: center; overflow-x: auto; overflow-y: auto; display: block;">${svg.outerHTML}</section>`
-    } else {
+      svg.style.margin = `auto`
+      return `<section style="text-align: center; overflow: auto;">${svg.outerHTML}</section>`
+    }
+    else {
       return `<span style="display: inline-block;">${svg.outerHTML}</span>`
     }
   }
