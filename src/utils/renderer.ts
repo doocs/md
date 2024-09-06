@@ -27,22 +27,16 @@ function MDKatex(options = {}) {
 function createRenderer(options, newlineAfter) {
   return (token) => {
     window.MathJax.texReset()
-    const node = window.MathJax.tex2svg(token.text, { display: newlineAfter })
-    node.firstElementChild.removeAttribute('width')
+    const mjxContainer = window.MathJax.tex2svg(token.text, { display: newlineAfter })
+    const svg = mjxContainer.firstChild;
+    const width = svg.style['min-width'] || svg.getAttribute('width')
+    svg.removeAttribute('width')
+    svg.style.width = width
     if (newlineAfter) {
-      node.style = 'overflow: auto; display: block; text-align: center;'
-      node.setAttribute('display', 'true')
-      node.firstElementChild.style = 'height: auto; max-width: 300% !important;';
-
+      return `<section style="text-align: center; overflow-x: auto; overflow-y: auto; display: block;">${svg.outerHTML}</section>`
     } else {
-      node.firstElementChild.style = 'display: inline-block;';
+      return `<span style="display: inline-block;">${svg.outerHTML}</span>`
     }
-    node.setAttribute('data-formula', token.text)
-    const sp = document.createElement('span')
-    sp.setAttribute('style', 'cursor: pointer;')
-    sp.appendChild(node)
-    sp.innerHTML = sp.innerHTML.replace(/<mjx-assistive-mml.+?<\/mjx-assistive-mml>/g, "");
-    return sp.outerHTML
   }
 }
 
