@@ -79,6 +79,14 @@ function transform(legend: string, text: string | null, title: string | null): s
   return ``
 }
 
+const macCodeSvg = `
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0px" y="0px" width="45px" height="13px" viewBox="0 0 450 130">
+    <ellipse cx="65" cy="65" rx="50" ry="52" stroke="rgb(220,60,54)" stroke-width="2" fill="rgb(237,108,96)" />
+    <ellipse cx="225" cy="65" rx="50" ry="52" stroke="rgb(218,151,33)" stroke-width="2" fill="rgb(247,193,81)" />
+    <ellipse cx="385" cy="65" rx="50" ry="52" stroke="rgb(27,161,37)" stroke-width="2" fill="rgb(100,200,86)" />
+  </svg>
+`.trim()
+
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
@@ -165,7 +173,7 @@ export function initRenderer(opts: IOpts) {
         .replace(/\n/g, `<br/>`)
         .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
 
-      return `<pre class="hljs code__pre" ${styles(`code_pre`)}><code class="language-${lang}" ${styles(`code`)}>${highlighted}</code></pre>`
+      return `<pre class="hljs code__pre" ${styles(`code_pre`)}><span class="mac-sign" style="padding: 10px 14px 0;" hidden>${macCodeSvg}</span><code class="language-${lang}" ${styles(`code`)}>${highlighted}</code></pre>`
     },
 
     codespan({ text }: Tokens.Codespan): string {
