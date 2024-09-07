@@ -11,8 +11,9 @@ function createRenderer(options, newlineAfter) {
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
     svg.style.width = width
+    svg.style.display = `initial`
     if (newlineAfter) {
-      svg.style.margin = `auto`
+      // svg.style.margin = `auto`
       return `<section style="text-align: center; overflow: auto;">${svg.outerHTML}</section>`
     }
     else {
