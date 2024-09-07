@@ -89,12 +89,10 @@ export const useStore = defineStore(`store`, () => {
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-    if (isCiteStatus.value) {
-      // 引用脚注
-      outputTemp += renderer.buildFootnotes()
-      // 附加的一些 style
-      outputTemp += renderer.buildAddition()
-    }
+    // 引用脚注
+    outputTemp += renderer.buildFootnotes()
+    // 附加的一些 style
+    outputTemp += renderer.buildAddition()
 
     if (isMacCodeBlock.value) {
       outputTemp += `
