@@ -111,13 +111,7 @@ function copy() {
       const clipboardDiv = document.getElementById(`output`)
       clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
       clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
-
-      // 调整 katex 公式元素为行内标签，目的是兼容微信公众号渲染
       clipboardDiv.innerHTML = clipboardDiv.innerHTML
-        .replace(
-          /class="base"( style="display: inline")*/g,
-          `class="base" style="display: inline"`,
-        )
         // 公众号不支持 position， 转换为等价的 translateY
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量

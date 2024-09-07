@@ -3,18 +3,17 @@ const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]
 
 const blockRule = /^(\${1,2})\n((?:\\[\s\S]|[^\\])+?)\n\1(?:\n|$)/
 
-function createRenderer(options, newlineAfter) {
+function createRenderer(display) {
   return (token) => {
     window.MathJax.texReset()
-    const mjxContainer = window.MathJax.tex2svg(token.text, { display: newlineAfter })
+    const mjxContainer = window.MathJax.tex2svg(token.text, { display })
     const svg = mjxContainer.firstChild
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
     svg.style = `max-width: 300vw !important;`
     svg.style.width = width
     svg.style.display = `initial`
-    if (newlineAfter) {
-      // svg.style.margin = `auto`
+    if (display) {
       return `<section style="text-align: center; overflow: auto;">${svg.outerHTML}</section>`
     }
     else {
@@ -87,8 +86,8 @@ function blockKatex(options, renderer) {
 export function MDKatex(options = {}) {
   return {
     extensions: [
-      inlineKatex(options, createRenderer(options, false)),
-      blockKatex(options, createRenderer(options, true)),
+      inlineKatex(options, createRenderer(false)),
+      blockKatex(options, createRenderer(true)),
     ],
   }
 }

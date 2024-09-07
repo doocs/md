@@ -8,13 +8,7 @@ import type { PropertiesHyphen } from 'csstype'
 import { MDKatex } from './MDKatex'
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 
-marked.use(
-  MDKatex({
-    throwOnError: false,
-    output: `html`,
-    nonStandard: true,
-  }),
-)
+marked.use(MDKatex({ nonStandard: true }))
 
 function buildTheme({ theme, fonts, size }: IOpts): ThemeStyles {
   const base = toMerged(theme.base, {
