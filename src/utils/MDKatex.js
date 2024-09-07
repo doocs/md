@@ -10,7 +10,7 @@ function createRenderer(options, newlineAfter) {
     const svg = mjxContainer.firstChild
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
-    svg.style = 'max-width: 300% !important;'
+    svg.style = `max-width: 300vw !important;`
     svg.style.width = width
     svg.style.display = `initial`
     if (newlineAfter) {
