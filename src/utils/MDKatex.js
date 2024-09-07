@@ -10,6 +10,7 @@ function createRenderer(options, newlineAfter) {
     const svg = mjxContainer.firstChild
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
+    svg.style = 'max-width: 300% !important;'
     svg.style.width = width
     svg.style.display = `initial`
     if (newlineAfter) {
@@ -17,7 +18,7 @@ function createRenderer(options, newlineAfter) {
       return `<section style="text-align: center; overflow: auto;">${svg.outerHTML}</section>`
     }
     else {
-      return `<span style="display: inline-block;">${svg.outerHTML}</span>`
+      return `<span style="display: inline-block; vertical-align: middle; line-height: 1;">${svg.outerHTML}</span>`
     }
   }
 }
