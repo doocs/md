@@ -1,20 +1,14 @@
 import type { Renderer, RendererObject, Tokens } from 'marked'
 import { marked } from 'marked'
 import hljs from 'highlight.js'
-import markedKatex from 'marked-katex-extension'
 import mermaid from 'mermaid'
 import { toMerged } from 'es-toolkit'
 
 import type { PropertiesHyphen } from 'csstype'
+import { MDKatex } from './MDKatex'
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 
-marked.use(
-  markedKatex({
-    throwOnError: false,
-    output: `html`,
-    nonStandard: true,
-  }),
-)
+marked.use(MDKatex({ nonStandard: true }))
 
 function buildTheme({ theme, fonts, size }: IOpts): ThemeStyles {
   const base = toMerged(theme.base, {
@@ -151,7 +145,7 @@ export function initRenderer(opts: IOpts) {
 
     blockquote({ tokens }: Tokens.Blockquote): string {
       let text = this.parser.parse(tokens)
-      text = text.replace(/<p.*?>/g, `<p ${styles(`blockquote_p`)}>`)
+      text = text.replace(/<p .*?>/g, `<p ${styles(`blockquote_p`)}>`)
       return styledContent(`blockquote`, text)
     },
 
