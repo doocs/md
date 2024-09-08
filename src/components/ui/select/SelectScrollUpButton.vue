@@ -4,7 +4,7 @@ import { SelectScrollUpButton, type SelectScrollUpButtonProps, useForwardProps }
 import { ChevronUp } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<SelectScrollUpButtonProps & { class?: HTMLAttributes['class'] }>()
+const props = defineProps<SelectScrollUpButtonProps & { class?: HTMLAttributes[`class`] }>()
 
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props

@@ -253,7 +253,6 @@ export function initRenderer(opts: IOpts) {
     },
 
     hr(_: Tokens.Hr): string {
-      console.log(`hr`)
       return styledContent(`hr`, ``)
     },
   }
