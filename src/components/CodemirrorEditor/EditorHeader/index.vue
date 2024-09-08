@@ -82,7 +82,7 @@ const {
   isDark,
   isCiteStatus,
   output,
-  fontColor,
+  primaryColor,
 } = storeToRefs(store)
 
 const {
@@ -130,7 +130,7 @@ function copy() {
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量
         .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
-        .replaceAll(`var(--md-primary-color)`, fontColor.value)
+        .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)
       clipboardDiv.focus()
       window.getSelection().removeAllRanges()
@@ -299,7 +299,7 @@ function updateOpen(isOpen) {
                 :key="value"
                 class="w-full"
                 variant="outline" :class="{
-                  'border-black dark:border-white': store.fontColor === value }" @click="store.colorChanged(value)"
+                  'border-black dark:border-white': store.primaryColor === value }" @click="store.colorChanged(value)"
               >
                 <span
                   class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
@@ -316,7 +316,7 @@ function updateOpen(isOpen) {
             </h2>
             <div>
               <el-color-picker
-                v-model="fontColor"
+                v-model="primaryColor"
                 :teleported="false"
                 show-alpha
                 @change="store.colorChanged"
