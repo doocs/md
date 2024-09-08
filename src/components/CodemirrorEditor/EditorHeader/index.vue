@@ -2,13 +2,22 @@
 import { nextTick, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
+import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
 
 import PostInfo from './PostInfo.vue'
 import FileDropdown from './FileDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
 import StyleDropdown from './StyleDropdown.vue'
 import EditDropdown from './EditDropdown.vue'
+import { altSign, codeBlockThemeOptions, colorOptions, ctrlKey, ctrlSign, fontFamilyOptions, fontSizeOptions, legendOptions, shiftSign, themeOptions } from '@/config'
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,8 +26,13 @@ import {
   DropdownMenuShortcut,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover'
+import { Button } from '@/components/ui/button'
 
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/config'
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { useStore } from '@/stores'
 
@@ -217,9 +231,222 @@ function updateOpen(isOpen) {
         :open-dropdown="openDropdown(4)" :update-open="updateOpen"
       />
     </div>
-    <el-button plain type="primary" @click="copy">
+    <Popover>
+      <PopoverTrigger>
+        <Button variant="outline">
+          <Paintbrush class="h-4 w-4" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent class="h-100 w-100 overflow-auto px-6" align="end">
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <h2>
+              主题
+            </h2>
+            <div class="grid grid-cols-3 justify-items-center gap-2">
+              <Button
+                v-for="{ label, value } in themeOptions"
+                :key="value"
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.theme === value }" @click="store.themeChanged(value)"
+              >
+                {{ label }}
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              字体
+            </h2>
+            <div class="grid grid-cols-3 justify-items-center gap-2">
+              <Button
+                v-for="{ label, value } in fontFamilyOptions"
+                :key="value"
+                variant="outline"
+                class="w-full"
+                :class="{ 'border-black dark:border-white': store.fontFamily === value }"
+                @click="store.fontChanged(value)"
+              >
+                {{ label }}
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              字号
+            </h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                v-for="{ value, desc } in fontSizeOptions"
+                :key="value"
+                variant="outline"
+                class="w-full"
+                :class="{
+                  'border-black dark:border-white': store.fontSize === value }" @click="store.sizeChanged(value)"
+              >
+                {{ desc }}
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              主题色
+            </h2>
+            <div class="grid grid-cols-3 justify-items-center gap-2">
+              <Button
+                v-for="{ label, value } in colorOptions"
+                :key="value"
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.fontColor === value }" @click="store.colorChanged(value)"
+              >
+                <span
+                  class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
+                    background: value,
+                  }"
+                />
+                {{ label }}
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              自定义主题色
+            </h2>
+            <div>
+              <el-color-picker
+                v-model="fontColor"
+                :teleported="false"
+                show-alpha
+                @change="store.colorChanged"
+              />
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              代码块主题
+            </h2>
+            <div>
+              <Select v-model="store.codeBlockTheme" @update:model-value="store.codeBlockThemeChanged">
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a fruit" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
+                    {{ label }}
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              图注格式
+            </h2>
+            <div class="grid grid-cols-3 justify-items-center gap-2">
+              <Button
+                v-for="{ label, value } in legendOptions"
+                :key="value"
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.legend === value }" @click="store.legendChanged(value)"
+              >
+                {{ label }}
+              </Button>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <h2>
+              Mac 代码块
+            </h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.isMacCodeBlock }" @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
+              >
+                开启
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': !store.isMacCodeBlock }" @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
+              >
+                关闭
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              微信外链转底部引用
+            </h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.isCiteStatus }" @click="!store.isCiteStatus && store.citeStatusChanged()"
+              >
+                开启
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': !store.isCiteStatus }" @click="store.isCiteStatus && store.citeStatusChanged()"
+              >
+                关闭
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              编辑区位置
+            </h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': store.isEditOnLeft }" @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
+              >
+                左侧
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': !store.isEditOnLeft }" @click="store.isEditOnLeft && store.toggleEditOnLeft()"
+              >
+                右侧
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>
+              模式
+            </h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': !isDark }" @click="store.toggleDark(false)"
+              >
+                <Sun class="h-4 w-4" />
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline" :class="{
+                  'border-black dark:border-white': isDark }" @click="store.toggleDark(true)"
+              >
+                <Moon class="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+    <Button variant="outline" class="mx-2" @click="copy">
       复制
-    </el-button>
+    </Button>
 
     <PostInfo />
   </div>
