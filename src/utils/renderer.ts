@@ -100,9 +100,6 @@ export function initRenderer(opts: IOpts) {
   }
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
-    if (!content) {
-      return ``
-    }
     const tag = tagName ?? styleLabel
     return `<${tag} ${styles(styleLabel)}>${content}</${tag}>`
   }
@@ -172,8 +169,9 @@ export function initRenderer(opts: IOpts) {
         .replace(/\r\n/g, `<br/>`)
         .replace(/\n/g, `<br/>`)
         .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
-
-      return `<pre class="hljs code__pre" ${styles(`code_pre`)}><span class="mac-sign" style="padding: 10px 14px 0;" hidden>${macCodeSvg}</span><code class="language-${lang}" ${styles(`code`)}>${highlighted}</code></pre>`
+      const span = `<span class="mac-sign" style="padding: 10px 14px 0;" hidden>${macCodeSvg}</span>`
+      const code = `<code class="language-${lang}" ${styles(`code`)}>${highlighted}</code>`
+      return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
     },
 
     codespan({ text }: Tokens.Codespan): string {
@@ -254,7 +252,8 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`td`, text)
     },
 
-    hr(): string {
+    hr(_: Tokens.Hr): string {
+      console.log(`hr`)
       return styledContent(`hr`, ``)
     },
   }
