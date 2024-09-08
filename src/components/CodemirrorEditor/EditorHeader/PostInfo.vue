@@ -51,9 +51,9 @@ function post() {
 </script>
 
 <template>
-  <el-button plain type="primary" @click="prePost">
+  <Button variant="outline" @click="prePost">
     发布
-  </el-button>
+  </Button>
 
   <el-dialog
     title="发布"
