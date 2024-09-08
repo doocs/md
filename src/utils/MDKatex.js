@@ -16,9 +16,8 @@ function createRenderer(display) {
     if (display) {
       return `<section style="text-align: center; overflow: auto;">${svg.outerHTML}</section>`
     }
-    else {
-      return `<span style="display: inline-block; vertical-align: middle; line-height: 1;">${svg.outerHTML}</span>`
-    }
+
+    return `<span style="vertical-align: middle; line-height: 1;">${svg.outerHTML}</span>`
   }
 }
 

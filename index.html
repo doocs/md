@@ -15,12 +15,6 @@
       rel="apple-touch-icon-precomposed"
       href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
     />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css"
-      integrity="sha384-nB0miv6/jRmo5UMMR1wu3Gz6NLsoTkbqJghGIsx//Rlm+ZU03BU6SQNC66uf4l5+"
-      crossorigin="anonymous"
-    />
     <style>
       .loading {
         position: fixed;
@@ -93,11 +87,12 @@
     </script>
     <script>
       MathJax = {
+        loader: { load: ['[tex]/ams'] },
+        tex: { packages: { '[+]': ['ams'] }, tags: 'ams' },
         svg: { fontCache: 'none' },
-        tex: { tags: 'ams' },
       }
     </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
     <script type="module" src="/src/main.js"></script>
   </body>
   <script src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/main.js"></script>
