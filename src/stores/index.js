@@ -1,4 +1,4 @@
-import { markRaw, onMounted, ref } from 'vue'
+import { computed, markRaw, onMounted, ref } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror'
@@ -43,12 +43,12 @@ export const useStore = defineStore(`store`, () => {
   // 图注格式
   const legend = useStorage(`legend`, legendOptions[3].value)
 
-  const fontSizeNumber = fontSize.value.replace(`px`, ``)
+  const fontSizeNumber = computed(() => fontSize.value.replace(`px`, ``))
 
   const renderer = initRenderer({
-    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }),
+    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: fontColor.value }),
     fonts: fontFamily.value,
-    size: fontSize.value,
+    size: fontSize,
   })
 
   // 内容编辑器编辑器
@@ -174,7 +174,7 @@ export const useStore = defineStore(`store`, () => {
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
-    const newTheme = customCssWithTemplate(json, fontColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber, color: fontColor.value }))
+    const newTheme = customCssWithTemplate(json, fontColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: fontColor.value }))
     renderer.setOptions({
       theme: newTheme,
     })
@@ -263,7 +263,7 @@ export const useStore = defineStore(`store`, () => {
 
   const themeChanged = withAfterRefresh((newTheme) => {
     renderer.setOptions({
-      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber, color: fontColor.value }),
+      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value, color: fontColor.value }),
     })
     theme.value = newTheme
   })
