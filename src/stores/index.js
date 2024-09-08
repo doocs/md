@@ -48,7 +48,6 @@ export const useStore = defineStore(`store`, () => {
   const renderer = initRenderer({
     theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: fontColor.value }),
     fonts: fontFamily.value,
-    size: fontSize,
   })
 
   // 内容编辑器编辑器
