@@ -29,7 +29,7 @@ const {
   theme,
   fontFamily,
   fontSize,
-  fontColor,
+  primaryColor,
   codeBlockTheme,
   legend,
   isMacCodeBlock,
@@ -89,7 +89,7 @@ function customStyle() {
       <StyleOptionMenu
         title="主题色"
         :options="colorOptions"
-        :current="fontColor"
+        :current="primaryColor"
         :change="colorChanged"
       />
       <StyleOptionMenu
@@ -109,7 +109,7 @@ function customStyle() {
           <HoverCardContent side="right" class="w-min">
             <el-color-picker
               ref="colorPicker"
-              v-model="fontColor"
+              v-model="primaryColor"
               :teleported="false"
               show-alpha
               class="ml-auto"
@@ -123,7 +123,7 @@ function customStyle() {
         自定义主题色
         <el-color-picker
           ref="colorPicker"
-          v-model="fontColor"
+          v-model="primaryColor"
           :teleported="false"
           show-alpha
           class="ml-auto"

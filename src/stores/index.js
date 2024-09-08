@@ -36,8 +36,8 @@ export const useStore = defineStore(`store`, () => {
   const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
   // 文本大小
   const fontSize = useStorage(`size`, fontSizeOptions[2].value)
-  // 文本颜色
-  const fontColor = useStorage(`color`, colorOptions[0].value)
+  // 主色
+  const primaryColor = useStorage(`color`, colorOptions[0].value)
   // 代码块主题
   const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[23].value)
   // 图注格式
@@ -46,7 +46,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => fontSize.value.replace(`px`, ``))
 
   const renderer = initRenderer({
-    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: fontColor.value }),
+    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value }),
     fonts: fontFamily.value,
   })
 
@@ -173,7 +173,7 @@ export const useStore = defineStore(`store`, () => {
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
-    const newTheme = customCssWithTemplate(json, fontColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: fontColor.value }))
+    const newTheme = customCssWithTemplate(json, primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value }))
     renderer.setOptions({
       theme: newTheme,
     })
@@ -226,7 +226,7 @@ export const useStore = defineStore(`store`, () => {
     fontFamily.value = fontFamilyOptions[0].value
     fontFamily.value = fontFamilyOptions[0].value
     fontSize.value = fontSizeOptions[2].value
-    fontColor.value = colorOptions[0].value
+    primaryColor.value = colorOptions[0].value
     codeBlockTheme.value = codeBlockThemeOptions[2].value
     legend.value = legendOptions[3].value
 
@@ -262,7 +262,7 @@ export const useStore = defineStore(`store`, () => {
 
   const themeChanged = withAfterRefresh((newTheme) => {
     renderer.setOptions({
-      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value, color: fontColor.value }),
+      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value, color: primaryColor.value }),
     })
     theme.value = newTheme
   })
@@ -276,7 +276,7 @@ export const useStore = defineStore(`store`, () => {
   })
 
   const sizeChanged = withAfterRefresh((size) => {
-    const theme = getTheme(size, fontColor.value)
+    const theme = getTheme(size, primaryColor.value)
     renderer.setOptions({
       size,
       theme,
@@ -291,7 +291,7 @@ export const useStore = defineStore(`store`, () => {
       theme,
     })
 
-    fontColor.value = newColor
+    primaryColor.value = newColor
   })
 
   const codeBlockThemeChanged = withAfterRefresh((newTheme) => {
@@ -404,7 +404,7 @@ export const useStore = defineStore(`store`, () => {
     theme,
     fontFamily,
     fontSize,
-    fontColor,
+    primaryColor,
     codeBlockTheme,
     legend,
 
