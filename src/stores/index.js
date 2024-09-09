@@ -45,11 +45,6 @@ export const useStore = defineStore(`store`, () => {
 
   const fontSizeNumber = computed(() => fontSize.value.replace(`px`, ``))
 
-  const renderer = initRenderer({
-    theme: customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value }),
-    fonts: fontFamily.value,
-  })
-
   // 内容编辑器编辑器
   const editor = ref(null)
   // 编辑区域内容
@@ -78,43 +73,6 @@ export const useStore = defineStore(`store`, () => {
       link.setAttribute(`id`, `hljs`)
       document.head.appendChild(link)
     }
-  }
-
-  // 更新编辑器
-  const editorRefresh = () => {
-    codeThemeChange()
-    renderer.reset({ status: isCiteStatus.value, legend: legend.value })
-    let outputTemp = marked.parse(editor.value.getValue(0))
-
-    // 去除第一行的 margin-top
-    outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-    // 引用脚注
-    outputTemp += renderer.buildFootnotes()
-    // 附加的一些 style
-    outputTemp += renderer.buildAddition()
-
-    if (isMacCodeBlock.value) {
-      outputTemp += `
-        <style>
-          .hljs.code__pre > .mac-sign {
-            display: inline-block;
-          }
-
-          .hljs.code__pre {
-            padding: 0!important;
-          }
-
-          .hljs.code__pre code {
-            display: -webkit-box;
-            padding: 0.5em 1em 1em;
-            overflow-x: auto;
-            text-indent: 0;
-          }
-        </style>
-      `
-    }
-
-    output.value = outputTemp
   }
 
   // 自义定 CSS 编辑器
@@ -170,6 +128,49 @@ export const useStore = defineStore(`store`, () => {
   const validatorTabName = (val) => {
     return cssContentConfig.value.tabs.every(({ name }) => name !== val)
   }
+
+  const renderer = initRenderer({
+    theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value })),
+    fonts: fontFamily.value,
+  })
+
+  // 更新编辑器
+  const editorRefresh = () => {
+    codeThemeChange()
+    renderer.reset({ status: isCiteStatus.value, legend: legend.value })
+    let outputTemp = marked.parse(editor.value.getValue(0))
+
+    // 去除第一行的 margin-top
+    outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+    // 引用脚注
+    outputTemp += renderer.buildFootnotes()
+    // 附加的一些 style
+    outputTemp += renderer.buildAddition()
+
+    if (isMacCodeBlock.value) {
+      outputTemp += `
+        <style>
+          .hljs.code__pre > .mac-sign {
+            display: inline-block;
+          }
+
+          .hljs.code__pre {
+            padding: 0!important;
+          }
+
+          .hljs.code__pre code {
+            display: -webkit-box;
+            padding: 0.5em 1em 1em;
+            overflow-x: auto;
+            text-indent: 0;
+          }
+        </style>
+      `
+    }
+
+    output.value = outputTemp
+  }
+
   // 更新 CSS
   const updateCss = () => {
     const json = css2json(cssEditor.value.getValue())
@@ -257,12 +258,12 @@ export const useStore = defineStore(`store`, () => {
   const getTheme = (size, color) => {
     const newTheme = themeMap[theme.value]
     const fontSize = size.replace(`px`, ``)
-    return customizeTheme(newTheme, { fontSize, color })
+    return customCssWithTemplate(css2json(getCurrentTab().content), color, customizeTheme(newTheme, { fontSize, color }))
   }
 
   const themeChanged = withAfterRefresh((newTheme) => {
     renderer.setOptions({
-      theme: customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value, color: primaryColor.value }),
+      theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value })),
     })
     theme.value = newTheme
   })
