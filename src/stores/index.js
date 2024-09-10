@@ -190,6 +190,7 @@ export const useStore = defineStore(`store`, () => {
         mode: `css`,
         theme: `xq-light`,
         lineNumbers: false,
+        styleActiveLine: true,
         lineWrapping: true,
         matchBrackets: true,
         autofocus: true,
