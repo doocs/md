@@ -188,7 +188,7 @@ export const useStore = defineStore(`store`, () => {
     cssEditor.value = markRaw(
       CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
-        theme: `style-mirror`,
+        theme: `xq-light`,
         lineNumbers: false,
         lineWrapping: true,
         matchBrackets: true,
