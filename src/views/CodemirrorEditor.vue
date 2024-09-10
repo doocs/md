@@ -30,8 +30,6 @@ import {
   toBase64,
 } from '@/utils'
 
-import 'codemirror/mode/javascript/javascript'
-
 const store = useStore()
 const { output, editor, editorContent, isShowCssEditor } = storeToRefs(store)
 
