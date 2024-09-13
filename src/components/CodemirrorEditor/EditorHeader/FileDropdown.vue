@@ -3,8 +3,6 @@ import { storeToRefs } from 'pinia'
 
 import { useStore } from '@/stores'
 
-const props = defineProps([`isOpen`, `clickTrigger`, `openDropdown`, `updateOpen`])
-
 const store = useStore()
 
 const {
@@ -22,11 +20,8 @@ const {
 </script>
 
 <template>
-  <MenubarMenu :open="props.isOpen" @update:open="props.updateOpen">
-    <MenubarTrigger
-      @click="props.clickTrigger()"
-      @mouseenter="props.openDropdown()"
-    >
+  <MenubarMenu>
+    <MenubarTrigger>
       文件
     </MenubarTrigger>
     <MenubarContent align="start">

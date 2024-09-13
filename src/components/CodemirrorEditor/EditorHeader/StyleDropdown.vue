@@ -20,8 +20,6 @@ import {
 } from '@/config'
 import { useStore } from '@/stores'
 
-const props = defineProps([`isOpen`, `clickTrigger`, `openDropdown`, `updateOpen`])
-
 const store = useStore()
 
 const {
@@ -68,13 +66,8 @@ function customStyle() {
 </script>
 
 <template>
-  <MenubarMenu :open="props.isOpen" @update:open="props.updateOpen">
-    <MenubarTrigger
-      @click="props.clickTrigger()"
-      @mouseenter="props.openDropdown()"
-    >
-      样式
-    </MenubarTrigger>
+  <MenubarMenu>
+    <MenubarTrigger> 样式 </MenubarTrigger>
     <MenubarContent class="w-56" align="start">
       <StyleOptionMenu
         title="主题"

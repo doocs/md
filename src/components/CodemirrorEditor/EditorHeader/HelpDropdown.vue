@@ -3,17 +3,12 @@ import { ref } from 'vue'
 
 import AboutDialog from './AboutDialog.vue'
 
-const props = defineProps([`isOpen`, `clickTrigger`, `openDropdown`, `updateOpen`])
-
 const aboutDialogVisible = ref(false)
 </script>
 
 <template>
-  <MenubarMenu :open="props.isOpen" @update:open="props.updateOpen">
-    <MenubarTrigger
-      @click="props.clickTrigger()"
-      @mouseenter="props.openDropdown()"
-    >
+  <MenubarMenu>
+    <MenubarTrigger>
       帮助
     </MenubarTrigger>
     <MenubarContent align="start">

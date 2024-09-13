@@ -1,5 +1,5 @@
 <script setup>
-import { nextTick, reactive, ref } from 'vue'
+import { nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
 import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
@@ -152,41 +152,15 @@ function copy() {
     })
   }, 350)
 }
-
-const isClickTrigger = ref(false)
-const isOpenList = reactive(Array.from({ length: 5 }).fill(false))
-function clickTrigger() {
-  isClickTrigger.value = !isClickTrigger.value
-}
-
-function openDropdown(index) {
-  return () => {
-    isOpenList.fill(false)
-    isOpenList[index] = true
-  }
-}
-
-function updateOpen(isOpen) {
-  if (!isOpen) {
-    isClickTrigger.value = false
-  }
-}
 </script>
 
 <template>
   <div class="header-container">
     <Menubar class="menubar mr-auto">
-      <FileDropdown
-        :is-open="isClickTrigger && isOpenList[0]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(0)"
-        :update-open="updateOpen"
-      />
+      <FileDropdown />
 
-      <MenubarMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
-        <MenubarTrigger @click="clickTrigger()" @mouseenter="openDropdown(1)()">
-          格式
-        </MenubarTrigger>
+      <MenubarMenu>
+        <MenubarTrigger> 格式 </MenubarTrigger>
         <MenubarContent class="w-60" align="start">
           <MenubarItem
             v-for="{ label, kbd, emitArgs } in formatItems"
@@ -210,24 +184,9 @@ function updateOpen(isOpen) {
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>
-      <EditDropdown
-        :is-open="isClickTrigger && isOpenList[2]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(2)"
-        :update-open="updateOpen"
-      />
-      <StyleDropdown
-        :is-open="isClickTrigger && isOpenList[3]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(3)"
-        :update-open="updateOpen"
-      />
-      <HelpDropdown
-        :is-open="isClickTrigger && isOpenList[4]"
-        :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(4)"
-        :update-open="updateOpen"
-      />
+      <EditDropdown />
+      <StyleDropdown />
+      <HelpDropdown />
     </Menubar>
 
     <Popover>
