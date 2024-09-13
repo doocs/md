@@ -9,7 +9,18 @@ import FileDropdown from './FileDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
 import StyleDropdown from './StyleDropdown.vue'
 import EditDropdown from './EditDropdown.vue'
-import { altSign, codeBlockThemeOptions, colorOptions, ctrlKey, ctrlSign, fontFamilyOptions, fontSizeOptions, legendOptions, shiftSign, themeOptions } from '@/config'
+import {
+  altSign,
+  codeBlockThemeOptions,
+  colorOptions,
+  ctrlKey,
+  ctrlSign,
+  fontFamilyOptions,
+  fontSizeOptions,
+  legendOptions,
+  shiftSign,
+  themeOptions,
+} from '@/config'
 
 import {
   Select,
@@ -19,29 +30,21 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover'
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarTrigger,
+} from '@/components/ui/menubar'
+
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Button } from '@/components/ui/button'
 
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { useStore } from '@/stores'
 
-const emit = defineEmits([
-  `addFormat`,
-  `formatContent`,
-  `startCopy`,
-  `endCopy`,
-])
+const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
 const formatItems = [
   {
@@ -78,18 +81,9 @@ const formatItems = [
 
 const store = useStore()
 
-const {
-  isDark,
-  isCiteStatus,
-  output,
-  primaryColor,
-} = storeToRefs(store)
+const { isDark, isCiteStatus, output, primaryColor } = storeToRefs(store)
 
-const {
-  toggleDark,
-  editorRefresh,
-  citeStatusChanged,
-} = store
+const { toggleDark, editorRefresh, citeStatusChanged } = store
 
 // 复制到微信公众号
 function copy() {
@@ -103,10 +97,7 @@ function copy() {
       const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
 
       originalItems.forEach((originalItem) => {
-        originalItem.parentElement.insertAdjacentElement(
-          `afterend`,
-          originalItem,
-        )
+        originalItem.parentElement.insertAdjacentElement(`afterend`, originalItem)
       })
 
       // 返回修改后的 HTML 字符串
@@ -184,53 +175,61 @@ function updateOpen(isOpen) {
 
 <template>
   <div class="header-container">
-    <div class="dropdowns flex flex-auto">
+    <Menubar class="menubar mr-auto">
       <FileDropdown
-        :is-open="isClickTrigger && isOpenList[0]" :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(0)" :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[0]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(0)"
+        :update-open="updateOpen"
       />
 
-      <DropdownMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
-        <DropdownMenuTrigger
-          class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9" :class="{
-            'bg-gray-2': isClickTrigger && isOpenList[1],
-            'dark:bg-stone-9': isClickTrigger && isOpenList[1],
-          }" @click="clickTrigger()" @mouseenter="openDropdown(1)()"
-        >
+      <MenubarMenu :open="isClickTrigger && isOpenList[1]" @update:open="updateOpen">
+        <MenubarTrigger @click="clickTrigger()" @mouseenter="openDropdown(1)()">
           格式
-        </DropdownMenuTrigger>
-        <DropdownMenuContent class="w-60" align="start">
-          <DropdownMenuItem v-for="{ label, kbd, emitArgs } in formatItems" :key="kbd" @click="$emit(...emitArgs);">
+        </MenubarTrigger>
+        <MenubarContent class="w-60" align="start">
+          <MenubarItem
+            v-for="{ label, kbd, emitArgs } in formatItems"
+            :key="kbd"
+            @click="$emit(...emitArgs)"
+          >
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
-            <DropdownMenuShortcut>
+            <MenubarSeparator>
               <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
                 {{ item }}
               </kbd>
-            </DropdownMenuShortcut>
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem @click="citeStatusChanged()">
+            </MenubarSeparator>
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem @click="citeStatusChanged()">
             <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isCiteStatus }">
               <ElIconCheck />
             </el-icon>
             微信外链转底部引用
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+          </MenubarItem>
+        </MenubarContent>
+      </MenubarMenu>
       <EditDropdown
-        :is-open="isClickTrigger && isOpenList[2]" :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(2)" :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[2]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(2)"
+        :update-open="updateOpen"
       />
       <StyleDropdown
-        :is-open="isClickTrigger && isOpenList[3]" :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(3)" :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[3]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(3)"
+        :update-open="updateOpen"
       />
       <HelpDropdown
-        :is-open="isClickTrigger && isOpenList[4]" :click-trigger="clickTrigger"
-        :open-dropdown="openDropdown(4)" :update-open="updateOpen"
+        :is-open="isClickTrigger && isOpenList[4]"
+        :click-trigger="clickTrigger"
+        :open-dropdown="openDropdown(4)"
+        :update-open="updateOpen"
       />
-    </div>
+    </Menubar>
+
     <Popover>
       <PopoverTrigger>
         <Button variant="outline">
@@ -240,25 +239,24 @@ function updateOpen(isOpen) {
       <PopoverContent class="h-100 w-100 overflow-auto px-6" align="end">
         <div class="space-y-4">
           <div class="space-y-2">
-            <h2>
-              主题
-            </h2>
+            <h2>主题</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
                 v-for="{ label, value } in themeOptions"
                 :key="value"
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.theme === value }" @click="store.themeChanged(value)"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.theme === value,
+                }"
+                @click="store.themeChanged(value)"
               >
                 {{ label }}
               </Button>
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              字体
-            </h2>
+            <h2>字体</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
                 v-for="{ label, value } in fontFamilyOptions"
@@ -273,9 +271,7 @@ function updateOpen(isOpen) {
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              字号
-            </h2>
+            <h2>字号</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
                 v-for="{ value, desc } in fontSizeOptions"
@@ -283,26 +279,30 @@ function updateOpen(isOpen) {
                 variant="outline"
                 class="w-full"
                 :class="{
-                  'border-black dark:border-white': store.fontSize === value }" @click="store.sizeChanged(value)"
+                  'border-black dark:border-white': store.fontSize === value,
+                }"
+                @click="store.sizeChanged(value)"
               >
                 {{ desc }}
               </Button>
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              主题色
-            </h2>
+            <h2>主题色</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
                 v-for="{ label, value } in colorOptions"
                 :key="value"
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.primaryColor === value }" @click="store.colorChanged(value)"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.primaryColor === value,
+                }"
+                @click="store.colorChanged(value)"
               >
                 <span
-                  class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
+                  class="mr-2 inline-block h-4 w-4 rounded-full"
+                  :style="{
                     background: value,
                   }"
                 />
@@ -311,9 +311,7 @@ function updateOpen(isOpen) {
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              自定义主题色
-            </h2>
+            <h2>自定义主题色</h2>
             <div>
               <el-color-picker
                 v-model="primaryColor"
@@ -324,16 +322,21 @@ function updateOpen(isOpen) {
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              代码块主题
-            </h2>
+            <h2>代码块主题</h2>
             <div>
-              <Select v-model="store.codeBlockTheme" @update:model-value="store.codeBlockThemeChanged">
+              <Select
+                v-model="store.codeBlockTheme"
+                @update:model-value="store.codeBlockThemeChanged"
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a fruit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
+                  <SelectItem
+                    v-for="{ label, value } in codeBlockThemeOptions"
+                    :key="label"
+                    :value="value"
+                  >
                     {{ label }}
                   </SelectItem>
                 </SelectContent>
@@ -341,16 +344,17 @@ function updateOpen(isOpen) {
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              图注格式
-            </h2>
+            <h2>图注格式</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
                 v-for="{ label, value } in legendOptions"
                 :key="value"
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.legend === value }" @click="store.legendChanged(value)"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.legend === value,
+                }"
+                @click="store.legendChanged(value)"
               >
                 {{ label }}
               </Button>
@@ -358,84 +362,100 @@ function updateOpen(isOpen) {
           </div>
 
           <div class="space-y-2">
-            <h2>
-              Mac 代码块
-            </h2>
+            <h2>Mac 代码块</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.isMacCodeBlock }" @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.isMacCodeBlock,
+                }"
+                @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 开启
               </Button>
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': !store.isMacCodeBlock }" @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !store.isMacCodeBlock,
+                }"
+                @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 关闭
               </Button>
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              微信外链转底部引用
-            </h2>
+            <h2>微信外链转底部引用</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.isCiteStatus }" @click="!store.isCiteStatus && store.citeStatusChanged()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.isCiteStatus,
+                }"
+                @click="!store.isCiteStatus && store.citeStatusChanged()"
               >
                 开启
               </Button>
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': !store.isCiteStatus }" @click="store.isCiteStatus && store.citeStatusChanged()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !store.isCiteStatus,
+                }"
+                @click="store.isCiteStatus && store.citeStatusChanged()"
               >
                 关闭
               </Button>
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              编辑区位置
-            </h2>
+            <h2>编辑区位置</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': store.isEditOnLeft }" @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.isEditOnLeft,
+                }"
+                @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 左侧
               </Button>
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': !store.isEditOnLeft }" @click="store.isEditOnLeft && store.toggleEditOnLeft()"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !store.isEditOnLeft,
+                }"
+                @click="store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 右侧
               </Button>
             </div>
           </div>
           <div class="space-y-2">
-            <h2>
-              模式
-            </h2>
+            <h2>模式</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': !isDark }" @click="store.toggleDark(false)"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !isDark,
+                }"
+                @click="store.toggleDark(false)"
               >
                 <Sun class="h-4 w-4" />
               </Button>
               <Button
                 class="w-full"
-                variant="outline" :class="{
-                  'border-black dark:border-white': isDark }" @click="store.toggleDark(true)"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': isDark,
+                }"
+                @click="store.toggleDark(true)"
               >
                 <Moon class="h-4 w-4" />
               </Button>
@@ -460,7 +480,7 @@ function updateOpen(isOpen) {
   padding: 0 20px;
 }
 
-.dropdowns {
+.menubar {
   user-select: none;
 }
 
