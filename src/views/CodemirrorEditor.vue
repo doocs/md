@@ -370,88 +370,82 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="container" class="container">
-    <el-container>
-      <el-header class="editor__header">
-        <EditorHeader
-          @add-format="addFormat"
-          @format-content="formatContent"
-          @start-copy="startCopy"
-          @end-copy="endCopy"
-        />
-      </el-header>
-      <el-main class="container-main">
-        <el-row class="container-main-section">
-          <el-col
-            ref="codeMirrorWrapper"
-            :span="isShowCssEditor ? 8 : 12"
-            class="codeMirror-wrapper"
-            :class="{
-              'order-1': !store.isEditOnLeft,
-            }"
-          >
-            <ContextMenu>
-              <ContextMenuTrigger>
-                <textarea
-                  id="editor"
-                  type="textarea"
-                  placeholder="Your markdown text here."
-                />
-              </ContextMenuTrigger>
-              <ContextMenuContent class="w-64">
-                <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
-                  上传图片
-                </ContextMenuItem>
-                <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
-                  插入表格
-                </ContextMenuItem>
-                <ContextMenuItem inset @click="resetStyleConfirm()">
-                  恢复默认样式
-                </ContextMenuItem>
-                <ContextMenuSeparator />
-                <ContextMenuItem inset @click="importMarkdownContent()">
-                  导入 .md 文档
-                </ContextMenuItem>
-                <ContextMenuItem inset @click="exportEditorContent2MD()">
-                  导出 .md 文档
-                </ContextMenuItem>
-                <ContextMenuItem inset @click="exportEditorContent2HTML()">
-                  导出 .html
-                </ContextMenuItem>
-                <ContextMenuItem inset @click="formatContent()">
-                  格式化
-                  <ContextMenuShortcut>{{ altSign }} + {{ shiftSign }} + F</ContextMenuShortcut>
-                </ContextMenuItem>
-              </ContextMenuContent>
-            </ContextMenu>
-          </el-col>
-          <el-col
-            id="preview"
-            ref="preview"
-            :span="isShowCssEditor ? 8 : 12"
-            class="preview-wrapper"
-          >
-            <div id="output-wrapper" :class="{ output_night: !backLight }">
-              <div class="preview">
-                <section id="output" v-html="output" />
-                <div v-if="isCoping" class="loading-mask">
-                  <div class="loading-mask-box">
-                    <div class="loading__img" />
-                    <span>正在生成</span>
-                  </div>
+  <div ref="container" class="container flex flex-col">
+    <EditorHeader
+      @add-format="addFormat"
+      @format-content="formatContent"
+      @start-copy="startCopy"
+      @end-copy="endCopy"
+    />
+    <main class="container-main flex-1">
+      <el-row class="container-main-section h-full border-1">
+        <el-col
+          ref="codeMirrorWrapper"
+          :span="isShowCssEditor ? 8 : 12"
+          class="codeMirror-wrapper"
+          :class="{
+            'order-1': !store.isEditOnLeft,
+          }"
+        >
+          <ContextMenu>
+            <ContextMenuTrigger>
+              <textarea
+                id="editor"
+                type="textarea"
+                placeholder="Your markdown text here."
+              />
+            </ContextMenuTrigger>
+            <ContextMenuContent class="w-64">
+              <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
+                上传图片
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
+                插入表格
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="resetStyleConfirm()">
+                恢复默认样式
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem inset @click="importMarkdownContent()">
+                导入 .md 文档
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="exportEditorContent2MD()">
+                导出 .md 文档
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="exportEditorContent2HTML()">
+                导出 .html
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="formatContent()">
+                格式化
+                <ContextMenuShortcut>{{ altSign }} + {{ shiftSign }} + F</ContextMenuShortcut>
+              </ContextMenuItem>
+            </ContextMenuContent>
+          </ContextMenu>
+        </el-col>
+        <el-col
+          id="preview"
+          ref="preview"
+          :span="isShowCssEditor ? 8 : 12"
+          class="preview-wrapper p-5"
+        >
+          <div id="output-wrapper" :class="{ output_night: !backLight }">
+            <div class="preview border shadow-xl">
+              <section id="output" v-html="output" />
+              <div v-if="isCoping" class="loading-mask">
+                <div class="loading-mask-box">
+                  <div class="loading__img" />
+                  <span>正在生成</span>
                 </div>
               </div>
             </div>
-          </el-col>
-          <CssEditor />
-        </el-row>
-      </el-main>
-    </el-container>
+          </div>
+        </el-col>
+        <CssEditor />
+      </el-row>
+    </main>
 
     <UploadImgDialog
-      @before-upload="beforeUpload"
       @upload-image="uploadImage"
-      @uploaded="uploaded"
     />
 
     <InsertFormDialog />
@@ -466,18 +460,15 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .container {
-  height: 100%;
+  height: 100vh;
   min-width: 100%;
   padding: 0;
 }
 
 .container-main {
+  overflow: hidden;
   padding: 20px;
   padding-top: 0;
-}
-
-.container-main-section {
-  height: 100%;
 }
 
 #output-wrapper {

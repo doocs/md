@@ -35,6 +35,7 @@ import {
   MenubarItem,
   MenubarMenu,
   MenubarSeparator,
+  MenubarShortcut,
   MenubarTrigger,
 } from '@/components/ui/menubar'
 
@@ -155,7 +156,7 @@ function copy() {
 </script>
 
 <template>
-  <div class="header-container">
+  <header class="header-container h-15 flex items-center px-5">
     <Menubar class="menubar mr-auto">
       <FileDropdown />
 
@@ -169,11 +170,11 @@ function copy() {
           >
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
-            <MenubarSeparator>
+            <MenubarShortcut>
               <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
                 {{ item }}
               </kbd>
-            </MenubarSeparator>
+            </MenubarShortcut>
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem @click="citeStatusChanged()">
@@ -428,17 +429,10 @@ function copy() {
     </Button>
 
     <PostInfo />
-  </div>
+  </header>
 </template>
 
 <style lang="less" scoped>
-.header-container {
-  display: flex;
-  align-items: center;
-  height: 100%;
-  padding: 0 20px;
-}
-
 .menubar {
   user-select: none;
 }

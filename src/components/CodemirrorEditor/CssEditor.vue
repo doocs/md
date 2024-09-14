@@ -67,7 +67,7 @@ function handleTabsEdit(targetName, action) {
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="store.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col">
+    <el-col v-show="store.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
       <el-tabs
         v-model="store.cssContentConfig.active"
         type="border-card"
