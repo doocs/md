@@ -43,6 +43,7 @@ export function customCssWithTemplate(jsonString, color, theme) {
     `h3`,
     `h4`,
     `code`,
+    `code_pre`,
     `p`,
     `hr`,
     `blockquote`,
