@@ -180,12 +180,8 @@ const changeTimer = ref(0)
 
 // 监听暗色模式并更新编辑器
 watch(isDark, () => {
-  if (isDark.value) {
-    toRaw(editor.value)?.setOption?.(`theme`, `darcula`)
-  }
-  else {
-    toRaw(editor.value)?.setOption?.(`theme`, `xq-light`)
-  }
+  const theme = isDark.value ? `darcula` : `xq-light`
+  toRaw(editor.value)?.setOption?.(`theme`, theme)
 })
 
 // 初始化编辑器

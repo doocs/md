@@ -184,11 +184,11 @@ export const useStore = defineStore(`store`, () => {
   onMounted(() => {
     const cssEditorDom = document.querySelector(`#cssEditor`)
     cssEditorDom.value = getCurrentTab().content
-
+    const theme = isDark.value ? `darcula` : `xq-light`
     cssEditor.value = markRaw(
       CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
-        theme: isDark.value ? `darcula` : `xq-light`,
+        theme,
         lineNumbers: false,
         styleActiveLine: true,
         lineWrapping: true,
@@ -220,12 +220,8 @@ export const useStore = defineStore(`store`, () => {
   })
 
   watch(isDark, () => {
-    if (isDark.value) {
-      toRaw(cssEditor.value)?.setOption?.(`theme`, `darcula`)
-    }
-    else {
-      toRaw(cssEditor.value)?.setOption?.(`theme`, `xq-light`)
-    }
+    const theme = isDark.value ? `darcula` : `xq-light`
+    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
   })
 
   // 重置样式
