@@ -1,5 +1,5 @@
 <script setup>
-import { onMounted, ref, toRaw } from 'vue'
+import { onMounted, ref, toRaw, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import CodeMirror from 'codemirror'
@@ -31,7 +31,7 @@ import {
 } from '@/utils'
 
 const store = useStore()
-const { output, editor, editorContent, isShowCssEditor } = storeToRefs(store)
+const { isDark, output, editor, editorContent, isShowCssEditor } = storeToRefs(store)
 
 const {
   editorRefresh,
@@ -177,6 +177,16 @@ function uploadImage(file, cb) {
 }
 
 const changeTimer = ref(0)
+
+// 监听暗色模式并更新编辑器
+watch(isDark, () => {
+  if (isDark.value) {
+    toRaw(editor.value)?.setOption?.(`theme`, `darcula`)
+  }
+  else {
+    toRaw(editor.value)?.setOption?.(`theme`, `xq-light`)
+  }
+})
 
 // 初始化编辑器
 function initEditor() {
@@ -382,7 +392,7 @@ onMounted(() => {
         <el-col
           ref="codeMirrorWrapper"
           :span="isShowCssEditor ? 8 : 12"
-          class="codeMirror-wrapper"
+          class="codeMirror-wrapper border-r-1"
           :class="{
             'order-1': !store.isEditOnLeft,
           }"

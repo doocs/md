@@ -6,6 +6,7 @@ import App from './App.vue'
 import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/xq-light.css'
+import 'codemirror/theme/darcula.css'
 
 /* 每个页面公共css */
 import '@/assets/index.css'
