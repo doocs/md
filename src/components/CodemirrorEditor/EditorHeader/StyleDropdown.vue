@@ -5,23 +5,20 @@ import { storeToRefs } from 'pinia'
 import StyleOptionMenu from './StyleOptionMenu.vue'
 
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-
-import {
   HoverCard,
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
 
-import { codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, themeOptions } from '@/config'
+import {
+  codeBlockThemeOptions,
+  colorOptions,
+  fontFamilyOptions,
+  fontSizeOptions,
+  legendOptions,
+  themeOptions,
+} from '@/config'
 import { useStore } from '@/stores'
-
-const props = defineProps([`isOpen`, `clickTrigger`, `openDropdown`, `updateOpen`])
 
 const store = useStore()
 
@@ -69,23 +66,28 @@ function customStyle() {
 </script>
 
 <template>
-  <DropdownMenu :open="props.isOpen" @update:open="props.updateOpen">
-    <DropdownMenuTrigger
-      class="flex items-center p-2 px-4 hover:bg-gray-2 dark:hover:bg-stone-9"
-      :class="{
-        'bg-gray-2': props.isOpen,
-        'dark:bg-stone-9': props.isOpen,
-      }"
-      @click="props.clickTrigger()"
-      @mouseenter="props.openDropdown()"
-    >
-      样式
-    </DropdownMenuTrigger>
-    <DropdownMenuContent class="w-56" align="start">
-      <StyleOptionMenu title="主题" :options="themeOptions" :current="theme" :change="themeChanged" />
-      <DropdownMenuSeparator />
-      <StyleOptionMenu title="字体" :options="fontFamilyOptions" :current="fontFamily" :change="fontChanged" />
-      <StyleOptionMenu title="字号" :options="fontSizeOptions" :current="fontSize" :change="sizeChanged" />
+  <MenubarMenu>
+    <MenubarTrigger> 样式 </MenubarTrigger>
+    <MenubarContent class="w-56" align="start">
+      <StyleOptionMenu
+        title="主题"
+        :options="themeOptions"
+        :current="theme"
+        :change="themeChanged"
+      />
+      <MenubarSeparator />
+      <StyleOptionMenu
+        title="字体"
+        :options="fontFamilyOptions"
+        :current="fontFamily"
+        :change="fontChanged"
+      />
+      <StyleOptionMenu
+        title="字号"
+        :options="fontSizeOptions"
+        :current="fontSize"
+        :change="sizeChanged"
+      />
       <StyleOptionMenu
         title="主题色"
         :options="colorOptions"
@@ -98,9 +100,14 @@ function customStyle() {
         :current="codeBlockTheme"
         :change="codeBlockThemeChanged"
       />
-      <StyleOptionMenu title="图注格式" :options="legendOptions" :current="legend" :change="legendChanged" />
-      <DropdownMenuSeparator />
-      <DropdownMenuItem @click.self.prevent="showPicker">
+      <StyleOptionMenu
+        title="图注格式"
+        :options="legendOptions"
+        :current="legend"
+        :change="legendChanged"
+      />
+      <MenubarSeparator />
+      <MenubarItem @click.self.prevent="showPicker">
         <HoverCard :open-delay="100">
           <HoverCardTrigger class="w-full flex">
             <el-icon class="mr-2 h-4 w-4" />
@@ -131,23 +138,23 @@ function customStyle() {
           @change="colorChanged"
           @click="showPicker"
         /> -->
-      </DropdownMenuItem>
-      <DropdownMenuItem @click="customStyle">
+      </MenubarItem>
+      <MenubarItem @click="customStyle">
         <el-icon class="mr-2 h-4 w-4" />
         自定义 CSS
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem @click="macCodeBlockChanged">
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem @click="macCodeBlockChanged">
         <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isMacCodeBlock }">
           <ElIconCheck />
         </el-icon>
         Mac 代码块
-      </DropdownMenuItem>
-      <DropdownMenuSeparator />
-      <DropdownMenuItem divided @click="resetStyleConfirm">
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem divided @click="resetStyleConfirm">
         <el-icon class="mr-2 h-4 w-4" />
         重置
-      </DropdownMenuItem>
-    </DropdownMenuContent>
-  </DropdownMenu>
+      </MenubarItem>
+    </MenubarContent>
+  </MenubarMenu>
 </template>

@@ -1,4 +1,4 @@
-import { computed, markRaw, onMounted, ref } from 'vue'
+import { computed, markRaw, onMounted, ref, toRaw, watch } from 'vue'
 import { createPinia, defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror'
@@ -184,11 +184,11 @@ export const useStore = defineStore(`store`, () => {
   onMounted(() => {
     const cssEditorDom = document.querySelector(`#cssEditor`)
     cssEditorDom.value = getCurrentTab().content
-
+    const theme = isDark.value ? `darcula` : `xq-light`
     cssEditor.value = markRaw(
       CodeMirror.fromTextArea(cssEditorDom, {
         mode: `css`,
-        theme: `xq-light`,
+        theme,
         lineNumbers: false,
         styleActiveLine: true,
         lineWrapping: true,
@@ -217,6 +217,11 @@ export const useStore = defineStore(`store`, () => {
       updateCss()
       getCurrentTab().content = cssEditor.value.getValue()
     })
+  })
+
+  watch(isDark, () => {
+    const theme = isDark.value ? `darcula` : `xq-light`
+    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
   })
 
   // 重置样式

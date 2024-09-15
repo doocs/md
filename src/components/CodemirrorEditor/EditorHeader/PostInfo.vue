@@ -1,6 +1,13 @@
 <script setup>
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 
 import { useStore } from '@/stores'
 
@@ -48,6 +55,12 @@ function post() {
     content: form.value.content || form.value.auto.content,
   })
 }
+
+function onUpdate(val) {
+  if (!val) {
+    dialogVisible.value = false
+  }
+}
 </script>
 
 <template>
@@ -55,51 +68,43 @@ function post() {
     发布
   </Button>
 
-  <el-dialog
-    title="发布"
-    :model-value="dialogVisible"
-    @close="dialogVisible = false"
-  >
-    <el-alert
-      class="mb-4"
-      title="注：此功能由第三方浏览器插件支持，本平台不保证安全性。"
-      type="info"
-      show-icon
-    />
-    <el-form
-      class="postInfo"
-      label-width="50"
-      :model="form"
-    >
-      <el-form-item label="封面">
-        <el-input
-          v-model="form.thumb"
-          placeholder="自动提取第一张图"
-        />
-      </el-form-item>
-      <el-form-item label="标题">
-        <el-input
-          v-model="form.title"
-          placeholder="自动提取第一个标题"
-        />
-      </el-form-item>
-      <el-form-item label="描述">
-        <el-input
-          v-model="form.desc"
-          type="textarea"
-          :rows="4"
-          placeholder="自动提取第一个段落"
-        />
-      </el-form-item>
-    </el-form>
+  <Dialog :open="dialogVisible" @update:open="onUpdate">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>发布</DialogTitle>
+      </DialogHeader>
 
-    <template #footer>
-      <el-button @click="dialogVisible = false">
-        取 消
-      </el-button>
-      <el-button type="primary" @click="post">
-        确 定
-      </el-button>
-    </template>
-  </el-dialog>
+      <el-alert
+        class="mb-4"
+        title="注：此功能由第三方浏览器插件支持，本平台不保证安全性。"
+        type="info"
+        show-icon
+      />
+      <el-form class="postInfo" label-width="50" :model="form">
+        <el-form-item label="封面">
+          <el-input v-model="form.thumb" placeholder="自动提取第一张图" />
+        </el-form-item>
+        <el-form-item label="标题">
+          <el-input v-model="form.title" placeholder="自动提取第一个标题" />
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input
+            v-model="form.desc"
+            type="textarea"
+            :rows="4"
+            placeholder="自动提取第一个段落"
+          />
+        </el-form-item>
+      </el-form>
+
+      <DialogFooter>
+        <Button variant="outline" @click="dialogVisible = false">
+          取 消
+        </Button>
+        <Button @click="post">
+          确 定
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
