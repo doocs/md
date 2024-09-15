@@ -197,7 +197,7 @@ function initEditor() {
   }
   editor.value = CodeMirror.fromTextArea(editorDom, {
     mode: `text/x-markdown`,
-    theme: `xq-light`,
+    theme: isDark.value ? `darcula` : `xq-light`,
     lineNumbers: false,
     lineWrapping: true,
     styleActiveLine: true,
