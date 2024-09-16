@@ -1,4 +1,4 @@
-export function utf16to8(str) {
+export function utf16to8(str: string) {
   let out = ``
   const len = str.length
 
@@ -22,7 +22,7 @@ export function utf16to8(str) {
   return out
 }
 
-export function utf8to16(str) {
+export function utf8to16(str: string) {
   let out = ``
   let i = 0
   const len = str.length
@@ -196,7 +196,7 @@ const base64DecodeChars = [
   -1,
 ]
 
-export function base64encode(str) {
+export function base64encode(str: string) {
   let out = ``
   let i = 0
   const len = str.length
@@ -232,7 +232,7 @@ export function base64encode(str) {
   return out
 }
 
-export function base64decode(str) {
+export function base64decode(str: string) {
   let c1, c2, c3, c4
   let i = 0
   const len = str.length
@@ -283,7 +283,7 @@ export function base64decode(str) {
   return out
 }
 
-export function safe64(base64) {
+export function safe64(base64: string) {
   base64 = base64.replace(/\+/g, `-`)
   base64 = base64.replace(/\//g, `_`)
   return base64

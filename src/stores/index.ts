@@ -31,7 +31,7 @@ export const useStore = defineStore(`store`, () => {
   const output = ref(``)
 
   // 文本字体
-  const theme = useStorage(addPrefix(`theme`), themeOptions[0].value)
+  const theme = useStorage<keyof typeof themeMap>(addPrefix(`theme`), themeOptions[0].value)
   // 文本字体
   const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
   // 文本大小
@@ -46,15 +46,15 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => fontSize.value.replace(`px`, ``))
 
   // 内容编辑器编辑器
-  const editor = ref(null)
+  const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
   // 编辑区域内容
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
   // 格式化文档
   const formatContent = () => {
-    formatDoc(editor.value.getValue()).then((doc) => {
-      editorContent.value = doc
-      editor.value.setValue(doc)
+    formatDoc((editor.value!).getValue()).then((doc) => {
+      editorContent.value = doc;
+      (editor.value!).setValue(doc)
     })
   }
 
@@ -76,9 +76,9 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器
-  const cssEditor = ref(null)
-  const setCssEditorValue = (content) => {
-    cssEditor.value.setValue(content)
+  const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const setCssEditorValue = (content: string) => {
+    (cssEditor.value!).setValue(content)
   }
   // 自定义 CSS 内容
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
@@ -99,24 +99,24 @@ export const useStore = defineStore(`store`, () => {
   })
   const getCurrentTab = () => cssContentConfig.value.tabs.find((tab) => {
     return tab.name === cssContentConfig.value.active
-  })
-  const tabChanged = (name) => {
+  })!
+  const tabChanged = (name: string) => {
     cssContentConfig.value.active = name
     const content = cssContentConfig.value.tabs.find((tab) => {
       return tab.name === name
-    }).content
+    })!.content
     setCssEditorValue(content)
   }
 
   // 重命名 css 方案
-  const renameTab = (name) => {
-    const tab = getCurrentTab()
+  const renameTab = (name: string) => {
+    const tab = getCurrentTab()!
     tab.title = name
     tab.name = name
     cssContentConfig.value.active = name
   }
 
-  const addCssContentTab = (name) => {
+  const addCssContentTab = (name: string) => {
     cssContentConfig.value.tabs.push({
       name,
       title: name,
@@ -125,20 +125,21 @@ export const useStore = defineStore(`store`, () => {
     cssContentConfig.value.active = name
     setCssEditorValue(DEFAULT_CSS_CONTENT)
   }
-  const validatorTabName = (val) => {
+  const validatorTabName = (val: string) => {
     return cssContentConfig.value.tabs.every(({ name }) => name !== val)
   }
 
   const renderer = initRenderer({
     theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value })),
     fonts: fontFamily.value,
+    size: fontSizeNumber.value,
   })
 
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
     renderer.reset({ status: isCiteStatus.value, legend: legend.value })
-    let outputTemp = marked.parse(editor.value.getValue(0))
+    let outputTemp = marked.parse(editor.value!.getValue()) as string
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
@@ -173,7 +174,7 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    const json = css2json(cssEditor.value.getValue())
+    const json = css2json(cssEditor.value!.getValue())
     const newTheme = customCssWithTemplate(json, primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value }))
     renderer.setOptions({
       theme: newTheme,
@@ -182,7 +183,7 @@ export const useStore = defineStore(`store`, () => {
   }
   // 初始化 CSS 编辑器
   onMounted(() => {
-    const cssEditorDom = document.querySelector(`#cssEditor`)
+    const cssEditorDom = document.querySelector<HTMLTextAreaElement>(`#cssEditor`)!
     cssEditorDom.value = getCurrentTab().content
     const theme = isDark.value ? `darcula` : `xq-light`
     cssEditor.value = markRaw(
@@ -190,32 +191,32 @@ export const useStore = defineStore(`store`, () => {
         mode: `css`,
         theme,
         lineNumbers: false,
-        styleActiveLine: true,
         lineWrapping: true,
+        styleActiveLine: true,
         matchBrackets: true,
         autofocus: true,
         extraKeys: {
-          [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
+          [`${shiftKey}-${altKey}-F`]: function autoFormat(editor: CodeMirror.Editor) {
             formatDoc(editor.getValue(), `css`).then((doc) => {
               getCurrentTab().content = doc
               editor.setValue(doc)
             })
           },
         },
-      }),
+      } as never),
     )
 
     // 自动提示
     cssEditor.value.on(`keyup`, (cm, e) => {
       if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-        cm.showHint(e)
+        (cm as any).showHint(e)
       }
     })
 
     // 实时保存
     cssEditor.value.on(`update`, () => {
       updateCss()
-      getCurrentTab().content = cssEditor.value.getValue()
+      getCurrentTab().content = cssEditor.value!.getValue()
     })
   })
 
@@ -249,25 +250,25 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    cssEditor.value.setValue(DEFAULT_CSS_CONTENT)
+    cssEditor.value!.setValue(DEFAULT_CSS_CONTENT)
 
     updateCss()
     editorRefresh()
   }
 
   // 为函数添加刷新编辑器的功能
-  const withAfterRefresh = fn => (...rest) => {
+  const withAfterRefresh = (fn: (...rest: any[]) => void) => (...rest: any[]) => {
     fn(...rest)
     editorRefresh()
   }
 
-  const getTheme = (size, color) => {
+  const getTheme = (size: string, color: string) => {
     const newTheme = themeMap[theme.value]
     const fontSize = size.replace(`px`, ``)
     return customCssWithTemplate(css2json(getCurrentTab().content), color, customizeTheme(newTheme, { fontSize, color }))
   }
 
-  const themeChanged = withAfterRefresh((newTheme) => {
+  const themeChanged = withAfterRefresh((newTheme: keyof typeof themeMap) => {
     renderer.setOptions({
       theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[newTheme], { fontSize: fontSizeNumber.value })),
     })
@@ -320,12 +321,12 @@ export const useStore = defineStore(`store`, () => {
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = () => {
     exportHTML()
-    document.querySelector(`#output`).innerHTML = output.value
+    document.querySelector(`#output`)!.innerHTML = output.value
   }
 
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
-    downloadMD(editor.value.getValue())
+    downloadMD(editor.value!.getValue())
   }
 
   // 导入 Markdown 文档
@@ -336,7 +337,7 @@ export const useStore = defineStore(`store`, () => {
     input.name = `filename`
     input.accept = `.md`
     input.onchange = () => {
-      const file = input.files[0]
+      const file = input.files![0]
       if (!file) {
         return
       }
@@ -344,7 +345,7 @@ export const useStore = defineStore(`store`, () => {
       const reader = new FileReader()
       reader.readAsText(file)
       reader.onload = (event) => {
-        editor.value.setValue(event.target.result)
+        (editor.value!).setValue((event.target !).result as string)
         ElMessage.success(`文档导入成功`)
       }
     }
@@ -374,7 +375,7 @@ export const useStore = defineStore(`store`, () => {
         })
       })
       .catch(() => {
-        editor.value.focus()
+        (editor.value!).focus()
       })
   }
 
