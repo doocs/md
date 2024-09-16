@@ -11,7 +11,7 @@ import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import * as tokenTools from '@/utils/tokenTools'
 import { giteeConfig, githubConfig } from '@/config'
 
-function getConfig(useDefault, platform) {
+function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {
     // load default config file
     const config = platform === `github` ? githubConfig : giteeConfig
@@ -29,7 +29,7 @@ function getConfig(useDefault, platform) {
   }
 
   // load configuration from localStorage
-  const customConfig = JSON.parse(localStorage.getItem(`${platform}Config`))
+  const customConfig = JSON.parse(localStorage.getItem(`${platform}Config`)!)
 
   // split username/repo
   const repoUrl = customConfig.repo
@@ -62,7 +62,7 @@ function getDir() {
  * @param {string} filename 文件名
  * @returns {string} `时间戳+uuid`
  */
-function getDateFilename(filename) {
+function getDateFilename(filename: string) {
   const currentTimestamp = new Date().getTime()
   const fileSuffix = filename.split(`.`)[1]
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
@@ -72,7 +72,7 @@ function getDateFilename(filename) {
 // GitHub File Upload
 // -----------------------------------------------------------------------
 
-async function ghFileUpload(content, filename) {
+async function ghFileUpload(content: string, filename: string) {
   const useDefault = localStorage.getItem(`imgHost`) === `default`
   const { username, repo, branch, accessToken } = getConfig(
     useDefault,
@@ -81,7 +81,18 @@ async function ghFileUpload(content, filename) {
   const dir = getDir()
   const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
   const dateFilename = getDateFilename(filename)
-  const res = await fetch({
+  const res = await fetch<{ content: {
+    download_url: string
+  } }, {
+      content: {
+        download_url: string
+      }
+      data: {
+        content: {
+          download_url: string
+        }
+      }
+    }>({
     url: url + dateFilename,
     method: `put`,
     headers: {
@@ -95,7 +106,7 @@ async function ghFileUpload(content, filename) {
   })
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
   const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
-  res.content = res.data?.content || res.content
+  res.content = res.data.content || res.content
   return useDefault
     ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
     : res.content.download_url
@@ -105,13 +116,24 @@ async function ghFileUpload(content, filename) {
 // Gitee File Upload
 // -----------------------------------------------------------------------
 
-async function giteeUpload(content, filename) {
+async function giteeUpload(content: any, filename: string) {
   const useDefault = localStorage.getItem(`imgHost`) === `default`
   const { username, repo, branch, accessToken } = getConfig(useDefault, `gitee`)
   const dir = getDir()
   const dateFilename = getDateFilename(filename)
   const url = `https://gitee.com/api/v5/repos/${username}/${repo}/contents/${dir}/${dateFilename}`
-  const res = await fetch({
+  const res = await fetch<{ content: {
+    download_url: string
+  } }, {
+      content: {
+        download_url: string
+      }
+      data: {
+        content: {
+          download_url: string
+        }
+      }
+    }>({
     url,
     method: `POST`,
     data: {
@@ -129,7 +151,10 @@ async function giteeUpload(content, filename) {
 // Qiniu File Upload
 // -----------------------------------------------------------------------
 
-function getQiniuToken(accessKey, secretKey, putPolicy) {
+function getQiniuToken(accessKey: string, secretKey: string, putPolicy: {
+  scope: string
+  deadline: number
+}) {
   const policy = JSON.stringify(putPolicy)
   const encoded = base64encode(utf16to8(policy))
   const hash = CryptoJS.HmacSHA1(encoded, secretKey)
@@ -137,9 +162,9 @@ function getQiniuToken(accessKey, secretKey, putPolicy) {
   return `${accessKey}:${safe64(encodedSigned)}:${encoded}`
 }
 
-async function qiniuUpload(file) {
+async function qiniuUpload(file: File) {
   const { accessKey, secretKey, bucket, region, path, domain } = JSON.parse(
-    localStorage.getItem(`qiniuConfig`),
+    localStorage.getItem(`qiniuConfig`)!,
   )
   const token = getQiniuToken(accessKey, secretKey, {
     scope: bucket,
@@ -167,10 +192,10 @@ async function qiniuUpload(file) {
 // AliOSS File Upload
 // -----------------------------------------------------------------------
 
-async function aliOSSFileUpload(file) {
+async function aliOSSFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const { region, bucket, accessKeyId, accessKeySecret, useSSL, cdnHost, path }
-    = JSON.parse(localStorage.getItem(`aliOSSConfig`))
+    = JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
   const dir = path ? `${path}/${dateFilename}` : dateFilename
   const secure = useSSL === undefined || useSSL
   const protocol = secure ? `https` : `http`
@@ -195,10 +220,10 @@ async function aliOSSFileUpload(file) {
 // TxCOS File Upload
 // -----------------------------------------------------------------------
 
-async function txCOSFileUpload(file) {
+async function txCOSFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const { secretId, secretKey, bucket, region, path, cdnHost } = JSON.parse(
-    localStorage.getItem(`txCOSConfig`),
+    localStorage.getItem(`txCOSConfig`)!,
   )
   const cos = new COS({
     SecretId: secretId,
@@ -235,13 +260,13 @@ async function txCOSFileUpload(file) {
 // Minio File Upload
 // -----------------------------------------------------------------------
 
-async function minioFileUpload(content, filename) {
+async function minioFileUpload(content: string, filename: string) {
   const dateFilename = getDateFilename(filename)
   const { endpoint, port, useSSL, bucket, accessKey, secretKey } = JSON.parse(
-    localStorage.getItem(`minioConfig`),
+    localStorage.getItem(`minioConfig`)!,
   )
   const buffer = Buffer(content, `base64`)
-  const conf = {
+  const conf: Minio.ClientOptions = {
     endPoint: endpoint,
     useSSL,
     accessKey,
@@ -278,7 +303,7 @@ async function minioFileUpload(content, filename) {
 // formCustom File Upload
 // -----------------------------------------------------------------------
 
-async function formCustomUpload(content, file) {
+async function formCustomUpload(content: string, file: File) {
   const str = `
     async (CUSTOM_ARG) => {
       ${localStorage.getItem(`formCustomConfig`)}
@@ -304,16 +329,18 @@ async function formCustomUpload(content, file) {
       errCb: reject, // 上传失败调用的函数
     }
     // eslint-disable-next-line no-eval
-    eval(str)(exportObj).catch((err) => {
+    eval(str)(exportObj).catch((err: any) => {
       console.error(err)
       reject(err)
     })
   })
 }
 
-function fileUpload(content, file) {
+function fileUpload(content: string, file: File) {
   const imgHost = localStorage.getItem(`imgHost`)
-  !imgHost && localStorage.setItem(`imgHost`, `default`)
+  if (!imgHost) {
+    localStorage.setItem(`imgHost`, `default`)
+  }
   switch (imgHost) {
     case `aliOSS`:
       return aliOSSFileUpload(file)

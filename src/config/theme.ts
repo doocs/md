@@ -1,6 +1,6 @@
 import { toMerged } from 'es-toolkit'
 
-import type { Theme } from '@/types'
+import type { IConfigOption, Theme } from '@/types'
 
 const defaultTheme: Theme = {
   base: {
@@ -342,7 +342,12 @@ const graceTheme = toMerged(defaultTheme, {
   },
 })
 
-export const themeOptions = [
+export const themeMap = {
+  default: defaultTheme,
+  grace: graceTheme,
+}
+
+export const themeOptions: IConfigOption<keyof typeof themeMap>[] = [
   {
     label: `经典`,
     value: `default`,
@@ -354,8 +359,3 @@ export const themeOptions = [
     desc: ``,
   },
 ]
-
-export const themeMap = {
-  default: defaultTheme,
-  grace: graceTheme,
-}

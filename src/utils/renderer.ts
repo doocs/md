@@ -109,13 +109,13 @@ export function initRenderer(opts: IOpts) {
     return footnoteIndex
   }
 
-  function reset(newOpts: IOpts): void {
+  function reset(newOpts: Partial<IOpts>): void {
     footnotes.length = 0
     footnoteIndex = 0
     setOptions(newOpts)
   }
 
-  function setOptions(newOpts: IOpts): void {
+  function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
     styleMapping = buildTheme(opts)
   }
@@ -197,7 +197,7 @@ export function initRenderer(opts: IOpts) {
     },
 
     image({ href, title, text }: Tokens.Image): string {
-      const subText = styledContent(`figcaption`, transform(opts.legend, text, title))
+      const subText = styledContent(`figcaption`, transform(opts.legend!, text, title))
       const figureStyles = styles(`figure`)
       const imgStyles = styles(`image`)
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
