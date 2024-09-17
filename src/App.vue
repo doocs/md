@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 </script>
 

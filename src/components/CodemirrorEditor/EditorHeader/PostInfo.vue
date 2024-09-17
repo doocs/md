@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import {
@@ -16,22 +16,23 @@ const { output } = storeToRefs(store)
 
 const dialogVisible = ref(false)
 
-const form = ref({
+const form = ref<any>({
   title: ``,
   desc: ``,
   thumb: ``,
   content: ``,
+  auto: {},
 })
 
 function prePost() {
   let auto = {}
   try {
     auto = {
-      thumb: document.querySelector(`#output img`)?.src,
+      thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src,
       title: [1, 2, 3, 4, 5, 6]
-        .map(h => document.querySelector(`#output h${h}`))
+        .map(h => document.querySelector(`#output h${h}`)!)
         .filter(h => h)[0].textContent,
-      desc: document.querySelector(`#output p`).textContent,
+      desc: document.querySelector(`#output p`)!.textContent,
       content: output.value,
     }
   }
@@ -45,10 +46,16 @@ function prePost() {
   dialogVisible.value = true
 }
 
+declare global {
+  interface Window {
+    syncPost: (data: { thumb: string, title: string, desc: string, content: string }) => void
+  }
+}
+
 function post() {
-  dialogVisible.value = false
+  dialogVisible.value = false;
   // 使用 window.$syncer 可以检测是否安装插件
-  window.syncPost({
+  (window.syncPost)({
     thumb: form.value.thumb || form.value.auto.thumb,
     title: form.value.title || form.value.auto.title,
     desc: form.value.desc || form.value.auto.desc,
@@ -56,7 +63,7 @@ function post() {
   })
 }
 
-function onUpdate(val) {
+function onUpdate(val: boolean) {
   if (!val) {
     dialogVisible.value = false
   }

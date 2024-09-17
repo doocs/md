@@ -1,31 +1,20 @@
-<script setup>
+<script setup lang="ts">
 import {
   MenubarItem,
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
 } from '@/components/ui/menubar'
+import type { IConfigOption } from '@/types'
 
-const props = defineProps({
-  title: {
-    type: String,
-    required: true,
-  },
-  options: {
-    type: Array,
-    required: true,
-  },
-  current: {
-    type: String,
-    required: true,
-  },
-  change: {
-    type: Function,
-    required: true,
-  },
-})
+const props = defineProps<{
+  title: string
+  options: IConfigOption[]
+  current: string
+  change: <T>(val: T) => void
+}>()
 
-function setStyle(title, value) {
+function setStyle(title: string, value: string) {
   switch (title) {
     case `字体`:
       return { fontFamily: value }

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import {
   Dialog,
   DialogContent,
@@ -16,7 +16,7 @@ const props = defineProps({
 
 const emit = defineEmits([`close`])
 
-function onUpdate(val) {
+function onUpdate(val: boolean) {
   if (!val) {
     emit(`close`)
   }
@@ -28,7 +28,7 @@ const links = [
   { label: `GitCode 仓库`, url: `https://gitcode.com/doocs/md` },
 ]
 
-function onRedirect(url) {
+function onRedirect(url: string) {
   window.open(url, `_blank`)
 }
 </script>

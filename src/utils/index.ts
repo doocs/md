@@ -253,10 +253,10 @@ export function createTable({ data, rows, cols }: { data: { [k: string]: string 
 }
 
 export function toBase64(file: Blob) {
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
     reader.readAsDataURL(file)
-    reader.onload = () => resolve((reader.result as string).split(`,`).pop())
+    reader.onload = () => resolve((reader.result as string).split(`,`).pop()!)
     reader.onerror = error => reject(error)
   })
 }

@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ref, toRaw } from 'vue'
 import {
   Dialog,
@@ -17,7 +17,7 @@ const { toggleShowInsertFormDialog } = store
 
 const rowNum = ref(3)
 const colNum = ref(3)
-const tableData = ref({})
+const tableData = ref<Record<string, string>>({})
 
 function resetVal() {
   rowNum.value = 3
@@ -32,12 +32,12 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  toRaw(store.editor).replaceSelection(`\n${table}\n`, `end`)
+  toRaw(store.editor!).replaceSelection(`\n${table}\n`, `end`)
   resetVal()
   toggleShowInsertFormDialog()
 }
 
-function onUpdate(val) {
+function onUpdate(val: boolean) {
   if (!val) {
     toggleShowInsertFormDialog(false)
   }
