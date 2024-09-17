@@ -8,12 +8,13 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 import { createTable } from '@/utils'
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
-const { toggleShowInsertFormDialog } = store
+const { toggleShowInsertFormDialog } = displayStore
 
 const rowNum = ref(3)
 const colNum = ref(3)
@@ -45,7 +46,7 @@ function onUpdate(val: boolean) {
 </script>
 
 <template>
-  <Dialog :open="store.isShowInsertFormDialog" @update:open="onUpdate">
+  <Dialog :open="displayStore.isShowInsertFormDialog" @update:open="onUpdate">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>插入表格</DialogTitle>

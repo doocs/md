@@ -1,25 +1,28 @@
 <script setup lang="ts">
-import { useStore } from '@/stores'
+import { TableIcon, UploadCloudIcon } from 'lucide-vue-next'
+import {
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarTrigger,
+} from '@/components/ui/menubar'
+import { useDisplayStore } from '@/stores'
 
-const store = useStore()
-
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog } = store
+const { toggleShowInsertFormDialog, toggleShowUploadImgDialog } = useDisplayStore()
 </script>
 
 <template>
   <MenubarMenu>
-    <MenubarTrigger> 编辑 </MenubarTrigger>
+    <MenubarTrigger>
+      编辑
+    </MenubarTrigger>
     <MenubarContent align="start">
       <MenubarItem @click="toggleShowUploadImgDialog()">
-        <el-icon class="mr-2 h-4 w-4">
-          <ElIconUpload />
-        </el-icon>
+        <UploadCloudIcon class="mr-2 h-4 w-4" />
         上传图片
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
-        <el-icon class="mr-2 h-4 w-4">
-          <ElIconGrid />
-        </el-icon>
+        <TableIcon class="mr-2 h-4 w-4" />
         插入表格
       </MenubarItem>
     </MenubarContent>

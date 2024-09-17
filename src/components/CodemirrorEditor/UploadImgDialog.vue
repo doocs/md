@@ -7,11 +7,11 @@ import CodeMirror from 'codemirror'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 import { checkImage, removeLeft } from '@/utils'
-import { useStore } from '@/stores'
+import { useDisplayStore } from '@/stores'
 
 const emit = defineEmits([`uploadImage`])
 
-const store = useStore()
+const displayStore = useDisplayStore()
 
 const formGitHub = ref({
   repo: ``,
@@ -282,7 +282,7 @@ function uploadImage(params: { file: any }) {
 </script>
 
 <template>
-  <Dialog v-model:open="store.isShowUploadImgDialog">
+  <Dialog v-model:open="displayStore.isShowUploadImgDialog">
     <DialogContent class="max-w-max">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>

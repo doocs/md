@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
 function editTabName() {
   ElMessageBox.prompt(`请输入新的方案名称`, `编辑方案名称`, {
@@ -67,7 +68,7 @@ function handleTabsEdit(targetName: string, action: string) {
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="store.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
+    <el-col v-show="displayStore.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
       <el-tabs
         v-model="store.cssContentConfig.active"
         type="border-card"
