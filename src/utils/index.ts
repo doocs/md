@@ -111,8 +111,6 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
     css = css.slice(rbracket + 1).trim()
   }
 
-  console.log(`json`, json)
-
   return json
 }
 

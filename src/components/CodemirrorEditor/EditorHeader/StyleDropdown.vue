@@ -52,11 +52,6 @@ function showPicker() {
 // 自定义CSS样式
 function customStyle() {
   toggleShowCssEditor()
-  nextTick(() => {
-    if (!cssEditor.value) {
-      cssEditor.value!.refresh()
-    }
-  })
   setTimeout(() => {
     cssEditor.value!.refresh()
   }, 50)
