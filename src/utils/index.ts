@@ -219,7 +219,7 @@ export function exportHTML() {
       return (
         element.tagName === `SPAN`
         && (isCode(element.parentElement)
-        || isCode((element.parentElement!).parentElement))
+          || isCode((element.parentElement!).parentElement))
       )
     }
   }
