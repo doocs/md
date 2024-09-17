@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { nextTick } from 'vue'
 import { storeToRefs } from 'pinia'
 import { ElNotification } from 'element-plus'
@@ -78,7 +78,7 @@ const formatItems = [
     kbd: [altSign, shiftSign, `F`],
     emitArgs: [`formatContent`],
   },
-]
+] as const
 
 const store = useStore()
 
@@ -90,7 +90,7 @@ const { toggleDark, editorRefresh, citeStatusChanged } = store
 function copy() {
   emit(`startCopy`)
   setTimeout(() => {
-    function modifyHtmlStructure(htmlString) {
+    function modifyHtmlStructure(htmlString: string) {
       // 创建一个 div 元素来暂存原始 HTML 字符串
       const tempDiv = document.createElement(`div`)
       tempDiv.innerHTML = htmlString
@@ -98,7 +98,7 @@ function copy() {
       const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
 
       originalItems.forEach((originalItem) => {
-        originalItem.parentElement.insertAdjacentElement(`afterend`, originalItem)
+        originalItem.parentElement!.insertAdjacentElement(`afterend`, originalItem)
       })
 
       // 返回修改后的 HTML 字符串
@@ -114,7 +114,7 @@ function copy() {
     nextTick(() => {
       solveWeChatImage()
 
-      const clipboardDiv = document.getElementById(`output`)
+      const clipboardDiv = document.getElementById(`output`)!
       clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
       clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
       clipboardDiv.innerHTML = clipboardDiv.innerHTML
@@ -125,14 +125,14 @@ function copy() {
         .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)
       clipboardDiv.focus()
-      window.getSelection().removeAllRanges()
+      window.getSelection()!.removeAllRanges()
       const range = document.createRange()
 
-      range.setStartBefore(clipboardDiv.firstChild)
-      range.setEndAfter(clipboardDiv.lastChild)
-      window.getSelection().addRange(range)
+      range.setStartBefore(clipboardDiv.firstChild!)
+      range.setEndAfter(clipboardDiv.lastChild!)
+      window.getSelection()!.addRange(range)
       document.execCommand(`copy`)
-      window.getSelection().removeAllRanges()
+      window.getSelection()!.removeAllRanges()
       clipboardDiv.innerHTML = output.value
 
       if (isBeforeDark) {
@@ -165,8 +165,8 @@ function copy() {
         <MenubarContent class="w-60" align="start">
           <MenubarItem
             v-for="{ label, kbd, emitArgs } in formatItems"
-            :key="kbd"
-            @click="$emit(...emitArgs)"
+            :key="label"
+            @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
           >
             <el-icon class="mr-2 h-4 w-4" />
             {{ label }}

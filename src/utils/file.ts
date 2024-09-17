@@ -173,7 +173,7 @@ async function qiniuUpload(file: File) {
   const dir = path ? `${path}/` : ``
   const dateFilename = dir + getDateFilename(file.name)
   const observable = qiniu.upload(file, dateFilename, token, {}, { region })
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     observable.subscribe({
       next: (result) => {
         console.log(result)
@@ -229,7 +229,7 @@ async function txCOSFileUpload(file: File) {
     SecretId: secretId,
     SecretKey: secretKey,
   })
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     cos.putObject(
       {
         Bucket: bucket,
@@ -277,7 +277,7 @@ async function minioFileUpload(content: string, filename: string) {
   if (isCustomPort) {
     conf.port = p
   }
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const minioClient = new Minio.Client(conf)
     try {
       minioClient.putObject(bucket, dateFilename, buffer, (e) => {
@@ -309,7 +309,7 @@ async function formCustomUpload(content: string, file: File) {
       ${localStorage.getItem(`formCustomConfig`)}
     }
   `
-  return new Promise((resolve, reject) => {
+  return new Promise<string>((resolve, reject) => {
     const exportObj = {
       content, // 待上传图片的 base64
       file, // 待上传图片的 file 对象

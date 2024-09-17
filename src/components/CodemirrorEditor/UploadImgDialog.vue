@@ -1,9 +1,9 @@
-<script setup>
+<script setup lang="ts">
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
-import CodeMirror from 'codemirror/lib/codemirror'
 import { ElMessage } from 'element-plus'
 import { UploadFilled } from '@element-plus/icons-vue'
 
+import CodeMirror from 'codemirror'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 import { checkImage, removeLeft } from '@/utils'
@@ -50,6 +50,7 @@ const formQiniu = ref({
   bucket: ``,
   domain: ``,
   region: ``,
+  path: ``,
 })
 
 const minioOSS = ref({
@@ -61,7 +62,7 @@ const minioOSS = ref({
   secretKey: ``,
 })
 
-const formCustom = ref({
+const formCustom = ref<{ code: string, editor: CodeMirror.EditorFromTextArea | null }>({
   code:
     localStorage.getItem(`formCustomConfig`)
     || removeLeft(`
@@ -76,7 +77,7 @@ const formCustom = ref({
     errCb(err)
   })
 `).trim(),
-  editor: undefined,
+  editor: null,
 })
 
 const options = [
@@ -116,7 +117,7 @@ const options = [
 
 const imgHost = ref(`default`)
 
-const formCustomElInput = ref(null)
+const formCustomElInput = ref<(HTMLInputElement & { $el: HTMLElement }) | null>(null)
 const activeName = ref(`upload`)
 
 watch(
@@ -124,12 +125,10 @@ watch(
   async (val) => {
     if (val === `formCustom`) {
       nextTick(() => {
-        const textarea = formCustomElInput.value.$el.querySelector(`textarea`)
-        formCustom.value.editor
-          = formCustom.value.editor
-          || CodeMirror.fromTextArea(textarea, {
-            mode: `javascript`,
-          })
+        const textarea = formCustomElInput.value!.$el.querySelector(`textarea`)!
+        formCustom.value.editor ||= CodeMirror.fromTextArea(textarea, {
+          mode: `javascript`,
+        })
         // formCustom.value.editor.setValue(formCustom.value.code)
       })
     }
@@ -141,25 +140,25 @@ watch(
 
 onBeforeMount(() => {
   if (localStorage.getItem(`githubConfig`)) {
-    formGitHub.value = JSON.parse(localStorage.getItem(`githubConfig`))
+    formGitHub.value = JSON.parse(localStorage.getItem(`githubConfig`)!)
   }
   // if (localStorage.getItem(`giteeConfig`)) {
-  //   formGitee.value = JSON.parse(localStorage.getItem(`giteeConfig`))
+  //   formGitee.value = JSON.parse(localStorage.getItem(`giteeConfig`)!)
   // }
   if (localStorage.getItem(`aliOSSConfig`)) {
-    formAliOSS.value = JSON.parse(localStorage.getItem(`aliOSSConfig`))
+    formAliOSS.value = JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
   }
   if (localStorage.getItem(`txCOSConfig`)) {
-    formTxCOS.value = JSON.parse(localStorage.getItem(`txCOSConfig`))
+    formTxCOS.value = JSON.parse(localStorage.getItem(`txCOSConfig`)!)
   }
   if (localStorage.getItem(`qiniuConfig`)) {
-    formQiniu.value = JSON.parse(localStorage.getItem(`qiniuConfig`))
+    formQiniu.value = JSON.parse(localStorage.getItem(`qiniuConfig`)!)
   }
   if (localStorage.getItem(`minioConfig`)) {
-    minioOSS.value = JSON.parse(localStorage.getItem(`minioConfig`))
+    minioOSS.value = JSON.parse(localStorage.getItem(`minioConfig`)!)
   }
   if (localStorage.getItem(`imgHost`)) {
-    imgHost.value = localStorage.getItem(`imgHost`)
+    imgHost.value = localStorage.getItem(`imgHost`)!
   }
 })
 
@@ -251,12 +250,12 @@ function saveQiniuConfiguration() {
 }
 
 function formCustomSave() {
-  const str = formCustom.value.editor.getValue()
+  const str = formCustom.value.editor!.getValue()
   localStorage.setItem(`formCustomConfig`, str)
   ElMessage.success(`保存成功`)
 }
 
-function beforeImageUpload(file) {
+function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
@@ -277,7 +276,7 @@ function beforeImageUpload(file) {
   return true
 }
 
-function uploadImage(params) {
+function uploadImage(params: { file: any }) {
   emit(`uploadImage`, params.file)
 }
 </script>

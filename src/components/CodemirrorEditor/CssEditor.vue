@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus'
 
 import { useStore } from '@/stores'
@@ -23,7 +23,7 @@ function editTabName() {
     })
 }
 
-function handleTabsEdit(targetName, action) {
+function handleTabsEdit(targetName: string, action: string) {
   if (action === `add`) {
     ElMessageBox.prompt(`请输入方案名称`, `新建自定义 CSS`, {
       confirmButtonText: `确认`,
@@ -86,7 +86,7 @@ function handleTabsEdit(targetName, action) {
             <el-icon
               v-if="store.cssContentConfig.active === item.name"
               class="ml-1"
-              @click="editTabName(item.name)"
+              @click="editTabName()"
             >
               <ElIconEditPen />
             </el-icon>

@@ -1,7 +1,8 @@
-<script setup>
+<script setup lang="ts">
+import type { ComponentPublicInstance } from 'vue'
 import { onMounted, ref, toRaw, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { ElMessage } from 'element-plus'
+import { ElCol, ElMessage } from 'element-plus'
 import CodeMirror from 'codemirror'
 
 import fileApi from '@/utils/file'
@@ -45,28 +46,29 @@ const {
 } = store
 
 const isImgLoading = ref(false)
-const timeout = ref(0)
+const timeout = ref<NodeJS.Timeout>()
 
-const preview = ref(null)
+const preview = ref<typeof ElCol | null>(null)
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
-  const scrollCB = (text) => {
-    let source, target
+  const scrollCB = (text: string) => {
+    let source: HTMLElement
+    let target: HTMLElement
 
     clearTimeout(timeout.value)
     if (text === `preview`) {
-      source = preview.value.$el
-      target = document.querySelector(`.CodeMirror-scroll`)
+      source = preview.value!.$el
+      target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
 
-      editor.value.off(`scroll`, editorScrollCB)
+      editor.value!.off(`scroll`, editorScrollCB)
       timeout.value = setTimeout(() => {
-        editor.value.on(`scroll`, editorScrollCB)
+        editor.value!.on(`scroll`, editorScrollCB)
       }, 300)
     }
-    else if (text === `editor`) {
-      source = document.querySelector(`.CodeMirror-scroll`)
-      target = preview.value.$el
+    else {
+      source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
+      target = preview.value!.$el
 
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
@@ -89,8 +91,8 @@ function leftAndRightScroll() {
     scrollCB(`preview`)
   }
 
-  preview.value.$el.addEventListener(`scroll`, previewScrollCB, false)
-  editor.value.on(`scroll`, editorScrollCB)
+  (preview.value!.$el).addEventListener(`scroll`, previewScrollCB, false)
+  editor.value!.on(`scroll`, editorScrollCB)
 }
 
 onMounted(() => {
@@ -120,7 +122,7 @@ function endCopy() {
   }, 800)
 }
 
-function beforeUpload(file) {
+function beforeUpload(file: File) {
   // validate image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
@@ -142,20 +144,20 @@ function beforeUpload(file) {
 }
 
 // 图片上传结束
-function uploaded(imageUrl) {
+function uploaded(imageUrl: string) {
   if (!imageUrl) {
     ElMessage.error(`上传图片未知异常`)
     return
   }
   toggleShowUploadImgDialog(false)
   // 上传成功，获取光标
-  const cursor = editor.value.getCursor()
+  const cursor = editor.value!.getCursor()
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor).replaceSelection(`\n${markdownImage}\n`, cursor)
+  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
   ElMessage.success(`图片上传成功`)
 }
-function uploadImage(file, cb) {
+function uploadImage(file: File, cb?: { (url: any): void, (arg0: unknown): void } | undefined) {
   isImgLoading.value = true
 
   toBase64(file)
@@ -176,7 +178,7 @@ function uploadImage(file, cb) {
     })
 }
 
-const changeTimer = ref(0)
+const changeTimer = ref<NodeJS.Timeout>()
 
 // 监听暗色模式并更新编辑器
 watch(isDark, () => {
@@ -186,7 +188,7 @@ watch(isDark, () => {
 
 // 初始化编辑器
 function initEditor() {
-  const editorDom = document.querySelector(`#editor`)
+  const editorDom = document.querySelector<HTMLTextAreaElement>(`#editor`)!
 
   if (!editorDom.value) {
     editorDom.value = editorContent.value
@@ -200,7 +202,7 @@ function initEditor() {
     autoCloseBrackets: true,
     extraKeys: {
       [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
-        formatDoc(editor.getValue(0)).then((doc) => {
+        formatDoc(editor.getValue()).then((doc) => {
           editor.setValue(doc)
         })
       },
@@ -241,7 +243,7 @@ function initEditor() {
   })
 
   // 粘贴上传图片并插入
-  editor.value.on(`paste`, (cm, e) => {
+  editor.value.on(`paste`, (_cm, e) => {
     if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {
       return
     }
@@ -249,7 +251,7 @@ function initEditor() {
       const item = e.clipboardData.items[i]
       if (item.kind === `file`) {
         // 校验图床参数
-        const pasteFile = item.getAsFile()
+        const pasteFile = item.getAsFile()!
         const isValid = beforeUpload(pasteFile)
         if (!isValid) {
           continue
@@ -263,33 +265,34 @@ function initEditor() {
 const container = ref(null)
 
 // 工具函数，添加格式
-function addFormat(cmd) {
-  editor.value.options.extraKeys[cmd](editor.value)
+function addFormat(cmd: string | number) {
+  (editor.value as any).options.extraKeys[cmd](editor.value)
 }
 
-const codeMirrorWrapper = ref(null)
+const codeMirrorWrapper = ref<ComponentPublicInstance<typeof ElCol> | null>(null)
 
 // 转换 markdown 中的本地图片为线上图片
 // todo 处理事件覆盖
 function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value.$el
+  const dom = codeMirrorWrapper.value!.$el as HTMLElement
+  console.log(`dom`, dom)
 
   // 上传 md 中的图片
-  const uploadMdImg = async ({ md, list }) => {
+  const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {
     const mdImgList = [
       ...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || []),
     ].filter((item) => {
       return item // 获取所有相对地址的图片
     })
-    const root = md.path.match(/.+?\//)[0]
-    const resList = await Promise.all(
+    const root = md.path.match(/.+?\//)![0]
+    const resList = await Promise.all<{ matchStr: string, url: string }>(
       mdImgList.map((item) => {
         return new Promise((resolve) => {
           let [, , matchStr] = item
           matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
           const { file }
                 = list.find(f => f.path === `${root}${matchStr}`) || {}
-          uploadImage(file, (url) => {
+          uploadImage(file!, (url) => {
             resolve({ matchStr, url })
           })
         })
@@ -300,16 +303,16 @@ function mdLocalToRemote() {
         .replace(`](./${item.matchStr})`, `](${item.url})`)
         .replace(`](${item.matchStr})`, `](${item.url})`)
     })
-    editor.value.setValue(md.str)
+    editor.value!.setValue(md.str)
   }
 
   dom.ondragover = evt => evt.preventDefault()
-  dom.ondrop = async (evt) => {
+  dom.ondrop = async (evt: any) => {
     evt.preventDefault()
     for (const item of evt.dataTransfer.items) {
-      item.getAsFileSystemHandle().then(async (handle) => {
+      item.getAsFileSystemHandle().then(async (handle: { kind: string, getFile: () => any }) => {
         if (handle.kind === `directory`) {
-          const list = await showFileStructure(handle)
+          const list = await showFileStructure(handle) as { path: string, file: File }[]
           const md = await getMd({ list })
           uploadMdImg({ md, list })
         }
@@ -322,14 +325,14 @@ function mdLocalToRemote() {
   }
 
   // 从文件列表中查找一个 md 文件并解析
-  async function getMd({ list }) {
-    return new Promise((resolve) => {
-      const { path, file } = list.find(item => item.path.match(/\.md$/))
+  async function getMd({ list }: { list: { path: string, file: File }[] }) {
+    return new Promise<{ str: string, file: File, path: string }>((resolve) => {
+      const { path, file } = list.find(item => item.path.match(/\.md$/))!
       const reader = new FileReader()
-      reader.readAsText(file, `UTF-8`)
+      reader.readAsText(file!, `UTF-8`)
       reader.onload = (evt) => {
         resolve({
-          str: evt.target.result,
+          str: evt.target!.result as string,
           file,
           path,
         })
@@ -338,7 +341,7 @@ function mdLocalToRemote() {
   }
 
   // 转换文件系统句柄中的文件为文件列表
-  async function showFileStructure(root) {
+  async function showFileStructure(root: any) {
     const result = []
     let cwd = ``
     try {
@@ -385,7 +388,7 @@ onMounted(() => {
     />
     <main class="container-main flex-1">
       <el-row class="container-main-section h-full border-1">
-        <el-col
+        <ElCol
           ref="codeMirrorWrapper"
           :span="isShowCssEditor ? 8 : 12"
           class="codeMirror-wrapper border-r-1"
@@ -427,8 +430,8 @@ onMounted(() => {
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
-        </el-col>
-        <el-col
+        </ElCol>
+        <ElCol
           id="preview"
           ref="preview"
           :span="isShowCssEditor ? 8 : 12"
@@ -445,7 +448,7 @@ onMounted(() => {
               </div>
             </div>
           </div>
-        </el-col>
+        </ElCol>
         <CssEditor />
       </el-row>
     </main>

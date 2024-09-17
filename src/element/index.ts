@@ -2,9 +2,10 @@ import { ElLoading, ElMessage } from 'element-plus'
 import * as ElementPlusIconsVue from '@element-plus/icons-vue'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
+import type { App } from 'vue'
 
 export default {
-  install(app) {
+  install(app: App<Element>) {
     // app.use(ElementPlus, { size: `default` })
 
     app.config.globalProperties.$loading = ElLoading.service
