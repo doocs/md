@@ -43,7 +43,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Button } from '@/components/ui/button'
 
 import { mergeCss, solveWeChatImage } from '@/utils'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
@@ -81,6 +81,7 @@ const formatItems = [
 ] as const
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
 const { isDark, isCiteStatus, output, primaryColor } = storeToRefs(store)
 
@@ -152,6 +153,13 @@ function copy() {
       emit(`endCopy`)
     })
   }, 350)
+}
+
+function customStyle() {
+  displayStore.toggleShowCssEditor()
+  setTimeout(() => {
+    store.cssEditor!.refresh()
+  }, 50)
 }
 </script>
 
@@ -372,6 +380,31 @@ function copy() {
             </div>
           </div>
           <div class="space-y-2">
+            <h2>自定义 CSS 面板</h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': displayStore.isShowCssEditor,
+                }"
+                @click="!displayStore.isShowCssEditor && customStyle()"
+              >
+                开启
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !displayStore.isShowCssEditor,
+                }"
+                @click="displayStore.isShowCssEditor && customStyle()"
+              >
+                关闭
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
             <h2>编辑区位置</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
@@ -418,6 +451,17 @@ function copy() {
                 @click="store.toggleDark(true)"
               >
                 <Moon class="h-4 w-4" />
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>样式配置</h2>
+            <div>
+              <Button
+                class="w-full"
+                @click="store.resetStyleConfirm()"
+              >
+                重置
               </Button>
             </div>
           </div>
