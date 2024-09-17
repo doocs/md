@@ -16,9 +16,10 @@ import {
   legendOptions,
   themeOptions,
 } from '@/config'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 
 const store = useStore()
+const { toggleShowCssEditor } = useDisplayStore()
 
 const {
   theme,
@@ -40,7 +41,6 @@ const {
   codeBlockThemeChanged,
   legendChanged,
   macCodeBlockChanged,
-  toggleShowCssEditor,
 } = store
 
 const colorPicker = ref<HTMLElement & { show: () => void } | null>(null)

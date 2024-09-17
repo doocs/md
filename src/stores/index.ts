@@ -1,5 +1,5 @@
 import { computed, markRaw, onMounted, ref, toRaw, watch } from 'vue'
-import { createPinia, defineStore } from 'pinia'
+import { defineStore } from 'pinia'
 import { marked } from 'marked'
 import CodeMirror from 'codemirror'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
@@ -379,23 +379,7 @@ export const useStore = defineStore(`store`, () => {
       })
   }
 
-  const isShowCssEditor = ref(false)
-  const toggleShowCssEditor = useToggle(isShowCssEditor)
-
-  const isShowInsertFormDialog = ref(false)
-  const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
-
-  const isShowUploadImgDialog = ref(false)
-  const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
-
   return {
-    isShowCssEditor,
-    toggleShowCssEditor,
-    isShowInsertFormDialog,
-    toggleShowInsertFormDialog,
-    isShowUploadImgDialog,
-    toggleShowUploadImgDialog,
-
     isDark,
     toggleDark,
 
@@ -444,4 +428,25 @@ export const useStore = defineStore(`store`, () => {
   }
 })
 
-export default createPinia()
+export const useDisplayStore = defineStore(`display`, () => {
+  // 是否展示 CSS 编辑器
+  const isShowCssEditor = ref(false)
+  const toggleShowCssEditor = useToggle(isShowCssEditor)
+
+  // 是否展示插入表格对话框
+  const isShowInsertFormDialog = ref(false)
+  const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
+
+  // 是否展示上传图片对话框
+  const isShowUploadImgDialog = ref(false)
+  const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
+
+  return {
+    isShowCssEditor,
+    toggleShowCssEditor,
+    isShowInsertFormDialog,
+    toggleShowInsertFormDialog,
+    isShowUploadImgDialog,
+    toggleShowUploadImgDialog,
+  }
+})

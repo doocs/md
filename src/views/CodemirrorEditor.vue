@@ -6,7 +6,7 @@ import { ElCol, ElMessage } from 'element-plus'
 import CodeMirror from 'codemirror'
 
 import fileApi from '@/utils/file'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
@@ -32,7 +32,9 @@ import {
 } from '@/utils'
 
 const store = useStore()
-const { isDark, output, editor, editorContent, isShowCssEditor } = storeToRefs(store)
+const displayStore = useDisplayStore()
+const { isDark, output, editor, editorContent } = storeToRefs(store)
+const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
   editorRefresh,
@@ -41,9 +43,12 @@ const {
   formatContent,
   importMarkdownContent,
   resetStyleConfirm,
+} = store
+
+const {
   toggleShowInsertFormDialog,
   toggleShowUploadImgDialog,
-} = store
+} = displayStore
 
 const isImgLoading = ref(false)
 const timeout = ref<NodeJS.Timeout>()
