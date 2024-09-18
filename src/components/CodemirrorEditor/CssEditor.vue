@@ -143,7 +143,7 @@ function handleTabsEdit(targetName: string, action: string) {
 }
 
 :deep(.el-tabs__content) {
-  padding: 0;
+  padding: 0 !important;
 }
 
 // 当 tab 为激活状态时，隐藏关闭按钮
