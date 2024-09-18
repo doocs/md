@@ -1,15 +1,15 @@
-import CryptoJS from 'crypto-js'
-import OSS from 'tiny-oss'
-import * as Minio from 'minio'
-import COS from 'cos-js-sdk-v5'
-import Buffer from 'buffer-from'
-import { v4 as uuidv4 } from 'uuid'
-import * as qiniu from 'qiniu-js'
-
+import { giteeConfig, githubConfig } from '@/config'
 import fetch from '@/utils/fetch'
 import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import * as tokenTools from '@/utils/tokenTools'
-import { giteeConfig, githubConfig } from '@/config'
+import Buffer from 'buffer-from'
+import COS from 'cos-js-sdk-v5'
+import CryptoJS from 'crypto-js'
+
+import * as Minio from 'minio'
+import * as qiniu from 'qiniu-js'
+import OSS from 'tiny-oss'
+import { v4 as uuidv4 } from 'uuid'
 
 function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {

@@ -1,19 +1,11 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import { onMounted, ref, toRaw, watch } from 'vue'
-import { storeToRefs } from 'pinia'
-import { ElCol, ElMessage } from 'element-plus'
-import CodeMirror from 'codemirror'
-
-import fileApi from '@/utils/file'
-import { useDisplayStore, useStore } from '@/stores'
-
+import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
-import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
-import RunLoading from '@/components/RunLoading.vue'
 
+import RunLoading from '@/components/RunLoading.vue'
 import {
   ContextMenu,
   ContextMenuContent,
@@ -24,12 +16,20 @@ import {
 } from '@/components/ui/context-menu'
 
 import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
-
+import { useDisplayStore, useStore } from '@/stores'
 import {
   checkImage,
   formatDoc,
   toBase64,
 } from '@/utils'
+import fileApi from '@/utils/file'
+import CodeMirror from 'codemirror'
+
+import { ElCol, ElMessage } from 'element-plus'
+
+import { storeToRefs } from 'pinia'
+
+import { onMounted, ref, toRaw, watch } from 'vue'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -280,7 +280,6 @@ const codeMirrorWrapper = ref<ComponentPublicInstance<typeof ElCol> | null>(null
 // todo 处理事件覆盖
 function mdLocalToRemote() {
   const dom = codeMirrorWrapper.value!.$el as HTMLElement
-  console.log(`dom`, dom)
 
   // 上传 md 中的图片
   const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {

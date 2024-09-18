@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus'
-
 import { useDisplayStore, useStore } from '@/stores'
+
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const store = useStore()
 const displayStore = useDisplayStore()

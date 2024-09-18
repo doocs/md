@@ -1,7 +1,7 @@
-import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import ElementPlus from './element'
+import { createApp } from 'vue'
 import App from './App.vue'
+import ElementPlus from './element'
 
 import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'

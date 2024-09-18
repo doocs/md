@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ref, toRaw } from 'vue'
 import {
   Dialog,
   DialogContent,
@@ -7,9 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-
 import { useDisplayStore, useStore } from '@/stores'
+
 import { createTable } from '@/utils'
+import { ref, toRaw } from 'vue'
 
 const store = useStore()
 const displayStore = useDisplayStore()
