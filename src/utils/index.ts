@@ -1,13 +1,13 @@
-import juice from 'juice'
+import type { Block, Inline, Theme } from '@/types'
 
-import { format } from 'prettier/standalone'
-import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
-import * as prettierPluginBabel from 'prettier/plugins/babel'
-import * as prettierPluginEstree from 'prettier/plugins/estree'
-import * as prettierPluginCss from 'prettier/plugins/postcss'
 import type { PropertiesHyphen } from 'csstype'
 import { prefix } from '@/config'
-import type { Block, Inline, Theme } from '@/types'
+import juice from 'juice'
+import * as prettierPluginBabel from 'prettier/plugins/babel'
+import * as prettierPluginEstree from 'prettier/plugins/estree'
+import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
+import * as prettierPluginCss from 'prettier/plugins/postcss'
+import { format } from 'prettier/standalone'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`

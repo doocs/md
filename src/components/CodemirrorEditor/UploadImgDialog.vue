@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { nextTick, onBeforeMount, ref, watch } from 'vue'
-import { ElMessage } from 'element-plus'
-import { UploadFilled } from '@element-plus/icons-vue'
-
-import CodeMirror from 'codemirror'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-
-import { checkImage, removeLeft } from '@/utils'
 import { useDisplayStore } from '@/stores'
+import { checkImage, removeLeft } from '@/utils'
+
+import { UploadFilled } from '@element-plus/icons-vue'
+import CodeMirror from 'codemirror'
+
+import { ElMessage } from 'element-plus'
+import { nextTick, onBeforeMount, ref, watch } from 'vue'
 
 const emit = defineEmits([`uploadImage`])
 

@@ -1,14 +1,23 @@
 <script setup lang="ts">
-import { nextTick } from 'vue'
-import { storeToRefs } from 'pinia'
-import { ElNotification } from 'element-plus'
-import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import {
+  Menubar,
+  MenubarContent,
+  MenubarItem,
+  MenubarMenu,
+  MenubarSeparator,
+  MenubarShortcut,
+  MenubarTrigger,
+} from '@/components/ui/menubar'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 
-import PostInfo from './PostInfo.vue'
-import FileDropdown from './FileDropdown.vue'
-import HelpDropdown from './HelpDropdown.vue'
-import StyleDropdown from './StyleDropdown.vue'
-import EditDropdown from './EditDropdown.vue'
 import {
   altSign,
   codeBlockThemeOptions,
@@ -21,29 +30,20 @@ import {
   shiftSign,
   themeOptions,
 } from '@/config'
-
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import {
-  Menubar,
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from '@/components/ui/menubar'
-
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { Button } from '@/components/ui/button'
-
-import { mergeCss, solveWeChatImage } from '@/utils'
 import { useDisplayStore, useStore } from '@/stores'
+import { mergeCss, solveWeChatImage } from '@/utils'
+import { ElNotification } from 'element-plus'
+import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+
+import { nextTick } from 'vue'
+import EditDropdown from './EditDropdown.vue'
+
+import FileDropdown from './FileDropdown.vue'
+import HelpDropdown from './HelpDropdown.vue'
+
+import PostInfo from './PostInfo.vue'
+import StyleDropdown from './StyleDropdown.vue'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 

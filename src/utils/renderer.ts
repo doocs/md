@@ -1,12 +1,12 @@
-import type { Renderer, RendererObject, Tokens } from 'marked'
-import { marked } from 'marked'
-import hljs from 'highlight.js'
-import mermaid from 'mermaid'
-import { toMerged } from 'es-toolkit'
-
-import type { PropertiesHyphen } from 'csstype'
-import { MDKatex } from './MDKatex'
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
+import type { PropertiesHyphen } from 'csstype'
+import type { Renderer, RendererObject, Tokens } from 'marked'
+import { toMerged } from 'es-toolkit'
+import hljs from 'highlight.js'
+
+import { marked } from 'marked'
+import mermaid from 'mermaid'
+import { MDKatex } from './MDKatex'
 
 marked.use(MDKatex({ nonStandard: true }))
 

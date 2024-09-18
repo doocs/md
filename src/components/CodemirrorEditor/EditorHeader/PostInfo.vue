@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import {
   Dialog,
   DialogContent,
@@ -8,8 +6,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-
 import { useStore } from '@/stores'
+import { storeToRefs } from 'pinia'
+
+import { ref } from 'vue'
 
 const store = useStore()
 const { output } = storeToRefs(store)
@@ -31,7 +31,8 @@ function prePost() {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src,
       title: [1, 2, 3, 4, 5, 6]
         .map(h => document.querySelector(`#output h${h}`)!)
-        .filter(h => h)[0].textContent,
+        .filter(h => h)[0]
+        .textContent,
       desc: document.querySelector(`#output p`)!.textContent,
       content: output.value,
     }

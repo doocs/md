@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { type HTMLAttributes, computed } from 'vue'
+import { cn } from '@/lib/utils'
+import { Check } from 'lucide-vue-next'
 import {
   MenubarCheckboxItem,
   type MenubarCheckboxItemEmits,
@@ -7,8 +8,7 @@ import {
   MenubarItemIndicator,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { Check } from 'lucide-vue-next'
-import { cn } from '@/lib/utils'
+import { computed, type HTMLAttributes } from 'vue'
 
 const props = defineProps<MenubarCheckboxItemProps & { class?: HTMLAttributes[`class`] }>()
 const emits = defineEmits<MenubarCheckboxItemEmits>()

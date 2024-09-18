@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { ElMessage, ElMessageBox } from 'element-plus'
-
 import { useDisplayStore, useStore } from '@/stores'
+
+import { ElMessage, ElMessageBox } from 'element-plus'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -143,7 +143,7 @@ function handleTabsEdit(targetName: string, action: string) {
 }
 
 :deep(.el-tabs__content) {
-  padding: 0;
+  padding: 0 !important;
 }
 
 // 当 tab 为激活状态时，隐藏关闭按钮
