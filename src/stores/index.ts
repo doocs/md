@@ -29,7 +29,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleCiteStatus = useToggle(isCiteStatus)
 
   // 是否开启段落首行缩进
-  const isUseIndent = useStorage(addPrefix(`use_indent`), true)
+  const isUseIndent = useStorage(addPrefix(`use_indent`), false)
   const toggleUseIndent = useToggle(isUseIndent)
 
   const output = ref(``)
