@@ -28,6 +28,10 @@ export const useStore = defineStore(`store`, () => {
   const isCiteStatus = useStorage(`isCiteStatus`, false)
   const toggleCiteStatus = useToggle(isCiteStatus)
 
+  // 是否开启段落首行缩进
+  const isUseIndent = useStorage(addPrefix(`use_indent`), true)
+  const toggleUseIndent = useToggle(isUseIndent)
+
   const output = ref(``)
 
   // 文本字体
@@ -133,12 +137,13 @@ export const useStore = defineStore(`store`, () => {
     theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value })),
     fonts: fontFamily.value,
     size: fontSize.value,
+    isUseIndent: isUseIndent.value,
   })
 
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    renderer.reset({ status: isCiteStatus.value, legend: legend.value })
+    renderer.reset({ status: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
     let outputTemp = marked.parse(editor.value!.getValue()) as string
 
     // 去除第一行的 margin-top
@@ -318,6 +323,10 @@ export const useStore = defineStore(`store`, () => {
     toggleCiteStatus()
   })
 
+  const useIndentChanged = withAfterRefresh(() => {
+    toggleUseIndent()
+  })
+
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = () => {
     exportHTML()
@@ -389,6 +398,8 @@ export const useStore = defineStore(`store`, () => {
     isMacCodeBlock,
     isCiteStatus,
     citeStatusChanged,
+    isUseIndent,
+    useIndentChanged,
 
     output,
     editor,

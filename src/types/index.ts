@@ -20,6 +20,7 @@ export interface IOpts {
   theme: Theme
   fonts: string
   size: string
+  isUseIndent: boolean
   legend?: string
   status?: boolean
 }

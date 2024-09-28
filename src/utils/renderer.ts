@@ -1,7 +1,7 @@
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { PropertiesHyphen } from 'csstype'
 import type { Renderer, RendererObject, Tokens } from 'marked'
-import { toMerged } from 'es-toolkit'
+import { cloneDeep, toMerged } from 'es-toolkit'
 import hljs from 'highlight.js'
 
 import { marked } from 'marked'
@@ -10,11 +10,19 @@ import { MDKatex } from './MDKatex'
 
 marked.use(MDKatex({ nonStandard: true }))
 
-function buildTheme({ theme, fonts, size }: IOpts): ThemeStyles {
+function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
+  const theme = cloneDeep(_theme)
   const base = toMerged(theme.base, {
     'font-family': fonts,
     'font-size': size,
   })
+
+  if (isUseIndent) {
+    theme.block.p = {
+      'text-indent': `2em`,
+      ...theme.block.p,
+    }
+  }
 
   const mergeStyles = (styles: Record<string, PropertiesHyphen>): Record<string, ExtendedProperties> =>
     Object.fromEntries(
