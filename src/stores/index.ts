@@ -43,7 +43,7 @@ export const useStore = defineStore(`store`, () => {
   // 图注格式
   const legend = useStorage(`legend`, legendOptions[3].value)
 
-  const fontSizeNumber = computed(() => fontSize.value.replace(`px`, ``))
+  const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器编辑器
   const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
@@ -132,7 +132,7 @@ export const useStore = defineStore(`store`, () => {
   const renderer = initRenderer({
     theme: customCssWithTemplate(css2json(getCurrentTab().content), primaryColor.value, customizeTheme(themeMap[theme.value], { fontSize: fontSizeNumber.value, color: primaryColor.value })),
     fonts: fontFamily.value,
-    size: fontSizeNumber.value,
+    size: fontSize.value,
   })
 
   // 更新编辑器
@@ -264,7 +264,7 @@ export const useStore = defineStore(`store`, () => {
 
   const getTheme = (size: string, color: string) => {
     const newTheme = themeMap[theme.value]
-    const fontSize = size.replace(`px`, ``)
+    const fontSize = Number(size.replace(`px`, ``))
     return customCssWithTemplate(css2json(getCurrentTab().content), color, customizeTheme(newTheme, { fontSize, color }))
   }
 
