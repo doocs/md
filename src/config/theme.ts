@@ -52,6 +52,21 @@ const defaultTheme: Theme = {
       'font-weight': `bold`,
     },
 
+    // 五级标题
+    h5: {
+      'margin': `1.5em 8px 0.5em`,
+      'color': `var(--md-primary-color)`,
+      'font-size': `1em`,
+      'font-weight': `bold`,
+    },
+
+    // 六级标题
+    h6: {
+      'margin': `1.5em 8px 0.5em`,
+      'font-size': `1em`,
+      'color': `var(--md-primary-color)`,
+    },
+
     // 段落
     p: {
       'margin': `1.5em 8px`,
@@ -238,6 +253,14 @@ const graceTheme = toMerged(defaultTheme, {
 
     h4: {
       'font-size': `1.1em`,
+    },
+
+    h5: {
+      'font-size': `1em`,
+    },
+
+    h6: {
+      'font-size': `1em`,
     },
 
     p: {
