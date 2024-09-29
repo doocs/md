@@ -1,6 +1,6 @@
 import type { PropertiesHyphen } from 'csstype'
 
-export type Block = `h1` | `h2` | `h3` | `h4` | `p` | `blockquote` | `blockquote_p` | `code_pre` | `code` | `image` | `ol` | `ul` | `footnotes` | `figure` | `hr`
+export type Block = `h1` | `h2` | `h3` | `h4` | `h5` | `h6` | `p` | `blockquote` | `blockquote_p` | `code_pre` | `code` | `image` | `ol` | `ul` | `footnotes` | `figure` | `hr`
 export type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `td` | `footnote` | `figcaption` | `em`
 
 interface CustomCSSProperties {
