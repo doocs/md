@@ -57,8 +57,8 @@ export const useStore = defineStore(`store`, () => {
   // 格式化文档
   const formatContent = () => {
     formatDoc((editor.value!).getValue()).then((doc) => {
-      editorContent.value = doc;
-      (editor.value!).setValue(doc)
+      editorContent.value = doc
+      toRaw(editor.value!).setValue(doc)
     })
   }
 
