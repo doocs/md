@@ -212,17 +212,19 @@ export function initRenderer(opts: IOpts) {
     },
 
     link({ href, title, text }: Tokens.Link): string {
+      const parsedText = marked.parseInline(text) as string
+
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
-        return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${text}</a>`
+        return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${parsedText}</a>`
       }
       if (href === text) {
-        return text
+        return parsedText
       }
       if (opts.status) {
         const ref = addFootnote(title || text, href)
-        return `<span ${styles(`link`)}>${text}<sup>[${ref}]</sup></span>`
+        return `<span ${styles(`link`)}>${parsedText}<sup>[${ref}]</sup></span>`
       }
-      return styledContent(`link`, text, `span`)
+      return styledContent(`link`, parsedText, `span`)
     },
 
     strong({ tokens }: Tokens.Strong): string {
