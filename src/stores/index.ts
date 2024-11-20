@@ -2,7 +2,6 @@ import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
 import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
-import markedAlert from '@/utils/MDAlert'
 import { initRenderer } from '@/utils/renderer'
 import { useDark, useStorage, useToggle } from '@vueuse/core'
 
@@ -186,7 +185,6 @@ export const useStore = defineStore(`store`, () => {
     renderer.setOptions({
       theme: newTheme,
     })
-    marked.use(markedAlert({ theme: newTheme }))
 
     editorRefresh()
   }

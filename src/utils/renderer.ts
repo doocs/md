@@ -104,8 +104,6 @@ export function initRenderer(opts: IOpts) {
   let listIndex: number = 0
   let isOrdered: boolean = false
 
-  marked.use(markedAlert({ theme: opts.theme }))
-
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)
   }
@@ -129,6 +127,7 @@ export function initRenderer(opts: IOpts) {
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
     styleMapping = buildTheme(opts)
+    marked.use(markedAlert({ theme: opts.theme }))
   }
 
   const buildFootnotes = () => {
