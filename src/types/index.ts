@@ -22,7 +22,7 @@ export interface IOpts {
   size: string
   isUseIndent: boolean
   legend?: string
-  status?: boolean
+  citeStatus?: boolean
 }
 
 export type ThemeStyles = Record<Block | Inline, ExtendedProperties>

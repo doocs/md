@@ -220,7 +220,7 @@ export function initRenderer(opts: IOpts) {
       if (href === text) {
         return parsedText
       }
-      if (opts.status) {
+      if (opts.citeStatus) {
         const ref = addFootnote(title || text, href)
         return `<span ${styles(`link`)}>${parsedText}<sup>[${ref}]</sup></span>`
       }
