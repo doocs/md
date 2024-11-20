@@ -6,6 +6,7 @@ import hljs from 'highlight.js'
 
 import { marked } from 'marked'
 import mermaid from 'mermaid'
+import { getStyleString } from '.'
 import markedAlert from './MDAlert'
 import { MDKatex } from './MDKatex'
 
@@ -59,9 +60,7 @@ function getStyles(styleMapping: ThemeStyles, tokenName: string, addition: strin
   if (!dict) {
     return ``
   }
-  const styles = Object.entries(dict)
-    .map(([key, value]) => `${key}:${value}`)
-    .join(`;`)
+  const styles = getStyleString(dict)
   return `style="${styles}${addition}"`
 }
 

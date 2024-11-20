@@ -1,4 +1,4 @@
-import type { Block, Inline, Theme } from '@/types'
+import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 import type { PropertiesHyphen } from 'csstype'
 import { prefix } from '@/config'
@@ -114,6 +114,15 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
   }
 
   return json
+}
+
+/**
+ * 将样式对象转换为 CSS 字符串
+ * @param {ExtendedProperties} style - 样式对象
+ * @returns {string} - CSS 字符串
+ */
+export function getStyleString(style: ExtendedProperties) {
+  return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
 }
 
 /**

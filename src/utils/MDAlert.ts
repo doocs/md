@@ -1,5 +1,6 @@
 import type { AlertOptions, AlertVariantItem } from '@/types'
 import type { MarkedExtension, Tokens } from 'marked'
+import { getStyleString } from '.'
 
 /**
  * https://github.com/bent10/marked-extensions/tree/main/packages/alert
@@ -44,6 +45,9 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
               ...options.theme?.block[titleClassName],
               ...options.theme?.block[`${titleClassName}-${variantType}`],
             },
+            contentWrapperStyle: {
+              margin: options.theme?.block[`${className}-content-wrapper`]?.margin,
+            },
           },
         })
 
@@ -77,15 +81,15 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
         name: `alert`,
         level: `block`,
         renderer({ meta, tokens = [] }) {
-          let tmpl = `<div class="${meta.className} ${meta.className}-${meta.variant}" style='${Object.entries(meta.style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)}'>\n`
-          tmpl += `<p class="${meta.titleClassName}" style='${Object.entries(meta.titleStyle ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)}'>`
+          let tmpl = `<div class="${meta.className} ${meta.className}-${meta.variant}" style='${getStyleString(meta.style)}'>\n`
+          tmpl += `<p class="${meta.titleClassName}" style='${getStyleString(meta.titleStyle)}'>`
           tmpl += meta.icon.replace(
             `<svg`,
             `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
           )
           tmpl += meta.title
           tmpl += `</p>\n`
-          tmpl += this.parser.parse(tokens)
+          tmpl += `<div style="${getStyleString(meta.contentWrapperStyle)}">${this.parser.parse(tokens)}</div>`
           tmpl += `</div>\n`
 
           return tmpl

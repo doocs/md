@@ -111,6 +111,11 @@ const defaultTheme: Theme = {
       'align-items': `center`,
     },
 
+    // GFM 警告块内容，抵消 p 默认的 margin
+    'markdown-alert-content-wrapper': {
+      margin: `-1em -8px -1.5em;`,
+    },
+
     'markdown-alert-title-note': {
       color: `#478be6`,
     },

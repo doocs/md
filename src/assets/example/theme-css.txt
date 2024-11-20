@@ -39,6 +39,9 @@ markdown-alert {
 /* GFM 警告块标题 */
 markdown-alert-title {
 }
+/* GFM 警告块内容，抵消 p 默认的 margin */
+markdown-alert-content-wrapper {
+}
 /* GFM note */
 markdown-alert-title-note {
 }
