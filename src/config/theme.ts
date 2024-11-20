@@ -109,6 +109,7 @@ const defaultTheme: Theme = {
     'markdown-alert-title': {
       'display': `flex`,
       'align-items': `center`,
+      'gap': `0.5em`,
     },
 
     // GFM 警告块内容，抵消 p 默认的 margin
