@@ -6,6 +6,7 @@ import hljs from 'highlight.js'
 
 import { marked } from 'marked'
 import mermaid from 'mermaid'
+import markedAlert from './MDAlert'
 import { MDKatex } from './MDKatex'
 
 marked.use(MDKatex({ nonStandard: true }))
@@ -102,6 +103,8 @@ export function initRenderer(opts: IOpts) {
   let codeIndex: number = 0
   let listIndex: number = 0
   let isOrdered: boolean = false
+
+  marked.use(markedAlert({ theme: opts.theme }))
 
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)

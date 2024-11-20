@@ -33,6 +33,27 @@ blockquote {
 /* 引用段落样式 */
 blockquote_p {
 }
+/* GFM 警告块 */
+markdown-alert {
+}
+/* GFM 警告块标题 */
+markdown-alert-title {
+}
+/* GFM note */
+markdown-alert-title-note {
+}
+/* GFM tip */
+markdown-alert-title-tip {
+}
+/* GFM important */
+markdown-alert-title-important {
+}
+/* GFM warning */
+markdown-alert-title-warning {
+}
+/* GFM caution */
+markdown-alert-title-caution {
+}
 /* 段落样式 */
 p {
 }

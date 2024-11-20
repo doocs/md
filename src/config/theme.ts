@@ -10,7 +10,7 @@ const defaultTheme: Theme = {
   },
   block: {
     // 一级标题
-    h1: {
+    'h1': {
       'display': `table`,
       'padding': `0 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
@@ -22,7 +22,7 @@ const defaultTheme: Theme = {
     },
 
     // 二级标题
-    h2: {
+    'h2': {
       'display': `table`,
       'padding': `0 0.2em`,
       'margin': `4em auto 2em`,
@@ -34,7 +34,7 @@ const defaultTheme: Theme = {
     },
 
     // 三级标题
-    h3: {
+    'h3': {
       'padding-left': `8px`,
       'border-left': `3px solid var(--md-primary-color)`,
       'margin': `2em 8px 0.75em 0`,
@@ -45,7 +45,7 @@ const defaultTheme: Theme = {
     },
 
     // 四级标题
-    h4: {
+    'h4': {
       'margin': `2em 8px 0.5em`,
       'color': `var(--md-primary-color)`,
       'font-size': `1em`,
@@ -53,7 +53,7 @@ const defaultTheme: Theme = {
     },
 
     // 五级标题
-    h5: {
+    'h5': {
       'margin': `1.5em 8px 0.5em`,
       'color': `var(--md-primary-color)`,
       'font-size': `1em`,
@@ -61,14 +61,14 @@ const defaultTheme: Theme = {
     },
 
     // 六级标题
-    h6: {
+    'h6': {
       'margin': `1.5em 8px 0.5em`,
       'font-size': `1em`,
       'color': `var(--md-primary-color)`,
     },
 
     // 段落
-    p: {
+    'p': {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
       'color': `var(--el-text-color-regular)`,
@@ -76,7 +76,7 @@ const defaultTheme: Theme = {
     },
 
     // 引用
-    blockquote: {
+    'blockquote': {
       'font-style': `normal`,
       'border-left': `none`,
       'padding': `1em`,
@@ -87,15 +87,52 @@ const defaultTheme: Theme = {
     },
 
     // 引用内容
-    blockquote_p: {
+    'blockquote_p': {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
       'color': `rgb(80, 80, 80)`,
     },
 
+    // GFM 警告块
+    'markdown-alert': {
+      'font-style': `normal`,
+      'border-left': `none`,
+      'padding': `1em`,
+      'border-radius': `8px`,
+      'background': `#f7f7f7`,
+      'margin': `2em 8px`,
+      '--el-text-color-regular': `rgb(80, 80, 80) !important`,
+    },
+
+    // GFM 警告块标题
+    'markdown-alert-title': {
+      'display': `flex`,
+      'align-items': `center`,
+    },
+
+    'markdown-alert-title-note': {
+      color: `#478be6`,
+    },
+
+    'markdown-alert-title-tip': {
+      color: `#57ab5a`,
+    },
+
+    'markdown-alert-title-important': {
+      color: `#986ee2`,
+    },
+
+    'markdown-alert-title-warning': {
+      color: `#c69026`,
+    },
+
+    'markdown-alert-title-caution': {
+      color: `#e5534b`,
+    },
+
     // 代码块
-    code_pre: {
+    'code_pre': {
       'font-size': `14px`,
       'overflow-x': `auto`,
       'border-radius': `8px`,
@@ -105,14 +142,14 @@ const defaultTheme: Theme = {
     },
 
     // 行内代码
-    code: {
+    'code': {
       'margin': 0,
       'white-space': `nowrap`,
       'font-family': `Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
     // 图片
-    image: {
+    'image': {
       'display': `block`,
       'width': `100% !important`,
       'margin': `0.1em auto 0.5em`,
@@ -120,32 +157,32 @@ const defaultTheme: Theme = {
     },
 
     // 有序列表
-    ol: {
+    'ol': {
       'padding-left': `1em`,
       'margin-left': `0`,
       'color': `var(--el-text-color-regular)`,
     },
 
     // 无序列表
-    ul: {
+    'ul': {
       'list-style': `circle`,
       'padding-left': `1em`,
       'margin-left': `0`,
       'color': `var(--el-text-color-regular)`,
     },
 
-    footnotes: {
+    'footnotes': {
       'margin': `0.5em 8px`,
       'font-size': `80%`,
       'color': `var(--el-text-color-regular)`,
     },
 
-    figure: {
+    'figure': {
       margin: `1.5em 8px`,
       color: `var(--el-text-color-regular)`,
     },
 
-    hr: {
+    'hr': {
       'border-style': `solid`,
       'border-width': `1px 0 0`,
       'border-color': `rgba(0,0,0,0.1)`,
@@ -230,43 +267,43 @@ const graceTheme = toMerged(defaultTheme, {
   base: {
   },
   block: {
-    h1: {
+    'h1': {
       'padding': `0.5em 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
       'font-size': `1.4em`,
       'text-shadow': `2px 2px 4px rgba(0,0,0,0.1)`,
     },
 
-    h2: {
+    'h2': {
       'padding': `0.3em 1em`,
       'border-radius': `8px`,
       'font-size': `1.3em`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.1)`,
     },
 
-    h3: {
+    'h3': {
       'padding-left': `12px`,
       'font-size': `1.2em`,
       'border-left': `4px solid var(--md-primary-color)`,
       'border-bottom': `1px dashed var(--md-primary-color)`,
     },
 
-    h4: {
+    'h4': {
       'font-size': `1.1em`,
     },
 
-    h5: {
+    'h5': {
       'font-size': `1em`,
     },
 
-    h6: {
+    'h6': {
       'font-size': `1em`,
     },
 
-    p: {
+    'p': {
     },
 
-    blockquote: {
+    'blockquote': {
       'font-style': `italic`,
       'padding': `1em 1em 1em 2em`,
       'border-left': `4px solid var(--md-primary-color)`,
@@ -276,41 +313,51 @@ const graceTheme = toMerged(defaultTheme, {
       'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
     },
 
-    blockquote_p: {
+    'blockquote_p': {
     },
 
-    code_pre: {
+    'markdown-alert': {
+      'font-style': `italic`,
+      'padding': `1em 1em 1em 2em`,
+      'border-left': `4px solid var(--md-primary-color)`,
+      'border-radius': `6px`,
+      'color': `rgba(0,0,0,0.6)`,
+      'background': `linear-gradient(to right, #f7f7f7, #ffffff)`,
+      'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
+    },
+
+    'code_pre': {
       'box-shadow': `inset 0 0 10px rgba(0,0,0,0.05)`,
     },
 
-    code: {
+    'code': {
       'white-space': `pre-wrap`,
       'font-family': `'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
-    image: {
+    'image': {
       'border-radius': `8px`,
       'box-shadow': `0 4px 8px rgba(0,0,0,0.1)`,
     },
 
-    ol: {
+    'ol': {
       'padding-left': `1.5em`,
     },
 
-    ul: {
+    'ul': {
       'list-style': `none`,
       'padding-left': `1.5em`,
     },
 
-    footnotes: {
+    'footnotes': {
 
     },
 
-    figure: {
+    'figure': {
 
     },
 
-    hr: {
+    'hr': {
       height: `1px`,
       border: `none`,
       margin: `2em 0`,
