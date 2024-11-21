@@ -519,17 +519,6 @@ onMounted(() => {
   border-spacing: 0;
 }
 
-:deep(.markdown-alert) {
-  display: block;
-  padding: 1em;
-  border-radius: 8px;
-  background: #f7f7f7;
-}
-
-:deep(.markdown-alert-title) {
-  font-weight: bold;
-}
-
 .codeMirror-wrapper,
 .preview-wrapper {
   height: 100%;
