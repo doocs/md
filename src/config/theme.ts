@@ -82,7 +82,7 @@ const defaultTheme: Theme = {
       'padding': `1em`,
       'border-radius': `8px`,
       'color': `rgba(0,0,0,0.5)`,
-      'background': `#f7f7f7`,
+      'background': `var(--blockquote-background)`,
       'margin': `2em 8px`,
     },
 
@@ -91,7 +91,7 @@ const defaultTheme: Theme = {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
-      'color': `rgb(80, 80, 80)`,
+      'color': `var(--el-text-color-regular)`,
     },
 
     // GFM 警告块
@@ -100,9 +100,8 @@ const defaultTheme: Theme = {
       'border-left': `none`,
       'padding': `1em`,
       'border-radius': `8px`,
-      'background': `#f7f7f7`,
+      'background': `var(--blockquote-background)`,
       'margin': `2em 8px`,
-      '--el-text-color-regular': `rgb(80, 80, 80) !important`,
     },
 
     // GFM 警告块标题
