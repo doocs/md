@@ -17,7 +17,7 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
         return
 
       const matchedVariant = resolvedVariants.find(({ type }) =>
-        new RegExp(createSyntaxPattern(type)).test(token.text),
+        new RegExp(createSyntaxPattern(type), `i`).test(token.text),
       )
 
       if (matchedVariant) {
@@ -148,7 +148,7 @@ export function resolveVariants(variants: AlertVariantItem[]) {
  * Returns regex pattern to match alert syntax.
  */
 export function createSyntaxPattern(type: string) {
-  return `^(?:\\[!${type.toUpperCase()}])\\s*?\n*`
+  return `^(?:\\[!${type}])\\s*?\n*`
 }
 
 /**
