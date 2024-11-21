@@ -125,7 +125,17 @@ function copy() {
         .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
         .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)
+
       clipboardDiv.focus()
+
+      // edge case: 由于 svg 无法复制， 在前面插入一个空节点
+      const p = document.createElement(`p`)
+      p.style.fontSize = `0` // 设置字体大小为 0
+      p.style.lineHeight = `0` // 行高也为 0
+      p.style.margin = `0` // 避免外边距干扰
+      p.innerHTML = `&nbsp;`
+      clipboardDiv.insertBefore(p, clipboardDiv.firstChild)
+
       window.getSelection()!.removeAllRanges()
       const range = document.createRange()
 
