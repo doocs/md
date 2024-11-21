@@ -212,9 +212,8 @@ export function initRenderer(opts: IOpts) {
       return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
-    link({ href, title, text }: Tokens.Link): string {
-      const parsedText = marked.parseInline(text) as string
-
+    link({ href, title, text, tokens }: Tokens.Link): string {
+      const parsedText = this.parser.parseInline(tokens)
       if (href.startsWith(`https://mp.weixin.qq.com`)) {
         return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${parsedText}</a>`
       }
