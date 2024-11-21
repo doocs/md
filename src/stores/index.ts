@@ -158,22 +158,26 @@ export const useStore = defineStore(`store`, () => {
       outputTemp += `
         <style>
           .hljs.code__pre > .mac-sign {
-            display: inline-block;
-          }
-
-          .hljs.code__pre {
-            padding: 0!important;
-          }
-
-          .hljs.code__pre code {
-            display: -webkit-box;
-            padding: 0.5em 1em 1em;
-            overflow-x: auto;
-            text-indent: 0;
+            display: flex;
           }
         </style>
       `
     }
+
+    outputTemp += `
+      <style>
+        .code__pre {
+          padding: 0 !important;
+        }
+
+        .hljs.code__pre code {
+          display: -webkit-box;
+          padding: 0.5em 1em 1em;
+          overflow-x: auto;
+          text-indent: 0;
+        }
+      </style>
+    `
 
     output.value = outputTemp
   }
