@@ -1,4 +1,4 @@
-import type { Block, Inline, Theme } from '@/types'
+import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 import type { PropertiesHyphen } from 'csstype'
 import { prefix } from '@/config'
@@ -34,7 +34,7 @@ export function customizeTheme(theme: Theme, options: {
 export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
   const newTheme = customizeTheme(theme, { color })
 
-  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline, PropertiesHyphen>>, keys: T[]) => {
+  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
     keys.forEach((key) => {
       if (source[key]) {
         target[key] = Object.assign(target[key] || {}, source[key])
@@ -54,7 +54,23 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     `p`,
     `hr`,
     `blockquote`,
+    `blockquote_note`,
+    `blockquote_tip`,
+    `blockquote_important`,
+    `blockquote_warning`,
+    `blockquote_caution`,
     `blockquote_p`,
+    `blockquote_p_note`,
+    `blockquote_p_tip`,
+    `blockquote_p_important`,
+    `blockquote_p_warning`,
+    `blockquote_p_caution`,
+    `blockquote_title`,
+    `blockquote_title_note`,
+    `blockquote_title_tip`,
+    `blockquote_title_important`,
+    `blockquote_title_warning`,
+    `blockquote_title_caution`,
     `image`,
     `ul`,
     `ol`,
@@ -114,6 +130,15 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
   }
 
   return json
+}
+
+/**
+ * 将样式对象转换为 CSS 字符串
+ * @param {ExtendedProperties} style - 样式对象
+ * @returns {string} - CSS 字符串
+ */
+export function getStyleString(style: ExtendedProperties) {
+  return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
 }
 
 /**

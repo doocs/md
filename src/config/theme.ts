@@ -82,7 +82,7 @@ const defaultTheme: Theme = {
       'padding': `1em`,
       'border-radius': `8px`,
       'color': `rgba(0,0,0,0.5)`,
-      'background': `#f7f7f7`,
+      'background': `var(--blockquote-background)`,
       'margin': `2em 8px`,
     },
 
@@ -91,7 +91,65 @@ const defaultTheme: Theme = {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
-      'color': `rgb(80, 80, 80)`,
+      'color': `var(--el-text-color-regular)`,
+    },
+
+    blockquote_note: {
+    },
+
+    blockquote_tip: {
+    },
+
+    blockquote_important: {
+    },
+
+    blockquote_warning: {
+    },
+
+    blockquote_caution: {
+    },
+
+    // GFM 警告块标题
+    blockquote_title: {
+      'display': `flex`,
+      'align-items': `center`,
+      'gap': `0.5em`,
+      'margin-bottom': `0.5em`,
+    },
+
+    blockquote_title_note: {
+      color: `#478be6`,
+    },
+
+    blockquote_title_tip: {
+      color: `#57ab5a`,
+    },
+
+    blockquote_title_important: {
+      color: `#986ee2`,
+    },
+
+    blockquote_title_warning: {
+      color: `#c69026`,
+    },
+
+    blockquote_title_caution: {
+      color: `#e5534b`,
+    },
+
+    blockquote_p_note: {
+    },
+
+    blockquote_p_tip: {
+    },
+
+    blockquote_p_important: {
+    },
+
+    blockquote_p_warning: {
+    },
+
+    blockquote_p_caution: {
     },
 
     // 代码块
@@ -230,87 +288,90 @@ const graceTheme = toMerged(defaultTheme, {
   base: {
   },
   block: {
-    h1: {
+    'h1': {
       'padding': `0.5em 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
       'font-size': `1.4em`,
       'text-shadow': `2px 2px 4px rgba(0,0,0,0.1)`,
     },
 
-    h2: {
+    'h2': {
       'padding': `0.3em 1em`,
       'border-radius': `8px`,
       'font-size': `1.3em`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.1)`,
     },
 
-    h3: {
+    'h3': {
       'padding-left': `12px`,
       'font-size': `1.2em`,
       'border-left': `4px solid var(--md-primary-color)`,
       'border-bottom': `1px dashed var(--md-primary-color)`,
     },
 
-    h4: {
+    'h4': {
       'font-size': `1.1em`,
     },
 
-    h5: {
+    'h5': {
       'font-size': `1em`,
     },
 
-    h6: {
+    'h6': {
       'font-size': `1em`,
     },
 
-    p: {
+    'p': {
     },
 
-    blockquote: {
+    'blockquote': {
       'font-style': `italic`,
       'padding': `1em 1em 1em 2em`,
       'border-left': `4px solid var(--md-primary-color)`,
       'border-radius': `6px`,
       'color': `rgba(0,0,0,0.6)`,
-      'background': `linear-gradient(to right, #f7f7f7, #ffffff)`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
     },
 
-    blockquote_p: {
+    'blockquote_p': {
     },
 
-    code_pre: {
+    'markdown-alert': {
+      'font-style': `italic`,
+    },
+
+    'code_pre': {
       'box-shadow': `inset 0 0 10px rgba(0,0,0,0.05)`,
     },
 
-    code: {
+    'code': {
       'white-space': `pre-wrap`,
       'font-family': `'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
-    image: {
+    'image': {
       'border-radius': `8px`,
       'box-shadow': `0 4px 8px rgba(0,0,0,0.1)`,
     },
 
-    ol: {
+    'ol': {
       'padding-left': `1.5em`,
     },
 
-    ul: {
+    'ul': {
       'list-style': `none`,
       'padding-left': `1.5em`,
     },
 
-    footnotes: {
+    'footnotes': {
 
     },
 
-    figure: {
+    'figure': {
 
     },
 
-    hr: {
+    'hr': {
       height: `1px`,
       border: `none`,
       margin: `2em 0`,

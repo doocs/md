@@ -35,6 +35,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 - [x] 支持自定义 CSS 样式
 - [x] 支持 Markdown 所有基础语法、代码块、LaTeX 公式
+- [x] 支持 [GFM 警告块](https://github.com/orgs/community/discussions/16925)
 - [x] 支持浅色、深色两种编辑器外观
 - [x] 支持 <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> 快速格式化文档
 - [x] 支持色盘取色，快速替换文章整体色调

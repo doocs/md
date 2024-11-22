@@ -143,7 +143,8 @@ export const useStore = defineStore(`store`, () => {
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    renderer.reset({ status: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
+    renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
+
     let outputTemp = marked.parse(editor.value!.getValue()) as string
 
     // 去除第一行的 margin-top
@@ -157,22 +158,26 @@ export const useStore = defineStore(`store`, () => {
       outputTemp += `
         <style>
           .hljs.code__pre > .mac-sign {
-            display: inline-block;
-          }
-
-          .hljs.code__pre {
-            padding: 0!important;
-          }
-
-          .hljs.code__pre code {
-            display: -webkit-box;
-            padding: 0.5em 1em 1em;
-            overflow-x: auto;
-            text-indent: 0;
+            display: flex;
           }
         </style>
       `
     }
+
+    outputTemp += `
+      <style>
+        .code__pre {
+          padding: 0 !important;
+        }
+
+        .hljs.code__pre code {
+          display: -webkit-box;
+          padding: 0.5em 1em 1em;
+          overflow-x: auto;
+          text-indent: 0;
+        }
+      </style>
+    `
 
     output.value = outputTemp
   }
@@ -184,6 +189,7 @@ export const useStore = defineStore(`store`, () => {
     renderer.setOptions({
       theme: newTheme,
     })
+
     editorRefresh()
   }
   // 初始化 CSS 编辑器
@@ -354,7 +360,7 @@ export const useStore = defineStore(`store`, () => {
       const reader = new FileReader()
       reader.readAsText(file)
       reader.onload = (event) => {
-        (editor.value!).setValue((event.target !).result as string)
+        (editor.value!).setValue((event.target!).result as string)
         ElMessage.success(`文档导入成功`)
       }
     }
