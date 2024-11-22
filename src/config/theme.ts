@@ -314,7 +314,6 @@ const graceTheme = toMerged(defaultTheme, {
       'border-left': `4px solid var(--md-primary-color)`,
       'border-radius': `6px`,
       'color': `rgba(0,0,0,0.6)`,
-      'background': `linear-gradient(to right, #f7f7f7, #ffffff)`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
     },
 
@@ -323,12 +322,6 @@ const graceTheme = toMerged(defaultTheme, {
 
     'markdown-alert': {
       'font-style': `italic`,
-      'padding': `1em 1em 1em 2em`,
-      'border-left': `4px solid var(--md-primary-color)`,
-      'border-radius': `6px`,
-      'color': `rgba(0,0,0,0.6)`,
-      'background': `linear-gradient(to right, #f7f7f7, #ffffff)`,
-      'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
     },
 
     'code_pre': {
