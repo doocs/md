@@ -27,7 +27,7 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
           title = ucfirst(variantType),
           titleClassName = `${className}-title`,
         } = matchedVariant
-        const typeRegexp = new RegExp(createSyntaxPattern(variantType))
+        const typeRegexp = new RegExp(createSyntaxPattern(variantType), `i`)
 
         Object.assign(token, {
           type: `alert`,
