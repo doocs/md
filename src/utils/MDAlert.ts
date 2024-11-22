@@ -29,6 +29,8 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
         } = matchedVariant
         const typeRegexp = new RegExp(createSyntaxPattern(variantType), `i`)
 
+        const { styles } = options
+
         Object.assign(token, {
           type: `alert`,
           meta: {
@@ -37,16 +39,17 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
             icon,
             title,
             titleClassName,
-            style: {
-              ...options.theme?.block[className],
-              ...options.theme?.block[`${className}-${variantType}`],
+            wrapperStyle: {
+              ...styles?.blockquote,
+              ...styles?.[`blockquote_${variantType}` as keyof typeof styles],
             },
             titleStyle: {
-              ...options.theme?.block[titleClassName],
-              ...options.theme?.block[`${titleClassName}-${variantType}`],
+              ...styles?.blockquote_title,
+              ...styles?.[`blockquote_title_${variantType}` as keyof typeof styles],
             },
-            contentWrapperStyle: {
-              margin: options.theme?.block[`${className}-content-wrapper`]?.margin,
+            contentStyle: {
+              ...styles?.blockquote_p,
+              ...styles?.[`blockquote_p_${variantType}` as keyof typeof styles],
             },
           },
         })
@@ -76,15 +79,17 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
         name: `alert`,
         level: `block`,
         renderer({ meta, tokens = [] }) {
-          let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style='${getStyleString(meta.style)}'>\n`
-          tmpl += `<p class="${meta.titleClassName}" style='${getStyleString(meta.titleStyle)}'>`
+          let text = this.parser.parse(tokens)
+          text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
+          let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
+          tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
           tmpl += meta.icon.replace(
             `<svg`,
             `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
           )
           tmpl += meta.title
           tmpl += `</p>\n`
-          tmpl += `<span style="${`${getStyleString(meta.contentWrapperStyle)} display: block;`}">${this.parser.parse(tokens)}</span>`
+          tmpl += text
           tmpl += `</blockquote>\n`
 
           return tmpl

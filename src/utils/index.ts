@@ -34,7 +34,7 @@ export function customizeTheme(theme: Theme, options: {
 export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
   const newTheme = customizeTheme(theme, { color })
 
-  const mergeProperties = <T extends Block | Inline | string = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
+  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
     keys.forEach((key) => {
       if (source[key]) {
         target[key] = Object.assign(target[key] || {}, source[key])
@@ -42,7 +42,7 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     })
   }
 
-  const blockKeys: (Block | string)[] = [
+  const blockKeys: Block[] = [
     `h1`,
     `h2`,
     `h3`,
@@ -54,15 +54,23 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     `p`,
     `hr`,
     `blockquote`,
+    `blockquote_note`,
+    `blockquote_tip`,
+    `blockquote_important`,
+    `blockquote_warning`,
+    `blockquote_caution`,
     `blockquote_p`,
-    `markdown-alert`,
-    `markdown-alert-title`,
-    `markdown-alert-content-wrapper`,
-    `markdown-alert-title-note`,
-    `markdown-alert-title-tip`,
-    `markdown-alert-title-important`,
-    `markdown-alert-title-warning`,
-    `markdown-alert-title-caution`,
+    `blockquote_p_note`,
+    `blockquote_p_tip`,
+    `blockquote_p_important`,
+    `blockquote_p_warning`,
+    `blockquote_p_caution`,
+    `blockquote_title`,
+    `blockquote_title_note`,
+    `blockquote_title_tip`,
+    `blockquote_title_important`,
+    `blockquote_title_warning`,
+    `blockquote_title_caution`,
     `image`,
     `ul`,
     `ol`,

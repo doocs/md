@@ -10,7 +10,7 @@ const defaultTheme: Theme = {
   },
   block: {
     // 一级标题
-    'h1': {
+    h1: {
       'display': `table`,
       'padding': `0 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
@@ -22,7 +22,7 @@ const defaultTheme: Theme = {
     },
 
     // 二级标题
-    'h2': {
+    h2: {
       'display': `table`,
       'padding': `0 0.2em`,
       'margin': `4em auto 2em`,
@@ -34,7 +34,7 @@ const defaultTheme: Theme = {
     },
 
     // 三级标题
-    'h3': {
+    h3: {
       'padding-left': `8px`,
       'border-left': `3px solid var(--md-primary-color)`,
       'margin': `2em 8px 0.75em 0`,
@@ -45,7 +45,7 @@ const defaultTheme: Theme = {
     },
 
     // 四级标题
-    'h4': {
+    h4: {
       'margin': `2em 8px 0.5em`,
       'color': `var(--md-primary-color)`,
       'font-size': `1em`,
@@ -53,7 +53,7 @@ const defaultTheme: Theme = {
     },
 
     // 五级标题
-    'h5': {
+    h5: {
       'margin': `1.5em 8px 0.5em`,
       'color': `var(--md-primary-color)`,
       'font-size': `1em`,
@@ -61,14 +61,14 @@ const defaultTheme: Theme = {
     },
 
     // 六级标题
-    'h6': {
+    h6: {
       'margin': `1.5em 8px 0.5em`,
       'font-size': `1em`,
       'color': `var(--md-primary-color)`,
     },
 
     // 段落
-    'p': {
+    p: {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
       'color': `var(--el-text-color-regular)`,
@@ -76,7 +76,7 @@ const defaultTheme: Theme = {
     },
 
     // 引用
-    'blockquote': {
+    blockquote: {
       'font-style': `normal`,
       'border-left': `none`,
       'padding': `1em`,
@@ -87,57 +87,73 @@ const defaultTheme: Theme = {
     },
 
     // 引用内容
-    'blockquote_p': {
+    blockquote_p: {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
       'color': `var(--el-text-color-regular)`,
     },
 
-    // GFM 警告块
-    'markdown-alert': {
-      'font-style': `normal`,
-      'border-left': `none`,
-      'padding': `1em`,
-      'border-radius': `8px`,
-      'background': `var(--blockquote-background)`,
-      'margin': `2em 8px`,
+    blockquote_note: {
+    },
+
+    blockquote_tip: {
+    },
+
+    blockquote_important: {
+    },
+
+    blockquote_warning: {
+    },
+
+    blockquote_caution: {
     },
 
     // GFM 警告块标题
-    'markdown-alert-title': {
+    blockquote_title: {
       'display': `flex`,
       'align-items': `center`,
       'gap': `0.5em`,
+      'margin-bottom': `0.5em`,
     },
 
-    // GFM 警告块内容，抵消 p 默认的 margin
-    'markdown-alert-content-wrapper': {
-      margin: `-1em -8px -1.5em;`,
-    },
-
-    'markdown-alert-title-note': {
+    blockquote_title_note: {
       color: `#478be6`,
     },
 
-    'markdown-alert-title-tip': {
+    blockquote_title_tip: {
       color: `#57ab5a`,
     },
 
-    'markdown-alert-title-important': {
+    blockquote_title_important: {
       color: `#986ee2`,
     },
 
-    'markdown-alert-title-warning': {
+    blockquote_title_warning: {
       color: `#c69026`,
     },
 
-    'markdown-alert-title-caution': {
+    blockquote_title_caution: {
       color: `#e5534b`,
     },
 
+    blockquote_p_note: {
+    },
+
+    blockquote_p_tip: {
+    },
+
+    blockquote_p_important: {
+    },
+
+    blockquote_p_warning: {
+    },
+
+    blockquote_p_caution: {
+    },
+
     // 代码块
-    'code_pre': {
+    code_pre: {
       'font-size': `14px`,
       'overflow-x': `auto`,
       'border-radius': `8px`,
@@ -147,14 +163,14 @@ const defaultTheme: Theme = {
     },
 
     // 行内代码
-    'code': {
+    code: {
       'margin': 0,
       'white-space': `nowrap`,
       'font-family': `Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
     // 图片
-    'image': {
+    image: {
       'display': `block`,
       'width': `100% !important`,
       'margin': `0.1em auto 0.5em`,
@@ -162,32 +178,32 @@ const defaultTheme: Theme = {
     },
 
     // 有序列表
-    'ol': {
+    ol: {
       'padding-left': `1em`,
       'margin-left': `0`,
       'color': `var(--el-text-color-regular)`,
     },
 
     // 无序列表
-    'ul': {
+    ul: {
       'list-style': `circle`,
       'padding-left': `1em`,
       'margin-left': `0`,
       'color': `var(--el-text-color-regular)`,
     },
 
-    'footnotes': {
+    footnotes: {
       'margin': `0.5em 8px`,
       'font-size': `80%`,
       'color': `var(--el-text-color-regular)`,
     },
 
-    'figure': {
+    figure: {
       margin: `1.5em 8px`,
       color: `var(--el-text-color-regular)`,
     },
 
-    'hr': {
+    hr: {
       'border-style': `solid`,
       'border-width': `1px 0 0`,
       'border-color': `rgba(0,0,0,0.1)`,

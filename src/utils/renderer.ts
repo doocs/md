@@ -126,7 +126,7 @@ export function initRenderer(opts: IOpts) {
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
     styleMapping = buildTheme(opts)
-    marked.use(markedAlert({ theme: opts.theme }))
+    marked.use(markedAlert({ styles: styleMapping }))
   }
 
   const buildFootnotes = () => {
