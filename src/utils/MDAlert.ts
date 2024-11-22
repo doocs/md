@@ -51,11 +51,6 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
           },
         })
 
-        console.log({
-          ...options.theme?.block[className],
-          ...options.theme?.block[`${className}-${variantType}`],
-        }, `style`)
-
         const firstLine = token.tokens?.[0] as Tokens.Paragraph
         const firstLineText = firstLine.raw?.replace(typeRegexp, ``).trim()
 

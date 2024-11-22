@@ -34,7 +34,7 @@ export function customizeTheme(theme: Theme, options: {
 export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
   const newTheme = customizeTheme(theme, { color })
 
-  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline, PropertiesHyphen>>, keys: T[]) => {
+  const mergeProperties = <T extends Block | Inline | string = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
     keys.forEach((key) => {
       if (source[key]) {
         target[key] = Object.assign(target[key] || {}, source[key])
@@ -42,7 +42,7 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     })
   }
 
-  const blockKeys: Block[] = [
+  const blockKeys: (Block | string)[] = [
     `h1`,
     `h2`,
     `h3`,
@@ -55,6 +55,14 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     `hr`,
     `blockquote`,
     `blockquote_p`,
+    `markdown-alert`,
+    `markdown-alert-title`,
+    `markdown-alert-content-wrapper`,
+    `markdown-alert-title-note`,
+    `markdown-alert-title-tip`,
+    `markdown-alert-title-important`,
+    `markdown-alert-title-warning`,
+    `markdown-alert-title-caution`,
     `image`,
     `ul`,
     `ol`,
