@@ -1,4 +1,15 @@
 <script setup lang="ts">
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Menubar,
@@ -17,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
+import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
   codeBlockThemeOptions,
@@ -32,16 +43,14 @@ import {
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
-import { ElNotification } from 'element-plus'
 import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-
 import { nextTick } from 'vue'
-import EditDropdown from './EditDropdown.vue'
+import { toast } from 'vue-sonner'
 
+import EditDropdown from './EditDropdown.vue'
 import FileDropdown from './FileDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
-
 import PostInfo from './PostInfo.vue'
 import StyleDropdown from './StyleDropdown.vue'
 
@@ -152,13 +161,7 @@ function copy() {
       }
 
       // 输出提示
-      ElNotification({
-        showClose: true,
-        message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
-        offset: 80,
-        duration: 1600,
-        type: `success`,
-      })
+      toast.success(`已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`)
 
       editorRefresh()
       emit(`endCopy`)
@@ -493,12 +496,28 @@ function customStyle() {
           <div class="space-y-2">
             <h2>样式配置</h2>
             <div>
-              <Button
-                class="w-full"
-                @click="store.resetStyleConfirm()"
-              >
-                重置
-              </Button>
+              <AlertDialog>
+                <AlertDialogTrigger as-child>
+<!--                  <Button variant="outline">-->
+                  <Button>
+                    重置
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>提示</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      此操作将丢失本地自定义样式，是否继续？
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>取消</AlertDialogCancel>
+                    <AlertDialogAction @click="store.resetStyleConfirm()">
+                      确认
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           </div>
         </div>
@@ -509,6 +528,8 @@ function customStyle() {
     </Button>
 
     <PostInfo />
+
+    <Toaster close-button rich-colors position="top-center" />
   </header>
 </template>
 

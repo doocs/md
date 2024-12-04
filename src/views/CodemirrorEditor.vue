@@ -4,7 +4,6 @@ import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
-
 import RunLoading from '@/components/RunLoading.vue'
 import {
   ContextMenu,
@@ -24,12 +23,10 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-
-import { ElCol, ElMessage } from 'element-plus'
-
+import { ElCol } from 'element-plus'
 import { storeToRefs } from 'pinia'
-
 import { onMounted, ref, toRaw, watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -131,7 +128,7 @@ function beforeUpload(file: File) {
   // validate image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    ElMessage.error(checkResult.msg)
+    toast.error(checkResult.msg)
     return false
   }
 
@@ -142,7 +139,7 @@ function beforeUpload(file: File) {
   const config = localStorage.getItem(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
-    ElMessage.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(`请先配置 ${imgHost} 图床参数`)
     return false
   }
   return true
@@ -151,7 +148,7 @@ function beforeUpload(file: File) {
 // 图片上传结束
 function uploaded(imageUrl: string) {
   if (!imageUrl) {
-    ElMessage.error(`上传图片未知异常`)
+    toast.error(`上传图片未知异常`)
     return
   }
   toggleShowUploadImgDialog(false)
@@ -160,7 +157,7 @@ function uploaded(imageUrl: string) {
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
   toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
-  ElMessage.success(`图片上传成功`)
+  toast.success(`图片上传成功`)
 }
 function uploadImage(file: File, cb?: { (url: any): void, (arg0: unknown): void } | undefined) {
   isImgLoading.value = true
@@ -176,7 +173,7 @@ function uploadImage(file: File, cb?: { (url: any): void, (arg0: unknown): void 
       }
     })
     .catch((err) => {
-      ElMessage.error(err.message)
+      toast.error(err.message)
     })
     .finally(() => {
       isImgLoading.value = false
