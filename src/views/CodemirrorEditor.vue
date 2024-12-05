@@ -32,7 +32,6 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { ElCol } from 'element-plus'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, toRaw, watch } from 'vue'
 import { toast } from 'vue-sonner'
@@ -59,7 +58,7 @@ const {
 const isImgLoading = ref(false)
 const timeout = ref<NodeJS.Timeout>()
 
-const preview = ref<typeof ElCol | null>(null)
+const preview = ref<HTMLDivElement | null>(null)
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
@@ -69,7 +68,7 @@ function leftAndRightScroll() {
 
     clearTimeout(timeout.value)
     if (text === `preview`) {
-      source = preview.value!.$el
+      source = preview.value!
       target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
 
       editor.value!.off(`scroll`, editorScrollCB)
@@ -79,7 +78,7 @@ function leftAndRightScroll() {
     }
     else {
       source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-      target = preview.value!.$el
+      target = preview.value!
 
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
@@ -102,7 +101,7 @@ function leftAndRightScroll() {
     scrollCB(`preview`)
   }
 
-  (preview.value!.$el).addEventListener(`scroll`, previewScrollCB, false)
+  (preview.value!).addEventListener(`scroll`, previewScrollCB, false)
   editor.value!.on(`scroll`, editorScrollCB)
 }
 
@@ -280,12 +279,12 @@ function addFormat(cmd: string | number) {
   (editor.value as any).options.extraKeys[cmd](editor.value)
 }
 
-const codeMirrorWrapper = ref<ComponentPublicInstance<typeof ElCol> | null>(null)
+const codeMirrorWrapper = ref<ComponentPublicInstance<HTMLDivElement> | null>(null)
 
 // 转换 markdown 中的本地图片为线上图片
 // todo 处理事件覆盖
 function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value!.$el as HTMLElement
+  const dom = codeMirrorWrapper.value!
 
   // 上传 md 中的图片
   const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {
@@ -397,10 +396,9 @@ onMounted(() => {
       @end-copy="endCopy"
     />
     <main class="container-main flex-1">
-      <el-row class="container-main-section h-full border-1">
-        <ElCol
+      <div class="container-main-section grid h-full border-1" :class="isShowCssEditor ? 'grid-cols-3' : 'grid-cols-2'">
+        <div
           ref="codeMirrorWrapper"
-          :span="isShowCssEditor ? 8 : 12"
           class="codeMirror-wrapper border-r-1"
           :class="{
             'order-1': !store.isEditOnLeft,
@@ -440,8 +438,8 @@ onMounted(() => {
               </ContextMenuItem>
             </ContextMenuContent>
           </ContextMenu>
-        </ElCol>
-        <ElCol
+        </div>
+        <div
           id="preview"
           ref="preview"
           :span="isShowCssEditor ? 8 : 12"
@@ -458,9 +456,9 @@ onMounted(() => {
               </div>
             </div>
           </div>
-        </ElCol>
+        </div>
         <CssEditor />
-      </el-row>
+      </div>
     </main>
 
     <UploadImgDialog

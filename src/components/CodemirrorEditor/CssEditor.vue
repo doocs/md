@@ -113,7 +113,7 @@ function delTab() {
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <el-col v-show="displayStore.isShowCssEditor" :span="8" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
+    <div v-show="displayStore.isShowCssEditor" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
       <el-tabs
         v-model="store.cssContentConfig.active"
         type="border-card"
@@ -203,7 +203,7 @@ function delTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </el-col>
+    </div>
   </transition>
 </template>
 
