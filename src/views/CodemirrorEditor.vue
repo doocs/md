@@ -6,6 +6,16 @@ import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
 import RunLoading from '@/components/RunLoading.vue'
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog'
+import {
   ContextMenu,
   ContextMenuContent,
   ContextMenuItem,
@@ -13,7 +23,6 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-
 import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -128,7 +137,7 @@ function beforeUpload(file: File) {
   // validate image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    toast.error(checkResult.msg)
+    toast.error(checkResult.msg!)
     return false
   }
 
@@ -461,6 +470,23 @@ onMounted(() => {
     <InsertFormDialog />
 
     <RunLoading />
+
+    <AlertDialog v-model:open="store.isOpenConfirmDialog">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>提示</AlertDialogTitle>
+          <AlertDialogDescription>
+            此操作将丢失本地自定义样式，是否继续？
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction @click="store.resetStyle()">
+            确认
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 </template>
 

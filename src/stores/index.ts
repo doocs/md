@@ -265,6 +265,8 @@ export const useStore = defineStore(`store`, () => {
 
     updateCss()
     editorRefresh()
+
+    toast.success(`样式重置成功~`)
   }
 
   // 为函数添加刷新编辑器的功能
@@ -370,25 +372,11 @@ export const useStore = defineStore(`store`, () => {
     body.removeChild(input)
   }
 
+  const isOpenConfirmDialog = ref(false)
+
   // 重置样式
   const resetStyleConfirm = () => {
-    // ElMessageBox.confirm(
-    //   `此操作将丢失本地自定义样式，是否继续？`,
-    //   `提示`,
-    //   {
-    //     confirmButtonText: `确定`,
-    //     cancelButtonText: `取消`,
-    //     type: `warning`,
-    //     center: true,
-    //   },
-    // )
-    //   .then(() => {
-        resetStyle()
-        toast.success(`样式重置成功~`)
-      // })
-      // .catch(() => {
-      //   (editor.value!).focus()
-      // })
+    isOpenConfirmDialog.value = true
   }
 
   return {
@@ -430,7 +418,9 @@ export const useStore = defineStore(`store`, () => {
 
     importMarkdownContent,
 
+    isOpenConfirmDialog,
     resetStyleConfirm,
+    resetStyle,
     editorContent,
 
     cssContentConfig,

@@ -1,15 +1,4 @@
 <script setup lang="ts">
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog'
 import { Button } from '@/components/ui/button'
 import {
   Menubar,
@@ -495,30 +484,9 @@ function customStyle() {
           </div>
           <div class="space-y-2">
             <h2>样式配置</h2>
-            <div>
-              <AlertDialog>
-                <AlertDialogTrigger as-child>
-<!--                  <Button variant="outline">-->
-                  <Button>
-                    重置
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>提示</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      此操作将丢失本地自定义样式，是否继续？
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>取消</AlertDialogCancel>
-                    <AlertDialogAction @click="store.resetStyleConfirm()">
-                      确认
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
+            <Button @click="store.resetStyleConfirm">
+              重置
+            </Button>
           </div>
         </div>
       </PopoverContent>

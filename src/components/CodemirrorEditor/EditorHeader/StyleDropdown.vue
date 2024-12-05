@@ -12,7 +12,6 @@ import {
   legendOptions,
   themeOptions,
 } from '@/config'
-
 import { useDisplayStore, useStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import { ref } from 'vue'
