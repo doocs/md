@@ -497,7 +497,7 @@ function customStyle() {
 
     <PostInfo />
 
-    <Toaster close-button rich-colors position="top-center" />
+    <Toaster rich-colors position="top-center" />
   </header>
 </template>
 
