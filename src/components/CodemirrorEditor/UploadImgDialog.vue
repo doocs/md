@@ -2,12 +2,10 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { useDisplayStore } from '@/stores'
 import { checkImage, removeLeft } from '@/utils'
-
 import { UploadFilled } from '@element-plus/icons-vue'
 import CodeMirror from 'codemirror'
-
-import { ElMessage } from 'element-plus'
 import { nextTick, onBeforeMount, ref, watch } from 'vue'
+import { toast } from 'vue-sonner'
 
 const emit = defineEmits([`uploadImage`])
 
@@ -164,28 +162,28 @@ onBeforeMount(() => {
 
 function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
-  ElMessage.success(`已成功切换图床`)
+  toast.success(`已成功切换图床`)
 }
 
 function saveGitHubConfiguration() {
   if (!(formGitHub.value.repo && formGitHub.value.accessToken)) {
     const blankElement = formGitHub.value.repo ? `token` : `GitHub 仓库`
-    ElMessage.error(`参数「${blankElement}」不能为空`)
+    toast.error(`参数「${blankElement}」不能为空`)
     return
   }
 
   localStorage.setItem(`githubConfig`, JSON.stringify(formGitHub.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 // const saveGiteeConfiguration = () => {
 //   if (!(formGitee.value.repo && formGitee.value.accessToken)) {
 //     const blankElement = formGitee.value.repo ? `私人令牌` : `Gitee 仓库`
-//     ElMessage.error(`参数「${blankElement}」不能为空`)
+//     toast.error(`参数「${blankElement}」不能为空`)
 //     return
 //   }
 //   localStorage.setItem(`giteeConfig`, JSON.stringify(formGitee.value))
-//   ElMessage.success(`保存成功`)
+//   toast.success(`保存成功`)
 // }
 
 function saveAliOSSConfiguration() {
@@ -197,11 +195,11 @@ function saveAliOSSConfiguration() {
       && formAliOSS.value.region
     )
   ) {
-    ElMessage.error(`阿里云 OSS 参数配置不全`)
+    toast.error(`阿里云 OSS 参数配置不全`)
     return
   }
   localStorage.setItem(`aliOSSConfig`, JSON.stringify(formAliOSS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveMinioOSSConfiguration() {
   if (
@@ -212,11 +210,11 @@ function saveMinioOSSConfiguration() {
       && minioOSS.value.secretKey
     )
   ) {
-    ElMessage.error(`MinIO 参数配置不全`)
+    toast.error(`MinIO 参数配置不全`)
     return
   }
   localStorage.setItem(`minioConfig`, JSON.stringify(minioOSS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveTxCOSConfiguration() {
   if (
@@ -227,11 +225,11 @@ function saveTxCOSConfiguration() {
       && formTxCOS.value.region
     )
   ) {
-    ElMessage.error(`腾讯云 COS 参数配置不全`)
+    toast.error(`腾讯云 COS 参数配置不全`)
     return
   }
   localStorage.setItem(`txCOSConfig`, JSON.stringify(formTxCOS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveQiniuConfiguration() {
   if (
@@ -242,24 +240,24 @@ function saveQiniuConfiguration() {
       && formQiniu.value.domain
     )
   ) {
-    ElMessage.error(`七牛云 Kodo 参数配置不全`)
+    toast.error(`七牛云 Kodo 参数配置不全`)
     return
   }
   localStorage.setItem(`qiniuConfig`, JSON.stringify(formQiniu.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 function formCustomSave() {
   const str = formCustom.value.editor!.getValue()
   localStorage.setItem(`formCustomConfig`, str)
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    ElMessage.error(checkResult.msg)
+    toast.error(checkResult.msg)
     return false
   }
   // check image host
@@ -270,7 +268,7 @@ function beforeImageUpload(file: File) {
   const config = localStorage.getItem(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
-    ElMessage.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(`请先配置 ${imgHost} 图床参数`)
     return false
   }
   return true
