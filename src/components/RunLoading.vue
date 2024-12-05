@@ -34,7 +34,7 @@ onMounted(() => {
   width: 100vw;
   height: 100vh;
   font-size: 18px;
-  background-color: var(--el-bg-color-page);
+  background-color: hsl(var(--background));
 
   &::before {
     content: url('../assets/images/favicon.png');

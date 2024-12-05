@@ -120,7 +120,7 @@ function copy() {
         // 公众号不支持 position， 转换为等价的 translateY
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量
-        .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+        .replaceAll(`hsl(var(--foreground))`, `#3f3f3f`)
         .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
         .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)

@@ -520,8 +520,8 @@ onMounted(() => {
   width: 100%;
   height: 100%;
   text-align: center;
-  color: var(--el-text-color-regular);
-  background-color: var(--el-bg-color);
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
 
   .loading-mask-box {
     position: sticky;
