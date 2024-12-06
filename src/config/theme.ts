@@ -216,8 +216,7 @@ const defaultTheme: Theme = {
   inline: {
     listitem: {
       'text-indent': `-1em`,
-      'display': `flex`,
-      'align-items': `center`,
+      'display': `block`,
       'margin': `0.2em 8px`,
       'color': `var(--el-text-color-regular)`,
     },
