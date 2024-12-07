@@ -62,6 +62,11 @@ const minioOSS = ref({
   secretKey: ``,
 })
 
+const formMp = ref({
+  appID: ``,
+  appsecret: ``,
+})
+const mpDisabled = ref(window.location.href.startsWith(`http`))
 const formCustom = ref<{ code: string, editor: CodeMirror.EditorFromTextArea | null }>({
   code:
     localStorage.getItem(`formCustomConfig`)
@@ -108,6 +113,11 @@ const options = [
   {
     value: `minio`,
     label: `MinIO`,
+  },
+  {
+    value: `mp`,
+    label: `公众号素材`,
+    disabled: mpDisabled.value,
   },
   {
     value: `formCustom`,
@@ -159,6 +169,9 @@ onBeforeMount(() => {
   }
   if (localStorage.getItem(`imgHost`)) {
     imgHost.value = localStorage.getItem(`imgHost`)!
+  }
+  if (localStorage.getItem(`mpConfig`)) {
+    formMp.value = JSON.parse(localStorage.getItem(`mpConfig`)!)
   }
 })
 
@@ -249,6 +262,20 @@ function saveQiniuConfiguration() {
   ElMessage.success(`保存成功`)
 }
 
+function saveMpConfiguration() {
+  if (
+    !(
+      formMp.value.appID
+      && formMp.value.appsecret
+    )
+  ) {
+    ElMessage.error(`公众号图床 参数配置不全`)
+    return
+  }
+  localStorage.setItem(`mpConfig`, JSON.stringify(formMp.value))
+  ElMessage.success(`保存成功`)
+}
+
 function formCustomSave() {
   const str = formCustom.value.editor!.getValue()
   localStorage.setItem(`formCustomConfig`, str)
@@ -301,6 +328,7 @@ function uploadImage(params: { file: any }) {
               :key="item.value"
               :label="item.label"
               :value="item.value"
+              :disabled="item?.disabled"
             />
           </el-select>
           <el-upload
@@ -609,6 +637,57 @@ function uploadImage(params: { file: any }) {
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="saveMinioOSSConfiguration">
+                保存配置
+              </el-button>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
+        <el-tab-pane class="github-panel" label="公众号 图床" name="mp">
+          <template #label>
+            <el-tooltip placement="top">
+              <template #content>
+                由于接口请求跨域问题请在浏览器插件形式中使用
+              </template>
+              <div>公众号 图床</div>
+            </el-tooltip>
+          </template>
+          <el-form
+            class="setting-form"
+            :model="formMp"
+            label-position="right"
+            label-width="150px"
+            :disabled="mpDisabled"
+          >
+            <el-form-item label="appID" :required="true">
+              <el-input
+                v-model.trim="formMp.appID"
+                placeholder="如：wx6e1234567890efa3"
+              />
+            </el-form-item>
+            <el-form-item label="appsecret">
+              <el-input
+                v-model.trim="formMp.appsecret"
+                placeholder="如：d9f1abcdef01234567890abcdef82397"
+              />
+              <el-link
+                type="primary"
+                href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
+                target="_blank"
+              >
+                如何开启公众号开发者模式并获取应用账号密钥？
+              </el-link>
+            </el-form-item>
+            <el-form-item style="margin-top: -26px;">
+              <el-link
+                type="primary"
+                href="https://mpmd.pages.dev/tutorial/"
+                target="_blank"
+              >
+                如何在浏览器插件中使用公众号图床？
+              </el-link>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="saveMpConfiguration">
                 保存配置
               </el-button>
             </el-form-item>

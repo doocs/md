@@ -14,9 +14,11 @@
     "build:analyze": "cross-env ANALYZE=true vite build",
     "preview": "npm run build && vite preview",
     "release:cli": "node ./bin/release.js",
+    "ext:dev": "wxt",
+    "ext:zip": "wxt zip",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "simple-git-hooks && wxt prepare"
   },
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.1",
@@ -77,7 +79,8 @@
     "vite": "^5.4.7",
     "vite-plugin-node-polyfills": "^0.22.0",
     "vite-plugin-vue-devtools": "^7.6.5",
-    "vue-tsc": "^2.1.10"
+    "vue-tsc": "^2.1.10",
+    "wxt": "^0.19.19"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
