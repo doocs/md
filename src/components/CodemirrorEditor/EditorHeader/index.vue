@@ -2,8 +2,8 @@
 import { Button } from '@/components/ui/button'
 import {
   Menubar,
+  MenubarCheckboxItem,
   MenubarContent,
-  MenubarItem,
   MenubarMenu,
   MenubarSeparator,
   MenubarShortcut,
@@ -174,26 +174,22 @@ function customStyle() {
       <MenubarMenu>
         <MenubarTrigger> 格式 </MenubarTrigger>
         <MenubarContent class="w-60" align="start">
-          <MenubarItem
+          <MenubarCheckboxItem
             v-for="{ label, kbd, emitArgs } in formatItems"
             :key="label"
             @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
           >
-            <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
             <MenubarShortcut>
               <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
                 {{ item }}
               </kbd>
             </MenubarShortcut>
-          </MenubarItem>
+          </MenubarCheckboxItem>
           <MenubarSeparator />
-          <MenubarItem @click="citeStatusChanged()">
-            <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isCiteStatus }">
-              <ElIconCheck />
-            </el-icon>
+          <MenubarCheckboxItem :checked="isCiteStatus" @click="citeStatusChanged()">
             微信外链转底部引用
-          </MenubarItem>
+          </MenubarCheckboxItem>
         </MenubarContent>
       </MenubarMenu>
       <EditDropdown />

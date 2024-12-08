@@ -19,8 +19,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
-
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDisplayStore, useStore } from '@/stores'
+import { Edit3, Plus, X } from 'lucide-vue-next'
 import { ref } from 'vue'
 import { toast } from 'vue-sonner'
 
@@ -29,6 +30,7 @@ const displayStore = useDisplayStore()
 
 const isOpenEditDialog = ref(false)
 const editInputVal = ref(``)
+const tabHistory = ref([``, store.cssContentConfig.active])
 
 function rename(name: string) {
   editInputVal.value = name
@@ -64,25 +66,21 @@ function addTab() {
     toast.error(`不能与现有方案重名`)
     return
   }
+
   store.addCssContentTab(addInputVal.value)
   isOpenAddDialog.value = false
+
+  store.cssContentConfig.active = addInputVal.value
+  tabHistory.value = [tabHistory.value[1], addInputVal.value]
   toast.success(`新建成功~`)
 }
 
 const isOpenDelTabConfirmDialog = ref(false)
 const delTargetName = ref(``)
 
-function handleTabsEdit(targetName: string, action: string) {
-  if (action === `add`) {
-    addInputVal.value = `方案${store.cssContentConfig.tabs.length + 1}`
-    isOpenAddDialog.value = true
-    return
-  }
-
-  if (action === `remove`) {
-    delTargetName.value = targetName
-    isOpenDelTabConfirmDialog.value = true
-  }
+function removeHandler(targetName: string) {
+  delTargetName.value = targetName
+  isOpenDelTabConfirmDialog.value = true
 }
 
 function delTab() {
@@ -109,36 +107,52 @@ function delTab() {
 
   toast.success(`删除成功~`)
 }
+
+function addHandler() {
+  addInputVal.value = `方案${store.cssContentConfig.tabs.length + 1}`
+  isOpenAddDialog.value = true
+}
+
+function tabChanged(tabName: string | number) {
+  if (tabName === `add`) {
+    store.cssContentConfig.active = tabHistory.value[1]
+    addHandler()
+    return
+  }
+
+  tabHistory.value = [tabHistory.value[1], tabName as string]
+}
 </script>
 
 <template>
   <transition enter-active-class="bounceInRight">
     <div v-show="displayStore.isShowCssEditor" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
-      <el-tabs
+      <Tabs
         v-model="store.cssContentConfig.active"
-        type="border-card"
-        stretch
-        editable
-        @edit="handleTabsEdit"
-        @tab-change="store.tabChanged"
+        @update:model-value="tabChanged"
       >
-        <el-tab-pane
-          v-for="item in store.cssContentConfig.tabs"
-          :key="item.name"
-          :name="item.name"
-        >
-          <template #label>
+        <TabsList class="w-full overflow-x-auto">
+          <TabsTrigger
+            v-for="item in store.cssContentConfig.tabs"
+            :key="item.name"
+            :value="item.name"
+            class="flex-1"
+          >
             {{ item.title }}
-            <el-icon
-              v-if="store.cssContentConfig.active === item.name"
-              class="ml-1"
+            <Edit3
+              v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
               @click="rename(item.name)"
-            >
-              <ElIconEditPen />
-            </el-icon>
-          </template>
-        </el-tab-pane>
-      </el-tabs>
+            />
+            <X
+              v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+              @click.self="removeHandler(item.name)"
+            />
+          </TabsTrigger>
+          <TabsTrigger value="add">
+            <Plus class="h-5 w-5" />
+          </TabsTrigger>
+        </TabsList>
+      </Tabs>
       <textarea
         id="cssEditor"
         type="textarea"
@@ -244,20 +258,5 @@ function delTab() {
   100% {
     transform: none;
   }
-}
-
-:deep(.el-tabs__content) {
-  padding: 0 !important;
-}
-
-// 当 tab 为激活状态时，隐藏关闭按钮
-:deep(.el-tabs__item.is-active) {
-  .is-icon-close {
-    display: none;
-  }
-}
-
-:deep(.el-tabs__new-tab) {
-  margin-right: 1em;
 }
 </style>

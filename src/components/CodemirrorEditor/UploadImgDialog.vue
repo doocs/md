@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDisplayStore } from '@/stores'
 import { checkImage, removeLeft } from '@/utils'
 import { UploadFilled } from '@element-plus/icons-vue'
@@ -285,26 +293,56 @@ function uploadImage(params: { file: any }) {
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
+      <Tabs v-model="activeName" class="w-max">
+        <TabsList>
+          <TabsTrigger value="upload">
+            选择上传
+          </TabsTrigger>
+          <!-- <TabsTrigger value="gitee">
+            Gitee 图床
+          </TabsTrigger> -->
+          <TabsTrigger value="github">
+            GitHub 图床
+          </TabsTrigger>
+          <TabsTrigger value="aliOSS">
+            阿里云 OSS
+          </TabsTrigger>
+          <TabsTrigger value="txCOS">
+            腾讯云 COS
+          </TabsTrigger>
+          <TabsTrigger value="qiniu">
+            七牛云 Kodo
+          </TabsTrigger>
+          <TabsTrigger value="minio">
+            MinIO
+          </TabsTrigger>
+          <TabsTrigger value="formCustom">
+            自定义代码
+          </TabsTrigger>
+        </TabsList>
 
-      <el-tabs v-model="activeName">
-        <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-          <el-select
-            v-model="imgHost"
-            placeholder="请选择"
-            size="small"
-            @change="changeImgHost"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
+        <TabsContent value="upload">
+          <Select v-model="imgHost" @update:model-value="changeImgHost">
+            <SelectTrigger>
+              <SelectValue placeholder="请选择" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
           <el-upload
             drag
             multiple
             action=""
+            class="mt-4"
             :headers="{ 'Content-Type': 'multipart/form-data' }"
             :show-file-list="false"
             accept=".jpg, .jpeg, .png, .gif"
@@ -320,8 +358,8 @@ function uploadImage(params: { file: any }) {
               <em>点击上传</em>
             </div>
           </el-upload>
-        </el-tab-pane>
-        <!-- <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
+        </TabsContent>
+        <!-- <TabsContent value="gitee">
           <el-form
             class="setting-form"
             :model="formGitee"
@@ -359,8 +397,8 @@ function uploadImage(params: { file: any }) {
               >
             </el-form-item>
           </el-form>
-        </el-tab-pane> -->
-        <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
+        </TabsContent> -->
+        <TabsContent value="github">
           <el-form
             class="setting-form"
             :model="formGitHub"
@@ -399,8 +437,8 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
+        </TabsContent>
+        <TabsContent value="aliOSS">
           <el-form
             class="setting-form"
             :model="formAliOSS"
@@ -461,8 +499,8 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
+        </TabsContent>
+        <TabsContent value="txCOS">
           <el-form
             class="setting-form"
             :model="formTxCOS"
@@ -516,8 +554,8 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="七牛云 Kodo" name="qiniu">
+        </TabsContent>
+        <TabsContent value="qiniu">
           <el-form
             class="setting-form"
             :model="formQiniu"
@@ -568,8 +606,8 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="MinIO" name="minio">
+        </TabsContent>
+        <TabsContent value="minio">
           <el-form
             class="setting-form"
             :model="minioOSS"
@@ -611,8 +649,8 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
+        </TabsContent>
+        <TabsContent value="formCustom">
           <el-form class="setting-form" :model="formCustom" label-position="right">
             <el-form-item label="" :required="true">
               <el-input
@@ -637,30 +675,13 @@ function uploadImage(params: { file: any }) {
               </el-button>
             </el-form-item>
           </el-form>
-        </el-tab-pane>
-      </el-tabs>
+        </TabsContent>
+      </Tabs>
     </DialogContent>
   </Dialog>
 </template>
 
 <style lang="less" scoped>
-:deep(.el-upload-dragger) {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  width: 500px;
-  height: 360px;
-
-  .el-icon-upload {
-    margin-top: 0;
-  }
-}
-
-:deep(.el-dialog__body) {
-  padding-bottom: 50px;
-}
-
 .upload-panel {
   display: flex;
   flex-direction: column;

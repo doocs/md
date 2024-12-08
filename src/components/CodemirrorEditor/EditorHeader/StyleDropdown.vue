@@ -4,6 +4,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
+import { MenubarCheckboxItem } from '@/components/ui/menubar'
 import {
   codeBlockThemeOptions,
   colorOptions,
@@ -99,10 +100,9 @@ function customStyle() {
         :change="legendChanged"
       />
       <MenubarSeparator />
-      <MenubarItem @click.self.prevent="showPicker">
+      <MenubarCheckboxItem @click.self.prevent="showPicker">
         <HoverCard :open-delay="100">
           <HoverCardTrigger class="w-full flex">
-            <el-icon class="mr-2 h-4 w-4" />
             自定义主题色
           </HoverCardTrigger>
           <HoverCardContent side="right" class="w-min">
@@ -130,23 +130,18 @@ function customStyle() {
           @change="colorChanged"
           @click="showPicker"
         /> -->
-      </MenubarItem>
-      <MenubarItem @click="customStyle">
-        <el-icon class="mr-2 h-4 w-4" />
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem @click="customStyle">
         自定义 CSS
-      </MenubarItem>
+      </MenubarCheckboxItem>
       <MenubarSeparator />
-      <MenubarItem @click="macCodeBlockChanged">
-        <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isMacCodeBlock }">
-          <ElIconCheck />
-        </el-icon>
+      <MenubarCheckboxItem :checked="isMacCodeBlock" @click="macCodeBlockChanged">
         Mac 代码块
-      </MenubarItem>
+      </MenubarCheckboxItem>
       <MenubarSeparator />
-      <MenubarItem divided @click="resetStyleConfirm">
-        <el-icon class="mr-2 h-4 w-4" />
+      <MenubarCheckboxItem divided @click="resetStyleConfirm">
         重置
-      </MenubarItem>
+      </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
 </template>

@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
+  DialogTrigger,
 } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Textarea } from '@/components/ui/textarea'
 import { useStore } from '@/stores'
+import { Info } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 
 import { ref } from 'vue'
@@ -44,7 +50,6 @@ function prePost() {
     ...auto,
     auto,
   }
-  dialogVisible.value = true
 }
 
 declare global {
@@ -72,38 +77,42 @@ function onUpdate(val: boolean) {
 </script>
 
 <template>
-  <Button variant="outline" @click="prePost">
-    发布
-  </Button>
-
-  <Dialog :open="dialogVisible" @update:open="onUpdate">
+  <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
+    <DialogTrigger>
+      <Button variant="outline" @click="prePost">
+        发布
+      </Button>
+    </DialogTrigger>
     <DialogContent>
       <DialogHeader>
         <DialogTitle>发布</DialogTitle>
       </DialogHeader>
+      <Alert>
+        <Info class="h-4 w-4" />
+        <AlertTitle>提示</AlertTitle>
+        <AlertDescription>
+          此功能由第三方浏览器插件支持，本平台不保证安全性。
+        </AlertDescription>
+      </Alert>
 
-      <el-alert
-        class="mb-4"
-        title="注：此功能由第三方浏览器插件支持，本平台不保证安全性。"
-        type="info"
-        show-icon
-      />
-      <el-form class="postInfo" label-width="50" :model="form">
-        <el-form-item label="封面">
-          <el-input v-model="form.thumb" placeholder="自动提取第一张图" />
-        </el-form-item>
-        <el-form-item label="标题">
-          <el-input v-model="form.title" placeholder="自动提取第一个标题" />
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input
-            v-model="form.desc"
-            type="textarea"
-            :rows="4"
-            placeholder="自动提取第一个段落"
-          />
-        </el-form-item>
-      </el-form>
+      <div class="w-full flex items-center gap-4">
+        <Label for="thumb" class="w-10 text-end">
+          封面
+        </Label>
+        <Input id="thumb" v-model="form.thumb" placeholder="自动提取第一张图" />
+      </div>
+      <div class="w-full flex items-center gap-4">
+        <Label for="title" class="w-10 text-end">
+          标题
+        </Label>
+        <Input id="title" v-model="form.title" placeholder="自动提取第一个标题" />
+      </div>
+      <div class="w-full flex items-start gap-4">
+        <Label for="desc" class="w-10 text-end">
+          描述
+        </Label>
+        <Textarea id="desc" v-model="form.desc" placeholder="自动提取第一个段落" />
+      </div>
 
       <DialogFooter>
         <Button variant="outline" @click="dialogVisible = false">
