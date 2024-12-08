@@ -15,7 +15,7 @@ const defaultTheme: Theme = {
       'padding': `0 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
       'margin': `2em auto 1em`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
       'font-size': `1.2em`,
       'font-weight': `bold`,
       'text-align': `center`,
@@ -38,7 +38,7 @@ const defaultTheme: Theme = {
       'padding-left': `8px`,
       'border-left': `3px solid var(--md-primary-color)`,
       'margin': `2em 8px 0.75em 0`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
       'font-size': `1.1em`,
       'font-weight': `bold`,
       'line-height': `1.2`,
@@ -71,7 +71,7 @@ const defaultTheme: Theme = {
     p: {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
       'text-align': `justify`,
     },
 
@@ -91,7 +91,7 @@ const defaultTheme: Theme = {
       'display': `block`,
       'font-size': `1em`,
       'letter-spacing': `0.1em`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     blockquote_note: {
@@ -181,7 +181,7 @@ const defaultTheme: Theme = {
     ol: {
       'padding-left': `1em`,
       'margin-left': `0`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     // 无序列表
@@ -189,18 +189,18 @@ const defaultTheme: Theme = {
       'list-style': `circle`,
       'padding-left': `1em`,
       'margin-left': `0`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     footnotes: {
       'margin': `0.5em 8px`,
       'font-size': `80%`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     figure: {
       margin: `1.5em 8px`,
-      color: `var(--el-text-color-regular)`,
+      color: `hsl(var(--foreground))`,
     },
 
     hr: {
@@ -218,7 +218,7 @@ const defaultTheme: Theme = {
       'text-indent': `-1em`,
       'display': `block`,
       'margin': `0.2em 8px`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     codespan: {
@@ -255,13 +255,13 @@ const defaultTheme: Theme = {
       'border-collapse': `collapse`,
       'text-align': `center`,
       'margin': `1em 8px`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     thead: {
       'background': `rgba(0, 0, 0, 0.05)`,
       'font-weight': `bold`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     td: {
@@ -273,7 +273,7 @@ const defaultTheme: Theme = {
 
     footnote: {
       'font-size': `12px`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
     },
 
     figcaption: {
@@ -403,7 +403,7 @@ const graceTheme = toMerged(defaultTheme, {
       'border-spacing': `0`,
       'border-radius': `8px`,
       'margin': `1em 8px`,
-      'color': `var(--el-text-color-regular)`,
+      'color': `hsl(var(--foreground))`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.1)`,
       'overflow': `hidden`,
     },
