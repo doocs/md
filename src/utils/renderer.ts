@@ -193,11 +193,11 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`listitem`, `${prefix}${content}`, `li`)
     },
 
-    list({ ordered, items }: Tokens.List): string {
+    list({ ordered, items, start = 1 }: Tokens.List): string {
       const listItems = []
       for (let i = 0; i < items.length; i++) {
         isOrdered = ordered
-        listIndex = i
+        listIndex = Number(start) + i - 1
         const item = items[i]
         listItems.push(this.listitem(item))
       }
