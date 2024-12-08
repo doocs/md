@@ -9,6 +9,9 @@ import {
   defineWxtModule,
 } from 'wxt/modules'
 
+interface FakeRollupOptions {
+  manualChunks: (id: string) => string | undefined
+}
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
@@ -23,7 +26,22 @@ export default defineWxtModule({
         skipped: false,
       }])
     })
-
+    wxt.hook(`vite:build:extendConfig`, (_, config) => {
+      if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.input) {
+        const input = config.build?.rollupOptions.input as Record<string, string>
+        if (input.options) {
+          const output = config.build?.rollupOptions.output as FakeRollupOptions
+          output.manualChunks = (id) => {
+            if (id.includes(`prettier`)) {
+              return `prettier-chunk`
+            }
+            if (id.includes(`highlight.js`)) {
+              return `highlight-chunk`
+            }
+          }
+        }
+      }
+    })
     addViteConfig(wxt, () => ({
       plugins: [
         htmlScriptToVirtual(wxt.config, () => wxt.server),
