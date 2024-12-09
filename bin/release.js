@@ -44,5 +44,5 @@ const __dirname = path.dirname(__filename);
     `git tag cli-v${newVersionObj.version}`,
     "git push && git push --tags",
   ]);
-  console.log("\x1B[32m%s\x1B[0m", "发布完成，请关注github CI构建");
+  console.log("\x1B[32m%s\x1B[0m", "发布完成，请关注 GitHub CI 构建");
 })();
