@@ -10,7 +10,7 @@
     "build:only": "vite build",
     "build:h5-netlify": "run-p type-check \"build:h5-netlify:only {@}\" --",
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
-    "build:cli": "npm run build && npm run shx rm -rf md-cli/dist && npm run shx rm -rf dist/**/*.map && npm run shx cp -r dist md-cli/ && cd md-cli && npm run pack",
+    "build:cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
     "preview": "npm run build && vite preview",
     "release:cli": "node ./bin/release.js",
