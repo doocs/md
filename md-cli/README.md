@@ -44,7 +44,7 @@ md-cli port=8899
 
 ## Maintainers
 
-- [yanglbme](https://github.com/yanglbme) – Core contributor.
+- [yanglbme](https://github.com/yanglbme) – Core maintainer.
 - [YangFong](https://github.com/yangfong) – Core maintainer.
 - [xw](https://github.com/wll8) – Contributor.
 - [thinkasany](https://www.npmjs.com/~thinkerwing) – Contributor.
