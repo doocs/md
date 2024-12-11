@@ -335,7 +335,7 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = () => {
-    exportHTML()
+    exportHTML(primaryColor.value)
     document.querySelector(`#output`)!.innerHTML = output.value
   }
 

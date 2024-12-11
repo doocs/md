@@ -180,10 +180,16 @@ export function downloadMD(doc: string) {
 /**
  * 导出 HTML 生成内容
  */
-export function exportHTML() {
+export function exportHTML(primaryColor: string) {
   const element = document.querySelector(`#output`)!
+
   setStyles(element)
+
   const htmlStr = element.innerHTML
+    .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+    .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
+    .replaceAll(`var(--md-primary-color)`, primaryColor)
+    .replaceAll(/--md-primary-color:.+?;/g, ``)
 
   const downLink = document.createElement(`a`)
 
