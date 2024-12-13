@@ -150,8 +150,8 @@ function copy() {
         section.innerHTML = parent.innerHTML
 
         const grand = parent.parentElement!
-        grand.innerHTML = `` // 清空父元素的内容
-        grand.appendChild(section) // 将新的 section 添加到父元素
+        grand.innerHTML = ``
+        grand.appendChild(section)
       })
 
       window.getSelection()!.removeAllRanges()
