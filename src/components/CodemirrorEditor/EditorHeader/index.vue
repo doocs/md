@@ -126,6 +126,7 @@ function copy() {
         .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
         .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)
+        .replace(/<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g, `<span class="nodeLabel"$1>$2</span>`)
 
       clipboardDiv.focus()
 
@@ -139,7 +140,7 @@ function copy() {
 
       // 兼容 Mermaid
       const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
-      for (const node of nodes) {
+      nodes.forEach((node) => {
         const parent = node.parentElement!
         const xmlns = parent.getAttribute(`xmlns`)!
         const style = parent.getAttribute(`style`)!
@@ -147,10 +148,11 @@ function copy() {
         section.setAttribute(`xmlns`, xmlns)
         section.setAttribute(`style`, style)
         section.innerHTML = parent.innerHTML
+
         const grand = parent.parentElement!
-        grand.innerHTML = ``
-        grand.appendChild(section)
-      }
+        grand.innerHTML = `` // 清空父元素的内容
+        grand.appendChild(section) // 将新的 section 添加到父元素
+      })
 
       window.getSelection()!.removeAllRanges()
       const range = document.createRange()
@@ -198,8 +200,7 @@ function customStyle() {
         <MenubarTrigger> 格式 </MenubarTrigger>
         <MenubarContent class="w-60" align="start">
           <MenubarItem
-            v-for="{ label, kbd, emitArgs } in formatItems"
-            :key="label"
+            v-for="{ label, kbd, emitArgs } in formatItems" :key="label"
             @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
           >
             <el-icon class="mr-2 h-4 w-4" />
@@ -236,14 +237,9 @@ function customStyle() {
             <h2>主题</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in themeOptions"
-                :key="value"
-                class="w-full"
-                variant="outline"
-                :class="{
+                v-for="{ label, value } in themeOptions" :key="value" class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.theme === value,
-                }"
-                @click="store.themeChanged(value)"
+                }" @click="store.themeChanged(value)"
               >
                 {{ label }}
               </Button>
@@ -253,10 +249,7 @@ function customStyle() {
             <h2>字体</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in fontFamilyOptions"
-                :key="value"
-                variant="outline"
-                class="w-full"
+                v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
                 :class="{ 'border-black dark:border-white': store.fontFamily === value }"
                 @click="store.fontChanged(value)"
               >
@@ -268,14 +261,9 @@ function customStyle() {
             <h2>字号</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                v-for="{ value, desc } in fontSizeOptions"
-                :key="value"
-                variant="outline"
-                class="w-full"
-                :class="{
+                v-for="{ value, desc } in fontSizeOptions" :key="value" variant="outline" class="w-full" :class="{
                   'border-black dark:border-white': store.fontSize === value,
-                }"
-                @click="store.sizeChanged(value)"
+                }" @click="store.sizeChanged(value)"
               >
                 {{ desc }}
               </Button>
@@ -285,18 +273,12 @@ function customStyle() {
             <h2>主题色</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in colorOptions"
-                :key="value"
-                class="w-full"
-                variant="outline"
-                :class="{
+                v-for="{ label, value } in colorOptions" :key="value" class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.primaryColor === value,
-                }"
-                @click="store.colorChanged(value)"
+                }" @click="store.colorChanged(value)"
               >
                 <span
-                  class="mr-2 inline-block h-4 w-4 rounded-full"
-                  :style="{
+                  class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
                     background: value,
                   }"
                 />
@@ -307,30 +289,18 @@ function customStyle() {
           <div class="space-y-2">
             <h2>自定义主题色</h2>
             <div>
-              <el-color-picker
-                v-model="primaryColor"
-                :teleported="false"
-                show-alpha
-                @change="store.colorChanged"
-              />
+              <el-color-picker v-model="primaryColor" :teleported="false" show-alpha @change="store.colorChanged" />
             </div>
           </div>
           <div class="space-y-2">
             <h2>代码块主题</h2>
             <div>
-              <Select
-                v-model="store.codeBlockTheme"
-                @update:model-value="store.codeBlockThemeChanged"
-              >
+              <Select v-model="store.codeBlockTheme" @update:model-value="store.codeBlockThemeChanged">
                 <SelectTrigger>
                   <SelectValue placeholder="Select a fruit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem
-                    v-for="{ label, value } in codeBlockThemeOptions"
-                    :key="label"
-                    :value="value"
-                  >
+                  <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
                     {{ label }}
                   </SelectItem>
                 </SelectContent>
@@ -341,14 +311,9 @@ function customStyle() {
             <h2>图注格式</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in legendOptions"
-                :key="value"
-                class="w-full"
-                variant="outline"
-                :class="{
+                v-for="{ label, value } in legendOptions" :key="value" class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.legend === value,
-                }"
-                @click="store.legendChanged(value)"
+                }" @click="store.legendChanged(value)"
               >
                 {{ label }}
               </Button>
@@ -359,22 +324,16 @@ function customStyle() {
             <h2>Mac 代码块</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.isMacCodeBlock,
-                }"
-                @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
+                }" @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !store.isMacCodeBlock,
-                }"
-                @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
+                }" @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 关闭
               </Button>
@@ -384,22 +343,16 @@ function customStyle() {
             <h2>微信外链转底部引用</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.isCiteStatus,
-                }"
-                @click="!store.isCiteStatus && store.citeStatusChanged()"
+                }" @click="!store.isCiteStatus && store.citeStatusChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !store.isCiteStatus,
-                }"
-                @click="store.isCiteStatus && store.citeStatusChanged()"
+                }" @click="store.isCiteStatus && store.citeStatusChanged()"
               >
                 关闭
               </Button>
@@ -409,22 +362,16 @@ function customStyle() {
             <h2>段落首行缩进</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.isUseIndent,
-                }"
-                @click="!store.isUseIndent && store.useIndentChanged()"
+                }" @click="!store.isUseIndent && store.useIndentChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !store.isUseIndent,
-                }"
-                @click="store.isUseIndent && store.useIndentChanged()"
+                }" @click="store.isUseIndent && store.useIndentChanged()"
               >
                 关闭
               </Button>
@@ -434,22 +381,16 @@ function customStyle() {
             <h2>自定义 CSS 面板</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': displayStore.isShowCssEditor,
-                }"
-                @click="!displayStore.isShowCssEditor && customStyle()"
+                }" @click="!displayStore.isShowCssEditor && customStyle()"
               >
                 开启
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !displayStore.isShowCssEditor,
-                }"
-                @click="displayStore.isShowCssEditor && customStyle()"
+                }" @click="displayStore.isShowCssEditor && customStyle()"
               >
                 关闭
               </Button>
@@ -459,22 +400,16 @@ function customStyle() {
             <h2>编辑区位置</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': store.isEditOnLeft,
-                }"
-                @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
+                }" @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 左侧
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !store.isEditOnLeft,
-                }"
-                @click="store.isEditOnLeft && store.toggleEditOnLeft()"
+                }" @click="store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 右侧
               </Button>
@@ -484,22 +419,16 @@ function customStyle() {
             <h2>模式</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': !isDark,
-                }"
-                @click="store.toggleDark(false)"
+                }" @click="store.toggleDark(false)"
               >
                 <Sun class="h-4 w-4" />
               </Button>
               <Button
-                class="w-full"
-                variant="outline"
-                :class="{
+                class="w-full" variant="outline" :class="{
                   'border-black dark:border-white': isDark,
-                }"
-                @click="store.toggleDark(true)"
+                }" @click="store.toggleDark(true)"
               >
                 <Moon class="h-4 w-4" />
               </Button>
@@ -508,10 +437,7 @@ function customStyle() {
           <div class="space-y-2">
             <h2>样式配置</h2>
             <div>
-              <Button
-                class="w-full"
-                @click="store.resetStyleConfirm()"
-              >
+              <Button class="w-full" @click="store.resetStyleConfirm()">
                 重置
               </Button>
             </div>
