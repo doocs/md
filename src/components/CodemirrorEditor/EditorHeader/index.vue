@@ -137,6 +137,21 @@ function copy() {
       p.innerHTML = `&nbsp;`
       clipboardDiv.insertBefore(p, clipboardDiv.firstChild)
 
+      // 兼容 Mermaid
+      const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
+      for (const node of nodes) {
+        const parent = node.parentElement!
+        const xmlns = parent.getAttribute(`xmlns`)!
+        const style = parent.getAttribute(`style`)!
+        const section = document.createElement(`section`)
+        section.setAttribute(`xmlns`, xmlns)
+        section.setAttribute(`style`, style)
+        section.innerHTML = parent.innerHTML
+        const grand = parent.parentElement!
+        grand.innerHTML = ``
+        grand.appendChild(section)
+      }
+
       window.getSelection()!.removeAllRanges()
       const range = document.createRange()
 
