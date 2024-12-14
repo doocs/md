@@ -5,7 +5,7 @@ export default antfu({
   unocss: true,
   typescript: true,
   formatters: true,
-  ignores: [`.github`, `bin`, `md-cli`, `src/assets`],
+  ignores: [`.github`, `bin`, `md-cli`, `src/assets`, `example`],
 }, {
   rules: {
     'semi': [`error`, `never`],
