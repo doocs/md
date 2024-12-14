@@ -308,7 +308,7 @@ interface MpResponse {
   errcode: number
   errmsg: string
 }
-async function getMpToken(appID: string, appsecret: string) {
+async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
   const data = localStorage.getItem(`mpToken:${appID}`)
   if (data) {
     const token = JSON.parse(data)
@@ -324,7 +324,10 @@ async function getMpToken(appID: string, appsecret: string) {
       secret: appsecret,
     },
   }
-  const url = `https://api.weixin.qq.com/cgi-bin/stable_token`
+  let url = `https://api.weixin.qq.com/cgi-bin/stable_token`
+  if (proxyOrigin) {
+    url = `${proxyOrigin}/cgi-bin/stable_token`
+  }
   const res = await fetch<any, MpResponse>(url, requestOptions)
   if (res.access_token) {
     const tokenInfo = {
@@ -337,13 +340,13 @@ async function getMpToken(appID: string, appsecret: string) {
   return ``
 }
 async function mpFileUpload(file: File) {
-  const { appID, appsecret } = JSON.parse(
+  const { appID, appsecret, proxyOrigin } = JSON.parse(
     localStorage.getItem(`mpConfig`)!,
   )
   /* eslint-disable no-async-promise-executor */
   return new Promise<string>(async (resolve, reject) => {
     try {
-      const access_token = await getMpToken(appID, appsecret).catch(e => console.error(e))
+      const access_token = await getMpToken(appID, appsecret, proxyOrigin).catch(e => console.error(e))
       if (!access_token) {
         reject(new Error(`获取 access_token 失败，请检查console日志`))
         return
@@ -354,11 +357,18 @@ async function mpFileUpload(file: File) {
         method: `POST`,
         data: formdata,
       }
-      const url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+      let url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+      if (proxyOrigin) {
+        url = `${proxyOrigin}/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+      }
       const res = await fetch<any, {
         url: string
       }>(url, requestOptions)
-      resolve(res.url)
+      let imageUrl = res.url
+      if (proxyOrigin && window.location.href.startsWith(`http`)) {
+        imageUrl = `https://wsrv.nl?url=${encodeURIComponent(imageUrl)}`
+      }
+      resolve(imageUrl)
     }
     catch (e) {
       reject(e)

@@ -63,10 +63,11 @@ const minioOSS = ref({
 })
 
 const formMp = ref({
+  proxyOrigin: ``,
   appID: ``,
   appsecret: ``,
 })
-const mpDisabled = ref(window.location.href.startsWith(`http`))
+const isWebsite = ref(window.location.href.startsWith(`http`))
 const formCustom = ref<{ code: string, editor: CodeMirror.EditorFromTextArea | null }>({
   code:
     localStorage.getItem(`formCustomConfig`)
@@ -117,7 +118,6 @@ const options = [
   {
     value: `mp`,
     label: `公众号素材`,
-    disabled: mpDisabled.value,
   },
   {
     value: `formCustom`,
@@ -272,6 +272,10 @@ function saveMpConfiguration() {
     ElMessage.error(`公众号图床 参数配置不全`)
     return
   }
+  if (isWebsite.value && !formMp.value.proxyOrigin) {
+    ElMessage.error(`代理域名必须配置`)
+    return
+  }
   localStorage.setItem(`mpConfig`, JSON.stringify(formMp.value))
   ElMessage.success(`保存成功`)
 }
@@ -328,7 +332,6 @@ function uploadImage(params: { file: any }) {
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              :disabled="item?.disabled"
             />
           </el-select>
           <el-upload
@@ -646,7 +649,7 @@ function uploadImage(params: { file: any }) {
           <template #label>
             <el-tooltip placement="top">
               <template #content>
-                由于接口请求跨域问题请在浏览器插件形式中使用
+                由于接口请求跨域问题建议在浏览器插件形式中使用
               </template>
               <div>公众号 图床</div>
             </el-tooltip>
@@ -656,8 +659,13 @@ function uploadImage(params: { file: any }) {
             :model="formMp"
             label-position="right"
             label-width="150px"
-            :disabled="mpDisabled"
           >
+            <el-form-item label="代理域名" :required="false">
+              <el-input
+                v-model.trim="formMp.proxyOrigin"
+                placeholder=""
+              />
+            </el-form-item>
             <el-form-item label="appID" :required="true">
               <el-input
                 v-model.trim="formMp.appID"
@@ -677,7 +685,7 @@ function uploadImage(params: { file: any }) {
                 如何开启公众号开发者模式并获取应用账号密钥？
               </el-link>
             </el-form-item>
-            <el-form-item style="margin-top: -26px;">
+            <el-form-item style="margin-top: -22px;">
               <el-link
                 type="primary"
                 href="https://mpmd.pages.dev/tutorial/"
