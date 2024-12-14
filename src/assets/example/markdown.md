@@ -132,6 +132,17 @@ $$
 Mermaid 是强大的可视化工具，可以在 Markdown 中创建流程图、时序图等。
 
 ```mermaid
+graph LR
+  A[GraphCommand] --> B[update]
+  A --> C[goto]
+  A --> D[send]
+  
+  B --> B1[更新状态]
+  C --> C1[流程控制]
+  D --> D1[消息传递]
+```
+
+```mermaid
 graph TD;
   A-->B;
   A-->C;
