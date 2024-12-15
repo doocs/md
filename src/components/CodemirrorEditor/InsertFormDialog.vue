@@ -6,6 +6,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { Label } from '@/components/ui/label'
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from '@/components/ui/number-field'
 import { useDisplayStore, useStore } from '@/stores'
 
 import { createTable } from '@/utils'
@@ -51,40 +59,36 @@ function onUpdate(val: boolean) {
       <DialogHeader>
         <DialogTitle>插入表格</DialogTitle>
       </DialogHeader>
-      <el-row class="tb-options" type="flex" align="middle" :gutter="10">
-        <el-col :span="12">
-          行数：
-          <el-input-number
-            v-model="rowNum"
-            controls-position="right"
-            :min="1"
-            :max="100"
-            size="small"
+      <div class="space-x-2 flex justify-between">
+        <NumberField v-model="rowNum" :min="1" :max="100">
+          <Label>行数</Label>
+          <NumberFieldContent>
+            <NumberFieldDecrement />
+            <NumberFieldInput />
+            <NumberFieldIncrement />
+          </NumberFieldContent>
+        </NumberField>
+        <NumberField v-model="colNum" :min="1" :max="100">
+          <Label>列数</Label>
+          <NumberFieldContent>
+            <NumberFieldDecrement />
+            <NumberFieldInput />
+            <NumberFieldIncrement />
+          </NumberFieldContent>
+        </NumberField>
+      </div>
+      <div class="space-y-2 border-1 rounded p-2">
+        <div v-for="row in rowNum + 1" :key="row" :class="{ 'head-style': row === 1 }" class="space-x-2 flex">
+          <Input
+            v-for="col in colNum" :key="col"
+            v-model="tableData[`k_${row - 1}_${col - 1}`]"
+            :class="{
+              'bg-gray-100 dark:bg-gray-900': row === 1,
+            }"
+            :placeholder="row === 1 ? '表头' : ''"
           />
-        </el-col>
-        <el-col :span="12">
-          列数：
-          <el-input-number
-            v-model="colNum"
-            controls-position="right"
-            :min="1"
-            :max="100"
-            size="small"
-          />
-        </el-col>
-      </el-row>
-      <table style="border-collapse: collapse" class="input-table">
-        <tr v-for="row in rowNum + 1" :key="row" :class="{ 'head-style': row === 1 }">
-          <td v-for="col in colNum" :key="col">
-            <el-input
-              v-model="tableData[`k_${row - 1}_${col - 1}`]"
-              align="center"
-              :placeholder="row === 1 ? '表头' : ''"
-            />
-          </td>
-        </tr>
-      </table>
-
+        </div>
+      </div>
       <DialogFooter>
         <Button variant="outline" @click="toggleShowInsertFormDialog(false)">
           取 消
@@ -98,11 +102,4 @@ function onUpdate(val: boolean) {
 </template>
 
 <style lang="less" scoped>
-.tb-options {
-  margin-bottom: 20px;
-}
-
-.input-table :deep(.el-input__inner) {
-  border-radius: 0;
-}
 </style>
