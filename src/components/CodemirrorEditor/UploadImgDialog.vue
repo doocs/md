@@ -363,7 +363,7 @@ function onDrop(e: DragEvent) {
             :class="{
               'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
             }"
-            @click="open"
+            @click="open()"
             @drop.prevent="onDrop"
             @dragover.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
