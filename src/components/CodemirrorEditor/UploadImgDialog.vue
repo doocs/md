@@ -111,7 +111,7 @@ const options = [
   },
   {
     value: `mp`,
-    label: `公众号素材`,
+    label: `公众号图床`,
   },
   {
     value: `formCustom`,
@@ -657,10 +657,10 @@ function onDrop(e: DragEvent) {
         </TabsContent>
         <TabsContent value="mp">
           <div class="space-y-4">
-            <FormItem label="代理域名">
+            <FormItem label="代理域名" :required="isWebsite">
               <Input
                 v-model.trim="formMp.proxyOrigin"
-                placeholder=""
+                placeholder="如：http://proxy.example.com，使用插件时可不填"
               />
             </FormItem>
             <FormItem label="appID" required>
@@ -669,7 +669,7 @@ function onDrop(e: DragEvent) {
                 placeholder="如：wx6e1234567890efa3"
               />
             </FormItem>
-            <FormItem label="appsecret">
+            <FormItem label="appsecret" required>
               <Input
                 v-model.trim="formMp.appsecret"
                 placeholder="如：d9f1abcdef01234567890abcdef82397"
