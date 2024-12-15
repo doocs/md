@@ -13,6 +13,7 @@ import '@/assets/index.css'
 import '@/assets/less/theme.less'
 
 import 'codemirror/mode/css/css'
+import 'codemirror/mode/javascript/javascript'
 import 'codemirror/mode/markdown/markdown'
 import 'codemirror/addon/edit/closebrackets'
 import 'codemirror/addon/edit/matchbrackets'
