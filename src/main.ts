@@ -1,7 +1,6 @@
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
-import ElementPlus from './element'
 
 import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
@@ -24,6 +23,5 @@ import 'codemirror/addon/hint/css-hint'
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(ElementPlus)
 
 app.mount(`#app`)
