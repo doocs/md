@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import type { Format } from 'vue-pick-colors'
 import { Button } from '@/components/ui/button'
 import {
   Menubar,
+  MenubarCheckboxItem,
   MenubarContent,
-  MenubarItem,
   MenubarMenu,
   MenubarSeparator,
   MenubarShortcut,
@@ -17,7 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-
+import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
   codeBlockThemeOptions,
@@ -32,16 +33,15 @@ import {
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
-import { ElNotification } from 'element-plus'
 import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
+import { nextTick, ref, useTemplateRef } from 'vue'
+import PickColors from 'vue-pick-colors'
+import { toast } from 'vue-sonner'
 
-import { nextTick } from 'vue'
 import EditDropdown from './EditDropdown.vue'
-
 import FileDropdown from './FileDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
-
 import PostInfo from './PostInfo.vue'
 import StyleDropdown from './StyleDropdown.vue'
 
@@ -122,7 +122,7 @@ function copy() {
         // 公众号不支持 position， 转换为等价的 translateY
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量
-        .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+        .replaceAll(`hsl(var(--foreground))`, `#3f3f3f`)
         .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
         .replaceAll(`var(--md-primary-color)`, primaryColor.value)
         .replaceAll(/--md-primary-color:.+?;/g, ``)
@@ -169,13 +169,7 @@ function copy() {
       }
 
       // 输出提示
-      ElNotification({
-        showClose: true,
-        message: `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`,
-        offset: 80,
-        duration: 1600,
-        type: `success`,
-      })
+      toast.success(`已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`)
 
       editorRefresh()
       emit(`endCopy`)
@@ -189,6 +183,10 @@ function customStyle() {
     store.cssEditor!.refresh()
   }, 50)
 }
+
+const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
+const format = ref<Format>(`rgb`)
+const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
 
 <template>
@@ -199,25 +197,21 @@ function customStyle() {
       <MenubarMenu>
         <MenubarTrigger> 格式 </MenubarTrigger>
         <MenubarContent class="w-60" align="start">
-          <MenubarItem
+          <MenubarCheckboxItem
             v-for="{ label, kbd, emitArgs } in formatItems" :key="label"
             @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
           >
-            <el-icon class="mr-2 h-4 w-4" />
             {{ label }}
             <MenubarShortcut>
               <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
                 {{ item }}
               </kbd>
             </MenubarShortcut>
-          </MenubarItem>
+          </MenubarCheckboxItem>
           <MenubarSeparator />
-          <MenubarItem @click="citeStatusChanged()">
-            <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isCiteStatus }">
-              <ElIconCheck />
-            </el-icon>
+          <MenubarCheckboxItem :checked="isCiteStatus" @click="citeStatusChanged()">
             微信外链转底部引用
-          </MenubarItem>
+          </MenubarCheckboxItem>
         </MenubarContent>
       </MenubarMenu>
       <EditDropdown />
@@ -288,8 +282,15 @@ function customStyle() {
           </div>
           <div class="space-y-2">
             <h2>自定义主题色</h2>
-            <div>
-              <el-color-picker v-model="primaryColor" :teleported="false" show-alpha @change="store.colorChanged" />
+            <div ref="pickColorsContainer">
+              <PickColors
+                v-model:value="primaryColor"
+                show-alpha
+                :format="format" :format-options="formatOptions"
+                :theme="store.isDark ? 'dark' : 'light'"
+                :popup-container="pickColorsContainer!"
+                @change="store.colorChanged"
+              />
             </div>
           </div>
           <div class="space-y-2">
@@ -436,11 +437,9 @@ function customStyle() {
           </div>
           <div class="space-y-2">
             <h2>样式配置</h2>
-            <div>
-              <Button class="w-full" @click="store.resetStyleConfirm()">
-                重置
-              </Button>
-            </div>
+            <Button @click="store.resetStyleConfirm">
+              重置
+            </Button>
           </div>
         </div>
       </PopoverContent>
@@ -450,6 +449,8 @@ function customStyle() {
     </Button>
 
     <PostInfo />
+
+    <Toaster rich-colors position="top-center" />
   </header>
 </template>
 

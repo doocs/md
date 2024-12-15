@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
-
+import { Download, FileCode, Upload } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 
 const store = useStore()
@@ -11,8 +11,6 @@ const {
 } = storeToRefs(store)
 
 const {
-  toggleDark,
-  toggleEditOnLeft,
   exportEditorContent2HTML,
   exportEditorContent2MD,
   importMarkdownContent,
@@ -26,37 +24,25 @@ const {
     </MenubarTrigger>
     <MenubarContent align="start">
       <MenubarItem @click="importMarkdownContent()">
-        <el-icon class="mr-2 h-4 w-4">
-          <ElIconUpload />
-        </el-icon>
+        <Upload class="mr-2 size-4" />
         导入 .md
       </MenubarItem>
       <MenubarItem @click="exportEditorContent2MD()">
-        <el-icon class="mr-2 h-4 w-4">
-          <ElIconDownload />
-        </el-icon>
+        <Download class="mr-2 size-4" />
         导出 .md
       </MenubarItem>
       <MenubarItem @click="exportEditorContent2HTML()">
-        <el-icon class="mr-2 h-4 w-4">
-          <ElIconDocument />
-        </el-icon>
+        <FileCode class="mr-2 size-4" />
         导出 .html
       </MenubarItem>
       <MenubarSeparator />
-      <MenubarItem @click="toggleDark()">
-        <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isDark }">
-          <ElIconCheck />
-        </el-icon>
+      <MenubarCheckboxItem v-model:checked="isDark">
         深色模式
-      </MenubarItem>
+      </MenubarCheckboxItem>
       <MenubarSeparator />
-      <MenubarItem @click="toggleEditOnLeft()">
-        <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isEditOnLeft }">
-          <ElIconCheck />
-        </el-icon>
+      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
         左侧编辑
-      </MenubarItem>
+      </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
 </template>

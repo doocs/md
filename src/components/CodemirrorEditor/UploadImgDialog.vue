@@ -1,13 +1,24 @@
 <script setup lang="ts">
+import CustomUploadForm from '@/components/CustomUploadForm.vue'
+import FormItem from '@/components/FormItem.vue'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { Switch } from '@/components/ui/switch'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDisplayStore } from '@/stores'
-import { checkImage, removeLeft } from '@/utils'
-
-import { UploadFilled } from '@element-plus/icons-vue'
-import CodeMirror from 'codemirror'
-
-import { ElMessage } from 'element-plus'
-import { nextTick, onBeforeMount, ref, watch } from 'vue'
+import { checkImage } from '@/utils'
+import { useFileDialog } from '@vueuse/core'
+import { UploadCloud } from 'lucide-vue-next'
+import { onBeforeMount, ref } from 'vue'
+import { toast } from 'vue-sonner'
 
 const emit = defineEmits([`uploadImage`])
 
@@ -68,23 +79,6 @@ const formMp = ref({
   appsecret: ``,
 })
 const isWebsite = ref(window.location.href.startsWith(`http`))
-const formCustom = ref<{ code: string, editor: CodeMirror.EditorFromTextArea | null }>({
-  code:
-    localStorage.getItem(`formCustomConfig`)
-    || removeLeft(`
-  const {file, util, okCb, errCb} = CUSTOM_ARG
-  const param = new FormData()
-  param.append('file', file)
-  util.axios.post('${window.location.origin}/upload', param, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }).then(res => {
-    okCb(res.url)
-  }).catch(err => {
-    errCb(err)
-  })
-`).trim(),
-  editor: null,
-})
 
 const options = [
   {
@@ -127,26 +121,7 @@ const options = [
 
 const imgHost = ref(`default`)
 
-const formCustomElInput = ref<(HTMLInputElement & { $el: HTMLElement }) | null>(null)
 const activeName = ref(`upload`)
-
-watch(
-  activeName,
-  async (val) => {
-    if (val === `formCustom`) {
-      nextTick(() => {
-        const textarea = formCustomElInput.value!.$el.querySelector(`textarea`)!
-        formCustom.value.editor ||= CodeMirror.fromTextArea(textarea, {
-          mode: `javascript`,
-        })
-        // formCustom.value.editor.setValue(formCustom.value.code)
-      })
-    }
-  },
-  {
-    immediate: true,
-  },
-)
 
 onBeforeMount(() => {
   if (localStorage.getItem(`githubConfig`)) {
@@ -177,28 +152,28 @@ onBeforeMount(() => {
 
 function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
-  ElMessage.success(`已成功切换图床`)
+  toast.success(`已成功切换图床`)
 }
 
 function saveGitHubConfiguration() {
   if (!(formGitHub.value.repo && formGitHub.value.accessToken)) {
     const blankElement = formGitHub.value.repo ? `token` : `GitHub 仓库`
-    ElMessage.error(`参数「${blankElement}」不能为空`)
+    toast.error(`参数「${blankElement}」不能为空`)
     return
   }
 
   localStorage.setItem(`githubConfig`, JSON.stringify(formGitHub.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 // const saveGiteeConfiguration = () => {
 //   if (!(formGitee.value.repo && formGitee.value.accessToken)) {
 //     const blankElement = formGitee.value.repo ? `私人令牌` : `Gitee 仓库`
-//     ElMessage.error(`参数「${blankElement}」不能为空`)
+//     toast.error(`参数「${blankElement}」不能为空`)
 //     return
 //   }
 //   localStorage.setItem(`giteeConfig`, JSON.stringify(formGitee.value))
-//   ElMessage.success(`保存成功`)
+//   toast.success(`保存成功`)
 // }
 
 function saveAliOSSConfiguration() {
@@ -210,11 +185,11 @@ function saveAliOSSConfiguration() {
       && formAliOSS.value.region
     )
   ) {
-    ElMessage.error(`阿里云 OSS 参数配置不全`)
+    toast.error(`阿里云 OSS 参数配置不全`)
     return
   }
   localStorage.setItem(`aliOSSConfig`, JSON.stringify(formAliOSS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveMinioOSSConfiguration() {
   if (
@@ -225,11 +200,11 @@ function saveMinioOSSConfiguration() {
       && minioOSS.value.secretKey
     )
   ) {
-    ElMessage.error(`MinIO 参数配置不全`)
+    toast.error(`MinIO 参数配置不全`)
     return
   }
   localStorage.setItem(`minioConfig`, JSON.stringify(minioOSS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveTxCOSConfiguration() {
   if (
@@ -240,11 +215,11 @@ function saveTxCOSConfiguration() {
       && formTxCOS.value.region
     )
   ) {
-    ElMessage.error(`腾讯云 COS 参数配置不全`)
+    toast.error(`腾讯云 COS 参数配置不全`)
     return
   }
   localStorage.setItem(`txCOSConfig`, JSON.stringify(formTxCOS.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 function saveQiniuConfiguration() {
   if (
@@ -255,11 +230,11 @@ function saveQiniuConfiguration() {
       && formQiniu.value.domain
     )
   ) {
-    ElMessage.error(`七牛云 Kodo 参数配置不全`)
+    toast.error(`七牛云 Kodo 参数配置不全`)
     return
   }
   localStorage.setItem(`qiniuConfig`, JSON.stringify(formQiniu.value))
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 function saveMpConfiguration() {
@@ -269,28 +244,22 @@ function saveMpConfiguration() {
       && formMp.value.appsecret
     )
   ) {
-    ElMessage.error(`公众号图床 参数配置不全`)
+    toast.error(`公众号图床 参数配置不全`)
     return
   }
   if (isWebsite.value && !formMp.value.proxyOrigin) {
-    ElMessage.error(`代理域名必须配置`)
+    toast.error(`代理域名必须配置`)
     return
   }
   localStorage.setItem(`mpConfig`, JSON.stringify(formMp.value))
-  ElMessage.success(`保存成功`)
-}
-
-function formCustomSave() {
-  const str = formCustom.value.editor!.getValue()
-  localStorage.setItem(`formCustomConfig`, str)
-  ElMessage.success(`保存成功`)
+  toast.success(`保存成功`)
 }
 
 function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    ElMessage.error(checkResult.msg)
+    toast.error(checkResult.msg || ``)
     return false
   }
   // check image host
@@ -301,14 +270,33 @@ function beforeImageUpload(file: File) {
   const config = localStorage.getItem(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
-    ElMessage.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(`请先配置 ${imgHost} 图床参数`)
     return false
   }
   return true
 }
 
-function uploadImage(params: { file: any }) {
-  emit(`uploadImage`, params.file)
+const dragover = ref(false)
+
+const { open, onChange } = useFileDialog({
+  accept: `image/*`,
+})
+
+onChange((files) => {
+  if (files == null) {
+    return
+  }
+
+  const file = files[0]
+
+  beforeImageUpload(file) && emit(`uploadImage`, file)
+})
+
+function onDrop(e: DragEvent) {
+  dragover.value = false
+  e.stopPropagation()
+  const file = Array.from(e.dataTransfer!.files)[0]
+  beforeImageUpload(file) && emit(`uploadImage`, file)
 }
 </script>
 
@@ -318,484 +306,409 @@ function uploadImage(params: { file: any }) {
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
+      <Tabs v-model="activeName" class="w-max">
+        <TabsList>
+          <TabsTrigger value="upload">
+            选择上传
+          </TabsTrigger>
+          <!-- <TabsTrigger value="gitee">
+            Gitee 图床
+          </TabsTrigger> -->
+          <TabsTrigger value="github">
+            GitHub 图床
+          </TabsTrigger>
+          <TabsTrigger value="aliOSS">
+            阿里云 OSS
+          </TabsTrigger>
+          <TabsTrigger value="txCOS">
+            腾讯云 COS
+          </TabsTrigger>
+          <TabsTrigger value="qiniu">
+            七牛云 Kodo
+          </TabsTrigger>
+          <TabsTrigger value="minio">
+            MinIO
+          </TabsTrigger>
+          <TabsTrigger value="mp">
+            公众号图床
+          </TabsTrigger>
+          <TabsTrigger value="formCustom">
+            自定义代码
+          </TabsTrigger>
+        </TabsList>
 
-      <el-tabs v-model="activeName">
-        <el-tab-pane class="upload-panel" label="选择上传" name="upload">
-          <el-select
-            v-model="imgHost"
-            placeholder="请选择"
-            size="small"
-            @change="changeImgHost"
+        <TabsContent value="upload">
+          <Label>
+            <span class="my-4 block">
+              图床
+            </span>
+            <Select v-model="imgHost" @update:model-value="changeImgHost">
+              <SelectTrigger>
+                <SelectValue placeholder="请选择" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                >
+                  {{ item.label }}
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </Label>
+          <div
+            class="bg-clip-padding mt-4 h-50 flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
+            :class="{
+              'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
+            }"
+            @click="open()"
+            @drop.prevent="onDrop"
+            @dragover.prevent="dragover = true"
+            @dragleave.prevent="dragover = false"
           >
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <el-upload
-            drag
-            multiple
-            action=""
-            :headers="{ 'Content-Type': 'multipart/form-data' }"
-            :show-file-list="false"
-            accept=".jpg, .jpeg, .png, .gif"
-            name="file"
-            :before-upload="beforeImageUpload"
-            :http-request="uploadImage"
-          >
-            <el-icon class="el-icon--upload">
-              <UploadFilled />
-            </el-icon>
-            <div class="el-upload__text">
+            <UploadCloud class="size-20" />
+            <p>
               将图片拖到此处，或
-              <em>点击上传</em>
-            </div>
-          </el-upload>
-        </el-tab-pane>
-        <!-- <el-tab-pane class="github-panel" label="Gitee 图床" name="gitee">
-          <el-form
-            class="setting-form"
-            :model="formGitee"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="Gitee 仓库" :required="true">
-              <el-input
+              <strong>点击上传</strong>
+            </p>
+          </div>
+        </TabsContent>
+        <!--        <TabsContent value="gitee">
+          <div class="space-y-4">
+            <FormItem label="Gitee 仓库" required>
+              <Input
                 v-model.trim="formGitee.repo"
                 placeholder="如：gitee.com/yanglbme/resource"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="分支">
-              <el-input
+              />
+            </FormItem>
+            <FormItem label="分支">
+              <Input
                 v-model.trim="formGitee.branch"
                 placeholder="如：release，可不填，默认 master"
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="私人令牌" :required="true">
-              <el-input
+              />
+            </FormItem>
+            <FormItem label="私人令牌" required>
+              <Input
                 v-model.trim="formGitee.accessToken"
-                show-password
+                type="password"
                 placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
-              ></el-input>
-              <el-link
-                type="primary"
+              />
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
                 href="https://gitee.com/profile/personal_access_tokens"
                 target="_blank"
-                >请在 Gitee「设置->安全设置->私人令牌」中生成</el-link
               >
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveGiteeConfiguration"
-                >保存配置</el-button
-              >
-            </el-form-item>
-          </el-form>
-        </el-tab-pane> -->
-        <el-tab-pane class="github-panel" label="GitHub 图床" name="github">
-          <el-form
-            class="setting-form"
-            :model="formGitHub"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="GitHub 仓库" :required="true">
-              <el-input
+                请在 Gitee「设置->安全设置->私人令牌」中生成
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveGiteeConfiguration">
+                保存配置
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent> -->
+        <TabsContent value="github">
+          <div class="space-y-4">
+            <FormItem label="GitHub 仓库" required>
+              <Input
                 v-model.trim="formGitHub.repo"
                 placeholder="如：github.com/yanglbme/resource"
               />
-            </el-form-item>
-            <el-form-item label="分支">
-              <el-input
+            </FormItem>
+            <FormItem label="分支">
+              <Input
                 v-model.trim="formGitHub.branch"
                 placeholder="如：release，可不填，默认 master"
               />
-            </el-form-item>
-            <el-form-item label="Token" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="Token" required>
+              <Input
                 v-model.trim="formGitHub.accessToken"
-                show-password
+                type="password"
                 placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
               />
-              <el-link
-                type="primary"
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
                 href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
                 target="_blank"
               >
                 如何获取 GitHub Token？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveGitHubConfiguration">
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveGitHubConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="阿里云 OSS" name="aliOSS">
-          <el-form
-            class="setting-form"
-            :model="formAliOSS"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="AccessKey ID" :required="true">
-              <el-input
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="aliOSS">
+          <div class="space-y-4">
+            <FormItem label="AccessKey ID" required>
+              <Input
                 v-model.trim="formAliOSS.accessKeyId"
                 placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
               />
-            </el-form-item>
-            <el-form-item label="AccessKey Secret" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="AccessKey Secret" required>
+              <Input
                 v-model.trim="formAliOSS.accessKeySecret"
-                show-password
+                type="password"
                 placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
               />
-            </el-form-item>
-            <el-form-item label="Bucket" :required="true">
-              <el-input v-model.trim="formAliOSS.bucket" placeholder="如：doocs" />
-            </el-form-item>
-            <el-form-item label="Bucket 所在区域" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="Bucket" required>
+              <Input v-model.trim="formAliOSS.bucket" placeholder="如：doocs" />
+            </FormItem>
+            <FormItem label="Bucket 所在区域" required>
+              <Input
                 v-model.trim="formAliOSS.region"
                 placeholder="如：oss-cn-shenzhen"
               />
-            </el-form-item>
-            <el-form-item label="UseSSL" :required="true">
-              <el-switch
-                v-model="formAliOSS.useSSL"
-                active-text="是"
-                inactive-text="否"
-              />
-            </el-form-item>
-            <el-form-item label="自定义 CDN 域名" :required="false">
-              <el-input
+            </FormItem>
+            <FormItem label="UseSSL" required>
+              <Switch v-model:checked="formAliOSS.useSSL" />
+            </FormItem>
+            <FormItem label="自定义 CDN 域名">
+              <Input
                 v-model.trim="formAliOSS.cdnHost"
                 placeholder="如：https://imagecdn.alidaodao.com，可不填"
               />
-            </el-form-item>
-            <el-form-item label="存储路径">
-              <el-input
+            </FormItem>
+            <FormItem label="存储路径">
+              <Input
                 v-model.trim="formAliOSS.path"
                 placeholder="如：img，可不填，默认为根目录"
               />
-              <el-link
-                type="primary"
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
                 href="https://help.aliyun.com/document_detail/31883.html"
                 target="_blank"
               >
                 如何使用阿里云 OSS？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveAliOSSConfiguration">
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveAliOSSConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="腾讯云 COS" name="txCOS">
-          <el-form
-            class="setting-form"
-            :model="formTxCOS"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="SecretId" :required="true">
-              <el-input
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="txCOS">
+          <div class="space-y-4">
+            <FormItem label="SecretId" required>
+              <Input
                 v-model.trim="formTxCOS.secretId"
                 placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
               />
-            </el-form-item>
-            <el-form-item label="SecretKey" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="SecretKey" required>
+              <Input
                 v-model.trim="formTxCOS.secretKey"
-                show-password
+                type="password"
                 placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
               />
-            </el-form-item>
-            <el-form-item label="Bucket" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="Bucket" required>
+              <Input
                 v-model.trim="formTxCOS.bucket"
                 placeholder="如：doocs-3212520134"
               />
-            </el-form-item>
-            <el-form-item label="Bucket 所在区域" :required="true">
-              <el-input v-model.trim="formTxCOS.region" placeholder="如：ap-guangzhou" />
-            </el-form-item>
-            <el-form-item label="自定义 CDN 域名" :required="false">
-              <el-input
+            </FormItem>
+            <FormItem label="Bucket 所在区域" required>
+              <Input v-model.trim="formTxCOS.region" placeholder="如：ap-guangzhou" />
+            </FormItem>
+            <FormItem label="自定义 CDN 域名">
+              <Input
                 v-model.trim="formTxCOS.cdnHost"
                 placeholder="如：https://imagecdn.alidaodao.com，可不填"
               />
-            </el-form-item>
-            <el-form-item label="存储路径">
-              <el-input
+            </FormItem>
+            <FormItem label="存储路径">
+              <Input
                 v-model.trim="formTxCOS.path"
                 placeholder="如：img，可不填，默认根目录"
               />
-              <el-link
-                type="primary"
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
                 href="https://cloud.tencent.com/document/product/436/38484"
                 target="_blank"
               >
                 如何使用腾讯云 COS？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveTxCOSConfiguration">
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveTxCOSConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="七牛云 Kodo" name="qiniu">
-          <el-form
-            class="setting-form"
-            :model="formQiniu"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="AccessKey" :required="true">
-              <el-input
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="qiniu">
+          <div class="space-y-4">
+            <FormItem label="AccessKey" required>
+              <Input
                 v-model.trim="formQiniu.accessKey"
                 placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
               />
-            </el-form-item>
-            <el-form-item label="SecretKey" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="SecretKey" required>
+              <Input
                 v-model.trim="formQiniu.secretKey"
-                show-password
+                type="password"
                 placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
               />
-            </el-form-item>
-            <el-form-item label="Bucket" :required="true">
-              <el-input v-model.trim="formQiniu.bucket" placeholder="如：md" />
-            </el-form-item>
-            <el-form-item label="Bucket 对应域名" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="Bucket" required>
+              <Input v-model.trim="formQiniu.bucket" placeholder="如：md" />
+            </FormItem>
+            <FormItem label="Bucket 对应域名" required>
+              <Input
                 v-model.trim="formQiniu.domain"
                 placeholder="如：https://images.123ylb.cn"
               />
-            </el-form-item>
-            <el-form-item label="存储区域" :required="false">
-              <el-input v-model.trim="formQiniu.region" placeholder="如：z2，可不填" />
-            </el-form-item>
-            <el-form-item label="存储路径" :required="false">
-              <el-input
+            </FormItem>
+            <FormItem label="存储区域">
+              <Input v-model.trim="formQiniu.region" placeholder="如：z2，可不填" />
+            </FormItem>
+            <FormItem label="存储路径">
+              <Input
                 v-model.trim="formQiniu.path"
                 placeholder="如：img，可不填，默认为根目录"
               />
-              <el-link
-                type="primary"
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
                 href="https://developer.qiniu.com/kodo"
                 target="_blank"
               >
                 如何使用七牛云 Kodo？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveQiniuConfiguration">
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveQiniuConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="MinIO" name="minio">
-          <el-form
-            class="setting-form"
-            :model="minioOSS"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="Endpoint" :required="true">
-              <el-input v-model.trim="minioOSS.endpoint" placeholder="如：play.min.io" />
-            </el-form-item>
-            <el-form-item label="Port" :required="false">
-              <el-input
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="minio">
+          <div class="space-y-4">
+            <FormItem label="Endpoint" required>
+              <Input v-model.trim="minioOSS.endpoint" placeholder="如：play.min.io" />
+            </FormItem>
+            <FormItem label="Port">
+              <Input
                 v-model.trim="minioOSS.port"
                 type="number"
                 placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
               />
-            </el-form-item>
-            <el-form-item label="UseSSL" :required="true">
-              <el-switch v-model="minioOSS.useSSL" active-text="是" inactive-text="否" />
-            </el-form-item>
-            <el-form-item label="Bucket" :required="true">
-              <el-input v-model.trim="minioOSS.bucket" placeholder="如：doocs" />
-            </el-form-item>
-            <el-form-item label="AccessKey" :required="true">
-              <el-input v-model.trim="minioOSS.accessKey" placeholder="如：zhangsan" />
-            </el-form-item>
-            <el-form-item label="SecretKey" :required="true">
-              <el-input v-model.trim="minioOSS.secretKey" placeholder="如：asdasdasd" />
-              <el-link
-                type="primary"
+            </FormItem>
+            <FormItem label="UseSSL" required>
+              <Switch v-model:checked="minioOSS.useSSL" />
+            </FormItem>
+            <FormItem label="Bucket" required>
+              <Input v-model.trim="minioOSS.bucket" placeholder="如：doocs" />
+            </FormItem>
+            <FormItem label="AccessKey" required>
+              <Input v-model.trim="minioOSS.accessKey" placeholder="如：zhangsan" />
+            </FormItem>
+            <FormItem label="SecretKey" required>
+              <Input v-model.trim="minioOSS.secretKey" placeholder="如：asdasdasd" />
+            </FormItem>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
                 href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
                 target="_blank"
               >
                 如何使用 MinIO？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveMinioOSSConfiguration">
+              </Button>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveMinioOSSConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel" label="公众号 图床" name="mp">
-          <template #label>
-            <el-tooltip placement="top">
-              <template #content>
-                由于接口请求跨域问题建议在浏览器插件形式中使用
-              </template>
-              <div>公众号 图床</div>
-            </el-tooltip>
-          </template>
-          <el-form
-            class="setting-form"
-            :model="formMp"
-            label-position="right"
-            label-width="150px"
-          >
-            <el-form-item label="代理域名" :required="false">
-              <el-input
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="mp">
+          <div class="space-y-4">
+            <FormItem label="代理域名">
+              <Input
                 v-model.trim="formMp.proxyOrigin"
                 placeholder=""
               />
-            </el-form-item>
-            <el-form-item label="appID" :required="true">
-              <el-input
+            </FormItem>
+            <FormItem label="appID" required>
+              <Input
                 v-model.trim="formMp.appID"
                 placeholder="如：wx6e1234567890efa3"
               />
-            </el-form-item>
-            <el-form-item label="appsecret">
-              <el-input
+            </FormItem>
+            <FormItem label="appsecret">
+              <Input
                 v-model.trim="formMp.appsecret"
                 placeholder="如：d9f1abcdef01234567890abcdef82397"
               />
-              <el-link
-                type="primary"
-                href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
-                target="_blank"
-              >
-                如何开启公众号开发者模式并获取应用账号密钥？
-              </el-link>
-            </el-form-item>
-            <el-form-item style="margin-top: -22px;">
-              <el-link
-                type="primary"
-                href="https://mpmd.pages.dev/tutorial/"
-                target="_blank"
-              >
-                如何在浏览器插件中使用公众号图床？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="saveMpConfiguration">
+            </FormItem>
+            <FormItem>
+              <div class="flex flex-col items-start">
+                <Button
+                  variant="link"
+                  class="p-0"
+                  href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
+                  target="_blank"
+                >
+                  如何开启公众号开发者模式并获取应用账号密钥？
+                </Button>
+                <Button
+                  variant="link"
+                  class="p-0"
+                  href="https://mpmd.pages.dev/tutorial/"
+                  target="_blank"
+                >
+                  如何在浏览器插件中使用公众号图床？
+                </Button>
+              </div>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveMpConfiguration">
                 保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-        <el-tab-pane class="github-panel formCustom" label="自定义代码" name="formCustom">
-          <el-form class="setting-form" :model="formCustom" label-position="right">
-            <el-form-item label="" :required="true">
-              <el-input
-                ref="formCustomElInput"
-                v-model="formCustom.code"
-                class="formCustomElInput"
-                type="textarea"
-                resize="none"
-                placeholder="Your custom code here."
-              />
-              <el-link
-                type="primary"
-                href="https://github.com/doocs/md#自定义上传逻辑"
-                target="_blank"
-              >
-                参数详情？
-              </el-link>
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="formCustomSave">
-                保存配置
-              </el-button>
-            </el-form-item>
-          </el-form>
-        </el-tab-pane>
-      </el-tabs>
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="formCustom">
+          <CustomUploadForm />
+        </TabsContent>
+      </Tabs>
     </DialogContent>
   </Dialog>
 </template>
 
 <style lang="less" scoped>
-:deep(.el-upload-dragger) {
-  display: flex;
-  flex-flow: column;
-  justify-content: center;
-  align-items: center;
-  width: 500px;
-  height: 360px;
-
-  .el-icon-upload {
-    margin-top: 0;
-  }
-}
-
-:deep(.el-dialog__body) {
-  padding-bottom: 50px;
-}
-
-.upload-panel {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-
-  .el-select {
-    align-self: flex-end;
-    margin: 0 67.75px 20px;
-    width: 100px;
-  }
-}
-
-.github-panel {
-  display: flex;
-  justify-content: center;
-
-  &.formCustom {
-    width: 100%;
-  }
-
-  .formCustomElInput {
-    :deep(.CodeMirror) {
-      border: 1px solid #eee;
-      height: 300px !important;
-      font-family: 'Fira Mono', 'DejaVu Sans Mono', Menlo, Consolas, 'Liberation Mono', Monaco, 'Lucida Console',
-        monospace !important;
-      line-height: 20px;
-
-      .CodeMirror-scroll {
-        padding: 10px;
-      }
-    }
-  }
-}
-
-.setting-form {
-  width: 100%;
-
-  .el-form-item {
-    margin: 15px;
-  }
-
-  .el-form-item:last-child {
-    text-align: right;
-  }
-}
 </style>

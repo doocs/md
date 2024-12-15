@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import UnoCSS from 'unocss/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import { ElementPlusResolver } from 'unplugin-vue-components/resolvers'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig } from 'vite'
 import { nodePolyfills } from 'vite-plugin-node-polyfills'
@@ -33,10 +32,10 @@ export default defineConfig({
       filename: `stats.html`,
     }),
     AutoImport({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [],
     }),
     Components({
-      resolvers: [ElementPlusResolver()],
+      resolvers: [],
     }),
   ],
   resolve: {

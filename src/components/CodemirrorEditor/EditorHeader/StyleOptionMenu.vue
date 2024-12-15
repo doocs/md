@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { IConfigOption } from '@/types'
 import {
-  MenubarItem,
+  MenubarCheckboxItem,
   MenubarSub,
   MenubarSubContent,
   MenubarSubTrigger,
@@ -31,26 +31,24 @@ function setStyle(title: string, value: string) {
 <template>
   <MenubarSub>
     <MenubarSubTrigger>
-      <el-icon class="mr-2 h-4 w-4" />
+      <span class="mr-2 h-4 w-4" />
       <span>{{ props.title }}</span>
     </MenubarSubTrigger>
     <MenubarSubContent class="max-h-56 overflow-auto">
-      <MenubarItem
+      <MenubarCheckboxItem
         v-for="{ label, value, desc } in options"
         :key="value"
         :label="label"
         :model-value="value"
         class="w-50"
+        :checked="current === value"
         @click="change(value)"
       >
-        <el-icon class="mr-2 h-4 w-4" :style="{ opacity: +(current === value) }">
-          <ElIconCheck />
-        </el-icon>
         {{ label }}
         <DropdownMenuShortcut :style="setStyle(title, value)">
           {{ desc }}
         </DropdownMenuShortcut>
-      </MenubarItem>
+      </MenubarCheckboxItem>
     </MenubarSubContent>
   </MenubarSub>
 </template>

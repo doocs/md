@@ -186,8 +186,6 @@ export function exportHTML(primaryColor: string) {
   setStyles(element)
 
   const htmlStr = element.innerHTML
-    .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
-    .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
     .replaceAll(`var(--md-primary-color)`, primaryColor)
     .replaceAll(/--md-primary-color:.+?;/g, ``)
 

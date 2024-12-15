@@ -4,6 +4,7 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from '@/components/ui/hover-card'
+import { MenubarCheckboxItem } from '@/components/ui/menubar'
 import {
   codeBlockThemeOptions,
   colorOptions,
@@ -12,10 +13,10 @@ import {
   legendOptions,
   themeOptions,
 } from '@/config'
-
 import { useDisplayStore, useStore } from '@/stores'
 import { storeToRefs } from 'pinia'
-import { ref } from 'vue'
+import { ref, useTemplateRef } from 'vue'
+import PickColors, { type Format } from 'vue-pick-colors'
 import StyleOptionMenu from './StyleOptionMenu.vue'
 
 const store = useStore()
@@ -56,6 +57,10 @@ function customStyle() {
     cssEditor.value!.refresh()
   }, 50)
 }
+
+const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
+const format = ref<Format>(`rgb`)
+const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
 
 <template>
@@ -100,54 +105,36 @@ function customStyle() {
         :change="legendChanged"
       />
       <MenubarSeparator />
-      <MenubarItem @click.self.prevent="showPicker">
+      <MenubarCheckboxItem @click.self.prevent="showPicker">
         <HoverCard :open-delay="100">
           <HoverCardTrigger class="w-full flex">
-            <el-icon class="mr-2 h-4 w-4" />
             自定义主题色
           </HoverCardTrigger>
           <HoverCardContent side="right" class="w-min">
-            <ElColorPicker
-              ref="colorPicker"
-              v-model="primaryColor"
-              :teleported="false"
-              show-alpha
-              class="ml-auto"
-              style="height: 2em"
-              @change="colorChanged"
-              @click="showPicker"
-            />
+            <div ref="pickColorsContainer">
+              <PickColors
+                v-model:value="primaryColor"
+                show-alpha
+                :format="format" :format-options="formatOptions"
+                :theme="store.isDark ? 'dark' : 'light'"
+                :popup-container="pickColorsContainer!"
+                @change="store.colorChanged"
+              />
+            </div>
           </HoverCardContent>
         </HoverCard>
-        <!-- <el-icon class="mr-2 h-4 w-4" />
-        自定义主题色
-        <el-color-picker
-          ref="colorPicker"
-          v-model="primaryColor"
-          :teleported="false"
-          show-alpha
-          class="ml-auto"
-          style="height: 2em"
-          @change="colorChanged"
-          @click="showPicker"
-        /> -->
-      </MenubarItem>
-      <MenubarItem @click="customStyle">
-        <el-icon class="mr-2 h-4 w-4" />
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem @click="customStyle">
         自定义 CSS
-      </MenubarItem>
+      </MenubarCheckboxItem>
       <MenubarSeparator />
-      <MenubarItem @click="macCodeBlockChanged">
-        <el-icon class="mr-2 h-4 w-4" :class="{ 'opacity-0': !isMacCodeBlock }">
-          <ElIconCheck />
-        </el-icon>
+      <MenubarCheckboxItem :checked="isMacCodeBlock" @click="macCodeBlockChanged">
         Mac 代码块
-      </MenubarItem>
+      </MenubarCheckboxItem>
       <MenubarSeparator />
-      <MenubarItem divided @click="resetStyleConfirm">
-        <el-icon class="mr-2 h-4 w-4" />
+      <MenubarCheckboxItem divided @click="resetStyleConfirm">
         重置
-      </MenubarItem>
+      </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
 </template>
