@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Label } from '@/components/ui/Label'
+import { Label } from '@/components/ui/label'
 
 const props = defineProps<{
   label?: string
