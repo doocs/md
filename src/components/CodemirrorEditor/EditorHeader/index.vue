@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Format } from 'vue-pick-colors'
 import { Button } from '@/components/ui/button'
 import {
   Menubar,
@@ -34,7 +35,8 @@ import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
-import { nextTick } from 'vue'
+import { nextTick, ref, useTemplateRef } from 'vue'
+import PickColors from 'vue-pick-colors'
 import { toast } from 'vue-sonner'
 
 import EditDropdown from './EditDropdown.vue'
@@ -181,6 +183,10 @@ function customStyle() {
     store.cssEditor!.refresh()
   }, 50)
 }
+
+const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
+const format = ref<Format>(`rgb`)
+const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
 
 <template>
@@ -276,8 +282,15 @@ function customStyle() {
           </div>
           <div class="space-y-2">
             <h2>自定义主题色</h2>
-            <div>
-              <el-color-picker v-model="primaryColor" :teleported="false" show-alpha @change="store.colorChanged" />
+            <div ref="pickColorsContainer">
+              <PickColors
+                v-model:value="primaryColor"
+                show-alpha
+                :format="format" :format-options="formatOptions"
+                :theme="store.isDark ? 'dark' : 'light'"
+                :popup-container="pickColorsContainer!"
+                @change="store.colorChanged"
+              />
             </div>
           </div>
           <div class="space-y-2">
