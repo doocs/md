@@ -180,10 +180,16 @@ export function downloadMD(doc: string) {
 /**
  * 导出 HTML 生成内容
  */
-export function exportHTML() {
+export function exportHTML(primaryColor: string) {
   const element = document.querySelector(`#output`)!
+
   setStyles(element)
+
   const htmlStr = element.innerHTML
+    .replaceAll(`var(--el-text-color-regular)`, `#3f3f3f`)
+    .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
+    .replaceAll(`var(--md-primary-color)`, primaryColor)
+    .replaceAll(/--md-primary-color:.+?;/g, ``)
 
   const downLink = document.createElement(`a`)
 
@@ -205,13 +211,21 @@ export function exportHTML() {
      * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
      * @returns 行内样式拼接结果
      */
-    function getElementStyles(element: Element, excludes = [`width`, `height`]) {
+    function getElementStyles(element: Element, excludes = [`width`, `height`, `inlineSize`, `webkitLogicalWidth`, `webkitLogicalHeight`]) {
       const styles = getComputedStyle(element, null)
       return Object.entries(styles)
         .filter(
-          ([key]) => styles.getPropertyValue(key) && !excludes.includes(key),
+          ([key]) => {
+            // 将驼峰转换为短横线格式
+            const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
+            return styles.getPropertyValue(kebabKey) && !excludes.includes(key)
+          },
         )
-        .map(([key, value]) => `${key}:${value};`)
+        .map(([key, value]) => {
+          // 将驼峰转换为短横线格式
+          const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
+          return `${kebabKey}:${value};`
+        })
         .join(``)
     }
 
