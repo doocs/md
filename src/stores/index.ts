@@ -52,12 +52,46 @@ export const useStore = defineStore(`store`, () => {
   // 内容编辑器编辑器
   const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
   // 编辑区域内容
+  // 预备弃用
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
+  // 文章列表
+  const posts = useStorage(addPrefix(`posts`), [{
+    title: `文章1`,
+    content: DEFAULT_CONTENT,
+  }])
+  // 当前文章
+  const currentPostIndex = useStorage(addPrefix(`currentPostIndex`), 0)
+
+  const addPost = (title: string) => {
+    currentPostIndex.value = posts.value.push({
+      title,
+      content: DEFAULT_CONTENT,
+    }) - 1
+    toast.success(`文章新增成功`)
+  }
+
+  const delPost = (index: number) => {
+    posts.value.splice(index, 1)
+    currentPostIndex.value = 0
+    toast.success(`文章删除成功`)
+  }
+
+  watch(currentPostIndex, () => {
+    toRaw(editor.value!).setValue(posts.value[currentPostIndex.value].content)
+  })
+
+  onMounted(() => {
+    // 迁移阶段，兼容之前的方案
+    if (editorContent.value !== DEFAULT_CONTENT) {
+      posts.value[currentPostIndex.value].content = editorContent.value
+      editorContent.value = DEFAULT_CONTENT
+    }
+  })
 
   // 格式化文档
   const formatContent = () => {
     formatDoc((editor.value!).getValue()).then((doc) => {
-      editorContent.value = doc
+      posts.value[currentPostIndex.value].content = doc
       toRaw(editor.value!).setValue(doc)
     })
   }
@@ -421,7 +455,6 @@ export const useStore = defineStore(`store`, () => {
     isOpenConfirmDialog,
     resetStyleConfirm,
     resetStyle,
-    editorContent,
 
     cssContentConfig,
     addCssContentTab,
@@ -429,6 +462,10 @@ export const useStore = defineStore(`store`, () => {
     setCssEditorValue,
     tabChanged,
     renameTab,
+    posts,
+    currentPostIndex,
+    addPost,
+    delPost,
   }
 })
 
