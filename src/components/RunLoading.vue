@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-
 const loading = ref(true)
 
 onMounted(() => {

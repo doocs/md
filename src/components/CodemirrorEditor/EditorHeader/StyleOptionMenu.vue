@@ -1,11 +1,5 @@
 <script setup lang="ts">
 import type { IConfigOption } from '@/types'
-import {
-  MenubarCheckboxItem,
-  MenubarSub,
-  MenubarSubContent,
-  MenubarSubTrigger,
-} from '@/components/ui/menubar'
 
 const props = defineProps<{
   title: string

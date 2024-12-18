@@ -1,11 +1,5 @@
 <script setup lang="ts">
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from '@/components/ui/hover-card'
-import { MenubarCheckboxItem } from '@/components/ui/menubar'
-import {
   codeBlockThemeOptions,
   colorOptions,
   fontFamilyOptions,
@@ -14,10 +8,7 @@ import {
   themeOptions,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
-import { storeToRefs } from 'pinia'
-import { ref, useTemplateRef } from 'vue'
 import PickColors, { type Format } from 'vue-pick-colors'
-import StyleOptionMenu from './StyleOptionMenu.vue'
 
 const store = useStore()
 const { toggleShowCssEditor } = useDisplayStore()

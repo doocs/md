@@ -1,30 +1,5 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
-import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
-import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
-import PostSlider from '@/components/CodemirrorEditor/PostSlider.vue'
-import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
-import RunLoading from '@/components/RunLoading.vue'
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-
-import {
-  ContextMenu,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuTrigger,
-} from '@/components/ui/context-menu'
 import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -34,9 +9,6 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { storeToRefs } from 'pinia'
-import { onMounted, ref, toRaw, watch } from 'vue'
-import { toast } from 'vue-sonner'
 
 const store = useStore()
 const displayStore = useDisplayStore()

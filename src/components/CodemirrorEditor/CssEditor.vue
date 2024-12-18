@@ -1,29 +1,6 @@
 <script setup lang="ts">
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDisplayStore, useStore } from '@/stores'
 import { Edit3, Plus, X } from 'lucide-vue-next'
-import { ref } from 'vue'
-import { toast } from 'vue-sonner'
 
 const store = useStore()
 const displayStore = useDisplayStore()

@@ -1,10 +1,4 @@
 <script setup lang="ts">
-import {
-  MenubarContent,
-  MenubarItem,
-  MenubarMenu,
-  MenubarTrigger,
-} from '@/components/ui/menubar'
 import { useDisplayStore } from '@/stores'
 import { TableIcon, UploadCloudIcon } from 'lucide-vue-next'
 
