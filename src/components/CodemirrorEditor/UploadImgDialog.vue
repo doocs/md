@@ -691,6 +691,7 @@ function onDrop(e: DragEvent) {
                 <Button
                   variant="link"
                   class="p-0"
+                  as="a"
                   href="https://mpmd.pages.dev/tutorial/"
                   target="_blank"
                 >
