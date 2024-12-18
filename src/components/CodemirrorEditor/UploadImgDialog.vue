@@ -601,6 +601,7 @@ function onDrop(e: DragEvent) {
               <Button
                 variant="link"
                 class="p-0"
+                as="a"
                 href="https://developer.qiniu.com/kodo"
                 target="_blank"
               >
@@ -642,6 +643,7 @@ function onDrop(e: DragEvent) {
               <Button
                 variant="link"
                 class="p-0"
+                as="a"
                 href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
                 target="_blank"
               >
@@ -680,6 +682,7 @@ function onDrop(e: DragEvent) {
                 <Button
                   variant="link"
                   class="p-0"
+                  as="a"
                   href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
                   target="_blank"
                 >
