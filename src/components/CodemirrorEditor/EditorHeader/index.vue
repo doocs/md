@@ -184,7 +184,7 @@ function customStyle() {
   }, 50)
 }
 
-const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
+const pickColorsContainer = useTemplateRef<HTMLElement | undefined>('pickColorsContainer')
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
@@ -294,8 +294,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                 show-alpha
                 :format="format" :format-options="formatOptions"
                 :theme="store.isDark ? 'dark' : 'light'"
-                :popup-container="pickColorsContainer!"
+                :popup-container="pickColorsContainer"
                 @change="store.colorChanged"
+                v-if="pickColorsContainer"
               />
             </div>
           </div>
