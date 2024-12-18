@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 import { NumberFieldInput } from 'radix-vue'
 
 const props = defineProps<{
-  class?: HTMLAttributes['class']
+  class?: HTMLAttributes[`class`]
 }>()
 </script>
 

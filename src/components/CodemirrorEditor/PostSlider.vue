@@ -121,7 +121,7 @@ function delPost() {
         :class="{
           'bg-primary text-primary-foreground': store.currentPostIndex === index,
         }"
-        class="hover:text-primary-foreground hover:bg-primary/90 dark:bg-muted dark:hover:bg-muted h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:text-white"
+        class="hover:bg-primary/90 hover:text-primary-foreground dark:bg-muted dark:hover:bg-muted h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:text-white"
         @click="store.currentPostIndex = index"
       >
         <span class="line-clamp-1">{{ post.title }}</span>

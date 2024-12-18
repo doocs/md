@@ -122,10 +122,10 @@ function copy() {
         // 公众号不支持 position， 转换为等价的 translateY
         .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
         // 适配主题中的颜色变量
-        .replaceAll(`hsl(var(--foreground))`, `#3f3f3f`)
-        .replaceAll(`var(--blockquote-background)`, `#f7f7f7`)
-        .replaceAll(`var(--md-primary-color)`, primaryColor.value)
-        .replaceAll(/--md-primary-color:.+?;/g, ``)
+        .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
+        .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
+        .replace(/var\(--md-primary-color\)/g, primaryColor.value)
+        .replace(/--md-primary-color:.+?;/g, ``)
         .replace(/<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g, `<span class="nodeLabel"$1>$2</span>`)
 
       clipboardDiv.focus()
@@ -219,10 +219,10 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       <HelpDropdown />
     </Menubar>
 
-    <Button v-if="!store.isOpenPostSlider" variant="outline" @click="store.isOpenPostSlider = true" class="mr-2">
+    <Button v-if="!store.isOpenPostSlider" variant="outline" class="mr-2" @click="store.isOpenPostSlider = true">
       <PanelLeftOpen class="size-4" />
     </Button>
-    <Button v-else variant="outline" @click="store.isOpenPostSlider = false" class="mr-2">
+    <Button v-else variant="outline" class="mr-2" @click="store.isOpenPostSlider = false">
       <PanelLeftClose class="size-4" />
     </Button>
     <Popover>

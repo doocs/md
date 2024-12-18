@@ -10,7 +10,7 @@ const props = defineProps<{
 <template>
   <div>
     <Label class="flex items-center">
-      <span class="mr-4 w-[150px] text-right font-bold min-h-4 flex-shrink-0" :class="{ required: props.required }">
+      <span class="mr-4 min-h-4 w-[150px] flex-shrink-0 text-right font-bold" :class="{ required: props.required }">
         {{ props.label }}
       </span>
       <slot />
