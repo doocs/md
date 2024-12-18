@@ -33,29 +33,26 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 功能特性
 
-- [x] 支持自定义 CSS 样式
-- [x] 支持 Markdown 所有基础语法、代码块、LaTeX 公式
-- [x] 支持 [GFM 警告块](https://github.com/orgs/community/discussions/16925)
-- [x] 支持浅色、深色两种编辑器外观
-- [x] 支持 <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> 快速格式化文档
-- [x] 支持色盘取色，快速替换文章整体色调
-- [x] 支持多图上传，可自定义配置图床
-- [x] 支持自定义上传逻辑
-- [x] 支持在编辑框右键弹出功能选项卡
-- [x] 支持批量转换本地图片为线上图片
+- [x] 实现对 Markdown 所有基础语法及数学公式的完美支持
+- [x] 提供对 Mermaid 图表的渲染和 [GFM 警告块](https://github.com/orgs/community/discussions/16925)的支持
+- [x] 丰富的代码块高亮主题，提升代码可读性
+- [x] 允许自定义主题色和 CSS 样式，灵活定制展示效果
+- [x] 提供多图上传功能，并可自定义配置图床
+- [x] 便捷的文件导入、导出功能，提升工作效率
+- [x] 内置本地文章管理功能，支持草稿自动保存
 
 ## 目前支持哪些图床
 
-| #   | 图床                                            | 使用时是否需要配置                                                         | 备注                                                                                                                        |
-| --- | ----------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 1   | 默认                                            | 否                                                                         | -                                                                                                                           |
-| 2   | [GitHub](https://github.com)                    | 配置 `Repo`、`Token` 参数                                                  | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)      |
-| 3   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数           | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                                  |
-| 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                                |
-| 5   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                                   |
-| 6   | [MinIO](https://min.io/)                        | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                                   |
-| 7   | [公众号](https://mp.weixin.qq.com/)             | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何获取公众号开发者ID密码？](https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html) |
-| 8   | 自定义上传                                      | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                         |
+| #   | 图床                                            | 使用时是否需要配置                                                         | 备注                                                                                                                          |
+| --- | ----------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 默认                                            | 否                                                                         | -                                                                                                                             |
+| 2   | [GitHub](https://github.com)                    | 配置 `Repo`、`Token` 参数                                                  | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)        |
+| 3   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数           | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                                    |
+| 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                                  |
+| 5   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                                     |
+| 6   | [MinIO](https://min.io/)                        | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                                     |
+| 7   | [公众号](https://mp.weixin.qq.com/)             | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何获取公众号开发者 ID 密码？](https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html) |
+| 8   | 自定义上传                                      | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                           |
 
 ![demo1](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo1.gif)
 

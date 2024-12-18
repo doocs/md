@@ -33,7 +33,7 @@ import {
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
-import { Moon, Paintbrush, PanelLeftClose, PanelLeftOpen, Sun } from 'lucide-vue-next'
+import { Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import PickColors from 'vue-pick-colors'
@@ -228,7 +228,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
     <Popover>
       <PopoverTrigger>
         <Button variant="outline">
-          <Paintbrush class="h-4 w-4" />
+          <Settings class="h-4 w-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent class="h-100 w-100 overflow-auto px-6" align="end">
