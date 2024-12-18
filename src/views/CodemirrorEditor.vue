@@ -3,6 +3,7 @@ import type { ComponentPublicInstance } from 'vue'
 import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
+import PostSlider from '@/components/CodemirrorEditor/PostSlider.vue'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
 import RunLoading from '@/components/RunLoading.vue'
 import {
@@ -15,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -38,7 +40,7 @@ import { toast } from 'vue-sonner'
 
 const store = useStore()
 const displayStore = useDisplayStore()
-const { isDark, output, editor, editorContent } = storeToRefs(store)
+const { isDark, output, editor } = storeToRefs(store)
 const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
@@ -201,7 +203,7 @@ function initEditor() {
   const editorDom = document.querySelector<HTMLTextAreaElement>(`#editor`)!
 
   if (!editorDom.value) {
-    editorDom.value = editorContent.value
+    editorDom.value = store.posts[store.currentPostIndex].content
   }
   editor.value = CodeMirror.fromTextArea(editorDom, {
     mode: `text/x-markdown`,
@@ -248,7 +250,7 @@ function initEditor() {
     clearTimeout(changeTimer.value)
     changeTimer.value = setTimeout(() => {
       onEditorRefresh()
-      editorContent.value = e.getValue()
+      store.posts[store.currentPostIndex].content = e.getValue()
     }, 300)
   })
 
@@ -396,10 +398,11 @@ onMounted(() => {
       @end-copy="endCopy"
     />
     <main class="container-main flex-1">
-      <div class="container-main-section grid h-full border-1" :class="isShowCssEditor ? 'grid-cols-3' : 'grid-cols-2'">
+      <div class="container-main-section h-full flex border-1">
+        <PostSlider />
         <div
           ref="codeMirrorWrapper"
-          class="codeMirror-wrapper border-r-1"
+          class="codeMirror-wrapper flex-1 border-r-1"
           :class="{
             'order-1': !store.isEditOnLeft,
           }"
@@ -443,7 +446,7 @@ onMounted(() => {
           id="preview"
           ref="preview"
           :span="isShowCssEditor ? 8 : 12"
-          class="preview-wrapper p-5"
+          class="preview-wrapper flex-1 p-5"
         >
           <div id="output-wrapper" :class="{ output_night: !backLight }">
             <div class="preview border shadow-xl">
@@ -457,7 +460,7 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <CssEditor />
+        <CssEditor class="flex-1" />
       </div>
     </main>
 
