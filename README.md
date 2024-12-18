@@ -33,29 +33,26 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 
 ## 功能特性
 
-- [x] 支持自定义 CSS 样式
-- [x] 支持 Markdown 所有基础语法、代码块、LaTeX 公式
-- [x] 支持 [GFM 警告块](https://github.com/orgs/community/discussions/16925)
-- [x] 支持浅色、深色两种编辑器外观
-- [x] 支持 <kbd>Alt</kbd> + <kbd>Shift</kbd> + <kbd>F</kbd> 快速格式化文档
-- [x] 支持色盘取色，快速替换文章整体色调
-- [x] 支持多图上传，可自定义配置图床
-- [x] 支持自定义上传逻辑
-- [x] 支持在编辑框右键弹出功能选项卡
-- [x] 支持批量转换本地图片为线上图片
+- [x] 支持 Markdown 所有基础语法、数学公式
+- [x] 提供对 Mermaid 图表的渲染和 [GFM 警告块](https://github.com/orgs/community/discussions/16925)的支持
+- [x] 丰富的代码块高亮主题，提升代码可读性
+- [x] 允许自定义主题色和 CSS 样式，灵活定制展示效果
+- [x] 提供多图上传功能，并可自定义配置图床
+- [x] 便捷的文件导入、导出功能，提升工作效率
+- [x] 内置本地文章管理功能，支持草稿自动保存
 
 ## 目前支持哪些图床
 
-| #   | 图床                                            | 使用时是否需要配置                                                         | 备注                                                                                                                        |
-| --- | ----------------------------------------------- | -------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- |
-| 1   | 默认                                            | 否                                                                         | -                                                                                                                           |
-| 2   | [GitHub](https://github.com)                    | 配置 `Repo`、`Token` 参数                                                  | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)      |
-| 3   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数           | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                                  |
-| 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                                |
-| 5   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                                   |
-| 6   | [MinIO](https://min.io/)                        | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                                   |
-| 7   | [公众号](https://mp.weixin.qq.com/)             | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何获取公众号开发者ID密码？](https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html) |
-| 8   | 自定义上传                                      | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                         |
+| #   | 图床                                            | 使用时是否需要配置                                                         | 备注                                                                                                                          |
+| --- | ----------------------------------------------- | -------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| 1   | 默认                                            | 否                                                                         | -                                                                                                                             |
+| 2   | [GitHub](https://github.com)                    | 配置 `Repo`、`Token` 参数                                                  | [如何获取 GitHub token？](https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token)        |
+| 3   | [阿里云](https://www.aliyun.com/product/oss)    | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数           | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                                    |
+| 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos) | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                                  |
+| 5   | [七牛云](https://www.qiniu.com/products/kodo)   | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                                     |
+| 6   | [MinIO](https://min.io/)                        | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                                     |
+| 7   | [公众号](https://mp.weixin.qq.com/)             | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何获取公众号开发者 ID 密码？](https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html) |
+| 8   | 自定义上传                                      | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                           |
 
 ![demo1](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/demo1.gif)
 
@@ -79,19 +76,19 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信文章�
 示例代码：
 
 ```js
-const { file, util, okCb, errCb } = CUSTOM_ARG
-const param = new FormData()
-param.append(`file`, file)
+const { file, util, okCb, errCb } = CUSTOM_ARG;
+const param = new FormData();
+param.append(`file`, file);
 util.axios
   .post(`http://127.0.0.1:9000/upload`, param, {
-    headers: { 'Content-Type': `multipart/form-data` },
+    headers: { "Content-Type": `multipart/form-data` },
   })
   .then((res) => {
-    okCb(res.url)
+    okCb(res.url);
   })
   .catch((err) => {
-    errCb(err)
-  })
+    errCb(err);
+  });
 
 // 提供的可用参数:
 // CUSTOM_ARG = {
@@ -185,13 +182,9 @@ docker run -d -p 8080:80 doocs/md:latest
 - [爱码士的内心独白](https://mp.weixin.qq.com/s/oc5Z2t9ykbu_Dezjnw5mfQ)
 - [乐玩 nodejs npm 工具库](https://mp.weixin.qq.com/s/SFde8OsZ8FzNGMHwpmDtrg)
 - [简静慢](https://mp.weixin.qq.com/s/7UG24ZugfI5ZnhUpo8vfvQ)
-- [0 加 1](https://mp.weixin.qq.com/s/qefHCmToAdowBz2JwBn_ug)
 - [编程图解](https://mp.weixin.qq.com/s/7bfpKACg7HP-PhBrkpM9IQ)
 - [好酸一柠檬](https://mp.weixin.qq.com/s/CVqmcu_OGG8TQO4FViAQ3w)
 - [不知所云 Hub](https://mp.weixin.qq.com/s/leDCdpvnfk8eZRPRRHwg5w)
-- [会泽百家](https://mp.weixin.qq.com/s/c9ZXxQHCrKz1FP1Zbh1S1w)
-- [平凡而诗意](https://mp.weixin.qq.com/s/MV8ch6qlSsamSaBOhWr9kg)
-- [治恒说说](https://mp.weixin.qq.com/s/bWPKO-S3TNLsCgzwspHCTg)
 - [柯宁申的叙事屋](https://mp.weixin.qq.com/s/AHHrxu7aIYBpvn3PpVHE_Q)
 - [我的 Beta 世界](https://mp.weixin.qq.com/s/6BO977YG5e_4qYxL4oVQJw)
 - [生化环材](https://mp.weixin.qq.com/s/fqNxIRxTkn6QEPmi4atW9w)
@@ -214,5 +207,23 @@ docker run -d -p 8080:80 doocs/md:latest
 - [Web3HackerWorld](https://mp.weixin.qq.com/s/eLuC6e93RR1zCD3w2FgpVA)
 - [StruggleYang](https://mp.weixin.qq.com/s/fKKQrsatC9en3PwWiCL-KQ)
 - [比心技术](https://mp.weixin.qq.com/s/DYzzci2paf10CgW22pkyUQ)
+- [Pyvan](https://mp.weixin.qq.com/s/YeIev850YlFLFrmzxwUcdg)
+- [CloudberryDB](https://mp.weixin.qq.com/s/8-YRch1U4DiXbpbUHQ1rWQ)
+- [也无言](https://mp.weixin.qq.com/s/pxykYtxQtvG1SAFz9SO5gw)
+- [易学历史](https://mp.weixin.qq.com/s/ICOb210BFzuyP49Zf5kj0A)
+- [小盒子的技术分享](https://mp.weixin.qq.com/s/ilKtA4c3_xQK5ZjwrCZIFw)
+- [Code365](https://mp.weixin.qq.com/s/WXBZTqkK1JvYlMg5GWyPhA)
+- [IT 智行](https://mp.weixin.qq.com/s/4eSGBiUX6aC-f6rG5xBq7g)
+- [哪里不会点哪里](https://mp.weixin.qq.com/s/dDe3pyziFjFMbiFO249U4g)
+- [AI 思维车间订阅号](https://mp.weixin.qq.com/s/f3Z0kWtEa5qjNDl8s_wArA)
+- [肖恩聊技术](https://mp.weixin.qq.com/s/hzZHwjKH5IE6H0yNXVhDPQ)
+- [极客范](https://mp.weixin.qq.com/s/AjOTuwY9Cz5Ir7iOVxLn8Q)
+- [AI 决策者洞察](https://mp.weixin.qq.com/s/8To24gWM5RFEZZ7SIHu46w)
+- [小墨是前端](https://mp.weixin.qq.com/s/G7Nw9uBadRGbvTUtv2OtrA)
+- [豆福 AI 笔记](https://mp.weixin.qq.com/s/b_OqX__jVeqgi8QCT9qMBA)
+- [运维前沿](https://mp.weixin.qq.com/s/X6x2ziLZGjCelJgXECdhPg)
+- [鱼 da 王](https://mp.weixin.qq.com/s/DdxK3j31TUWLNVhZtWTuVA)
+- [程序员小宋](https://mp.weixin.qq.com/s/llgdqSN3AIXMlEbBuPkKNQ)
+- [架构师修行之路](https://mp.weixin.qq.com/s/-HWx7VZC6NthROGBaATcLA)
 
 注：如果你使用了本 Markdown 编辑器进行文章排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/discussions/5) 留言。
