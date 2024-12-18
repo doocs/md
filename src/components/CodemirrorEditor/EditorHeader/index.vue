@@ -33,7 +33,7 @@ import {
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
-import { Moon, Paintbrush, Sun } from 'lucide-vue-next'
+import { Moon, Paintbrush, PanelLeftClose, PanelLeftOpen, Sun } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { nextTick, ref, useTemplateRef } from 'vue'
 import PickColors from 'vue-pick-colors'
@@ -219,6 +219,12 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       <HelpDropdown />
     </Menubar>
 
+    <Button v-if="!store.isOpenPostSlider" variant="outline" @click="store.isOpenPostSlider = true" class="mr-2">
+      <PanelLeftOpen class="size-4" />
+    </Button>
+    <Button v-else variant="outline" @click="store.isOpenPostSlider = false" class="mr-2">
+      <PanelLeftClose class="size-4" />
+    </Button>
     <Popover>
       <PopoverTrigger>
         <Button variant="outline">

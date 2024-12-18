@@ -54,26 +54,30 @@ export const useStore = defineStore(`store`, () => {
   // 编辑区域内容
   // 预备弃用
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
+
+  const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
   // 文章列表
   const posts = useStorage(addPrefix(`posts`), [{
     title: `文章1`,
     content: DEFAULT_CONTENT,
   }])
   // 当前文章
-  const currentPostIndex = useStorage(addPrefix(`currentPostIndex`), 0)
+  const currentPostIndex = useStorage(addPrefix(`current_post_index`), 0)
 
   const addPost = (title: string) => {
     currentPostIndex.value = posts.value.push({
       title,
       content: DEFAULT_CONTENT,
     }) - 1
-    toast.success(`文章新增成功`)
+  }
+
+  const renamePost = (index: number, title: string) => {
+    posts.value[index].title = title
   }
 
   const delPost = (index: number) => {
     posts.value.splice(index, 1)
     currentPostIndex.value = 0
-    toast.success(`文章删除成功`)
   }
 
   watch(currentPostIndex, () => {
@@ -465,7 +469,9 @@ export const useStore = defineStore(`store`, () => {
     posts,
     currentPostIndex,
     addPost,
+    renamePost,
     delPost,
+    isOpenPostSlider,
   }
 })
 

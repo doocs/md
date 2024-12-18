@@ -3,6 +3,7 @@ import type { ComponentPublicInstance } from 'vue'
 import CssEditor from '@/components/CodemirrorEditor/CssEditor.vue'
 import EditorHeader from '@/components/CodemirrorEditor/EditorHeader/index.vue'
 import InsertFormDialog from '@/components/CodemirrorEditor/InsertFormDialog.vue'
+import PostSlider from '@/components/CodemirrorEditor/PostSlider.vue'
 import UploadImgDialog from '@/components/CodemirrorEditor/UploadImgDialog.vue'
 import RunLoading from '@/components/RunLoading.vue'
 import {
@@ -15,6 +16,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog'
+
 import {
   ContextMenu,
   ContextMenuContent,
@@ -23,17 +25,6 @@ import {
   ContextMenuShortcut,
   ContextMenuTrigger,
 } from '@/components/ui/context-menu'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-
 import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -43,7 +34,6 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { Plus, Trash } from 'lucide-vue-next'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, toRaw, watch } from 'vue'
 import { toast } from 'vue-sonner'
@@ -397,16 +387,6 @@ onMounted(() => {
   onEditorRefresh()
   mdLocalToRemote()
 })
-
-const isOpen = ref(false)
-
-const addPostInputVal = ref(``)
-
-function addPost() {
-  store.addPost(addPostInputVal.value)
-  isOpen.value = false
-  addPostInputVal.value = ``
-}
 </script>
 
 <template>
@@ -419,42 +399,7 @@ function addPost() {
     />
     <main class="container-main flex-1">
       <div class="container-main-section h-full flex border-1">
-        <nav class="space-y-1 w-50 border-r bg-gray/20 p-2 dark:bg-gray/40">
-          <Dialog v-model:open="isOpen">
-            <DialogTrigger as-child>
-              <Button variant="outline" class="w-full" size="xs">
-                <Plus /> 新增文章
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>新增文章</DialogTitle>
-                <DialogDescription>
-                  请输入文章名称
-                </DialogDescription>
-              </DialogHeader>
-              <Input v-model="addPostInputVal" />
-              <DialogFooter>
-                <Button @click="addPost()">
-                  确 定
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-          <a
-            v-for="(post, index) in store.posts"
-            :key="post.title"
-            href="#"
-            :class="{
-              'bg-primary text-primary-foreground': store.currentPostIndex === index,
-            }"
-            class="hover:text-primary-foreground hover:bg-primary/90 dark:bg-muted dark:hover:bg-muted h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-4 text-sm transition-colors dark:text-white dark:hover:text-white"
-            @click="store.currentPostIndex = index"
-          >
-            <span>{{ post.title }}</span>
-            <Trash v-if="index == store.currentPostIndex" class="ml-auto size-4" @click.stop="store.delPost(index)" />
-          </a>
-        </nav>
+        <PostSlider />
         <div
           ref="codeMirrorWrapper"
           class="codeMirror-wrapper flex-1 border-r-1"
