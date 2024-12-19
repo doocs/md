@@ -1,21 +1,6 @@
 <script setup lang="ts">
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { useStore } from '@/stores'
 import { Info } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-
-import { ref } from 'vue'
 
 const store = useStore()
 const { output } = storeToRefs(store)

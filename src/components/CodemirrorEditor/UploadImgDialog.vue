@@ -1,24 +1,7 @@
 <script setup lang="ts">
-import CustomUploadForm from '@/components/CustomUploadForm.vue'
-import FormItem from '@/components/FormItem.vue'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useDisplayStore } from '@/stores'
 import { checkImage } from '@/utils'
-import { useFileDialog } from '@vueuse/core'
 import { UploadCloud } from 'lucide-vue-next'
-import { onBeforeMount, ref } from 'vue'
-import { toast } from 'vue-sonner'
 
 const emit = defineEmits([`uploadImage`])
 

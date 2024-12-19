@@ -3,13 +3,9 @@ import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
 import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
 import { initRenderer } from '@/utils/renderer'
-import { useDark, useStorage, useToggle } from '@vueuse/core'
 
 import CodeMirror from 'codemirror'
 import { marked } from 'marked'
-import { defineStore } from 'pinia'
-import { computed, markRaw, onMounted, ref, toRaw, watch } from 'vue'
-import { toast } from 'vue-sonner'
 
 export const useStore = defineStore(`store`, () => {
   // 是否开启深色模式

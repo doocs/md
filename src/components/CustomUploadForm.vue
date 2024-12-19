@@ -1,10 +1,7 @@
 <script setup lang='ts'>
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
-import { useLocalStorage } from '@vueuse/core'
 import CodeMirror from 'codemirror'
-import { markRaw, nextTick, onMounted, ref, useTemplateRef } from 'vue'
-import { toast } from 'vue-sonner'
 
 const store = useStore()
 

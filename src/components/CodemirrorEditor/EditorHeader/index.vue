@@ -1,23 +1,5 @@
 <script setup lang="ts">
 import type { Format } from 'vue-pick-colors'
-import { Button } from '@/components/ui/button'
-import {
-  Menubar,
-  MenubarCheckboxItem,
-  MenubarContent,
-  MenubarMenu,
-  MenubarSeparator,
-  MenubarShortcut,
-  MenubarTrigger,
-} from '@/components/ui/menubar'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
 import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
@@ -34,16 +16,7 @@ import {
 import { useDisplayStore, useStore } from '@/stores'
 import { mergeCss, solveWeChatImage } from '@/utils'
 import { Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
-import { nextTick, ref, useTemplateRef } from 'vue'
 import PickColors from 'vue-pick-colors'
-import { toast } from 'vue-sonner'
-
-import EditDropdown from './EditDropdown.vue'
-import FileDropdown from './FileDropdown.vue'
-import HelpDropdown from './HelpDropdown.vue'
-import PostInfo from './PostInfo.vue'
-import StyleDropdown from './StyleDropdown.vue'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
@@ -184,7 +157,7 @@ function customStyle() {
   }, 50)
 }
 
-const pickColorsContainer = useTemplateRef<HTMLElement | undefined>('pickColorsContainer')
+const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
@@ -290,13 +263,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>自定义主题色</h2>
             <div ref="pickColorsContainer">
               <PickColors
+                v-if="pickColorsContainer"
                 v-model:value="primaryColor"
-                show-alpha
-                :format="format" :format-options="formatOptions"
+                show-alpha :format="format"
+                :format-options="formatOptions"
                 :theme="store.isDark ? 'dark' : 'light'"
                 :popup-container="pickColorsContainer"
                 @change="store.colorChanged"
-                v-if="pickColorsContainer"
               />
             </div>
           </div>

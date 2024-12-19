@@ -1,23 +1,6 @@
 <script setup lang="ts">
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Label } from '@/components/ui/label'
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from '@/components/ui/number-field'
 import { useDisplayStore, useStore } from '@/stores'
-
 import { createTable } from '@/utils'
-import { ref, toRaw } from 'vue'
 
 const store = useStore()
 const displayStore = useDisplayStore()

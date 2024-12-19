@@ -32,7 +32,15 @@ export default defineConfig({
       filename: `stats.html`,
     }),
     AutoImport({
-      resolvers: [],
+      imports: [
+        `vue`,
+        `pinia`,
+        `@vueuse/core`,
+      ],
+      dirs: [
+        `./src/stores`,
+        `./src/utils/toast`,
+      ],
     }),
     Components({
       resolvers: [],

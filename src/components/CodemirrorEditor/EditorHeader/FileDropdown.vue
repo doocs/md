@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { Download, FileCode, Upload } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
 
 const store = useStore()
 
