@@ -63,7 +63,7 @@ export const useStore = defineStore(`store`, () => {
   const addPost = (title: string) => {
     currentPostIndex.value = posts.value.push({
       title,
-      content: DEFAULT_CONTENT,
+      content: `# ${title}`,
     }) - 1
   }
 
@@ -73,7 +73,7 @@ export const useStore = defineStore(`store`, () => {
 
   const delPost = (index: number) => {
     posts.value.splice(index, 1)
-    currentPostIndex.value = 0
+    currentPostIndex.value = posts.value.length - 1
   }
 
   watch(currentPostIndex, () => {

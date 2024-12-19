@@ -40,7 +40,7 @@ function renamePost() {
   }
   store.renamePost(editTarget.value, renamePostInputVal.value)
   isOpenEditDialog.value = false
-  toast.success(`文章更名成功`)
+  toast.success(`文章重命名成功`)
 }
 
 const isOpenDelPostConfirmDialog = ref(false)
@@ -90,9 +90,10 @@ function delPost() {
         :key="post.title"
         href="#"
         :class="{
-          'bg-primary text-primary-foreground': store.currentPostIndex === index,
+          'bg-primary text-primary-foreground shadow-lg border-2 border-primary': store.currentPostIndex === index,
+          'dark:bg-primary-dark dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === index,
         }"
-        class="hover:bg-primary/90 hover:text-primary-foreground dark:bg-muted dark:hover:bg-muted h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:text-white"
+        class="hover:bg-primary/90 hover:text-primary-foreground dark:bg-muted dark:hover:bg-muted dark:hover:border-primary-dark h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:text-white"
         @click="store.currentPostIndex = index"
       >
         <span class="line-clamp-1">{{ post.title }}</span>
@@ -105,9 +106,9 @@ function delPost() {
           <DropdownMenuContent>
             <DropdownMenuItem @click.stop="startRenamePost(index)">
               <Edit3 class="mr-2 size-4" />
-              更名
+              重命名
             </DropdownMenuItem>
-            <DropdownMenuItem @click.stop="startDelPost(index)">
+            <DropdownMenuItem v-if="store.posts.length > 1" @click.stop="startDelPost(index)">
               <Trash class="mr-2 size-4" />
               删除
             </DropdownMenuItem>
