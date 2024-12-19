@@ -63,7 +63,7 @@ export const useStore = defineStore(`store`, () => {
   const addPost = (title: string) => {
     currentPostIndex.value = posts.value.push({
       title,
-      content: DEFAULT_CONTENT,
+      content: `# ${title}`,
     }) - 1
   }
 
