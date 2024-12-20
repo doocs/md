@@ -56,6 +56,15 @@ const minioOSS = ref({
   secretKey: ``,
 })
 
+const formR2 = ref({
+  accountId: ``,
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  path: ``,
+})
+
 const formMp = ref({
   proxyOrigin: ``,
   appID: ``,
@@ -97,6 +106,10 @@ const options = [
     label: `公众号图床`,
   },
   {
+    value: `r2`,
+    label: `Cloudflare R2`,
+  },
+  {
     value: `formCustom`,
     label: `自定义代码`,
   },
@@ -124,6 +137,9 @@ onBeforeMount(() => {
   }
   if (localStorage.getItem(`minioConfig`)) {
     minioOSS.value = JSON.parse(localStorage.getItem(`minioConfig`)!)
+  }
+  if (localStorage.getItem(`r2Config`)) {
+    formR2.value = JSON.parse(localStorage.getItem(`r2Config`)!)
   }
   if (localStorage.getItem(`imgHost`)) {
     imgHost.value = localStorage.getItem(`imgHost`)!
@@ -217,6 +233,23 @@ function saveQiniuConfiguration() {
     return
   }
   localStorage.setItem(`qiniuConfig`, JSON.stringify(formQiniu.value))
+  toast.success(`保存成功`)
+}
+
+function saveR2Configuration() {
+  if (
+    !(
+      formR2.value.accountId
+      && formR2.value.accessKey
+      && formR2.value.secretKey
+      && formR2.value.bucket
+      && formR2.value.domain
+    )
+  ) {
+    toast.error(`Cloudflare R2参数配置不全`)
+    return
+  }
+  localStorage.setItem(`r2Config`, JSON.stringify(formR2.value))
   toast.success(`保存成功`)
 }
 
@@ -314,6 +347,9 @@ function onDrop(e: DragEvent) {
           </TabsTrigger>
           <TabsTrigger value="mp">
             公众号图床
+          </TabsTrigger>
+          <TabsTrigger value="r2">
+            Cloudflare R2
           </TabsTrigger>
           <TabsTrigger value="formCustom">
             自定义代码
@@ -684,6 +720,58 @@ function onDrop(e: DragEvent) {
             </FormItem>
             <FormItem>
               <Button @click="saveMpConfiguration">
+                保存配置
+              </Button>
+            </FormItem>
+          </div>
+        </TabsContent>
+        <TabsContent value="r2">
+          <div class="space-y-4">
+            <FormItem label="AccountId" required>
+              <Input v-model.trim="formR2.accountId" placeholder="如: 0030f123e55a57546f4c281c564e560" class="min-w-[350px]" />
+            </FormItem>
+            <FormItem label="AccessKey" required>
+              <Input v-model.trim="formR2.accessKey" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
+            </FormItem>
+            <FormItem label="SecretKey" required>
+              <Input
+                v-model.trim="formR2.secretKey" type="password"
+                placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010"
+              />
+            </FormItem>
+            <FormItem label="Bucket" required>
+              <Input v-model.trim="formR2.bucket" placeholder="如：md" />
+            </FormItem>
+            <FormItem label="域名" required>
+              <Input v-model.trim="formR2.domain" placeholder="如：https://oss.example.com" />
+            </FormItem>
+            <FormItem label="存储路径">
+              <Input v-model.trim="formR2.path" placeholder="如：img，可不填，默认为根目录" />
+            </FormItem>
+            <FormItem>
+              <div class="flex flex-col items-start">
+                <Button
+                  variant="link"
+                  class="p-0"
+                  as="a"
+                  href="https://developers.cloudflare.com/r2/api/s3/api/"
+                  target="_blank"
+                >
+                  如何使用 S3 API 操作 Cloudflare R2
+                </Button>
+                <Button
+                  variant="link"
+                  class="p-0"
+                  as="a"
+                  href="https://developers.cloudflare.com/r2/buckets/cors/"
+                  target="_blank"
+                >
+                  如何设置跨域(CORS)
+                </Button>
+              </div>
+            </FormItem>
+            <FormItem>
+              <Button @click="saveR2Configuration">
                 保存配置
               </Button>
             </FormItem>
