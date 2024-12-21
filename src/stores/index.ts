@@ -213,7 +213,7 @@ export const useStore = defineStore(`store`, () => {
       </style>
     `
 
-    output.value = outputTemp
+    output.value = renderer.createContainer(outputTemp)
   }
 
   // 更新 CSS

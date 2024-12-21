@@ -43,6 +43,7 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
   }
 
   const blockKeys: Block[] = [
+    `container`,
     `h1`,
     `h2`,
     `h3`,

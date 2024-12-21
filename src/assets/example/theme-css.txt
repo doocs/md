@@ -6,6 +6,9 @@
  * 召集令：如果你有好看的主题样式，欢迎分享，让更多人能够使用到你的主题。
  * 提交区：https://github.com/doocs/md/discussions/426
  */
+/* 顶层容器样式 */
+container {
+}
 /* 一级标题样式 */
 h1 {
 }

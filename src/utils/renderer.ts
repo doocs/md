@@ -274,5 +274,8 @@ export function initRenderer(opts: IOpts) {
     buildFootnotes,
     setOptions,
     reset,
+    createContainer(content: string) {
+      return styledContent(`container`, content, `section`)
+    },
   }
 }
