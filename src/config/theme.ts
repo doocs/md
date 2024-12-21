@@ -9,6 +9,7 @@ const defaultTheme: Theme = {
     'line-height': `1.75`,
   },
   block: {
+    container: {},
     // 一级标题
     h1: {
       'display': `table`,
@@ -288,6 +289,7 @@ const graceTheme = toMerged(defaultTheme, {
   base: {
   },
   block: {
+    'container': {},
     'h1': {
       'padding': `0.5em 1em`,
       'border-bottom': `2px solid var(--md-primary-color)`,
