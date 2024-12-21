@@ -170,12 +170,15 @@ watch(isDark, () => {
   toRaw(editor.value)?.setOption?.(`theme`, theme)
 })
 
+const charCount = ref(0)
+
 // 初始化编辑器
 function initEditor() {
   const editorDom = document.querySelector<HTMLTextAreaElement>(`#editor`)!
 
   if (!editorDom.value) {
     editorDom.value = store.posts[store.currentPostIndex].content
+    charCount.value = store.posts[store.currentPostIndex].content.replace(/\s/g, ``).length
   }
   editor.value = CodeMirror.fromTextArea(editorDom, {
     mode: `text/x-markdown`,
@@ -222,7 +225,9 @@ function initEditor() {
     clearTimeout(changeTimer.value)
     changeTimer.value = setTimeout(() => {
       onEditorRefresh()
-      store.posts[store.currentPostIndex].content = e.getValue()
+      const value = e.getValue()
+      store.posts[store.currentPostIndex].content = value
+      charCount.value = value.replace(/\s/g, ``).length
     }, 300)
   })
 
@@ -414,22 +419,27 @@ onMounted(() => {
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div
-          id="preview"
-          ref="preview"
-          :span="isShowCssEditor ? 8 : 12"
-          class="preview-wrapper flex-1 p-5"
-        >
-          <div id="output-wrapper" :class="{ output_night: !backLight }">
-            <div class="preview border shadow-xl">
-              <section id="output" v-html="output" />
-              <div v-if="isCoping" class="loading-mask">
-                <div class="loading-mask-box">
-                  <div class="loading__img" />
-                  <span>正在生成</span>
+        <div class="relative flex-1">
+          <div
+            id="preview"
+            ref="preview"
+            :span="isShowCssEditor ? 8 : 12"
+            class="preview-wrapper flex-1 p-5"
+          >
+            <div id="output-wrapper" :class="{ output_night: !backLight }">
+              <div class="preview border shadow-xl">
+                <section id="output" v-html="output" />
+                <div v-if="isCoping" class="loading-mask">
+                  <div class="loading-mask-box">
+                    <div class="loading__img" />
+                    <span>正在生成</span>
+                  </div>
                 </div>
               </div>
             </div>
+          </div>
+          <div class="bg-muted absolute bottom-0 left-0 p-2 text-xs shadow">
+            {{ charCount }} 个字符
           </div>
         </div>
         <CssEditor class="flex-1" />
