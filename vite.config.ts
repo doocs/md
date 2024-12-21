@@ -54,5 +54,13 @@ export default defineConfig({
   css: {
     devSourcemap: true,
   },
-},
-)
+  build: {
+    rollupOptions: {
+      output: {
+        chunkFileNames: `static/js/md-[name]-[hash].js`,
+        entryFileNames: `static/js/md-[name]-[hash].js`,
+        assetFileNames: `static/[ext]/md-[name]-[hash].[ext]`,
+      },
+    },
+  },
+})
