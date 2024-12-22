@@ -14,8 +14,8 @@ import {
   themeOptions,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
-import { mergeCss, solveWeChatImage } from '@/utils'
-import { Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
+import { addPrefix, mergeCss, solveWeChatImage } from '@/utils'
+import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
@@ -60,6 +60,10 @@ const { isDark, isCiteStatus, output, primaryColor } = storeToRefs(store)
 
 const { toggleDark, editorRefresh, citeStatusChanged } = store
 
+const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
+const source = ref(``)
+const { copy: copyContent } = useClipboard({ source })
+
 // 复制到微信公众号
 function copy() {
   emit(`startCopy`)
@@ -85,7 +89,7 @@ function copy() {
       toggleDark()
     }
 
-    nextTick(() => {
+    nextTick(async () => {
       solveWeChatImage()
 
       const clipboardDiv = document.getElementById(`output`)!
@@ -128,21 +132,30 @@ function copy() {
       })
 
       window.getSelection()!.removeAllRanges()
-      const range = document.createRange()
 
-      range.setStartBefore(clipboardDiv.firstChild!)
-      range.setEndAfter(clipboardDiv.lastChild!)
-      window.getSelection()!.addRange(range)
-      document.execCommand(`copy`)
-      window.getSelection()!.removeAllRanges()
+      const temp = clipboardDiv.innerHTML
+
+      if (copyMode.value === `txt`) {
+        const range = document.createRange()
+        range.setStartBefore(clipboardDiv.firstChild!)
+        range.setEndAfter(clipboardDiv.lastChild!)
+        window.getSelection()!.addRange(range)
+        document.execCommand(`copy`)
+        window.getSelection()!.removeAllRanges()
+      }
+
       clipboardDiv.innerHTML = output.value
 
       if (isBeforeDark) {
         nextTick(() => toggleDark())
       }
 
+      if (copyMode.value === `html`) {
+        await copyContent(temp)
+      }
+
       // 输出提示
-      toast.success(`已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`)
+      toast.success(copyMode.value === `html` ? `已复制 HTML 源码，请进行下一步操作。` : `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴。`)
 
       editorRefresh()
       emit(`endCopy`)
@@ -424,9 +437,34 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </PopoverContent>
     </Popover>
-    <Button variant="outline" class="mx-2" @click="copy">
-      复制
-    </Button>
+
+    <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
+      <Button variant="ghost" class="shadow-none" @click="copy">
+        复制
+      </Button>
+      <Separator orientation="vertical" class="h-5" />
+      <DropdownMenu v-model="copyMode">
+        <DropdownMenuTrigger as-child>
+          <Button variant="ghost" class="px-2 shadow-none">
+            <ChevronDownIcon class="text-secondary-foreground h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          align="end"
+          :align-offset="-5"
+          class="w-[200px]"
+        >
+          <DropdownMenuRadioGroup v-model="copyMode">
+            <DropdownMenuRadioItem value="txt">
+              公众号格式
+            </DropdownMenuRadioItem>
+            <DropdownMenuRadioItem value="html">
+              HTML 格式
+            </DropdownMenuRadioItem>
+          </DropdownMenuRadioGroup>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
 
     <PostInfo />
 
