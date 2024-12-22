@@ -152,7 +152,7 @@ function copy() {
       }
 
       // 输出提示
-      toast.success(`已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴`)
+      toast.success(copyMode.value === `html` ? `已复制 HTML 源码，请进行下一步操作。` : `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴。`)
 
       editorRefresh()
       emit(`endCopy`)
@@ -453,7 +453,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         >
           <DropdownMenuRadioGroup v-model="copyMode">
             <DropdownMenuRadioItem value="txt">
-              文本
+              公众号格式
             </DropdownMenuRadioItem>
             <DropdownMenuRadioItem value="html">
               HTML 格式
