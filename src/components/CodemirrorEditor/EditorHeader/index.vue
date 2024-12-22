@@ -133,10 +133,9 @@ function copy() {
 
       window.getSelection()!.removeAllRanges()
 
-      if (copyMode.value === `html`) {
-        await copyContent(clipboardDiv.innerHTML)
-      }
-      else {
+      const temp = clipboardDiv.innerHTML
+
+      if (copyMode.value === `txt`) {
         const range = document.createRange()
         range.setStartBefore(clipboardDiv.firstChild!)
         range.setEndAfter(clipboardDiv.lastChild!)
@@ -149,6 +148,10 @@ function copy() {
 
       if (isBeforeDark) {
         nextTick(() => toggleDark())
+      }
+
+      if (copyMode.value === `html`) {
+        await copyContent(temp)
       }
 
       // 输出提示
