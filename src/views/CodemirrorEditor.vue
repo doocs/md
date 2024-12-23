@@ -9,11 +9,11 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
 const { isDark, output, editor, readingTime } = storeToRefs(store)
-const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
   editorRefresh,
@@ -363,18 +363,45 @@ onMounted(() => {
 
 <template>
   <div ref="container" class="container flex flex-col">
-    <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
+    <EditorHeader
+      @add-format="addFormat"
+      @format-content="formatContent"
+      @start-copy="startCopy"
+      @end-copy="endCopy"
+    />
     <main class="container-main flex-1">
-      <div class="container-main-section h-full flex border-1">
+      <div class="container-main-section h-full flex">
+        <div class="flex flex-col border-r p-1">
+          <TooltipProvider :delay-duration="200">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button size="icon" variant="ghost" @click="store.isOpenPostSlider = !store.isOpenPostSlider">
+                  <PanelLeftOpen v-show="!store.isOpenPostSlider" class="size-4" />
+                  <PanelLeftClose v-show="store.isOpenPostSlider" class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {{ store.isOpenPostSlider ? "关闭" : "展开" }}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <PostSlider />
         <div
-          ref="codeMirrorWrapper" class="codeMirror-wrapper flex-1 border-r-1" :class="{
-            'order-1': !store.isEditOnLeft,
+          ref="codeMirrorWrapper"
+          class="codeMirror-wrapper flex-1"
+          :class="{
+            'order-1 border-l': !store.isEditOnLeft,
+            'border-r': store.isEditOnLeft,
           }"
         >
           <ContextMenu>
             <ContextMenuTrigger>
-              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
+              <textarea
+                id="editor"
+                type="textarea"
+                placeholder="Your markdown text here."
+              />
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
               <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
@@ -403,7 +430,11 @@ onMounted(() => {
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div id="preview" ref="preview" :span="isShowCssEditor ? 8 : 12" class="preview-wrapper flex-1 p-5">
+        <div
+          id="preview"
+          ref="preview"
+          class="preview-wrapper flex-1 p-5"
+        >
           <div id="output-wrapper" :class="{ output_night: !backLight }">
             <div class="preview border shadow-xl">
               <section id="output" v-html="output" />
@@ -416,7 +447,8 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <CssEditor class="flex-1" />
+        <CssEditor class="order-2 flex-1" />
+        <RightSlider class="order-2" />
       </div>
       <footer class="flex flex-1 justify-end pr-5 text-[12px]">
         字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
@@ -461,8 +493,6 @@ onMounted(() => {
 
 .container-main {
   overflow: hidden;
-  padding: 20px;
-  padding-top: 0;
 }
 
 #output-wrapper {

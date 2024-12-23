@@ -56,6 +56,8 @@ export const useStore = defineStore(`store`, () => {
   // 预备弃用
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
+  const isOpenRightSlider = useStorage(addPrefix(`is_open_right_slider`), false)
+
   const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
   // 文章列表
   const posts = useStorage(addPrefix(`posts`), [{
@@ -492,6 +494,7 @@ export const useStore = defineStore(`store`, () => {
     renamePost,
     delPost,
     isOpenPostSlider,
+    isOpenRightSlider,
   }
 })
 
