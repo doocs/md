@@ -13,7 +13,7 @@
     "build:cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
     "preview": "npm run build && vite preview",
-    "release:cli": "node ./bin/release.js",
+    "release:cli": "node ./scripts/release.js",
     "ext:dev": "wxt",
     "ext:zip": "wxt zip",
     "lint": "eslint . --fix",

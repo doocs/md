@@ -1,0 +1,19 @@
+ARG VER_GOLANG=1.17.6-alpine3.15
+ARG VER_ALPINE=3.15
+
+FROM "doocs/md:latest-assets" AS assets
+
+FROM "golang:$VER_GOLANG" AS gobuilder
+COPY --from=assets /app/* /app/assets/
+COPY server/main.go /app
+RUN apk add git bash gcc musl-dev upx
+WORKDIR /app
+RUN go build -ldflags "-w -s" -o md main.go && \
+    apk add upx && \
+    upx -9 -o md.minify md
+
+FROM "alpine:$VER_ALPINE"
+LABEL MAINTAINER="ylb<contact@yanglibin.info>"
+COPY --from=gobuilder /app/md.minify /bin/md
+EXPOSE 80
+CMD ["md"]

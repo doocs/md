@@ -1,0 +1,14 @@
+FROM node:20-alpine3.19 AS builder
+ENV LANG="en_US.UTF-8"
+ENV LANGUAGE="en_US.UTF-8"
+ENV LC_ALL="en_US.UTF-8"
+RUN apk add curl
+RUN curl -L "https://github.com/doocs/md/archive/refs/heads/main.zip" -o "main.zip" && unzip "main.zip" && mv "md-main" /app
+WORKDIR /app
+COPY ./patch/vite.config.ts /app/vite.config.ts
+ENV NODE_OPTIONS="--openssl-legacy-provider"
+RUN npm i && npm run build
+
+FROM scratch
+LABEL MAINTAINER="ylb<contact@yanglibin.info>"
+COPY --from=builder /app/dist /app/assets
