@@ -64,6 +64,15 @@ const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
 const source = ref(``)
 const { copy: copyContent } = useClipboard({ source })
 
+const creatEmptyNode = () => {
+  const node = document.createElement(`p`)
+  node.style.fontSize = `0`
+  node.style.lineHeight = `0`
+  node.style.margin = `0`
+  node.innerHTML = `&nbsp;`
+  return node
+}
+
 // 复制到微信公众号
 function copy() {
   emit(`startCopy`)
@@ -107,13 +116,11 @@ function copy() {
 
       clipboardDiv.focus()
 
-      // edge case: 由于 svg 无法复制， 在前面插入一个空节点
-      const p = document.createElement(`p`)
-      p.style.fontSize = `0` // 设置字体大小为 0
-      p.style.lineHeight = `0` // 行高也为 0
-      p.style.margin = `0` // 避免外边距干扰
-      p.innerHTML = `&nbsp;`
-      clipboardDiv.insertBefore(p, clipboardDiv.firstChild)
+      // 由于 svg 无法复制， 在前后各插入一个空白节点
+      const beforeNode = creatEmptyNode()
+      const afterNode = creatEmptyNode()
+      clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
+      clipboardDiv.appendChild(afterNode)
 
       // 兼容 Mermaid
       const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
