@@ -8,7 +8,6 @@ WORKDIR /app
 COPY ./patch/vite.config.ts /app/vite.config.ts
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 RUN npm i && npm run build
-RUN touch /app/dist/.nojekyll
 
 FROM scratch
 LABEL MAINTAINER="ylb<contact@yanglibin.info>"
