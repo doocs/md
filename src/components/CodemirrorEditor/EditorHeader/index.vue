@@ -64,7 +64,7 @@ const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
 const source = ref(``)
 const { copy: copyContent } = useClipboard({ source })
 
-const creatEmptyNode = () => {
+function creatEmptyNode() {
   const node = document.createElement(`p`)
   node.style.fontSize = `0`
   node.style.lineHeight = `0`
