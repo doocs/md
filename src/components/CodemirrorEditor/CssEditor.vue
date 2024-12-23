@@ -103,7 +103,7 @@ function tabChanged(tabName: string | number) {
 
 <template>
   <transition enter-active-class="bounceInRight">
-    <div v-show="displayStore.isShowCssEditor" class="cssEditor-wrapper order-1 h-full flex flex-col border-l-1">
+    <div v-show="displayStore.isShowCssEditor" class="cssEditor-wrapper h-full flex flex-col border-l-1">
       <Tabs
         v-model="store.cssContentConfig.active"
         @update:model-value="tabChanged"

@@ -57,7 +57,7 @@ function delPost() {
 
 <template>
   <div
-    class="overflow-hidden border-r bg-gray/20 transition-width dark:bg-gray/40"
+    class="overflow-hidden bg-gray/20 transition-width dark:bg-gray/40"
     :class="{
       'w-0': !store.isOpenPostSlider,
       'w-50': store.isOpenPostSlider,

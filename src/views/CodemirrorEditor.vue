@@ -9,11 +9,11 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
 const { isDark, output, editor } = storeToRefs(store)
-const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
   editorRefresh,
@@ -370,13 +370,29 @@ onMounted(() => {
       @end-copy="endCopy"
     />
     <main class="container-main flex-1">
-      <div class="container-main-section h-full flex border-1">
+      <div class="container-main-section h-full flex">
+        <div class="flex flex-col border-r p-1">
+          <TooltipProvider :delay-duration="200">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button size="icon" variant="ghost" @click="store.isOpenPostSlider = !store.isOpenPostSlider">
+                  <PanelLeftOpen v-show="!store.isOpenPostSlider" class="size-4" />
+                  <PanelLeftClose v-show="store.isOpenPostSlider" class="size-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                {{ store.isOpenPostSlider ? "关闭" : "展开" }}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        </div>
         <PostSlider />
         <div
           ref="codeMirrorWrapper"
-          class="codeMirror-wrapper flex-1 border-r-1"
+          class="codeMirror-wrapper flex-1"
           :class="{
-            'order-1': !store.isEditOnLeft,
+            'order-1 border-l': !store.isEditOnLeft,
+            'border-r': store.isEditOnLeft,
           }"
         >
           <ContextMenu>
@@ -417,7 +433,6 @@ onMounted(() => {
         <div
           id="preview"
           ref="preview"
-          :span="isShowCssEditor ? 8 : 12"
           class="preview-wrapper flex-1 p-5"
         >
           <div id="output-wrapper" :class="{ output_night: !backLight }">
@@ -432,7 +447,8 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <CssEditor class="flex-1" />
+        <CssEditor class="order-2 flex-1" />
+        <RightSlider class="order-2" />
       </div>
     </main>
 
@@ -476,8 +492,6 @@ onMounted(() => {
 
 .container-main {
   overflow: hidden;
-  padding: 20px;
-  padding-top: 0;
 }
 
 #output-wrapper {
