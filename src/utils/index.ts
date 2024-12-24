@@ -418,7 +418,8 @@ export function processClipboardContent(primaryColor: string) {
     section.innerHTML = parent.innerHTML
 
     const grand = parent.parentElement!
-    grand.innerHTML = `` // 清空父元素
+    // 清空父元素
+    grand.innerHTML = ``
     grand.appendChild(section)
   })
 }
