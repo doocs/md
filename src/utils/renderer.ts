@@ -174,6 +174,8 @@ export function initRenderer(opts: IOpts) {
       const langText = lang.split(` `)[0]
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
       let highlighted = hljs.highlight(text, { language }).value
+      // tab to 4 spaces
+      highlighted = highlighted.replace(/\t/g, '    ')
       highlighted = highlighted
         .replace(/\r\n/g, `<br/>`)
         .replace(/\n/g, `<br/>`)
