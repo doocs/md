@@ -340,18 +340,18 @@ export function removeLeft(str: string) {
 export function solveWeChatImage() {
   const clipboardDiv = document.getElementById(`output`)!
   const images = clipboardDiv.getElementsByTagName(`img`)
-  for (let i = 0; i < images.length; i++) {
-    const image = images[i]
+
+  Array.from(images).forEach((image) => {
     const width = image.getAttribute(`width`)!
     const height = image.getAttribute(`height`)!
     image.removeAttribute(`width`)
     image.removeAttribute(`height`)
     image.style.width = width
     image.style.height = height
-  }
+  })
 }
 
-export function mergeCss(html: string) {
+export function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
     preserveImportant: true,
@@ -368,16 +368,57 @@ export function createEmptyNode(): HTMLElement {
 }
 
 export function modifyHtmlStructure(htmlString: string): string {
-  // 创建一个 div 元素来暂存原始 HTML 字符串
   const tempDiv = document.createElement(`div`)
   tempDiv.innerHTML = htmlString
 
-  const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
-
-  originalItems.forEach((originalItem) => {
+  // 移动 `li > ul` 和 `li > ol` 到 `li` 后面
+  tempDiv.querySelectorAll(`li > ul, li > ol`).forEach((originalItem) => {
     originalItem.parentElement!.insertAdjacentElement(`afterend`, originalItem)
   })
 
-  // 返回修改后的 HTML 字符串
   return tempDiv.innerHTML
+}
+
+export function processClipboardContent(primaryColor: string) {
+  const clipboardDiv = document.getElementById(`output`)!
+
+  // 先合并 CSS 和修改 HTML 结构
+  clipboardDiv.innerHTML = modifyHtmlStructure(mergeCss(clipboardDiv.innerHTML))
+
+  // 处理样式和颜色变量
+  clipboardDiv.innerHTML = clipboardDiv.innerHTML
+    .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
+    .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
+    .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
+    .replace(/var\(--md-primary-color\)/g, primaryColor)
+    .replace(/--md-primary-color:.+?;/g, ``)
+    .replace(
+      /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
+      `<span class="nodeLabel"$1>$2</span>`,
+    )
+
+  // 处理图片大小
+  solveWeChatImage()
+
+  // 添加空白节点用于兼容 SVG 复制
+  const beforeNode = createEmptyNode()
+  const afterNode = createEmptyNode()
+  clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
+  clipboardDiv.appendChild(afterNode)
+
+  // 兼容 Mermaid
+  const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
+  nodes.forEach((node) => {
+    const parent = node.parentElement!
+    const xmlns = parent.getAttribute(`xmlns`)!
+    const style = parent.getAttribute(`style`)!
+    const section = document.createElement(`section`)
+    section.setAttribute(`xmlns`, xmlns)
+    section.setAttribute(`style`, style)
+    section.innerHTML = parent.innerHTML
+
+    const grand = parent.parentElement!
+    grand.innerHTML = `` // 清空父元素
+    grand.appendChild(section)
+  })
 }

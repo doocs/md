@@ -16,10 +16,7 @@ import {
 import { useDisplayStore, useStore } from '@/stores'
 import {
   addPrefix,
-  createEmptyNode,
-  mergeCss,
-  modifyHtmlStructure,
-  solveWeChatImage,
+  processClipboardContent,
 } from '@/utils'
 import {
   ChevronDownIcon,
@@ -93,52 +90,11 @@ function copy() {
     }
 
     nextTick(async () => {
-      solveWeChatImage()
-
+      processClipboardContent(primaryColor.value)
       const clipboardDiv = document.getElementById(`output`)!
-      clipboardDiv.innerHTML = mergeCss(clipboardDiv.innerHTML)
-      clipboardDiv.innerHTML = modifyHtmlStructure(clipboardDiv.innerHTML)
-      clipboardDiv.innerHTML = clipboardDiv.innerHTML
-        // 公众号不支持 position， 转换为等价的 translateY
-        .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
-        // 适配主题中的颜色变量
-        .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
-        .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
-        .replace(/var\(--md-primary-color\)/g, primaryColor.value)
-        .replace(/--md-primary-color:.+?;/g, ``)
-        .replace(
-          /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
-          `<span class="nodeLabel"$1>$2</span>`,
-        )
-
       clipboardDiv.focus()
-
-      // 由于 svg 无法复制， 在前后各插入一个空白节点
-      const beforeNode = createEmptyNode()
-      const afterNode = createEmptyNode()
-      clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
-      clipboardDiv.appendChild(afterNode)
-
-      // 兼容 Mermaid
-      const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
-      nodes.forEach((node) => {
-        const parent = node.parentElement!
-        const xmlns = parent.getAttribute(`xmlns`)!
-        const style = parent.getAttribute(`style`)!
-        const section = document.createElement(`section`)
-        section.setAttribute(`xmlns`, xmlns)
-        section.setAttribute(`style`, style)
-        section.innerHTML = parent.innerHTML
-
-        const grand = parent.parentElement!
-        grand.innerHTML = ``
-        grand.appendChild(section)
-      })
-
       window.getSelection()!.removeAllRanges()
-
       const temp = clipboardDiv.innerHTML
-
       if (copyMode.value === `txt`) {
         const range = document.createRange()
         range.setStartBefore(clipboardDiv.firstChild!)
@@ -147,13 +103,10 @@ function copy() {
         document.execCommand(`copy`)
         window.getSelection()!.removeAllRanges()
       }
-
       clipboardDiv.innerHTML = output.value
-
       if (isBeforeDark) {
         nextTick(() => toggleDark())
       }
-
       if (copyMode.value === `html`) {
         await copyContent(temp)
       }
