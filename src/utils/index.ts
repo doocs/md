@@ -357,3 +357,27 @@ export function mergeCss(html: string) {
     preserveImportant: true,
   })
 }
+
+export function createEmptyNode(): HTMLElement {
+  const node = document.createElement(`p`)
+  node.style.fontSize = `0`
+  node.style.lineHeight = `0`
+  node.style.margin = `0`
+  node.innerHTML = `&nbsp;`
+  return node
+}
+
+export function modifyHtmlStructure(htmlString: string): string {
+  // 创建一个 div 元素来暂存原始 HTML 字符串
+  const tempDiv = document.createElement(`div`)
+  tempDiv.innerHTML = htmlString
+
+  const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
+
+  originalItems.forEach((originalItem) => {
+    originalItem.parentElement!.insertAdjacentElement(`afterend`, originalItem)
+  })
+
+  // 返回修改后的 HTML 字符串
+  return tempDiv.innerHTML
+}

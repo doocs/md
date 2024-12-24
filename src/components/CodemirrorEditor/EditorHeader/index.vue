@@ -14,11 +14,29 @@ import {
   themeOptions,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
-import { addPrefix, mergeCss, solveWeChatImage } from '@/utils'
-import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
+import {
+  addPrefix,
+  createEmptyNode,
+  mergeCss,
+  modifyHtmlStructure,
+  solveWeChatImage,
+} from '@/utils'
+import {
+  ChevronDownIcon,
+  Moon,
+  PanelLeftClose,
+  PanelLeftOpen,
+  Settings,
+  Sun,
+} from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
 
-const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
+const emit = defineEmits([
+  `addFormat`,
+  `formatContent`,
+  `startCopy`,
+  `endCopy`,
+])
 
 const formatItems = [
   {
@@ -64,34 +82,10 @@ const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
 const source = ref(``)
 const { copy: copyContent } = useClipboard({ source })
 
-function creatEmptyNode() {
-  const node = document.createElement(`p`)
-  node.style.fontSize = `0`
-  node.style.lineHeight = `0`
-  node.style.margin = `0`
-  node.innerHTML = `&nbsp;`
-  return node
-}
-
 // 复制到微信公众号
 function copy() {
   emit(`startCopy`)
   setTimeout(() => {
-    function modifyHtmlStructure(htmlString: string) {
-      // 创建一个 div 元素来暂存原始 HTML 字符串
-      const tempDiv = document.createElement(`div`)
-      tempDiv.innerHTML = htmlString
-
-      const originalItems = tempDiv.querySelectorAll(`li > ul, li > ol`)
-
-      originalItems.forEach((originalItem) => {
-        originalItem.parentElement!.insertAdjacentElement(`afterend`, originalItem)
-      })
-
-      // 返回修改后的 HTML 字符串
-      return tempDiv.innerHTML
-    }
-
     // 如果是深色模式，复制之前需要先切换到白天模式
     const isBeforeDark = isDark.value
     if (isBeforeDark) {
@@ -112,13 +106,16 @@ function copy() {
         .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
         .replace(/var\(--md-primary-color\)/g, primaryColor.value)
         .replace(/--md-primary-color:.+?;/g, ``)
-        .replace(/<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g, `<span class="nodeLabel"$1>$2</span>`)
+        .replace(
+          /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
+          `<span class="nodeLabel"$1>$2</span>`,
+        )
 
       clipboardDiv.focus()
 
       // 由于 svg 无法复制， 在前后各插入一个空白节点
-      const beforeNode = creatEmptyNode()
-      const afterNode = creatEmptyNode()
+      const beforeNode = createEmptyNode()
+      const afterNode = createEmptyNode()
       clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
       clipboardDiv.appendChild(afterNode)
 
@@ -162,7 +159,11 @@ function copy() {
       }
 
       // 输出提示
-      toast.success(copyMode.value === `html` ? `已复制 HTML 源码，请进行下一步操作。` : `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴。`)
+      toast.success(
+        copyMode.value === `html`
+          ? `已复制 HTML 源码，请进行下一步操作。`
+          : `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴。`,
+      )
 
       editorRefresh()
       emit(`endCopy`)
@@ -177,7 +178,9 @@ function customStyle() {
   }, 50)
 }
 
-const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
+const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(
+  `pickColorsContainer`,
+)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
@@ -191,18 +194,30 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <MenubarTrigger> 格式 </MenubarTrigger>
         <MenubarContent class="w-60" align="start">
           <MenubarCheckboxItem
-            v-for="{ label, kbd, emitArgs } in formatItems" :key="label"
-            @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
+            v-for="{ label, kbd, emitArgs } in formatItems"
+            :key="label"
+            @click="
+              emitArgs[0] === 'addFormat'
+                ? $emit(emitArgs[0], emitArgs[1])
+                : $emit(emitArgs[0])
+            "
           >
             {{ label }}
             <MenubarShortcut>
-              <kbd v-for="item in kbd" :key="item" class="mx-1 bg-gray-2 dark:bg-stone-9">
+              <kbd
+                v-for="item in kbd"
+                :key="item"
+                class="mx-1 bg-gray-2 dark:bg-stone-9"
+              >
                 {{ item }}
               </kbd>
             </MenubarShortcut>
           </MenubarCheckboxItem>
           <MenubarSeparator />
-          <MenubarCheckboxItem :checked="isCiteStatus" @click="citeStatusChanged()">
+          <MenubarCheckboxItem
+            :checked="isCiteStatus"
+            @click="citeStatusChanged()"
+          >
             微信外链转底部引用
           </MenubarCheckboxItem>
         </MenubarContent>
@@ -212,10 +227,20 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       <HelpDropdown />
     </Menubar>
 
-    <Button v-if="!store.isOpenPostSlider" variant="outline" class="mr-2" @click="store.isOpenPostSlider = true">
+    <Button
+      v-if="!store.isOpenPostSlider"
+      variant="outline"
+      class="mr-2"
+      @click="store.isOpenPostSlider = true"
+    >
       <PanelLeftOpen class="size-4" />
     </Button>
-    <Button v-else variant="outline" class="mr-2" @click="store.isOpenPostSlider = false">
+    <Button
+      v-else
+      variant="outline"
+      class="mr-2"
+      @click="store.isOpenPostSlider = false"
+    >
       <PanelLeftClose class="size-4" />
     </Button>
     <Popover>
@@ -230,9 +255,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>主题</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in themeOptions" :key="value" class="w-full" variant="outline" :class="{
+                v-for="{ label, value } in themeOptions"
+                :key="value"
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.theme === value,
-                }" @click="store.themeChanged(value)"
+                }"
+                @click="store.themeChanged(value)"
               >
                 {{ label }}
               </Button>
@@ -242,8 +272,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>字体</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
-                :class="{ 'border-black dark:border-white': store.fontFamily === value }"
+                v-for="{ label, value } in fontFamilyOptions"
+                :key="value"
+                variant="outline"
+                class="w-full"
+                :class="{
+                  'border-black dark:border-white': store.fontFamily === value,
+                }"
                 @click="store.fontChanged(value)"
               >
                 {{ label }}
@@ -254,9 +289,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>字号</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                v-for="{ value, desc } in fontSizeOptions" :key="value" variant="outline" class="w-full" :class="{
+                v-for="{ value, desc } in fontSizeOptions"
+                :key="value"
+                variant="outline"
+                class="w-full"
+                :class="{
                   'border-black dark:border-white': store.fontSize === value,
-                }" @click="store.sizeChanged(value)"
+                }"
+                @click="store.sizeChanged(value)"
               >
                 {{ desc }}
               </Button>
@@ -266,12 +306,19 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>主题色</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in colorOptions" :key="value" class="w-full" variant="outline" :class="{
-                  'border-black dark:border-white': store.primaryColor === value,
-                }" @click="store.colorChanged(value)"
+                v-for="{ label, value } in colorOptions"
+                :key="value"
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white':
+                    store.primaryColor === value,
+                }"
+                @click="store.colorChanged(value)"
               >
                 <span
-                  class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
+                  class="mr-2 inline-block h-4 w-4 rounded-full"
+                  :style="{
                     background: value,
                   }"
                 />
@@ -285,7 +332,8 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
               <PickColors
                 v-if="pickColorsContainer"
                 v-model:value="primaryColor"
-                show-alpha :format="format"
+                show-alpha
+                :format="format"
                 :format-options="formatOptions"
                 :theme="store.isDark ? 'dark' : 'light'"
                 :popup-container="pickColorsContainer"
@@ -296,12 +344,19 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
           <div class="space-y-2">
             <h2>代码块主题</h2>
             <div>
-              <Select v-model="store.codeBlockTheme" @update:model-value="store.codeBlockThemeChanged">
+              <Select
+                v-model="store.codeBlockTheme"
+                @update:model-value="store.codeBlockThemeChanged"
+              >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a fruit" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
+                  <SelectItem
+                    v-for="{ label, value } in codeBlockThemeOptions"
+                    :key="label"
+                    :value="value"
+                  >
                     {{ label }}
                   </SelectItem>
                 </SelectContent>
@@ -312,9 +367,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>图注格式</h2>
             <div class="grid grid-cols-3 justify-items-center gap-2">
               <Button
-                v-for="{ label, value } in legendOptions" :key="value" class="w-full" variant="outline" :class="{
+                v-for="{ label, value } in legendOptions"
+                :key="value"
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.legend === value,
-                }" @click="store.legendChanged(value)"
+                }"
+                @click="store.legendChanged(value)"
               >
                 {{ label }}
               </Button>
@@ -325,16 +385,22 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>Mac 代码块</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.isMacCodeBlock,
-                }" @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
+                }"
+                @click="!store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !store.isMacCodeBlock,
-                }" @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
+                }"
+                @click="store.isMacCodeBlock && store.macCodeBlockChanged()"
               >
                 关闭
               </Button>
@@ -344,16 +410,22 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>微信外链转底部引用</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.isCiteStatus,
-                }" @click="!store.isCiteStatus && store.citeStatusChanged()"
+                }"
+                @click="!store.isCiteStatus && store.citeStatusChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !store.isCiteStatus,
-                }" @click="store.isCiteStatus && store.citeStatusChanged()"
+                }"
+                @click="store.isCiteStatus && store.citeStatusChanged()"
               >
                 关闭
               </Button>
@@ -363,16 +435,22 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>段落首行缩进</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.isUseIndent,
-                }" @click="!store.isUseIndent && store.useIndentChanged()"
+                }"
+                @click="!store.isUseIndent && store.useIndentChanged()"
               >
                 开启
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !store.isUseIndent,
-                }" @click="store.isUseIndent && store.useIndentChanged()"
+                }"
+                @click="store.isUseIndent && store.useIndentChanged()"
               >
                 关闭
               </Button>
@@ -382,16 +460,23 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>自定义 CSS 面板</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
-                  'border-black dark:border-white': displayStore.isShowCssEditor,
-                }" @click="!displayStore.isShowCssEditor && customStyle()"
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white':
+                    displayStore.isShowCssEditor,
+                }"
+                @click="!displayStore.isShowCssEditor && customStyle()"
               >
                 开启
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !displayStore.isShowCssEditor,
-                }" @click="displayStore.isShowCssEditor && customStyle()"
+                }"
+                @click="displayStore.isShowCssEditor && customStyle()"
               >
                 关闭
               </Button>
@@ -401,16 +486,22 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>编辑区位置</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': store.isEditOnLeft,
-                }" @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
+                }"
+                @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 左侧
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !store.isEditOnLeft,
-                }" @click="store.isEditOnLeft && store.toggleEditOnLeft()"
+                }"
+                @click="store.isEditOnLeft && store.toggleEditOnLeft()"
               >
                 右侧
               </Button>
@@ -420,16 +511,22 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <h2>模式</h2>
             <div class="grid grid-cols-5 justify-items-center gap-2">
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': !isDark,
-                }" @click="store.toggleDark(false)"
+                }"
+                @click="store.toggleDark(false)"
               >
                 <Sun class="h-4 w-4" />
               </Button>
               <Button
-                class="w-full" variant="outline" :class="{
+                class="w-full"
+                variant="outline"
+                :class="{
                   'border-black dark:border-white': isDark,
-                }" @click="store.toggleDark(true)"
+                }"
+                @click="store.toggleDark(true)"
               >
                 <Moon class="h-4 w-4" />
               </Button>
@@ -445,7 +542,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </PopoverContent>
     </Popover>
 
-    <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
+    <div
+      class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md"
+    >
       <Button variant="ghost" class="shadow-none" @click="copy">
         复制
       </Button>
@@ -456,11 +555,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             <ChevronDownIcon class="text-secondary-foreground h-4 w-4" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent
-          align="end"
-          :align-offset="-5"
-          class="w-[200px]"
-        >
+        <DropdownMenuContent align="end" :align-offset="-5" class="w-[200px]">
           <DropdownMenuRadioGroup v-model="copyMode">
             <DropdownMenuRadioItem value="txt">
               公众号格式
