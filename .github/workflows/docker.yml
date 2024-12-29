@@ -9,7 +9,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    if: github.repository == 'doocs/md'
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
