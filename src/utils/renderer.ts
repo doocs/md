@@ -2,8 +2,9 @@ import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { PropertiesHyphen } from 'csstype'
 import type { Renderer, RendererObject, Tokens } from 'marked'
 import { cloneDeep, toMerged } from 'es-toolkit'
-import hljs from 'highlight.js'
+import frontMatter from 'front-matter'
 
+import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import { getStyleString } from '.'
@@ -108,6 +109,19 @@ export function initRenderer(opts: IOpts) {
 
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)
+  }
+
+  function parseFrontMatterAndContent(markdownText: string) {
+    try {
+      const parsed = frontMatter(markdownText)
+      const yamlData = parsed.attributes
+      const markdownContent = parsed.body
+      return { yamlData, markdownContent }
+    }
+    catch (error) {
+      console.error(`Error parsing front-matter:`, error)
+      return { yamlData: {}, markdownContent: markdownText }
+    }
   }
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
@@ -280,6 +294,7 @@ export function initRenderer(opts: IOpts) {
     buildFootnotes,
     setOptions,
     reset,
+    parseFrontMatterAndContent,
     createContainer(content: string) {
       return styledContent(`container`, content, `section`)
     },
