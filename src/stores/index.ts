@@ -179,7 +179,8 @@ export const useStore = defineStore(`store`, () => {
     codeThemeChange()
     renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
 
-    let outputTemp = marked.parse(editor.value!.getValue()) as string
+    const { markdownContent } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    let outputTemp = marked.parse(markdownContent) as string
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)

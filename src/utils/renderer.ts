@@ -2,14 +2,18 @@ import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { PropertiesHyphen } from 'csstype'
 import type { Renderer, RendererObject, Tokens } from 'marked'
 import { cloneDeep, toMerged } from 'es-toolkit'
-import hljs from 'highlight.js'
+import frontMatter from 'front-matter'
 
+import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
 import { MDKatex } from './MDKatex'
 
+marked.setOptions({
+  breaks: true,
+})
 marked.use(MDKatex({ nonStandard: true }))
 
 function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
@@ -107,6 +111,19 @@ export function initRenderer(opts: IOpts) {
     return getStyles(styleMapping, tag, addition)
   }
 
+  function parseFrontMatterAndContent(markdownText: string) {
+    try {
+      const parsed = frontMatter(markdownText)
+      const yamlData = parsed.attributes
+      const markdownContent = parsed.body
+      return { yamlData, markdownContent }
+    }
+    catch (error) {
+      console.error(`Error parsing front-matter:`, error)
+      return { yamlData: {}, markdownContent: markdownText }
+    }
+  }
+
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
     return `<${tag} ${styles(styleLabel)}>${content}</${tag}>`
@@ -175,7 +192,7 @@ export function initRenderer(opts: IOpts) {
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
       let highlighted = hljs.highlight(text, { language }).value
       // tab to 4 spaces
-      highlighted = highlighted.replace(/\t/g, '    ')
+      highlighted = highlighted.replace(/\t/g, `    `)
       highlighted = highlighted
         .replace(/\r\n/g, `<br/>`)
         .replace(/\n/g, `<br/>`)
@@ -186,7 +203,8 @@ export function initRenderer(opts: IOpts) {
     },
 
     codespan({ text }: Tokens.Codespan): string {
-      return styledContent(`codespan`, text, `code`)
+      const escapedText = text.replace(/</g, `&lt;`).replace(/>/g, `&gt;`)
+      return styledContent(`codespan`, escapedText, `code`)
     },
 
     listitem(item: Tokens.ListItem): string {
@@ -276,6 +294,7 @@ export function initRenderer(opts: IOpts) {
     buildFootnotes,
     setOptions,
     reset,
+    parseFrontMatterAndContent,
     createContainer(content: string) {
       return styledContent(`container`, content, `section`)
     },
