@@ -206,12 +206,14 @@ const defaultTheme: Theme = {
 
     hr: {
       'border-style': `solid`,
-      'border-width': `1px 0 0`,
+      'border-width': `2px 0 0`,
       'border-color': `rgba(0,0,0,0.1)`,
       '-webkit-transform-origin': `0 0`,
       '-webkit-transform': `scale(1, 0.5)`,
       'transform-origin': `0 0`,
       'transform': `scale(1, 0.5)`,
+      'height': `0.4em`,
+      'margin': `1.5em 0`,
     },
   },
   inline: {
