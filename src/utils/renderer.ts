@@ -10,6 +10,9 @@ import { getStyleString } from '.'
 import markedAlert from './MDAlert'
 import { MDKatex } from './MDKatex'
 
+marked.setOptions({
+  breaks: true,
+})
 marked.use(MDKatex({ nonStandard: true }))
 
 function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
@@ -175,7 +178,7 @@ export function initRenderer(opts: IOpts) {
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
       let highlighted = hljs.highlight(text, { language }).value
       // tab to 4 spaces
-      highlighted = highlighted.replace(/\t/g, '    ')
+      highlighted = highlighted.replace(/\t/g, `    `)
       highlighted = highlighted
         .replace(/\r\n/g, `<br/>`)
         .replace(/\n/g, `<br/>`)
@@ -186,7 +189,8 @@ export function initRenderer(opts: IOpts) {
     },
 
     codespan({ text }: Tokens.Codespan): string {
-      return styledContent(`codespan`, text, `code`)
+      const escapedText = text.replace(/</g, `&lt;`).replace(/>/g, `&gt;`)
+      return styledContent(`codespan`, escapedText, `code`)
     },
 
     listitem(item: Tokens.ListItem): string {
