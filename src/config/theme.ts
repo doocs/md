@@ -79,12 +79,11 @@ const defaultTheme: Theme = {
     // 引用
     blockquote: {
       'font-style': `normal`,
-      'border-left': `none`,
       'padding': `1em`,
-      'border-radius': `8px`,
+      'border-left': `4px solid var(--md-primary-color)`,
+      'border-radius': `6px`,
       'color': `rgba(0,0,0,0.5)`,
       'background': `var(--blockquote-background)`,
-      'margin': `2em 8px`,
     },
 
     // 引用内容
