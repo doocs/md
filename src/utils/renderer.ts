@@ -40,6 +40,16 @@ function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeSt
   } as ThemeStyles
 }
 
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, `&amp;`) // 转义 &
+    .replace(/</g, `&lt;`) // 转义 <
+    .replace(/>/g, `&gt;`) // 转义 >
+    .replace(/"/g, `&quot;`) // 转义 "
+    .replace(/'/g, `&#39;`) // 转义 '
+    .replace(/`/g, `&#96;`) // 转义 `
+}
+
 function buildAddition(): string {
   return `
     <style>
@@ -203,7 +213,7 @@ export function initRenderer(opts: IOpts) {
     },
 
     codespan({ text }: Tokens.Codespan): string {
-      const escapedText = text.replace(/</g, `&lt;`).replace(/>/g, `&gt;`)
+      const escapedText = escapeHtml(text)
       return styledContent(`codespan`, escapedText, `code`)
     },
 
