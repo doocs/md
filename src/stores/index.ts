@@ -24,6 +24,10 @@ export const useStore = defineStore(`store`, () => {
   const isCiteStatus = useStorage(`isCiteStatus`, false)
   const toggleCiteStatus = useToggle(isCiteStatus)
 
+  // 是否统计字数和阅读时间
+  const isCountStatus = useStorage(`isCountStatus`, false)
+  const toggleCountStatus = useToggle(isCountStatus)
+
   // 是否开启段落首行缩进
   const isUseIndent = useStorage(addPrefix(`use_indent`), false)
   const toggleUseIndent = useToggle(isUseIndent)
@@ -177,10 +181,13 @@ export const useStore = defineStore(`store`, () => {
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
+    renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value, countStatus: isCountStatus.value })
 
-    const { markdownContent } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    const { markdownContent, readingTime } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
     let outputTemp = marked.parse(markdownContent) as string
+
+    // 阅读时间及字数统计
+    outputTemp = renderer.buildReadingTime(readingTime) + outputTemp
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
@@ -275,6 +282,7 @@ export const useStore = defineStore(`store`, () => {
   const resetStyle = () => {
     isCiteStatus.value = false
     isMacCodeBlock.value = true
+    isCountStatus.value = false
 
     theme.value = themeOptions[0].value
     fontFamily.value = fontFamilyOptions[0].value
@@ -366,6 +374,10 @@ export const useStore = defineStore(`store`, () => {
     toggleCiteStatus()
   })
 
+  const countStatusChanged = withAfterRefresh(() => {
+    toggleCountStatus()
+  })
+
   const useIndentChanged = withAfterRefresh(() => {
     toggleUseIndent()
   })
@@ -426,6 +438,9 @@ export const useStore = defineStore(`store`, () => {
     citeStatusChanged,
     isUseIndent,
     useIndentChanged,
+
+    isCountStatus,
+    countStatusChanged,
 
     output,
     editor,

@@ -1,14 +1,18 @@
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { PropertiesHyphen } from 'csstype'
 import type { Renderer, RendererObject, Tokens } from 'marked'
+import type { ReadTimeResults } from 'reading-time'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
 
 import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
+import readingTime from 'reading-time'
+
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
+
 import { MDKatex } from './MDKatex'
 
 marked.setOptions({
@@ -109,6 +113,36 @@ const macCodeSvg = `
   </svg>
 `.trim()
 
+interface ParseResult {
+  yamlData: Record<string, any>
+  markdownContent: string
+  readingTime: ReadTimeResults
+}
+
+function parseFrontMatterAndContent(markdownText: string): ParseResult {
+  try {
+    const parsed = frontMatter(markdownText)
+    const yamlData = parsed.attributes
+    const markdownContent = parsed.body
+
+    const readingTimeResult = readingTime(markdownContent)
+
+    return {
+      yamlData: yamlData as Record<string, any>,
+      markdownContent,
+      readingTime: readingTimeResult,
+    }
+  }
+  catch (error) {
+    console.error(`Error parsing front-matter:`, error)
+    return {
+      yamlData: {},
+      markdownContent: markdownText,
+      readingTime: readingTime(markdownText),
+    }
+  }
+}
+
 export function initRenderer(opts: IOpts) {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
@@ -119,19 +153,6 @@ export function initRenderer(opts: IOpts) {
 
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)
-  }
-
-  function parseFrontMatterAndContent(markdownText: string) {
-    try {
-      const parsed = frontMatter(markdownText)
-      const yamlData = parsed.attributes
-      const markdownContent = parsed.body
-      return { yamlData, markdownContent }
-    }
-    catch (error) {
-      console.error(`Error parsing front-matter:`, error)
-      return { yamlData: {}, markdownContent: markdownText }
-    }
   }
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
@@ -154,6 +175,20 @@ export function initRenderer(opts: IOpts) {
     opts = { ...opts, ...newOpts }
     styleMapping = buildTheme(opts)
     marked.use(markedAlert({ styles: styleMapping }))
+  }
+
+  function buildReadingTime(readingTime: ReadTimeResults): string {
+    if (!opts.countStatus) {
+      return ``
+    }
+    if (!readingTime.words) {
+      return ``
+    }
+    return `
+      <blockquote ${styles(`blockquote`)}>
+        <p ${styles(`blockquote_p`)}>约 ${readingTime.words} 字，需 ${readingTime.text.replace(`read`, `阅读。`)}</p>
+      </blockquote>
+    `
   }
 
   const buildFootnotes = () => {
@@ -305,6 +340,7 @@ export function initRenderer(opts: IOpts) {
     setOptions,
     reset,
     parseFrontMatterAndContent,
+    buildReadingTime,
     createContainer(content: string) {
       return styledContent(`container`, content, `section`)
     },

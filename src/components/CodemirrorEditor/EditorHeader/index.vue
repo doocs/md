@@ -71,9 +71,9 @@ const formatItems = [
 const store = useStore()
 const displayStore = useDisplayStore()
 
-const { isDark, isCiteStatus, output, primaryColor } = storeToRefs(store)
+const { isDark, isCiteStatus, isCountStatus, output, primaryColor } = storeToRefs(store)
 
-const { toggleDark, editorRefresh, citeStatusChanged } = store
+const { toggleDark, editorRefresh, citeStatusChanged, countStatusChanged } = store
 
 const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
 const source = ref(``)
@@ -172,6 +172,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             @click="citeStatusChanged()"
           >
             微信外链转底部引用
+          </MenubarCheckboxItem>
+          <MenubarSeparator />
+          <MenubarCheckboxItem
+            :checked="isCountStatus"
+            @click="countStatusChanged()"
+          >
+            统计字数和阅读时间
           </MenubarCheckboxItem>
         </MenubarContent>
       </MenubarMenu>
@@ -379,6 +386,31 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                   'border-black dark:border-white': !store.isCiteStatus,
                 }"
                 @click="store.isCiteStatus && store.citeStatusChanged()"
+              >
+                关闭
+              </Button>
+            </div>
+          </div>
+          <div class="space-y-2">
+            <h2>统计字数和阅读时间</h2>
+            <div class="grid grid-cols-5 justify-items-center gap-2">
+              <Button
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': store.isCountStatus,
+                }"
+                @click="!store.isCountStatus && store.countStatusChanged()"
+              >
+                开启
+              </Button>
+              <Button
+                class="w-full"
+                variant="outline"
+                :class="{
+                  'border-black dark:border-white': !store.isCountStatus,
+                }"
+                @click="store.isCountStatus && store.countStatusChanged()"
               >
                 关闭
               </Button>

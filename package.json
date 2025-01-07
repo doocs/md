@@ -45,6 +45,7 @@
     "pinia": "^2.2.7",
     "qiniu-js": "^3.4.2",
     "radix-vue": "^1.9.10",
+    "reading-time": "^1.5.0",
     "tailwind-merge": "^2.5.5",
     "tailwindcss-animate": "^1.0.7",
     "tiny-oss": "^0.5.1",
