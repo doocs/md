@@ -1,9 +1,10 @@
+import type { ReadTimeResults } from 'reading-time'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
 import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
-import { initRenderer } from '@/utils/renderer'
 
+import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import { marked } from 'marked'
 
@@ -178,16 +179,22 @@ export const useStore = defineStore(`store`, () => {
     isUseIndent: isUseIndent.value,
   })
 
+  const readingTime = ref<ReadTimeResults | null>(null)
+
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
     renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value, countStatus: isCountStatus.value })
 
-    const { markdownContent, readingTime } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    const { markdownContent, readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    console.log(`Reading time result:`, readingTimeResult)
+    readingTime.value = readingTimeResult
     let outputTemp = marked.parse(markdownContent) as string
 
+    console.log(readingTime.value)
+
     // 阅读时间及字数统计
-    outputTemp = renderer.buildReadingTime(readingTime) + outputTemp
+    outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
@@ -451,6 +458,7 @@ export const useStore = defineStore(`store`, () => {
     primaryColor,
     codeBlockTheme,
     legend,
+    readingTime,
 
     editorRefresh,
 

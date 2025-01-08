@@ -12,7 +12,7 @@ import CodeMirror from 'codemirror'
 
 const store = useStore()
 const displayStore = useDisplayStore()
-const { isDark, output, editor } = storeToRefs(store)
+const { isDark, output, editor, readingTime } = storeToRefs(store)
 const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
@@ -434,6 +434,9 @@ onMounted(() => {
         </div>
         <CssEditor class="flex-1" />
       </div>
+      <footer class="flex flex-1 justify-end pr-5 text-[14px]">
+        约 {{ readingTime?.words }} 字， {{ readingTime?.text }}
+      </footer>
     </main>
 
     <UploadImgDialog
