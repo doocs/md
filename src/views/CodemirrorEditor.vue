@@ -419,7 +419,7 @@ onMounted(() => {
         <CssEditor class="flex-1" />
       </div>
       <footer class="flex flex-1 justify-end pr-5 text-[12px]">
-        字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes) }} 分钟
+        字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
 
       <UploadImgDialog @upload-image="uploadImage" />
