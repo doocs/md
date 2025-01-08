@@ -12,7 +12,7 @@ import CodeMirror from 'codemirror'
 
 const store = useStore()
 const displayStore = useDisplayStore()
-const { isDark, output, editor } = storeToRefs(store)
+const { isDark, output, editor, readingTime } = storeToRefs(store)
 const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
@@ -61,7 +61,7 @@ function leftAndRightScroll() {
     }
 
     const percentage
-          = source.scrollTop / (source.scrollHeight - source.offsetHeight)
+      = source.scrollTop / (source.scrollHeight - source.offsetHeight)
     const height = percentage * (target.scrollHeight - target.offsetHeight)
 
     target.scrollTo(0, height)
@@ -274,7 +274,7 @@ function mdLocalToRemote() {
           let [, , matchStr] = item
           matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
           const { file }
-                = list.find(f => f.path === `${root}${matchStr}`) || {}
+            = list.find(f => f.path === `${root}${matchStr}`) || {}
           uploadImage(file!, (url) => {
             resolve({ matchStr, url })
           })
@@ -363,29 +363,18 @@ onMounted(() => {
 
 <template>
   <div ref="container" class="container flex flex-col">
-    <EditorHeader
-      @add-format="addFormat"
-      @format-content="formatContent"
-      @start-copy="startCopy"
-      @end-copy="endCopy"
-    />
+    <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
     <main class="container-main flex-1">
       <div class="container-main-section h-full flex border-1">
         <PostSlider />
         <div
-          ref="codeMirrorWrapper"
-          class="codeMirror-wrapper flex-1 border-r-1"
-          :class="{
+          ref="codeMirrorWrapper" class="codeMirror-wrapper flex-1 border-r-1" :class="{
             'order-1': !store.isEditOnLeft,
           }"
         >
           <ContextMenu>
             <ContextMenuTrigger>
-              <textarea
-                id="editor"
-                type="textarea"
-                placeholder="Your markdown text here."
-              />
+              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
               <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
@@ -414,12 +403,7 @@ onMounted(() => {
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div
-          id="preview"
-          ref="preview"
-          :span="isShowCssEditor ? 8 : 12"
-          class="preview-wrapper flex-1 p-5"
-        >
+        <div id="preview" ref="preview" :span="isShowCssEditor ? 8 : 12" class="preview-wrapper flex-1 p-5">
           <div id="output-wrapper" :class="{ output_night: !backLight }">
             <div class="preview border shadow-xl">
               <section id="output" v-html="output" />
@@ -434,32 +418,33 @@ onMounted(() => {
         </div>
         <CssEditor class="flex-1" />
       </div>
+      <footer class="flex flex-1 justify-end pr-5 text-[12px]">
+        字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
+      </footer>
+
+      <UploadImgDialog @upload-image="uploadImage" />
+
+      <InsertFormDialog />
+
+      <RunLoading />
+
+      <AlertDialog v-model:open="store.isOpenConfirmDialog">
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>提示</AlertDialogTitle>
+            <AlertDialogDescription>
+              此操作将丢失本地自定义样式，是否继续？
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>取消</AlertDialogCancel>
+            <AlertDialogAction @click="store.resetStyle()">
+              确认
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
-
-    <UploadImgDialog
-      @upload-image="uploadImage"
-    />
-
-    <InsertFormDialog />
-
-    <RunLoading />
-
-    <AlertDialog v-model:open="store.isOpenConfirmDialog">
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>提示</AlertDialogTitle>
-          <AlertDialogDescription>
-            此操作将丢失本地自定义样式，是否继续？
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction @click="store.resetStyle()">
-            确认
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   </div>
 </template>
 

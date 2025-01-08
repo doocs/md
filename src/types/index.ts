@@ -26,6 +26,7 @@ export interface IOpts {
   isUseIndent: boolean
   legend?: string
   citeStatus?: boolean
+  countStatus?: boolean
 }
 
 export type ThemeStyles = Record<Block | Inline, ExtendedProperties>

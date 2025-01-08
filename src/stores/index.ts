@@ -1,9 +1,10 @@
+import type { ReadTimeResults } from 'reading-time'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, codeBlockThemeOptions, colorOptions, fontFamilyOptions, fontSizeOptions, legendOptions, shiftKey, themeMap, themeOptions } from '@/config'
 import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD, exportHTML, formatDoc } from '@/utils'
-import { initRenderer } from '@/utils/renderer'
 
+import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import { marked } from 'marked'
 
@@ -23,6 +24,10 @@ export const useStore = defineStore(`store`, () => {
   // 是否开启微信外链接底部引用
   const isCiteStatus = useStorage(`isCiteStatus`, false)
   const toggleCiteStatus = useToggle(isCiteStatus)
+
+  // 是否统计字数和阅读时间
+  const isCountStatus = useStorage(`isCountStatus`, false)
+  const toggleCountStatus = useToggle(isCountStatus)
 
   // 是否开启段落首行缩进
   const isUseIndent = useStorage(addPrefix(`use_indent`), false)
@@ -174,13 +179,22 @@ export const useStore = defineStore(`store`, () => {
     isUseIndent: isUseIndent.value,
   })
 
+  const readingTime = ref<ReadTimeResults | null>(null)
+
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
-    renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value })
+    renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value, countStatus: isCountStatus.value })
 
-    const { markdownContent } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    const { markdownContent, readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    console.log(`Reading time result:`, readingTimeResult)
+    readingTime.value = readingTimeResult
     let outputTemp = marked.parse(markdownContent) as string
+
+    console.log(readingTime.value)
+
+    // 阅读时间及字数统计
+    outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
 
     // 去除第一行的 margin-top
     outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
@@ -275,6 +289,7 @@ export const useStore = defineStore(`store`, () => {
   const resetStyle = () => {
     isCiteStatus.value = false
     isMacCodeBlock.value = true
+    isCountStatus.value = false
 
     theme.value = themeOptions[0].value
     fontFamily.value = fontFamilyOptions[0].value
@@ -366,6 +381,10 @@ export const useStore = defineStore(`store`, () => {
     toggleCiteStatus()
   })
 
+  const countStatusChanged = withAfterRefresh(() => {
+    toggleCountStatus()
+  })
+
   const useIndentChanged = withAfterRefresh(() => {
     toggleUseIndent()
   })
@@ -427,6 +446,9 @@ export const useStore = defineStore(`store`, () => {
     isUseIndent,
     useIndentChanged,
 
+    isCountStatus,
+    countStatusChanged,
+
     output,
     editor,
     cssEditor,
@@ -436,6 +458,7 @@ export const useStore = defineStore(`store`, () => {
     primaryColor,
     codeBlockTheme,
     legend,
+    readingTime,
 
     editorRefresh,
 

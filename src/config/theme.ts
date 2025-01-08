@@ -84,6 +84,7 @@ const defaultTheme: Theme = {
       'border-radius': `6px`,
       'color': `rgba(0,0,0,0.5)`,
       'background': `var(--blockquote-background)`,
+      'margin-bottom': `1em`,
     },
 
     // 引用内容
@@ -334,6 +335,7 @@ const graceTheme = toMerged(defaultTheme, {
       'border-radius': `6px`,
       'color': `rgba(0,0,0,0.6)`,
       'box-shadow': `0 4px 6px rgba(0,0,0,0.05)`,
+      'margin-bottom': `1em`,
     },
 
     'blockquote_p': {
