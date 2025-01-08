@@ -186,7 +186,7 @@ export function initRenderer(opts: IOpts) {
     }
     return `
       <blockquote ${styles(`blockquote`)}>
-        <p ${styles(`blockquote_p`)}>约 ${readingTime.words} 字，需 ${readingTime.text.replace(`read`, `阅读。`)}</p>
+        <p ${styles(`blockquote_p`)}>字数 ${readingTime?.words}，阅读大约需 ${Math.ceil(readingTime?.minutes)} 分钟</p>
       </blockquote>
     `
   }
