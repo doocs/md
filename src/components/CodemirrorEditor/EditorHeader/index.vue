@@ -7,7 +7,7 @@ import {
   shiftSign,
 } from '@/config'
 import { useStore } from '@/stores'
-import { addPrefix, mergeCss, solveWeChatImage } from '@/utils'
+import { addPrefix, processClipboardContent } from '@/utils'
 import { ChevronDownIcon, PanelRightClose, PanelRightOpen } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
