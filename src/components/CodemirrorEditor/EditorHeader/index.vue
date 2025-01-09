@@ -8,7 +8,7 @@ import {
 } from '@/config'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
-import { ChevronDownIcon, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide-vue-next'
+import { ChevronDownIcon, PanelLeftClose, PanelLeftOpen, Settings } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
@@ -186,8 +186,7 @@ function copy() {
       <PostInfo />
 
       <Button variant="outline" @click="store.isOpenRightSlider = !store.isOpenRightSlider">
-        <PanelRightOpen v-show="!store.isOpenRightSlider" class="size-4" />
-        <PanelRightClose v-show="store.isOpenRightSlider" class="size-4" />
+        <Settings class="size-4" />
       </Button>
 
       <Toaster rich-colors position="top-center" />
