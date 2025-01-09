@@ -40,13 +40,18 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
 <template>
   <div
-    class="overflow-hidden bg-gray/20 transition-width dark:bg-gray/40"
+    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-gray/40"
     :class="{
       'w-0': !store.isOpenRightSlider,
       'w-100': store.isOpenRightSlider,
     }"
   >
-    <div class="space-y-4 h-full overflow-auto p-4">
+    <div
+      class="space-y-4 h-full overflow-auto p-4 transition-transform" :class="{
+        'translate-x-0': store.isOpenRightSlider,
+        'translate-x-full': !store.isOpenRightSlider,
+      }"
+    >
       <div class="space-y-2">
         <h2>主题</h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">

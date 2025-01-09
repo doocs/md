@@ -57,13 +57,19 @@ function delPost() {
 
 <template>
   <div
-    class="overflow-hidden bg-gray/20 transition-width dark:bg-gray/40"
+    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-gray/40"
     :class="{
       'w-0': !store.isOpenPostSlider,
       'w-50': store.isOpenPostSlider,
     }"
   >
-    <nav class="space-y-1 h-full overflow-auto p-2">
+    <nav
+      class="space-y-1 h-full overflow-auto p-2 transition-transform"
+      :class="{
+        'translate-x-100': store.isOpenPostSlider,
+        '-translate-x-full': !store.isOpenPostSlider,
+      }"
+    >
       <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
           <Button variant="outline" class="w-full" size="xs">
@@ -86,10 +92,7 @@ function delPost() {
         </DialogContent>
       </Dialog>
       <a
-        v-for="(post, index) in store.posts"
-        :key="post.title"
-        href="#"
-        :class="{
+        v-for="(post, index) in store.posts" :key="post.title" href="#" :class="{
           'bg-primary text-primary-foreground shadow-lg border-2 border-primary': store.currentPostIndex === index,
           'dark:bg-primary-dark dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === index,
         }"
