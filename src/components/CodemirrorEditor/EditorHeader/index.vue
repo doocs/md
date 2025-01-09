@@ -102,7 +102,7 @@ function copy() {
 </script>
 
 <template>
-  <header class="header-container h-15 flex items-center justify-between border-b px-5">
+  <header class="header-container h-15 flex items-center justify-between px-5">
     <div class="space-x-2 flex">
       <Menubar class="menubar">
         <FileDropdown />
