@@ -8,7 +8,7 @@ import {
 } from '@/config'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
-import { ChevronDownIcon, PanelRightClose, PanelRightOpen } from 'lucide-vue-next'
+import { ChevronDownIcon, PanelLeftClose, PanelLeftOpen, PanelRightClose, PanelRightOpen } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
@@ -47,7 +47,7 @@ const formatItems = [
 
 const store = useStore()
 
-const { isDark, isCiteStatus, isCountStatus, output, primaryColor } = storeToRefs(store)
+const { isDark, isCiteStatus, isCountStatus, output, primaryColor, isOpenPostSlider } = storeToRefs(store)
 
 const { toggleDark, editorRefresh, citeStatusChanged, countStatusChanged } = store
 
@@ -141,6 +141,20 @@ function copy() {
     </div>
 
     <div class="space-x-2 flex">
+      <TooltipProvider :delay-duration="200">
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <Button variant="outline" @click="isOpenPostSlider = !isOpenPostSlider">
+              <PanelLeftOpen v-show="!isOpenPostSlider" class="size-4" />
+              <PanelLeftClose v-show="isOpenPostSlider" class="size-4" />
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side="left">
+            {{ isOpenPostSlider ? "关闭" : "展开" }}
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+
       <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
         <Button variant="ghost" class="shadow-none" @click="copy">
           复制

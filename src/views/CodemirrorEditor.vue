@@ -9,7 +9,6 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { PanelLeftClose, PanelLeftOpen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -369,23 +368,8 @@ onMounted(() => {
       @start-copy="startCopy"
       @end-copy="endCopy"
     />
-    <main class="container-main flex-1">
-      <div class="container-main-section h-full flex">
-        <div class="flex flex-col border-r p-1">
-          <TooltipProvider :delay-duration="200">
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <Button size="icon" variant="ghost" @click="store.isOpenPostSlider = !store.isOpenPostSlider">
-                  <PanelLeftOpen v-show="!store.isOpenPostSlider" class="size-4" />
-                  <PanelLeftClose v-show="store.isOpenPostSlider" class="size-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="right">
-                {{ store.isOpenPostSlider ? "关闭" : "展开" }}
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        </div>
+    <main class="container-main flex flex-1 flex-col">
+      <div class="container-main-section relative flex flex-1 overflow-hidden">
         <PostSlider />
         <div
           ref="codeMirrorWrapper"
@@ -450,7 +434,7 @@ onMounted(() => {
         <CssEditor class="order-2 flex-1" />
         <RightSlider class="order-2" />
       </div>
-      <footer class="flex flex-1 justify-end pr-5 text-[12px]">
+      <footer class="h-[24px] flex items-center justify-end pr-5 text-[12px]">
         字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
 
@@ -493,6 +477,7 @@ onMounted(() => {
 
 .container-main {
   overflow: hidden;
+  padding: 0 20px;
 }
 
 #output-wrapper {
