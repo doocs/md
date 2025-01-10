@@ -59,12 +59,12 @@ export const useStore = defineStore(`store`, () => {
   const isOpenRightSlider = useStorage(addPrefix(`is_open_right_slider`), false)
 
   const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
-  // 文章列表
+  // 内容列表
   const posts = useStorage(addPrefix(`posts`), [{
-    title: `文章1`,
+    title: `内容1`,
     content: DEFAULT_CONTENT,
   }])
-  // 当前文章
+  // 当前内容
   const currentPostIndex = useStorage(addPrefix(`current_post_index`), 0)
 
   const addPost = (title: string) => {

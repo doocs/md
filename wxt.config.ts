@@ -6,7 +6,7 @@ export default defineConfig({
   publicDir: `../public`,
   extensionApi: `chrome`,
   manifest: {
-    name: `公众号文章编辑器`,
+    name: `公众号内容编辑器`,
     description: `一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、色盘取色、多图上传、一键下载文档、自定义 CSS 样式、一键重置等特性`,
     version: `0.0.7`,
     icons: {

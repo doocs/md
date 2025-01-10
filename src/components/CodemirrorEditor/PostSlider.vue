@@ -16,12 +16,12 @@ watch(isOpen, () => {
 
 function addPost() {
   if (addPostInputVal.value === ``) {
-    toast.error(`文章标题不可为空`)
+    toast.error(`内容标题不可为空`)
     return
   }
   store.addPost(addPostInputVal.value)
   isOpen.value = false
-  toast.success(`文章新增成功`)
+  toast.success(`内容新增成功`)
 }
 
 const editTarget = ref(-1)
@@ -35,12 +35,12 @@ function startRenamePost(index: number) {
 
 function renamePost() {
   if (renamePostInputVal.value === ``) {
-    toast.error(`文章标题不可为空`)
+    toast.error(`内容标题不可为空`)
     return
   }
   store.renamePost(editTarget.value, renamePostInputVal.value)
   isOpenEditDialog.value = false
-  toast.success(`文章重命名成功`)
+  toast.success(`内容重命名成功`)
 }
 
 const isOpenDelPostConfirmDialog = ref(false)
@@ -51,7 +51,7 @@ function startDelPost(index: number) {
 function delPost() {
   store.delPost(editTarget.value)
   isOpenDelPostConfirmDialog.value = false
-  toast.success(`文章删除成功`)
+  toast.success(`内容删除成功`)
 }
 </script>
 
@@ -73,14 +73,14 @@ function delPost() {
       <Dialog v-model:open="isOpen">
         <DialogTrigger as-child>
           <Button variant="outline" class="w-full" size="xs">
-            <Plus /> 新增文章
+            <Plus /> 新增内容
           </Button>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>新增文章</DialogTitle>
+            <DialogTitle>新增内容</DialogTitle>
             <DialogDescription>
-              请输入文章名称
+              请输入内容名称
             </DialogDescription>
           </DialogHeader>
           <Input v-model="addPostInputVal" />
@@ -122,9 +122,9 @@ function delPost() {
       <Dialog v-model:open="isOpenEditDialog">
         <DialogContent class="sm:max-w-[425px]">
           <DialogHeader>
-            <DialogTitle>编辑文章名称</DialogTitle>
+            <DialogTitle>编辑内容名称</DialogTitle>
             <DialogDescription>
-              请输入新的文章名称
+              请输入新的内容名称
             </DialogDescription>
           </DialogHeader>
           <Input v-model="renamePostInputVal" />
@@ -144,7 +144,7 @@ function delPost() {
           <AlertDialogHeader>
             <AlertDialogTitle>提示</AlertDialogTitle>
             <AlertDialogDescription>
-              此操作将删除该文章，是否继续？
+              此操作将删除该内容，是否继续？
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

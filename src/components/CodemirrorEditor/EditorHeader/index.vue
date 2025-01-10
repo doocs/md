@@ -91,7 +91,7 @@ function copy() {
       toast.success(
         copyMode.value === `html`
           ? `已复制 HTML 源码，请进行下一步操作。`
-          : `已复制渲染后的文章到剪贴板，可直接到公众号后台粘贴。`,
+          : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
       )
 
       editorRefresh()
@@ -150,7 +150,7 @@ function copy() {
             </Button>
           </TooltipTrigger>
           <TooltipContent side="left">
-            {{ isOpenPostSlider ? "关闭" : "展开" }}
+            {{ isOpenPostSlider ? "关闭" : "内容管理" }}
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
