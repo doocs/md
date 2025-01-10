@@ -56,13 +56,15 @@ export const useStore = defineStore(`store`, () => {
   // 预备弃用
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
+  const isOpenRightSlider = useStorage(addPrefix(`is_open_right_slider`), false)
+
   const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
-  // 文章列表
+  // 内容列表
   const posts = useStorage(addPrefix(`posts`), [{
-    title: `文章1`,
+    title: `内容1`,
     content: DEFAULT_CONTENT,
   }])
-  // 当前文章
+  // 当前内容
   const currentPostIndex = useStorage(addPrefix(`current_post_index`), 0)
 
   const addPost = (title: string) => {
@@ -296,7 +298,7 @@ export const useStore = defineStore(`store`, () => {
     fontFamily.value = fontFamilyOptions[0].value
     fontSize.value = fontSizeOptions[2].value
     primaryColor.value = colorOptions[0].value
-    codeBlockTheme.value = codeBlockThemeOptions[2].value
+    codeBlockTheme.value = codeBlockThemeOptions[23].value
     legend.value = legendOptions[3].value
 
     cssContentConfig.value = {
@@ -492,6 +494,7 @@ export const useStore = defineStore(`store`, () => {
     renamePost,
     delPost,
     isOpenPostSlider,
+    isOpenRightSlider,
   }
 })
 

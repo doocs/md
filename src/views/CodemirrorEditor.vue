@@ -13,7 +13,6 @@ import CodeMirror from 'codemirror'
 const store = useStore()
 const displayStore = useDisplayStore()
 const { isDark, output, editor, readingTime } = storeToRefs(store)
-const { isShowCssEditor } = storeToRefs(displayStore)
 
 const {
   editorRefresh,
@@ -363,18 +362,30 @@ onMounted(() => {
 
 <template>
   <div ref="container" class="container flex flex-col">
-    <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
-    <main class="container-main flex-1">
-      <div class="container-main-section h-full flex border-1">
+    <EditorHeader
+      @add-format="addFormat"
+      @format-content="formatContent"
+      @start-copy="startCopy"
+      @end-copy="endCopy"
+    />
+    <main class="container-main flex flex-1 flex-col">
+      <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
         <div
-          ref="codeMirrorWrapper" class="codeMirror-wrapper flex-1 border-r-1" :class="{
-            'order-1': !store.isEditOnLeft,
+          ref="codeMirrorWrapper"
+          class="codeMirror-wrapper flex-1"
+          :class="{
+            'order-1 border-l': !store.isEditOnLeft,
+            'border-r': store.isEditOnLeft,
           }"
         >
           <ContextMenu>
             <ContextMenuTrigger>
-              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
+              <textarea
+                id="editor"
+                type="textarea"
+                placeholder="Your markdown text here."
+              />
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
               <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
@@ -403,9 +414,13 @@ onMounted(() => {
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div id="preview" ref="preview" :span="isShowCssEditor ? 8 : 12" class="preview-wrapper flex-1 p-5">
+        <div
+          id="preview"
+          ref="preview"
+          class="preview-wrapper flex-1 p-5"
+        >
           <div id="output-wrapper" :class="{ output_night: !backLight }">
-            <div class="preview border shadow-xl">
+            <div class="preview border-x-1 shadow-xl">
               <section id="output" v-html="output" />
               <div v-if="isCoping" class="loading-mask">
                 <div class="loading-mask-box">
@@ -416,9 +431,10 @@ onMounted(() => {
             </div>
           </div>
         </div>
-        <CssEditor class="flex-1" />
+        <CssEditor class="order-2 flex-1" />
+        <RightSlider class="order-2" />
       </div>
-      <footer class="flex flex-1 justify-end pr-5 text-[12px]">
+      <footer class="h-[30px] flex select-none items-center justify-end text-[12px]">
         字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
 
@@ -461,8 +477,7 @@ onMounted(() => {
 
 .container-main {
   overflow: hidden;
-  padding: 20px;
-  padding-top: 0;
+  padding: 0 20px;
 }
 
 #output-wrapper {
