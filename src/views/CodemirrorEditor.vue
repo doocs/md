@@ -430,6 +430,8 @@ onMounted(() => {
               </div>
             </div>
           </div>
+
+          <BackTop target="preview" :right="40" :bottom="40" />
         </div>
         <CssEditor class="order-2 flex-1" />
         <RightSlider class="order-2" />
