@@ -8,7 +8,7 @@ import {
 } from '@/config'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
-import { ChevronDownIcon, PanelLeftClose, PanelLeftOpen, Settings } from 'lucide-vue-next'
+import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
@@ -154,6 +154,11 @@ function copy() {
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
+
+      <Button variant="outline" @click="toggleDark()">
+        <Moon v-show="isDark" class="size-4" />
+        <Sun v-show="!isDark" class="size-4" />
+      </Button>
 
       <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
         <Button variant="ghost" class="shadow-none" @click="copy">
