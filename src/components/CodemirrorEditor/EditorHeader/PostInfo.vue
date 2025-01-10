@@ -125,7 +125,7 @@ onMounted(() => {
         <Button variant="outline" @click="dialogVisible = false">
           取 消
         </Button>
-        <Button @click="post">
+        <Button :disabled="!extensionInstalled" @click="post">
           确 定
         </Button>
       </DialogFooter>
