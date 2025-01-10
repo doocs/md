@@ -62,7 +62,7 @@ function onUpdate(val: boolean) {
 }
 
 onMounted(() => {
-  extensionInstalled.value = window.$syncer !== `undefined`
+  extensionInstalled.value = window.$syncer !== undefined
 })
 </script>
 
