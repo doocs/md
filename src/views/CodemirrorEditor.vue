@@ -434,7 +434,7 @@ onMounted(() => {
         <CssEditor class="order-2 flex-1" />
         <RightSlider class="order-2" />
       </div>
-      <footer class="h-[30px] flex items-center justify-end text-[12px]">
+      <footer class="h-[30px] flex select-none items-center justify-end text-[12px]">
         字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
 
@@ -473,6 +473,7 @@ onMounted(() => {
   height: 100vh;
   min-width: 100%;
   padding: 0;
+  overflow: hidden;
 }
 
 .container-main {
