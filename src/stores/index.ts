@@ -298,7 +298,7 @@ export const useStore = defineStore(`store`, () => {
     fontFamily.value = fontFamilyOptions[0].value
     fontSize.value = fontSizeOptions[2].value
     primaryColor.value = colorOptions[0].value
-    codeBlockTheme.value = codeBlockThemeOptions[2].value
+    codeBlockTheme.value = codeBlockThemeOptions[23].value
     legend.value = legendOptions[3].value
 
     cssContentConfig.value = {
