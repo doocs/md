@@ -473,7 +473,6 @@ onMounted(() => {
   height: 100vh;
   min-width: 100%;
   padding: 0;
-  overflow: hidden;
 }
 
 .container-main {
