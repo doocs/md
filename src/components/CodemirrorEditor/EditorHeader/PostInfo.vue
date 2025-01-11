@@ -61,8 +61,30 @@ function onUpdate(val: boolean) {
   }
 }
 
+function checkExtension() {
+  if (window.$syncer !== undefined) {
+    extensionInstalled.value = true
+    return
+  }
+
+  // 如果插件还没加载，5秒内每 500ms 检查一次
+  let count = 0
+  const timer = setInterval(() => {
+    if (window.$syncer !== undefined) {
+      extensionInstalled.value = true
+      clearInterval(timer)
+      return
+    }
+
+    count++
+    if (count > 10) { // 5秒后还是没有检测到，就停止检查
+      clearInterval(timer)
+    }
+  }, 500)
+}
+
 onMounted(() => {
-  extensionInstalled.value = window.$syncer !== undefined
+  checkExtension()
 })
 </script>
 
