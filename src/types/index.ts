@@ -72,3 +72,23 @@ export interface Alert {
   text: string
   tokens: Token[]
 }
+
+export interface PostAccount {
+  avatar: string
+  displayName: string
+  home: string
+  icon: string
+  supportTypes: string[]
+  title: string
+  type: string
+  uid: string
+  checked: boolean
+}
+
+export interface Post {
+  title: string
+  desc: string
+  thumb: string
+  content: string
+  accounts: PostAccount[]
+}
