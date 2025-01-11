@@ -5,7 +5,7 @@ import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 
 const store = useStore()
-const { output } = storeToRefs(store)
+const { output, editor } = storeToRefs(store)
 
 const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
@@ -17,6 +17,7 @@ const form = ref<Post>({
   desc: ``,
   thumb: ``,
   content: ``,
+  markdown: ``,
   accounts: [] as PostAccount[],
 })
 
@@ -28,6 +29,7 @@ async function prePost() {
     title: ``,
     desc: ``,
     content: ``,
+    markdown: ``,
     accounts: [],
   }
   try {
@@ -39,6 +41,7 @@ async function prePost() {
         .textContent ?? ``,
       desc: document.querySelector(`#output p`)!.textContent ?? ``,
       content: output.value,
+      markdown: editor.value?.getValue() ?? ``,
       accounts: allAccounts.value,
     }
   }
@@ -121,7 +124,7 @@ onBeforeMount(() => {
         <Info class="h-4 w-4" />
         <AlertTitle>提示</AlertTitle>
         <AlertDescription>
-          此功能由第三方浏览器插件支持，本平台不保证安全性。
+          此功能由第三方浏览器插件支持，本平台不保证安全性及同步准确度。
         </AlertDescription>
       </Alert>
 
@@ -198,5 +201,5 @@ onBeforeMount(() => {
     </DialogContent>
   </Dialog>
 
-  <PostTaskDialog :open="postTaskDialogVisible" :post="form" />
+  <PostTaskDialog v-model:open="postTaskDialogVisible" :post="form" />
 </template>

@@ -83,6 +83,8 @@ export interface PostAccount {
   type: string
   uid: string
   checked: boolean
+  status?: string
+  error?: string
 }
 
 export interface Post {
@@ -90,5 +92,6 @@ export interface Post {
   desc: string
   thumb: string
   content: string
+  markdown: string
   accounts: PostAccount[]
 }
