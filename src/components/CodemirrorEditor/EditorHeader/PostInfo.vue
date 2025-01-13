@@ -24,6 +24,10 @@ const form = ref<Post>({
 const allowPost = computed(() => extensionInstalled.value && form.value.accounts.some(a => a.checked))
 
 async function prePost() {
+  if (extensionInstalled.value && allAccounts.value.length === 0) {
+    await getAccounts()
+  }
+
   let auto: Post = {
     thumb: ``,
     title: ``,
@@ -32,7 +36,7 @@ async function prePost() {
     markdown: ``,
     accounts: [],
   }
-  const accounts = allAccounts.value.filter(a => !['weixin', 'ipfs'].includes(a.type))
+  const accounts = allAccounts.value.filter(a => ![`weixin`, `ipfs`].includes(a.type))
   try {
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
@@ -64,9 +68,12 @@ declare global {
   }
 }
 
-async function getAccounts() {
-  await window.$syncer?.getAccounts((resp: PostAccount[]) => {
-    allAccounts.value = resp.map(a => ({ ...a, checked: true }))
+async function getAccounts(): Promise<void> {
+  return new Promise((resolve) => {
+    window.$syncer?.getAccounts((resp: PostAccount[]) => {
+      allAccounts.value = resp.map(a => ({ ...a, checked: true }))
+      resolve()
+    })
   })
 }
 
@@ -90,10 +97,10 @@ function checkExtension() {
 
   // 如果插件还没加载，5秒内每 500ms 检查一次
   let count = 0
-  const timer = setInterval(() => {
+  const timer = setInterval(async () => {
     if (window.$syncer !== undefined) {
       extensionInstalled.value = true
-      getAccounts()
+      await getAccounts()
       clearInterval(timer)
       return
     }
