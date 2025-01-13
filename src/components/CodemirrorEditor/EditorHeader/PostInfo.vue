@@ -32,6 +32,7 @@ async function prePost() {
     markdown: ``,
     accounts: [],
   }
+  const accounts = allAccounts.value.filter(a => !['weixin', 'ipfs'].includes(a.type))
   try {
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
@@ -42,7 +43,7 @@ async function prePost() {
       desc: document.querySelector(`#output p`)!.textContent ?? ``,
       content: output.value,
       markdown: editor.value?.getValue() ?? ``,
-      accounts: allAccounts.value,
+      accounts,
     }
   }
   catch (error) {
