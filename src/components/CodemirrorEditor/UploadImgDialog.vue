@@ -1,86 +1,197 @@
 <script setup lang="ts">
 import { useDisplayStore } from '@/stores'
 import { checkImage } from '@/utils'
+import { toTypedSchema } from '@vee-validate/yup'
 import { UploadCloud } from 'lucide-vue-next'
+import { Field, Form } from 'vee-validate'
+import * as yup from 'yup'
 
 const emit = defineEmits([`uploadImage`])
 
 const displayStore = useDisplayStore()
 
-const formGitHub = ref({
-  repo: ``,
-  branch: ``,
-  accessToken: ``,
-})
+// github
+const githubSchema = toTypedSchema(yup.object({
+  repo: yup.string().required(`GitHub 仓库不能为空`),
+  branch: yup.string().optional(),
+  accessToken: yup.string().required(`GitHub Token 不能为空`),
+}))
 
-// const formGitee = ref({
-//   repo: ``,
-//   branch: ``,
-//   accessToken: ``,
-// })
+const githubConfig = ref(localStorage.getItem(`githubConfig`)
+  ? JSON.parse(localStorage.getItem(`githubConfig`)!)
+  : { repo: ``, branch: ``, accessToken: `` })
 
-const formAliOSS = ref({
-  accessKeyId: ``,
-  accessKeySecret: ``,
-  bucket: ``,
-  region: ``,
-  path: ``,
-  cdnHost: ``,
-  useSSL: true,
-})
+function githubSubmit(formValues: any) {
+  localStorage.setItem(`githubConfig`, JSON.stringify(formValues))
+  githubConfig.value = formValues
+  toast.success(`保存成功`)
+}
 
-const formTxCOS = ref({
-  secretId: ``,
-  secretKey: ``,
-  bucket: ``,
-  region: ``,
-  path: ``,
-  cdnHost: ``,
-})
+// 阿里云
+const aliOSSSchema = toTypedSchema(yup.object({
+  accessKeyId: yup.string().required(`AccessKey ID 不能为空`),
+  accessKeySecret: yup.string().required(`AccessKey Secret 不能为空`),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  region: yup.string().required(`Region 不能为空`),
+  useSSL: yup.boolean().required(),
+  cdnHost: yup.string().optional(),
+  path: yup.string().optional(),
+}))
 
-const formQiniu = ref({
-  accessKey: ``,
-  secretKey: ``,
-  bucket: ``,
-  domain: ``,
-  region: ``,
-  path: ``,
-})
+const aliOSSConfig = ref(localStorage.getItem(`aliOSSConfig`)
+  ? JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
+  : {
+      accessKeyId: ``,
+      accessKeySecret: ``,
+      bucket: ``,
+      region: ``,
+      useSSL: true,
+      cdnHost: ``,
+      path: ``,
+    })
 
-const minioOSS = ref({
-  endpoint: ``,
-  port: ``,
-  useSSL: true,
-  bucket: ``,
-  accessKey: ``,
-  secretKey: ``,
-})
+function aliOSSSubmit(formValues: any) {
+  localStorage.setItem(`aliOSSConfig`, JSON.stringify(formValues))
+  aliOSSConfig.value = formValues
+  toast.success(`保存成功`)
+}
 
-const formR2 = ref({
-  accountId: ``,
-  accessKey: ``,
-  secretKey: ``,
-  bucket: ``,
-  domain: ``,
-  path: ``,
-})
+// 腾讯云
+const txCOSSchema = toTypedSchema(yup.object({
+  secretId: yup.string().required(`Secret ID 不能为空`),
+  secretKey: yup.string().required(`Secret Key 不能为空`),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  region: yup.string().required(`Region 不能为空`),
+  cdnHost: yup.string().optional(),
+  path: yup.string().optional(),
+}))
 
-const formMp = ref({
-  proxyOrigin: ``,
-  appID: ``,
-  appsecret: ``,
-})
+const txCOSConfig = ref(localStorage.getItem(`txCOSConfig`)
+  ? JSON.parse(localStorage.getItem(`txCOSConfig`)!)
+  : {
+      secretId: ``,
+      secretKey: ``,
+      bucket: ``,
+      region: ``,
+      cdnHost: ``,
+      path: ``,
+    })
+
+function txCOSSubmit(formValues: any) {
+  localStorage.setItem(`txCOSConfig`, JSON.stringify(formValues))
+  txCOSConfig.value = formValues
+  toast.success(`保存成功`)
+}
+
+// 七牛云
+const qiniuSchema = toTypedSchema(yup.object({
+  accessKey: yup.string().required(`AccessKey 不能为空`),
+  secretKey: yup.string().required(`SecretKey 不能为空`),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  domain: yup.string().required(`Bucket 对应域名不能为空`),
+  region: yup.string().optional(),
+  path: yup.string().optional(),
+}))
+
+const qiniuConfig = ref(localStorage.getItem(`qiniuConfig`)
+  ? JSON.parse(localStorage.getItem(`qiniuConfig`)!)
+  : {
+      accessKey: ``,
+      secretKey: ``,
+      bucket: ``,
+      domain: ``,
+      region: ``,
+      path: ``,
+    })
+
+function qiniuSubmit(formValues: any) {
+  localStorage.setItem(`qiniuConfig`, JSON.stringify(formValues))
+  qiniuConfig.value = formValues
+  toast.success(`保存成功`)
+}
+
+// MinIO
+const minioOSSSchema = toTypedSchema(yup.object({
+  endpoint: yup.string().required(`Endpoint 不能为空`),
+  port: yup.string().optional(),
+  useSSL: yup.boolean().required(),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  accessKey: yup.string().required(`AccessKey 不能为空`),
+  secretKey: yup.string().required(`SecretKey 不能为空`),
+}))
+
+const minioOSSConfig = ref(localStorage.getItem(`minioConfig`)
+  ? JSON.parse(localStorage.getItem(`minioConfig`)!)
+  : {
+      endpoint: ``,
+      port: ``,
+      useSSL: true,
+      bucket: ``,
+      accessKey: ``,
+      secretKey: ``,
+    })
+
+function minioOSSSubmit(formValues: any) {
+  localStorage.setItem(`minioConfig`, JSON.stringify(formValues))
+  minioOSSConfig.value = formValues
+  toast.success(`保存成功`)
+}
+
+// 公众号
 const isWebsite = ref(window.location.href.startsWith(`http`))
+
+const mpSchema = toTypedSchema(yup.object({
+  proxyOrigin: isWebsite.value ? yup.string().required(`代理域名不能为空`) : yup.string().optional(),
+  appID: yup.string().required(`AppID 不能为空`),
+  appsecret: yup.string().required(`AppSecret 不能为空`),
+}))
+
+const mpConfig = ref(localStorage.getItem(`mpConfig`)
+  ? JSON.parse(localStorage.getItem(`mpConfig`)!)
+  : {
+      proxyOrigin: ``,
+      appID: ``,
+      appsecret: ``,
+    })
+
+function mpSubmit(formValues: any) {
+  localStorage.setItem(`mpConfig`, JSON.stringify(formValues))
+  mpConfig.value = formValues
+  toast.success(`保存成功`)
+}
+
+// Cloudflare R2
+const r2Schema = toTypedSchema(yup.object({
+  accountId: yup.string().required(`Account ID 不能为空`),
+  accessKey: yup.string().required(`AccessKey 不能为空`),
+  secretKey: yup.string().required(`SecretKey 不能为空`),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  domain: yup.string().required(`Bucket 对应域名不能为空`),
+  path: yup.string().optional(),
+}))
+
+const r2Config = ref(localStorage.getItem(`r2Config`)
+  ? JSON.parse(localStorage.getItem(`r2Config`)!)
+  : {
+      accountId: ``,
+      accessKey: ``,
+      secretKey: ``,
+      bucket: ``,
+      domain: ``,
+      path: ``,
+    })
+
+function r2Submit(formValues: any) {
+  localStorage.setItem(`r2Config`, JSON.stringify(formValues))
+  r2Config.value = formValues
+  toast.success(`保存成功`)
+}
 
 const options = [
   {
     value: `default`,
     label: `默认`,
   },
-  // {
-  //   value: `gitee`,
-  //   label: `Gitee`,
-  // },
   {
     value: `github`,
     label: `GitHub`,
@@ -120,155 +231,14 @@ const imgHost = ref(`default`)
 const activeName = ref(`upload`)
 
 onBeforeMount(() => {
-  if (localStorage.getItem(`githubConfig`)) {
-    formGitHub.value = JSON.parse(localStorage.getItem(`githubConfig`)!)
-  }
-  // if (localStorage.getItem(`giteeConfig`)) {
-  //   formGitee.value = JSON.parse(localStorage.getItem(`giteeConfig`)!)
-  // }
-  if (localStorage.getItem(`aliOSSConfig`)) {
-    formAliOSS.value = JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
-  }
-  if (localStorage.getItem(`txCOSConfig`)) {
-    formTxCOS.value = JSON.parse(localStorage.getItem(`txCOSConfig`)!)
-  }
-  if (localStorage.getItem(`qiniuConfig`)) {
-    formQiniu.value = JSON.parse(localStorage.getItem(`qiniuConfig`)!)
-  }
-  if (localStorage.getItem(`minioConfig`)) {
-    minioOSS.value = JSON.parse(localStorage.getItem(`minioConfig`)!)
-  }
-  if (localStorage.getItem(`r2Config`)) {
-    formR2.value = JSON.parse(localStorage.getItem(`r2Config`)!)
-  }
   if (localStorage.getItem(`imgHost`)) {
     imgHost.value = localStorage.getItem(`imgHost`)!
-  }
-  if (localStorage.getItem(`mpConfig`)) {
-    formMp.value = JSON.parse(localStorage.getItem(`mpConfig`)!)
   }
 })
 
 function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
   toast.success(`已成功切换图床`)
-}
-
-function saveGitHubConfiguration() {
-  if (!(formGitHub.value.repo && formGitHub.value.accessToken)) {
-    const blankElement = formGitHub.value.repo ? `token` : `GitHub 仓库`
-    toast.error(`参数「${blankElement}」不能为空`)
-    return
-  }
-
-  localStorage.setItem(`githubConfig`, JSON.stringify(formGitHub.value))
-  toast.success(`保存成功`)
-}
-
-// const saveGiteeConfiguration = () => {
-//   if (!(formGitee.value.repo && formGitee.value.accessToken)) {
-//     const blankElement = formGitee.value.repo ? `私人令牌` : `Gitee 仓库`
-//     toast.error(`参数「${blankElement}」不能为空`)
-//     return
-//   }
-//   localStorage.setItem(`giteeConfig`, JSON.stringify(formGitee.value))
-//   toast.success(`保存成功`)
-// }
-
-function saveAliOSSConfiguration() {
-  if (
-    !(
-      formAliOSS.value.accessKeyId
-      && formAliOSS.value.accessKeySecret
-      && formAliOSS.value.bucket
-      && formAliOSS.value.region
-    )
-  ) {
-    toast.error(`阿里云 OSS 参数配置不全`)
-    return
-  }
-  localStorage.setItem(`aliOSSConfig`, JSON.stringify(formAliOSS.value))
-  toast.success(`保存成功`)
-}
-function saveMinioOSSConfiguration() {
-  if (
-    !(
-      minioOSS.value.endpoint
-      && minioOSS.value.bucket
-      && minioOSS.value.accessKey
-      && minioOSS.value.secretKey
-    )
-  ) {
-    toast.error(`MinIO 参数配置不全`)
-    return
-  }
-  localStorage.setItem(`minioConfig`, JSON.stringify(minioOSS.value))
-  toast.success(`保存成功`)
-}
-function saveTxCOSConfiguration() {
-  if (
-    !(
-      formTxCOS.value.secretId
-      && formTxCOS.value.secretKey
-      && formTxCOS.value.bucket
-      && formTxCOS.value.region
-    )
-  ) {
-    toast.error(`腾讯云 COS 参数配置不全`)
-    return
-  }
-  localStorage.setItem(`txCOSConfig`, JSON.stringify(formTxCOS.value))
-  toast.success(`保存成功`)
-}
-function saveQiniuConfiguration() {
-  if (
-    !(
-      formQiniu.value.accessKey
-      && formQiniu.value.secretKey
-      && formQiniu.value.bucket
-      && formQiniu.value.domain
-    )
-  ) {
-    toast.error(`七牛云 Kodo 参数配置不全`)
-    return
-  }
-  localStorage.setItem(`qiniuConfig`, JSON.stringify(formQiniu.value))
-  toast.success(`保存成功`)
-}
-
-function saveR2Configuration() {
-  if (
-    !(
-      formR2.value.accountId
-      && formR2.value.accessKey
-      && formR2.value.secretKey
-      && formR2.value.bucket
-      && formR2.value.domain
-    )
-  ) {
-    toast.error(`Cloudflare R2参数配置不全`)
-    return
-  }
-  localStorage.setItem(`r2Config`, JSON.stringify(formR2.value))
-  toast.success(`保存成功`)
-}
-
-function saveMpConfiguration() {
-  if (
-    !(
-      formMp.value.appID
-      && formMp.value.appsecret
-    )
-  ) {
-    toast.error(`公众号图床 参数配置不全`)
-    return
-  }
-  if (isWebsite.value && !formMp.value.proxyOrigin) {
-    toast.error(`代理域名必须配置`)
-    return
-  }
-  localStorage.setItem(`mpConfig`, JSON.stringify(formMp.value))
-  toast.success(`保存成功`)
 }
 
 function beforeImageUpload(file: File) {
@@ -318,7 +288,7 @@ function onDrop(e: DragEvent) {
 
 <template>
   <Dialog v-model:open="displayStore.isShowUploadImgDialog">
-    <DialogContent class="max-w-max">
+    <DialogContent class="max-w-max" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
@@ -327,32 +297,8 @@ function onDrop(e: DragEvent) {
           <TabsTrigger value="upload">
             选择上传
           </TabsTrigger>
-          <!-- <TabsTrigger value="gitee">
-            Gitee 图床
-          </TabsTrigger> -->
-          <TabsTrigger value="github">
-            GitHub 图床
-          </TabsTrigger>
-          <TabsTrigger value="aliOSS">
-            阿里云 OSS
-          </TabsTrigger>
-          <TabsTrigger value="txCOS">
-            腾讯云 COS
-          </TabsTrigger>
-          <TabsTrigger value="qiniu">
-            七牛云 Kodo
-          </TabsTrigger>
-          <TabsTrigger value="minio">
-            MinIO
-          </TabsTrigger>
-          <TabsTrigger value="mp">
-            公众号图床
-          </TabsTrigger>
-          <TabsTrigger value="r2">
-            Cloudflare R2
-          </TabsTrigger>
-          <TabsTrigger value="formCustom">
-            自定义代码
+          <TabsTrigger v-for="item in options.filter(item => item.value !== 'default')" :key="item.value" :value="item.value">
+            {{ item.label }}
           </TabsTrigger>
         </TabsList>
 
@@ -394,66 +340,40 @@ function onDrop(e: DragEvent) {
             </p>
           </div>
         </TabsContent>
-        <!--        <TabsContent value="gitee">
-          <div class="space-y-4">
-            <FormItem label="Gitee 仓库" required>
-              <Input
-                v-model.trim="formGitee.repo"
-                placeholder="如：gitee.com/yanglbme/resource"
-              />
-            </FormItem>
-            <FormItem label="分支">
-              <Input
-                v-model.trim="formGitee.branch"
-                placeholder="如：release，可不填，默认 master"
-              />
-            </FormItem>
-            <FormItem label="私人令牌" required>
-              <Input
-                v-model.trim="formGitee.accessToken"
-                type="password"
-                placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
-              />
-            </FormItem>
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0"
-                as="a"
-                href="https://gitee.com/profile/personal_access_tokens"
-                target="_blank"
-              >
-                请在 Gitee「设置->安全设置->私人令牌」中生成
-              </Button>
-            </FormItem>
-            <FormItem>
-              <Button @click="saveGiteeConfiguration">
-                保存配置
-              </Button>
-            </FormItem>
-          </div>
-        </TabsContent> -->
+
         <TabsContent value="github">
-          <div class="space-y-4">
-            <FormItem label="GitHub 仓库" required>
-              <Input
-                v-model.trim="formGitHub.repo"
-                placeholder="如：github.com/yanglbme/resource"
-              />
-            </FormItem>
-            <FormItem label="分支">
-              <Input
-                v-model.trim="formGitHub.branch"
-                placeholder="如：release，可不填，默认 master"
-              />
-            </FormItem>
-            <FormItem label="Token" required>
-              <Input
-                v-model.trim="formGitHub.accessToken"
-                type="password"
-                placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
-              />
-            </FormItem>
+          <Form :validation-schema="githubSchema" :initial-values="githubConfig" @submit="githubSubmit">
+            <Field v-slot="{ field, errorMessage }" name="repo">
+              <FormItem label="GitHub 仓库" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：github.com/yanglbme/resource"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="branch">
+              <FormItem label="分支" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：release，可不填，默认 master"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessToken">
+              <FormItem label="Token" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="password"
+                  placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
+                />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <Button
                 variant="link"
@@ -465,52 +385,89 @@ function onDrop(e: DragEvent) {
                 如何获取 GitHub Token？
               </Button>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveGitHubConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="aliOSS">
-          <div class="space-y-4">
-            <FormItem label="AccessKey ID" required>
-              <Input
-                v-model.trim="formAliOSS.accessKeyId"
-                placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
-              />
-            </FormItem>
-            <FormItem label="AccessKey Secret" required>
-              <Input
-                v-model.trim="formAliOSS.accessKeySecret"
-                type="password"
-                placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
-              />
-            </FormItem>
-            <FormItem label="Bucket" required>
-              <Input v-model.trim="formAliOSS.bucket" placeholder="如：doocs" />
-            </FormItem>
-            <FormItem label="Bucket 所在区域" required>
-              <Input
-                v-model.trim="formAliOSS.region"
-                placeholder="如：oss-cn-shenzhen"
-              />
-            </FormItem>
-            <FormItem label="UseSSL" required>
-              <Switch v-model:checked="formAliOSS.useSSL" />
-            </FormItem>
-            <FormItem label="自定义 CDN 域名">
-              <Input
-                v-model.trim="formAliOSS.cdnHost"
-                placeholder="如：https://imagecdn.alidaodao.com，可不填"
-              />
-            </FormItem>
-            <FormItem label="存储路径">
-              <Input
-                v-model.trim="formAliOSS.path"
-                placeholder="如：img，可不填，默认为根目录"
-              />
-            </FormItem>
+          <Form :validation-schema="aliOSSSchema" :initial-values="aliOSSConfig" @submit="aliOSSSubmit">
+            <Field v-slot="{ field, errorMessage }" name="accessKeyId">
+              <FormItem label="AccessKey ID" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
+              <FormItem label="AccessKey Secret" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="password"
+                  placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：doocs"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="region">
+              <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：oss-cn-shenzhen"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
+              <FormItem label="UseSSL" required :error="errorMessage">
+                <Switch
+                  :checked="field.value"
+                  :name="field.name"
+                  @update:checked="field.onChange"
+                  @blur="field.onBlur"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="cdnHost">
+              <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：img，可不填，默认为根目录"
+                />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <Button
                 variant="link"
@@ -522,49 +479,78 @@ function onDrop(e: DragEvent) {
                 如何使用阿里云 OSS？
               </Button>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveAliOSSConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="txCOS">
-          <div class="space-y-4">
-            <FormItem label="SecretId" required>
-              <Input
-                v-model.trim="formTxCOS.secretId"
-                placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
-              />
-            </FormItem>
-            <FormItem label="SecretKey" required>
-              <Input
-                v-model.trim="formTxCOS.secretKey"
-                type="password"
-                placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
-              />
-            </FormItem>
-            <FormItem label="Bucket" required>
-              <Input
-                v-model.trim="formTxCOS.bucket"
-                placeholder="如：doocs-3212520134"
-              />
-            </FormItem>
-            <FormItem label="Bucket 所在区域" required>
-              <Input v-model.trim="formTxCOS.region" placeholder="如：ap-guangzhou" />
-            </FormItem>
-            <FormItem label="自定义 CDN 域名">
-              <Input
-                v-model.trim="formTxCOS.cdnHost"
-                placeholder="如：https://imagecdn.alidaodao.com，可不填"
-              />
-            </FormItem>
-            <FormItem label="存储路径">
-              <Input
-                v-model.trim="formTxCOS.path"
-                placeholder="如：img，可不填，默认根目录"
-              />
-            </FormItem>
+          <Form :validation-schema="txCOSSchema" :initial-values="txCOSConfig" @submit="txCOSSubmit">
+            <Field v-slot="{ field, errorMessage }" name="secretId">
+              <FormItem label="SecretId" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="secretKey">
+              <FormItem label="SecretKey" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="password"
+                  placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：doocs-3212520134"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="region">
+              <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：ap-guangzhou"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="cdnHost">
+              <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：img，可不填，默认根目录"
+                />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <Button
                 variant="link"
@@ -576,46 +562,78 @@ function onDrop(e: DragEvent) {
                 如何使用腾讯云 COS？
               </Button>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveTxCOSConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="qiniu">
-          <div class="space-y-4">
-            <FormItem label="AccessKey" required>
-              <Input
-                v-model.trim="formQiniu.accessKey"
-                placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
-              />
-            </FormItem>
-            <FormItem label="SecretKey" required>
-              <Input
-                v-model.trim="formQiniu.secretKey"
-                type="password"
-                placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
-              />
-            </FormItem>
-            <FormItem label="Bucket" required>
-              <Input v-model.trim="formQiniu.bucket" placeholder="如：md" />
-            </FormItem>
-            <FormItem label="Bucket 对应域名" required>
-              <Input
-                v-model.trim="formQiniu.domain"
-                placeholder="如：https://images.123ylb.cn"
-              />
-            </FormItem>
-            <FormItem label="存储区域">
-              <Input v-model.trim="formQiniu.region" placeholder="如：z2，可不填" />
-            </FormItem>
-            <FormItem label="存储路径">
-              <Input
-                v-model.trim="formQiniu.path"
-                placeholder="如：img，可不填，默认为根目录"
-              />
-            </FormItem>
+          <Form :validation-schema="qiniuSchema" :initial-values="qiniuConfig" @submit="qiniuSubmit">
+            <Field v-slot="{ field, errorMessage }" name="accessKey">
+              <FormItem label="AccessKey" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="secretKey">
+              <FormItem label="SecretKey" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="password"
+                  placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：md"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="domain">
+              <FormItem label="Bucket 对应域名" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：https://images.123ylb.cn"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="region">
+              <FormItem label="存储区域" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：z2，可不填"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：img，可不填，默认为根目录"
+                />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <Button
                 variant="link"
@@ -627,37 +645,71 @@ function onDrop(e: DragEvent) {
                 如何使用七牛云 Kodo？
               </Button>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveQiniuConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="minio">
-          <div class="space-y-4">
-            <FormItem label="Endpoint" required>
-              <Input v-model.trim="minioOSS.endpoint" placeholder="如：play.min.io" />
-            </FormItem>
-            <FormItem label="Port">
-              <Input
-                v-model.trim="minioOSS.port"
-                type="number"
-                placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
-              />
-            </FormItem>
-            <FormItem label="UseSSL" required>
-              <Switch v-model:checked="minioOSS.useSSL" />
-            </FormItem>
-            <FormItem label="Bucket" required>
-              <Input v-model.trim="minioOSS.bucket" placeholder="如：doocs" />
-            </FormItem>
-            <FormItem label="AccessKey" required>
-              <Input v-model.trim="minioOSS.accessKey" placeholder="如：zhangsan" />
-            </FormItem>
-            <FormItem label="SecretKey" required>
-              <Input v-model.trim="minioOSS.secretKey" placeholder="如：asdasdasd" />
-            </FormItem>
+          <Form :validation-schema="minioOSSSchema" :initial-values="minioOSSConfig" @submit="minioOSSSubmit">
+            <Field v-slot="{ field, errorMessage }" name="endpoint">
+              <FormItem label="Endpoint" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：play.min.io"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="port">
+              <FormItem label="Port" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="number"
+                  placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
+              <FormItem label="UseSSL" required :error="errorMessage">
+                <Switch
+                  :checked="field.value"
+                  :name="field.name"
+                  @update:checked="field.onChange"
+                  @blur="field.onBlur"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：doocs"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessKey">
+              <FormItem label="AccessKey" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：zhangsan" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="secretKey">
+              <FormItem label="SecretKey" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：asdasdasd" />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <Button
                 variant="link"
@@ -669,33 +721,47 @@ function onDrop(e: DragEvent) {
                 如何使用 MinIO？
               </Button>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveMinioOSSConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="mp">
-          <div class="space-y-4">
-            <FormItem label="代理域名" :required="isWebsite">
-              <Input
-                v-model.trim="formMp.proxyOrigin"
-                placeholder="如：http://proxy.example.com，使用插件时可不填"
-              />
-            </FormItem>
-            <FormItem label="appID" required>
-              <Input
-                v-model.trim="formMp.appID"
-                placeholder="如：wx6e1234567890efa3"
-              />
-            </FormItem>
-            <FormItem label="appsecret" required>
-              <Input
-                v-model.trim="formMp.appsecret"
-                placeholder="如：d9f1abcdef01234567890abcdef82397"
-              />
-            </FormItem>
+          <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
+            <Field v-slot="{ field, errorMessage }" name="proxyOrigin">
+              <FormItem label="代理域名" :required="isWebsite" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：http://proxy.example.com，使用插件时可不填"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="appID">
+              <FormItem label="appID" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：wx6e1234567890efa3"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="appsecret">
+              <FormItem label="appsecret" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：d9f1abcdef01234567890abcdef82397"
+                />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <div class="flex flex-col items-start">
                 <Button
@@ -718,36 +784,53 @@ function onDrop(e: DragEvent) {
                 </Button>
               </div>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveMpConfiguration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="r2">
-          <div class="space-y-4">
-            <FormItem label="AccountId" required>
-              <Input v-model.trim="formR2.accountId" placeholder="如: 0030f123e55a57546f4c281c564e560" class="min-w-[350px]" />
-            </FormItem>
-            <FormItem label="AccessKey" required>
-              <Input v-model.trim="formR2.accessKey" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
-            </FormItem>
-            <FormItem label="SecretKey" required>
-              <Input
-                v-model.trim="formR2.secretKey" type="password"
-                placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010"
-              />
-            </FormItem>
-            <FormItem label="Bucket" required>
-              <Input v-model.trim="formR2.bucket" placeholder="如：md" />
-            </FormItem>
-            <FormItem label="域名" required>
-              <Input v-model.trim="formR2.domain" placeholder="如：https://oss.example.com" />
-            </FormItem>
-            <FormItem label="存储路径">
-              <Input v-model.trim="formR2.path" placeholder="如：img，可不填，默认为根目录" />
-            </FormItem>
+          <Form :validation-schema="r2Schema" :initial-values="r2Config" @submit="r2Submit">
+            <Field v-slot="{ field, errorMessage }" name="accountId">
+              <FormItem label="AccountId" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="min-w-[350px]" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessKey">
+              <FormItem label="AccessKey" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="secretKey">
+              <FormItem label="SecretKey" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：md" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="domain">
+              <FormItem label="域名" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+              </FormItem>
+            </Field>
+
             <FormItem>
               <div class="flex flex-col items-start">
                 <Button
@@ -770,13 +853,15 @@ function onDrop(e: DragEvent) {
                 </Button>
               </div>
             </FormItem>
+
             <FormItem>
-              <Button @click="saveR2Configuration">
+              <Button type="submit">
                 保存配置
               </Button>
             </FormItem>
-          </div>
+          </Form>
         </TabsContent>
+
         <TabsContent value="formCustom">
           <CustomUploadForm />
         </TabsContent>
