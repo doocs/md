@@ -98,6 +98,7 @@ function tabChanged(tabName: string | number) {
   }
 
   tabHistory.value = [tabHistory.value[1], tabName as string]
+  store.tabChanged(tabName as string)
 }
 </script>
 

@@ -189,11 +189,8 @@ export const useStore = defineStore(`store`, () => {
     renderer.reset({ citeStatus: isCiteStatus.value, legend: legend.value, isUseIndent: isUseIndent.value, countStatus: isCountStatus.value })
 
     const { markdownContent, readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
-    console.log(`Reading time result:`, readingTimeResult)
     readingTime.value = readingTimeResult
     let outputTemp = marked.parse(markdownContent) as string
-
-    console.log(readingTime.value)
 
     // 阅读时间及字数统计
     outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp

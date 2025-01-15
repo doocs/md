@@ -57,7 +57,6 @@ async function prePost() {
     form.value = {
       ...auto,
     }
-    console.log(form.value, `====`)
   }
 }
 
