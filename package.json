@@ -16,6 +16,8 @@
     "release:cli": "node ./scripts/release.js",
     "ext:dev": "wxt",
     "ext:zip": "wxt zip",
+    "firefox:dev": "wxt -b firefox",
+    "firefox:zip": "wxt zip -b firefox",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
     "postinstall": "simple-git-hooks && wxt prepare"
