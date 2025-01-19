@@ -11,7 +11,7 @@ export default defineConfig({
     icons: {
       256: `/mpmd/icon-256.png`,
     },
-    permissions: [`storage`, `tabs`],
+    permissions: [`storage`],
     host_permissions: [
       `https://*.github.com/*`,
       `https://*.githubusercontent.com/*`,
