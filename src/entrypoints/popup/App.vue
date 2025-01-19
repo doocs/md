@@ -27,19 +27,18 @@ function onOpenOption() {
       <div>如果您希望使用微信公众号素材库作为图床功能，需要进行以下配置：</div>
       <div>
         1.开启公众号开发者模式
-        <span><el-link
-          type="primary"
+        <span><a
           href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
           target="_blank"
-        >查看文档</el-link></span>
+        >查看文档</a></span>
       </div>
       <div>
-        2.配置IP白名单<span><el-link type="primary" href="https://mpmd.pages.dev/tutorial" target="_blank">使用教程</el-link></span>
+        2.配置IP白名单<span><a href="https://mpmd.pages.dev/tutorial" target="_blank">使用教程</a></span>
       </div>
       <div>
-        <el-link type="primary" href="#" @click="onOpenOption">
+        <button class="button" @click="onOpenOption">
           开始使用
-        </el-link>
+        </button>
       </div>
     </section>
   </div>
@@ -60,5 +59,14 @@ function onOpenOption() {
   margin-right: auto;
   margin-left: auto;
   font-size: 14px;
+}
+.button {
+  padding: 2px 6px;
+  background: #07c060;
+  color: #fff;
+  border-radius: 4px;
+}
+section a {
+  text-decoration: underline;
 }
 </style>
