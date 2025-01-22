@@ -344,37 +344,37 @@ async function mpFileUpload(file: File) {
   const { appID, appsecret, proxyOrigin } = JSON.parse(
     localStorage.getItem(`mpConfig`)!,
   )
-  /* eslint-disable no-async-promise-executor */
-  return new Promise<string>(async (resolve, reject) => {
-    try {
-      const access_token = await getMpToken(appID, appsecret, proxyOrigin).catch(e => console.error(e))
-      if (!access_token) {
-        reject(new Error(`获取 access_token 失败，请检查console日志`))
-        return
-      }
-      const formdata = new FormData()
-      formdata.append(`media`, file, file.name)
-      const requestOptions = {
-        method: `POST`,
-        data: formdata,
-      }
-      let url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
-      if (proxyOrigin) {
-        url = `${proxyOrigin}/cgi-bin/material/add_material?access_token=${access_token}&type=image`
-      }
-      const res = await fetch<any, {
-        url: string
-      }>(url, requestOptions)
-      let imageUrl = res.url
-      if (proxyOrigin && window.location.href.startsWith(`http`)) {
-        imageUrl = `https://wsrv.nl?url=${encodeURIComponent(imageUrl)}`
-      }
-      resolve(imageUrl)
-    }
-    catch (e) {
-      reject(e)
-    }
-  })
+
+  const access_token = await getMpToken(appID, appsecret, proxyOrigin)
+  if (!access_token) {
+    throw new Error(`获取 access_token 失败`)
+  }
+
+  const formdata = new FormData()
+  formdata.append(`media`, file, file.name)
+
+  const requestOptions = {
+    method: `POST`,
+    data: formdata,
+  }
+
+  let url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+  if (proxyOrigin) {
+    url = `${proxyOrigin}/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+  }
+
+  const res = await fetch<any, { url: string }>(url, requestOptions)
+
+  if (!res.url) {
+    throw new Error(`上传失败，未获取到URL`)
+  }
+
+  let imageUrl = res.url
+  if (proxyOrigin && window.location.href.startsWith(`http`)) {
+    imageUrl = `https://wsrv.nl?url=${encodeURIComponent(imageUrl)}`
+  }
+
+  return imageUrl
 }
 
 // -----------------------------------------------------------------------
