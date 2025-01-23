@@ -187,7 +187,7 @@ export function exportHTML(primaryColor: string) {
   setStyles(element)
 
   const htmlStr = element.innerHTML
-    .replace(`var(--md-primary-color)`, primaryColor)
+    .replace(/var\(--md-primary-color\)/g, primaryColor)
     .replace(/--md-primary-color:.+?;/g, ``)
 
   const downLink = document.createElement(`a`)
