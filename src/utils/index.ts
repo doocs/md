@@ -387,7 +387,7 @@ export function processClipboardContent(primaryColor: string) {
 
   // 处理样式和颜色变量
   clipboardDiv.innerHTML = clipboardDiv.innerHTML
-    .replace(/top:(.*?)em/g, `transform: translateY($1em)`)
+    .replace(/([^-])top:(.*?)em/g, `$1transform: translateY($2em)`)
     .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
     .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
     .replace(/var\(--md-primary-color\)/g, primaryColor)
