@@ -57,14 +57,14 @@ function delPost() {
 
 <template>
   <div
-    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-gray/40"
+    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-[#191c20]"
     :class="{
       'w-0': !store.isOpenPostSlider,
       'w-50': store.isOpenPostSlider,
     }"
   >
     <nav
-      class="space-y-1 h-full overflow-auto p-2 transition-transform"
+      class="space-y-1 h-full overflow-auto border-r-2 border-gray/20 p-2 transition-transform"
       :class="{
         'translate-x-100': store.isOpenPostSlider,
         '-translate-x-full': !store.isOpenPostSlider,
@@ -93,10 +93,10 @@ function delPost() {
       </Dialog>
       <a
         v-for="(post, index) in store.posts" :key="post.title" href="#" :class="{
-          'bg-primary text-primary-foreground shadow-lg border-2 border-primary': store.currentPostIndex === index,
-          'dark:bg-primary-dark dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === index,
+          'bg-primary text-primary-foreground shadow-lg dark:border-1 border-primary': store.currentPostIndex === index,
+          'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === index,
         }"
-        class="hover:bg-primary/90 hover:text-primary-foreground dark:bg-muted dark:hover:bg-muted dark:hover:border-primary-dark h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:text-white"
+        class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:bg-gray/20 dark:hover:text-white"
         @click="store.currentPostIndex = index"
       >
         <span class="line-clamp-1">{{ post.title }}</span>

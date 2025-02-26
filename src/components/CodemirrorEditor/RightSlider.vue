@@ -40,9 +40,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
 <template>
   <div
-    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-gray/40"
+    class="overflow-hidden border-l-2 border-gray/20 bg-gray/20 transition-width duration-300 dark:bg-[#191c20]"
     :class="{
-      'w-0': !store.isOpenRightSlider,
+      'w-0 border-l-0': !store.isOpenRightSlider,
       'w-100': store.isOpenRightSlider,
     }"
   >
