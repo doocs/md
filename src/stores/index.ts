@@ -7,6 +7,7 @@ import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD,
 import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import { marked } from 'marked'
+import DOMPurify from 'dompurify'
 
 export const useStore = defineStore(`store`, () => {
   // 是否开启深色模式
@@ -191,6 +192,7 @@ export const useStore = defineStore(`store`, () => {
     const { markdownContent, readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
     readingTime.value = readingTimeResult
     let outputTemp = marked.parse(markdownContent) as string
+    outputTemp = DOMPurify.sanitize(outputTemp)
 
     // 阅读时间及字数统计
     outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
