@@ -4,6 +4,7 @@ import * as tokenTools from '@/utils/tokenTools'
 
 import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import Buffer from 'buffer-from'
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
@@ -388,20 +389,19 @@ async function r2Upload(file: File) {
   const dir = path ? `${path}/` : ``
   const filename = dir + getDateFilename(file.name)
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
-
-  return new Promise<string>((resolve, reject) => {
-    const putObjectCommand = new PutObjectCommand({
-      Bucket: bucket,
-      Key: filename,
-      ContentType: file.type,
-      Body: file,
-    })
-    client.send(putObjectCommand).then(() => {
-      resolve(`${domain}/${filename}`)
-    }).catch((err) => {
-      reject(err)
-    })
-  })
+  const signedUrl = await getSignedUrl(
+    client,
+    new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: file.type }),
+    { expiresIn: 300 },
+  )
+  await fetch(signedUrl, {
+    method: `PUT`,
+    headers: {
+      'Content-Type': file.type,
+    },
+    data: file,
+  }).catch((err) => { console.log(err) })
+  return `${domain}/${filename}`
 }
 
 // -----------------------------------------------------------------------
