@@ -125,7 +125,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div>
           <Select v-model="store.codeBlockTheme" @update:model-value="store.codeBlockThemeChanged">
             <SelectTrigger>
-              <SelectValue placeholder="Select a fruit" />
+              <SelectValue placeholder="Select a code block theme" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
