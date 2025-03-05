@@ -4,6 +4,7 @@ import * as tokenTools from '@/utils/tokenTools'
 
 import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import Buffer from 'buffer-from'
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
@@ -381,26 +382,26 @@ async function mpFileUpload(file: File) {
 // Cloudflare R2 File Upload
 // -----------------------------------------------------------------------
 
-async function r2Upload(content: string, file: File) {
+async function r2Upload(file: File) {
   const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(
     localStorage.getItem(`r2Config`)!,
   )
   const dir = path ? `${path}/` : ``
   const filename = dir + getDateFilename(file.name)
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
-  return new Promise<string>((resolve, reject) => {
-    const putObjectCommand = new PutObjectCommand({
-      Bucket: bucket,
-      Key: filename,
-      ContentType: file.type,
-      Body: content,
-    })
-    client.send(putObjectCommand).then(() => {
-      resolve(`${domain}/${filename}`)
-    }).catch((err) => {
-      reject(err)
-    })
-  })
+  const signedUrl = await getSignedUrl(
+    client,
+    new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: file.type }),
+    { expiresIn: 300 },
+  )
+  await fetch(signedUrl, {
+    method: `PUT`,
+    headers: {
+      'Content-Type': file.type,
+    },
+    data: file,
+  }).catch((err) => { console.log(err) })
+  return `${domain}/${filename}`
 }
 
 // -----------------------------------------------------------------------
@@ -461,7 +462,7 @@ function fileUpload(content: string, file: File) {
     case `mp`:
       return mpFileUpload(file)
     case `r2`:
-      return r2Upload(content, file)
+      return r2Upload(file)
     case `formCustom`:
       return formCustomUpload(content, file)
     default:

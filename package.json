@@ -23,7 +23,8 @@
     "postinstall": "simple-git-hooks && wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.733.0",
+    "@aws-sdk/client-s3": "^3.758.0",
+    "@aws-sdk/s3-request-presigner": "^3.758.0",
     "@vee-validate/yup": "^4.15.0",
     "@vueuse/core": "^12.5.0",
     "axios": "^1.7.9",
