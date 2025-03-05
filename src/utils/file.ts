@@ -381,20 +381,19 @@ async function mpFileUpload(file: File) {
 // Cloudflare R2 File Upload
 // -----------------------------------------------------------------------
 
-async function r2Upload(file: File) {
+async function r2Upload(content: string, file: File) {
   const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(
     localStorage.getItem(`r2Config`)!,
   )
   const dir = path ? `${path}/` : ``
   const filename = dir + getDateFilename(file.name)
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
-
   return new Promise<string>((resolve, reject) => {
     const putObjectCommand = new PutObjectCommand({
       Bucket: bucket,
       Key: filename,
       ContentType: file.type,
-      Body: file,
+      Body: content,
     })
     client.send(putObjectCommand).then(() => {
       resolve(`${domain}/${filename}`)
@@ -462,7 +461,7 @@ function fileUpload(content: string, file: File) {
     case `mp`:
       return mpFileUpload(file)
     case `r2`:
-      return r2Upload(file)
+      return r2Upload(content, file)
     case `formCustom`:
       return formCustomUpload(content, file)
     default:
