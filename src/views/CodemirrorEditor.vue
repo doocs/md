@@ -20,6 +20,7 @@ const {
   exportEditorContent2MD,
   formatContent,
   importMarkdownContent,
+  importDefaultContent,
   resetStyleConfirm,
 } = store
 
@@ -396,6 +397,9 @@ onMounted(() => {
               </ContextMenuItem>
               <ContextMenuItem inset @click="resetStyleConfirm()">
                 恢复默认样式
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="importDefaultContent()">
+                导入默认文档
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem inset @click="importMarkdownContent()">

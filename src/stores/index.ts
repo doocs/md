@@ -401,6 +401,12 @@ export const useStore = defineStore(`store`, () => {
     downloadMD(editor.value!.getValue())
   }
 
+  // 导入默认文档
+  const importDefaultContent = () => {
+    editor.value!.setValue(DEFAULT_CONTENT)
+    toast.success(`文档已重置为默认文档`)
+  }
+
   // 导入 Markdown 文档
   const importMarkdownContent = () => {
     const body = document.body
@@ -476,6 +482,7 @@ export const useStore = defineStore(`store`, () => {
     exportEditorContent2MD,
 
     importMarkdownContent,
+    importDefaultContent,
 
     isOpenConfirmDialog,
     resetStyleConfirm,
