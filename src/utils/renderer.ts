@@ -157,7 +157,8 @@ export function initRenderer(opts: IOpts) {
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    return `<${tag} ${styles(styleLabel)}>${content}</${tag}>`
+
+    return `<${tag} ${/^h\d$/.test(tag) ? `data-heading="true"` : ``} ${styles(styleLabel)}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
