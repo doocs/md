@@ -23,9 +23,9 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 
 注：推荐使用 Chrome 浏览器，效果最佳。
 
-## 为何二次开发
+## 为何开发这款编辑器
 
-现有的开源微信 Markdown 编辑器，样式繁杂，也不符合我个人的审美需求。在我使用它们进行内容排版的时候，经常还要自己做一些改动，费时费力，因此动手做了二次开发。
+现有的开源微信 Markdown 编辑器样式繁杂，排版过程中往往需要额外调整，影响使用效率。为了解决这一问题，我们打造了一款更加简洁、优雅的编辑器，提供更流畅的排版体验。
 
 欢迎各位朋友随时提交 PR，让这款微信 Markdown 编辑器变得更好！如果你有新的想法，也欢迎在 [Discussions 讨论区](https://github.com/doocs/md/discussions)反馈。
 
@@ -226,5 +226,18 @@ docker run -d -p 8080:80 doocs/md:latest
 - [鱼 da 王](https://mp.weixin.qq.com/s/DdxK3j31TUWLNVhZtWTuVA)
 - [程序员小宋](https://mp.weixin.qq.com/s/llgdqSN3AIXMlEbBuPkKNQ)
 - [架构师修行之路](https://mp.weixin.qq.com/s/-HWx7VZC6NthROGBaATcLA)
+- [前端徐徐](https://mp.weixin.qq.com/s/OQriNzz3LrheOWgchKpvrw)
+- [科妙知行](https://mp.weixin.qq.com/s/smcivd8MNAbo0MtXdoVKaw)
+- [西建大 iOS 众创空间俱乐部](https://mp.weixin.qq.com/s/YQooBjWoAg4WFIp5A4k9tw)
+- [AMC 真题库](https://mp.weixin.qq.com/s/LOzNVEXtlRv_3vIDhYjyFg)
+- [不止于 python](https://mp.weixin.qq.com/s/0zd3t7k9CYcwTLevh0KFHw)
+- [Daily 词语仓](https://mp.weixin.qq.com/s/3SPtQuvC3ohmQICtg4tbAw)
+- [没事学点 AI 小知识](https://mp.weixin.qq.com/s/rV3eNxWsJbAs93azg9q74Q)
+- [攻城狮成长日记](https://mp.weixin.qq.com/s/PqtqTCWAlDsInjamND94Jw)
+- [口袋狗](https://mp.weixin.qq.com/s/YZzhUjDIhF5JD_ierQc5Ng)
+- [原来开源](https://mp.weixin.qq.com/s/BYXUaF9xK8aTjTSYSkl89g)
+- [Jackywine](https://mp.weixin.qq.com/s/6ZT_oUQMDVskdHdA6T1gQA)
+- [轱辘凯 glookai](https://mp.weixin.qq.com/s/d-CFbMnX4ABEWB-abd2p_A)
+- [小竹读研在养鱼](https://mp.weixin.qq.com/s/NJ_GpCBjQzZIZTbZz3btTg)
 
 注：如果你使用了本 Markdown 编辑器进行内容排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/discussions/5) 留言。
