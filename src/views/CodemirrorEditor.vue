@@ -9,6 +9,7 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
+import { Minimize2, MoveDiagonal } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -359,6 +360,8 @@ onMounted(() => {
   onEditorRefresh()
   mdLocalToRemote()
 })
+
+const isOpenHeadingSlider = ref(false)
 </script>
 
 <template>
@@ -418,24 +421,47 @@ onMounted(() => {
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div
-          id="preview"
-          ref="preview"
-          class="preview-wrapper flex-1 p-5"
-        >
-          <div id="output-wrapper" :class="{ output_night: !backLight }">
-            <div class="preview border-x-1 shadow-xl">
-              <section id="output" v-html="output" />
-              <div v-if="isCoping" class="loading-mask">
-                <div class="loading-mask-box">
-                  <div class="loading__img" />
-                  <span>正在生成</span>
+        <div class="relative flex-1">
+          <div
+            id="preview"
+            ref="preview"
+            class="preview-wrapper p-5"
+          >
+            <div id="output-wrapper" :class="{ output_night: !backLight }">
+              <div class="preview border-x-1 shadow-xl">
+                <section id="output" v-html="output" />
+                <div v-if="isCoping" class="loading-mask">
+                  <div class="loading-mask-box">
+                    <div class="loading__img" />
+                    <span>正在生成</span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <BackTop target="preview" :right="40" :bottom="40" />
+            <BackTop target="preview" :right="40" :bottom="40" />
+          </div>
+          <div
+            class="bg-background absolute left-0 top-0 border rounded-2 p-2 text-sm shadow"
+          >
+            <Button variant="outline" size="icon" @click="isOpenHeadingSlider = !isOpenHeadingSlider">
+              <Minimize2 v-show="isOpenHeadingSlider" class="size-4" />
+              <MoveDiagonal v-show="!isOpenHeadingSlider" class="size-4" />
+            </Button>
+            <ul
+              class="overflow-auto transition-all"
+              :class="{
+                'max-h-0 w-0': !isOpenHeadingSlider,
+                'max-h-100 w-60 mt-2': isOpenHeadingSlider,
+              }"
+            >
+              <li v-for="(item, index) in store.titleList" :key="index" class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600" :style="{paddingLeft: item.level - 0.5 + 'em'}">
+                <a :href="item.url">
+                  {{ item.title }}
+                </a>
+              </li>
+            </ul>
+          </div>
         </div>
         <CssEditor class="order-2 flex-1" />
         <RightSlider class="order-2" />
