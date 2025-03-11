@@ -1,0 +1,39 @@
+{
+    "name": "dev-wechat-markdown-editor-multipost",
+    "build": {
+      "dockerfile": "Dockerfile",
+      "target": "dev"
+    },
+    "workspaceFolder": "/root/wechat-markdown-editor-multipost",
+    "shutdownAction": "stopContainer",
+    "remoteUser": "root",
+    "forwardPorts": [5173],
+    "postCreateCommand": "git clone git@github.com:leaper-one/wechat-markdown-editor-multipost.git .",
+    "postStartCommand": "npm install && npm run start",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+          "steoates.autoimport",
+          "naumovs.color-highlight",
+          "dbaeumer.vscode-eslint",
+          "antfu.iconify",
+          "xabikos.javascriptsnippets",
+          "esbenp.prettier-vscode",
+          "gruntfuggly.todo-tree",
+          "stylelint.vscode-stylelint",
+          "standard.vscode-standard",
+          "bradlc.vscode-tailwindcss",
+          "aaron-bond.better-comments",
+          "mikestead.dotenv",
+          "heybourn.headwind",
+          "lokalise.i18n-ally",
+          "kisstkondoros.vscode-gutter-preview",
+          "eamodio.gitlens"
+        ]
+      }
+    },
+    "mounts": [
+      "source=/var/run/docker.sock,target=/var/run/docker.sock,type=bind"
+    ]
+  }
+  
