@@ -360,8 +360,13 @@ async function mpFileUpload(file: File) {
   }
 
   let url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+  const fileSizeInMB = file.size / (1024 * 1024)
+  const fileType = file.type.toLowerCase()
+  if (fileSizeInMB < 1 && (fileType === `image/jpeg` || fileType === `image/png`)) {
+    url = `https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=${access_token}`
+  }
   if (proxyOrigin) {
-    url = `${proxyOrigin}/cgi-bin/material/add_material?access_token=${access_token}&type=image`
+    url = url.replace(`https://api.weixin.qq.com`, proxyOrigin)
   }
 
   const res = await fetch<any, { url: string }>(url, requestOptions)
