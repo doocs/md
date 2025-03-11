@@ -9,7 +9,7 @@
     "remoteUser": "root",
     "forwardPorts": [5173],
     "postCreateCommand": "git clone git@github.com:leaper-one/wechat-markdown-editor-multipost.git .",
-    "postStartCommand": "npm install && npm run start",
+    "postStartCommand": "npm install",
     "customizations": {
       "vscode": {
         "extensions": [
