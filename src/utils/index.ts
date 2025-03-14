@@ -396,6 +396,10 @@ export function processClipboardContent(primaryColor: string) {
       /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
       `<span class="nodeLabel"$1>$2</span>`,
     )
+    .replace(
+      /<span class="edgeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
+      `<span class="edgeLabel"$1>$2</span>`,
+    )
 
   // 处理图片大小
   solveWeChatImage()
