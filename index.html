@@ -9,12 +9,9 @@
       name="viewport"
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
-    <title>微信 Markdown 编辑器 | Doocs 开源社区</title>
-    <link rel="shortcut icon" href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/favicon.png" />
-    <link
-      rel="apple-touch-icon-precomposed"
-      href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
-    />
+    <title>MultiPost - Markdown 编辑器</title>
+    <link rel="shortcut icon" href="./src/assets/images/favicon.png" />
+    <link rel="apple-touch-icon-precomposed" href="./src/assets/images/favicon.png" />
     <style>
       .loading {
         position: fixed;
@@ -31,10 +28,12 @@
       }
 
       .loading::before {
-        content: url('/src/assets/images/favicon.png');
+        content: '';
         width: 100px;
         height: 100px;
         margin-bottom: 26px;
+        background: url('./src/assets/images/favicon.png') no-repeat center center;
+        background-size: contain;
       }
 
       .loading.dark {
@@ -75,7 +74,7 @@
     </noscript>
     <div id="app">
       <div class="loading">
-        <strong>致力于让 Markdown 编辑更简单</strong>
+        <strong>适配 MultiPost 文章同步助手</strong>
         <p class="txt">正在加载编辑器</p>
       </div>
     </div>
@@ -92,7 +91,10 @@
         svg: { fontCache: 'none' },
       }
     </script>
-    <script id="MathJax-script" src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js"></script>
+    <script
+      id="MathJax-script"
+      src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
     <script type="module" src="/src/main.ts"></script>
   </body>
   <script src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/main.js"></script>
