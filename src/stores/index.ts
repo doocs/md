@@ -6,8 +6,8 @@ import { addPrefix, css2json, customCssWithTemplate, customizeTheme, downloadMD,
 
 import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
-import { marked } from 'marked'
 import DOMPurify from 'dompurify'
+import { marked } from 'marked'
 
 export const useStore = defineStore(`store`, () => {
   // 是否开启深色模式
