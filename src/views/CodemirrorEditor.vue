@@ -142,6 +142,9 @@ function uploaded(imageUrl: string) {
   toast.success(`图片上传成功`)
 }
 function uploadImage(file: File, cb?: { (url: any): void, (arg0: unknown): void } | undefined) {
+  toast(`暂不支持图片上传， 请使用自己的图床`)
+  return
+
   isImgLoading.value = true
 
   toBase64(file)
@@ -261,33 +264,33 @@ function mdLocalToRemote() {
   const dom = codeMirrorWrapper.value!
 
   // 上传 md 中的图片
-  const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {
-    const mdImgList = [
-      ...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || []),
-    ].filter((item) => {
-      return item // 获取所有相对地址的图片
-    })
-    const root = md.path.match(/.+?\//)![0]
-    const resList = await Promise.all<{ matchStr: string, url: string }>(
-      mdImgList.map((item) => {
-        return new Promise((resolve) => {
-          let [, , matchStr] = item
-          matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
-          const { file }
-            = list.find(f => f.path === `${root}${matchStr}`) || {}
-          uploadImage(file!, (url) => {
-            resolve({ matchStr, url })
-          })
-        })
-      }),
-    )
-    resList.forEach((item) => {
-      md.str = md.str
-        .replace(`](./${item.matchStr})`, `](${item.url})`)
-        .replace(`](${item.matchStr})`, `](${item.url})`)
-    })
-    editor.value!.setValue(md.str)
-  }
+  // const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {
+  //   const mdImgList = [
+  //     ...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || []),
+  //   ].filter((item) => {
+  //     return item // 获取所有相对地址的图片
+  //   })
+  //   const root = md.path.match(/.+?\//)![0]
+  //   const resList = await Promise.all<{ matchStr: string, url: string }>(
+  //     mdImgList.map((item) => {
+  //       return new Promise((resolve) => {
+  //         let [, , matchStr] = item
+  //         matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
+  //         const { file }
+  //           = list.find(f => f.path === `${root}${matchStr}`) || {}
+  //         uploadImage(file!, (url) => {
+  //           resolve({ matchStr, url })
+  //         })
+  //       })
+  //     }),
+  //   )
+  //   resList.forEach((item) => {
+  //     md.str = md.str
+  //       .replace(`](./${item.matchStr})`, `](${item.url})`)
+  //       .replace(`](${item.matchStr})`, `](${item.url})`)
+  //   })
+  //   editor.value!.setValue(md.str)
+  // }
 
   dom.ondragover = evt => evt.preventDefault()
   dom.ondrop = async (evt: any) => {
@@ -297,7 +300,8 @@ function mdLocalToRemote() {
         if (handle.kind === `directory`) {
           const list = await showFileStructure(handle) as { path: string, file: File }[]
           const md = await getMd({ list })
-          uploadMdImg({ md, list })
+          console.log(`md`, md)
+          // uploadMdImg({ md, list })
         }
         else {
           const file = await handle.getFile()
