@@ -8,6 +8,7 @@ import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
+import { autoSpace } from '@/utils/autoSpace'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
@@ -153,9 +154,10 @@ export async function formatDoc(content: string, type: `markdown` | `css` = `mar
     markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
     css: [prettierPluginCss],
   }
+  const addSpaceContent = autoSpace(content)
 
   const parser = type in plugins ? type : `markdown`
-  return await format(content, {
+  return await format(addSpaceContent, {
     parser,
     plugins: plugins[parser],
   })
