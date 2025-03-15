@@ -1,0 +1,7 @@
+version: "3.8"
+services:
+  multipost-markdown-editor:
+    image: registry.cn-guangzhou.aliyuncs.com/leaperone/multipost-markdown-editor:latest
+    build:
+      context: ..
+      dockerfile: ./docker/Dockerfile
