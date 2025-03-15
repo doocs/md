@@ -1,0 +1,64 @@
+name: Deploy MultiPost Markdown Editor
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Skip CI
+        run: |
+          if grep -q "noci" <<< "${{ github.event.client_payload.message || '' }}"; then
+            echo "跳过构建: commit message 包含 'noci'"
+            exit 78
+          fi
+
+      - name: Login to Aliyun Docker Registry
+        uses: docker/login-action@v3
+        with:
+          registry: registry.cn-guangzhou.aliyuncs.com
+          username: ${{ secrets.ALIYUN_DOCKER_USERNAME }}
+          password: ${{ secrets.ALIYUN_DOCKER_PASSWORD }}
+
+      - name: Setup docker-compose
+        uses: KengoTODA/actions-setup-docker-compose@v1
+        with:
+          version: '2.14.2'
+
+      - name: Build Docker images
+        run: docker compose -f ./docker/docker-compose-build.yml build
+
+      - name: Tag and Push Docker images
+        run: |
+          docker push registry.cn-guangzhou.aliyuncs.com/leaperone/multipost-markdown-editor:latest
+
+      - name: Deploy to Production
+        if: github.ref == 'refs/heads/main'
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.ALIYUN_HK_HOST }}
+          username: ${{ secrets.ALIYUN_CN_USERNAME }}
+          port: ${{ secrets.ALIYUN_CN_PORT }}
+          key: ${{ secrets.ALIYUN_CN_SSH_PRIVATE_KEY }}
+          script: ${{ secrets.DEPLOY_MULTIPOST_SCRIPT }}
+
+  notify:
+    needs: build-and-deploy
+    if: always()
+    uses: leaper-one/leaperone-releases/.github/workflows/feishu-notification.yml@main
+    with:
+      status: ${{ needs.build-and-deploy.result }}
+      ref: leaper-one/MultiPost-Markdown-Editor@${{ github.event.client_payload.ref }}
+      run_number: ${{ github.run_number }}
+      message: ${{ github.event.client_payload.message }}
+      author: ${{ github.event.client_payload.author }}
+      run_id: ${{ github.run_id }}
+    secrets:
+      FEISHU_WEBHOOK_URL: ${{ secrets.FEISHU_WEBHOOK_URL }}
