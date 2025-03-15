@@ -99,11 +99,18 @@ function copy() {
     })
   }, 350)
 }
+
+function backToMultiPost() {
+  window.location.href = `https://multipost.app/publish`
+}
 </script>
 
 <template>
   <header class="header-container h-15 flex items-center justify-between px-5 dark:bg-[#191c20]">
     <div class="space-x-2 flex">
+      <Button variant="outline" @click="backToMultiPost">
+        Back to MultiPost
+      </Button>
       <Menubar class="menubar">
         <FileDropdown />
 
