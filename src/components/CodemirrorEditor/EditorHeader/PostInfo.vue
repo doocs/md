@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import type { ArticleData, checkServiceStatus, FileData, funcGetPermission, funcPublish, getPlatformInfos, type PlatformInfo, SyncData } from '@/utils/extension'
+import type { ArticleData, FileData, PlatformInfo, SyncData } from '@/utils/extension'
 import { useStore } from '@/stores'
+import { checkServiceStatus, funcGetPermission, funcPublish, getPlatformInfos } from '@/utils/extension'
 import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 
@@ -10,7 +11,7 @@ const { output, editor } = storeToRefs(store)
 const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PlatformInfo[]>([])
-const postTaskDialogVisible = ref(false)
+// const postTaskDialogVisible = ref(false)
 
 const selectedAccounts = ref<PlatformInfo[]>([])
 
@@ -272,7 +273,7 @@ onMounted(() => {
         <div class="grid grid-cols-2 w-full gap-2">
           <div v-for="account in allAccounts" :key="account.platformName" class="flex items-center gap-2">
             <CheckboxRoot
-              :checked="isAccountSelected(account)" class="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground h-4 w-4 flex items-center justify-center border rounded-sm"
+              :checked="isAccountSelected(account)" class="data-[state=checked]:bg-primary border-primary data-[state=checked]:text-primary-foreground h-4 w-4 flex items-center justify-center border rounded-sm"
               @update:checked="toggleAccount(account)"
             >
               <CheckboxIndicator>
@@ -301,5 +302,5 @@ onMounted(() => {
     </DialogContent>
   </Dialog>
 
-  <PostTaskDialog v-model:open="postTaskDialogVisible" :post="form" />
+  <!-- <PostTaskDialog v-model:open="postTaskDialogVisible" :post="form" /> -->
 </template>

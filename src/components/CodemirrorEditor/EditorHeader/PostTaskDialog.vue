@@ -1,9 +1,9 @@
-<script setup lang="ts">
-import type { Post } from '@/types'
+<!-- <script setup lang="ts">
+// import type { Post } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 const props = defineProps<{
-  post: Post
+  // post: Post
   open: boolean
 }>()
 
@@ -51,8 +51,8 @@ watch(() => props.open, (newVal) => {
     startPost()
   }
 })
-</script>
-
+</script> -->
+<!--
 <template>
   <Dialog v-model:open="dialogVisible">
     <DialogContent>
@@ -116,4 +116,4 @@ watch(() => props.open, (newVal) => {
 .account-item {
   margin-bottom: 1rem;
 }
-</style>
+</style> -->
