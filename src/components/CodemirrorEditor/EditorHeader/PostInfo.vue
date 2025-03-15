@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Post, PostAccount } from '@/types'
+import type { ArticleData, checkServiceStatus, FileData, funcGetPermission, funcPublish, getPlatformInfos, type PlatformInfo, SyncData } from '@/utils/extension'
 import { useStore } from '@/stores'
 import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
@@ -9,45 +9,72 @@ const { output, editor } = storeToRefs(store)
 
 const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
-const allAccounts = ref<PostAccount[]>([])
+const allAccounts = ref<PlatformInfo[]>([])
 const postTaskDialogVisible = ref(false)
 
-const form = ref<Post>({
-  title: ``,
-  desc: ``,
-  thumb: ``,
-  content: ``,
-  markdown: ``,
-  accounts: [] as PostAccount[],
-})
+const selectedAccounts = ref<PlatformInfo[]>([])
 
-const allowPost = computed(() => extensionInstalled.value && form.value.accounts.some(a => a.checked))
+const form = ref<ArticleData>({
+  title: ``,
+  content: ``,
+  digest: ``,
+  cover: {
+    url: ``,
+    type: ``,
+    size: 0,
+    name: ``,
+  },
+  images: [],
+  videos: [],
+  fileDatas: [],
+  originContent: ``,
+  markdownContent: ``,
+  markdownOriginContent: ``,
+})
 
 async function prePost() {
   if (extensionInstalled.value && allAccounts.value.length === 0) {
     await getAccounts()
   }
 
-  let auto: Post = {
-    thumb: ``,
+  let auto: ArticleData = {
+    cover: {
+      url: ``,
+      type: ``,
+      size: 0,
+      name: ``,
+    },
     title: ``,
-    desc: ``,
     content: ``,
-    markdown: ``,
-    accounts: [],
+    digest: ``,
+    images: [],
+    videos: [],
+    fileDatas: [],
+    originContent: ``,
+    markdownContent: ``,
+    markdownOriginContent: ``,
   }
-  const accounts = allAccounts.value.filter(a => ![`weixin`, `ipfs`].includes(a.type))
   try {
     auto = {
-      thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
+      cover: {
+        url: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
+        type: `image/*`,
+        size: 0,
+        name: `cover.png`,
+        originUrl: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
+      },
       title: [1, 2, 3, 4, 5, 6]
         .map(h => document.querySelector(`#output h${h}`)!)
         .filter(h => h)[0]
         .textContent ?? ``,
-      desc: document.querySelector(`#output p`)!.textContent ?? ``,
+      digest: document.querySelector(`#output p`)!.textContent ?? ``,
       content: output.value,
-      markdown: editor.value?.getValue() ?? ``,
-      accounts,
+      originContent: output.value,
+      markdownContent: editor.value?.getValue() ?? ``,
+      markdownOriginContent: editor.value?.getValue() ?? ``,
+      images: [],
+      videos: [],
+      fileDatas: [],
     }
   }
   catch (error) {
@@ -57,6 +84,8 @@ async function prePost() {
     form.value = {
       ...auto,
     }
+    // 在表单数据准备好后处理图片
+    await processImages()
   }
 }
 
@@ -68,18 +97,85 @@ declare global {
 }
 
 async function getAccounts(): Promise<void> {
-  return new Promise((resolve) => {
-    window.$syncer?.getAccounts((resp: PostAccount[]) => {
-      allAccounts.value = resp.map(a => ({ ...a, checked: true }))
-      resolve()
-    })
-  })
+  const platforms = await getPlatformInfos(`ARTICLE`)
+  allAccounts.value = platforms
+  console.log(`allAccounts`, platforms)
+}
+
+function toRaw<T extends object>(obj: T): T {
+  if (Array.isArray(obj)) {
+    return obj.map((item) => {
+      if (typeof item === `object` && item !== null) {
+        return toRaw(item)
+      }
+      return item
+    }) as unknown as T
+  }
+
+  const rawObj: Record<string, any> = {}
+  for (const key in obj) {
+    const value = obj[key as keyof T]
+    if (typeof value === `object` && value !== null) {
+      rawObj[key] = toRaw(value)
+    }
+    else {
+      rawObj[key] = value
+    }
+  }
+  return rawObj as T
 }
 
 function post() {
-  form.value.accounts = form.value.accounts.filter(a => a.checked)
-  postTaskDialogVisible.value = true
-  dialogVisible.value = false
+  const sdata: SyncData = {
+    platforms: selectedAccounts.value.map(account => account.name),
+    auto_publish: false,
+    data: toRaw(form.value),
+  }
+
+  funcPublish(sdata)
+
+  console.log(`sdata`, sdata)
+  // postTaskDialogVisible.value = true
+  // dialogVisible.value = false
+}
+
+async function processImages() {
+  const images = Array.from(document.querySelectorAll(`#output img`)) as HTMLImageElement[]
+  console.log(`images`, images)
+
+  const imageFileDatas: FileData[] = []
+
+  // 处理图片
+  for (let i = 0; i < images.length; i++) {
+    try {
+      const img = images[i]
+      const src = img.src
+      const response = await fetch(src)
+      const blob = await response.blob()
+      const fileData: FileData = {
+        name: `image_${i}.${blob.type.split(`/`)[1]}`,
+        type: blob.type,
+        size: blob.size,
+        url: URL.createObjectURL(blob),
+        originUrl: src,
+      }
+      imageFileDatas.push(fileData)
+
+      // 替换原始图片的 src 为本地 URL
+      img.src = fileData.url
+
+      if (i === 0) {
+        form.value.cover = fileData
+      }
+    }
+    catch (error) {
+      console.error(`处理图片时出错:`, error)
+    }
+  }
+
+  // 保存所有图片数据
+  form.value.images = imageFileDatas
+  form.value.fileDatas = [...imageFileDatas]
 }
 
 function onUpdate(val: boolean) {
@@ -88,31 +184,34 @@ function onUpdate(val: boolean) {
   }
 }
 
-function checkExtension() {
-  if (window.$syncer !== undefined) {
-    extensionInstalled.value = true
-    return
+async function checkExtension() {
+  const result = await checkServiceStatus()
+  extensionInstalled.value = result
+}
+
+function toggleAccount(account: PlatformInfo) {
+  const index = selectedAccounts.value.findIndex(a => a.platformName === account.platformName)
+  if (index === -1) {
+    selectedAccounts.value.push(account)
   }
+  else {
+    selectedAccounts.value.splice(index, 1)
+  }
+}
 
-  // 如果插件还没加载，5秒内每 500ms 检查一次
-  let count = 0
-  const timer = setInterval(async () => {
-    if (window.$syncer !== undefined) {
-      extensionInstalled.value = true
-      await getAccounts()
-      clearInterval(timer)
-      return
-    }
-
-    count++
-    if (count > 10) { // 5秒后还是没有检测到，就停止检查
-      clearInterval(timer)
-    }
-  }, 500)
+function isAccountSelected(account: PlatformInfo) {
+  return selectedAccounts.value.some(a => a.platformName === account.platformName)
 }
 
 onBeforeMount(() => {
   checkExtension()
+})
+
+onMounted(() => {
+  funcGetPermission().then((res) => {
+    console.log(`res`, res)
+  })
+  processImages()
 })
 </script>
 
@@ -140,10 +239,7 @@ onBeforeMount(() => {
         <AlertTitle>未检测到插件</AlertTitle>
         <AlertDescription>
           请安装
-          <Primitive
-            as="a" class="text-blue-500" href="https://www.wechatsync.com/?utm_source=syncicon#install"
-            target="_blank"
-          >
+          <Primitive as="a" class="text-blue-500" href="https://multipost.app/extension" target="_blank">
             文章同步助手
           </Primitive>
           插件
@@ -154,7 +250,7 @@ onBeforeMount(() => {
         <Label for="thumb" class="w-10 text-end">
           封面
         </Label>
-        <Input id="thumb" v-model="form.thumb" placeholder="自动提取第一张图" />
+        <img :src="form.cover.originUrl" :alt="form.cover.name" class="h-20 w-20 rounded-sm">
       </div>
       <div class="w-full flex items-center gap-4">
         <Label for="title" class="w-10 text-end">
@@ -166,33 +262,30 @@ onBeforeMount(() => {
         <Label for="desc" class="w-10 text-end">
           描述
         </Label>
-        <Textarea id="desc" v-model="form.desc" placeholder="自动提取第一个段落" />
+        <Textarea id="desc" v-model="form.digest" placeholder="自动提取第一个段落" />
       </div>
 
       <div class="w-full flex items-start gap-4">
-        <Label class="w-10 text-end">
-          账号
+        <Label for="accounts" class="w-10 text-end">
+          平台
         </Label>
-        <div class="flex flex-1 flex-col gap-2">
-          <div v-for="account in form.accounts" :key="account.uid + account.displayName" class="flex items-center gap-2">
-            <label class="flex flex-row items-center gap-4">
-              <CheckboxRoot
-                v-model:checked="account.checked"
-                class="bg-background hover:bg-muted h-[25px] w-[25px] flex appearance-none items-center justify-center border border-gray-200 rounded-[4px] outline-none"
+        <div class="grid grid-cols-2 w-full gap-2">
+          <div v-for="account in allAccounts" :key="account.platformName" class="flex items-center gap-2">
+            <CheckboxRoot
+              :checked="isAccountSelected(account)" class="border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground h-4 w-4 flex items-center justify-center border rounded-sm"
+              @update:checked="toggleAccount(account)"
+            >
+              <CheckboxIndicator>
+                <Check class="h-4 w-4" />
+              </CheckboxIndicator>
+            </CheckboxRoot>
+            <div class="flex items-center gap-2">
+              <img
+                v-if="account.faviconUrl" :src="account.faviconUrl" :alt="account.platformName"
+                class="h-4 w-4 rounded-sm"
               >
-                <CheckboxIndicator>
-                  <Check v-if="account.checked" class="h-4 w-4" />
-                </CheckboxIndicator>
-              </CheckboxRoot>
-              <span class="flex items-center gap-2 text-sm">
-                <img
-                  :src="account.icon"
-                  alt=""
-                  class="inline-block h-[20px] w-[20px]"
-                >
-                {{ account.title }} - {{ account.displayName ?? account.home }}
-              </span>
-            </label>
+              <span class="text-sm">{{ account.platformName }}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -201,7 +294,7 @@ onBeforeMount(() => {
         <Button variant="outline" @click="dialogVisible = false">
           取 消
         </Button>
-        <Button :disabled="!allowPost" @click="post">
+        <Button :disabled="!selectedAccounts.length" @click="post">
           确 定
         </Button>
       </DialogFooter>

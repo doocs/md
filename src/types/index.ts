@@ -86,12 +86,3 @@ export interface PostAccount {
   status?: string
   error?: string
 }
-
-export interface Post {
-  title: string
-  desc: string
-  thumb: string
-  content: string
-  markdown: string
-  accounts: PostAccount[]
-}
