@@ -10,6 +10,12 @@
 cd example
 npx wrangler dev worker.js
 ```
+或者安装依赖后启动
+```
+cd example
+pnpm i
+pnpm dev
+```
 
 部署：
 
