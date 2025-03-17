@@ -231,7 +231,7 @@ onMounted(() => {
         <Info class="h-4 w-4" />
         <AlertTitle>提示</AlertTitle>
         <AlertDescription>
-          此功能由第三方浏览器插件支持，本平台不保证安全性及同步准确度。
+          此功能由 MultiPost 开发。
         </AlertDescription>
       </Alert>
 
