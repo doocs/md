@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import { altKey, altSign, ctrlKey, shiftKey, shiftSign } from '@/config'
+import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
   checkImage,
@@ -416,11 +416,11 @@ onMounted(() => {
               <ContextMenuSeparator />
               <ContextMenuItem inset @click="copyToClipboard()">
                 复制
-                <ContextMenuShortcut>Ctrl + C</ContextMenuShortcut>
+                <ContextMenuShortcut> {{ ctrlSign }} + C</ContextMenuShortcut>
               </ContextMenuItem>
               <ContextMenuItem inset @click="pasteFromClipboard">
                 粘贴
-                <ContextMenuShortcut>Ctrl + V</ContextMenuShortcut>
+                <ContextMenuShortcut> {{ ctrlSign }} + V</ContextMenuShortcut>
               </ContextMenuItem>
               <ContextMenuItem inset @click="formatContent()">
                 格式化
