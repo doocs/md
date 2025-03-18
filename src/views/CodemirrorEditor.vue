@@ -21,6 +21,8 @@ const {
   formatContent,
   importMarkdownContent,
   importDefaultContent,
+  copyToClipboard,
+  pasteFromClipboard,
   resetStyleConfirm,
 } = store
 
@@ -410,6 +412,15 @@ onMounted(() => {
               </ContextMenuItem>
               <ContextMenuItem inset @click="exportEditorContent2HTML()">
                 导出 .html
+              </ContextMenuItem>
+              <ContextMenuSeparator />
+              <ContextMenuItem inset @click="copyToClipboard()">
+                复制
+                <ContextMenuShortcut>Ctrl + C</ContextMenuShortcut>
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="pasteFromClipboard">
+                粘贴
+                <ContextMenuShortcut>Ctrl + V</ContextMenuShortcut>
               </ContextMenuItem>
               <ContextMenuItem inset @click="formatContent()">
                 格式化

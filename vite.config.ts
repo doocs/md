@@ -31,7 +31,7 @@ export default defineConfig({
     VitePluginRadar({
       analytics: {
         id: `G-7NZL3PZ0NK`,
-      }
+      },
     }),
     process.env.ANALYZE === `true` && visualizer({
       emitFile: true,
