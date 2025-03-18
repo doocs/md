@@ -2,13 +2,13 @@ import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 import type { PropertiesHyphen } from 'csstype'
 import { prefix } from '@/config'
+import { autoSpace } from '@/utils/autoSpace'
 import juice from 'juice'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
-import { autoSpace } from '@/utils/autoSpace'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`

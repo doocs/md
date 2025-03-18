@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { useDisplayStore } from '@/stores'
-import { TableIcon, UploadCloudIcon } from 'lucide-vue-next'
+import { useDisplayStore, useStore } from '@/stores'
+import { ClipboardPasteIcon, CopyIcon, TableIcon, UploadCloudIcon } from 'lucide-vue-next'
 
 const { toggleShowInsertFormDialog, toggleShowUploadImgDialog } = useDisplayStore()
+
+const { copyToClipboard, pasteFromClipboard } = useStore()
 </script>
 
 <template>
@@ -18,6 +20,15 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog } = useDisplayStor
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <TableIcon class="mr-2 h-4 w-4" />
         插入表格
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem @click="copyToClipboard">
+        <CopyIcon class="mr-2 h-4 w-4" />
+        复制
+      </MenubarItem>
+      <MenubarItem @click="pasteFromClipboard">
+        <ClipboardPasteIcon class="mr-2 h-4 w-4" />
+        粘贴
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
