@@ -42,9 +42,8 @@ async function prePost() {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
       title: [1, 2, 3, 4, 5, 6]
         .map(h => document.querySelector(`#output h${h}`)!)
-        .filter(h => h)[0]
-        .textContent ?? ``,
-      desc: document.querySelector(`#output p`)!.textContent ?? ``,
+        .find(h => h)?.textContent ?? ``,
+      desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
       content: output.value,
       markdown: editor.value?.getValue() ?? ``,
       accounts,
