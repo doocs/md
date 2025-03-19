@@ -8,7 +8,6 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import Buffer from 'buffer-from'
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
-import * as Minio from 'minio'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
@@ -262,43 +261,35 @@ async function txCOSFileUpload(file: File) {
 // Minio File Upload
 // -----------------------------------------------------------------------
 
-async function minioFileUpload(content: string, filename: string) {
-  const dateFilename = getDateFilename(filename)
+async function minioFileUpload(file: File) {
+  const dateFilename = getDateFilename(file.name)
   const { endpoint, port, useSSL, bucket, accessKey, secretKey } = JSON.parse(
     localStorage.getItem(`minioConfig`)!,
   )
-  const buffer = Buffer(content, `base64`)
-  const conf: Minio.ClientOptions = {
-    endPoint: endpoint,
-    useSSL,
-    accessKey,
-    secretKey,
-  }
-  const p = Number(port || 0)
-  const isCustomPort = p > 0 && p !== 80 && p !== 443
-  if (isCustomPort) {
-    conf.port = p
-  }
-  return new Promise<string>((resolve, reject) => {
-    const minioClient = new Minio.Client(conf)
-    try {
-      minioClient.putObject(bucket, dateFilename, buffer, (e) => {
-        if (e) {
-          reject(e)
-        }
-        const host = `${useSSL ? `https://` : `http://`}${endpoint}${
-          isCustomPort ? `:${port}` : ``
-        }`
-        const url = `${host}/${bucket}/${dateFilename}`
-        // console.log("文件上传成功: ", url)
-        resolve(url)
-        // return `${endpoint}/${bucket}/${dateFilename}`;
-      })
-    }
-    catch (e) {
-      reject(e)
-    }
+  const s3Client = new S3Client({
+    endpoint: `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}`,
+    credentials: {
+      accessKeyId: accessKey,
+      secretAccessKey: secretKey,
+    },
+    region: `auto`,
+    forcePathStyle: true,
   })
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: dateFilename,
+    ContentType: file.type,
+  })
+  const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+  await fetch(presignedUrl, {
+    method: `PUT`,
+    headers: {
+      'Content-Type': file.type,
+    },
+    data: file,
+  }).catch((err) => { console.log(err) })
+  return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
 
 // -----------------------------------------------------------------------
@@ -455,7 +446,7 @@ function fileUpload(content: string, file: File) {
     case `aliOSS`:
       return aliOSSFileUpload(file)
     case `minio`:
-      return minioFileUpload(content, file.name)
+      return minioFileUpload(file)
     case `txCOS`:
       return txCOSFileUpload(file)
     case `qiniu`:
