@@ -36,7 +36,7 @@ async function prePost() {
     markdown: ``,
     accounts: [],
   }
-  const accounts = allAccounts.value.filter(a => ![`weixin`, `ipfs`].includes(a.type))
+  const accounts = allAccounts.value.filter(a => ![`ipfs`].includes(a.type))
   try {
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
