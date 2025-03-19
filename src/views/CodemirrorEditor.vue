@@ -398,10 +398,10 @@ onMounted(() => {
                 插入表格
               </ContextMenuItem>
               <ContextMenuItem inset @click="resetStyleConfirm()">
-                恢复默认样式
+                重置样式
               </ContextMenuItem>
               <ContextMenuItem inset @click="importDefaultContent()">
-                导入默认文档
+                重置文档
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem inset @click="importMarkdownContent()">

@@ -238,7 +238,7 @@ onBeforeMount(() => {
 
 function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
-  toast.success(`已成功切换图床`)
+  toast.success(`图床已切换`)
 }
 
 function beforeImageUpload(file: File) {
@@ -840,7 +840,7 @@ function onDrop(e: DragEvent) {
                   href="https://developers.cloudflare.com/r2/api/s3/api/"
                   target="_blank"
                 >
-                  如何使用 S3 API 操作 Cloudflare R2
+                  如何使用 S3 API 操作 Cloudflare R2？
                 </Button>
                 <Button
                   variant="link"
@@ -849,7 +849,7 @@ function onDrop(e: DragEvent) {
                   href="https://developers.cloudflare.com/r2/buckets/cors/"
                   target="_blank"
                 >
-                  如何设置跨域(CORS)
+                  如何设置跨域(CORS)？
                 </Button>
               </div>
             </FormItem>

@@ -376,7 +376,7 @@ export const useStore = defineStore(`store`, () => {
     updateCss()
     editorRefresh()
 
-    toast.success(`样式重置成功~`)
+    toast.success(`样式已重置`)
   }
 
   // 为函数添加刷新编辑器的功能
@@ -473,7 +473,7 @@ export const useStore = defineStore(`store`, () => {
   // 导入默认文档
   const importDefaultContent = () => {
     editor.value!.setValue(DEFAULT_CONTENT)
-    toast.success(`文档已重置为默认文档`)
+    toast.success(`文档已重置`)
   }
 
   const copyToClipboard = async () => {

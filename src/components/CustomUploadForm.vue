@@ -55,10 +55,11 @@ function formCustomSave() {
     <Button
       variant="link"
       class="p-0"
+      as="a"
       href="https://github.com/doocs/md#自定义上传逻辑"
       target="_blank"
     >
-      参数详情
+      参数详情？
     </Button>
     <Button class="block" @click="formCustomSave">
       保存配置
