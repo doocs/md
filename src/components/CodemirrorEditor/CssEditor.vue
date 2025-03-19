@@ -26,7 +26,7 @@ function editTabName() {
   }
   store.renameTab(editInputVal.value)
   isOpenEditDialog.value = false
-  toast.success(`修改成功~`)
+  toast.success(`修改成功`)
 }
 
 const isOpenAddDialog = ref(false)
@@ -49,7 +49,7 @@ function addTab() {
 
   store.cssContentConfig.active = addInputVal.value
   tabHistory.value = [tabHistory.value[1], addInputVal.value]
-  toast.success(`新建成功~`)
+  toast.success(`新建成功`)
 }
 
 const isOpenDelTabConfirmDialog = ref(false)
@@ -82,7 +82,7 @@ function delTab() {
   store.tabChanged(activeName)
   store.cssContentConfig.tabs = tabs.filter(tab => tab.name !== delTargetName.value)
 
-  toast.success(`删除成功~`)
+  toast.success(`删除成功`)
 }
 
 function addHandler() {
