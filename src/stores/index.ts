@@ -224,6 +224,13 @@ export const useStore = defineStore(`store`, () => {
 
   const readingTime = ref<ReadTimeResults | null>(null)
 
+  // 文章标题
+  const titleList = ref<{
+    url: string
+    title: string
+    level: number
+  }[]>([])
+
   // 更新编辑器
   const editorRefresh = () => {
     codeThemeChange()
@@ -240,6 +247,26 @@ export const useStore = defineStore(`store`, () => {
     } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
     readingTime.value = readingTimeResult
     let outputTemp = marked.parse(markdownContent) as string
+
+    // 提取标题
+    const div = document.createElement('div')
+    div.innerHTML = outputTemp
+    const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
+
+    titleList.value = []
+    let i = 0
+    for (const item of list) {
+      item.setAttribute(`id`, `${i}`)
+      titleList.value.push({
+        url: `#${i}`,
+        title: `${item.innerText}`,
+        level: Number(item.tagName.slice(1))
+      })
+      i++
+    }
+
+    outputTemp = div.innerHTML
+
     outputTemp = DOMPurify.sanitize(outputTemp)
 
     // 阅读时间及字数统计
@@ -595,6 +622,8 @@ export const useStore = defineStore(`store`, () => {
     delPost,
     isOpenPostSlider,
     isOpenRightSlider,
+
+    titleList,
   }
 })
 
