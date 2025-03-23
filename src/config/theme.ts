@@ -73,7 +73,6 @@ const defaultTheme: Theme = {
       'margin': `1.5em 8px`,
       'letter-spacing': `0.1em`,
       'color': `hsl(var(--foreground))`,
-      'text-align': `justify`,
     },
 
     // 引用
