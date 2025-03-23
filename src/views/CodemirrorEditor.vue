@@ -9,7 +9,7 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { Minimize2, MoveDiagonal } from 'lucide-vue-next'
+import { List } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -453,12 +453,11 @@ const isOpenHeadingSlider = ref(false)
             <BackTop target="preview" :right="40" :bottom="40" />
           </div>
           <div
-            class="bg-background absolute left-0 top-0 border rounded-2 p-2 text-sm shadow"
+            class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
+            @mouseenter="() => isOpenHeadingSlider = true"
+            @mouseleave="() => isOpenHeadingSlider = false"
           >
-            <Button variant="outline" size="icon" @click="isOpenHeadingSlider = !isOpenHeadingSlider">
-              <Minimize2 v-show="isOpenHeadingSlider" class="size-4" />
-              <MoveDiagonal v-show="!isOpenHeadingSlider" class="size-4" />
-            </Button>
+            <List class="size-6" />
             <ul
               class="overflow-auto transition-all"
               :class="{
@@ -466,7 +465,7 @@ const isOpenHeadingSlider = ref(false)
                 'max-h-100 w-60 mt-2': isOpenHeadingSlider,
               }"
             >
-              <li v-for="(item, index) in store.titleList" :key="index" class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600" :style="{paddingLeft: item.level - 0.5 + 'em'}">
+              <li v-for="(item, index) in store.titleList" :key="index" class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600" :style="{ paddingLeft: `${item.level - 0.5}em` }">
                 <a :href="item.url">
                   {{ item.title }}
                 </a>
