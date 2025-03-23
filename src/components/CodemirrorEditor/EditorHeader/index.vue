@@ -101,7 +101,7 @@ function copy() {
 }
 
 function backToMultiPost() {
-  window.location.href = `https://multipost.app/publish`
+  window.location.href = `https://multipost.app/dashboard/publish`
 }
 </script>
 
