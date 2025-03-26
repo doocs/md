@@ -264,7 +264,7 @@ function beforeImageUpload(file: File) {
 
 const dragover = ref(false)
 
-const { open, onChange } = useFileDialog({
+const { open, reset, onChange } = useFileDialog({
   accept: `image/*`,
 })
 
@@ -276,6 +276,7 @@ onChange((files) => {
   const file = files[0]
 
   beforeImageUpload(file) && emit(`uploadImage`, file)
+  reset()
 })
 
 function onDrop(e: DragEvent) {
