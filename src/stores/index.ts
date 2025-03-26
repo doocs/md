@@ -260,7 +260,7 @@ export const useStore = defineStore(`store`, () => {
       item.setAttribute(`id`, `${i}`)
       titleList.value.push({
         url: `#${i}`,
-        title: `${item.innerText}`,
+        title: `${item.textContent}`,
         level: Number(item.tagName.slice(1)),
       })
       i++
