@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import type { Post, PostAccount } from '@/types'
+import { useCopyContent } from '@/composables/useCopyContent'
 import { useStore } from '@/stores'
 import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 
 const store = useStore()
-const { output, editor } = storeToRefs(store)
+const { editor } = storeToRefs(store)
 
 const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
+const { handleCopyContent } = useCopyContent()
 
 const form = ref<Post>({
   title: ``,
@@ -37,14 +39,26 @@ async function prePost() {
     accounts: [],
   }
   const accounts = allAccounts.value.filter(a => ![`ipfs`].includes(a.type))
+
+  /**
+   * 获取标题、内容、封面，描述
+   * 内容为 #output 中渲染的 html
+   * 标题为 #output 中第一个 h1-h6 的内容
+   * 封面为 #output 中第一个 img 的 src
+   * 描述为 #output 中第一个 p 的内容
+   */
   try {
+    // 调用父组件的 handleCopyContent 方法，获取渲染后的内容，并赋值给 content
+    const content = await handleCopyContent(`html`, false)
+
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
       title: [1, 2, 3, 4, 5, 6]
         .map(h => document.querySelector(`#output h${h}`)!)
-        .find(h => h)?.textContent ?? ``,
+        .find(h => h)
+        ?.textContent ?? ``,
       desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
-      content: output.value,
+      content,
       markdown: editor.value?.getValue() ?? ``,
       accounts,
     }

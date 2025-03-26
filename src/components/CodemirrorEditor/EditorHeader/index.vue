@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { Toaster } from '@/components/ui/sonner'
+import { useCopyContent } from '@/composables/useCopyContent'
 import {
   altSign,
   ctrlKey,
@@ -9,8 +10,6 @@ import {
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
-
-const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
 
 const formatItems = [
   {
@@ -47,58 +46,11 @@ const formatItems = [
 
 const store = useStore()
 
-const { isDark, isCiteStatus, isCountStatus, output, primaryColor, isOpenPostSlider } = storeToRefs(store)
+const { isDark, isCiteStatus, isCountStatus, isOpenPostSlider } = storeToRefs(store)
 
-const { toggleDark, editorRefresh, citeStatusChanged, countStatusChanged } = store
+const { toggleDark, citeStatusChanged, countStatusChanged } = store
 
-const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
-const source = ref(``)
-const { copy: copyContent } = useClipboard({ source })
-
-// 复制到微信公众号
-function copy() {
-  emit(`startCopy`)
-  setTimeout(() => {
-    // 如果是深色模式，复制之前需要先切换到白天模式
-    const isBeforeDark = isDark.value
-    if (isBeforeDark) {
-      toggleDark()
-    }
-
-    nextTick(async () => {
-      processClipboardContent(primaryColor.value)
-      const clipboardDiv = document.getElementById(`output`)!
-      clipboardDiv.focus()
-      window.getSelection()!.removeAllRanges()
-      const temp = clipboardDiv.innerHTML
-      if (copyMode.value === `txt`) {
-        const range = document.createRange()
-        range.setStartBefore(clipboardDiv.firstChild!)
-        range.setEndAfter(clipboardDiv.lastChild!)
-        window.getSelection()!.addRange(range)
-        document.execCommand(`copy`)
-        window.getSelection()!.removeAllRanges()
-      }
-      clipboardDiv.innerHTML = output.value
-      if (isBeforeDark) {
-        nextTick(() => toggleDark())
-      }
-      if (copyMode.value === `html`) {
-        await copyContent(temp)
-      }
-
-      // 输出提示
-      toast.success(
-        copyMode.value === `html`
-          ? `已复制 HTML 源码，请进行下一步操作。`
-          : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
-      )
-
-      editorRefresh()
-      emit(`endCopy`)
-    })
-  }, 350)
-}
+const { copyMode, handleCopyContent } = useCopyContent()
 </script>
 
 <template>
@@ -161,7 +113,7 @@ function copy() {
       </Button>
 
       <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
-        <Button variant="ghost" class="shadow-none" @click="copy">
+        <Button variant="ghost" class="shadow-none" @click="() => handleCopyContent(copyMode)">
           复制
         </Button>
         <Separator orientation="vertical" class="h-5" />

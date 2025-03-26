@@ -90,6 +90,7 @@ export const useStore = defineStore(`store`, () => {
 
   const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
   // 内容列表
+  // 使用 @vueuse 的 Storage 模块存储本地数据，存储格式为 { title: string, content: string }[]
   const posts = useStorage(addPrefix(`posts`), [
     {
       title: `内容1`,
@@ -153,7 +154,7 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
-  // 自义定 CSS 编辑器
+  // 自定义 CSS 编辑器
   const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
   const setCssEditorValue = (content: string) => {
     cssEditor.value!.setValue(content)
@@ -249,7 +250,7 @@ export const useStore = defineStore(`store`, () => {
     let outputTemp = marked.parse(markdownContent) as string
 
     // 提取标题
-    const div = document.createElement('div')
+    const div = document.createElement(`div`)
     div.innerHTML = outputTemp
     const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
 
@@ -260,7 +261,7 @@ export const useStore = defineStore(`store`, () => {
       titleList.value.push({
         url: `#${i}`,
         title: `${item.innerText}`,
-        level: Number(item.tagName.slice(1))
+        level: Number(item.tagName.slice(1)),
       })
       i++
     }
