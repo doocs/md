@@ -8,7 +8,6 @@ import {
   shiftSign,
 } from '@/config'
 import { useStore } from '@/stores'
-import { addPrefix, processClipboardContent } from '@/utils'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 
 const formatItems = [
