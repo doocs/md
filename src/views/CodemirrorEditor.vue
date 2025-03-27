@@ -244,6 +244,7 @@ function initEditor() {
           continue
         }
         uploadImage(pasteFile)
+        e.preventDefault()
       }
     }
   })
@@ -305,6 +306,7 @@ function mdLocalToRemote() {
         else {
           const file = await handle.getFile()
           console.log(`file`, file)
+          beforeUpload(file) && uploadImage(file)
         }
       })
     }
