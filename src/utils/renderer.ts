@@ -12,13 +12,14 @@ import readingTime from 'reading-time'
 
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
-
+import markedSlider from './MDSlider'
 import { MDKatex } from './MDKatex'
 
 marked.setOptions({
   breaks: true,
 })
 marked.use(MDKatex({ nonStandard: true }))
+marked.use(markedSlider())
 
 function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
   const theme = cloneDeep(_theme)
@@ -334,6 +335,7 @@ export function initRenderer(opts: IOpts) {
   }
 
   marked.use({ renderer })
+  marked.use(markedSlider({ styles: styleMapping }))
 
   return {
     buildAddition,
