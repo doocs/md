@@ -249,7 +249,7 @@ export const useStore = defineStore(`store`, () => {
     let outputTemp = marked.parse(markdownContent) as string
 
     // 提取标题
-    const div = document.createElement('div')
+    const div = document.createElement(`div`)
     div.innerHTML = outputTemp
     const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
 
@@ -259,8 +259,8 @@ export const useStore = defineStore(`store`, () => {
       item.setAttribute(`id`, `${i}`)
       titleList.value.push({
         url: `#${i}`,
-        title: `${item.innerText}`,
-        level: Number(item.tagName.slice(1))
+        title: `${item.textContent}`,
+        level: Number(item.tagName.slice(1)),
       })
       i++
     }
