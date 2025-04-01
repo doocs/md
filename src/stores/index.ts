@@ -41,7 +41,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleEditOnLeft = useToggle(isEditOnLeft)
 
   // 是否开启微信外链接底部引用
-  const isCiteStatus = useStorage(`isCiteStatus`, false)
+  const isCiteStatus = useStorage(`isCiteStatus`, true)
   const toggleCiteStatus = useToggle(isCiteStatus)
 
   // 是否统计字数和阅读时间
@@ -57,12 +57,12 @@ export const useStore = defineStore(`store`, () => {
   // 文本字体
   const theme = useStorage<keyof typeof themeMap>(
     addPrefix(`theme`),
-    themeOptions[0].value,
+    themeOptions[2].value,
   )
   // 文本字体
   const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
   // 文本大小
-  const fontSize = useStorage(`size`, fontSizeOptions[2].value)
+  const fontSize = useStorage(`size`, fontSizeOptions[1].value)
   // 主色
   const primaryColor = useStorage(`color`, colorOptions[0].value)
   // 代码块主题
