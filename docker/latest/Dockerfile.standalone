@@ -7,7 +7,7 @@ FROM --platform=$BUILDPLATFORM "golang:$VER_GOLANG" AS gobuilder
 ARG TARGETARCH
 ARG TARGETOS
 COPY --from=assets /app/* /app/assets/
-COPY docker/latest/server/main.go /app
+COPY server/main.go /app
 RUN apk add git bash gcc musl-dev upx
 WORKDIR /app
 ENV GOOS=$TARGETOS GOARCH=$TARGETARCH
