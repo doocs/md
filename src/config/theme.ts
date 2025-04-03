@@ -172,7 +172,7 @@ const defaultTheme: Theme = {
     // 图片
     image: {
       'display': `block`,
-      'width': `100% !important`,
+      'max-width': `100%`,
       'margin': `0.1em auto 0.5em`,
       'border-radius': `4px`,
     },
