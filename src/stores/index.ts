@@ -94,6 +94,12 @@ export const useStore = defineStore(`store`, () => {
     {
       title: `内容1`,
       content: DEFAULT_CONTENT,
+      history: [
+        {
+          datetime: new Date().toLocaleString(`zh-cn`),
+          content: DEFAULT_CONTENT,
+        },
+      ],
     },
   ])
   // 当前内容
@@ -104,6 +110,12 @@ export const useStore = defineStore(`store`, () => {
       = posts.value.push({
         title,
         content: `# ${title}`,
+        history: [
+          {
+            datetime: new Date().toLocaleString(`zh-cn`),
+            content: `# ${title}`,
+          },
+        ],
       }) - 1
   }
 
