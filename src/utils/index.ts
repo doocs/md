@@ -76,8 +76,9 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
     `image`,
     `ul`,
     `ol`,
+    `block_katex`,
   ]
-  const inlineKeys: Inline[] = [`strong`, `codespan`, `link`, `wx_link`, `listitem`]
+  const inlineKeys: Inline[] = [`strong`, `codespan`, `link`, `wx_link`, `listitem`, `inline_katex`]
 
   mergeProperties(newTheme.block, jsonString, blockKeys)
   mergeProperties(newTheme.inline, jsonString, inlineKeys)
