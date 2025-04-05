@@ -100,9 +100,9 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
   // 辅助函数：将声明数组转换为对象
   const toObject = (array: any[]) =>
     array.reduce<{ [k: string]: string }>((obj, item) => {
-      const [property, value] = item.split(`:`).map((part: string) => part.trim())
+      const [property, ...value] = item.split(`:`).map((part: string) => part.trim())
       if (property)
-        obj[property] = value
+        obj[property] = value.join(`:`)
       return obj
     }, {})
 
