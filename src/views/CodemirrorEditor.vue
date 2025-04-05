@@ -229,6 +229,22 @@ function initEditor() {
     }, 300)
   })
 
+  // 定时，30 秒记录一次
+  setInterval(() => {
+    const pre = (store.posts[store.currentPostIndex].history || [])[0]?.content
+    if (pre !== store.posts[store.currentPostIndex].content) {
+      store.posts[store.currentPostIndex].history ??= []
+      store.posts[store.currentPostIndex].history.unshift({
+        datetime: new Date().toLocaleString(`zh-CN`),
+        content: store.posts[store.currentPostIndex].content,
+      })
+      // 超长时，进行减负
+      if (store.posts[store.currentPostIndex].history.length > 10) {
+        store.posts[store.currentPostIndex].history.length = 10
+      }
+    }
+  }, 30 * 1000)
+
   // 粘贴上传图片并插入
   editor.value.on(`paste`, (_cm, e) => {
     if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {

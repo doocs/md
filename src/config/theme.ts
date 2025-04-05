@@ -172,7 +172,7 @@ const defaultTheme: Theme = {
     // 图片
     image: {
       'display': `block`,
-      'width': `100% !important`,
+      'max-width': `100%`,
       'margin': `0.1em auto 0.5em`,
       'border-radius': `4px`,
     },
@@ -214,6 +214,8 @@ const defaultTheme: Theme = {
       'height': `0.4em`,
       'margin': `1.5em 0`,
     },
+
+    block_katex: {},
   },
   inline: {
     listitem: {
@@ -283,6 +285,8 @@ const defaultTheme: Theme = {
       'color': `#888`,
       'font-size': `0.8em`,
     },
+
+    inline_katex: {},
   },
 }
 
