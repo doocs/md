@@ -12,8 +12,8 @@ import readingTime from 'reading-time'
 
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
-import markedSlider from './MDSlider'
 import { MDKatex } from './MDKatex'
+import markedSlider from './MDSlider'
 
 marked.setOptions({
   breaks: true,
@@ -180,10 +180,8 @@ export function initRenderer(opts: IOpts) {
     if (oldStyle !== newStyle) {
       marked.use(markedAlert({ styles: styleMapping }))
       marked.use(
-        MDKatex({ nonStandard: true },
-          styles('inline_katex', `;vertical-align: middle; line-height: 1;`),
-          styles('block_katex', `;text-align: center; overflow: auto;`)
-        )
+        MDKatex({ nonStandard: true }, styles(`inline_katex`, `;vertical-align: middle; line-height: 1;`), styles(`block_katex`, `;text-align: center; overflow: auto;`),
+        ),
       )
     }
   }
@@ -347,10 +345,8 @@ export function initRenderer(opts: IOpts) {
   marked.use(markedSlider({ styles: styleMapping }))
   marked.use(markedAlert({ styles: styleMapping }))
   marked.use(
-    MDKatex({ nonStandard: true },
-      styles('inline_katex', `;vertical-align: middle; line-height: 1;`),
-      styles('block_katex', `;text-align: center; overflow: auto;`)
-    )
+    MDKatex({ nonStandard: true }, styles(`inline_katex`, `;vertical-align: middle; line-height: 1;`), styles(`block_katex`, `;text-align: center; overflow: auto;`),
+    ),
   )
 
   return {

@@ -117,6 +117,9 @@ util.axios
 ## 如何开发和部署
 
 ```sh
+# 安装 node 版本
+nvm i && nvm use
+
 # 安装依赖
 npm i
 
