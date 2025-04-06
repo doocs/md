@@ -1,6 +1,6 @@
+import type { ThemeStyles } from '@/types'
 import type { MarkedExtension, Tokens } from 'marked'
 import { getStyleString } from '.'
-import type { ThemeStyles } from '@/types'
 
 /**
  * A marked extension to support horizontal sliding images.
@@ -10,17 +10,17 @@ export default function markedSlider(options: { styles?: ThemeStyles } = {}): Ma
   return {
     extensions: [
       {
-        name: 'horizontalSlider',
-        level: 'block',
+        name: `horizontalSlider`,
+        level: `block`,
         start(src: string) {
-          return src.match(/^<\!\[/)?.index
+          return src.match(/^<!\[/)?.index
         },
         tokenizer(src: string) {
-          const rule = /^<(\!\[.*?\]\(.*?\)(?:,\!\[.*?\]\(.*?\))*)>/
+          const rule = /^<(!\[.*?\]\(.*?\)(?:,!\[.*?\]\(.*?\))*)>/
           const match = src.match(rule)
           if (match) {
             return {
-              type: 'horizontalSlider',
+              type: `horizontalSlider`,
               raw: match[0],
               text: match[1],
             }
@@ -29,27 +29,27 @@ export default function markedSlider(options: { styles?: ThemeStyles } = {}): Ma
         },
         renderer(token: Tokens.Generic) {
           const { text } = token
-          const imageMatches = text.match(/\!\[(.*?)\]\((.*?)\)/g) || []
-          
+          const imageMatches = text.match(/!\[(.*?)\]\((.*?)\)/g) || []
+
           if (imageMatches.length === 0) {
-            return ''
+            return ``
           }
 
           const images = imageMatches.map((img: string) => {
-            const altMatch = img.match(/\!\[(.*?)\]/) || []
+            const altMatch = img.match(/!\[(.*?)\]/) || []
             const srcMatch = img.match(/\]\((.*?)\)/) || []
-            const alt = altMatch[1] || ''
-            const src = srcMatch[1] || ''
-            
+            const alt = altMatch[1] || ``
+            const src = srcMatch[1] || ``
+
             const { styles } = options
-            const imgStyles = styles ? getStyleString(styles['image']) : ''
-            
+            const imgStyles = styles ? getStyleString(styles.image) : ``
+
             return { src, alt, imgStyles }
           })
 
           // 使用微信公众号兼容的滑动容器布局
           // 使用微信支持的section标签和特殊样式组合
-          
+
           return `
             <section style="box-sizing: border-box; font-size: 16px;">
               <section data-role="outer" style="font-family: 微软雅黑; font-size: 16px;">
@@ -58,10 +58,10 @@ export default function markedSlider(options: { styles?: ThemeStyles } = {}): Ma
                     <section style="display: inline-block; width: 100%;">
                       <!-- 微信公众号支持的滑动图片容器 -->
                       <section style="overflow-x: scroll; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%; text-align: center;">
-                        ${images.map((img: { src: string; alt: string; imgStyles: string }, _index: number) => `<section style="display: inline-block; width: 100%; margin-right: 0; vertical-align: top;">
+                        ${images.map((img: { src: string, alt: string, imgStyles: string }, _index: number) => `<section style="display: inline-block; width: 100%; margin-right: 0; vertical-align: top;">
                           <img src="${img.src}" alt="${img.alt}" title="${img.alt}" style="${img.imgStyles}; width: 100%; height: auto; border-radius: 4px; vertical-align: top;"/>
                           <p style="margin-top: 5px; font-size: 14px; color: #666; text-align: center; white-space: normal;">${img.alt}</p>
-                        </section>`).join('')}
+                        </section>`).join(``)}
                       </section>
                     </section>
                   </section>
@@ -70,8 +70,8 @@ export default function markedSlider(options: { styles?: ThemeStyles } = {}): Ma
               <p style="font-size: 14px; color: #999; text-align: center; margin-top: 5px;"><<< 左右滑动看更多 >>></p>
             </section>
           `
-        }
-      }
-    ]
+        },
+      },
+    ],
   }
 }
