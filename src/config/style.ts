@@ -20,28 +20,28 @@ export const fontFamilyOptions: IConfigOption[] = [
 
 export const fontSizeOptions: IConfigOption[] = [
   {
-    label: `12px`,
-    value: `12px`,
-    desc: `更小`,
-  },
-  {
-    label: `13px`,
-    value: `13px`,
-    desc: `稍小`,
-  },
-  {
     label: `14px`,
     value: `14px`,
-    desc: `推荐`,
+    desc: `更小`,
   },
   {
     label: `15px`,
     value: `15px`,
-    desc: `稍大`,
+    desc: `稍小`,
   },
   {
     label: `16px`,
     value: `16px`,
+    desc: `推荐`,
+  },
+  {
+    label: `17px`,
+    value: `17px`,
+    desc: `稍大`,
+  },
+  {
+    label: `18px`,
+    value: `18px`,
     desc: `更大`,
   },
 ]
