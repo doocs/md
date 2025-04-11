@@ -1,11 +1,11 @@
-FROM doocs/md:latest-assets AS assets
+FROM --platform=$BUILDPLATFORM doocs/md:latest-assets AS assets
 
 # detail https://github.com/lipanski/docker-static-website/blob/master/Dockerfile
-FROM lipanski/docker-static-website
+FROM --platform=$TARGETPLATFORM lipanski/docker-static-website
 
 WORKDIR /home/static
 
-COPY --from=assets /app/* /home/static
+COPY --from=assets /app /home/static
 
 EXPOSE 80
 
