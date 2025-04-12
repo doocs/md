@@ -154,7 +154,7 @@ const defaultTheme: Theme = {
 
     // 代码块
     code_pre: {
-      'font-size': `14px`,
+      'font-size': `90%`,
       'overflow-x': `auto`,
       'border-radius': `8px`,
       'padding': `1em`,
@@ -166,6 +166,7 @@ const defaultTheme: Theme = {
     code: {
       'margin': 0,
       'white-space': `nowrap`,
+      'font-size': `90%`,
       'font-family': `Menlo, Operator Mono, Consolas, Monaco, monospace`,
     },
 
