@@ -8,7 +8,6 @@ const props = defineProps({
 
 const emit = defineEmits([`close`])
 
-// 核心贡献者数据直接定义在组件内部
 const contributors = [
   {
     name: `yanglbme`,
