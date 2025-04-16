@@ -22,6 +22,7 @@ const memoryKey = `ai_memory_context`
 interface ChatMessage {
   role: `user` | `assistant` | `system`
   content: string
+  done?: boolean
 }
 
 const messages = ref<ChatMessage[]>([])
@@ -73,7 +74,7 @@ async function sendMessage() {
   const userInput = input.value.trim()
   messages.value.push({ role: `user`, content: userInput })
   input.value = ``
-  const replyMessage: ChatMessage = { role: `assistant`, content: `` }
+  const replyMessage: ChatMessage = { role: `assistant`, content: ``, done: false }
   messages.value.push(replyMessage)
   await scrollToBottom()
 
@@ -113,8 +114,13 @@ async function sendMessage() {
 
     while (true) {
       const { value, done } = await reader.read()
-      if (done)
+      if (done) {
+        const last = messages.value[messages.value.length - 1]
+        if (last.role === `assistant`) {
+          last.done = true
+        }
         break
+      }
 
       buffer += decoder.decode(value, { stream: true })
       const lines = buffer.split(`\n`)
@@ -201,8 +207,8 @@ async function sendMessage() {
 
             <div v-if="msg.role === 'assistant'" class="mt-1 flex justify-start">
               <Button
-                variant="ghost" size="icon" class="ml-0 h-5 w-5 p-1" aria-label="复制内容"
-                @click="copyToClipboard(msg.content, index)"
+                v-if="msg.role === 'assistant' && msg.content && msg.done" variant="ghost" size="icon"
+                class="ml-0 h-5 w-5 p-1" aria-label="复制内容" @click="copyToClipboard(msg.content, index)"
               >
                 <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
                 <Copy v-else class="h-3 w-3 text-gray-500" />
@@ -221,9 +227,9 @@ async function sendMessage() {
           />
 
           <Button
-            :disabled="!input.trim() || loading" size="icon" class="absolute bottom-3 right-3 rounded-full bg-black p-2 text-white hover:bg-gray-800 disabled:opacity-40"
-            aria-label="发送"
-            @click="sendMessage"
+            :disabled="!input.trim() || loading" size="icon"
+            class="absolute bottom-3 right-3 rounded-full bg-black p-2 text-white hover:bg-gray-800 disabled:opacity-40"
+            aria-label="发送" @click="sendMessage"
           >
             <Send class="h-4 w-4" />
           </Button>
