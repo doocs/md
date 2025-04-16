@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AIAssistantPanel from '@/components/ai/AIAssistantPanel.vue'
 import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
@@ -191,8 +190,6 @@ function copy() {
       </div>
 
       <PostInfo />
-
-      <AIAssistantPanel />
 
       <Button variant="outline" @click="store.isOpenRightSlider = !store.isOpenRightSlider">
         <Settings class="size-4" />

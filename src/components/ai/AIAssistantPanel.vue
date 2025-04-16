@@ -6,13 +6,21 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { Check, Copy, Send, Settings } from 'lucide-vue-next'
-import { nextTick, onMounted, ref } from 'vue'
+import { Check, Copy, Send, Settings, Trash } from 'lucide-vue-next'
+import { nextTick, onMounted, ref, watch } from 'vue'
 
-const dialogVisible = ref(false)
+// 接收外部传入的 open
+const props = defineProps<{ open: boolean }>()
+const emit = defineEmits([`update:open`])
+
+// 内部状态同步
+const dialogVisible = ref(props.open)
+watch(() => props.open, val => (dialogVisible.value = val))
+watch(dialogVisible, val => emit(`update:open`, val))
+
+// 核心逻辑变量
 const input = ref(``)
 const configVisible = ref(false)
 const loading = ref(false)
@@ -37,15 +45,15 @@ function getDefaultMessages(): ChatMessage[] {
   return [{ role: `assistant`, content: `你好，我是 AI 助手，有什么可以帮你的？` }]
 }
 
+function handleConfigSaved() {
+  configVisible.value = false
+}
+
 function handleKeydown(e: KeyboardEvent) {
   if (e.key === `Enter` && !e.shiftKey) {
     e.preventDefault()
     sendMessage()
   }
-}
-
-function handleConfigSaved() {
-  configVisible.value = false
 }
 
 async function scrollToBottom() {
@@ -63,6 +71,16 @@ async function copyToClipboard(text: string, index: number) {
   }
   catch (err) {
     console.error(`复制失败:`, err)
+  }
+}
+
+function resetMessages() {
+  messages.value = getDefaultMessages()
+  try {
+    localStorage.setItem(memoryKey, JSON.stringify(messages.value))
+  }
+  catch (e) {
+    console.error(`清空消息失败:`, e)
   }
 }
 
@@ -116,9 +134,8 @@ async function sendMessage() {
       const { value, done } = await reader.read()
       if (done) {
         const last = messages.value[messages.value.length - 1]
-        if (last.role === `assistant`) {
+        if (last.role === `assistant`)
           last.done = true
-        }
         break
       }
 
@@ -165,19 +182,18 @@ async function sendMessage() {
 
 <template>
   <Dialog v-model:open="dialogVisible">
-    <DialogTrigger>
-      <Button variant="outline">
-        AI 助手
-      </Button>
-    </DialogTrigger>
-
     <DialogContent class="max-w-lg w-full rounded-xl">
       <!-- 标题与设置 -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-2 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
+
           <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
             <Settings class="h-4 w-4" />
+          </Button>
+
+          <Button variant="ghost" size="icon" aria-label="清空对话" title="清空对话内容" @click="resetMessages">
+            <Trash class="h-4 w-4 opacity-60 hover:opacity-100" />
           </Button>
         </div>
         <p class="text-sm text-gray-500">
@@ -195,20 +211,18 @@ async function sendMessage() {
           :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
         >
           <div
-            class="max-w-xs rounded-xl px-4 py-2 text-sm" :class="[
-              msg.role === 'user'
-                ? 'bg-black text-white'
-                : 'bg-gray-100 text-gray-800',
-            ]"
+            class="max-w-xs rounded-xl px-4 py-2 text-sm"
+            :class="msg.role === 'user' ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'"
           >
             <div class="whitespace-pre-wrap">
               {{ msg.content }}
             </div>
 
-            <div v-if="msg.role === 'assistant'" class="mt-1 flex justify-start">
+            <!-- 左下角复制按钮，仅生成完成后显示 -->
+            <div v-if="msg.role === 'assistant' && msg.done" class="mt-1 flex justify-start">
               <Button
-                v-if="msg.role === 'assistant' && msg.content && msg.done" variant="ghost" size="icon"
-                class="ml-0 h-5 w-5 p-1" aria-label="复制内容" @click="copyToClipboard(msg.content, index)"
+                variant="ghost" size="icon" class="ml-0 h-5 w-5 p-1" aria-label="复制内容"
+                @click="copyToClipboard(msg.content, index)"
               >
                 <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
                 <Copy v-else class="h-3 w-3 text-gray-500" />
@@ -225,7 +239,6 @@ async function sendMessage() {
             v-model="input" placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)" rows="2"
             class="w-full resize-none border-none focus-visible:ring-0" @keydown="handleKeydown"
           />
-
           <Button
             :disabled="!input.trim() || loading" size="icon"
             class="absolute bottom-3 right-3 rounded-full bg-black p-2 text-white hover:bg-gray-800 disabled:opacity-40"
