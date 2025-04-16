@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import AIAssistantPanel from '@/components/ai/AIAssistantPanel.vue'
 import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
@@ -6,6 +7,7 @@ import {
   ctrlSign,
   shiftSign,
 } from '@/config'
+
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
@@ -189,6 +191,8 @@ function copy() {
       </div>
 
       <PostInfo />
+
+      <AIAssistantPanel />
 
       <Button variant="outline" @click="store.isOpenRightSlider = !store.isOpenRightSlider">
         <Settings class="size-4" />
