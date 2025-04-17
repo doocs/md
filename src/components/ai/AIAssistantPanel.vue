@@ -187,15 +187,15 @@ async function sendMessage() {
   <Dialog v-model:open="dialogVisible">
     <DialogContent class="max-w-lg w-full rounded-xl">
       <DialogHeader class="space-y-1 flex flex-col items-start">
-        <div class="space-x-2 flex items-center">
+        <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
 
-          <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
+          <Button variant="ghost" size="icon" aria-label="配置" title="配置参数" @click="configVisible = !configVisible">
             <Settings class="h-4 w-4" />
           </Button>
 
           <Button variant="ghost" size="icon" aria-label="清空对话" title="清空对话内容" @click="resetMessages">
-            <Trash class="h-4 w-4 opacity-60 hover:opacity-100" />
+            <Trash class="h-4 w-4" />
           </Button>
         </div>
         <p class="text-sm text-gray-500">
