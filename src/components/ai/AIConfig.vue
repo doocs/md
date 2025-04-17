@@ -18,23 +18,13 @@ const serviceOptions = [
     value: `deepseek`,
     label: `DeepSeek`,
     endpoint: `https://api.deepseek.com/v1`,
-    models: [
-      `deepseek-chat`,
-      `deepseek-reasoner`,
-    ],
+    models: [`deepseek-chat`, `deepseek-reasoner`],
   },
   {
     value: `openai`,
     label: `OpenAI`,
     endpoint: `https://api.openai.com/v1`,
-    models: [
-      `gpt-4.1`,
-      `gpt-4.1-mini`,
-      `gpt-4.1-nano`,
-      `gpt-4-turbo`,
-      `gpt-4o`,
-      `gpt-3.5-turbo`,
-    ],
+    models: [`gpt-4.1`, `gpt-4.1-mini`, `gpt-4.1-nano`, `gpt-4-turbo`, `gpt-4o`, `gpt-3.5-turbo`],
   },
   {
     value: `qwen`,
@@ -56,22 +46,13 @@ const serviceOptions = [
     value: `wenxin`,
     label: `百度文心一言`,
     endpoint: `https://wenxin.baidu.com/moduleApi/ernieBot`,
-    models: [
-      `ERNIE-4.5-8K-Preview`,
-      `ERNIE-X1-32K-Preview`,
-      `ERNIE-4.0-Turbo-128K`,
-      `ERNIE-3.5-128K`,
-    ],
+    models: [`ERNIE-4.5-8K-Preview`, `ERNIE-X1-32K-Preview`, `ERNIE-4.0-Turbo-128K`, `ERNIE-3.5-128K`],
   },
   {
     value: `spark`,
     label: `讯飞星火`,
     endpoint: `https://gateway.theturbo.ai/v1/chat/completions`,
-    models: [
-      `general`,
-      `generalv3.5`,
-      `4.0Ultra`,
-    ],
+    models: [`general`, `generalv3.5`, `4.0Ultra`],
   },
   {
     value: `custom`,
@@ -103,7 +84,7 @@ function initConfigFromStorage() {
 
   config.type = savedType
   config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
-  config.apiKey = localStorage.getItem(`openai_key`) || ``
+  config.apiKey = localStorage.getItem(`openai_key_${savedType}`) || ``
   config.model = localStorage.getItem(`openai_model`) || service.models[0] || ``
 }
 
@@ -111,32 +92,38 @@ onMounted(() => {
   initConfigFromStorage()
 })
 
-// 服务类型变化时自动更新 endpoint 和 model
+// 服务类型变化时自动更新 endpoint、model 和 API Key
 watch(() => config.type, () => {
   const service = currentService()
   config.endpoint = service.endpoint
   config.model = service.models[0] || ``
+  config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
 })
 
+// 保存配置
 function saveConfig() {
   localStorage.setItem(`openai_type`, config.type)
   localStorage.setItem(`openai_endpoint`, config.endpoint)
-  localStorage.setItem(`openai_key`, config.apiKey)
+  localStorage.setItem(`openai_key_${config.type}`, config.apiKey)
   localStorage.setItem(`openai_model`, config.model)
   testResult.value = `✅ 配置已保存`
   emit(`saved`)
 }
 
+// 清空配置
 function clearConfig() {
   localStorage.removeItem(`openai_type`)
   localStorage.removeItem(`openai_endpoint`)
-  localStorage.removeItem(`openai_key`)
   localStorage.removeItem(`openai_model`)
+  serviceOptions.forEach((service) => {
+    localStorage.removeItem(`openai_key_${service.value}`)
+  })
 
   initConfigFromStorage()
   testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
+// 测试连接
 async function testConnection() {
   testResult.value = ``
   loading.value = true
@@ -150,7 +137,7 @@ async function testConnection() {
     testResult.value = res.ok ? `✅ 测试成功，API 可用` : `❌ 测试失败：${res.statusText}`
   }
   catch (e) {
-    console.log(e)
+    console.error(e)
     testResult.value = `❌ 网络错误或配置有误`
   }
   finally {
