@@ -18,7 +18,7 @@ const serviceOptions = [
     value: `deepseek`,
     label: `DeepSeek`,
     endpoint: `https://api.deepseek.com/v1`,
-    models: [`deepseek-chat`, `deepseek-reasoner`],
+    models: [`deepseek-chat`],
   },
   {
     value: `openai`,
@@ -55,6 +55,8 @@ const config = reactive({
   endpoint: ``,
   apiKey: ``,
   model: ``,
+  temperature: 1,
+  maxToken: 1024,
 })
 
 const loading = ref(false)
@@ -73,7 +75,11 @@ function initConfigFromStorage() {
   config.type = savedType
   config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
   config.apiKey = localStorage.getItem(`openai_key_${savedType}`) || ``
-  config.model = localStorage.getItem(`openai_model`) || service.models[0] || ``
+  config.model = service.models.includes(localStorage.getItem(`openai_model`) || ``)
+    ? localStorage.getItem(`openai_model`)!
+    : service.models[0] || ``
+  config.temperature = Number(localStorage.getItem(`openai_temperature`) || 1)
+  config.maxToken = Number(localStorage.getItem(`openai_max_token`) || 1024)
 }
 
 onMounted(() => {
@@ -84,7 +90,13 @@ onMounted(() => {
 watch(() => config.type, () => {
   const service = currentService()
   config.endpoint = service.endpoint
-  config.model = service.models[0] || ``
+  const savedModel = localStorage.getItem(`openai_model`)
+  if (savedModel && service.models.includes(savedModel)) {
+    config.model = savedModel
+  }
+  else {
+    config.model = service.models[0] || ``
+  }
   config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
 })
 
@@ -94,6 +106,8 @@ function saveConfig() {
   localStorage.setItem(`openai_endpoint`, config.endpoint)
   localStorage.setItem(`openai_key_${config.type}`, config.apiKey)
   localStorage.setItem(`openai_model`, config.model)
+  localStorage.setItem(`openai_temperature`, config.temperature.toString())
+  localStorage.setItem(`openai_max_token`, config.maxToken.toString())
   testResult.value = `✅ 配置已保存`
   emit(`saved`)
 }
@@ -103,6 +117,8 @@ function clearConfig() {
   localStorage.removeItem(`openai_type`)
   localStorage.removeItem(`openai_endpoint`)
   localStorage.removeItem(`openai_model`)
+  localStorage.removeItem(`openai_temperature`)
+  localStorage.removeItem(`openai_max_token`)
   serviceOptions.forEach((service) => {
     localStorage.removeItem(`openai_key_${service.value}`)
   })
@@ -150,11 +166,7 @@ async function testConnection() {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem
-            v-for="service in serviceOptions"
-            :key="service.value"
-            :value="service.value"
-          >
+          <SelectItem v-for="service in serviceOptions" :key="service.value" :value="service.value">
             {{ service.label }}
           </SelectItem>
         </SelectContent>
@@ -165,8 +177,7 @@ async function testConnection() {
     <div>
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <Input
-        v-model="config.endpoint"
-        placeholder="输入 API 端点 URL"
+        v-model="config.endpoint" placeholder="输入 API 端点 URL"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -175,9 +186,7 @@ async function testConnection() {
     <div>
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
       <Input
-        v-model="config.apiKey"
-        type="password"
-        placeholder="sk-..."
+        v-model="config.apiKey" type="password" placeholder="sk-..."
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -192,19 +201,31 @@ async function testConnection() {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem
-            v-for="model in currentService().models"
-            :key="model"
-            :value="model"
-          >
+          <SelectItem v-for="model in currentService().models" :key="model" :value="model">
             {{ model }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Input
-        v-else
-        v-model="config.model"
-        placeholder="输入模型名称"
+        v-else v-model="config.model" placeholder="输入模型名称"
+        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+      />
+    </div>
+
+    <!-- 温度 -->
+    <div>
+      <Label class="mb-1 block text-sm font-medium">温度</Label>
+      <Input
+        v-model.number="config.temperature" type="number" step="0.1" min="0" max="2" placeholder="0 ~ 2，默认 1"
+        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+      />
+    </div>
+
+    <!-- 最大 Token -->
+    <div>
+      <Label class="mb-1 block text-sm font-medium">最大 Token 数</Label>
+      <Input
+        v-model.number="config.maxToken" type="number" min="1" max="32768" placeholder="比如 1024"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>

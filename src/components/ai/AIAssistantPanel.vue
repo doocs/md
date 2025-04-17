@@ -35,7 +35,7 @@ interface ChatMessage {
 }
 
 const messages = ref<ChatMessage[]>([])
-const { apiKey, endpoint, model } = useAIConfig()
+const { apiKey, endpoint, model, temperature, maxToken } = useAIConfig()
 
 onMounted(async () => {
   const saved = localStorage.getItem(memoryKey)
@@ -104,7 +104,8 @@ async function sendMessage() {
       { role: `system`, content: `你是一个专业的 Markdown 编辑器助手，请用简洁中文回答。` },
       ...messages.value.slice(-10),
     ],
-    temperature: 0.7,
+    temperature: temperature.value,
+    max_tokens: maxToken.value,
     stream: true,
   }
 
