@@ -29,6 +29,9 @@ watch(dialogVisible, (val) => {
 })
 
 const input = ref(``)
+const inputHistory = ref<string[]>([])
+const historyIndex = ref<number | null>(null)
+
 const configVisible = ref(false)
 const loading = ref(false)
 const copiedIndex = ref<number | null>(null)
@@ -61,6 +64,31 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.key === `Enter` && !e.shiftKey) {
     e.preventDefault()
     sendMessage()
+  }
+  else if (e.key === `ArrowUp`) {
+    e.preventDefault()
+    if (inputHistory.value.length === 0)
+      return
+    if (historyIndex.value === null) {
+      historyIndex.value = inputHistory.value.length - 1
+    }
+    else if (historyIndex.value > 0) {
+      historyIndex.value--
+    }
+    input.value = inputHistory.value[historyIndex.value] || ``
+  }
+  else if (e.key === `ArrowDown`) {
+    e.preventDefault()
+    if (historyIndex.value === null)
+      return
+    if (historyIndex.value < inputHistory.value.length - 1) {
+      historyIndex.value++
+      input.value = inputHistory.value[historyIndex.value] || ``
+    }
+    else {
+      historyIndex.value = null
+      input.value = ``
+    }
   }
 }
 
@@ -95,6 +123,9 @@ function resetMessages() {
 async function sendMessage() {
   if (!input.value.trim() || loading.value)
     return
+
+  inputHistory.value.push(input.value.trim())
+  historyIndex.value = null
 
   loading.value = true
   const userInput = input.value.trim()
