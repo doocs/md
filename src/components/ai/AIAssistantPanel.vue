@@ -8,6 +8,12 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { Check, Copy, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
@@ -190,14 +196,27 @@ async function sendMessage() {
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
 
-          <Button variant="ghost" size="icon" aria-label="配置" title="配置参数" @click="configVisible = !configVisible">
-            <Settings class="h-4 w-4" />
-          </Button>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
+                  <Settings class="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>配置参数</TooltipContent>
+            </Tooltip>
 
-          <Button variant="ghost" size="icon" aria-label="清空对话" title="清空对话内容" @click="resetMessages">
-            <Trash class="h-4 w-4" />
-          </Button>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <Button variant="ghost" size="icon" aria-label="清空对话" @click="resetMessages">
+                  <Trash class="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>清空对话内容</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
+
         <p class="text-sm text-gray-500">
           使用 AI 助手帮助您编写和优化内容
         </p>
