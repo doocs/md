@@ -253,8 +253,11 @@ async function sendMessage() {
       <div v-if="!configVisible" class="relative mt-2">
         <div class="flex items-center border border-black/10 rounded-xl px-3 py-2 pr-12 shadow-sm">
           <Textarea
-            v-model="input" placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)" rows="2"
-            class="w-full resize-none border-none focus-visible:ring-0" @keydown="handleKeydown"
+            v-model="input"
+            placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)"
+            rows="2"
+            class="custom-scroll w-full resize-none overflow-y-auto border-none focus-visible:ring-0"
+            @keydown="handleKeydown"
           />
           <Button
             :disabled="!input.trim() || loading" size="icon"
@@ -268,3 +271,16 @@ async function sendMessage() {
     </DialogContent>
   </Dialog>
 </template>
+
+<style scoped>
+.custom-scroll::-webkit-scrollbar {
+  @apply w-0 h-0;
+}
+.custom-scroll::-webkit-scrollbar-thumb {
+  @apply bg-transparent;
+}
+.custom-scroll {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+</style>
