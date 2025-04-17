@@ -15,22 +15,63 @@ const emit = defineEmits([`saved`])
 
 const serviceOptions = [
   {
-    value: `openai`,
-    label: `OpenAI`,
-    endpoint: `https://api.openai.com/v1`,
-    models: [`gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`],
-  },
-  {
     value: `deepseek`,
     label: `DeepSeek`,
     endpoint: `https://api.deepseek.com/v1`,
-    models: [`deepseek-chat`, `deepseek-coder`],
+    models: [
+      `deepseek-chat`,
+      `deepseek-reasoner`,
+    ],
+  },
+  {
+    value: `openai`,
+    label: `OpenAI`,
+    endpoint: `https://api.openai.com/v1`,
+    models: [
+      `gpt-4.1`,
+      `gpt-4.1-mini`,
+      `gpt-4.1-nano`,
+      `gpt-4-turbo`,
+      `gpt-4o`,
+      `gpt-3.5-turbo`,
+    ],
   },
   {
     value: `qwen`,
     label: `通义千问`,
     endpoint: `https://dashscope.aliyuncs.com/compatible-mode/v1`,
-    models: [`qwen-plus`, `qwen-plus-latest`],
+    models: [
+      `qwen-plus`,
+      `qwen-max`,
+      `qwen-turbo`,
+      `qwen-math-plus`,
+      `qwen-math-turbo`,
+      `qwen-coder-plus`,
+      `qwen-coder-turbo`,
+      `qwen-vl-plus`,
+      `qwen-vl-max`,
+    ],
+  },
+  {
+    value: `wenxin`,
+    label: `百度文心一言`,
+    endpoint: `https://wenxin.baidu.com/moduleApi/ernieBot`,
+    models: [
+      `ERNIE-4.5-8K-Preview`,
+      `ERNIE-X1-32K-Preview`,
+      `ERNIE-4.0-Turbo-128K`,
+      `ERNIE-3.5-128K`,
+    ],
+  },
+  {
+    value: `spark`,
+    label: `讯飞星火`,
+    endpoint: `https://gateway.theturbo.ai/v1/chat/completions`,
+    models: [
+      `general`,
+      `generalv3.5`,
+      `4.0Ultra`,
+    ],
   },
   {
     value: `custom`,
@@ -70,7 +111,7 @@ onMounted(() => {
   initConfigFromStorage()
 })
 
-// 当服务类型变化时更新端点和模型
+// 服务类型变化时自动更新 endpoint 和 model
 watch(() => config.type, () => {
   const service = currentService()
   config.endpoint = service.endpoint
@@ -126,7 +167,7 @@ async function testConnection() {
 
     <!-- 服务类型 -->
     <div>
-      <Label class="text-sm font-medium">服务类型</Label>
+      <Label class="mb-1 block text-sm font-medium">服务类型</Label>
       <Select v-model="config.type">
         <SelectTrigger class="w-full">
           <SelectValue>
@@ -147,19 +188,28 @@ async function testConnection() {
 
     <!-- API 端点 -->
     <div>
-      <Label class="text-sm font-medium">API 端点</Label>
-      <Input v-model="config.endpoint" placeholder="输入API端点URL" />
+      <Label class="mb-1 block text-sm font-medium">API 端点</Label>
+      <Input
+        v-model="config.endpoint"
+        placeholder="输入 API 端点 URL"
+        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+      />
     </div>
 
     <!-- API 密钥 -->
     <div>
-      <Label class="text-sm font-medium">API 密钥</Label>
-      <Input v-model="config.apiKey" type="password" placeholder="sk-..." />
+      <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
+      <Input
+        v-model="config.apiKey"
+        type="password"
+        placeholder="sk-..."
+        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+      />
     </div>
 
     <!-- 模型名称 -->
     <div>
-      <Label class="text-sm font-medium">模型名称</Label>
+      <Label class="mb-1 block text-sm font-medium">模型名称</Label>
       <Select v-if="currentService().models.length > 0" v-model="config.model">
         <SelectTrigger class="w-full">
           <SelectValue>
@@ -176,7 +226,12 @@ async function testConnection() {
           </SelectItem>
         </SelectContent>
       </Select>
-      <Input v-else v-model="config.model" placeholder="输入模型名称" />
+      <Input
+        v-else
+        v-model="config.model"
+        placeholder="输入模型名称"
+        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+      />
     </div>
 
     <!-- 操作按钮 -->
