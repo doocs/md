@@ -34,7 +34,7 @@ interface ChatMessage {
 }
 
 const messages = ref<ChatMessage[]>([])
-const { apiKey, endpoint, model } = useAIConfig()
+const { apiKey, endpoint, model, type } = useAIConfig()
 
 onMounted(() => {
   const saved = localStorage.getItem(memoryKey)
@@ -108,10 +108,14 @@ async function sendMessage() {
 
   try {
     const url = new URL(endpoint.value)
-    if (!url.pathname.endsWith(`/chat/completions`)) {
-      url.pathname = url.pathname.endsWith(`/`)
-        ? `${url.pathname}chat/completions`
-        : `${url.pathname}/chat/completions`
+
+    if (type.value === `openai` || type.value === `deepseek`) {
+      // 确保是以 /chat/completions 结尾
+      if (!url.pathname.endsWith(`/chat/completions`)) {
+        url.pathname = url.pathname.endsWith(`/`)
+          ? `${url.pathname}chat/completions`
+          : `${url.pathname}/chat/completions`
+      }
     }
 
     const res = await fetch(url.toString(), {
