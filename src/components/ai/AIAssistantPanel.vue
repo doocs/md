@@ -11,16 +11,17 @@ import { Textarea } from '@/components/ui/textarea'
 import { Check, Copy, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
-// 接收外部传入的 open
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
-// 内部状态同步
 const dialogVisible = ref(props.open)
 watch(() => props.open, val => (dialogVisible.value = val))
-watch(dialogVisible, val => emit(`update:open`, val))
+watch(dialogVisible, (val) => {
+  emit(`update:open`, val)
+  if (val)
+    scrollToBottom()
+})
 
-// 核心逻辑变量
 const input = ref(``)
 const configVisible = ref(false)
 const loading = ref(false)
@@ -36,9 +37,10 @@ interface ChatMessage {
 const messages = ref<ChatMessage[]>([])
 const { apiKey, endpoint, model } = useAIConfig()
 
-onMounted(() => {
+onMounted(async () => {
   const saved = localStorage.getItem(memoryKey)
   messages.value = saved ? JSON.parse(saved) : getDefaultMessages()
+  await scrollToBottom()
 })
 
 function getDefaultMessages(): ChatMessage[] {
@@ -108,7 +110,6 @@ async function sendMessage() {
 
   try {
     const url = new URL(endpoint.value)
-    // 确保是以 /chat/completions 结尾
     if (!url.pathname.endsWith(`/chat/completions`)) {
       url.pathname = url.pathname.endsWith(`/`)
         ? `${url.pathname}chat/completions`
@@ -184,7 +185,6 @@ async function sendMessage() {
 <template>
   <Dialog v-model:open="dialogVisible">
     <DialogContent class="max-w-lg w-full rounded-xl">
-      <!-- 标题与设置 -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-2 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
@@ -202,10 +202,8 @@ async function sendMessage() {
         </p>
       </DialogHeader>
 
-      <!-- 配置面板 -->
       <AIConfig v-if="configVisible" class="mb-4 w-full border rounded-md p-4" @saved="handleConfigSaved" />
 
-      <!-- 消息列表 -->
       <div v-if="!configVisible" class="chat-container space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
         <div
           v-for="(msg, index) in messages" :key="index" class="relative flex"
@@ -219,7 +217,6 @@ async function sendMessage() {
               {{ msg.content }}
             </div>
 
-            <!-- 左下角复制按钮，仅生成完成后显示 -->
             <div v-if="msg.role === 'assistant' && msg.done" class="mt-1 flex justify-start">
               <Button
                 variant="ghost" size="icon" class="ml-0 h-5 w-5 p-1" aria-label="复制内容"
@@ -233,7 +230,6 @@ async function sendMessage() {
         </div>
       </div>
 
-      <!-- 输入区 -->
       <div v-if="!configVisible" class="relative mt-2">
         <div class="flex items-center border border-black/10 rounded-xl px-3 py-2 pr-12 shadow-sm">
           <Textarea
