@@ -256,7 +256,7 @@ async function sendMessage() {
             v-model="input"
             placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)"
             rows="2"
-            class="custom-scroll w-full resize-none overflow-y-auto border-none focus-visible:ring-0"
+            class="custom-scroll w-full resize-none overflow-y-auto border-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
             @keydown="handleKeydown"
           />
           <Button
