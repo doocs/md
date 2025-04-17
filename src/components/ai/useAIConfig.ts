@@ -1,11 +1,13 @@
 import { computed } from 'vue'
 
 export function useAIConfig() {
-  const apiKey = computed(() => localStorage.getItem(`openai_key`) || ``)
-  const endpoint = computed(() => localStorage.getItem(`openai_endpoint`) || `https://api.openai.com/v1`)
-  const model = computed(() => localStorage.getItem(`openai_model`) || `gpt-3.5-turbo`)
+  const type = computed(() => localStorage.getItem(`openai_type`) || `deepseek`)
+  const endpoint = computed(() => localStorage.getItem(`openai_endpoint`) || `https://api.deepseek.com/v1`)
+  const apiKey = computed(() => localStorage.getItem(`openai_key_${type.value}`) || ``)
+  const model = computed(() => localStorage.getItem(`openai_model`) || ``)
 
   return {
+    type,
     apiKey,
     endpoint,
     model,
