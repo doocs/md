@@ -43,18 +43,6 @@ const serviceOptions = [
     ],
   },
   {
-    value: `wenxin`,
-    label: `百度文心一言`,
-    endpoint: `https://wenxin.baidu.com/moduleApi/ernieBot`,
-    models: [`ERNIE-4.5-8K-Preview`, `ERNIE-X1-32K-Preview`, `ERNIE-4.0-Turbo-128K`, `ERNIE-3.5-128K`],
-  },
-  {
-    value: `spark`,
-    label: `讯飞星火`,
-    endpoint: `https://gateway.theturbo.ai/v1/chat/completions`,
-    models: [`general`, `generalv3.5`, `4.0Ultra`],
-  },
-  {
     value: `custom`,
     label: `自定义服务`,
     endpoint: ``,
