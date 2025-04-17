@@ -9,12 +9,39 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive, ref, watch } from 'vue'
 
 const emit = defineEmits([`saved`])
 
+const serviceOptions = [
+  {
+    value: `openai`,
+    label: `OpenAI`,
+    endpoint: `https://api.openai.com/v1`,
+    models: [`gpt-3.5-turbo`, `gpt-4`, `gpt-4-turbo`],
+  },
+  {
+    value: `deepseek`,
+    label: `DeepSeek`,
+    endpoint: `https://api.deepseek.com/v1`,
+    models: [`deepseek-chat`, `deepseek-coder`],
+  },
+  {
+    value: `qwen`,
+    label: `通义千问`,
+    endpoint: `https://dashscope.aliyuncs.com/compatible-mode/v1`,
+    models: [`qwen-plus`, `qwen-plus-latest`],
+  },
+  {
+    value: `custom`,
+    label: `自定义服务`,
+    endpoint: ``,
+    models: [],
+  },
+]
+
 const config = reactive({
-  type: ``,
+  type: `deepseek`,
   endpoint: ``,
   apiKey: ``,
   model: ``,
@@ -23,11 +50,31 @@ const config = reactive({
 const loading = ref(false)
 const testResult = ref(``)
 
-onMounted(() => {
-  config.type = localStorage.getItem(`openai_type`) || `自定义 OpenAI 兼容服务`
-  config.endpoint = localStorage.getItem(`openai_endpoint`) || `https://api.openai.com/v1`
+// 获取当前服务配置
+function currentService() {
+  return serviceOptions.find(service => service.value === config.type) || serviceOptions[0]
+}
+
+// 初始化配置
+function initConfigFromStorage() {
+  const savedType = localStorage.getItem(`openai_type`) || `deepseek`
+  const service = serviceOptions.find(s => s.value === savedType) || serviceOptions[0]
+
+  config.type = savedType
+  config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
   config.apiKey = localStorage.getItem(`openai_key`) || ``
-  config.model = localStorage.getItem(`openai_model`) || `gpt-3.5-turbo`
+  config.model = localStorage.getItem(`openai_model`) || service.models[0] || ``
+}
+
+onMounted(() => {
+  initConfigFromStorage()
+})
+
+// 当服务类型变化时更新端点和模型
+watch(() => config.type, () => {
+  const service = currentService()
+  config.endpoint = service.endpoint
+  config.model = service.models[0] || ``
 })
 
 function saveConfig() {
@@ -40,8 +87,13 @@ function saveConfig() {
 }
 
 function clearConfig() {
-  localStorage.clear()
-  testResult.value = `🗑️ 配置已清除`
+  localStorage.removeItem(`openai_type`)
+  localStorage.removeItem(`openai_endpoint`)
+  localStorage.removeItem(`openai_key`)
+  localStorage.removeItem(`openai_model`)
+
+  initConfigFromStorage()
+  testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
 async function testConnection() {
@@ -54,12 +106,7 @@ async function testConnection() {
         Authorization: `Bearer ${config.apiKey}`,
       },
     })
-    if (res.ok) {
-      testResult.value = `✅ 测试成功，API 可用`
-    }
-    else {
-      testResult.value = `❌ 测试失败：${res.statusText}`
-    }
+    testResult.value = res.ok ? `✅ 测试成功，API 可用` : `❌ 测试失败：${res.statusText}`
   }
   catch (e) {
     console.log(e)
@@ -77,35 +124,62 @@ async function testConnection() {
       AI 配置
     </div>
 
+    <!-- 服务类型 -->
     <div>
       <Label class="text-sm font-medium">服务类型</Label>
       <Select v-model="config.type">
         <SelectTrigger class="w-full">
-          <SelectValue placeholder="请选择服务类型" />
+          <SelectValue>
+            {{ currentService().label }}
+          </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="自定义 OpenAI 兼容服务">
-            自定义 OpenAI 兼容服务
+          <SelectItem
+            v-for="service in serviceOptions"
+            :key="service.value"
+            :value="service.value"
+          >
+            {{ service.label }}
           </SelectItem>
         </SelectContent>
       </Select>
     </div>
 
+    <!-- API 端点 -->
     <div>
       <Label class="text-sm font-medium">API 端点</Label>
-      <Input v-model="config.endpoint" placeholder="https://api.openai.com/v1" />
+      <Input v-model="config.endpoint" placeholder="输入API端点URL" />
     </div>
 
+    <!-- API 密钥 -->
     <div>
       <Label class="text-sm font-medium">API 密钥</Label>
       <Input v-model="config.apiKey" type="password" placeholder="sk-..." />
     </div>
 
+    <!-- 模型名称 -->
     <div>
       <Label class="text-sm font-medium">模型名称</Label>
-      <Input v-model="config.model" placeholder="gpt-3.5-turbo" />
+      <Select v-if="currentService().models.length > 0" v-model="config.model">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ config.model || '请选择模型' }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="model in currentService().models"
+            :key="model"
+            :value="model"
+          >
+            {{ model }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
+      <Input v-else v-model="config.model" placeholder="输入模型名称" />
     </div>
 
+    <!-- 操作按钮 -->
     <div class="mt-2 flex gap-2">
       <Button size="sm" @click="saveConfig">
         保存
@@ -118,6 +192,7 @@ async function testConnection() {
       </Button>
     </div>
 
+    <!-- 测试结果 -->
     <div v-if="testResult" class="mt-1 text-xs text-gray-500">
       {{ testResult }}
     </div>
