@@ -245,3 +245,11 @@ docker run -d -p 8080:80 doocs/md:latest
 - [小竹读研在养鱼](https://mp.weixin.qq.com/s/NJ_GpCBjQzZIZTbZz3btTg)
 
 注：如果你使用了本 Markdown 编辑器进行内容排版，并且希望在本项目 README 中展示你的公众号，请到 [#5](https://github.com/doocs/md/discussions/5) 留言。
+
+## 贡献者
+
+感谢以下所有朋友对本项目的贡献！
+
+<a href="https://openomy.app/github/doocs/md" target="_blank" style="display: block; width: 100%;" align="center">
+  <img src="https://openomy.app/svg?repo=doocs/md&chart=bubble&latestMonth=3" target="_blank" alt="Contribution Leaderboard" style="display: block; width: 100%;" />
+ </a>
