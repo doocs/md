@@ -6,15 +6,33 @@ on:
       - "v*"
 
 jobs:
-  build:
-    name: Create Release
+  release:
+    name: Create GitHub Release
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Create Release
-        id: create_release
+
+      - name: Extract Changelog for Tag
+        id: changelog
+        run: |
+          TAG_NAME="${GITHUB_REF##*/}"
+          echo "Extracting changelog for $TAG_NAME"
+
+          # 提取 CHANGELOG.md 中对应版本块的内容
+          CHANGELOG=$(awk "/^## \\[$TAG_NAME\\]/ {flag=1; next} /^## \\[/ {flag=0} flag" CHANGELOG.md)
+
+          # 如果为空就设置默认信息
+          if [ -z "$CHANGELOG" ]; then
+            CHANGELOG="No changelog entry found for $TAG_NAME."
+          fi
+
+          echo "changelog<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
         uses: actions/create-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -22,11 +40,13 @@ jobs:
           tag_name: ${{ github.ref }}
           release_name: ${{ github.ref }}
           body: |
-            # 微信 Markdown 编辑器 ${{ github.ref }} 发布🎈
+            # 微信 Markdown 编辑器 ${{ github.ref_name }} 发布🎈
 
             [![github](https://badgen.net/badge/>>/GitHub/cyan)](https://github.com/doocs/md/releases) [![gitee](https://badgen.net/badge/>>/Gitee/cyan)](https://gitee.com/doocs/md/releases)
 
             > Markdown 文档自动即时渲染为微信图文，让你不再为微信内容排版而发愁！
+
+            ${{ steps.changelog.outputs.changelog }}
 
           draft: false
           prerelease: false
