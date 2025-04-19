@@ -100,8 +100,21 @@ export const useStore = defineStore(`store`, () => {
           content: DEFAULT_CONTENT,
         },
       ],
+      createDatetime: new Date(),
+      updateDatetime: new Date()
     },
   ])
+
+  // 有新的字段变化，更新兼容
+  onBeforeMount(() => {
+    posts.value = posts.value.map((post, index) => {
+      const now = Date.now()
+      post.createDatetime ??= new Date(now + index)
+      post.updateDatetime ??= new Date(now + index)
+      return post
+    })
+  })
+
   // 当前内容
   const currentPostIndex = useStorage(addPrefix(`current_post_index`), 0)
 
@@ -116,6 +129,8 @@ export const useStore = defineStore(`store`, () => {
             content: `# ${title}`,
           },
         ],
+        createDatetime: new Date(),
+        updateDatetime: new Date()
       }) - 1
   }
 

@@ -226,6 +226,7 @@ function initEditor() {
     changeTimer.value = setTimeout(() => {
       onEditorRefresh()
       store.posts[store.currentPostIndex].content = e.getValue()
+      store.posts[store.currentPostIndex].updateDatetime = new Date()
     }, 300)
   })
 
