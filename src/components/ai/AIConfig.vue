@@ -132,7 +132,7 @@ async function testConnection() {
   testResult.value = ``
   loading.value = true
   try {
-    const res = await fetch(`${config.endpoint}/models`, {
+    const res = await window.fetch(`${config.endpoint}/models`, {
       method: `GET`,
       headers: {
         Authorization: `Bearer ${config.apiKey}`,
