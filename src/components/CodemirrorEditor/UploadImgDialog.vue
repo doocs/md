@@ -138,18 +138,35 @@ function minioOSSSubmit(formValues: any) {
 }
 
 // 公众号
-const isWebsite = ref(window.location.href.startsWith(`http`))
-const mpPlaceholder = computed(() => {
-  if (isWebsite.value) {
-    return `如：${window.location.origin}，使用cloudflare pages部署时`
-  }
-  return `如：http://proxy.example.com，不清楚建议不填`
+// 当前是否为网页（http/https 协议）
+const isWebsite = window.location.protocol.startsWith(`http`)
+
+// Cloudflare Pages 环境
+const isCfPage = import.meta.env.CF_PAGES === `1`
+
+// 插件模式运行（如 chrome-extension://）
+const isPluginMode = !isWebsite
+
+// 是否需要填写 proxyOrigin（只在 非插件 且 非CF页面 时需要）
+const isProxyRequired = computed(() => {
+  return !isPluginMode && !isCfPage
 })
-const mpSchema = toTypedSchema(yup.object({
-  proxyOrigin: isWebsite.value ? yup.string().required(`代理域名不能为空`) : yup.string().optional(),
-  appID: yup.string().required(`AppID 不能为空`),
-  appsecret: yup.string().required(`AppSecret 不能为空`),
-}))
+
+const mpPlaceholder = computed(() => {
+  if (isProxyRequired.value) {
+    return `如：http://proxy.example.com`
+  }
+  return `可不填`
+})
+const mpSchema = computed(() =>
+  toTypedSchema(yup.object({
+    proxyOrigin: isProxyRequired.value
+      ? yup.string().required(`代理域名不能为空`)
+      : yup.string().optional(),
+    appID: yup.string().required(`AppID 不能为空`),
+    appsecret: yup.string().required(`AppSecret 不能为空`),
+  })),
+)
 
 const mpConfig = ref(localStorage.getItem(`mpConfig`)
   ? JSON.parse(localStorage.getItem(`mpConfig`)!)
