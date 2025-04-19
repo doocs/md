@@ -10,7 +10,7 @@ export default defineBackground({
         return
       }
       if (detail.reason === `install`) {
-        browser.tabs.create({ url: `https://mp.honwhy.wang/welcome` })
+        browser.tabs.create({ url: `https://md-pages.doocs.org/welcome` })
       }
       else if (detail.reason === `update`) {
         browser.runtime.openOptionsPage()
