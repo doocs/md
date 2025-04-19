@@ -756,7 +756,7 @@ function onDrop(e: DragEvent) {
         <TabsContent value="mp">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
             <Field v-slot="{ field, errorMessage }" name="proxyOrigin">
-              <FormItem label="代理域名" :required="isWebsite" :error="errorMessage">
+              <FormItem label="代理域名" :required="isProxyRequired" :error="errorMessage">
                 <Input
                   v-bind="field"
                   v-model="field.value"
@@ -800,7 +800,7 @@ function onDrop(e: DragEvent) {
                   variant="link"
                   class="p-0"
                   as="a"
-                  href="https://mp.honwhy.wang/tutorial/"
+                  href="https://md-pages.doocs.org/tutorial/"
                   target="_blank"
                 >
                   如何在浏览器插件中使用公众号图床？
