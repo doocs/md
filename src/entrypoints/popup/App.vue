@@ -33,7 +33,7 @@ function onOpenOption() {
         >查看文档</a></span>
       </div>
       <div>
-        2.配置IP白名单<span><a href="https://mpmd.pages.dev/tutorial" target="_blank">使用教程</a></span>
+        2.配置IP白名单<span><a href="https://mp.honwhy.wang/tutorial" target="_blank">使用教程</a></span>
       </div>
       <div>
         <button class="button" @click="onOpenOption">

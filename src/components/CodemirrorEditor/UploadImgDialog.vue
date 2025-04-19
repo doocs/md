@@ -139,7 +139,12 @@ function minioOSSSubmit(formValues: any) {
 
 // 公众号
 const isWebsite = ref(window.location.href.startsWith(`http`))
-
+const mpPlaceholder = computed(() => {
+  if (isWebsite.value) {
+    return `如：${window.location.origin}，使用cloudflare pages部署时`
+  }
+  return `如：http://proxy.example.com，不清楚建议不填`
+})
 const mpSchema = toTypedSchema(yup.object({
   proxyOrigin: isWebsite.value ? yup.string().required(`代理域名不能为空`) : yup.string().optional(),
   appID: yup.string().required(`AppID 不能为空`),
@@ -738,7 +743,7 @@ function onDrop(e: DragEvent) {
                 <Input
                   v-bind="field"
                   v-model="field.value"
-                  placeholder="如：http://proxy.example.com，使用插件时可不填"
+                  :placeholder="mpPlaceholder"
                 />
               </FormItem>
             </Field>
@@ -778,7 +783,7 @@ function onDrop(e: DragEvent) {
                   variant="link"
                   class="p-0"
                   as="a"
-                  href="https://mpmd.pages.dev/tutorial/"
+                  href="https://mp.honwhy.wang/tutorial/"
                   target="_blank"
                 >
                   如何在浏览器插件中使用公众号图床？
