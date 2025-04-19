@@ -17,6 +17,7 @@ export default defineConfig({
   define: {
     process,
   },
+  envPrefix: [`VITE_`, `CF_`], // 允许 VITE_ 和 CF_ 前缀的变量
   plugins: [
     vue(),
     UnoCSS(),

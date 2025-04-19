@@ -10,7 +10,7 @@ export default defineBackground({
         return
       }
       if (detail.reason === `install`) {
-        browser.tabs.create({ url: `https://mpmd.pages.dev/welcome` })
+        browser.tabs.create({ url: `https://mp.honwhy.wang/welcome` })
       }
       else if (detail.reason === `update`) {
         browser.runtime.openOptionsPage()
