@@ -149,12 +149,10 @@ async function sendMessage() {
   try {
     const url = new URL(endpoint.value)
     if (!url.pathname.endsWith(`/chat/completions`)) {
-      url.pathname = url.pathname.endsWith(`/`)
-        ? `${url.pathname}chat/completions`
-        : `${url.pathname}/chat/completions`
+      url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
     }
 
-    const res = await fetch(url.toString(), {
+    const res = await window.fetch(url.toString(), {
       method: `POST`,
       headers: {
         'Authorization': `Bearer ${apiKey.value}`,
