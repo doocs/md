@@ -225,6 +225,10 @@ function initEditor() {
     clearTimeout(changeTimer.value)
     changeTimer.value = setTimeout(() => {
       onEditorRefresh()
+      if (e.getValue() !== store.posts[store.currentPostIndex].content) {
+        store.posts[store.currentPostIndex].updateDatetime = new Date()
+      }
+
       store.posts[store.currentPostIndex].content = e.getValue()
     }, 300)
   })
