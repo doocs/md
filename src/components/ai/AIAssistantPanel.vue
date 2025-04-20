@@ -25,7 +25,7 @@ watch(() => props.open, val => (dialogVisible.value = val))
 watch(dialogVisible, (val) => {
   emit(`update:open`, val)
   if (val)
-    scrollToBottom()
+    scrollToBottom(true)
 })
 
 const input = ref(``)
@@ -49,7 +49,7 @@ const { apiKey, endpoint, model, temperature, maxToken } = useAIConfig()
 onMounted(async () => {
   const saved = localStorage.getItem(memoryKey)
   messages.value = saved ? JSON.parse(saved) : getDefaultMessages()
-  await scrollToBottom()
+  await scrollToBottom(true)
 })
 
 function getDefaultMessages(): ChatMessage[] {
@@ -58,6 +58,7 @@ function getDefaultMessages(): ChatMessage[] {
 
 function handleConfigSaved() {
   configVisible.value = false
+  scrollToBottom(true)
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -92,11 +93,17 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
-async function scrollToBottom() {
+async function scrollToBottom(force = false) {
   await nextTick()
   const container = document.querySelector(`.chat-container`)
-  if (container)
-    container.scrollTop = container.scrollHeight
+  if (container) {
+    const isNearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 50
+    if (force || isNearBottom) {
+      container.scrollTop = container.scrollHeight
+      // 添加微小的延迟确保滚动完成
+      await new Promise(resolve => setTimeout(resolve, 50))
+    }
+  }
 }
 
 async function copyToClipboard(text: string, index: number) {
@@ -104,6 +111,7 @@ async function copyToClipboard(text: string, index: number) {
     await navigator.clipboard.writeText(text)
     copiedIndex.value = index
     setTimeout(() => (copiedIndex.value = null), 1500)
+    await scrollToBottom(true)
   }
   catch (err) {
     console.error(`复制失败:`, err)
@@ -118,6 +126,7 @@ function resetMessages() {
   catch (e) {
     console.error(`清空消息失败:`, e)
   }
+  scrollToBottom(true)
 }
 
 async function sendMessage() {
@@ -133,13 +142,18 @@ async function sendMessage() {
   input.value = ``
   const replyMessage: ChatMessage = { role: `assistant`, content: ``, done: false }
   messages.value.push(replyMessage)
-  await scrollToBottom()
+  await scrollToBottom(true)
 
   const payload = {
     model: model.value,
     messages: [
       { role: `system`, content: `你是一个专业的 Markdown 编辑器助手，请用简洁中文回答。` },
-      ...messages.value.slice(-10),
+      ...messages.value.slice(-12)
+        .filter((msg, index, arr) =>
+          !(index === arr.length - 1 && msg.role === `assistant` && !msg.done)
+          && !(index === 0 && msg.role === `assistant`),
+        )
+        .slice(-10),
     ],
     temperature: temperature.value,
     max_tokens: maxToken.value,
@@ -172,8 +186,10 @@ async function sendMessage() {
       const { value, done } = await reader.read()
       if (done) {
         const last = messages.value[messages.value.length - 1]
-        if (last.role === `assistant`)
+        if (last.role === `assistant`) {
           last.done = true
+          await scrollToBottom(true)
+        }
         break
       }
 
@@ -205,6 +221,7 @@ async function sendMessage() {
   catch (e) {
     console.error(`请求失败:`, e)
     messages.value[messages.value.length - 1].content = `❌ 请求失败: ${(e as Error).message}`
+    await scrollToBottom(true)
   }
   finally {
     try {
