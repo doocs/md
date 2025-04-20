@@ -170,10 +170,10 @@ const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
           }
         }).sort((a, b) => {
           if (sortMode === 'A-Z') {
-            return a.title > b.title ? 1 : -1
+            return a.title.localeCompare(b.title)
           }
           if (sortMode === 'Z-A') {
-            return a.title < b.title ? 1 : -1
+            return b.title.localeCompare(a.title)
           }
           if (sortMode === 'update-new-old') {
             return new Date(a.updateDatetime) < new Date(b.updateDatetime) ? 1 : -1
