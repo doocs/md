@@ -18,7 +18,7 @@ const serviceOptions = [
     value: `deepseek`,
     label: `DeepSeek`,
     endpoint: `https://api.deepseek.com/v1`,
-    models: [`deepseek-chat`],
+    models: [`deepseek-chat`, `deepseek-reasoner`],
   },
   {
     value: `openai`,

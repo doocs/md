@@ -139,7 +139,12 @@ async function sendMessage() {
     model: model.value,
     messages: [
       { role: `system`, content: `你是一个专业的 Markdown 编辑器助手，请用简洁中文回答。` },
-      ...messages.value.slice(-10),
+      ...messages.value.slice(-12)
+        .filter((msg, index, arr) =>
+          !(index === arr.length - 1 && msg.role === `assistant` && !msg.done) // 排除最后未完成的
+          && !(index === 0 && msg.role === `assistant`), // 排除第一条是assistant
+        )
+        .slice(-10),
     ],
     temperature: temperature.value,
     max_tokens: maxToken.value,
