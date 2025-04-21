@@ -25,6 +25,7 @@ import {
 import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import DOMPurify from 'dompurify'
+import { toPng } from 'html-to-image'
 import { marked } from 'marked'
 
 export const useStore = defineStore(`store`, () => {
@@ -504,6 +505,22 @@ export const useStore = defineStore(`store`, () => {
     document.querySelector(`#output`)!.innerHTML = output.value
   }
 
+  // 下载卡片
+  const dowloadAsCardImage = (filename = `download.png`) => {
+    const el = document.querySelector(` #output-wrapper>.preview`)! as HTMLElement
+    toPng(el, {
+      backgroundColor: `#fff`,
+      // skipFonts: true,//如果加载字体控制台报错，打开这段的注释
+    }).then((url) => {
+      const a = document.createElement(`a`)
+      a.download = filename
+      document.body.appendChild(a)
+      a.href = url
+      a.click()
+      document.body.removeChild(a)
+    })
+  }
+
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
     downloadMD(editor.value!.getValue())
@@ -610,6 +627,7 @@ export const useStore = defineStore(`store`, () => {
     formatContent,
     exportEditorContent2HTML,
     exportEditorContent2MD,
+    dowloadAsCardImage,
 
     importMarkdownContent,
     importDefaultContent,
