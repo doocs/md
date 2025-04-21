@@ -52,6 +52,7 @@
     "form-data": "4.0.1",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
+    "html-to-image": "^1.11.13",
     "juice": "^11.0.0",
     "lucide-vue-next": "^0.473.0",
     "marked": "^15.0.6",

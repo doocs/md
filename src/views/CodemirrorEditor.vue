@@ -25,6 +25,7 @@ const {
   copyToClipboard,
   pasteFromClipboard,
   resetStyleConfirm,
+  dowloadAsCardImage,
 } = store
 
 const {
@@ -437,6 +438,9 @@ const isOpenHeadingSlider = ref(false)
               </ContextMenuItem>
               <ContextMenuItem inset @click="exportEditorContent2HTML()">
                 导出 .html
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="dowloadAsCardImage()">
+                导出 .png
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem inset @click="copyToClipboard()">
