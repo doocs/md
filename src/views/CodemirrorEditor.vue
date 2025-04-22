@@ -9,7 +9,7 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { List } from 'lucide-vue-next'
+import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -35,6 +35,31 @@ const {
 
 const isImgLoading = ref(false)
 const timeout = ref<NodeJS.Timeout>()
+
+const isMobile = ref(false)
+const showEditor = ref(true)
+
+// 判断是否为移动端（初始 + resize 响应）
+function handleResize() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+onMounted(() => {
+  handleResize()
+  window.addEventListener(`resize`, handleResize)
+  setTimeout(() => {
+    leftAndRightScroll()
+  }, 300)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener(`resize`, handleResize)
+})
+
+// 切换编辑/预览视图（仅限移动端）
+function toggleView() {
+  showEditor.value = !showEditor.value
+}
 
 const preview = ref<HTMLDivElement | null>(null)
 
@@ -82,12 +107,6 @@ function leftAndRightScroll() {
   (preview.value!).addEventListener(`scroll`, previewScrollCB, false)
   editor.value!.on(`scroll`, editorScrollCB)
 }
-
-onMounted(() => {
-  setTimeout(() => {
-    leftAndRightScroll()
-  }, 300)
-})
 
 // 更新编辑器
 function onEditorRefresh() {
@@ -401,6 +420,7 @@ const isOpenHeadingSlider = ref(false)
       <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
         <div
+          v-show="!isMobile || (isMobile && showEditor)"
           ref="codeMirrorWrapper"
           class="codeMirror-wrapper flex-1"
           :class="{
@@ -458,7 +478,10 @@ const isOpenHeadingSlider = ref(false)
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div class="relative flex-1">
+        <div
+          v-show="!isMobile || (isMobile && !showEditor)"
+          class="relative flex-1"
+        >
           <div
             id="preview"
             ref="preview"
@@ -475,7 +498,6 @@ const isOpenHeadingSlider = ref(false)
                 </div>
               </div>
             </div>
-
             <BackTop target="preview" :right="40" :bottom="40" />
           </div>
           <div
@@ -505,6 +527,15 @@ const isOpenHeadingSlider = ref(false)
       <footer class="h-[30px] flex select-none items-center justify-end px-4 text-[12px]">
         字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
+
+      <button
+        v-if="isMobile"
+        class="bg-primary fixed bottom-16 right-6 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+        aria-label="切换编辑/预览"
+        @click="toggleView"
+      >
+        <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
+      </button>
 
       <UploadImgDialog @upload-image="uploadImage" />
 
@@ -589,5 +620,6 @@ const isOpenHeadingSlider = ref(false)
 
 .codeMirror-wrapper {
   overflow-x: auto;
+  height: 100%;
 }
 </style>

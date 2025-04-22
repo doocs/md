@@ -102,7 +102,7 @@ export const useStore = defineStore(`store`, () => {
         },
       ],
       createDatetime: new Date(),
-      updateDatetime: new Date()
+      updateDatetime: new Date(),
     },
   ])
 
@@ -131,7 +131,7 @@ export const useStore = defineStore(`store`, () => {
           },
         ],
         createDatetime: new Date(),
-        updateDatetime: new Date()
+        updateDatetime: new Date(),
       }) - 1
   }
 
