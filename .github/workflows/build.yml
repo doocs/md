@@ -24,7 +24,7 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build:h5-netlify
+        run: npm run build
 
       - name: Add .nojekyll file
         run: |
