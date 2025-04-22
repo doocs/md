@@ -526,6 +526,7 @@ export const useStore = defineStore(`store`, () => {
     toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
       skipFonts: true, // 如果加载字体控制台报错，打开这段的注释
+      pixelRatio: 2,
     }).then((url) => {
       const a = document.createElement(`a`)
       a.download = filename
