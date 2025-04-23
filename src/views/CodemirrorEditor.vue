@@ -200,57 +200,82 @@ function initEditor() {
   if (!editorDom.value) {
     editorDom.value = store.posts[store.currentPostIndex].content
   }
-  editor.value = CodeMirror.fromTextArea(editorDom, {
-    mode: `text/x-markdown`,
-    theme: isDark.value ? `darcula` : `xq-light`,
-    lineNumbers: false,
-    lineWrapping: true,
-    styleActiveLine: true,
-    autoCloseBrackets: true,
-    extraKeys: {
-      [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
-        formatDoc(editor.getValue()).then((doc) => {
-          editor.setValue(doc)
-        })
-      },
-      [`${ctrlKey}-B`]: function bold(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`**${selected}**`)
-      },
-      [`${ctrlKey}-I`]: function italic(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`*${selected}*`)
-      },
-      [`${ctrlKey}-D`]: function del(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`~~${selected}~~`)
-      },
-      [`${ctrlKey}-K`]: function italic(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`[${selected}]()`)
-      },
-      [`${ctrlKey}-E`]: function code(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`\`${selected}\``)
-      },
-      // 预备弃用
-      [`${ctrlKey}-L`]: function code(editor) {
-        const selected = editor.getSelection()
-        editor.replaceSelection(`\`${selected}\``)
-      },
-    },
-  })
 
-  editor.value.on(`change`, (e) => {
-    clearTimeout(changeTimer.value)
-    changeTimer.value = setTimeout(() => {
-      onEditorRefresh()
-      if (e.getValue() !== store.posts[store.currentPostIndex].content) {
-        store.posts[store.currentPostIndex].updateDatetime = new Date()
+  nextTick(() => {
+    editor.value = CodeMirror.fromTextArea(editorDom, {
+      mode: `text/x-markdown`,
+      theme: isDark.value ? `darcula` : `xq-light`,
+      lineNumbers: false,
+      lineWrapping: true,
+      styleActiveLine: true,
+      autoCloseBrackets: true,
+      extraKeys: {
+        [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
+          formatDoc(editor.getValue()).then((doc) => {
+            editor.setValue(doc)
+          })
+        },
+        [`${ctrlKey}-B`]: function bold(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`**${selected}**`)
+        },
+        [`${ctrlKey}-I`]: function italic(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`*${selected}*`)
+        },
+        [`${ctrlKey}-D`]: function del(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`~~${selected}~~`)
+        },
+        [`${ctrlKey}-K`]: function italic(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`[${selected}]()`)
+        },
+        [`${ctrlKey}-E`]: function code(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`\`${selected}\``)
+        },
+        // 预备弃用
+        [`${ctrlKey}-L`]: function code(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`\`${selected}\``)
+        },
+      },
+    })
+
+    editor.value.on(`change`, (e) => {
+      clearTimeout(changeTimer.value)
+      changeTimer.value = setTimeout(() => {
+        onEditorRefresh()
+        if (e.getValue() !== store.posts[store.currentPostIndex].content) {
+          store.posts[store.currentPostIndex].updateDatetime = new Date()
+        }
+
+        store.posts[store.currentPostIndex].content = e.getValue()
+      }, 300)
+    })
+
+    // 粘贴上传图片并插入
+    editor.value.on(`paste`, (_cm, e) => {
+      if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {
+        return
       }
-
-      store.posts[store.currentPostIndex].content = e.getValue()
-    }, 300)
+      for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
+        const item = e.clipboardData.items[i]
+        if (item.kind === `file`) {
+          // 校验图床参数
+          const pasteFile = item.getAsFile()!
+          const isValid = beforeUpload(pasteFile)
+          if (!isValid) {
+            continue
+          }
+          uploadImage(pasteFile)
+          e.preventDefault()
+        }
+      }
+    })
+    onEditorRefresh()
+    mdLocalToRemote()
   })
 
   // 定时，30 秒记录一次
@@ -268,26 +293,6 @@ function initEditor() {
       }
     }
   }, 30 * 1000)
-
-  // 粘贴上传图片并插入
-  editor.value.on(`paste`, (_cm, e) => {
-    if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {
-      return
-    }
-    for (let i = 0, len = e.clipboardData.items.length; i < len; ++i) {
-      const item = e.clipboardData.items[i]
-      if (item.kind === `file`) {
-        // 校验图床参数
-        const pasteFile = item.getAsFile()!
-        const isValid = beforeUpload(pasteFile)
-        if (!isValid) {
-          continue
-        }
-        uploadImage(pasteFile)
-        e.preventDefault()
-      }
-    }
-  })
 }
 
 const container = ref(null)
@@ -401,8 +406,6 @@ function mdLocalToRemote() {
 
 onMounted(() => {
   initEditor()
-  onEditorRefresh()
-  mdLocalToRemote()
 })
 
 const isOpenHeadingSlider = ref(false)
@@ -410,19 +413,12 @@ const isOpenHeadingSlider = ref(false)
 
 <template>
   <div ref="container" class="container flex flex-col">
-    <EditorHeader
-      @add-format="addFormat"
-      @format-content="formatContent"
-      @start-copy="startCopy"
-      @end-copy="endCopy"
-    />
+    <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
     <main class="container-main flex flex-1 flex-col">
       <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
         <div
-          v-show="!isMobile || (isMobile && showEditor)"
-          ref="codeMirrorWrapper"
-          class="codeMirror-wrapper flex-1"
+          v-show="!isMobile || (isMobile && showEditor)" ref="codeMirrorWrapper" class="codeMirror-wrapper flex-1"
           :class="{
             'order-1 border-l': !store.isEditOnLeft,
             'border-r': store.isEditOnLeft,
@@ -430,11 +426,7 @@ const isOpenHeadingSlider = ref(false)
         >
           <ContextMenu>
             <ContextMenuTrigger>
-              <textarea
-                id="editor"
-                type="textarea"
-                placeholder="Your markdown text here."
-              />
+              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
               <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
@@ -478,15 +470,8 @@ const isOpenHeadingSlider = ref(false)
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div
-          v-show="!isMobile || (isMobile && !showEditor)"
-          class="relative flex-1"
-        >
-          <div
-            id="preview"
-            ref="preview"
-            class="preview-wrapper p-5"
-          >
+        <div v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1">
+          <div id="preview" ref="preview" class="preview-wrapper p-5">
             <div id="output-wrapper" :class="{ output_night: !backLight }">
               <div class="preview border-x-1 shadow-xl">
                 <section id="output" v-html="output" />
@@ -502,18 +487,20 @@ const isOpenHeadingSlider = ref(false)
           </div>
           <div
             class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
-            @mouseenter="() => isOpenHeadingSlider = true"
-            @mouseleave="() => isOpenHeadingSlider = false"
+            @mouseenter="() => isOpenHeadingSlider = true" @mouseleave="() => isOpenHeadingSlider = false"
           >
             <List class="size-6" />
             <ul
-              class="overflow-auto transition-all"
-              :class="{
+              class="overflow-auto transition-all" :class="{
                 'max-h-0 w-0': !isOpenHeadingSlider,
                 'max-h-100 w-60 mt-2': isOpenHeadingSlider,
               }"
             >
-              <li v-for="(item, index) in store.titleList" :key="index" class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600" :style="{ paddingLeft: `${item.level - 0.5}em` }">
+              <li
+                v-for="(item, index) in store.titleList" :key="index"
+                class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600"
+                :style="{ paddingLeft: `${item.level - 0.5}em` }"
+              >
                 <a :href="item.url">
                   {{ item.title }}
                 </a>
@@ -531,8 +518,7 @@ const isOpenHeadingSlider = ref(false)
       <button
         v-if="isMobile"
         class="bg-primary fixed bottom-16 right-6 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-        aria-label="切换编辑/预览"
-        @click="toggleView"
+        aria-label="切换编辑/预览" @click="toggleView"
       >
         <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
       </button>
