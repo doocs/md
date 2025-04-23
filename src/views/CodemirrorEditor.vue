@@ -414,7 +414,7 @@ const isOpenHeadingSlider = ref(false)
 <template>
   <div ref="container" class="container flex flex-col">
     <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
-    <main class="container-main flex flex-1 flex-col">
+    <main class="container-main flex flex-1 flex-col bg-white">
       <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
         <div
@@ -470,7 +470,10 @@ const isOpenHeadingSlider = ref(false)
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1">
+        <div
+          v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1 transition-width"
+          :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
+        >
           <div id="preview" ref="preview" class="preview-wrapper p-5">
             <div id="output-wrapper" :class="{ output_night: !backLight }">
               <div class="preview border-x-1 shadow-xl">

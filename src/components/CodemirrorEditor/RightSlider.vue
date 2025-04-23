@@ -40,12 +40,8 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
 <template>
   <div
-    class="overflow-hidden border-l-2 border-gray/20 bg-white transition-width duration-300 dark:bg-[#191919]"
-    :class="{
-      'w-0 border-l-0': !store.isOpenRightSlider,
-      'w-100': store.isOpenRightSlider,
-    }"
-    style="z-index: 1;"
+    class="relative overflow-hidden border-l-2 border-gray/20 bg-white transition-width duration-300 dark:bg-[#191919]"
+    :class="[store.isOpenRightSlider ? 'w-100' : 'w-0 border-l-0']"
   >
     <div
       class="space-y-4 h-full overflow-auto p-4 transition-transform" :class="{
@@ -70,8 +66,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
-            :class="{ 'border-black dark:border-white': store.fontFamily === value }"
-            @click="store.fontChanged(value)"
+            :class="{ 'border-black dark:border-white': store.fontFamily === value }" @click="store.fontChanged(value)"
           >
             {{ label }}
           </Button>
@@ -110,13 +105,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <h2>自定义主题色</h2>
         <div ref="pickColorsContainer">
           <PickColors
-            v-if="pickColorsContainer"
-            v-model:value="primaryColor"
-            show-alpha :format="format"
-            :format-options="formatOptions"
-            :theme="store.isDark ? 'dark' : 'light'"
-            :popup-container="pickColorsContainer"
-            @change="store.colorChanged"
+            v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
+            :format-options="formatOptions" :theme="store.isDark ? 'dark' : 'light'"
+            :popup-container="pickColorsContainer" @change="store.colorChanged"
           />
         </div>
       </div>
@@ -272,6 +263,4 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
   </div>
 </template>
 
-<style scoped lang="less">
-
-</style>
+<style scoped lang="less"></style>
