@@ -5,8 +5,12 @@ on:
     branches: [main]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }} - ${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
@@ -32,11 +36,27 @@ jobs:
             echo "BUILD_COMMAND=build" >> $GITHUB_ENV
           fi
 
-      - name: Run build command
+      - name: Run build
         run: npm run ${{ env.BUILD_COMMAND }}
 
-      - name: Deploy
-        uses: JamesIves/github-pages-deploy-action@v4
+      - name: Generate CNAME
+        run: echo "md.doocs.org" > dist/CNAME
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          branch: gh-pages
-          folder: dist
+          path: ./dist
+
+  deploy:
+    needs: build
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github_pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
