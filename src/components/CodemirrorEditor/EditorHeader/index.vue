@@ -144,7 +144,7 @@ function copy() {
     </div>
 
     <!-- 右侧操作区：移动端保留核心按钮 -->
-    <div class="space-x-2 flex flex-wrap">
+    <div class="space-x-1 flex flex-wrap">
       <!-- 展开/收起左侧内容栏 -->
       <TooltipProvider :delay-duration="200">
         <Tooltip>

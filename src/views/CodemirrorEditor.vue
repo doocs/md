@@ -470,7 +470,10 @@ const isOpenHeadingSlider = ref(false)
             </ContextMenuContent>
           </ContextMenu>
         </div>
-        <div v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1">
+        <div
+          v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1 transition-width"
+          :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
+        >
           <div id="preview" ref="preview" class="preview-wrapper p-5">
             <div id="output-wrapper" :class="{ output_night: !backLight }">
               <div class="preview border-x-1 shadow-xl">
