@@ -138,13 +138,35 @@ function minioOSSSubmit(formValues: any) {
 }
 
 // 公众号
-const isWebsite = ref(window.location.href.startsWith(`http`))
+// 当前是否为网页（http/https 协议）
+const isWebsite = window.location.protocol.startsWith(`http`)
 
-const mpSchema = toTypedSchema(yup.object({
-  proxyOrigin: isWebsite.value ? yup.string().required(`代理域名不能为空`) : yup.string().optional(),
-  appID: yup.string().required(`AppID 不能为空`),
-  appsecret: yup.string().required(`AppSecret 不能为空`),
-}))
+// Cloudflare Pages 环境
+const isCfPage = import.meta.env.CF_PAGES === `1`
+
+// 插件模式运行（如 chrome-extension://）
+const isPluginMode = !isWebsite
+
+// 是否需要填写 proxyOrigin（只在 非插件 且 非CF页面 时需要）
+const isProxyRequired = computed(() => {
+  return !isPluginMode && !isCfPage
+})
+
+const mpPlaceholder = computed(() => {
+  if (isProxyRequired.value) {
+    return `如：http://proxy.example.com`
+  }
+  return `可不填`
+})
+const mpSchema = computed(() =>
+  toTypedSchema(yup.object({
+    proxyOrigin: isProxyRequired.value
+      ? yup.string().required(`代理域名不能为空`)
+      : yup.string().optional(),
+    appID: yup.string().required(`AppID 不能为空`),
+    appsecret: yup.string().required(`AppSecret 不能为空`),
+  })),
+)
 
 const mpConfig = ref(localStorage.getItem(`mpConfig`)
   ? JSON.parse(localStorage.getItem(`mpConfig`)!)
@@ -264,7 +286,7 @@ function beforeImageUpload(file: File) {
 
 const dragover = ref(false)
 
-const { open, onChange } = useFileDialog({
+const { open, reset, onChange } = useFileDialog({
   accept: `image/*`,
 })
 
@@ -276,6 +298,7 @@ onChange((files) => {
   const file = files[0]
 
   beforeImageUpload(file) && emit(`uploadImage`, file)
+  reset()
 })
 
 function onDrop(e: DragEvent) {
@@ -733,11 +756,11 @@ function onDrop(e: DragEvent) {
         <TabsContent value="mp">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
             <Field v-slot="{ field, errorMessage }" name="proxyOrigin">
-              <FormItem label="代理域名" :required="isWebsite" :error="errorMessage">
+              <FormItem label="代理域名" :required="isProxyRequired" :error="errorMessage">
                 <Input
                   v-bind="field"
                   v-model="field.value"
-                  placeholder="如：http://proxy.example.com，使用插件时可不填"
+                  :placeholder="mpPlaceholder"
                 />
               </FormItem>
             </Field>
@@ -777,7 +800,7 @@ function onDrop(e: DragEvent) {
                   variant="link"
                   class="p-0"
                   as="a"
-                  href="https://mpmd.pages.dev/tutorial/"
+                  href="https://md-pages.doocs.org/tutorial/"
                   target="_blank"
                 >
                   如何在浏览器插件中使用公众号图床？

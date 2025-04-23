@@ -117,3 +117,9 @@ code {
 /* 代码块外层样式 */
 code_pre {
 }
+/* 行内公式样式 */
+inline_katex {
+}
+/* 公式块样式 */
+block_katex {
+}

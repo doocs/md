@@ -18,8 +18,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 
 ## 在线编辑器地址
 
-- [https://md.doocs.org](https://md.doocs.org)
-- [https://doocs-md.pages.dev](https://doocs-md.pages.dev)
+[https://md.doocs.org](https://md.doocs.org)
 
 注：推荐使用 Chrome 浏览器，效果最佳。
 
@@ -40,6 +39,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 - [x] 提供多图上传功能，并可自定义配置图床
 - [x] 便捷的文件导入、导出功能，提升工作效率
 - [x] 内置本地内容管理功能，支持草稿自动保存
+- [x] 集成主流 AI 模型（如 DeekSeek、OpenAI、通义千问），辅助内容创作
 
 ## 目前支持哪些图床
 
@@ -51,7 +51,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 | 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos)        | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 | 5   | [七牛云](https://www.qiniu.com/products/kodo)          | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
 | 6   | [MinIO](https://min.io/)                               | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                              |
-| 7   | [公众号](https://mp.weixin.qq.com/)                    | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何使用公众号图床？](https://mp.honwhy.wang/tutorial)                                                                |
+| 7   | [公众号](https://mp.weixin.qq.com/)                    | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何使用公众号图床？](https://md-pages.doocs.org/tutorial)                                                            |
 | 8   | [Cloudflare R2](https://developers.cloudflare.com/r2/) | 配置 `AccountId`、`AccessKey`、`SecretKey`、`Bucket`、`Domain` 参数        | [如何使用 S3 API 操作 R2？](https://developers.cloudflare.com/r2/api/s3/api/)                                          |
 | 9   | 自定义上传                                             | 是                                                                         | [如何自定义上传？](#自定义上传逻辑)                                                                                    |
 
@@ -117,6 +117,9 @@ util.axios
 ## 如何开发和部署
 
 ```sh
+# 安装 node 版本
+nvm i && nvm use
+
 # 安装依赖
 npm i
 

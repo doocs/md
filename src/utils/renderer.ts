@@ -12,13 +12,13 @@ import readingTime from 'reading-time'
 
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
-
 import { MDKatex } from './MDKatex'
+import markedSlider from './MDSlider'
 
 marked.setOptions({
   breaks: true,
 })
-marked.use(MDKatex({ nonStandard: true }))
+marked.use(markedSlider())
 
 function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
   const theme = cloneDeep(_theme)
@@ -174,8 +174,16 @@ export function initRenderer(opts: IOpts) {
 
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
+    const oldStyle = JSON.stringify(styleMapping)
     styleMapping = buildTheme(opts)
-    marked.use(markedAlert({ styles: styleMapping }))
+    const newStyle = JSON.stringify(styleMapping)
+    if (oldStyle !== newStyle) {
+      marked.use(markedAlert({ styles: styleMapping }))
+      marked.use(
+        MDKatex({ nonStandard: true }, styles(`inline_katex`, `;vertical-align: middle; line-height: 1;`), styles(`block_katex`, `;text-align: center; overflow: auto;`),
+        ),
+      )
+    }
   }
 
   function buildReadingTime(readingTime: ReadTimeResults): string {
@@ -334,6 +342,12 @@ export function initRenderer(opts: IOpts) {
   }
 
   marked.use({ renderer })
+  marked.use(markedSlider({ styles: styleMapping }))
+  marked.use(markedAlert({ styles: styleMapping }))
+  marked.use(
+    MDKatex({ nonStandard: true }, styles(`inline_katex`, `;vertical-align: middle; line-height: 1;`), styles(`block_katex`, `;text-align: center; overflow: auto;`),
+    ),
+  )
 
   return {
     buildAddition,

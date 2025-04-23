@@ -23,12 +23,17 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build
-        run: npm run build:h5-netlify
-
-      - name: Add .nojekyll file
+      - name: Determine build command
+        id: build-command
         run: |
-          touch ./dist/.nojekyll
+          if [[ "${{ secrets.BUILD_COMMAND }}" == "build:h5-netlify" ]]; then
+            echo "BUILD_COMMAND=build:h5-netlify" >> $GITHUB_ENV
+          else
+            echo "BUILD_COMMAND=build" >> $GITHUB_ENV
+          fi
+
+      - name: Run build command
+        run: npm run ${{ env.BUILD_COMMAND }}
 
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4

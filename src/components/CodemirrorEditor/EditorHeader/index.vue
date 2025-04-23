@@ -7,6 +7,7 @@ import {
   ctrlSign,
   shiftSign,
 } from '@/config'
+
 import { useStore } from '@/stores'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 
@@ -53,8 +54,9 @@ const { copyMode, handleCopyContent } = useCopyContent()
 </script>
 
 <template>
-  <header class="header-container h-15 flex items-center justify-between px-5 dark:bg-[#191c20]">
-    <div class="space-x-2 flex">
+  <header class="header-container h-15 flex flex-wrap items-center justify-between px-5 dark:bg-[#191c20]">
+    <!-- 左侧菜单：移动端隐藏 -->
+    <div class="space-x-2 hidden sm:flex">
       <Menubar class="menubar">
         <FileDropdown />
 
@@ -62,7 +64,8 @@ const { copyMode, handleCopyContent } = useCopyContent()
           <MenubarTrigger> 格式 </MenubarTrigger>
           <MenubarContent class="w-60" align="start">
             <MenubarCheckboxItem
-              v-for="{ label, kbd, emitArgs } in formatItems" :key="label"
+              v-for="{ label, kbd, emitArgs } in formatItems"
+              :key="label"
               @click="emitArgs[0] === 'addFormat' ? $emit(emitArgs[0], emitArgs[1]) : $emit(emitArgs[0])"
             >
               {{ label }}
@@ -91,7 +94,9 @@ const { copyMode, handleCopyContent } = useCopyContent()
       </Menubar>
     </div>
 
-    <div class="space-x-2 flex">
+    <!-- 右侧操作区：移动端保留核心按钮 -->
+    <div class="space-x-2 flex flex-wrap">
+      <!-- 展开/收起左侧内容栏 -->
       <TooltipProvider :delay-duration="200">
         <Tooltip>
           <TooltipTrigger as-child>
@@ -106,11 +111,13 @@ const { copyMode, handleCopyContent } = useCopyContent()
         </Tooltip>
       </TooltipProvider>
 
+      <!-- 暗色切换 -->
       <Button variant="outline" @click="toggleDark()">
         <Moon v-show="isDark" class="size-4" />
         <Sun v-show="!isDark" class="size-4" />
       </Button>
 
+      <!-- 复制按钮组 -->
       <div class="space-x-1 bg-background text-background-foreground mx-2 flex items-center border rounded-md">
         <Button variant="ghost" class="shadow-none" @click="() => handleCopyContent(copyMode)">
           复制
@@ -139,8 +146,10 @@ const { copyMode, handleCopyContent } = useCopyContent()
         </DropdownMenu>
       </div>
 
-      <PostInfo />
+      <!-- 文章信息（移动端隐藏） -->
+      <PostInfo class="hidden sm:inline-flex" />
 
+      <!-- 设置按钮 -->
       <Button variant="outline" @click="store.isOpenRightSlider = !store.isOpenRightSlider">
         <Settings class="size-4" />
       </Button>

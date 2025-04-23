@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
-import { Edit3, Ellipsis, Plus, Trash } from 'lucide-vue-next'
+import { addPrefix } from '@/utils'
+import { ArrowUpNarrowWide, Edit3, Ellipsis, History, Plus, Trash } from 'lucide-vue-next'
 
 const store = useStore()
 
@@ -53,6 +54,41 @@ function delPost() {
   isOpenDelPostConfirmDialog.value = false
   toast.success(`内容删除成功`)
 }
+
+const isOpenHistoryDialog = ref(false)
+const currentPostIndex = ref(0)
+const currentPost = ref<typeof store.posts[0] | null>(null)
+const currentHistoryIndex = ref(0)
+
+/**
+ * 打开窗口
+ * @param index
+ */
+function openHistoryDialog(index: number) {
+  isOpenHistoryDialog.value = true
+  currentPost.value = store.posts[index]
+  currentHistoryIndex.value = 0
+  currentPostIndex.value = index
+}
+
+/**
+ * 恢复记录
+ */
+function recoverHistory() {
+  if (currentPost.value == null) {
+    isOpenHistoryDialog.value = false
+    return
+  }
+
+  store.posts[currentPostIndex.value].content = currentPost.value.history[currentHistoryIndex.value]?.content
+  toRaw(store.editor!).setValue(currentPost.value.history[currentHistoryIndex.value]?.content)
+
+  toast.success(`记录恢复成功`)
+  isOpenHistoryDialog.value = false
+}
+
+// 排序模式
+const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
 </script>
 
 <template>
@@ -70,34 +106,95 @@ function delPost() {
         '-translate-x-full': !store.isOpenPostSlider,
       }"
     >
-      <Dialog v-model:open="isOpen">
-        <DialogTrigger as-child>
-          <Button variant="outline" class="w-full" size="xs">
-            <Plus /> 新增内容
-          </Button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>新增内容</DialogTitle>
-            <DialogDescription>
-              请输入内容名称
-            </DialogDescription>
-          </DialogHeader>
-          <Input v-model="addPostInputVal" />
-          <DialogFooter>
-            <Button @click="addPost()">
-              确 定
+      <div class="space-x-4 flex justify-center">
+        <!-- 新增文章 -->
+        <Dialog v-model:open="isOpen">
+          <DialogTrigger as-child>
+            <Button variant="outline" size="icon">
+              <Plus />
             </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>新增内容</DialogTitle>
+              <DialogDescription>
+                请输入内容名称
+              </DialogDescription>
+            </DialogHeader>
+            <Input v-model="addPostInputVal" />
+            <DialogFooter>
+              <Button @click="addPost()">
+                确 定
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button variant="outline" size="icon">
+              <ArrowUpNarrowWide />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuRadioGroup v-model="sortMode">
+              <DropdownMenuRadioItem value="A-Z">
+                文件名（A-Z）
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="Z-A">
+                文件名（Z-A）
+              </DropdownMenuRadioItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioItem value="update-new-old">
+                编辑时间（从新到旧）
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="update-old-new">
+                编辑时间（从旧到新）
+              </DropdownMenuRadioItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioItem value="create-new-old">
+                创建时间（从新到旧）
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="create-old-new">
+                创建时间（从旧到新）
+              </DropdownMenuRadioItem>
+            </DropdownMenuRadioGroup>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
       <a
-        v-for="(post, index) in store.posts" :key="post.title" href="#" :class="{
-          'bg-primary text-primary-foreground shadow-lg dark:border-1 border-primary': store.currentPostIndex === index,
-          'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === index,
+        v-for="(post, index) in [...store.posts].map((post, index) => {
+          return {
+            ...post,
+            index,
+          }
+        }).sort((a, b) => {
+          if (sortMode === 'A-Z') {
+            return a.title.localeCompare(b.title)
+          }
+          if (sortMode === 'Z-A') {
+            return b.title.localeCompare(a.title)
+          }
+          if (sortMode === 'update-new-old') {
+            return new Date(a.updateDatetime) < new Date(b.updateDatetime) ? 1 : -1
+          }
+          if (sortMode === 'update-old-new') {
+            return new Date(a.updateDatetime) > new Date(b.updateDatetime) ? 1 : -1
+          }
+          if (sortMode === 'create-new-old') {
+            return new Date(a.createDatetime) < new Date(b.createDatetime) ? 1 : -1
+          }
+          if (sortMode === 'create-old-new') {
+            return new Date(a.createDatetime) > new Date(b.createDatetime) ? 1 : -1
+          }
+          return 1
+        })" :key="post.index" href="#"
+        :class="{
+          'bg-primary text-primary-foreground shadow-lg dark:border-1 border-primary': store.currentPostIndex === post.index,
+          'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostIndex === post.index,
         }"
         class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:bg-gray/20 dark:hover:text-white"
-        @click="store.currentPostIndex = index"
+        @click="store.currentPostIndex = post.index"
       >
         <span class="line-clamp-1">{{ post.title }}</span>
         <DropdownMenu>
@@ -111,6 +208,10 @@ function delPost() {
               <Edit3 class="mr-2 size-4" />
               重命名
             </DropdownMenuItem>
+            <DropdownMenuItem @click.stop="openHistoryDialog(index)">
+              <History class="mr-2 size-4" />
+              历史记录
+            </DropdownMenuItem>
             <DropdownMenuItem v-if="store.posts.length > 1" @click.stop="startDelPost(index)">
               <Trash class="mr-2 size-4" />
               删除
@@ -118,6 +219,7 @@ function delPost() {
           </DropdownMenuContent>
         </DropdownMenu>
       </a>
+
       <!-- 重命名弹窗 -->
       <Dialog v-model:open="isOpenEditDialog">
         <DialogContent class="sm:max-w-[425px]">
@@ -138,7 +240,7 @@ function delPost() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-
+      <!-- 删除文章 -->
       <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -155,6 +257,64 @@ function delPost() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog v-model:open="isOpenHistoryDialog">
+        <DialogContent class="max-w-max">
+          <DialogHeader>
+            <DialogTitle>历史记录</DialogTitle>
+            <DialogDescription>
+              每隔 30 秒进行一次保存，最多保存 10 条
+            </DialogDescription>
+          </DialogHeader>
+
+          <div class="h-[50vh] flex">
+            <ul class="space-y-2 w-[150px]">
+              <li
+                v-for="(item, index) in currentPost?.history"
+                :key="item.datetime"
+                :class="{
+                  'bg-primary text-primary-foreground shadow-lg dark:border-1 border-primary': currentHistoryIndex === index,
+                  'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': currentHistoryIndex === index,
+                }"
+                class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex cursor-pointer items-center justify-start gap-2 whitespace-nowrap rounded px-2 text-sm transition-colors dark:text-white dark:hover:bg-gray/20 dark:hover:text-white"
+                @click="currentHistoryIndex = index"
+              >
+                {{ item.datetime }}
+              </li>
+            </ul>
+            <Separator orientation="vertical" class="mx-2" />
+            <div class="space-y-2 max-h-full w-[500px] overflow-y-auto">
+              <p v-for="(item, index) in currentPost?.history[currentHistoryIndex].content.split('\n')" :key="index">
+                {{ item }}
+              </p>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
+              <AlertDialogTrigger>
+                <Button>
+                  恢 复
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>提示</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    此操作将使用该记录替换对应文章内容，是否继续恢复？
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>取消</AlertDialogCancel>
+                  <AlertDialogAction @click="recoverHistory()">
+                    恢 复
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </nav>
   </div>
 </template>
