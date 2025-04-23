@@ -36,6 +36,48 @@ blockquote {
 /* 引用段落样式 */
 blockquote_p {
 }
+/* 段落样式 */
+p {
+}
+/* 分割线样式 */
+hr {
+}
+/* 行内代码样式 */
+codespan {
+}
+/* 斜体样式 */
+em {
+}
+/* 粗体样式 */
+strong {
+}
+/* 链接样式 */
+link {
+}
+/* 微信链接样式 */
+wx_link {
+}
+/* 有序列表样式 */
+ol {
+}
+/* 无序列表样式 */
+ul {
+}
+/* 列表项样式 */
+listitem {
+}
+/* 代码块样式 */
+code {
+}
+/* 代码块外层样式 */
+code_pre {
+}
+/* 行内公式样式 */
+inline_katex {
+}
+/* 公式块样式 */
+block_katex {
+}
 /* GFM note 样式 */
 blockquote_note {
 }
@@ -83,43 +125,4 @@ blockquote_p_warning {
 }
 /* GFM caution 段落样式 */
 blockquote_p_caution {
-}
-/* 段落样式 */
-p {
-}
-/* 分割线样式 */
-hr {
-}
-/* 行内代码样式 */
-codespan {
-}
-/* 粗体样式 */
-strong {
-}
-/* 链接样式 */
-link {
-}
-/* 微信链接样式 */
-wx_link {
-}
-/* 有序列表样式 */
-ol {
-}
-/* 无序列表样式 */
-ul {
-}
-/* 列表项样式 */
-listitem {
-}
-/* 代码块样式 */
-code {
-}
-/* 代码块外层样式 */
-code_pre {
-}
-/* 行内公式样式 */
-inline_katex {
-}
-/* 公式块样式 */
-block_katex {
 }
