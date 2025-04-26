@@ -41,8 +41,6 @@ const serviceOptions = [
       `deepseek-r1-distill-qwen-7b`,
       `deepseek-r1`,
       `qwen1.5-7b-chat`,
-      // `qwen-vl-ocr-latest`,
-      // `qwen-vl-ocr`,
       `qwen-coder-plus-1106`,
       `qwen-coder-plus`,
       `qwen-coder-plus-latest`,
@@ -125,6 +123,51 @@ const serviceOptions = [
     ],
   },
   {
+    value: `doubao`,
+    label: `豆包`,
+    endpoint: `https://ark.cn-beijing.volces.com/api/v3`,
+    models: [
+      `doubao-1-5-thinking-pro-250415`,
+      `doubao-1-5-thinking-pro-m-250415`,
+      `deepseek-r1-250120`,
+      `deepseek-r1-distill-qwen-32b-250120`,
+      `deepseek-r1-distill-qwen-7b-250120`,
+      `deepseek-v3-250324`,
+      `deepseek-v3-241226`,
+      `doubao-1-5-vision-pro-250328`,
+      `doubao-1-5-vision-lite-250315`,
+      `doubao-1-5-vision-pro-32k-250115`,
+      `doubao-1-5-ui-tars-250328`,
+      `doubao-vision-pro-32k-241028`,
+      `doubao-vision-lite-32k-241015`,
+      `doubao-1-5-pro-32k-250115`,
+      `doubao-1-5-pro-256k-250115`,
+      `doubao-1-5-lite-32k-250115`,
+      `doubao-pro-4k-240515`,
+      `doubao-pro-32k-241215`,
+      `doubao-pro-32k-240828`,
+      `doubao-pro-32k-240615`,
+      `doubao-pro-256k-241115`,
+      `doubao-lite-4k-character-240828`,
+      `doubao-lite-32k-240828`,
+      `doubao-lite-32k-character-241015`,
+      `doubao-lite-128k-240828`,
+      `moonshot-v1-8k`,
+      `moonshot-v1-32k`,
+      `moonshot-v1-128k`,
+    ],
+  },
+  {
+    value: `moonshot`,
+    label: `月之暗面`,
+    endpoint: `https://api.moonshot.cn/v1`,
+    models: [
+      `moonshot-v1-8k`,
+      `moonshot-v1-32k`,
+      `moonshot-v1-128k`,
+    ],
+  },
+  {
     value: `custom`,
     label: `自定义兼容 OpenAI API 的服务`,
     endpoint: ``,
@@ -144,12 +187,10 @@ const config = reactive({
 const loading = ref(false)
 const testResult = ref(``)
 
-// 获取当前服务配置
 function currentService() {
   return serviceOptions.find(service => service.value === config.type) || serviceOptions[0]
 }
 
-// 初始化配置
 function initConfigFromStorage() {
   const savedType = localStorage.getItem(`openai_type`) || `deepseek`
   const service = serviceOptions.find(s => s.value === savedType) || serviceOptions[0]
@@ -168,33 +209,34 @@ onMounted(() => {
   initConfigFromStorage()
 })
 
-// 服务类型变化时自动更新 endpoint、model 和 API Key
 watch(() => config.type, () => {
   const service = currentService()
   config.endpoint = service.endpoint
   const savedModel = localStorage.getItem(`openai_model`)
-  if (savedModel && service.models.includes(savedModel)) {
-    config.model = savedModel
-  }
-  else {
-    config.model = service.models[0] || ``
-  }
+  config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
   config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
+  testResult.value = `` // ✅ 服务变化时，重置测试结果
 })
 
-// 保存配置
-function saveConfig() {
+// 监听模型变化
+watch(() => config.model, () => {
+  testResult.value = `` // ✅ 模型变化时，重置测试结果
+})
+
+function saveConfig(emitEvent = true) {
   localStorage.setItem(`openai_type`, config.type)
   localStorage.setItem(`openai_endpoint`, config.endpoint)
   localStorage.setItem(`openai_key_${config.type}`, config.apiKey)
   localStorage.setItem(`openai_model`, config.model)
   localStorage.setItem(`openai_temperature`, config.temperature.toString())
   localStorage.setItem(`openai_max_token`, config.maxToken.toString())
-  testResult.value = `✅ 配置已保存`
-  emit(`saved`)
+
+  if (emitEvent) {
+    testResult.value = `✅ 配置已保存`
+    emit(`saved`)
+  }
 }
 
-// 清空配置
 function clearConfig() {
   localStorage.removeItem(`openai_type`)
   localStorage.removeItem(`openai_endpoint`)
@@ -209,22 +251,65 @@ function clearConfig() {
   testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
-// 测试连接
 async function testConnection() {
   testResult.value = ``
   loading.value = true
+
   try {
-    const res = await window.fetch(`${config.endpoint}/models`, {
-      method: `GET`,
+    const url = new URL(config.endpoint)
+    if (!url.pathname.endsWith(`/chat/completions`)) {
+      url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
+    }
+
+    const payload = {
+      model: config.model || (currentService().models[0] || ``),
+      messages: [{ role: `user`, content: `hello` }],
+      temperature: config.temperature,
+      max_tokens: config.maxToken,
+      stream: false,
+    }
+
+    const res = await window.fetch(url.toString(), {
+      method: `POST`,
       headers: {
-        Authorization: `Bearer ${config.apiKey}`,
+        'Authorization': `Bearer ${config.apiKey}`,
+        'Content-Type': `application/json`,
       },
+      body: JSON.stringify(payload),
     })
-    testResult.value = res.ok ? `✅ 测试成功，API 可用` : `❌ 测试失败：${res.statusText}`
+
+    if (res.ok) {
+      testResult.value = `✅ 测试成功，/chat/completions 可用`
+      saveConfig(false) // ✅ 测试成功后保存，但不触发 saved 事件
+    }
+    else {
+      const text = await res.text()
+
+      // 新增判断：如果是模型未开通
+      try {
+        const json = JSON.parse(text)
+        const errorCode = json?.error?.code || ``
+        const errorMessage = json?.error?.message || ``
+
+        if (
+          res.status === 404
+          && (errorCode === `ModelNotOpen` || errorMessage.includes(`not activated`) || errorMessage.includes(`未开通`))
+        ) {
+          testResult.value = `⚠️ 测试成功，但当前模型未开通：${config.model}`
+          saveConfig(false) // 保存配置，因为接口是正常的
+          return
+        }
+      }
+      catch (e) {
+        console.log(e)
+      }
+
+      testResult.value = `❌ 测试失败：${res.status} ${res.statusText}，${text}`
+    }
   }
   catch (e) {
     console.error(e)
-    testResult.value = `❌ 网络错误或配置有误`
+    testResult.value = `❌ 测试失败：${(e as Error).message}`
   }
   finally {
     loading.value = false
@@ -248,7 +333,11 @@ async function testConnection() {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem v-for="service in serviceOptions" :key="service.value" :value="service.value">
+          <SelectItem
+            v-for="service in serviceOptions"
+            :key="service.value"
+            :value="service.value"
+          >
             {{ service.label }}
           </SelectItem>
         </SelectContent>
@@ -259,7 +348,8 @@ async function testConnection() {
     <div>
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <Input
-        v-model="config.endpoint" placeholder="输入 API 端点 URL"
+        v-model="config.endpoint"
+        placeholder="输入 API 端点 URL"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -268,7 +358,9 @@ async function testConnection() {
     <div>
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
       <Input
-        v-model="config.apiKey" type="password" placeholder="sk-..."
+        v-model="config.apiKey"
+        type="password"
+        placeholder="sk-..."
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -283,36 +375,51 @@ async function testConnection() {
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem v-for="model in currentService().models" :key="model" :value="model">
+          <SelectItem
+            v-for="model in currentService().models"
+            :key="model"
+            :value="model"
+          >
             {{ model }}
           </SelectItem>
         </SelectContent>
       </Select>
       <Input
-        v-else v-model="config.model" placeholder="输入模型名称"
+        v-else
+        v-model="config.model"
+        placeholder="输入模型名称"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
-    <!-- 温度 -->
+    <!-- 温度 temperature -->
     <div>
       <Label class="mb-1 block text-sm font-medium">温度</Label>
       <Input
-        v-model.number="config.temperature" type="number" step="0.1" min="0" max="2" placeholder="0 ~ 2，默认 1"
+        v-model.number="config.temperature"
+        type="number"
+        step="0.1"
+        min="0"
+        max="2"
+        placeholder="0 ~ 2，默认 1"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
-    <!-- 最大 Token -->
+    <!-- 最大 Token 数 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">最大 Token 数</Label>
       <Input
-        v-model.number="config.maxToken" type="number" min="1" max="32768" placeholder="比如 1024"
+        v-model.number="config.maxToken"
+        type="number"
+        min="1"
+        max="32768"
+        placeholder="比如 1024"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
-    <!-- 操作按钮 -->
+    <!-- 操作按钮区域 -->
     <div class="mt-2 flex gap-2">
       <Button size="sm" @click="saveConfig">
         保存
@@ -320,12 +427,17 @@ async function testConnection() {
       <Button size="sm" variant="ghost" @click="clearConfig">
         清空
       </Button>
-      <Button size="sm" variant="outline" :disabled="loading" @click="testConnection">
+      <Button
+        size="sm"
+        variant="outline"
+        :disabled="loading"
+        @click="testConnection"
+      >
         {{ loading ? '测试中...' : '测试连接' }}
       </Button>
     </div>
 
-    <!-- 测试结果 -->
+    <!-- 测试结果显示 -->
     <div v-if="testResult" class="mt-1 text-xs text-gray-500">
       {{ testResult }}
     </div>
