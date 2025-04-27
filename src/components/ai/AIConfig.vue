@@ -23,7 +23,7 @@ const config = reactive<{
   temperature: number
   maxToken: number
 }>({
-  type: `deepseek`,
+  type: `default`,
   endpoint: ``,
   apiKey: ``,
   model: ``,
@@ -39,15 +39,21 @@ function currentService() {
 }
 
 function initConfigFromStorage() {
-  const savedType = localStorage.getItem(`openai_type`) || `deepseek`
+  const savedType = localStorage.getItem(`openai_type`) || `default`
   const service = serviceOptions.find(s => s.value === savedType) || serviceOptions[0]
 
   config.type = savedType
-  config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
+  if (savedType === `default`) {
+    config.endpoint = `https://doocs-proxy.billowing-hall-5148.workers.dev/v1`
+  }
+  else {
+    config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
+  }
   config.apiKey = localStorage.getItem(`openai_key_${savedType}`) || ``
-  config.model = service.models.includes(localStorage.getItem(`openai_model`) || ``)
-    ? localStorage.getItem(`openai_model`)!
-    : service.models[0] || ``
+
+  const savedModel = localStorage.getItem(`openai_model`)
+  config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
+
   config.temperature = Number(localStorage.getItem(`openai_temperature`) || 1)
   config.maxToken = Number(localStorage.getItem(`openai_max_token`) || 1024)
 }
@@ -56,18 +62,24 @@ onMounted(() => {
   initConfigFromStorage()
 })
 
-watch(() => config.type, () => {
-  const service = currentService()
-  config.endpoint = service.endpoint
-  const savedModel = localStorage.getItem(`openai_model`)
-  config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
-  config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
-  testResult.value = `` // ✅ 服务变化时，重置测试结果
-})
-
 // 监听模型变化
 watch(() => config.model, () => {
   testResult.value = `` // ✅ 模型变化时，重置测试结果
+})
+
+watch(() => config.type, () => {
+  const service = currentService()
+  if (config.type === `default`) {
+    config.endpoint = `https://doocs-proxy.billowing-hall-5148.workers.dev/v1`
+    config.model = service.models[0] || ``
+  }
+  else {
+    const savedModel = localStorage.getItem(`openai_model`)
+    config.endpoint = service.endpoint
+    config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
+    config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
+  }
+  testResult.value = `` // ✅ 服务变化时，重置测试结果
 })
 
 function saveConfig(emitEvent = true) {
@@ -101,6 +113,14 @@ function clearConfig() {
 async function testConnection() {
   testResult.value = ``
   loading.value = true
+
+  const headers: Record<string, string> = {
+    'Content-Type': `application/json`,
+  }
+
+  if (config.apiKey && config.type !== `default`) {
+    headers.Authorization = `Bearer ${config.apiKey}`
+  }
 
   try {
     const url = new URL(config.endpoint)
@@ -192,7 +212,7 @@ async function testConnection() {
     </div>
 
     <!-- API 端点 -->
-    <div>
+    <div v-if="config.type !== 'default'">
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <Input
         v-model="config.endpoint"
@@ -208,6 +228,7 @@ async function testConnection() {
         v-model="config.apiKey"
         type="password"
         placeholder="sk-..."
+        :disabled="config.type === 'default'"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
