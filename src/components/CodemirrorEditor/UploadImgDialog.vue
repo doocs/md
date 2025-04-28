@@ -755,8 +755,13 @@ function onDrop(e: DragEvent) {
 
         <TabsContent value="mp">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
-            <Field v-slot="{ field, errorMessage }" name="proxyOrigin">
-              <FormItem label="代理域名" :required="isProxyRequired" :error="errorMessage">
+            <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
+            <Field
+              v-if="isProxyRequired"
+              v-slot="{ field, errorMessage }"
+              name="proxyOrigin"
+            >
+              <FormItem label="代理域名" required :error="errorMessage">
                 <Input
                   v-bind="field"
                   v-model="field.value"

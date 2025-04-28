@@ -44,7 +44,7 @@ interface ChatMessage {
 }
 
 const messages = ref<ChatMessage[]>([])
-const { apiKey, endpoint, model, temperature, maxToken } = useAIConfig()
+const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
 onMounted(async () => {
   const saved = localStorage.getItem(memoryKey)
@@ -158,6 +158,14 @@ async function sendMessage() {
     temperature: temperature.value,
     max_tokens: maxToken.value,
     stream: true,
+  }
+
+  const headers: Record<string, string> = {
+    'Content-Type': `application/json`,
+  }
+
+  if (apiKey.value && type.value !== `default`) {
+    headers.Authorization = `Bearer ${apiKey.value}`
   }
 
   try {
