@@ -9,7 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { type ServiceOption, serviceOptions } from '@/config/ai-services'
+import { DEFAULT_SERVICE_ENDPOINT, type ServiceOption, serviceOptions } from '@/config/ai-services'
 
 import { onMounted, reactive, ref, watch } from 'vue'
 
@@ -44,7 +44,7 @@ function initConfigFromStorage() {
 
   config.type = savedType
   if (savedType === `default`) {
-    config.endpoint = `https://proxy-ai.doocs.org/v1`
+    config.endpoint = DEFAULT_SERVICE_ENDPOINT
   }
   else {
     config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
@@ -70,7 +70,7 @@ watch(() => config.model, () => {
 watch(() => config.type, () => {
   const service = currentService()
   if (config.type === `default`) {
-    config.endpoint = `https://proxy-ai.doocs.org/v1`
+    config.endpoint = DEFAULT_SERVICE_ENDPOINT
     config.model = service.models[0] || ``
   }
   else {

@@ -1,3 +1,5 @@
+export const DEFAULT_SERVICE_ENDPOINT = `https://proxy-ai.doocs.org/v1`
+
 export interface ServiceOption {
   value: string
   label: string
@@ -9,7 +11,7 @@ export const serviceOptions: ServiceOption[] = [
   {
     value: `default`,
     label: `默认服务（无需配置 sk）`,
-    endpoint: `https://proxy-ai.doocs.org/v1`,
+    endpoint: DEFAULT_SERVICE_ENDPOINT,
     models: [
       `Qwen/Qwen2.5-7B-Instruct`,
       `Qwen/Qwen2.5-Coder-7B-Instruct`,
