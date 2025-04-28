@@ -525,8 +525,8 @@ export const useStore = defineStore(`store`, () => {
     const el = document.querySelector(` #output-wrapper>.preview`)! as HTMLElement
     toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
-      skipFonts: true, // 如果加载字体控制台报错，打开这段的注释
-      pixelRatio: Math.max(window.devicePixelRatio || 1, 2), // 添加 || 1 以防 devicePixelRatio 不可用
+      skipFonts: true,
+      pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
     }).then((url) => {
       const a = document.createElement(`a`)
       a.download = filename
