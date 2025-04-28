@@ -486,7 +486,7 @@ const isOpenHeadingSlider = ref(false)
                 </div>
               </div>
             </div>
-            <BackTop target="preview" :right="20" :bottom="20" />
+            <BackTop target="preview" :right="isMobile ? 24 : 20" :bottom="isMobile ? 90 : 20" />
           </div>
           <div
             class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
