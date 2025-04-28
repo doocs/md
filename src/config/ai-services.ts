@@ -10,7 +10,14 @@ export const serviceOptions: ServiceOption[] = [
     value: `default`,
     label: `默认服务（无需配置 sk）`,
     endpoint: `https://proxy-ai.doocs.org/v1`,
-    models: [`Qwen/Qwen2.5-7B-Instruct`],
+    models: [
+      `Qwen/Qwen2.5-7B-Instruct`,
+      `Qwen/Qwen2.5-Coder-7B-Instruct`,
+      `deepseek-ai/DeepSeek-R1-Distill-Qwen-7B`,
+      `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B`,
+      `THUDM/GLM-Z1-9B-0414`,
+      `THUDM/GLM-4-9B-0414`,
+    ],
   },
   {
     value: `deepseek`,
