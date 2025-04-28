@@ -11,13 +11,15 @@ jobs:
     if: github.repository == 'doocs/md'
     steps:
       - uses: actions/checkout@v4
-      # Setup .npmrc file to publish to npm
+
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
+          registry-url: 'https://registry.npmjs.org/'
+
       - run: npm install
       - run: npm run build:cli
+
       - run: cd md-cli && npm ci && npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
-
