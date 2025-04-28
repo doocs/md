@@ -221,14 +221,13 @@ async function testConnection() {
       />
     </div>
 
-    <!-- API 密钥 -->
-    <div>
+    <!-- API 密钥，仅非 default 显示 -->
+    <div v-if="config.type !== 'default'">
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
       <Input
         v-model="config.apiKey"
         type="password"
         placeholder="sk-..."
-        :disabled="config.type === 'default'"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
