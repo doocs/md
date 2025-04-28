@@ -44,7 +44,7 @@ function initConfigFromStorage() {
 
   config.type = savedType
   if (savedType === `default`) {
-    config.endpoint = `https://doocs-proxy.billowing-hall-5148.workers.dev/v1`
+    config.endpoint = `https://proxy-ai.doocs.org/v1`
   }
   else {
     config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
@@ -70,7 +70,7 @@ watch(() => config.model, () => {
 watch(() => config.type, () => {
   const service = currentService()
   if (config.type === `default`) {
-    config.endpoint = `https://doocs-proxy.billowing-hall-5148.workers.dev/v1`
+    config.endpoint = `https://proxy-ai.doocs.org/v1`
     config.model = service.models[0] || ``
   }
   else {

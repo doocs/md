@@ -9,7 +9,7 @@ export const serviceOptions: ServiceOption[] = [
   {
     value: `default`,
     label: `默认服务（无需配置 sk）`,
-    endpoint: `https://doocs-proxy.billowing-hall-5148.workers.dev/v1`,
+    endpoint: `https://proxy-ai.doocs.org/v1`,
     models: [`Qwen/Qwen2.5-7B-Instruct`],
   },
   {
