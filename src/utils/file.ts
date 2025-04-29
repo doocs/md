@@ -10,6 +10,7 @@ import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
+import upyun from 'upyun'
 import { v4 as uuidv4 } from 'uuid'
 
 function getConfig(useDefault: boolean, platform: string) {
@@ -406,6 +407,28 @@ async function r2Upload(file: File) {
 }
 
 // -----------------------------------------------------------------------
+// Upyun File Upload
+// -----------------------------------------------------------------------
+
+async function upyunUpload(file: File) {
+  const { bucket, username, password, path, domain } = JSON.parse(
+    localStorage.getItem(`upyunConfig`)!,
+  )
+  const service = new upyun.Service(bucket, username, password)
+  const client = new upyun.Client(service)
+  const filename = `${path}/${getDateFilename(file.name)}`
+  try {
+    const arrayBuffer = await file.arrayBuffer()
+    const buffer = Buffer(arrayBuffer)
+    await client.putFile(filename, buffer)
+    return `${domain}/${filename}`
+  }
+  catch (error) {
+    console.log(error)
+  }
+}
+
+// -----------------------------------------------------------------------
 // formCustom File Upload
 // -----------------------------------------------------------------------
 
@@ -464,6 +487,8 @@ function fileUpload(content: string, file: File) {
       return mpFileUpload(file)
     case `r2`:
       return r2Upload(file)
+    case `upyun`:
+      return upyunUpload(file)
     case `formCustom`:
       return formCustomUpload(content, file)
     default:

@@ -209,6 +209,33 @@ function r2Submit(formValues: any) {
   toast.success(`保存成功`)
 }
 
+// 又拍云
+const upyunSchema = computed(() => toTypedSchema(
+  yup.object({
+    bucket: yup.string().required(`Bucket 不能为空`),
+    username: yup.string().required(`操作员 不能为空`),
+    password: yup.string().required(`密码 不能为空`),
+    domain: yup.string().required(`CDN 域名不能为空`),
+    path: yup.string().optional(),
+  }),
+))
+
+const upyunConfig = ref(localStorage.getItem(`upyunConfig`)
+  ? JSON.parse(localStorage.getItem(`upyunConfig`)!)
+  : {
+      bucket: ``,
+      username: ``,
+      password: ``,
+      domain: ``,
+      path: ``,
+    })
+
+function upyunSubmit(formValues: any) {
+  localStorage.setItem(`upyunConfig`, JSON.stringify(formValues))
+  upyunConfig.value = formValues
+  toast.success(`保存成功`)
+}
+
 const options = [
   {
     value: `default`,
@@ -241,6 +268,10 @@ const options = [
   {
     value: `r2`,
     label: `Cloudflare R2`,
+  },
+  {
+    value: `upyun`,
+    label: `又拍云`,
   },
   {
     value: `formCustom`,
@@ -881,6 +912,46 @@ function onDrop(e: DragEvent) {
                 </Button>
               </div>
             </FormItem>
+
+            <FormItem>
+              <Button type="submit">
+                保存配置
+              </Button>
+            </FormItem>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="upyun">
+          <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" @submit="upyunSubmit">
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如: md" class="min-w-[350px]" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="username">
+              <FormItem label="操作员" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如: username" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="password">
+              <FormItem label="操作员密码" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="domain">
+              <FormItem label="域名" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+              </FormItem>
+            </Field>
 
             <FormItem>
               <Button type="submit">
