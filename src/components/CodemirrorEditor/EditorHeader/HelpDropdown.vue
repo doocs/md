@@ -1,7 +1,12 @@
 <script setup lang="ts">
+import { useDisplayStore } from '@/stores'
+
+const displayStore = useDisplayStore()
+const { aiDialogVisible } = storeToRefs(displayStore)
+const { toggleAIDialog } = displayStore
+
 const aboutDialogVisible = ref(false)
 const fundDialogVisible = ref(false)
-const aiDialogVisible = ref(false)
 </script>
 
 <template>
@@ -15,7 +20,7 @@ const aiDialogVisible = ref(false)
       <MenubarCheckboxItem @click="fundDialogVisible = true">
         <span>赞赏</span>
       </MenubarCheckboxItem>
-      <MenubarCheckboxItem @click="aiDialogVisible = true">
+      <MenubarCheckboxItem @click="toggleAIDialog(true)">
         <span>AI 助手</span>
       </MenubarCheckboxItem>
     </MenubarContent>
