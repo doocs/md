@@ -411,10 +411,10 @@ async function r2Upload(file: File) {
 // -----------------------------------------------------------------------
 
 async function upyunUpload(file: File) {
-  const { bucket, username, password, path, domain } = JSON.parse(
+  const { bucket, operator, password, path, domain } = JSON.parse(
     localStorage.getItem(`upyunConfig`)!,
   )
-  const service = new upyun.Service(bucket, username, password)
+  const service = new upyun.Service(bucket, operator, password)
   const client = new upyun.Client(service)
   const filename = `${path}/${getDateFilename(file.name)}`
   try {

@@ -224,7 +224,7 @@ const upyunConfig = ref(localStorage.getItem(`upyunConfig`)
   ? JSON.parse(localStorage.getItem(`upyunConfig`)!)
   : {
       bucket: ``,
-      username: ``,
+      operator: ``,
       password: ``,
       domain: ``,
       path: ``,
@@ -929,9 +929,9 @@ function onDrop(e: DragEvent) {
               </FormItem>
             </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="username">
+            <Field v-slot="{ field, errorMessage }" name="operator">
               <FormItem label="操作员" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: username" />
+                <Input v-bind="field" v-model="field.value" placeholder="如: operator" />
               </FormItem>
             </Field>
 
@@ -943,7 +943,7 @@ function onDrop(e: DragEvent) {
 
             <Field v-slot="{ field, errorMessage }" name="domain">
               <FormItem label="域名" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
+                <Input v-bind="field" v-model="field.value" placeholder="如：http://xxx.test.upcdn.net" />
               </FormItem>
             </Field>
 
@@ -952,6 +952,18 @@ function onDrop(e: DragEvent) {
                 <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
               </FormItem>
             </Field>
+
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
+                href="https://help.upyun.com/"
+                target="_blank"
+              >
+                如何使用 又拍云？
+              </Button>
+            </FormItem>
 
             <FormItem>
               <Button type="submit">
