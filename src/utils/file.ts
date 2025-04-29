@@ -417,15 +417,12 @@ async function upyunUpload(file: File) {
   const service = new upyun.Service(bucket, operator, password)
   const client = new upyun.Client(service)
   const filename = `${path}/${getDateFilename(file.name)}`
-  try {
-    const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer(arrayBuffer)
-    await client.putFile(filename, buffer)
-    return `${domain}/${filename}`
-  }
-  catch (error) {
+  const arrayBuffer = await file.arrayBuffer()
+  const buffer = Buffer(arrayBuffer)
+  await client.putFile(filename, buffer).catch((error) => {
     console.log(error)
-  }
+  })
+  return `${domain}/${filename}`
 }
 
 // -----------------------------------------------------------------------
