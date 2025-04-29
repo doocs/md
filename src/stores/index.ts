@@ -20,6 +20,7 @@ import {
   downloadMD,
   exportHTML,
   formatDoc,
+  sanitizeTitle,
 } from '@/utils'
 
 import { initRenderer } from '@/utils/renderer'
@@ -516,12 +517,12 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = () => {
-    exportHTML(primaryColor.value)
+    exportHTML(primaryColor.value, posts.value[currentPostIndex.value].title)
     document.querySelector(`#output`)!.innerHTML = output.value
   }
 
   // 下载卡片
-  const dowloadAsCardImage = (filename = `download.png`) => {
+  const dowloadAsCardImage = () => {
     const el = document.querySelector(` #output-wrapper>.preview`)! as HTMLElement
     toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
@@ -529,7 +530,7 @@ export const useStore = defineStore(`store`, () => {
       pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
     }).then((url) => {
       const a = document.createElement(`a`)
-      a.download = filename
+      a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
       document.body.appendChild(a)
       a.href = url
       a.click()
