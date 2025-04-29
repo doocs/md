@@ -213,7 +213,7 @@ function r2Submit(formValues: any) {
 const upyunSchema = computed(() => toTypedSchema(
   yup.object({
     bucket: yup.string().required(`Bucket 不能为空`),
-    username: yup.string().required(`操作员 不能为空`),
+    operator: yup.string().required(`操作员 不能为空`),
     password: yup.string().required(`密码 不能为空`),
     domain: yup.string().required(`CDN 域名不能为空`),
     path: yup.string().optional(),
