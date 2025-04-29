@@ -167,11 +167,12 @@ export async function formatDoc(content: string, type: `markdown` | `css` = `mar
 /**
  * 导出原始 Markdown 文档
  * @param {string} doc - 文档内容
+ * @param {string} title - 文档标题
  */
-export function downloadMD(doc: string) {
+export function downloadMD(doc: string, title: string) {
   const downLink = document.createElement(`a`)
 
-  downLink.download = `content.md`
+  downLink.download = `${title}.md`
   downLink.style.display = `none`
   const blob = new Blob([doc])
 

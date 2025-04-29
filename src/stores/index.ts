@@ -539,7 +539,7 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
-    downloadMD(editor.value!.getValue())
+    downloadMD(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
   }
 
   // 导入默认文档
