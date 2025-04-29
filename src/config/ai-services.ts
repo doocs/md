@@ -19,6 +19,12 @@ export const serviceOptions: ServiceOption[] = [
       `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B`,
       `THUDM/GLM-Z1-9B-0414`,
       `THUDM/GLM-4-9B-0414`,
+      `internlm/internlm2_5-7b-chat`,
+      `qwen/qwen3-30b-a3b:free`,
+      `qwen/qwen3-8b:free`,
+      `qwen/qwen3-14b:free`,
+      `qwen/qwen3-32b:free`,
+      `qwen/qwen3-235b-a22b:free`,
     ],
   },
   {
