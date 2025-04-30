@@ -9,7 +9,7 @@ import {
 } from '@/utils'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
-import { Bot, Eye, List, Pen } from 'lucide-vue-next'
+import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -31,10 +31,7 @@ const {
 const {
   toggleShowInsertFormDialog,
   toggleShowUploadImgDialog,
-  toggleAIDialog,
 } = displayStore
-
-const { aiDialogVisible } = storeToRefs(displayStore)
 
 const isImgLoading = ref(false)
 const timeout = ref<NodeJS.Timeout>()
@@ -429,19 +426,7 @@ const isOpenHeadingSlider = ref(false)
         >
           <ContextMenu>
             <ContextMenuTrigger>
-              <!-- 包裹 CodeMirror 的容器 -->
-              <div class="codeMirror-container relative">
-                <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
-
-                <!-- AI Bot 按钮 -->
-                <button
-                  class="bot-btn bg-primary absolute right-4 top-4 z-10 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-                  aria-label="打开AI助手"
-                  @click="toggleAIDialog(true)"
-                >
-                  <Bot class="h-5 w-5" />
-                </button>
-              </div>
+              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
             </ContextMenuTrigger>
             <ContextMenuContent class="w-64">
               <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
@@ -546,9 +531,6 @@ const isOpenHeadingSlider = ref(false)
       <InsertFormDialog />
 
       <RunLoading />
-
-      <!-- 挂载 AI 助手面板 -->
-      <AIAssistantPanel v-model:open="aiDialogVisible" />
 
       <AlertDialog v-model:open="store.isOpenConfirmDialog">
         <AlertDialogContent>
