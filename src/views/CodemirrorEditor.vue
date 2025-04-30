@@ -477,13 +477,13 @@ const isOpenHeadingSlider = ref(false)
           v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1 transition-width"
           :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
         >
-          <div id="preview" ref="preview" class="preview-wrapper p-5">
-            <div id="output-wrapper" :class="{ output_night: !backLight }">
+          <div id="preview" ref="preview" class="preview-wrapper w-full p-5">
+            <div id="output-wrapper" class="w-full" :class="{ output_night: !backLight }">
               <div
-                class="preview relative border-x-1 shadow-xl transition-all duration-500 ease-in-out"
+                class="preview border-x-1 shadow-xl"
                 :class="[store.previewWidth]"
               >
-                <section id="output" v-html="output" />
+                <section id="output" class="w-full" v-html="output" />
                 <div v-if="isCoping" class="loading-mask">
                   <div class="loading-mask-box">
                     <div class="loading__img" />
