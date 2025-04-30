@@ -41,6 +41,13 @@ function renamePost() {
 
 const delId = ref<string | null>(null)
 const isOpenDelPostConfirmDialog = ref(false)
+
+const delConfirmText = computed(() => {
+  const title = store.getPostById(delId.value || ``)?.title ?? ``
+  const short = title.length > 20 ? `${title.slice(0, 20)}…` : title
+  return `此操作将删除「${short}」，是否继续？`
+})
+
 function startDelPost(id: string) {
   delId.value = id
   isOpenDelPostConfirmDialog.value = true
@@ -218,7 +225,7 @@ const sortedPosts = computed(() => {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>提示</AlertDialogTitle>
-            <AlertDialogDescription>此操作将删除该内容，是否继续？</AlertDialogDescription>
+            <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
