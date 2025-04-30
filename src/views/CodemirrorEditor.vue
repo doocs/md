@@ -476,7 +476,7 @@ const isOpenHeadingSlider = ref(false)
         >
           <div id="preview" ref="preview" class="preview-wrapper p-5">
             <div id="output-wrapper" :class="{ output_night: !backLight }">
-              <div class="preview border-x-1 shadow-xl">
+              <div class="preview relative mx-auto border-x-1 shadow-xl transition-all duration-500 ease-in-out" :class="[store.previewWidth]">
                 <section id="output" v-html="output" />
                 <div v-if="isCoping" class="loading-mask">
                   <div class="loading-mask-box">

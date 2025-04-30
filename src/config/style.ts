@@ -104,6 +104,19 @@ export const colorOptions: IConfigOption[] = [
   },
 ]
 
+export const widthOptions: IConfigOption[] = [
+  {
+    label: `移动端`,
+    value: `w-[375px]`,
+    desc: `固定`,
+  },
+  {
+    label: `电脑端`,
+    value: `w-full`,
+    desc: `适应`,
+  },
+]
+
 const codeBlockUrlPrefix = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlightjs/11.11.1/styles/`
 const codeBlockThemeList = [
   `1c-light.min.css`,
