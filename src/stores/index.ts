@@ -743,6 +743,7 @@ export const useDisplayStore = defineStore(`display`, () => {
   const aiDialogVisible = ref(false)
 
   function toggleAIDialog(value?: boolean) {
+    console.log(`toggleAIDialog`, value)
     aiDialogVisible.value = value ?? !aiDialogVisible.value
   }
 
