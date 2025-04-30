@@ -687,6 +687,12 @@ export const useDisplayStore = defineStore(`display`, () => {
   const isShowUploadImgDialog = ref(false)
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
 
+  const aiDialogVisible = ref(false)
+
+  function toggleAIDialog(value?: boolean) {
+    aiDialogVisible.value = value ?? !aiDialogVisible.value
+  }
+
   return {
     isShowCssEditor,
     toggleShowCssEditor,
@@ -694,5 +700,7 @@ export const useDisplayStore = defineStore(`display`, () => {
     toggleShowInsertFormDialog,
     isShowUploadImgDialog,
     toggleShowUploadImgDialog,
+    aiDialogVisible,
+    toggleAIDialog,
   }
 })
