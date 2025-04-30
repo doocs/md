@@ -106,12 +106,12 @@ export const colorOptions: IConfigOption[] = [
 
 export const widthOptions: IConfigOption[] = [
   {
-    label: `手机视图`,
+    label: `移动端`,
     value: `w-[375px]`,
     desc: `固定`,
   },
   {
-    label: `PC 视图`,
+    label: `电脑端`,
     value: `w-full`,
     desc: `适应`,
   },
