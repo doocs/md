@@ -87,7 +87,7 @@ export const useStore = defineStore(`store`, () => {
   const legend = useStorage(`legend`, legendOptions[3].value)
 
   // 预览宽度
-  const previewWidth = useStorage(`previewWidth`, widthOptions[1].value)
+  const previewWidth = useStorage(`previewWidth`, widthOptions[0].value)
 
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
