@@ -236,7 +236,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>宽度</h2>
+        <h2>预览模式</h2>
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in widthOptions" :key="value" class="w-full" variant="outline" :class="{
