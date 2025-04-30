@@ -11,6 +11,7 @@ import {
   shiftKey,
   themeMap,
   themeOptions,
+  widthOptions,
 } from '@/config'
 import {
   addPrefix,
@@ -84,6 +85,9 @@ export const useStore = defineStore(`store`, () => {
   const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[23].value)
   // 图注格式
   const legend = useStorage(`legend`, legendOptions[3].value)
+
+  // 预览宽度
+  const previewWidth = useStorage(`previewWidth`, widthOptions[1].value)
 
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
@@ -536,6 +540,10 @@ export const useStore = defineStore(`store`, () => {
     codeBlockTheme.value = newTheme
   })
 
+  const previewWidthChanged = withAfterRefresh((newWidth: string) => {
+    previewWidth.value = newWidth
+  })
+
   const legendChanged = withAfterRefresh((newVal) => {
     legend.value = newVal
   })
@@ -671,6 +679,8 @@ export const useStore = defineStore(`store`, () => {
     codeBlockTheme,
     legend,
     readingTime,
+    previewWidth,
+    previewWidthChanged,
 
     editorRefresh,
 
