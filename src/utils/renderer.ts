@@ -12,6 +12,7 @@ import readingTime from 'reading-time'
 
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
+import markedFootnotes from './MDFootnotes'
 import { MDKatex } from './MDKatex'
 import markedSlider from './MDSlider'
 
@@ -348,6 +349,7 @@ export function initRenderer(opts: IOpts) {
     MDKatex({ nonStandard: true }, styles(`inline_katex`, `;vertical-align: middle; line-height: 1;`), styles(`block_katex`, `;text-align: center; overflow: auto;`),
     ),
   )
+  marked.use(markedFootnotes())
 
   return {
     buildAddition,
