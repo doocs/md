@@ -418,7 +418,9 @@ const isOpenHeadingSlider = ref(false)
       <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
         <div
-          v-show="!isMobile || (isMobile && showEditor)" ref="codeMirrorWrapper" class="codeMirror-wrapper flex-1"
+          v-show="!isMobile || (isMobile && showEditor)"
+          ref="codeMirrorWrapper"
+          class="codeMirror-wrapper relative flex-1"
           :class="{
             'order-1 border-l': !store.isEditOnLeft,
             'border-r': store.isEditOnLeft,
@@ -477,7 +479,10 @@ const isOpenHeadingSlider = ref(false)
         >
           <div id="preview" ref="preview" class="preview-wrapper p-5">
             <div id="output-wrapper" :class="{ output_night: !backLight }">
-              <div class="preview relative mx-auto border-x-1 shadow-xl transition-all duration-500 ease-in-out" :class="[store.previewWidth]">
+              <div
+                class="preview relative border-x-1 shadow-xl transition-all duration-500 ease-in-out"
+                :class="[store.previewWidth]"
+              >
                 <section id="output" v-html="output" />
                 <div v-if="isCoping" class="loading-mask">
                   <div class="loading-mask-box">
