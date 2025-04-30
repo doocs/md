@@ -16,6 +16,8 @@ watch(isOpenAddDialog, (o) => {
 function addPost() {
   if (!addPostInputVal.value.trim())
     return toast.error(`内容标题不可为空`)
+  if (store.posts.some(post => post.title === addPostInputVal.value.trim()))
+    return toast.error(`内容标题已存在`)
   store.addPost(addPostInputVal.value.trim())
   isOpenAddDialog.value = false
   toast.success(`内容新增成功`)
@@ -34,9 +36,15 @@ function startRenamePost(id: string) {
 function renamePost() {
   if (!renamePostInputVal.value.trim())
     return toast.error(`内容标题不可为空`)
+  if (store.posts.some(post => post.title === renamePostInputVal.value.trim() && post.id !== editId.value))
+    return toast.error(`内容标题已存在`)
+  if (renamePostInputVal.value === store.getPostById(editId.value!)?.title) {
+    isOpenEditDialog.value = false
+    return
+  }
   store.renamePost(editId.value!, renamePostInputVal.value.trim())
-  isOpenEditDialog.value = false
   toast.success(`内容重命名成功`)
+  isOpenEditDialog.value = false
 }
 
 const delId = ref<string | null>(null)
