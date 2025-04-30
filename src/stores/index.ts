@@ -111,7 +111,10 @@ export const useStore = defineStore(`store`, () => {
     },
   ])
 
-  /** 旧版本兼容：补齐 id, createDatetime, updateDatetime */
+  // currentPostId 先存空串
+  const currentPostId = useStorage(addPrefix(`current_post_id`), ``)
+
+  // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
   onBeforeMount(() => {
     posts.value = posts.value.map((post, index) => {
       const now = Date.now()
@@ -121,14 +124,13 @@ export const useStore = defineStore(`store`, () => {
         createDatetime: post.createDatetime ?? new Date(now + index),
         updateDatetime: post.updateDatetime ?? new Date(now + index),
       }
-    },
-    )
-  })
+    })
 
-  /********************************
-   * 当前激活文章：使用 id
-   ********************************/
-  const currentPostId = useStorage(addPrefix(`current_post_id`), posts.value[0]?.id ?? ``)
+    // 兼容：如果本地没有 currentPostId，或指向的文章已不存在
+    if (!currentPostId.value || !posts.value.some(p => p.id === currentPostId.value)) {
+      currentPostId.value = posts.value[0]?.id ?? ``
+    }
+  })
 
   /** 根据 id 找索引 */
   const findIndexById = (id: string) => posts.value.findIndex(p => p.id === id)
