@@ -424,6 +424,7 @@ const isOpenHeadingSlider = ref(false)
             'border-r': store.isEditOnLeft,
           }"
         >
+          <AIFixedBtn :is-mobile="isMobile" :show-editor="showEditor" />
           <ContextMenu>
             <ContextMenuTrigger>
               <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
