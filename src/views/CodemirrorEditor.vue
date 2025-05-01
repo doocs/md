@@ -36,24 +36,13 @@ const {
 const isImgLoading = ref(false)
 const timeout = ref<NodeJS.Timeout>()
 
-const isMobile = ref(false)
+const isMobile = inject(`isMobile`) as Ref<boolean>
 const showEditor = ref(true)
 
-// 判断是否为移动端（初始 + resize 响应）
-function handleResize() {
-  isMobile.value = window.innerWidth <= 768
-}
-
 onMounted(() => {
-  handleResize()
-  window.addEventListener(`resize`, handleResize)
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener(`resize`, handleResize)
 })
 
 // 切换编辑/预览视图（仅限移动端）
