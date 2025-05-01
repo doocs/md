@@ -474,7 +474,7 @@ const isOpenHeadingSlider = ref(false)
           </ContextMenu>
         </div>
         <div
-          v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1 transition-width"
+          v-show="!isMobile || (isMobile && !showEditor)" class="relative flex-1 overflow-x-hidden transition-width"
           :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
         >
           <div id="preview" ref="preview" class="preview-wrapper w-full p-5">
