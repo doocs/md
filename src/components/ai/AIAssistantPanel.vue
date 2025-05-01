@@ -247,7 +247,7 @@ async function sendMessage() {
 
 <template>
   <Dialog v-model:open="dialogVisible">
-    <DialogContent class="max-w-lg w-full rounded-xl">
+    <DialogContent class="max-w-2xl w-full rounded-xl">
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
@@ -278,11 +278,20 @@ async function sendMessage() {
         </p>
       </DialogHeader>
 
-      <AIConfig v-if="configVisible" class="mb-4 w-full border rounded-md p-4" @saved="handleConfigSaved" />
+      <AIConfig
+        v-if="configVisible"
+        class="mb-4 w-full border rounded-md p-4"
+        @saved="handleConfigSaved"
+      />
 
-      <div v-if="!configVisible" class="chat-container space-y-3 mb-4 max-h-60 overflow-y-auto pr-1">
+      <div
+        v-if="!configVisible"
+        class="chat-container space-y-3 mb-4 max-h-[50vh] overflow-y-auto pr-1"
+      >
         <div
-          v-for="(msg, index) in messages" :key="index" class="relative flex"
+          v-for="(msg, index) in messages"
+          :key="index"
+          class="relative flex"
           :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
         >
           <div
@@ -292,10 +301,12 @@ async function sendMessage() {
             <div class="whitespace-pre-wrap">
               {{ msg.content }}
             </div>
-
             <div v-if="msg.role === 'assistant' && msg.done" class="mt-1 flex justify-start">
               <Button
-                variant="ghost" size="icon" class="ml-0 h-5 w-5 p-1" aria-label="复制内容"
+                variant="ghost"
+                size="icon"
+                class="ml-0 h-5 w-5 p-1"
+                aria-label="复制内容"
                 @click="copyToClipboard(msg.content, index)"
               >
                 <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
@@ -316,9 +327,11 @@ async function sendMessage() {
             @keydown="handleKeydown"
           />
           <Button
-            :disabled="!input.trim() || loading" size="icon"
+            :disabled="!input.trim() || loading"
+            size="icon"
             class="absolute bottom-3 right-3 rounded-full bg-black p-2 text-white hover:bg-gray-800 disabled:opacity-40"
-            aria-label="发送" @click="sendMessage"
+            aria-label="发送"
+            @click="sendMessage"
           >
             <Send class="h-4 w-4" />
           </Button>
