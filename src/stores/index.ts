@@ -572,11 +572,14 @@ export const useStore = defineStore(`store`, () => {
 
   // 下载卡片
   const dowloadAsCardImage = () => {
-    const el = document.querySelector(` #output-wrapper>.preview`)! as HTMLElement
+    const el = document.querySelector(`#output-wrapper>.preview`)! as HTMLElement
     toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
       skipFonts: true,
       pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
+      style: {
+        margin: `0`,
+      },
     }).then((url) => {
       const a = document.createElement(`a`)
       a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
