@@ -5,10 +5,10 @@ export default defineConfig({
   srcDir: `src`,
   publicDir: `../public`,
   extensionApi: `chrome`,
-  manifest: {
+  manifest: ({ mode }) => ({
     name: `公众号内容编辑器`,
     icons: {
-      256: `/mpmd/icon-256.png`,
+      256: mode === `development` ? `/mpmd/icon-256-gray.png` : `/mpmd/icon-256.png`,
     },
     permissions: [`storage`],
     host_permissions: [
@@ -25,7 +25,7 @@ export default defineConfig({
         matches: [`<all_urls>`],
       },
     ],
-  },
+  }),
   analysis: {
     open: true,
   },
