@@ -118,6 +118,22 @@ export const useStore = defineStore(`store`, () => {
   // currentPostId 先存空串
   const currentPostId = useStorage(addPrefix(`current_post_id`), ``)
 
+  // 是否为移动端
+  const isMobile = useStorage(`isMobile`, false)
+
+  function handleResize() {
+    isMobile.value = window.innerWidth <= 768
+  }
+
+  onMounted(() => {
+    handleResize()
+    window.addEventListener(`resize`, handleResize)
+  })
+
+  onBeforeUnmount(() => {
+    window.removeEventListener(`resize`, handleResize)
+  })
+
   // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
   onBeforeMount(() => {
     posts.value = posts.value.map((post, index) => {
@@ -727,6 +743,7 @@ export const useStore = defineStore(`store`, () => {
     isOpenRightSlider,
 
     titleList,
+    isMobile,
   }
 })
 
