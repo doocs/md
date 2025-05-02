@@ -1,5 +1,23 @@
 <script setup lang="ts">
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
+
+const isMobile = ref(false)
+
+// 判断是否为移动端（初始 + resize 响应）
+function handleResize() {
+  isMobile.value = window.innerWidth <= 768
+}
+
+onMounted(() => {
+  handleResize()
+  window.addEventListener(`resize`, handleResize)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener(`resize`, handleResize)
+})
+
+provide(`isMobile`, isMobile)
 </script>
 
 <template>

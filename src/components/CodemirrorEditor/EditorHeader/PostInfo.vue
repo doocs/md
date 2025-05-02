@@ -11,6 +11,7 @@ const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
+const isMobile = inject(`isMobile`) as Ref<boolean>
 
 const form = ref<Post>({
   title: ``,
@@ -119,7 +120,7 @@ onBeforeMount(() => {
 <template>
   <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
     <DialogTrigger>
-      <Button variant="outline" @click="prePost">
+      <Button v-if="!isMobile" variant="outline" @click="prePost">
         发布
       </Button>
     </DialogTrigger>
