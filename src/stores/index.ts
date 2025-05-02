@@ -732,7 +732,7 @@ export const useStore = defineStore(`store`, () => {
 
 export const useDisplayStore = defineStore(`display`, () => {
   // 是否展示 CSS 编辑器
-  const isShowCssEditor = ref(false)
+  const isShowCssEditor = useStorage(`isShowCssEditor`, false)
   const toggleShowCssEditor = useToggle(isShowCssEditor)
 
   // 是否展示插入表格对话框
