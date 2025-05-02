@@ -406,6 +406,41 @@ async function r2Upload(file: File) {
 }
 
 // -----------------------------------------------------------------------
+// Upyun File Upload
+// -----------------------------------------------------------------------
+
+async function upyunUpload(file: File) {
+  const { bucket, operator, password, path, domain } = JSON.parse(
+    localStorage.getItem(`upyunConfig`)!,
+  )
+  const filename = `${path}/${getDateFilename(file.name)}`
+  const uri = `/${bucket}/${filename}`
+  const arrayBuffer = await file.arrayBuffer()
+  const date = new Date().toUTCString()
+  const method = `PUT`
+  const signStr = [method, uri, date].join(`&`)
+  const passwordMd5 = CryptoJS.MD5(password).toString()
+  const signature = CryptoJS.HmacSHA1(signStr, passwordMd5).toString(CryptoJS.enc.Base64)
+  const authorization = `UPYUN ${operator}:${signature}`
+  const url = `https://v0.api.upyun.com${uri}`
+  const res = await window.fetch(url, {
+    method: `PUT`,
+    headers: {
+      'Authorization': authorization,
+      'X-Date': date,
+      'Content-Type': file.type,
+    },
+    body: arrayBuffer,
+  })
+
+  if (!res.ok) {
+    throw new Error(`上传失败: ${await res.text()}`)
+  }
+
+  return `${domain}/${filename}`
+}
+
+// -----------------------------------------------------------------------
 // formCustom File Upload
 // -----------------------------------------------------------------------
 
@@ -464,6 +499,8 @@ function fileUpload(content: string, file: File) {
       return mpFileUpload(file)
     case `r2`:
       return r2Upload(file)
+    case `upyun`:
+      return upyunUpload(file)
     case `formCustom`:
       return formCustomUpload(content, file)
     default:
