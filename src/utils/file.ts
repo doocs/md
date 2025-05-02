@@ -10,7 +10,6 @@ import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
-import upyun from 'upyun'
 import { v4 as uuidv4 } from 'uuid'
 
 function getConfig(useDefault: boolean, platform: string) {
@@ -414,14 +413,30 @@ async function upyunUpload(file: File) {
   const { bucket, operator, password, path, domain } = JSON.parse(
     localStorage.getItem(`upyunConfig`)!,
   )
-  const service = new upyun.Service(bucket, operator, password)
-  const client = new upyun.Client(service)
   const filename = `${path}/${getDateFilename(file.name)}`
+  const uri = `/${bucket}/${filename}`
   const arrayBuffer = await file.arrayBuffer()
-  const buffer = Buffer(arrayBuffer)
-  await client.putFile(filename, buffer).catch((error) => {
-    console.log(error)
+  const date = new Date().toUTCString()
+  const method = `PUT`
+  const signStr = [method, uri, date].join(`&`)
+  const passwordMd5 = CryptoJS.MD5(password).toString()
+  const signature = CryptoJS.HmacSHA1(signStr, passwordMd5).toString(CryptoJS.enc.Base64)
+  const authorization = `UPYUN ${operator}:${signature}`
+  const url = `https://v0.api.upyun.com${uri}`
+  const res = await window.fetch(url, {
+    method: `PUT`,
+    headers: {
+      'Authorization': authorization,
+      'X-Date': date,
+      'Content-Type': file.type,
+    },
+    body: arrayBuffer,
   })
+
+  if (!res.ok) {
+    throw new Error(`上传失败: ${await res.text()}`)
+  }
+
   return `${domain}/${filename}`
 }
 
