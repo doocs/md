@@ -778,3 +778,39 @@ export const useDisplayStore = defineStore(`display`, () => {
     toggleAIDialog,
   }
 })
+
+// 获取所有状态的方法
+export function getAllStoreStates() {
+  const store = useStore()
+  const displayStore = useDisplayStore()
+
+  return {
+    // 主 store 的状态
+    isDark: store.isDark,
+    isEditOnLeft: store.isEditOnLeft,
+    isMacCodeBlock: store.isMacCodeBlock,
+    isCiteStatus: store.isCiteStatus,
+    isCountStatus: store.isCountStatus,
+    isUseIndent: store.isUseIndent,
+    isOpenRightSlider: store.isOpenRightSlider,
+    isOpenPostSlider: store.isOpenPostSlider,
+    theme: store.theme,
+    fontFamily: store.fontFamily,
+    fontSize: store.fontSize,
+    primaryColor: store.primaryColor,
+    codeBlockTheme: store.codeBlockTheme,
+    legend: store.legend,
+    currentPostId: store.currentPostId,
+    currentPostIndex: store.currentPostIndex,
+    posts: store.posts,
+    cssContentConfig: store.cssContentConfig,
+    titleList: store.titleList,
+    readingTime: store.readingTime,
+
+    // displayStore 的状态
+    isShowCssEditor: displayStore.isShowCssEditor,
+    isShowInsertFormDialog: displayStore.isShowInsertFormDialog,
+    isShowUploadImgDialog: displayStore.isShowUploadImgDialog,
+    aiDialogVisible: displayStore.aiDialogVisible,
+  }
+}
