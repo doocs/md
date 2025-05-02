@@ -40,6 +40,7 @@ const memoryKey = `ai_memory_context`
 interface ChatMessage {
   role: `user` | `assistant` | `system`
   content: string
+  reasoning?: string
   done?: boolean
 }
 
@@ -99,10 +100,9 @@ async function scrollToBottom(force = false) {
   await nextTick()
   const container = document.querySelector(`.chat-container`)
   if (container) {
-    const isNearBottom = container.scrollTop + container.clientHeight >= container.scrollHeight - 50
+    const isNearBottom = (container.scrollTop + container.clientHeight) >= (container.scrollHeight - 50)
     if (force || isNearBottom) {
       container.scrollTop = container.scrollHeight
-      // 添加微小的延迟确保滚动完成
       await new Promise(resolve => setTimeout(resolve, 50))
     }
   }
@@ -113,7 +113,6 @@ async function copyToClipboard(text: string, index: number) {
     await navigator.clipboard.writeText(text)
     copiedIndex.value = index
     setTimeout(() => (copiedIndex.value = null), 1500)
-    await scrollToBottom(true)
   }
   catch (err) {
     console.error(`复制失败:`, err)
@@ -142,7 +141,7 @@ async function sendMessage() {
   const userInput = input.value.trim()
   messages.value.push({ role: `user`, content: userInput })
   input.value = ``
-  const replyMessage: ChatMessage = { role: `assistant`, content: ``, done: false }
+  const replyMessage: ChatMessage = { role: `assistant`, content: ``, reasoning: ``, done: false }
   messages.value.push(replyMessage)
   await scrollToBottom(true)
 
@@ -151,9 +150,9 @@ async function sendMessage() {
     messages: [
       { role: `system`, content: `你是一个专业的 Markdown 编辑器助手，请用简洁中文回答。` },
       ...messages.value.slice(-12)
-        .filter((msg, index, arr) =>
-          !(index === arr.length - 1 && msg.role === `assistant` && !msg.done)
-          && !(index === 0 && msg.role === `assistant`),
+        .filter((msg, idx, arr) =>
+          !(idx === arr.length - 1 && msg.role === `assistant` && !msg.done)
+          && !(idx === 0 && msg.role === `assistant`),
         )
         .slice(-10),
     ],
@@ -185,8 +184,9 @@ async function sendMessage() {
       body: JSON.stringify(payload),
     })
 
-    if (!res.ok || !res.body)
+    if (!res.ok || !res.body) {
       throw new Error(`响应错误：${res.status} ${res.statusText}`)
+    }
 
     const reader = res.body.getReader()
     const decoder = new TextDecoder(`utf-8`)
@@ -208,19 +208,19 @@ async function sendMessage() {
       buffer = lines.pop() || ``
 
       for (const line of lines) {
-        if (line.trim() === ``)
+        if (!line.trim() || line.trim() === `data: [DONE]`)
           continue
         try {
-          const eventData = line.replace(/^data: /, ``)
-          if (eventData === `[DONE]`)
-            continue
-          const json = JSON.parse(eventData)
-          const delta = json.choices?.[0]?.delta?.content
-          if (delta) {
-            const lastMessage = messages.value[messages.value.length - 1]
-            lastMessage.content += delta
-            await scrollToBottom()
+          const json = JSON.parse(line.replace(/^data: /, ``))
+          const delta = json.choices?.[0]?.delta || {}
+          const last = messages.value[messages.value.length - 1]
+          if (delta.content) {
+            last.content += delta.content
           }
+          else if (delta.reasoning_content) {
+            last.reasoning = (last.reasoning || ``) + delta.reasoning_content
+          }
+          await scrollToBottom()
         }
         catch (e) {
           console.error(`解析失败:`, e)
@@ -251,7 +251,6 @@ async function sendMessage() {
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
-
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger as-child>
@@ -261,7 +260,6 @@ async function sendMessage() {
               </TooltipTrigger>
               <TooltipContent>配置参数</TooltipContent>
             </Tooltip>
-
             <Tooltip>
               <TooltipTrigger as-child>
                 <Button variant="ghost" size="icon" aria-label="清空对话" @click="resetMessages">
@@ -272,7 +270,6 @@ async function sendMessage() {
             </Tooltip>
           </TooltipProvider>
         </div>
-
         <p class="text-sm text-gray-500">
           使用 AI 助手帮助您编写和优化内容
         </p>
@@ -284,10 +281,7 @@ async function sendMessage() {
         @saved="handleConfigSaved"
       />
 
-      <div
-        v-if="!configVisible"
-        class="chat-container space-y-3 mb-4 max-h-[50vh] overflow-y-auto pr-1"
-      >
+      <div v-if="!configVisible" class="chat-container space-y-3 mb-4 max-h-[50vh] overflow-y-auto pr-1">
         <div
           v-for="(msg, index) in messages"
           :key="index"
@@ -299,10 +293,20 @@ async function sendMessage() {
             :class="msg.role === 'user' ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'"
           >
             <div class="whitespace-pre-wrap">
-              {{ msg.content }}
+              <!-- 渲染“思考” -->
+              <template v-if="msg.reasoning">
+                <div class="mb-1 text-gray-500 italic">
+                  {{ msg.reasoning }}
+                </div>
+              </template>
+              <!-- 渲染正式内容 -->
+              <div>
+                {{ msg.content }}
+              </div>
             </div>
-            <div v-if="msg.role === 'assistant' && msg.done" class="mt-1 flex justify-start">
+            <div class="mt-1 flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
               <Button
+                v-if="!(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
                 variant="ghost"
                 size="icon"
                 class="ml-0 h-5 w-5 p-1"
@@ -323,7 +327,7 @@ async function sendMessage() {
             v-model="input"
             placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)"
             rows="2"
-            class="custom-scroll w-full resize-none overflow-y-auto border-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0"
+            class="custom-scroll w-full resize-none overflow-y-auto border-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
             @keydown="handleKeydown"
           />
           <Button
