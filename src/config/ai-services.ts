@@ -13,6 +13,7 @@ export const serviceOptions: ServiceOption[] = [
     label: `默认服务（无需配置 sk）`,
     endpoint: DEFAULT_SERVICE_ENDPOINT,
     models: [
+      `Qwen/Qwen3-8B`,
       `Qwen/Qwen2.5-7B-Instruct`,
       `Qwen/Qwen2.5-Coder-7B-Instruct`,
       `Qwen/Qwen2-7B-Instruct`,
@@ -191,6 +192,11 @@ export const serviceOptions: ServiceOption[] = [
     label: `硅基流动`,
     endpoint: `https://api.siliconflow.cn/v1`,
     models: [
+      `Qwen/Qwen3-235B-A22B`,
+      `Qwen/Qwen3-30B-A3B`,
+      `Qwen/Qwen3-32B`,
+      `Qwen/Qwen3-14B`,
+      `Qwen/Qwen3-8B`,
       `THUDM/GLM-Z1-32B-0414`,
       `THUDM/GLM-4-32B-0414`,
       `THUDM/GLM-Z1-Rumination-32B-0414`,
