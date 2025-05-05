@@ -12,7 +12,7 @@ interface PopoverRef {
   visible: boolean
   show: () => void
   close: () => void
-  adjustPosition: () => void
+  recalcPos: () => void
 }
 
 function useAIPolish() {
@@ -31,6 +31,28 @@ function useAIPolish() {
   const dragStartY = ref(0)
   const dragStartLeft = ref(0)
   const dragStartTop = ref(0)
+
+  const baseMargin = 10
+
+  // 统一的位置计算函数
+  async function calcPos(targetLeft: number, targetTop: number) {
+    await nextTick()
+    if (!AIPolishPopoverRef.value)
+      return
+    const popover = AIPolishPopoverRef.value?.$el.getBoundingClientRect()
+    const vW = window.innerWidth
+    const vH = window.innerHeight
+    const pW = popover.width
+    const pH = popover.height
+
+    // 计算最大可移动范围
+    const maxLeft = vW - pW - baseMargin
+    const maxTop = vH - pH - baseMargin
+
+    // 边界检查，确保弹窗不会超出视窗范围
+    position.left = Math.max(baseMargin, Math.min(targetLeft, maxLeft))
+    position.top = Math.max(baseMargin, Math.min(targetTop, maxTop))
+  }
 
   function startDrag(e: MouseEvent) {
     if (e.target !== AIPolishPopoverRef.value) {
@@ -63,22 +85,7 @@ function useAIPolish() {
     const newLeft = dragStartLeft.value + deltaX
     const newTop = dragStartTop.value + deltaY
 
-    // 获取视窗尺寸和元素尺寸
-    const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-    const popoverWidth = AIPolishPopoverRef.value?.$el.offsetWidth || 420 // 使用默认宽度
-    const popoverHeight = AIPolishPopoverRef.value?.$el.offsetHeight || 300 // 使用默认高度
-
-    // 添加边距，避免贴边
-    const margin = 10
-
-    // 计算最大可移动范围
-    const maxLeft = viewportWidth - popoverWidth - margin
-    const maxTop = viewportHeight - popoverHeight - margin
-
-    // 边界检查，确保弹窗不会超出视窗范围
-    position.left = Math.max(margin, Math.min(newLeft, maxLeft))
-    position.top = Math.max(margin, Math.min(newTop, maxTop))
+    calcPos(newLeft, newTop)
   }
 
   function stopDrag() {
@@ -114,20 +121,39 @@ function useAIPolish() {
         console.error(`Error handling selection:`, error)
       }
     })
+
+    editor.on(`keydown`, (_, event: KeyboardEvent) => {
+      const isSelectAll
+        = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === `a`
+
+      if (!isSelectAll)
+        return
+
+      try {
+        const wrapper = editor.getWrapperElement()
+        const rect = wrapper.getBoundingClientRect()
+
+        position.left = rect.right - 50
+        position.top = rect.top + rect.height / 2
+
+        // 先拿原始值，再 trim
+        const raw = editor.getValue() ?? ``
+        const cleaned = raw.trim()
+
+        if (cleaned) {
+          selectedText.value = cleaned
+          AIPolishBtnRef.value?.show()
+        }
+        // 如果 cleaned 为空，就什么也不做，让按钮保持隐藏
+      }
+      catch (err) {
+        console.error(`Error handling Select‑All:`, err)
+      }
+    })
   }
 
-  async function adjustPosition() {
-    await nextTick()
-    if (!AIPolishPopoverRef.value)
-      return
-
-    const rect = AIPolishPopoverRef.value.$el.getBoundingClientRect()
-    const windowHeight = window.innerHeight
-    const bottomSpace = windowHeight - rect.bottom
-
-    if (bottomSpace <= 0) {
-      position.top = position.top + bottomSpace - 20
-    }
+  function recalcPos() {
+    calcPos(position.left, position.top)
   }
 
   return {
@@ -138,7 +164,7 @@ function useAIPolish() {
     isDragging,
     startDrag,
     initPolishEvent,
-    adjustPosition,
+    recalcPos,
   }
 }
 

@@ -9,7 +9,7 @@ const props = defineProps<{
   isDragging: boolean
 }>()
 
-const emit = defineEmits([`closeBtn`, `adjustPosition`, `startDrag`])
+const emit = defineEmits([`closeBtn`, `recalcPos`, `startDrag`])
 
 /* -------------------- state -------------------- */
 const configVisible = ref(false)
@@ -30,7 +30,9 @@ const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
 /* ------------------- watch --------------------- */
 watch(message, async () => {
-  emit(`adjustPosition`)
+  /* 通知父组件调位置 */
+  emit(`recalcPos`)
+  /* 自动滚到底部 */
   await nextTick()
   const el = resultContainer.value
   if (el)
@@ -43,7 +45,7 @@ function addPrompt(e: KeyboardEvent) {
   if (prompt && !customPrompts.value.includes(prompt))
     customPrompts.value.push(prompt)
   ;(e.target as HTMLInputElement).value = ``
-  emit(`adjustPosition`)
+  emit(`recalcPos`)
 }
 function removePrompt(index: number) {
   customPrompts.value.splice(index, 1)
@@ -150,7 +152,7 @@ function show() {
     return
   }
   visible.value = true
-  emit(`adjustPosition`)
+  emit(`recalcPos`)
 }
 function close() {
   visible.value = false
