@@ -117,7 +117,6 @@ async function testConnection() {
   const headers: Record<string, string> = {
     'Content-Type': `application/json`,
   }
-
   if (config.apiKey && config.type !== `default`) {
     headers.Authorization = `Bearer ${config.apiKey}`
   }
@@ -130,18 +129,15 @@ async function testConnection() {
 
     const payload = {
       model: config.model || (currentService().models[0] || ``),
-      messages: [{ role: `user`, content: `hello` }],
-      temperature: config.temperature,
-      max_tokens: config.maxToken,
+      messages: [{ role: `user`, content: `ping` }],
+      temperature: 0,
+      max_tokens: 1,
       stream: false,
     }
 
     const res = await window.fetch(url.toString(), {
       method: `POST`,
-      headers: {
-        'Authorization': `Bearer ${config.apiKey}`,
-        'Content-Type': `application/json`,
-      },
+      headers,
       body: JSON.stringify(payload),
     })
 
@@ -152,7 +148,7 @@ async function testConnection() {
     else {
       const text = await res.text()
 
-      // 新增判断：如果是模型未开通
+      // 如果是模型未开通
       try {
         const json = JSON.parse(text)
         const errorCode = json?.error?.code || ``
@@ -160,10 +156,12 @@ async function testConnection() {
 
         if (
           res.status === 404
-          && (errorCode === `ModelNotOpen` || errorMessage.includes(`not activated`) || errorMessage.includes(`未开通`))
+          && (errorCode === `ModelNotOpen`
+            || errorMessage.includes(`not activated`)
+            || errorMessage.includes(`未开通`))
         ) {
           testResult.value = `⚠️ 测试成功，但当前模型未开通：${config.model}`
-          saveConfig(false) // 保存配置，因为接口是正常的
+          saveConfig(false)
           return
         }
       }
