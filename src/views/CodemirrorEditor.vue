@@ -66,7 +66,7 @@ const preview = ref<HTMLDivElement | null>(null)
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
   const scrollCB = (text: string) => {
-    AIPolishBtnRef.value?.close()
+    // AIPolishBtnRef.value?.close()
 
     let source: HTMLElement
     let target: HTMLElement
@@ -257,8 +257,6 @@ function initEditor() {
       }, 300)
     })
 
-    initPolishEvent(editor.value)
-
     // 粘贴上传图片并插入
     editor.value.on(`paste`, (_cm, e) => {
       if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {
@@ -278,6 +276,8 @@ function initEditor() {
         }
       }
     })
+
+    initPolishEvent(editor.value)
     onEditorRefresh()
     mdLocalToRemote()
   })
