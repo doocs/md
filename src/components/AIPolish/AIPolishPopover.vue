@@ -4,10 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Settings, X } from 'lucide-vue-next'
 
 const props = defineProps<{
-  position: {
-    top: number
-    left: number
-  }
+  position: { top: number, left: number }
   selectedText: string
   isDragging: boolean
 }>()
@@ -21,7 +18,7 @@ const message = ref(``)
 const loading = ref(false)
 const abortController = ref<AbortController | null>(null)
 const customPrompts = ref<string[]>([])
-const hasPolished = ref(false)
+const hasResult = ref(false)
 
 const store = useStore()
 
@@ -33,22 +30,18 @@ const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
 /* ------------------- watch --------------------- */
 watch(message, async () => {
-  /* 通知父组件调位置 */
   emit(`adjustPosition`)
-  /* 自动滚到底部 */
   await nextTick()
   const el = resultContainer.value
-  if (el) {
+  if (el)
     el.scrollTop = el.scrollHeight
-  }
 })
 
 /* ------------------- prompt -------------------- */
 function addPrompt(e: KeyboardEvent) {
-  const prompt = (e.target as HTMLInputElement).value
-  if (prompt.trim() && !customPrompts.value.includes(prompt.trim()))
-    customPrompts.value.push(prompt.trim())
-
+  const prompt = (e.target as HTMLInputElement).value.trim()
+  if (prompt && !customPrompts.value.includes(prompt))
+    customPrompts.value.push(prompt)
   ;(e.target as HTMLInputElement).value = ``
   emit(`adjustPosition`)
 }
@@ -57,20 +50,29 @@ function removePrompt(index: number) {
 }
 
 /* ------------------- AI call ------------------- */
-async function getPolishedText() {
+async function runAIAction() {
   const text = props.selectedText.trim()
   if (!text || loading.value)
     return
 
   message.value = ``
   loading.value = true
+  hasResult.value = false
+  abortController.value?.abort()
   abortController.value = new AbortController()
-  hasPolished.value = false
 
-  const systemPrompt = `你是一个专业的 AI 润色助手，请用简洁中文润色以下词句：${text}`
-  const messages = [{ role: `system`, content: systemPrompt }]
-  if (customPrompts.value.length)
-    messages.push({ role: `user`, content: `润色时请注意：${customPrompts.value.join(`，`)}` })
+  // 基础系统 Prompt：多功能文本助手
+  const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。`
+
+  // 用户指令：把自定义提示词合并成一句话，没有则给默认指令“请优化文本”
+  const userCommand = customPrompts.value.length
+    ? `请按照以下要求处理文本：${customPrompts.value.join(`、`)}。`
+    : `请优化文本，使其更通顺易读。`
+
+  const messages = [
+    { role: `system`, content: systemPrompt },
+    { role: `user`, content: `${userCommand}\n\n待处理文本：\n${text}` },
+  ]
 
   const payload = {
     model: model.value,
@@ -93,7 +95,7 @@ async function getPolishedText() {
       method: `POST`,
       headers,
       body: JSON.stringify(payload),
-      signal: abortController.value?.signal,
+      signal: abortController.value.signal,
     })
 
     if (!res.ok || !res.body)
@@ -120,7 +122,7 @@ async function getPolishedText() {
           const delta = json.choices?.[0]?.delta?.content
           if (delta?.trim()) {
             message.value += delta
-            hasPolished.value = true
+            hasResult.value = true
           }
         }
         catch (e) {
@@ -144,7 +146,7 @@ function replaceText() {
 function show() {
   emit(`closeBtn`)
   if (!props.selectedText.trim()) {
-    toast.error(`请选择需要润色的内容`)
+    toast.error(`请选择需要处理的内容`)
     return
   }
   visible.value = true
@@ -155,13 +157,12 @@ function close() {
   message.value = ``
   customPrompts.value = []
   loading.value = false
-  hasPolished.value = false
+  hasResult.value = false
   abortController.value?.abort()
   abortController.value = null
 }
 
-/* expose */
-defineExpose({ visible, getPolishedText, replaceText, show, close })
+defineExpose({ visible, runAIAction, replaceText, show, close })
 </script>
 
 <template>
@@ -169,11 +170,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
     <div
       v-if="visible"
       class="bg-card border-border text-card-foreground fixed z-50 w-[420px] border rounded-xl shadow-2xl"
-      :style="{
-        left: `${position.left}px`,
-        top: `${position.top}px`,
-        transformOrigin: 'top left',
-      }"
+      :style="{ left: `${position.left}px`, top: `${position.top}px`, transformOrigin: 'top left' }"
     >
       <!-- header -->
       <div
@@ -181,7 +178,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
         @mousedown="emit('startDrag', $event)"
       >
         <div class="flex items-center gap-2">
-          <span class="text-lg font-bold">AI 润色</span>
+          <span class="text-lg font-bold">AI 工具箱</span>
           <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
             <Settings class="h-4 w-4" />
           </Button>
@@ -192,11 +189,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
       </div>
 
       <!-- config panel -->
-      <AIConfig
-        v-if="configVisible"
-        class="border-border mb-4 w-full border rounded-md p-4"
-        @saved="() => (configVisible = false)"
-      />
+      <AIConfig v-if="configVisible" class="border-border mb-4 w-full border rounded-md p-4" @saved="() => (configVisible = false)" />
 
       <!-- main content -->
       <section v-else>
@@ -206,9 +199,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
             <div class="mb-1 text-sm font-semibold">
               原文
             </div>
-            <div
-              class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
-            >
+            <div class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm">
               {{ selectedText }}
             </div>
           </div>
@@ -218,42 +209,27 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
             <div class="mb-1 text-sm font-semibold">
               自定义提示词（可选）
             </div>
-            <div
-              class="custom-scroll border-border max-h-24 min-h-[40px] flex flex-wrap gap-2 overflow-y-auto border rounded px-2 py-1"
-            >
-              <div
-                v-for="(prompt, index) in customPrompts"
-                :key="index"
-                class="text-muted-foreground bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-sm"
-              >
-                <span>{{ prompt }}</span>
-                <button
-                  class="hover:bg-muted/60 h-4 w-4 flex items-center justify-center rounded-full"
-                  @click="removePrompt(index)"
-                >
-                  <X class="h-3 w-3" />
-                </button>
-              </div>
-
-              <input
-                class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-none focus:ring-0 focus:ring-transparent"
-                placeholder="输入提示词后按回车"
-                @keydown.enter="addPrompt"
-              >
+            <div class="custom-scroll border-border max-h-24 min-h-[40px] flex flex-wrap gap-2 overflow-y-auto border rounded px-2 py-1">
+              <template v-for="(prompt, index) in customPrompts" :key="index">
+                <div class="text-muted-foreground bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-sm">
+                  <span>{{ prompt }}</span>
+                  <button class="hover:bg-muted/60 h-4 w-4 flex items-center justify-center rounded-full" @click="removePrompt(index)">
+                    <X class="h-3 w-3" />
+                  </button>
+                </div>
+              </template>
+              <input class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-none" placeholder="输入提示词后按回车" @keydown.enter="addPrompt">
             </div>
           </div>
 
-          <!-- polished result -->
+          <!-- result -->
           <div>
             <div class="mb-1 text-sm font-semibold">
-              润色结果
+              处理结果
             </div>
-            <div
-              ref="resultContainer"
-              class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
-            >
+            <div ref="resultContainer" class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm">
               <span v-if="message">{{ message }}</span>
-              <span v-else class="text-muted-foreground">点击下方 "AI润色" 按钮生成结果</span>
+              <span v-else class="text-muted-foreground">点击下方 "AI 处理" 按钮生成结果</span>
             </div>
           </div>
         </div>
@@ -263,8 +239,8 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
           <Button variant="default" :disabled="!message || loading" @click="replaceText">
             接受
           </Button>
-          <Button variant="outline" :disabled="loading || (!hasPolished && !!message)" @click="getPolishedText">
-            {{ loading ? 'AI润色中...' : hasPolished ? '重试' : 'AI润色' }}
+          <Button variant="outline" :disabled="loading || (!hasResult && !!message)" @click="runAIAction">
+            {{ loading ? 'AI 处理中...' : hasResult ? '重试' : 'AI 处理' }}
           </Button>
           <Button variant="ghost" @click="close">
             取消
