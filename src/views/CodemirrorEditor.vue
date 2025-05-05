@@ -58,7 +58,7 @@ const {
   isDragging,
   startDrag,
   initPolishEvent,
-  adjustPosition,
+  recalcPos,
 } = useAIPolish()
 
 const preview = ref<HTMLDivElement | null>(null)
@@ -430,7 +430,7 @@ const isOpenHeadingSlider = ref(false)
       :selected-text="selectedText"
       :is-dragging="isDragging"
       @close-btn="AIPolishBtnRef?.close"
-      @adjust-position="adjustPosition"
+      @recalc-pos="recalcPos"
       @start-drag="startDrag"
     />
 
