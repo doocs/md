@@ -122,29 +122,32 @@ function useAIPolish() {
       }
     })
 
-    // 添加 ctrl+a 事件监听
-    editor.on(`keydown`, (_, event) => {
-      if (event.ctrlKey && event.key.toLowerCase() === `a`) {
-        try {
-          const wrapper = editor.getWrapperElement()
-          const rect = wrapper.getBoundingClientRect()
+    editor.on(`keydown`, (_, event: KeyboardEvent) => {
+      const isSelectAll
+        = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === `a`
 
-          // 设置位置在编辑器右侧中间
-          const targetLeft = rect.right - 50 // 50px 是按钮的宽度，可以根据实际情况调整
-          const targetTop = rect.top + (rect.height / 2)
+      if (!isSelectAll)
+        return
 
-          position.left = targetLeft
-          position.top = targetTop
-          // 获取选中的文本
-          const text = editor.getValue()
-          if (text && text.length > 0) {
-            selectedText.value = text.trim()
-            AIPolishBtnRef.value?.show()
-          }
+      try {
+        const wrapper = editor.getWrapperElement()
+        const rect = wrapper.getBoundingClientRect()
+
+        position.left = rect.right - 50
+        position.top = rect.top + rect.height / 2
+
+        // 先拿原始值，再 trim
+        const raw = editor.getValue() ?? ``
+        const cleaned = raw.trim()
+
+        if (cleaned) {
+          selectedText.value = cleaned
+          AIPolishBtnRef.value?.show()
         }
-        catch (error) {
-          console.error(`Error handling ctrl+a:`, error)
-        }
+        // 如果 cleaned 为空，就什么也不做，让按钮保持隐藏
+      }
+      catch (err) {
+        console.error(`Error handling Select‑All:`, err)
       }
     })
   }
