@@ -184,7 +184,7 @@ async function testConnection() {
 
 <template>
   <div class="space-y-4 text-sm">
-    <div class="text-gray-800 font-medium">
+    <div class="font-medium">
       AI 配置
     </div>
 

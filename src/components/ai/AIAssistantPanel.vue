@@ -20,6 +20,7 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
+/* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
 watch(() => props.open, val => (dialogVisible.value = val))
 watch(dialogVisible, (val) => {
@@ -28,10 +29,12 @@ watch(dialogVisible, (val) => {
     scrollToBottom(true)
 })
 
+/* ---------- 输入 & 历史 ---------- */
 const input = ref(``)
 const inputHistory = ref<string[]>([])
 const historyIndex = ref<number | null>(null)
 
+/* ---------- 配置 & 状态 ---------- */
 const configVisible = ref(false)
 const loading = ref(false)
 const copiedIndex = ref<number | null>(null)
@@ -47,24 +50,25 @@ interface ChatMessage {
 const messages = ref<ChatMessage[]>([])
 const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
+/* ---------- 初始数据 ---------- */
 onMounted(async () => {
   const saved = localStorage.getItem(memoryKey)
   messages.value = saved ? JSON.parse(saved) : getDefaultMessages()
   await scrollToBottom(true)
 })
-
 function getDefaultMessages(): ChatMessage[] {
   return [{ role: `assistant`, content: `你好，我是 AI 助手，有什么可以帮你的？` }]
 }
 
+/* ---------- 事件 ---------- */
 function handleConfigSaved() {
   configVisible.value = false
   scrollToBottom(true)
 }
-
 function handleKeydown(e: KeyboardEvent) {
   if (e.isComposing || e.keyCode === 229)
     return
+
   if (e.key === `Enter` && !e.shiftKey) {
     e.preventDefault()
     sendMessage()
@@ -95,7 +99,23 @@ function handleKeydown(e: KeyboardEvent) {
     }
   }
 }
+async function copyToClipboard(text: string, index: number) {
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedIndex.value = index
+    setTimeout(() => (copiedIndex.value = null), 1500)
+  }
+  catch (err) {
+    console.error(`复制失败:`, err)
+  }
+}
+function resetMessages() {
+  messages.value = getDefaultMessages()
+  localStorage.setItem(memoryKey, JSON.stringify(messages.value))
+  scrollToBottom(true)
+}
 
+/* ---------- 滚动 ---------- */
 async function scrollToBottom(force = false) {
   await nextTick()
   const container = document.querySelector(`.chat-container`)
@@ -108,28 +128,7 @@ async function scrollToBottom(force = false) {
   }
 }
 
-async function copyToClipboard(text: string, index: number) {
-  try {
-    await navigator.clipboard.writeText(text)
-    copiedIndex.value = index
-    setTimeout(() => (copiedIndex.value = null), 1500)
-  }
-  catch (err) {
-    console.error(`复制失败:`, err)
-  }
-}
-
-function resetMessages() {
-  messages.value = getDefaultMessages()
-  try {
-    localStorage.setItem(memoryKey, JSON.stringify(messages.value))
-  }
-  catch (e) {
-    console.error(`清空消息失败:`, e)
-  }
-  scrollToBottom(true)
-}
-
+/* ---------- 发送消息 ---------- */
 async function sendMessage() {
   if (!input.value.trim() || loading.value)
     return
@@ -141,6 +140,7 @@ async function sendMessage() {
   const userInput = input.value.trim()
   messages.value.push({ role: `user`, content: userInput })
   input.value = ``
+
   const replyMessage: ChatMessage = { role: `assistant`, content: ``, reasoning: ``, done: false }
   messages.value.push(replyMessage)
   await scrollToBottom(true)
@@ -149,44 +149,35 @@ async function sendMessage() {
     model: model.value,
     messages: [
       { role: `system`, content: `你是一个专业的 Markdown 编辑器助手，请用简洁中文回答。` },
-      ...messages.value.slice(-12)
+      ...messages.value
+        .slice(-12) // 取最近 12 条
         .filter((msg, idx, arr) =>
           !(idx === arr.length - 1 && msg.role === `assistant` && !msg.done)
           && !(idx === 0 && msg.role === `assistant`),
         )
-        .slice(-10),
+        .slice(-10), // 再截 10 条发给接口
     ],
     temperature: temperature.value,
     max_tokens: maxToken.value,
     stream: true,
   }
 
-  const headers: Record<string, string> = {
-    'Content-Type': `application/json`,
-  }
-
-  if (apiKey.value && type.value !== `default`) {
+  const headers: Record<string, string> = { 'Content-Type': `application/json` }
+  if (apiKey.value && type.value !== `default`)
     headers.Authorization = `Bearer ${apiKey.value}`
-  }
 
   try {
     const url = new URL(endpoint.value)
-    if (!url.pathname.endsWith(`/chat/completions`)) {
+    if (!url.pathname.endsWith(`/chat/completions`))
       url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
-    }
 
     const res = await window.fetch(url.toString(), {
       method: `POST`,
-      headers: {
-        'Authorization': `Bearer ${apiKey.value}`,
-        'Content-Type': `application/json`,
-      },
+      headers,
       body: JSON.stringify(payload),
     })
-
-    if (!res.ok || !res.body) {
+    if (!res.ok || !res.body)
       throw new Error(`响应错误：${res.status} ${res.statusText}`)
-    }
 
     const reader = res.body.getReader()
     const decoder = new TextDecoder(`utf-8`)
@@ -214,12 +205,10 @@ async function sendMessage() {
           const json = JSON.parse(line.replace(/^data: /, ``))
           const delta = json.choices?.[0]?.delta || {}
           const last = messages.value[messages.value.length - 1]
-          if (delta.content) {
+          if (delta.content)
             last.content += delta.content
-          }
-          else if (delta.reasoning_content) {
+          else if (delta.reasoning_content)
             last.reasoning = (last.reasoning || ``) + delta.reasoning_content
-          }
           await scrollToBottom()
         }
         catch (e) {
@@ -234,12 +223,7 @@ async function sendMessage() {
     await scrollToBottom(true)
   }
   finally {
-    try {
-      localStorage.setItem(memoryKey, JSON.stringify(messages.value))
-    }
-    catch (e) {
-      console.error(`保存失败:`, e)
-    }
+    localStorage.setItem(memoryKey, JSON.stringify(messages.value))
     loading.value = false
   }
 }
@@ -247,7 +231,9 @@ async function sendMessage() {
 
 <template>
   <Dialog v-model:open="dialogVisible">
-    <DialogContent class="max-w-2xl w-full rounded-xl">
+    <!-- DialogContent：加 bg-card/text-card-foreground 适配暗色 -->
+    <DialogContent class="bg-card text-card-foreground max-w-2xl w-full rounded-xl shadow-xl">
+      <!-- Header + 操作按钮 -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
@@ -270,41 +256,52 @@ async function sendMessage() {
             </Tooltip>
           </TooltipProvider>
         </div>
-        <p class="text-sm text-gray-500">
+        <p class="text-muted-foreground text-sm">
           使用 AI 助手帮助您编写和优化内容
         </p>
       </DialogHeader>
 
+      <!-- AI 配置面板 -->
       <AIConfig
         v-if="configVisible"
         class="mb-4 w-full border rounded-md p-4"
         @saved="handleConfigSaved"
       />
 
-      <div v-if="!configVisible" class="chat-container space-y-3 mb-4 max-h-[50vh] overflow-y-auto pr-1">
+      <!-- 聊天历史 -->
+      <div
+        v-if="!configVisible"
+        class="custom-scroll space-y-3 chat-container mb-4 max-h-[60vh] overflow-y-auto pr-2"
+      >
         <div
           v-for="(msg, index) in messages"
           :key="index"
           class="relative flex"
           :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
         >
+          <!-- 气泡 -->
           <div
-            class="max-w-xs rounded-xl px-4 py-2 text-sm"
-            :class="msg.role === 'user' ? 'bg-black text-white' : 'bg-gray-100 text-gray-800'"
+            class="ring-border/20 max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-sm ring-1"
+            :class="msg.role === 'user'
+              ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground'
+              : 'bg-gray-100 text-gray-800 dark:bg-muted/60 dark:text-muted-foreground'"
           >
-            <div class="whitespace-pre-wrap">
-              <!-- 渲染“思考” -->
-              <template v-if="msg.reasoning">
-                <div class="mb-1 text-gray-500 italic">
-                  {{ msg.reasoning }}
-                </div>
-              </template>
-              <!-- 渲染正式内容 -->
-              <div>
-                {{ msg.content }}
+            <!-- reasoning -->
+            <template v-if="msg.reasoning">
+              <div class="text-muted-foreground mb-1 italic">
+                {{ msg.reasoning }}
               </div>
+            </template>
+            <!-- content -->
+            <div class="whitespace-pre-wrap">
+              {{ msg.content }}
             </div>
-            <div class="mt-1 flex" :class="msg.role === 'user' ? 'justify-end' : 'justify-start'">
+
+            <!-- 复制按钮 -->
+            <div
+              class="mt-1 flex"
+              :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
+            >
               <Button
                 v-if="!(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
                 variant="ghost"
@@ -314,26 +311,30 @@ async function sendMessage() {
                 @click="copyToClipboard(msg.content, index)"
               >
                 <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
-                <Copy v-else class="h-3 w-3 text-gray-500" />
+                <Copy v-else class="text-muted-foreground h-3 w-3" />
               </Button>
             </div>
           </div>
         </div>
       </div>
 
+      <!-- 输入区 -->
       <div v-if="!configVisible" class="relative mt-2">
-        <div class="flex items-center border border-black/10 rounded-xl px-3 py-2 pr-12 shadow-sm">
+        <div
+          class="bg-background border-border flex items-end gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+        >
           <Textarea
             v-model="input"
-            placeholder="说些什么……(按 Enter 发送，Shift+Enter 换行)"
+            placeholder="说些什么… (Enter 发送，Shift+Enter 换行)"
             rows="2"
-            class="custom-scroll w-full resize-none overflow-y-auto border-none focus:border-none focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-offset-0"
+            class="custom-scroll w-full resize-none border-none bg-transparent p-0 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"
           />
+          <!-- 发送按钮 -->
           <Button
             :disabled="!input.trim() || loading"
             size="icon"
-            class="absolute bottom-3 right-3 rounded-full bg-black p-2 text-white hover:bg-gray-800 disabled:opacity-40"
+            class="bg-primary text-primary-foreground hover:bg-primary/90 absolute bottom-3 right-3 rounded-full disabled:opacity-40"
             aria-label="发送"
             @click="sendMessage"
           >
@@ -347,13 +348,22 @@ async function sendMessage() {
 
 <style scoped>
 .custom-scroll::-webkit-scrollbar {
-  @apply w-0 h-0;
+  width: 6px;
 }
+
+/* 亮色：灰色；暗色：更亮一点的灰（或主色也行） */
 .custom-scroll::-webkit-scrollbar-thumb {
-  @apply bg-transparent;
+  /* 先清掉旧的，再分亮/暗两套 */
+  @apply rounded-full bg-gray-400/40 hover:bg-gray-400/60;
+  @apply dark:bg-gray-500/40 dark:hover:bg-gray-500/70;
 }
+
+/* Firefox */
 .custom-scroll {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE 10+ */
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175 / 0.4) transparent; /* 亮色 */
+}
+.dark .custom-scroll {
+  scrollbar-color: rgb(107 114 128 / 0.4) transparent; /* 暗色 */
 }
 </style>
