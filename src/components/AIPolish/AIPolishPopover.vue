@@ -25,11 +25,23 @@ const hasPolished = ref(false)
 
 const store = useStore()
 
+/* template refs */
+const resultContainer = ref<HTMLElement | null>(null)
+
 /* AI config */
 const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
 /* ------------------- watch --------------------- */
-watch(message, () => emit(`adjustPosition`))
+watch(message, async () => {
+  /* 通知父组件调位置 */
+  emit(`adjustPosition`)
+  /* 自动滚到底部 */
+  await nextTick()
+  const el = resultContainer.value
+  if (el) {
+    el.scrollTop = el.scrollHeight
+  }
+})
 
 /* ------------------- prompt -------------------- */
 function addPrompt(e: KeyboardEvent) {
@@ -195,7 +207,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
               原文
             </div>
             <div
-              class="border-border custom-scroll text-muted-foreground bg-muted/20 max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
+              class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
             >
               {{ selectedText }}
             </div>
@@ -237,6 +249,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
               润色结果
             </div>
             <div
+              ref="resultContainer"
               class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
             >
               <span v-if="message">{{ message }}</span>
