@@ -253,7 +253,7 @@ defineExpose({ visible, getPolishedText, replaceText, show, close })
               class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
             >
               <span v-if="message">{{ message }}</span>
-              <span v-else class="text-muted-foreground">点击下方 \"AI润色\" 按钮生成结果</span>
+              <span v-else class="text-muted-foreground">点击下方 "AI润色" 按钮生成结果</span>
             </div>
           </div>
         </div>
