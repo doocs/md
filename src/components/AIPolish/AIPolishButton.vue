@@ -31,7 +31,7 @@ defineExpose({
   <Transition name="fade-scale">
     <button
       v-show="visible"
-      aria-label="AI 润色"
+      aria-label="AI 工具箱"
       class="bg-primary absolute z-50 flex cursor-pointer items-center justify-center rounded-full p-2 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
       :style="{
         left: `${position.left}px`,
