@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
+import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -49,11 +50,24 @@ function toggleView() {
   showEditor.value = !showEditor.value
 }
 
+const {
+  AIPolishBtnRef,
+  AIPolishPopoverRef,
+  selectedText,
+  position,
+  isDragging,
+  startDrag,
+  initPolishEvent,
+  adjustPosition,
+} = useAIPolish()
+
 const preview = ref<HTMLDivElement | null>(null)
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
   const scrollCB = (text: string) => {
+    AIPolishBtnRef.value?.close()
+
     let source: HTMLElement
     let target: HTMLElement
 
@@ -243,6 +257,8 @@ function initEditor() {
       }, 300)
     })
 
+    initPolishEvent(editor.value)
+
     // 粘贴上传图片并插入
     editor.value.on(`paste`, (_cm, e) => {
       if (!(e.clipboardData && e.clipboardData.items) || isImgLoading.value) {
@@ -402,6 +418,22 @@ const isOpenHeadingSlider = ref(false)
 <template>
   <div ref="container" class="container flex flex-col">
     <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
+    <AIPolishButton
+      ref="AIPolishBtnRef"
+      :position="position"
+      @click="AIPolishPopoverRef?.show"
+    />
+
+    <AIPolishPopover
+      ref="AIPolishPopoverRef"
+      :position="position"
+      :selected-text="selectedText"
+      :is-dragging="isDragging"
+      @close-btn="AIPolishBtnRef?.close"
+      @adjust-position="adjustPosition"
+      @start-drag="startDrag"
+    />
+
     <main class="container-main flex flex-1 flex-col">
       <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
         <PostSlider />
