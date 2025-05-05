@@ -88,36 +88,30 @@ function useAIPolish() {
   }
 
   function initPolishEvent(editor: Editor) {
-    editor.on(`cursorActivity`, () => {
-      const text = editor?.getSelection()
-      if (text && !AIPolishPopoverRef.value?.visible) {
-        const to = editor?.getCursor(`to`)
-        const line = editor.getLine(to.line)
-        const isLineEnd = to.ch === line.length
-
-        if (isLineEnd) {
-          // 如果是行尾，使用行尾字符的坐标
-          const coords = editor.charCoords({ line: to.line, ch: line.length - 1 }, `page`)
-          position.left = coords.right
-          position.top = coords.bottom
-        }
-        else {
-          const coords = editor.charCoords(to, `page`)
-          position.left = coords.left
-          position.top = coords.bottom
-        }
+    editor.on(`mousedown`, () => {
+      try {
+        AIPolishBtnRef.value?.visible && AIPolishBtnRef.value?.close()
+      }
+      catch (error) {
+        console.error(`Error handling mousedown:`, error)
       }
     })
 
-    editor.on(`mousedown`, () => {
-      AIPolishBtnRef.value?.visible && AIPolishBtnRef.value?.close()
-    })
-
-    editor.getWrapperElement().addEventListener(`mouseup`, () => {
-      const text = editor?.getSelection()?.trim()
-      if (text) {
-        selectedText.value = text
-        !AIPolishPopoverRef.value?.visible && AIPolishBtnRef.value?.show()
+    editor.getWrapperElement().addEventListener(`mouseup`, (e) => {
+      try {
+        const text = editor?.getSelection()
+        if (text && text.length > 0) { // 确保有选中内容
+          selectedText.value = text.trim()
+          // 获取鼠标位置
+          if (!AIPolishPopoverRef.value?.visible) {
+            position.left = e.clientX
+            position.top = e.clientY
+            AIPolishBtnRef.value?.show()
+          }
+        }
+      }
+      catch (error) {
+        console.error(`Error handling selection:`, error)
       }
     })
   }
