@@ -258,7 +258,7 @@ async function sendMessage() {
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
-          <TooltipProvider>
+          <TooltipProvider :ignore-non-keyboard-focus="true">
             <Tooltip>
               <TooltipTrigger as-child>
                 <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
