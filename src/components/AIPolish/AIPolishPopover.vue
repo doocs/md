@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import { useAIConfig } from '@/components/ai/useAIConfig'
 import { Button } from '@/components/ui/button'
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import { Settings, X } from 'lucide-vue-next'
+import { nextTick, ref, toRaw, watch } from 'vue'
 
 /* -------------------- props / emits -------------------- */
-const props = defineProps<{ position: { top: number, left: number }, selectedText: string, isDragging: boolean }>()
+const props = defineProps<{
+  position: { top: number, left: number }
+  selectedText: string
+  isDragging: boolean
+}>()
 const emit = defineEmits([`closeBtn`, `recalcPos`, `startDrag`])
 
-/* -------------------- state -------------------- */
+/* -------------------- reactive state -------------------- */
 const configVisible = ref(false)
 const visible = ref(false)
 const message = ref(``)
@@ -16,16 +28,17 @@ const loading = ref(false)
 const abortController = ref<AbortController | null>(null)
 const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
-const selectedAction = ref(`optimize`)
+const selectedAction = ref<`optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`>(`optimize`)
+const currentText = ref(``)
 
-/* -------------------- store / refs -------------------- */
+/* -------------------- store & refs -------------------- */
 const store = useStore()
 const resultContainer = ref<HTMLElement | null>(null)
 
 /* -------------------- AI config -------------------- */
 const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
-/* -------------------- options -------------------- */
+/* -------------------- action options -------------------- */
 interface ActionOption {
   value: string
   label: string
@@ -43,19 +56,42 @@ const actionOptions: ActionOption[] = [
 
 /* -------------------- watchers -------------------- */
 watch(message, async () => {
-  /* 通知父组件调位置 */
   emit(`recalcPos`)
-  /* 自动滚到底部 */
   await nextTick()
   resultContainer.value?.scrollTo({ top: resultContainer.value.scrollHeight })
 })
 
+watch(selectedAction, (val) => {
+  if (val !== `custom`) {
+    customPrompts.value = []
+  }
+})
+
+// 当 visible 且 props.selectedText 变更时，更新原文并重置状态
+watch(
+  () => props.selectedText,
+  (val) => {
+    if (visible.value) {
+      currentText.value = val
+      resetState()
+    }
+  },
+)
+
+watch(selectedAction, (val) => {
+  if (val !== `custom`) {
+    customPrompts.value = []
+  }
+})
+
 /* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
-  const prompt = (e.target as HTMLInputElement).value.trim()
-  if (prompt && !customPrompts.value.includes(prompt))
+  const input = e.target as HTMLInputElement
+  const prompt = input.value.trim()
+  if (prompt && !customPrompts.value.includes(prompt)) {
     customPrompts.value.push(prompt)
-  ;(e.target as HTMLInputElement).value = ``
+  }
+  input.value = ``
   emit(`recalcPos`)
 }
 
@@ -67,38 +103,37 @@ function resetState() {
   message.value = ``
   loading.value = false
   hasResult.value = false
+
   abortController.value?.abort()
   abortController.value = null
 }
 
 /* -------------------- AI call -------------------- */
 async function runAIAction() {
-  const text = props.selectedText.trim()
+  // 使用 currentText 而非 props.selectedText，以便重复处理更新后的内容
+  const text = currentText.value.trim()
   if (!text || loading.value)
     return
 
-  // 重置并准备新请求
   resetState()
   loading.value = true
   abortController.value = new AbortController()
 
-  /* ---------------- system & user prompts ---------------- */
   const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。`
-  const picked = actionOptions.find(opt => opt.value === selectedAction.value)!
-
-  // 组合默认 prompt 与自定义提示
+  const picked = actionOptions.find(o => o.value === selectedAction.value)!
   const parts: string[] = []
-  if (picked.defaultPrompt)
-    parts.push(picked.defaultPrompt)
-  if (customPrompts.value.length)
-    parts.push(`请同时满足以下要求：${customPrompts.value.join(`、`)}。`)
 
-  // 若两者都为空，提供兜底提示
-  if (!parts.length)
+  if (picked.defaultPrompt) {
+    parts.push(picked.defaultPrompt)
+  }
+  if (customPrompts.value.length) {
+    parts.push(`请同时满足以下要求：${customPrompts.value.join(`、`)}。`)
+  }
+  if (!parts.length) {
     parts.push(`请根据最佳实践优化文本。`)
+  }
 
   const userCommand = parts.join(` `)
-
   const messages = [
     { role: `system`, content: systemPrompt },
     { role: `user`, content: `${userCommand}\n\n待处理文本：\n${text}` },
@@ -113,23 +148,26 @@ async function runAIAction() {
   }
 
   const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== `default`)
+  if (apiKey.value && type.value !== `default`) {
     headers.Authorization = `Bearer ${apiKey.value}`
+  }
 
   try {
     const url = new URL(endpoint.value)
-    if (!url.pathname.endsWith(`/chat/completions`))
+    if (!url.pathname.endsWith(`/chat/completions`)) {
       url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
+    }
 
-    const res = await window.fetch(url.toString(), {
+    const res = await fetch(url.toString(), {
       method: `POST`,
       headers,
       body: JSON.stringify(payload),
       signal: abortController.value.signal,
     })
 
-    if (!res.ok || !res.body)
-      throw new Error(`响应错误：${res.status} ${res.statusText}`)
+    if (!res.ok || !res.body) {
+      throw new Error(`响应错误：${res.status}`)
+    }
 
     const reader = res.body.getReader()
     const decoder = new TextDecoder(`utf-8`)
@@ -155,14 +193,12 @@ async function runAIAction() {
             hasResult.value = true
           }
         }
-        catch (e) {
-          console.error(`解析失败:`, e)
-        }
+        catch {}
       }
     }
   }
   catch (e) {
-    console.error(`请求失败:`, e)
+    console.error(`请求失败：`, e)
   }
   finally {
     loading.value = false
@@ -171,16 +207,30 @@ async function runAIAction() {
 
 /* -------------------- actions -------------------- */
 function replaceText() {
-  toRaw(store.editor!)!.replaceSelection(message.value)
+  const cm = toRaw(store.editor!)!
+  const start = cm.getCursor(`start`)
+  cm.replaceSelection(message.value)
+  const end = cm.getCursor(`end`)
+  cm.setSelection(start, end)
+  cm.focus()
+
+  // 更新展示文本
+  currentText.value = message.value
+
+  // 点击接受后隐藏处理结果和按钮
+  resetState()
 }
 
 function show() {
   emit(`closeBtn`)
+
   if (!props.selectedText.trim()) {
     toast.error(`请选择需要处理的内容`)
     return
   }
+
   visible.value = true
+  currentText.value = props.selectedText
   emit(`recalcPos`)
 }
 
@@ -191,7 +241,6 @@ function close() {
   resetState()
 }
 
-/* -------------------- expose -------------------- */
 defineExpose({ visible, runAIAction, replaceText, show, close })
 </script>
 
@@ -209,86 +258,121 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
       >
         <div class="flex items-center gap-2">
           <span class="text-lg font-bold">AI 工具箱</span>
-          <Button variant="ghost" size="icon" aria-label="配置" @click="configVisible = !configVisible">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="配置"
+            @click="configVisible = !configVisible"
+          >
             <Settings class="h-4 w-4" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" aria-label="关闭" @click="close">
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="关闭"
+          @click="close"
+        >
           <X class="h-3 w-3" />
         </Button>
       </div>
 
       <!-- config panel -->
-      <AIConfig v-if="configVisible" class="border-border mb-4 w-full border rounded-md p-4" @saved="() => (configVisible = false)" />
+      <AIConfig
+        v-if="configVisible"
+        class="border-border mb-4 w-full border rounded-md p-4"
+        @saved="() => (configVisible = false)"
+      />
 
       <!-- main content -->
-      <section v-else>
-        <div class="space-y-3 px-6 pb-2 pt-3">
-          <!-- action selector -->
-          <div>
-            <div class="mb-1 text-sm font-semibold">
-              选择操作
-            </div>
-            <Select v-model="selectedAction">
-              <SelectTrigger class="w-full">
-                <SelectValue placeholder="请选择要执行的操作" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectItem v-for="opt in actionOptions" :key="opt.value" :value="opt.value">
-                    {{ opt.label }}
-                  </SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+      <section v-else class="space-y-3 px-6 pb-2 pt-3">
+        <!-- action selector -->
+        <div>
+          <div class="mb-1 text-sm font-semibold">
+            选择操作
           </div>
+          <Select v-model="selectedAction">
+            <SelectTrigger class="w-full">
+              <SelectValue placeholder="请选择要执行的操作" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem v-for="opt in actionOptions" :key="opt.value" :value="opt.value">
+                  {{ opt.label }}
+                </SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
 
-          <!-- original text -->
-          <div>
-            <div class="mb-1 text-sm font-semibold">
-              原文
-            </div>
-            <div class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm">
-              {{ selectedText }}
-            </div>
+        <!-- original text -->
+        <div>
+          <div class="mb-1 text-sm font-semibold">
+            原文
           </div>
-
-          <!-- custom prompts -->
-          <div>
-            <div class="mb-1 text-sm font-semibold">
-              自定义提示词（可选）
-            </div>
-            <div class="custom-scroll border-border max-h-24 min-h-[40px] flex flex-wrap gap-2 overflow-y-auto border rounded px-2 py-1">
-              <template v-for="(prompt, index) in customPrompts" :key="index">
-                <div class="text-muted-foreground bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-sm">
-                  <span>{{ prompt }}</span>
-                  <button class="hover:bg-muted/60 h-4 w-4 flex items-center justify-center rounded-full" @click="removePrompt(index)">
-                    <X class="h-3 w-3" />
-                  </button>
-                </div>
-              </template>
-              <input class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-none" placeholder="输入提示词后按回车" @keydown.enter="addPrompt">
-            </div>
+          <div
+            class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
+          >
+            {{ currentText }}
           </div>
+        </div>
 
-          <!-- result -->
-          <div>
-            <div class="mb-1 text-sm font-semibold">
-              处理结果
-            </div>
-            <div ref="resultContainer" class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm">
-              <span v-if="message">{{ message }}</span>
-              <span v-else class="text-muted-foreground">点击下方 "AI 处理" 按钮生成结果</span>
-            </div>
+        <!-- custom prompts -->
+        <div v-if="selectedAction === 'custom'">
+          <div class="mb-1 text-sm font-semibold">
+            自定义提示词（可选）
+          </div>
+          <div
+            class="custom-scroll border-border max-h-24 min-h-[40px] flex flex-wrap gap-2 overflow-y-auto border rounded px-2 py-1"
+          >
+            <template v-for="(prompt, index) in customPrompts" :key="index">
+              <div
+                class="text-muted-foreground bg-muted flex items-center gap-1 rounded-full px-2 py-1 text-sm"
+              >
+                <span>{{ prompt }}</span>
+                <button
+                  class="hover:bg-muted/60 h-4 w-4 flex items-center justify-center rounded-full"
+                  @click="removePrompt(index)"
+                >
+                  <X class="h-3 w-3" />
+                </button>
+              </div>
+            </template>
+            <input
+              class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-none"
+              placeholder="输入提示词后按回车"
+              @keydown.enter="addPrompt"
+            >
+          </div>
+        </div>
+
+        <!-- result -->
+        <div v-if="message">
+          <div class="mb-1 text-sm font-semibold">
+            处理结果
+          </div>
+          <div
+            ref="resultContainer"
+            class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
+          >
+            {{ message }}
           </div>
         </div>
 
         <!-- footer buttons -->
         <div class="border-border flex justify-end gap-2 border-t px-6 pb-3 pt-2">
-          <Button variant="default" :disabled="!message || loading" @click="replaceText">
+          <Button
+            v-if="hasResult"
+            variant="default"
+            @click="replaceText"
+          >
             接受
           </Button>
-          <Button variant="outline" :disabled="loading || (!hasResult && !!message)" @click="runAIAction">
+          <Button
+            variant="outline"
+            :disabled="loading || (!hasResult && !!message)"
+            @click="runAIAction"
+          >
             {{ loading ? 'AI 处理中...' : hasResult ? '重试' : 'AI 处理' }}
           </Button>
           <Button variant="ghost" @click="close">
@@ -322,14 +406,14 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
   width: 6px;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-gray-400/40 hover:bg-gray-400/60 dark:bg-gray-500/40 dark:hover:bg-gray-500/70;
+  @apply rounded-full bg-gray-400/40 hover:bg-gray-400/60;
 }
 .custom-scroll {
   scrollbar-width: thin;
-  scrollbar-color: rgb(156 163 175 / 0.4) transparent;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
 }
 :deep(.dark) .custom-scroll {
-  scrollbar-color: rgb(107 114 128 / 0.4) transparent;
+  scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
 }
 
 .popover-header {
