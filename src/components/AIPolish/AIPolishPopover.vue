@@ -50,6 +50,13 @@ watch(message, async () => {
   resultContainer.value?.scrollTo({ top: resultContainer.value.scrollHeight })
 })
 
+// 清空自定义提示词，当用户切换到非自定义时
+watch(selectedAction, (val) => {
+  if (val !== `custom`) {
+    customPrompts.value = []
+  }
+})
+
 /* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
   const prompt = (e.target as HTMLInputElement).value.trim()
@@ -253,8 +260,8 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
             </div>
           </div>
 
-          <!-- custom prompts -->
-          <div>
+          <!-- custom prompts: only show for custom action -->
+          <div v-if="selectedAction === 'custom'">
             <div class="mb-1 text-sm font-semibold">
               自定义提示词（可选）
             </div>
