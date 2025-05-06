@@ -197,7 +197,11 @@ function replaceText() {
   cm.setSelection(start, end)
   cm.focus()
 
+  // 更新展示文本
   currentText.value = message.value
+
+  // 点击接受后隐藏处理结果和按钮
+  resetState()
 }
 
 function show() {
@@ -326,7 +330,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
         </div>
 
         <!-- result -->
-        <div>
+        <div v-if="message">
           <div class="mb-1 text-sm font-semibold">
             处理结果
           </div>
@@ -334,18 +338,15 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
             ref="resultContainer"
             class="custom-scroll border-border bg-background max-h-40 min-h-[60px] overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
           >
-            <span v-if="message">{{ message }}</span>
-            <span v-else class="text-muted-foreground">
-              点击下方 "AI 处理" 按钮生成结果
-            </span>
+            {{ message }}
           </div>
         </div>
 
         <!-- footer buttons -->
         <div class="border-border flex justify-end gap-2 border-t px-6 pb-3 pt-2">
           <Button
+            v-if="hasResult"
             variant="default"
-            :disabled="!message || loading"
             @click="replaceText"
           >
             接受
