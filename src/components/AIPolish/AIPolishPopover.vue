@@ -67,6 +67,23 @@ watch(selectedAction, (val) => {
   }
 })
 
+// 当 visible 且 props.selectedText 变更时，更新原文并重置状态
+watch(
+  () => props.selectedText,
+  (val) => {
+    if (visible.value) {
+      currentText.value = val
+      resetState()
+    }
+  },
+)
+
+watch(selectedAction, (val) => {
+  if (val !== `custom`) {
+    customPrompts.value = []
+  }
+})
+
 /* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
   const input = e.target as HTMLInputElement
