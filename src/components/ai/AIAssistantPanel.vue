@@ -37,6 +37,7 @@ const historyIndex = ref<number | null>(null)
 /* ---------- 配置 & 状态 ---------- */
 const configVisible = ref(false)
 const loading = ref(false)
+const fetchController = ref<AbortController | null>(null)
 const copiedIndex = ref<number | null>(null)
 const memoryKey = `ai_memory_context`
 
@@ -110,6 +111,10 @@ async function copyToClipboard(text: string, index: number) {
   }
 }
 function resetMessages() {
+  if (fetchController.value) {
+    fetchController.value.abort()
+    fetchController.value = null
+  }
   messages.value = getDefaultMessages()
   localStorage.setItem(memoryKey, JSON.stringify(messages.value))
   scrollToBottom(true)
@@ -143,6 +148,8 @@ async function sendMessage() {
 
   const replyMessage: ChatMessage = { role: `assistant`, content: ``, reasoning: ``, done: false }
   messages.value.push(replyMessage)
+  // used to check if the messages has changed, if changed, no need to update the last message
+  const replyMessageProxy = messages.value[messages.value.length - 1]
   await scrollToBottom(true)
 
   const payload = {
@@ -166,6 +173,9 @@ async function sendMessage() {
   if (apiKey.value && type.value !== `default`)
     headers.Authorization = `Bearer ${apiKey.value}`
 
+  fetchController.value = new AbortController()
+  const signal = fetchController.value.signal
+
   try {
     const url = new URL(endpoint.value)
     if (!url.pathname.endsWith(`/chat/completions`))
@@ -175,6 +185,7 @@ async function sendMessage() {
       method: `POST`,
       headers,
       body: JSON.stringify(payload),
+      signal,
     })
     if (!res.ok || !res.body)
       throw new Error(`响应错误：${res.status} ${res.statusText}`)
@@ -205,6 +216,9 @@ async function sendMessage() {
           const json = JSON.parse(line.replace(/^data: /, ``))
           const delta = json.choices?.[0]?.delta || {}
           const last = messages.value[messages.value.length - 1]
+          // it indicates the messages has changed, so no need to update the last message
+          if (last !== replyMessageProxy)
+            return
           if (delta.content)
             last.content += delta.content
           else if (delta.reasoning_content)
@@ -218,13 +232,20 @@ async function sendMessage() {
     }
   }
   catch (e) {
-    console.error(`请求失败:`, e)
-    messages.value[messages.value.length - 1].content = `❌ 请求失败: ${(e as Error).message}`
+    if ((e as Error).name === `AbortError`) {
+      // If aborted, messages are reset by resetMessages, so no specific error message needed here.
+      console.log(`请求中止`)
+    }
+    else {
+      console.error(`请求失败:`, e)
+      messages.value[messages.value.length - 1].content = `❌ 请求失败: ${(e as Error).message}`
+    }
     await scrollToBottom(true)
   }
   finally {
     localStorage.setItem(memoryKey, JSON.stringify(messages.value))
     loading.value = false
+    fetchController.value = null
   }
 }
 </script>
