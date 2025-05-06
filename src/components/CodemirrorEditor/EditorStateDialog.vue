@@ -135,6 +135,12 @@ function copyToClipboard(text: string) {
 }
 
 // 处理文件导入
+const fileInputRef = ref<HTMLInputElement | null>(null)
+
+function triggerFileInput() {
+  fileInputRef.value?.click()
+}
+
 function handleFileImport(event: Event) {
   const input = event.target as HTMLInputElement
   if (!input.files?.length)
@@ -292,6 +298,7 @@ function applyImportedConfig() {
               <div v-if="!originalImportData" class="m-4 flex flex-col items-center justify-center border-2 rounded-lg border-dashed">
                 <input
                   id="json-import-input"
+                  ref="fileInputRef"
                   type="file"
                   accept=".json"
                   class="hidden"
@@ -341,17 +348,19 @@ function applyImportedConfig() {
             <div class="col-span-2 flex justify-end">
               <input
                 id="json-import-input"
+                ref="fileInputRef"
                 type="file"
                 accept=".json"
                 class="hidden"
                 @change="handleFileImport"
               >
-              <label
-                for="json-import-input"
+              <Button
+                type="button"
                 class="mr-2 h-10 cursor-pointer rounded-md bg-gray-200 px-4 py-2 text-gray-700 dark:bg-gray-700 hover:bg-gray-300 dark:text-gray-200 dark:hover:bg-gray-600"
+                @click="triggerFileInput"
               >
                 重新导入
-              </label>
+              </Button>
 
               <Button
                 type="primary"
