@@ -1,14 +1,11 @@
 <script setup lang="ts">
 import { useAIConfig } from '@/components/ai/useAIConfig'
 import { Button } from '@/components/ui/button'
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Settings, X } from 'lucide-vue-next'
 
-const props = defineProps<{
-  position: { top: number, left: number }
-  selectedText: string
-  isDragging: boolean
-}>()
-
+/* -------------------- props / emits -------------------- */
+const props = defineProps<{ position: { top: number, left: number }, selectedText: string, isDragging: boolean }>()
 const emit = defineEmits([`closeBtn`, `recalcPos`, `startDrag`])
 
 /* -------------------- state -------------------- */
@@ -19,27 +16,41 @@ const loading = ref(false)
 const abortController = ref<AbortController | null>(null)
 const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
+const selectedAction = ref(`optimize`)
 
+/* -------------------- store / refs -------------------- */
 const store = useStore()
-
-/* template refs */
 const resultContainer = ref<HTMLElement | null>(null)
 
-/* AI config */
+/* -------------------- AI config -------------------- */
 const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
 
-/* ------------------- watch --------------------- */
+/* -------------------- options -------------------- */
+interface ActionOption {
+  value: string
+  label: string
+  defaultPrompt: string
+}
+
+const actionOptions: ActionOption[] = [
+  { value: `optimize`, label: `优化文本`, defaultPrompt: `请优化文本，使其更通顺易读。` },
+  { value: `summarize`, label: `文章总结`, defaultPrompt: `请对文本进行摘要，输出主要观点和结论。` },
+  { value: `spellcheck`, label: `错别字纠正`, defaultPrompt: `请找出并纠正文本中的错别字、标点和语法错误。` },
+  { value: `translate-zh`, label: `翻译为中文`, defaultPrompt: `请将文本翻译为地道的中文。` },
+  { value: `translate-en`, label: `翻译为英文`, defaultPrompt: `请将文本翻译为自然流畅的英文。` },
+  { value: `custom`, label: `自定义`, defaultPrompt: `` },
+]
+
+/* -------------------- watchers -------------------- */
 watch(message, async () => {
   /* 通知父组件调位置 */
   emit(`recalcPos`)
   /* 自动滚到底部 */
   await nextTick()
-  const el = resultContainer.value
-  if (el)
-    el.scrollTop = el.scrollHeight
+  resultContainer.value?.scrollTo({ top: resultContainer.value.scrollHeight })
 })
 
-/* ------------------- prompt -------------------- */
+/* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
   const prompt = (e.target as HTMLInputElement).value.trim()
   if (prompt && !customPrompts.value.includes(prompt))
@@ -47,29 +58,46 @@ function addPrompt(e: KeyboardEvent) {
   ;(e.target as HTMLInputElement).value = ``
   emit(`recalcPos`)
 }
+
 function removePrompt(index: number) {
   customPrompts.value.splice(index, 1)
 }
 
-/* ------------------- AI call ------------------- */
+function resetState() {
+  message.value = ``
+  loading.value = false
+  hasResult.value = false
+  abortController.value?.abort()
+  abortController.value = null
+}
+
+/* -------------------- AI call -------------------- */
 async function runAIAction() {
   const text = props.selectedText.trim()
   if (!text || loading.value)
     return
 
-  message.value = ``
+  // 重置并准备新请求
+  resetState()
   loading.value = true
-  hasResult.value = false
-  abortController.value?.abort()
   abortController.value = new AbortController()
 
-  // 基础系统 Prompt：多功能文本助手
+  /* ---------------- system & user prompts ---------------- */
   const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。`
+  const picked = actionOptions.find(opt => opt.value === selectedAction.value)!
 
-  // 用户指令：把自定义提示词合并成一句话，没有则给默认指令“请优化文本”
-  const userCommand = customPrompts.value.length
-    ? `请按照以下要求处理文本：${customPrompts.value.join(`、`)}。`
-    : `请优化文本，使其更通顺易读。`
+  // 组合默认 prompt 与自定义提示
+  const parts: string[] = []
+  if (picked.defaultPrompt)
+    parts.push(picked.defaultPrompt)
+  if (customPrompts.value.length)
+    parts.push(`请同时满足以下要求：${customPrompts.value.join(`、`)}。`)
+
+  // 若两者都为空，提供兜底提示
+  if (!parts.length)
+    parts.push(`请根据最佳实践优化文本。`)
+
+  const userCommand = parts.join(` `)
 
   const messages = [
     { role: `system`, content: systemPrompt },
@@ -141,10 +169,11 @@ async function runAIAction() {
   }
 }
 
-/* ------------------- actions ------------------- */
+/* -------------------- actions -------------------- */
 function replaceText() {
   toRaw(store.editor!)!.replaceSelection(message.value)
 }
+
 function show() {
   emit(`closeBtn`)
   if (!props.selectedText.trim()) {
@@ -154,16 +183,15 @@ function show() {
   visible.value = true
   emit(`recalcPos`)
 }
+
 function close() {
   visible.value = false
-  message.value = ``
   customPrompts.value = []
-  loading.value = false
-  hasResult.value = false
-  abortController.value?.abort()
-  abortController.value = null
+  selectedAction.value = `optimize`
+  resetState()
 }
 
+/* -------------------- expose -------------------- */
 defineExpose({ visible, runAIAction, replaceText, show, close })
 </script>
 
@@ -171,7 +199,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
   <Transition name="fade-scale">
     <div
       v-if="visible"
-      class="bg-card border-border text-card-foreground fixed z-50 w-[420px] border rounded-xl shadow-2xl"
+      class="bg-card border-border text-card-foreground fixed z-50 w-[460px] border rounded-xl shadow-2xl"
       :style="{ left: `${position.left}px`, top: `${position.top}px`, transformOrigin: 'top left' }"
     >
       <!-- header -->
@@ -196,6 +224,25 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
       <!-- main content -->
       <section v-else>
         <div class="space-y-3 px-6 pb-2 pt-3">
+          <!-- action selector -->
+          <div>
+            <div class="mb-1 text-sm font-semibold">
+              选择操作
+            </div>
+            <Select v-model="selectedAction">
+              <SelectTrigger class="w-full">
+                <SelectValue placeholder="请选择要执行的操作" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectItem v-for="opt in actionOptions" :key="opt.value" :value="opt.value">
+                    {{ opt.label }}
+                  </SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
           <!-- original text -->
           <div>
             <div class="mb-1 text-sm font-semibold">
