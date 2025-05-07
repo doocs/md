@@ -119,7 +119,7 @@ async function runAIAction() {
   loading.value = true
   abortController.value = new AbortController()
 
-  const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。`
+  const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。在输出时，不要输出任何额外的信息，只输出处理后的文本。`
   const picked = actionOptions.find(o => o.value === selectedAction.value)!
   const parts: string[] = []
 
