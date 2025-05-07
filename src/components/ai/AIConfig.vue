@@ -9,7 +9,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { DEFAULT_SERVICE_ENDPOINT, type ServiceOption, serviceOptions } from '@/config/ai-services'
+import { Info } from 'lucide-vue-next'
 
 import { onMounted, reactive, ref, watch } from 'vue'
 
@@ -259,7 +267,19 @@ async function testConnection() {
 
     <!-- 温度 temperature -->
     <div>
-      <Label class="mb-1 block text-sm font-medium">温度</Label>
+      <Label class="mb-1 flex items-center gap-1 text-sm font-medium">
+        温度
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Info class="text-gray-500" :size="16" />
+            </TooltipTrigger>
+            <TooltipContent>
+              <div>控制输出的随机性：较低的值使输出更确定，较高的值使其更随机。</div>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      </Label>
       <Input
         v-model.number="config.temperature"
         type="number"
