@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { toast } from '@/utils/toast' // Added import for toast
 import { Settings, X } from 'lucide-vue-next'
 import { nextTick, ref, toRaw, watch } from 'vue'
 
@@ -197,8 +198,14 @@ async function runAIAction() {
       }
     }
   }
-  catch (e) {
-    console.error(`请求失败：`, e)
+  catch (e: any) {
+    if (e.name === `AbortError`) {
+      console.log(`Request aborted by user.`)
+    }
+    else {
+      console.error(`请求失败：`, e)
+      toast.error(e.message || `请求失败`)
+    }
   }
   finally {
     loading.value = false
