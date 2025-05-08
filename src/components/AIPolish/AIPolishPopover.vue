@@ -9,7 +9,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { toast } from '@/utils/toast' // Added import for toast
 import { Settings, X } from 'lucide-vue-next'
 import { nextTick, ref, toRaw, watch } from 'vue'
 
@@ -31,6 +30,7 @@ const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
 const selectedAction = ref<`optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`>(`optimize`)
 const currentText = ref(``)
+const error = ref(``)
 
 /* -------------------- store & refs -------------------- */
 const store = useStore()
@@ -104,6 +104,7 @@ function resetState() {
   message.value = ``
   loading.value = false
   hasResult.value = false
+  error.value = ``
 
   abortController.value?.abort()
   abortController.value = null
@@ -204,7 +205,7 @@ async function runAIAction() {
     }
     else {
       console.error(`请求失败：`, e)
-      toast.error(e.message || `请求失败`)
+      error.value = e.message || `请求失败`
     }
   }
   finally {
@@ -351,6 +352,11 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
               @keydown.enter="addPrompt"
             >
           </div>
+        </div>
+
+        <!-- error -->
+        <div v-if="error" class="min-h-[24px] flex items-center text-[12px] text-red-500">
+          {{ error }}
         </div>
 
         <!-- result -->
