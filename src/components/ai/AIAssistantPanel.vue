@@ -13,6 +13,8 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
+const store = useStore()
+const { editor } = storeToRefs(store)
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
@@ -34,6 +36,7 @@ const loading = ref(false)
 const fetchController = ref<AbortController | null>(null)
 const copiedIndex = ref<number | null>(null)
 const memoryKey = `ai_memory_context`
+const isQuoteAllContent = ref(false)
 
 interface ChatMessage {
   role: `user` | `assistant` | `system`
@@ -127,6 +130,11 @@ async function scrollToBottom(force = false) {
   }
 }
 
+/* ---------- 引用全文 ---------- */
+function quoteAllContent() {
+  isQuoteAllContent.value = !isQuoteAllContent.value
+}
+
 /* ---------- 发送消息 ---------- */
 async function sendMessage() {
   if (!input.value.trim() || loading.value)
@@ -160,6 +168,10 @@ async function sendMessage() {
     temperature: temperature.value,
     max_tokens: maxToken.value,
     stream: true,
+  }
+
+  if (isQuoteAllContent.value) {
+    payload.messages.splice(1, 0, { role: `system`, content: `markdown 的全文内容是：${editor.value!.getValue()}` })
   }
 
   const headers: Record<string, string> = { 'Content-Type': `application/json` }
@@ -324,15 +336,21 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="bg-background border-border flex items-end gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
             placeholder="说些什么… (Enter 发送，Shift+Enter 换行)"
             rows="2"
-            class="custom-scroll w-full resize-none border-none bg-transparent p-0 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
+            class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"
           />
+          <!-- 引用全文按钮 -->
+          <Button variant="ghost" size="icon" :class="isQuoteAllContent ? 'bg-gray-100' : 'text-gray-500'" class="h-8 w-20 border text-white color-black" aria-label="引用全文" @click="quoteAllContent">
+            <Copy class="mr-1 h-4 w-4 color-gray-500" />
+            <span class="text-xs text-gray-500">引用全文</span>
+          </Button>
+          <!-- 发送按钮 -->
           <Button
             :disabled="!input.trim() || loading"
             size="icon"
