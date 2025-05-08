@@ -30,6 +30,7 @@ const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
 const selectedAction = ref<`optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`>(`optimize`)
 const currentText = ref(``)
+const error = ref(``)
 
 /* -------------------- store & refs -------------------- */
 const store = useStore()
@@ -103,6 +104,7 @@ function resetState() {
   message.value = ``
   loading.value = false
   hasResult.value = false
+  error.value = ``
 
   abortController.value?.abort()
   abortController.value = null
@@ -197,8 +199,14 @@ async function runAIAction() {
       }
     }
   }
-  catch (e) {
-    console.error(`请求失败：`, e)
+  catch (e: any) {
+    if (e.name === `AbortError`) {
+      console.log(`Request aborted by user.`)
+    }
+    else {
+      console.error(`请求失败：`, e)
+      error.value = e.message || `请求失败`
+    }
   }
   finally {
     loading.value = false
@@ -344,6 +352,11 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
               @keydown.enter="addPrompt"
             >
           </div>
+        </div>
+
+        <!-- error -->
+        <div v-if="error" class="min-h-[24px] flex items-center text-[12px] text-red-500">
+          {{ error }}
         </div>
 
         <!-- result -->
