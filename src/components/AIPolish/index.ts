@@ -1,4 +1,6 @@
 import type { Editor } from 'codemirror'
+import type { ComponentPublicInstance } from 'vue'
+import { nextTick, reactive, ref, watch } from 'vue'
 import AIPolishButton from './AIPolishButton.vue'
 import AIPolishPopover from './AIPolishPopover.vue'
 
@@ -16,58 +18,45 @@ interface PopoverRef {
 }
 
 function useAIPolish() {
-  const AIPolishBtnRef = useTemplateRef<ComponentPublicInstance<BtnRef> >(`AIPolishBtnRef`)
-  const AIPolishPopoverRef = useTemplateRef<ComponentPublicInstance<PopoverRef>>(`AIPolishPopoverRef`)
+  const AIPolishBtnRef = ref<ComponentPublicInstance<BtnRef>>()
+  const AIPolishPopoverRef = ref<ComponentPublicInstance<PopoverRef>>()
 
   const selectedText = ref(``)
-  const position = reactive({
-    top: 0,
-    left: 0,
-  })
+  const position = reactive({ top: 0, left: 0 })
 
-  // 拖拽相关状态
   const isDragging = ref(false)
-  const dragStartX = ref(0)
-  const dragStartY = ref(0)
-  const dragStartLeft = ref(0)
-  const dragStartTop = ref(0)
-
+  const dragStart = reactive({ x: 0, y: 0, left: 0, top: 0 })
   const baseMargin = 10
 
-  // 统一的位置计算函数
-  async function calcPos(targetLeft: number, targetTop: number) {
+  function closeAll() {
+    AIPolishPopoverRef.value?.close()
+    AIPolishBtnRef.value?.close()
+  }
+
+  async function calcPos(left: number, top: number) {
     await nextTick()
-    if (!AIPolishPopoverRef.value)
+    const popEl = AIPolishPopoverRef.value?.$el.getBoundingClientRect()
+    if (!popEl)
       return
-    const popover = AIPolishPopoverRef.value?.$el.getBoundingClientRect()
-    const vW = window.innerWidth
-    const vH = window.innerHeight
-    const pW = popover.width
-    const pH = popover.height
 
-    // 计算最大可移动范围
-    const maxLeft = vW - pW - baseMargin
-    const maxTop = vH - pH - baseMargin
+    const maxLeft = window.innerWidth - popEl.width - baseMargin
+    const maxTop = window.innerHeight - popEl.height - baseMargin
 
-    // 边界检查，确保弹窗不会超出视窗范围
-    position.left = Math.max(baseMargin, Math.min(targetLeft, maxLeft))
-    position.top = Math.max(baseMargin, Math.min(targetTop, maxTop))
+    position.left = Math.min(Math.max(baseMargin, left), maxLeft)
+    position.top = Math.min(Math.max(baseMargin, top), maxTop)
   }
 
   function startDrag(e: MouseEvent) {
-    if (e.target !== AIPolishPopoverRef.value) {
-      const header = (e.target as HTMLElement).closest(`.popover-header`)
-      if (!header)
-        return
-    }
+    const header = (e.target as HTMLElement).closest(`.popover-header`)
+    if (!header)
+      return
 
     isDragging.value = true
-    dragStartX.value = e.clientX
-    dragStartY.value = e.clientY
-    dragStartLeft.value = position.left
-    dragStartTop.value = position.top
+    dragStart.x = e.clientX
+    dragStart.y = e.clientY
+    dragStart.left = position.left
+    dragStart.top = position.top
 
-    // 确保能获取到元素尺寸
     nextTick(() => {
       document.addEventListener(`mousemove`, onDrag)
       document.addEventListener(`mouseup`, stopDrag)
@@ -77,15 +66,9 @@ function useAIPolish() {
   function onDrag(e: MouseEvent) {
     if (!isDragging.value)
       return
-
-    const deltaX = e.clientX - dragStartX.value
-    const deltaY = e.clientY - dragStartY.value
-
-    // 计算新的位置
-    const newLeft = dragStartLeft.value + deltaX
-    const newTop = dragStartTop.value + deltaY
-
-    calcPos(newLeft, newTop)
+    const dx = e.clientX - dragStart.x
+    const dy = e.clientY - dragStart.y
+    calcPos(dragStart.left + dx, dragStart.top + dy)
   }
 
   function stopDrag() {
@@ -95,66 +78,65 @@ function useAIPolish() {
   }
 
   function initPolishEvent(editor: Editor) {
-    editor.on(`mousedown`, () => {
-      try {
-        AIPolishBtnRef.value?.visible && AIPolishBtnRef.value?.close()
-      }
-      catch (error) {
-        console.error(`Error handling mousedown:`, error)
-      }
-    })
+    // Hide on any new mouse down (start of selection or click)
+    editor.on(`mousedown`, () => closeAll())
 
-    editor.getWrapperElement().addEventListener(`mouseup`, (e) => {
-      try {
-        const text = editor?.getSelection()
-        if (text && text.length > 0) { // 确保有选中内容
-          selectedText.value = text.trim()
-          // 获取鼠标位置
-          if (!AIPolishPopoverRef.value?.visible) {
-            position.left = e.clientX
-            position.top = e.clientY
-            AIPolishBtnRef.value?.show()
-          }
-        }
-      }
-      catch (error) {
-        console.error(`Error handling selection:`, error)
-      }
-    })
-
-    editor.on(`keydown`, (_, event: KeyboardEvent) => {
-      const isSelectAll
-        = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === `a`
-
-      if (!isSelectAll)
-        return
-
-      try {
-        const wrapper = editor.getWrapperElement()
-        const rect = wrapper.getBoundingClientRect()
-
-        position.left = rect.right - 50
-        position.top = rect.top + rect.height / 2
-
-        // 先拿原始值，再 trim
-        const raw = editor.getValue() ?? ``
-        const cleaned = raw.trim()
-
-        if (cleaned) {
-          selectedText.value = cleaned
+    // Show button after mouse up when selection is complete
+    const wrapper = editor.getWrapperElement()
+    wrapper.addEventListener(`mouseup`, (e) => {
+      setTimeout(() => {
+        const text = editor.getSelection()?.trim() || ``
+        selectedText.value = text
+        if (text) {
+          position.left = e.clientX
+          position.top = e.clientY
           AIPolishBtnRef.value?.show()
         }
-        // 如果 cleaned 为空，就什么也不做，让按钮保持隐藏
+        else {
+          closeAll()
+        }
+      }, 0)
+    })
+
+    // Update content in toolbox when selection changes while visible
+    editor.on(`cursorActivity`, () => {
+      const text = editor.getSelection()?.trim() || ``
+      if (AIPolishPopoverRef.value?.visible) {
+        if (text) {
+          // update selection and reposition within toolbox bounds
+          selectedText.value = text
+          calcPos(position.left, position.top)
+        }
       }
-      catch (err) {
-        console.error(`Error handling Select‑All:`, err)
-      }
+    })
+
+    // Handle Select-All explicitly
+    editor.on(`keydown`, (_, event: KeyboardEvent) => {
+      const isSelectAll = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === `a`
+      if (!isSelectAll)
+        return
+      setTimeout(() => {
+        const raw = editor.getValue() || ``
+        const cleaned = raw.trim()
+        if (cleaned) {
+          selectedText.value = cleaned
+          const rect = editor.getWrapperElement().getBoundingClientRect()
+          position.left = rect.right - 50
+          position.top = rect.top + rect.height / 2
+          AIPolishBtnRef.value?.show()
+        }
+        else {
+          closeAll()
+        }
+      }, 0)
     })
   }
 
-  function recalcPos() {
-    calcPos(position.left, position.top)
-  }
+  // Hide if programmatically cleared
+  watch(selectedText, (val) => {
+    if (!val && !AIPolishPopoverRef.value?.visible)
+      closeAll()
+  })
 
   return {
     AIPolishBtnRef,
@@ -162,9 +144,10 @@ function useAIPolish() {
     selectedText,
     position,
     isDragging,
-    startDrag,
     initPolishEvent,
-    recalcPos,
+    startDrag,
+    closeAll,
+    calcPos,
   }
 }
 
