@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAIConfig } from '@/components/ai/useAIConfig'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,6 +7,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import useAIConfigStore from '@/stores/AIConfig'
 import { Check, Copy, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
@@ -46,7 +46,8 @@ interface ChatMessage {
 }
 
 const messages = ref<ChatMessage[]>([])
-const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
+const AIConfigStore = useAIConfigStore()
+const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
 
 /* ---------- 初始数据 ---------- */
 onMounted(async () => {
@@ -336,7 +337,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"

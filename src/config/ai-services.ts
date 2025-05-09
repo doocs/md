@@ -1,4 +1,4 @@
-export const DEFAULT_SERVICE_ENDPOINT = `https://proxy-ai.doocs.org/v1`
+import { DEFAULT_SERVICE_ENDPOINT } from '@/constants/AIConfig'
 
 export interface ServiceOption {
   value: string
@@ -315,3 +315,5 @@ export const serviceOptions: ServiceOption[] = [
     models: [],
   },
 ]
+
+export const DEFAULT_SERVICE_MODEL = serviceOptions[0].models[0]

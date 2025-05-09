@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAIConfig } from '@/components/ai/useAIConfig'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -9,6 +8,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import useAIConfigStore from '@/stores/AIConfig'
 import { Settings, X } from 'lucide-vue-next'
 import { nextTick, ref, toRaw, watch } from 'vue'
 
@@ -37,7 +37,8 @@ const store = useStore()
 const resultContainer = ref<HTMLElement | null>(null)
 
 /* -------------------- AI config -------------------- */
-const { apiKey, endpoint, model, temperature, maxToken, type } = useAIConfig()
+const AIConfigStore = useAIConfigStore()
+const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
 
 /* -------------------- action options -------------------- */
 interface ActionOption {
