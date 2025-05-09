@@ -1,66 +1,73 @@
 <script setup lang="ts">
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
-
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from '@/components/ui/tooltip'
-import { DEFAULT_SERVICE_MODEL, serviceOptions } from '@/config/ai-services'
-import { DEFAULT_SERVICE_ENDPOINT, DEFAULT_SERVICE_KEY, DEFAULT_SERVICE_MAX_TOKEN, DEFAULT_SERVICE_TEMPERATURE, DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
-
+import { serviceOptions } from '@/config/ai-services'
+import { DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Info } from 'lucide-vue-next'
+
+/* -------------------------- 基础数据 -------------------------- */
 
 const emit = defineEmits([`saved`])
 
 const AIConfigStore = useAIConfigStore()
-const { type, apiKey, endpoint, model, temperature, maxToken } = storeToRefs(AIConfigStore)
+const { type, endpoint, model, apiKey, temperature, maxToken }
+  = storeToRefs(AIConfigStore)
 
+/** 本地草稿 */
 const config = reactive({
-  type: type.value,
-  endpoint: endpoint.value,
-  apiKey: apiKey.value,
-  model: model.value,
-  temperature: temperature.value,
-  maxToken: maxToken.value,
+  type: ``,
+  endpoint: ``,
+  apiKey: ``,
+  model: ``,
+  temperature: 1,
+  maxToken: 1024,
 })
 
+/** UI 状态 */
 const loading = ref(false)
 const testResult = ref(``)
 
-const currentService = computed(() => {
-  return serviceOptions.find(service => service.value === config.type) || serviceOptions[0]
-})
+/** 当前服务信息 */
+const currentService = computed(
+  () => serviceOptions.find(s => s.value === config.type) || serviceOptions[0],
+)
 
-// 监听模型变化
-watch(() => config.model, () => {
-  testResult.value = `` // ✅ 模型变化时，重置测试结果
-})
+/* -------------------------- 同步函数 -------------------------- */
 
-watch(() => config.type, () => {
-  config.endpoint = currentService.value.endpoint
-  config.model = model.value && currentService.value.models.includes(model.value) ? model.value : currentService.value.models[0]
-  testResult.value = `` // ✅ 服务变化时，重置测试结果
-})
+function pullFromStore() {
+  config.type = type.value
+  config.endpoint = endpoint.value
+  config.apiKey = apiKey.value
+  config.model = model.value
+  config.temperature = temperature.value
+  config.maxToken = maxToken.value
+}
+pullFromStore() // 首屏同步一次
+
+/* -------------------------- 监听 -------------------------- */
+
+watch(
+  () => config.type,
+  () => {
+    config.endpoint = currentService.value.endpoint
+    if (!currentService.value.models.includes(config.model)) {
+      config.model = currentService.value.models[0] || ``
+    }
+    testResult.value = ``
+  },
+)
+
+watch(() => config.model, () => (testResult.value = ``))
+
+/* -------------------------- 操作 -------------------------- */
 
 function saveConfig(emitEvent = true) {
-  type.value = config.type
-  endpoint.value = config.endpoint
+  AIConfigStore.$patch({
+    type: config.type,
+    endpoint: config.endpoint,
+    model: config.model,
+    temperature: config.temperature,
+    maxToken: config.maxToken,
+  })
   apiKey.value = config.apiKey
-  model.value = config.model
-  temperature.value = config.temperature
-  maxToken.value = config.maxToken
 
   if (emitEvent) {
     testResult.value = `✅ 配置已保存`
@@ -69,15 +76,8 @@ function saveConfig(emitEvent = true) {
 }
 
 function clearConfig() {
-  config.type = DEFAULT_SERVICE_TYPE
-  config.endpoint = DEFAULT_SERVICE_ENDPOINT
-  config.apiKey = DEFAULT_SERVICE_KEY
-  config.model = DEFAULT_SERVICE_MODEL
-  config.temperature = DEFAULT_SERVICE_TEMPERATURE
-  config.maxToken = DEFAULT_SERVICE_MAX_TOKEN
-
   AIConfigStore.reset()
-
+  pullFromStore()
   testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
@@ -85,18 +85,14 @@ async function testConnection() {
   testResult.value = ``
   loading.value = true
 
-  const headers: Record<string, string> = {
-    'Content-Type': `application/json`,
-  }
-  if (config.apiKey && config.type !== DEFAULT_SERVICE_TYPE) {
+  const headers: Record<string, string> = { 'Content-Type': `application/json` }
+  if (config.apiKey && config.type !== DEFAULT_SERVICE_TYPE)
     headers.Authorization = `Bearer ${config.apiKey}`
-  }
 
   try {
     const url = new URL(config.endpoint)
-    if (!url.pathname.endsWith(`/chat/completions`)) {
+    if (!url.pathname.endsWith(`/chat/completions`))
       url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
-    }
 
     const payload = {
       model: config.model,
@@ -114,38 +110,28 @@ async function testConnection() {
 
     if (res.ok) {
       testResult.value = `✅ 测试成功，/chat/completions 可用`
-      saveConfig(false) // ✅ 测试成功后保存，但不触发 saved 事件
+      saveConfig(false)
     }
     else {
       const text = await res.text()
-
-      // 如果是模型未开通
       try {
-        const json = JSON.parse(text)
-        const errorCode = json?.error?.code || ``
-        const errorMessage = json?.error?.message || ``
-
+        const { error } = JSON.parse(text)
         if (
           res.status === 404
-          && (errorCode === `ModelNotOpen`
-            || errorMessage.includes(`not activated`)
-            || errorMessage.includes(`未开通`))
+          && (error?.code === `ModelNotOpen`
+            || /not activated|未开通/i.test(error?.message))
         ) {
           testResult.value = `⚠️ 测试成功，但当前模型未开通：${config.model}`
           saveConfig(false)
           return
         }
       }
-      catch (e) {
-        console.log(e)
-      }
-
+      catch {}
       testResult.value = `❌ 测试失败：${res.status} ${res.statusText}，${text}`
     }
   }
-  catch (e) {
-    console.error(e)
-    testResult.value = `❌ 测试失败：${(e as Error).message}`
+  catch (err) {
+    testResult.value = `❌ 测试失败：${(err as Error).message}`
   }
   finally {
     loading.value = false
@@ -181,7 +167,7 @@ async function testConnection() {
     </div>
 
     <!-- API 端点 -->
-    <div v-if="config.type !== 'default'">
+    <div v-if="config.type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <Input
         v-model="config.endpoint"
@@ -191,7 +177,7 @@ async function testConnection() {
     </div>
 
     <!-- API 密钥，仅非 default 显示 -->
-    <div v-if="config.type !== 'default'">
+    <div v-if="config.type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
       <Input
         v-model="config.apiKey"

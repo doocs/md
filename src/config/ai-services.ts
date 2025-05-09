@@ -13,7 +13,6 @@ export const serviceOptions: ServiceOption[] = [
     label: `默认服务（无需配置 sk）`,
     endpoint: DEFAULT_SERVICE_ENDPOINT,
     models: [
-      `Qwen/Qwen3-8B`,
       `Qwen/Qwen2.5-7B-Instruct`,
       `Qwen/Qwen2.5-Coder-7B-Instruct`,
       `Qwen/Qwen2-7B-Instruct`,

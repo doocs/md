@@ -1,46 +1,88 @@
-import { DEFAULT_SERVICE_MODEL, serviceOptions } from '@/config/ai-services'
-import { DEFAULT_SERVICE_ENDPOINT, DEFAULT_SERVICE_KEY, DEFAULT_SERVICE_MAX_TOKEN, DEFAULT_SERVICE_TEMPERATURE, DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
+import { serviceOptions } from '@/config/ai-services'
+import {
+  DEFAULT_SERVICE_KEY,
+  DEFAULT_SERVICE_MAX_TOKEN,
+  DEFAULT_SERVICE_TEMPERATURE,
+  DEFAULT_SERVICE_TYPE,
+} from '@/constants/AIConfig'
+import { useStorage } from '@vueuse/core'
+import { defineStore } from 'pinia'
+import { customRef, ref, watch } from 'vue'
 
 export default defineStore(`AIConfig`, () => {
-  const type = useStorage(`openai_type`, DEFAULT_SERVICE_TYPE)
-  const endpoint = useStorage(`openai_endpoint`, DEFAULT_SERVICE_ENDPOINT)
-  const model = useStorage(`openai_model`, DEFAULT_SERVICE_MODEL)
-  const temperature = useStorage(`openai_temperature`, DEFAULT_SERVICE_TEMPERATURE)
-  const maxToken = useStorage(`openai_max_token`, DEFAULT_SERVICE_MAX_TOKEN)
+  /* ————— 与 service 无关的全局配置 ————— */
+  const type = useStorage<string>(`openai_type`, DEFAULT_SERVICE_TYPE)
+  const temperature = useStorage<number>(`openai_temperature`, DEFAULT_SERVICE_TEMPERATURE)
+  const maxToken = useStorage<number>(`openai_max_token`, DEFAULT_SERVICE_MAX_TOKEN)
 
-  const apiKey = customRef((track, trigger) => ({
+  /* ————— 与 service 强相关的字段 ————— */
+  const endpoint = ref<string>(``) // 由 watch(type) 初始化
+  const model = ref<string>(``) // 同上
+
+  /* ————— apiKey：按 service 前缀持久化 ————— */
+  const apiKey = customRef<string>((track, trigger) => ({
     get() {
       track()
-      const key = localStorage.getItem(`openai_key_${type.value}`)
-      return key || DEFAULT_SERVICE_KEY
+      return localStorage.getItem(`openai_key_${type.value}`) || DEFAULT_SERVICE_KEY
     },
-    set(value: string) {
+    set(val: string) {
       if (type.value !== DEFAULT_SERVICE_TYPE) {
-        localStorage.setItem(`openai_key_${type.value}`, value)
+        localStorage.setItem(`openai_key_${type.value}`, val)
       }
       trigger()
     },
   }))
 
+  /* ————————————————— 核心逻辑 ————————————————— */
+
+  // ① type 变化（含首次加载）→ 同步 endpoint & model
+  watch(
+    type,
+    (newType) => {
+      const svc = serviceOptions.find(s => s.value === newType) ?? serviceOptions[0]
+
+      // 更新端点
+      endpoint.value = svc.endpoint
+
+      // 读取或回退模型
+      const saved = localStorage.getItem(`openai_model_${newType}`) || ``
+      model.value = svc.models.includes(saved) ? saved : svc.models[0]
+
+      // 如有回退，写回存储保持一致
+      localStorage.setItem(`openai_model_${newType}`, model.value)
+    },
+    { immediate: true }, // ⬅️ 关键：首次也执行
+  )
+
+  // ② model 变化 → 持久化到对应 service 键
+  watch(model, (val) => {
+    localStorage.setItem(`openai_model_${type.value}`, val)
+  })
+
+  /* ————— actions ————— */
+
   function reset() {
     type.value = DEFAULT_SERVICE_TYPE
-    endpoint.value = DEFAULT_SERVICE_ENDPOINT
-    model.value = DEFAULT_SERVICE_MODEL
     temperature.value = DEFAULT_SERVICE_TEMPERATURE
     maxToken.value = DEFAULT_SERVICE_MAX_TOKEN
 
-    serviceOptions.forEach((service) => {
-      localStorage.removeItem(`openai_key_${service.value}`)
+    // 清理所有 service 相关持久化
+    serviceOptions.forEach(({ value }) => {
+      localStorage.removeItem(`openai_key_${value}`)
+      localStorage.removeItem(`openai_model_${value}`)
     })
   }
 
   return {
+    // state
     type,
     endpoint,
     model,
     temperature,
     maxToken,
     apiKey,
+
+    // actions
     reset,
   }
 })
