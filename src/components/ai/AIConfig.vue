@@ -101,8 +101,8 @@ async function testConnection() {
     const payload = {
       model: config.model,
       messages: [{ role: `user`, content: `ping` }],
-      temperature: config.temperature,
-      max_tokens: config.maxToken,
+      temperature: 0,
+      max_tokens: 1,
       stream: false,
     }
 
