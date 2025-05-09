@@ -138,6 +138,10 @@ function useAIPolish() {
       closeAll()
   })
 
+  function recalcPos() {
+    calcPos(position.left, position.top)
+  }
+
   return {
     AIPolishBtnRef,
     AIPolishPopoverRef,
@@ -147,7 +151,7 @@ function useAIPolish() {
     initPolishEvent,
     startDrag,
     closeAll,
-    calcPos,
+    recalcPos,
   }
 }
 
