@@ -64,7 +64,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleCiteStatus = useToggle(isCiteStatus)
 
   // 是否开启 AI 工具箱
-  const showAIToolbox = useStorage(`showAIToolbox`, false)
+  const showAIToolbox = useStorage(`showAIToolbox`, true)
   const toggleAIToolbox = useToggle(showAIToolbox)
 
   // 是否统计字数和阅读时间
