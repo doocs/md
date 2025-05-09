@@ -8,6 +8,7 @@ export const storeLabels: Record<string, string> = {
   isUseIndent: `使用缩进`,
   isOpenRightSlider: `开启右侧滑块`,
   isOpenPostSlider: `开启右侧发布滑块`,
+  showAIToolbox: `AI 工具箱状态`,
   theme: `主题`,
   fontFamily: `字体`,
   fontSize: `字体大小`,

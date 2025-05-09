@@ -419,12 +419,14 @@ const isOpenHeadingSlider = ref(false)
   <div ref="container" class="container flex flex-col">
     <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
     <AIPolishButton
+      v-if="store.showAIToolbox"
       ref="AIPolishBtnRef"
       :position="position"
       @click="AIPolishPopoverRef?.show"
     />
 
     <AIPolishPopover
+      v-if="store.showAIToolbox"
       ref="AIPolishPopoverRef"
       :position="position"
       :selected-text="selectedText"
