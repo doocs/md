@@ -16,58 +16,31 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { DEFAULT_SERVICE_ENDPOINT, type ServiceOption, serviceOptions } from '@/config/ai-services'
-import { Info } from 'lucide-vue-next'
+import { DEFAULT_SERVICE_MODEL, serviceOptions } from '@/config/ai-services'
+import { DEFAULT_SERVICE_ENDPOINT, DEFAULT_SERVICE_KEY, DEFAULT_SERVICE_MAX_TOKEN, DEFAULT_SERVICE_TEMPERATURE, DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
 
-import { onMounted, reactive, ref, watch } from 'vue'
+import useAIConfigStore from '@/stores/AIConfig'
+import { Info } from 'lucide-vue-next'
 
 const emit = defineEmits([`saved`])
 
-const config = reactive<{
-  type: ServiceOption[`value`]
-  endpoint: string
-  apiKey: string
-  model: string
-  temperature: number
-  maxToken: number
-}>({
-  type: `default`,
-  endpoint: ``,
-  apiKey: ``,
-  model: ``,
-  temperature: 1,
-  maxToken: 1024,
+const AIConfigStore = useAIConfigStore()
+const { type, apiKey, endpoint, model, temperature, maxToken } = storeToRefs(AIConfigStore)
+
+const config = reactive({
+  type: type.value,
+  endpoint: endpoint.value,
+  apiKey: apiKey.value,
+  model: model.value,
+  temperature: temperature.value,
+  maxToken: maxToken.value,
 })
 
 const loading = ref(false)
 const testResult = ref(``)
 
-function currentService() {
+const currentService = computed(() => {
   return serviceOptions.find(service => service.value === config.type) || serviceOptions[0]
-}
-
-function initConfigFromStorage() {
-  const savedType = localStorage.getItem(`openai_type`) || `default`
-  const service = serviceOptions.find(s => s.value === savedType) || serviceOptions[0]
-
-  config.type = savedType
-  if (savedType === `default`) {
-    config.endpoint = DEFAULT_SERVICE_ENDPOINT
-  }
-  else {
-    config.endpoint = localStorage.getItem(`openai_endpoint`) || service.endpoint
-  }
-  config.apiKey = localStorage.getItem(`openai_key_${savedType}`) || ``
-
-  const savedModel = localStorage.getItem(`openai_model`)
-  config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
-
-  config.temperature = Number(localStorage.getItem(`openai_temperature`) || 1)
-  config.maxToken = Number(localStorage.getItem(`openai_max_token`) || 1024)
-}
-
-onMounted(() => {
-  initConfigFromStorage()
 })
 
 // 监听模型变化
@@ -76,27 +49,18 @@ watch(() => config.model, () => {
 })
 
 watch(() => config.type, () => {
-  const service = currentService()
-  if (config.type === `default`) {
-    config.endpoint = DEFAULT_SERVICE_ENDPOINT
-    config.model = service.models[0] || ``
-  }
-  else {
-    const savedModel = localStorage.getItem(`openai_model`)
-    config.endpoint = service.endpoint
-    config.model = savedModel && service.models.includes(savedModel) ? savedModel : (service.models[0] || ``)
-    config.apiKey = localStorage.getItem(`openai_key_${config.type}`) || ``
-  }
+  config.endpoint = currentService.value.endpoint
+  config.model = model.value && currentService.value.models.includes(model.value) ? model.value : currentService.value.models[0]
   testResult.value = `` // ✅ 服务变化时，重置测试结果
 })
 
 function saveConfig(emitEvent = true) {
-  localStorage.setItem(`openai_type`, config.type)
-  localStorage.setItem(`openai_endpoint`, config.endpoint)
-  localStorage.setItem(`openai_key_${config.type}`, config.apiKey)
-  localStorage.setItem(`openai_model`, config.model)
-  localStorage.setItem(`openai_temperature`, config.temperature.toString())
-  localStorage.setItem(`openai_max_token`, config.maxToken.toString())
+  type.value = config.type
+  endpoint.value = config.endpoint
+  apiKey.value = config.apiKey
+  model.value = config.model
+  temperature.value = config.temperature
+  maxToken.value = config.maxToken
 
   if (emitEvent) {
     testResult.value = `✅ 配置已保存`
@@ -105,16 +69,15 @@ function saveConfig(emitEvent = true) {
 }
 
 function clearConfig() {
-  localStorage.removeItem(`openai_type`)
-  localStorage.removeItem(`openai_endpoint`)
-  localStorage.removeItem(`openai_model`)
-  localStorage.removeItem(`openai_temperature`)
-  localStorage.removeItem(`openai_max_token`)
-  serviceOptions.forEach((service) => {
-    localStorage.removeItem(`openai_key_${service.value}`)
-  })
+  config.type = DEFAULT_SERVICE_TYPE
+  config.endpoint = DEFAULT_SERVICE_ENDPOINT
+  config.apiKey = DEFAULT_SERVICE_KEY
+  config.model = DEFAULT_SERVICE_MODEL
+  config.temperature = DEFAULT_SERVICE_TEMPERATURE
+  config.maxToken = DEFAULT_SERVICE_MAX_TOKEN
 
-  initConfigFromStorage()
+  AIConfigStore.reset()
+
   testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
@@ -125,7 +88,7 @@ async function testConnection() {
   const headers: Record<string, string> = {
     'Content-Type': `application/json`,
   }
-  if (config.apiKey && config.type !== `default`) {
+  if (config.apiKey && config.type !== DEFAULT_SERVICE_TYPE) {
     headers.Authorization = `Bearer ${config.apiKey}`
   }
 
@@ -136,7 +99,7 @@ async function testConnection() {
     }
 
     const payload = {
-      model: config.model || (currentService().models[0] || ``),
+      model: config.model,
       messages: [{ role: `user`, content: `ping` }],
       temperature: 0,
       max_tokens: 1,
@@ -202,7 +165,7 @@ async function testConnection() {
       <Select v-model="config.type">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ currentService().label }}
+            {{ currentService.label }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -241,7 +204,7 @@ async function testConnection() {
     <!-- 模型名称 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">模型名称</Label>
-      <Select v-if="currentService().models.length > 0" v-model="config.model">
+      <Select v-if="currentService.models.length > 0" v-model="config.model">
         <SelectTrigger class="w-full">
           <SelectValue>
             {{ config.model || '请选择模型' }}
@@ -249,11 +212,11 @@ async function testConnection() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem
-            v-for="model in currentService().models"
-            :key="model"
-            :value="model"
+            v-for="_model in currentService.models"
+            :key="_model"
+            :value="_model"
           >
-            {{ model }}
+            {{ _model }}
           </SelectItem>
         </SelectContent>
       </Select>
