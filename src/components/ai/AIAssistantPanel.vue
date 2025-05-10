@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Check, Copy, Send, Settings, Trash } from 'lucide-vue-next'
+import { Check, Copy, Pause, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ open: boolean }>()
@@ -115,6 +115,19 @@ function resetMessages() {
   }
   messages.value = getDefaultMessages()
   localStorage.setItem(memoryKey, JSON.stringify(messages.value))
+  scrollToBottom(true)
+}
+
+function pauseStreaming() {
+  if (fetchController.value) {
+    fetchController.value.abort() // 中断请求
+    fetchController.value = null
+  }
+  loading.value = false // 恢复为非加载态
+  // 可选：把最后一条 assistant 设为 done，防止光标闪烁
+  const last = messages.value[messages.value.length - 1]
+  if (last?.role === `assistant`)
+    last.done = true
   scrollToBottom(true)
 }
 
@@ -337,7 +350,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
@@ -353,13 +366,14 @@ async function sendMessage() {
           </Button>
           <!-- 发送按钮 -->
           <Button
-            :disabled="!input.trim() || loading"
+            :disabled="!input.trim() && !loading"
             size="icon"
             class="bg-primary text-primary-foreground hover:bg-primary/90 absolute bottom-3 right-3 rounded-full disabled:opacity-40"
-            aria-label="发送"
-            @click="sendMessage"
+            :aria-label="loading ? '暂停' : '发送'"
+            @click="loading ? pauseStreaming() : sendMessage()"
           >
-            <Send class="h-4 w-4" />
+            <Pause v-if="loading" class="h-4 w-4" />
+            <Send v-else class="h-4 w-4" />
           </Button>
         </div>
       </div>
