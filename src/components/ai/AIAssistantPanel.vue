@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Check, Copy, Edit, Pause, Send, Settings, Trash } from 'lucide-vue-next'
+import { Check, Copy, Edit, Pause, RefreshCcw, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ open: boolean }>()
@@ -160,6 +160,22 @@ async function scrollToBottom(force = false) {
 /* ---------- 引用全文 ---------- */
 function quoteAllContent() {
   isQuoteAllContent.value = !isQuoteAllContent.value
+}
+
+/* ---------- 重新生成最后一条消息 ---------- */
+async function regenerateLast() {
+  const lastUser = [...messages.value].reverse().find(m => m.role === `user`)
+  if (!lastUser)
+    return
+  // 删除紧跟其后的 assistant（若存在）
+  const idx = messages.value.findIndex((m, i, arr) =>
+    i > 0 && arr[i - 1] === lastUser && m.role === `assistant`)
+  if (idx !== -1)
+    messages.value.splice(idx, 1)
+  // 把 user 内容放回输入框并重新发送
+  input.value = lastUser.content
+  await nextTick()
+  sendMessage()
 }
 
 /* ---------- 发送消息 ---------- */
@@ -396,6 +412,16 @@ async function sendMessage() {
                 @click="editMessage(msg.content)"
               >
                 <Edit class="text-muted-foreground h-3 w-3" />
+              </Button>
+              <Button
+                v-if="msg.role === 'assistant' && msg.done && index === messages.length - 1"
+                variant="ghost"
+                size="icon"
+                class="ml-1 h-5 w-5 p-1"
+                aria-label="重新生成"
+                @click="regenerateLast"
+              >
+                <RefreshCcw class="text-muted-foreground h-3 w-3" />
               </Button>
             </div>
           </div>
