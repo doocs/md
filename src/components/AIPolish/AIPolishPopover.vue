@@ -9,7 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Settings, X } from 'lucide-vue-next'
+import { Pause, Settings, X } from 'lucide-vue-next'
 import { nextTick, ref, toRaw, watch } from 'vue'
 
 /* -------------------- props / emits -------------------- */
@@ -28,7 +28,9 @@ const loading = ref(false)
 const abortController = ref<AbortController | null>(null)
 const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
-const selectedAction = ref<`optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`>(`optimize`)
+const selectedAction = ref<
+  `optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`
+>(`optimize`)
 const currentText = ref(``)
 const error = ref(``)
 
@@ -38,7 +40,8 @@ const resultContainer = ref<HTMLElement | null>(null)
 
 /* -------------------- AI config -------------------- */
 const AIConfigStore = useAIConfigStore()
-const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
+const { apiKey, endpoint, model, temperature, maxToken, type }
+  = storeToRefs(AIConfigStore)
 
 /* -------------------- action options -------------------- */
 interface ActionOption {
@@ -48,11 +51,31 @@ interface ActionOption {
 }
 
 const actionOptions: ActionOption[] = [
-  { value: `optimize`, label: `优化文本`, defaultPrompt: `请优化文本，使其更通顺易读。` },
-  { value: `summarize`, label: `文章总结`, defaultPrompt: `请对文本进行摘要，输出主要观点和结论。` },
-  { value: `spellcheck`, label: `错别字纠正`, defaultPrompt: `请找出并纠正文本中的错别字、标点和语法错误。` },
-  { value: `translate-zh`, label: `翻译为中文`, defaultPrompt: `请将文本翻译为地道的中文。` },
-  { value: `translate-en`, label: `翻译为英文`, defaultPrompt: `请将文本翻译为自然流畅的英文。` },
+  {
+    value: `optimize`,
+    label: `优化文本`,
+    defaultPrompt: `请优化文本，使其更通顺易读。`,
+  },
+  {
+    value: `summarize`,
+    label: `文章总结`,
+    defaultPrompt: `请对文本进行摘要，输出主要观点和结论。`,
+  },
+  {
+    value: `spellcheck`,
+    label: `错别字纠正`,
+    defaultPrompt: `请找出并纠正文本中的错别字、标点和语法错误。`,
+  },
+  {
+    value: `translate-zh`,
+    label: `翻译为中文`,
+    defaultPrompt: `请将文本翻译为地道的中文。`,
+  },
+  {
+    value: `translate-en`,
+    label: `翻译为英文`,
+    defaultPrompt: `请将文本翻译为自然流畅的英文。`,
+  },
   { value: `custom`, label: `自定义`, defaultPrompt: `` },
 ]
 
@@ -64,9 +87,8 @@ watch(message, async () => {
 })
 
 watch(selectedAction, (val) => {
-  if (val !== `custom`) {
+  if (val !== `custom`)
     customPrompts.value = []
-  }
 })
 
 // 当 visible 且 props.selectedText 变更时，更新原文并重置状态
@@ -79,12 +101,6 @@ watch(
     }
   },
 )
-
-watch(selectedAction, (val) => {
-  if (val !== `custom`) {
-    customPrompts.value = []
-  }
-})
 
 /* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
@@ -113,7 +129,6 @@ function resetState() {
 
 /* -------------------- AI call -------------------- */
 async function runAIAction() {
-  // 使用 currentText 而非 props.selectedText，以便重复处理更新后的内容
   const text = currentText.value.trim()
   if (!text || loading.value)
     return
@@ -122,19 +137,17 @@ async function runAIAction() {
   loading.value = true
   abortController.value = new AbortController()
 
-  const systemPrompt = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。在输出时，不要输出任何额外的信息，只输出处理后的文本。`
+  const systemPrompt
+    = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。在输出时，不要输出任何额外的信息，只输出处理后的文本。`
   const picked = actionOptions.find(o => o.value === selectedAction.value)!
   const parts: string[] = []
 
-  if (picked.defaultPrompt) {
+  if (picked.defaultPrompt)
     parts.push(picked.defaultPrompt)
-  }
-  if (customPrompts.value.length) {
+  if (customPrompts.value.length)
     parts.push(`请同时满足以下要求：${customPrompts.value.join(`、`)}。`)
-  }
-  if (!parts.length) {
+  if (!parts.length)
     parts.push(`请根据最佳实践优化文本。`)
-  }
 
   const userCommand = parts.join(` `)
   const messages = [
@@ -150,7 +163,9 @@ async function runAIAction() {
     stream: true,
   }
 
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
+  const headers: Record<string, string> = {
+    'Content-Type': `application/json`,
+  }
   if (apiKey.value && type.value !== `default`) {
     headers.Authorization = `Bearer ${apiKey.value}`
   }
@@ -161,16 +176,15 @@ async function runAIAction() {
       url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
     }
 
-    const res = await fetch(url.toString(), {
+    const res = await window.fetch(url.toString(), {
       method: `POST`,
       headers,
       body: JSON.stringify(payload),
-      signal: abortController.value.signal,
+      signal: abortController.value!.signal,
     })
 
-    if (!res.ok || !res.body) {
+    if (!res.ok || !res.body)
       throw new Error(`响应错误：${res.status}`)
-    }
 
     const reader = res.body.getReader()
     const decoder = new TextDecoder(`utf-8`)
@@ -214,6 +228,14 @@ async function runAIAction() {
   }
 }
 
+/* -------------------- abort handler -------------------- */
+function stopAI() {
+  if (loading.value && abortController.value) {
+    abortController.value.abort()
+    loading.value = false
+  }
+}
+
 /* -------------------- actions -------------------- */
 function replaceText() {
   const cm = toRaw(store.editor!)!
@@ -223,21 +245,16 @@ function replaceText() {
   cm.setSelection(start, end)
   cm.focus()
 
-  // 更新展示文本
   currentText.value = message.value
-
-  // 点击接受后隐藏处理结果和按钮
   resetState()
 }
 
 function show() {
   emit(`closeBtn`)
-
   if (!props.selectedText.trim()) {
     toast.error(`请选择需要处理的内容`)
     return
   }
-
   visible.value = true
   currentText.value = props.selectedText
   emit(`recalcPos`)
@@ -250,7 +267,7 @@ function close() {
   resetState()
 }
 
-defineExpose({ visible, runAIAction, replaceText, show, close })
+defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
 </script>
 
 <template>
@@ -276,12 +293,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
             <Settings class="h-4 w-4" />
           </Button>
         </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          aria-label="关闭"
-          @click="close"
-        >
+        <Button variant="ghost" size="icon" aria-label="关闭" @click="close">
           <X class="h-3 w-3" />
         </Button>
       </div>
@@ -306,7 +318,11 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
-                <SelectItem v-for="opt in actionOptions" :key="opt.value" :value="opt.value">
+                <SelectItem
+                  v-for="opt in actionOptions"
+                  :key="opt.value"
+                  :value="opt.value"
+                >
                   {{ opt.label }}
                 </SelectItem>
               </SelectGroup>
@@ -375,22 +391,23 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
 
         <!-- footer buttons -->
         <div class="border-border flex justify-end gap-2 border-t px-6 pb-3 pt-2">
+          <Button v-if="loading" variant="secondary" @click="stopAI">
+            <Pause class="mr-1 h-4 w-4" /> 终止
+          </Button>
           <Button
-            v-if="hasResult"
+            v-if="hasResult && !loading"
             variant="default"
             @click="replaceText"
           >
             接受
           </Button>
           <Button
+            v-if="!loading"
             variant="outline"
-            :disabled="loading || (!hasResult && !!message)"
+            :disabled="!hasResult && !!message"
             @click="runAIAction"
           >
-            {{ loading ? 'AI 处理中...' : hasResult ? '重试' : 'AI 处理' }}
-          </Button>
-          <Button variant="ghost" @click="close">
-            取消
+            {{ hasResult ? '重试' : 'AI 处理' }}
           </Button>
         </div>
       </section>
@@ -420,7 +437,12 @@ defineExpose({ visible, runAIAction, replaceText, show, close })
   width: 6px;
 }
 .custom-scroll::-webkit-scrollbar-thumb {
-  @apply rounded-full bg-gray-400/40 hover:bg-gray-400/60;
+  /* Tailwind @apply in <style> needs explicit classes when using <style scoped> */
+  background-color: rgba(156, 163, 175, 0.4);
+  border-radius: 9999px;
+}
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.6);
 }
 .custom-scroll {
   scrollbar-width: thin;
