@@ -338,15 +338,22 @@ async function sendMessage() {
                 {{ msg.reasoning }}
               </div>
             </template>
-            <div class="whitespace-pre-wrap">
-              {{ msg.content }}
+            <div
+              class="whitespace-pre-wrap"
+              :class="msg.content ? '' : 'animate-pulse text-muted-foreground'"
+            >
+              {{
+                msg.content
+                  || (msg.role === 'assistant' && !msg.done ? '思考中…' : '')
+              }}
             </div>
+
             <div
               class="mt-1 flex"
               :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
             >
               <Button
-                v-if="!(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
+                v-if="index > 0 && !(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
                 variant="ghost"
                 size="icon"
                 class="ml-0 h-5 w-5 p-1"
@@ -356,9 +363,8 @@ async function sendMessage() {
                 <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
                 <Copy v-else class="text-muted-foreground h-3 w-3" />
               </Button>
-              <!-- 编辑按钮 -->
               <Button
-                v-if="!(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
+                v-if="index > 0 && !(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
                 variant="ghost"
                 size="icon"
                 class="ml-1 h-5 w-5 p-1"
@@ -374,7 +380,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
