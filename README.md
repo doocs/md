@@ -185,7 +185,7 @@ docker run -d -p 8080:80 doocs/md:latest
 
 ## 支持我们
 
-如果本项目对你有所帮助，可以通过以下方式支持我们：
+如果本项目对你有所帮助，可以通过以下方式支持我们。
 
 <table style="margin: 0 auto">
   <tbody>
@@ -199,6 +199,29 @@ docker run -d -p 8080:80 doocs/md:latest
       <td align="center" style="width: 260px">
         <img
           src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/support2.jpg"
+          style="width: 200px"
+        /><br />
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+## 反馈与交流
+
+如果你在使用过程中遇到问题，或者有好的建议，欢迎在 [Issues](https://github.com/doocs/md/issues) 中反馈。你也可以加入我们的交流群，和我们一起讨论，若群二维码失效，请添加好友，备注 `md`，我们会拉你进群。
+
+<table style="margin: 0 auto">
+  <tbody>
+    <tr>
+      <td align="center" style="width: 260px">
+        <img
+          src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/doocs-md-wechat-group.jpg"
+          style="width: 200px"
+        /><br />
+      </td>
+      <td align="center" style="width: 260px">
+        <img
+          src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/wechat-ylb.jpg"
           style="width: 200px"
         /><br />
       </td>
