@@ -386,16 +386,28 @@ async function sendMessage() {
       <!-- 快捷指令按钮 -->
       <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
         <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
-          <Button
-            v-for="cmd in quickCmdStore.commands"
-            :key="cmd.id"
-            variant="secondary"
-            size="sm"
-            class="text-xs"
-            @click="applyQuickCommand(cmd)"
-          >
-            {{ cmd.label }}
-          </Button>
+          <!-- 有指令时 -->
+          <template v-if="quickCmdStore.commands.length">
+            <Button
+              v-for="cmd in quickCmdStore.commands"
+              :key="cmd.id"
+              variant="secondary"
+              size="sm"
+              class="text-xs"
+              @click="applyQuickCommand(cmd)"
+            >
+              {{ cmd.label }}
+            </Button>
+          </template>
+
+          <!-- 空态提示 -->
+          <template v-else>
+            <div
+              class="text-muted-foreground flex items-center gap-2 border rounded-md border-dashed px-3 py-1 text-xs"
+            >
+              还没有任何快捷指令，点击右侧添加
+            </div>
+          </template>
 
           <Button
             variant="ghost"
