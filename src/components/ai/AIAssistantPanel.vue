@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -8,6 +9,7 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
+import { useQuickCommands } from '@/stores/useQuickCommands'
 import { Check, Copy, Edit, Pause, RefreshCcw, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
@@ -37,6 +39,7 @@ const fetchController = ref<AbortController | null>(null)
 const copiedIndex = ref<number | null>(null)
 const memoryKey = `ai_memory_context`
 const isQuoteAllContent = ref(false)
+const cmdMgrOpen = ref(false)
 
 interface ChatMessage {
   role: `user` | `assistant` | `system`
@@ -50,29 +53,7 @@ const AIConfigStore = useAIConfigStore()
 const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
 
 /* ---------- 快捷指令 ---------- */
-interface QuickCommand {
-  label: string
-  buildPrompt: (selected?: string) => string
-}
-
-const quickCommands: QuickCommand[] = [
-  {
-    label: `润色`,
-    buildPrompt: (sel = ``) => `请润色以下内容：\n\n${sel}`,
-  },
-  {
-    label: `翻译成英文`,
-    buildPrompt: (sel = ``) => `请将以下内容翻译为英文：\n\n${sel}`,
-  },
-  {
-    label: `翻译成中文`,
-    buildPrompt: (sel = ``) => `Please translate the following content into Chinese:\n\n${sel}`,
-  },
-  {
-    label: `总结`,
-    buildPrompt: (sel = ``) => `请对以下内容进行总结：\n\n${sel}`,
-  },
-]
+const quickCmdStore = useQuickCommands()
 
 function getSelectedText(): string {
   try {
@@ -89,7 +70,7 @@ function getSelectedText(): string {
   }
 }
 
-function applyQuickCommand(cmd: QuickCommand) {
+function applyQuickCommand(cmd: QuickCommandRuntime) {
   const selected = getSelectedText()
   input.value = cmd.buildPrompt(selected)
   historyIndex.value = null
@@ -404,16 +385,30 @@ async function sendMessage() {
 
       <!-- 快捷指令按钮 -->
       <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
-        <Button
-          v-for="cmd in quickCommands"
-          :key="cmd.label"
-          variant="secondary"
-          size="sm"
-          class="text-xs"
-          @click="applyQuickCommand(cmd)"
-        >
-          {{ cmd.label }}
-        </Button>
+        <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
+          <Button
+            v-for="cmd in quickCmdStore.commands"
+            :key="cmd.id"
+            variant="secondary"
+            size="sm"
+            class="text-xs"
+            @click="applyQuickCommand(cmd)"
+          >
+            {{ cmd.label }}
+          </Button>
+
+          <Button
+            variant="ghost"
+            size="icon"
+            title="管理指令"
+            @click="cmdMgrOpen = true"
+          >
+            <Edit class="h-4 w-4" />
+          </Button>
+        </div>
+
+        <!-- 指令管理弹窗 -->
+        <QuickCommandManager v-model:open="cmdMgrOpen" />
       </div>
 
       <AIConfig
@@ -495,7 +490,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
