@@ -26,7 +26,7 @@ watch(dialogVisible, (val) => {
 })
 
 /* ---------- 输入 & 历史 ---------- */
-const input = ref(``)
+const input = ref<string>(``)
 const inputHistory = ref<string[]>([])
 const historyIndex = ref<number | null>(null)
 
@@ -48,6 +48,61 @@ interface ChatMessage {
 const messages = ref<ChatMessage[]>([])
 const AIConfigStore = useAIConfigStore()
 const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
+
+/* ---------- 快捷指令 ---------- */
+interface QuickCommand {
+  label: string
+  buildPrompt: (selected?: string) => string
+}
+
+const quickCommands: QuickCommand[] = [
+  {
+    label: `润色`,
+    buildPrompt: (sel = ``) => `请润色以下内容：\n\n${sel}`,
+  },
+  {
+    label: `翻译成英文`,
+    buildPrompt: (sel = ``) => `请将以下内容翻译为英文：\n\n${sel}`,
+  },
+  {
+    label: `翻译成中文`,
+    buildPrompt: (sel = ``) => `Please translate the following content into Chinese:\n\n${sel}`,
+  },
+  {
+    label: `总结`,
+    buildPrompt: (sel = ``) => `请对以下内容进行总结：\n\n${sel}`,
+  },
+]
+
+function getSelectedText(): string {
+  try {
+    const cm: any = editor.value
+    if (!cm)
+      return ``
+    if (typeof cm.getSelection === `function`)
+      return cm.getSelection() || ``
+    return ``
+  }
+  catch (e) {
+    console.warn(`获取选中文本失败`, e)
+    return ``
+  }
+}
+
+function applyQuickCommand(cmd: QuickCommand) {
+  const selected = getSelectedText()
+  input.value = cmd.buildPrompt(selected)
+  historyIndex.value = null
+  nextTick(() => {
+    const textarea = document.querySelector(
+      `textarea[placeholder*="说些什么" ]`,
+    ) as HTMLTextAreaElement | null
+    textarea?.focus()
+    if (textarea) {
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+    }
+  })
+}
 
 /* ---------- 初始数据 ---------- */
 onMounted(async () => {
@@ -114,7 +169,6 @@ function editMessage(content: string) {
   nextTick(() => {
     const textarea = document.querySelector(`textarea[placeholder*="说些什么" ]`) as HTMLTextAreaElement | null
     textarea?.focus()
-    // 将光标置于文本末尾
     if (textarea) {
       const len = textarea.value.length
       textarea.setSelectionRange(len, len)
@@ -133,11 +187,10 @@ function resetMessages() {
 
 function pauseStreaming() {
   if (fetchController.value) {
-    fetchController.value.abort() // 中断请求
+    fetchController.value.abort()
     fetchController.value = null
   }
-  loading.value = false // 恢复为非加载态
-  // 可选：把最后一条 assistant 设为 done，防止光标闪烁
+  loading.value = false
   const last = messages.value[messages.value.length - 1]
   if (last?.role === `assistant`)
     last.done = true
@@ -167,12 +220,10 @@ async function regenerateLast() {
   const lastUser = [...messages.value].reverse().find(m => m.role === `user`)
   if (!lastUser)
     return
-  // 删除紧跟其后的 assistant（若存在）
   const idx = messages.value.findIndex((m, i, arr) =>
     i > 0 && arr[i - 1] === lastUser && m.role === `assistant`)
   if (idx !== -1)
     messages.value.splice(idx, 1)
-  // 把 user 内容放回输入框并重新发送
   input.value = lastUser.content
   await nextTick()
   sendMessage()
@@ -351,6 +402,20 @@ async function sendMessage() {
         </p>
       </DialogHeader>
 
+      <!-- 快捷指令按钮 -->
+      <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
+        <Button
+          v-for="cmd in quickCommands"
+          :key="cmd.label"
+          variant="secondary"
+          size="sm"
+          class="text-xs"
+          @click="applyQuickCommand(cmd)"
+        >
+          {{ cmd.label }}
+        </Button>
+      </div>
+
       <AIConfig
         v-if="configVisible"
         class="mb-4 w-full border rounded-md p-4"
@@ -430,7 +495,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
@@ -462,16 +527,14 @@ async function sendMessage() {
 </template>
 
 <style scoped>
-/* 安全区 & 滚动条细化 */
 :root {
-  --safe-bottom: env(safe-area-inset-bottom); /* iOS 刘海、Home 指示条适配 */
+  --safe-bottom: env(safe-area-inset-bottom);
 }
 
 .chat-container {
   padding-bottom: calc(1rem + var(--safe-bottom));
 }
 
-/* 触屏设备滚动条更细 */
 @media (pointer: coarse) {
   .custom-scroll::-webkit-scrollbar {
     width: 3px;
