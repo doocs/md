@@ -76,14 +76,12 @@ const quickCommands: QuickCommand[] = [
 
 function getSelectedText(): string {
   try {
-    const monaco = editor.value
-    if (!monaco)
+    const cm: any = editor.value
+    if (!cm)
       return ``
-    const model = monaco.getModel()
-    const selection = monaco.getSelection()
-    if (!model || !selection)
-      return ``
-    return model.getValueInRange(selection) || ``
+    if (typeof cm.getSelection === `function`)
+      return cm.getSelection() || ``
+    return ``
   }
   catch (e) {
     console.warn(`获取选中文本失败`, e)
@@ -497,7 +495,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
