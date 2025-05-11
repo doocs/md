@@ -32,10 +32,19 @@ import { marked } from 'marked'
 import { v4 as uuid } from 'uuid'
 
 /**********************************
- * Post 结构接口
+ * Folder / Post 接口
  *********************************/
-interface Post {
+export interface Folder {
   id: string
+  name: string
+  createDatetime: Date
+  updateDatetime: Date
+}
+
+export interface Post {
+  id: string
+  /** 所属文件夹 id，null 或 'root' 代表未归档 */
+  folderId: string | null
   title: string
   content: string
   history: {
@@ -104,23 +113,43 @@ export const useStore = defineStore(`store`, () => {
   const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
 
   /*******************************
-   * 内容列表 posts：默认就带 id
+   * Folder 列表
    ******************************/
-  const posts = useStorage<Post[]>(addPrefix(`posts`), [
+  const folders = useStorage<Folder[]>(addPrefix(`folders`), [
     {
-      id: uuid(),
-      title: `内容1`,
-      content: DEFAULT_CONTENT,
-      history: [
-        { datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT },
-      ],
+      id: `root`,
+      name: `未归档`,
       createDatetime: new Date(),
       updateDatetime: new Date(),
     },
   ])
 
-  // currentPostId 先存空串
+  const currentFolderId = useStorage(addPrefix(`current_folder_id`), `root`)
+
+  /*******************************
+   * Post 列表
+   ******************************/
+  const posts = useStorage<Post[]>(addPrefix(`posts`), [
+    {
+      id: uuid(),
+      folderId: `root`,
+      title: `内容1`,
+      content: DEFAULT_CONTENT,
+      history: [{ datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT }],
+      createDatetime: new Date(),
+      updateDatetime: new Date(),
+    },
+  ])
+
+  // 当前文章 id / index
   const currentPostId = useStorage(addPrefix(`current_post_id`), ``)
+  const currentPostIndex = computed<number>({
+    get: () => posts.value.findIndex(p => p.id === currentPostId.value),
+    set: (idx) => {
+      if (idx >= 0 && idx < posts.value.length)
+        currentPostId.value = posts.value[idx].id
+    },
+  })
 
   // 是否为移动端
   const isMobile = useStorage(`isMobile`, false)
@@ -145,6 +174,7 @@ export const useStore = defineStore(`store`, () => {
       return {
         ...post,
         id: post.id ?? uuid(),
+        folderId: post.folderId ?? `root`,
         createDatetime: post.createDatetime ?? new Date(now + index),
         updateDatetime: post.updateDatetime ?? new Date(now + index),
       }
@@ -159,24 +189,16 @@ export const useStore = defineStore(`store`, () => {
   /** 根据 id 找索引 */
   const findIndexById = (id: string) => posts.value.findIndex(p => p.id === id)
 
-  /** computed: 让旧代码还能用 index，但底层映射 id */
-  const currentPostIndex = computed<number>({
-    get: () => findIndexById(currentPostId.value),
-    set: (idx) => {
-      if (idx >= 0 && idx < posts.value.length)
-        currentPostId.value = posts.value[idx].id
-    },
-  })
-
   /** 获取 Post */
   const getPostById = (id: string) => posts.value.find(p => p.id === id)
 
   /********************************
    * CRUD
    ********************************/
-  const addPost = (title: string) => {
+  const addPost = (title: string, folderId: string | null = currentFolderId.value) => {
     const newPost: Post = {
       id: uuid(),
+      folderId,
       title,
       content: `# ${title}`,
       history: [
@@ -201,6 +223,39 @@ export const useStore = defineStore(`store`, () => {
       return
     posts.value.splice(idx, 1)
     currentPostId.value = posts.value[Math.min(idx, posts.value.length - 1)]?.id ?? ``
+  }
+
+  /* ---------- Folder CRUD ---------- */
+  const addFolder = (name: string) => {
+    const f: Folder = {
+      id: uuid(),
+      name,
+      createDatetime: new Date(),
+      updateDatetime: new Date(),
+    }
+    folders.value.push(f)
+    currentFolderId.value = f.id
+  }
+
+  const renameFolder = (id: string, name: string) => {
+    const f = folders.value.find(f => f.id === id)
+    if (f) {
+      f.name = name
+      f.updateDatetime = new Date()
+    }
+  }
+
+  const delFolder = (id: string) => {
+    if (id === `root`)
+      return // root 不可删
+    // 处理内部文章：丢到 root（或选择级联删除）
+    posts.value.forEach((p) => {
+      if (p.folderId === id)
+        p.folderId = `root`
+    })
+    folders.value = folders.value.filter(f => f.id !== id)
+    if (currentFolderId.value === id)
+      currentFolderId.value = `root`
   }
 
   /********************************
@@ -742,6 +797,13 @@ export const useStore = defineStore(`store`, () => {
     setCssEditorValue,
     tabChanged,
     renameTab,
+    /* -------- Folder -------- */
+    folders,
+    currentFolderId,
+    addFolder,
+    renameFolder,
+    delFolder,
+    /* -------- Post -------- */
     posts,
     currentPostId,
     currentPostIndex,
@@ -812,8 +874,10 @@ export function getAllStoreStates() {
     codeBlockTheme: store.codeBlockTheme,
     legend: store.legend,
     currentPostId: store.currentPostId,
+    currentFolderId: store.currentFolderId,
     currentPostIndex: store.currentPostIndex,
     posts: store.posts,
+    folders: store.folders,
     cssContentConfig: store.cssContentConfig,
     titleList: store.titleList,
     readingTime: store.readingTime,
