@@ -1,12 +1,9 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import { useStorage } from '@vueuse/core'
 import {
-  ArrowUpNarrowWide,
   Edit3,
   Ellipsis,
-  FolderPlus,
   History,
   Plus,
   Trash,
@@ -20,7 +17,6 @@ const store = useStore()
  * -------------------------------------------------------------------- */
 const folders = computed(() => [...store.folders].sort((a, b) => a.name.localeCompare(b.name)))
 
-/* sortMode is global but UI is rendered inside each folder row so UX feels scoped. */
 const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`) as Ref<string>
 
 const sortedPosts = computed(() => {
@@ -40,21 +36,8 @@ const sortedPosts = computed(() => {
 })
 
 /* ----------------------------------------------------------------------
- * New / edit / delete folder
+ * Folder rename / delete (creation logic removed)
  * -------------------------------------------------------------------- */
-const isOpenAddFolderDialog = ref(false)
-const addFolderInputVal = ref(``)
-watch(isOpenAddFolderDialog, open => open && (addFolderInputVal.value = ``))
-function addFolder() {
-  if (!addFolderInputVal.value.trim())
-    return toast.error(`文件夹名称不可为空`)
-  if (folders.value.some(f => f.name === addFolderInputVal.value.trim()))
-    return toast.error(`文件夹名称已存在`)
-  store.addFolder(addFolderInputVal.value.trim())
-  isOpenAddFolderDialog.value = false
-  toast.success(`文件夹新增成功`)
-}
-
 const editFolderId = ref<string | null>(null)
 const isOpenEditFolderDialog = ref(false)
 const renameFolderInputVal = ref(``)
@@ -200,65 +183,6 @@ watch(
       class="space-y-1 h-full overflow-auto border-r-2 border-gray/20 p-2 transition-transform"
       :class="{ 'translate-x-100': store.isOpenPostSlider, '-translate-x-full': !store.isOpenPostSlider }"
     >
-      <!-- Top actions -->
-      <div class="mb-4 flex items-center justify-between px-1">
-        <div class="flex gap-2">
-          <!-- Add folder -->
-          <Dialog v-model:open="isOpenAddFolderDialog">
-            <DialogTrigger as-child>
-              <Button variant="outline" size="sm" class="h-8">
-                <FolderPlus class="mr-1 size-4" /> 文件夹
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>新增文件夹</DialogTitle>
-                <DialogDescription>请输入文件夹名称</DialogDescription>
-              </DialogHeader>
-              <Input v-model="addFolderInputVal" @keyup.enter="addFolder" />
-              <DialogFooter>
-                <Button @click="addFolder">
-                  确 定
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        </div>
-
-        <!-- Sort dropdown (global) -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" size="sm" class="h-8 w-8 p-0">
-              <ArrowUpNarrowWide class="size-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuRadioGroup v-model="sortMode">
-              <DropdownMenuRadioItem value="A-Z">
-                文件名（A-Z）
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="Z-A">
-                文件名（Z-A）
-              </DropdownMenuRadioItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioItem value="update-new-old">
-                编辑时间（新→旧）
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="update-old-new">
-                编辑时间（旧→新）
-              </DropdownMenuRadioItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuRadioItem value="create-new-old">
-                创建时间（新→旧）
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="create-old-new">
-                创建时间（旧→新）
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
-
       <!-- Folder & posts list -->
       <div class="space-y-1">
         <div
