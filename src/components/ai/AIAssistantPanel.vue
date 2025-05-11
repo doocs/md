@@ -10,7 +10,7 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
 import { useQuickCommands } from '@/stores/useQuickCommands'
-import { Check, Copy, Edit, Pause, RefreshCcw, Send, Settings, Trash } from 'lucide-vue-next'
+import { Check, Copy, Edit, Pause, Plus, RefreshCcw, Send, Settings, Trash } from 'lucide-vue-next'
 import { nextTick, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{ open: boolean }>()
@@ -415,7 +415,7 @@ async function sendMessage() {
             title="管理指令"
             @click="cmdMgrOpen = true"
           >
-            <Edit class="h-4 w-4" />
+            <Plus class="h-4 w-4" />
           </Button>
         </div>
 

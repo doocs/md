@@ -9,6 +9,7 @@ import { ref, watch } from 'vue'
 /* ---------- 弹窗开关 ---------- */
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
+
 const dialogOpen = ref(props.open)
 watch(() => props.open, v => (dialogOpen.value = v))
 watch(dialogOpen, v => emit(`update:open`, v))
@@ -36,11 +37,9 @@ function beginEdit(cmd: { id: string, label: string, template: string }) {
   editLabel.value = cmd.label
   editTemplate.value = cmd.template
 }
-
 function cancelEdit() {
   editingId.value = null
 }
-
 function saveEdit() {
   if (!editLabel.value.trim() || !editTemplate.value.trim())
     return
@@ -51,13 +50,15 @@ function saveEdit() {
 
 <template>
   <Dialog v-model:open="dialogOpen">
-    <DialogContent class="w-full sm:max-w-lg">
+    <DialogContent
+      class="max-h-[90vh] w-[92vw] flex flex-col sm:max-w-lg"
+    >
       <DialogHeader>
         <DialogTitle>管理快捷指令</DialogTitle>
       </DialogHeader>
 
-      <div class="space-y-4">
-        <!-- 列表 -->
+      <!-- 列表：独立滚动区域 -->
+      <div class="space-y-4 flex-1 overflow-y-auto pr-1">
         <div
           v-for="cmd in store.commands"
           :key="cmd.id"
@@ -66,7 +67,11 @@ function saveEdit() {
           <!-- 编辑态 -->
           <template v-if="editingId === cmd.id">
             <Input v-model="editLabel" placeholder="指令名称" />
-            <Textarea v-model="editTemplate" rows="2" placeholder="模板内容，支持 {{sel}} 占位" />
+            <Textarea
+              v-model="editTemplate"
+              rows="2"
+              placeholder="模板内容，支持 {{sel}} 占位"
+            />
             <div class="flex justify-end gap-2">
               <Button size="xs" @click="saveEdit">
                 保存
@@ -92,19 +97,19 @@ function saveEdit() {
             </div>
           </template>
         </div>
+      </div>
 
-        <!-- 新增 -->
-        <div class="space-y-2 border rounded-md p-3">
-          <Input v-model="label" placeholder="指令名称 (如：改写为 SEO 文案)" />
-          <Textarea
-            v-model="template"
-            rows="2"
-            placeholder="模板，可用 {{sel}} 占位，例如：\n请把以下文字改写为 SEO 友好的标题：\n\n{{sel}}"
-          />
-          <Button class="w-full" @click="addCmd">
-            添加
-          </Button>
-        </div>
+      <!-- 新增表单：固定在滚动区下方 -->
+      <div class="space-y-2 mt-4 border rounded-md p-3">
+        <Input v-model="label" placeholder="指令名称 (如：改写为 SEO 文案)" />
+        <Textarea
+          v-model="template"
+          rows="2"
+          placeholder="模板，可用 {{sel}} 占位，例如：\n请把以下文字改写为 SEO 友好的标题：\n\n{{sel}}"
+        />
+        <Button class="w-full" @click="addCmd">
+          添加
+        </Button>
       </div>
     </DialogContent>
   </Dialog>
