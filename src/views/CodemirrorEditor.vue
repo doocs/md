@@ -431,6 +431,7 @@ const isOpenHeadingSlider = ref(false)
       :position="position"
       :selected-text="selectedText"
       :is-dragging="isDragging"
+      :is-mobile="store.isMobile"
       @close-btn="AIPolishBtnRef?.close"
       @recalc-pos="recalcPos"
       @start-drag="startDrag"

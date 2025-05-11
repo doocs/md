@@ -322,7 +322,7 @@ async function sendMessage() {
 
 <template>
   <Dialog v-model:open="dialogVisible">
-    <DialogContent class="bg-card text-card-foreground max-w-2xl w-full rounded-xl shadow-xl">
+    <DialogContent class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl">
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
@@ -359,7 +359,7 @@ async function sendMessage() {
 
       <div
         v-if="!configVisible"
-        class="custom-scroll space-y-3 chat-container mb-4 max-h-[60vh] overflow-y-auto pr-2"
+        class="custom-scroll space-y-3 chat-container mb-4 flex-1 overflow-y-auto pr-2"
       >
         <div
           v-for="(msg, index) in messages"
@@ -462,6 +462,21 @@ async function sendMessage() {
 </template>
 
 <style scoped>
+/* 安全区 & 滚动条细化 */
+:root {
+  --safe-bottom: env(safe-area-inset-bottom); /* iOS 刘海、Home 指示条适配 */
+}
+
+.chat-container {
+  padding-bottom: calc(1rem + var(--safe-bottom));
+}
+
+/* 触屏设备滚动条更细 */
+@media (pointer: coarse) {
+  .custom-scroll::-webkit-scrollbar {
+    width: 3px;
+  }
+}
 .custom-scroll::-webkit-scrollbar {
   width: 6px;
 }

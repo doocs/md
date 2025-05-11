@@ -17,6 +17,7 @@ const props = defineProps<{
   position: { top: number, left: number }
   selectedText: string
   isDragging: boolean
+  isMobile: boolean
 }>()
 const emit = defineEmits([`closeBtn`, `recalcPos`, `startDrag`])
 
@@ -274,13 +275,13 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
   <Transition name="fade-scale">
     <div
       v-if="visible"
-      class="bg-card border-border text-card-foreground fixed z-50 w-[460px] border rounded-xl shadow-2xl"
-      :style="{ left: `${position.left}px`, top: `${position.top}px`, transformOrigin: 'top left' }"
+      class="bg-card border-border text-card-foreground fixed left-1/2 top-1/2 z-50 max-h-[90dvh] w-[90vw] flex flex-col overflow-hidden border rounded-xl shadow-2xl sm:w-[460px] -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0"
+      :style="props.isMobile ? {} : { left: `${position.left}px`, top: `${position.top}px`, transformOrigin: 'top left' }"
     >
       <!-- header -->
       <div
-        class="border-border popover-header flex cursor-move select-none items-center justify-between border-b px-6 pb-2 pt-3"
-        @mousedown="emit('startDrag', $event)"
+        class="border-border popover-header flex select-none items-center justify-between border-b px-4 pb-2 pt-3 sm:cursor-move sm:px-6"
+        @mousedown="!props.isMobile && emit('startDrag', $event)"
       >
         <div class="flex items-center gap-2">
           <span class="text-lg font-bold">AI 工具箱</span>
@@ -306,7 +307,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
       />
 
       <!-- main content -->
-      <section v-else class="space-y-3 px-6 pb-2 pt-3">
+      <section v-else class="space-y-3 custom-scroll flex-1 overflow-y-auto px-4 pb-2 pt-3 sm:px-6">
         <!-- action selector -->
         <div>
           <div class="mb-1 text-sm font-semibold">
@@ -336,7 +337,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
             原文
           </div>
           <div
-            class="border-border custom-scroll text-muted-foreground bg-muted/20 max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
+            class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
           >
             {{ currentText }}
           </div>
@@ -417,20 +418,27 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
 
 <style scoped>
 .fade-scale-enter-active {
-  transition: all 0.2s ease-out;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
 }
 .fade-scale-leave-active {
-  transition: all 0.15s ease-in;
+  transition:
+    opacity 0.15s ease,
+    transform 0.15s ease;
 }
+
 .fade-scale-enter-from,
 .fade-scale-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  --tw-scale-x: 0.95;
+  --tw-scale-y: 0.95;
 }
 .fade-scale-enter-to,
 .fade-scale-leave-from {
   opacity: 1;
-  transform: scale(1);
+  --tw-scale-x: 1;
+  --tw-scale-y: 1;
 }
 
 .custom-scroll::-webkit-scrollbar {
@@ -455,5 +463,11 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
 .popover-header {
   cursor: move;
   user-select: none;
+}
+
+@media (pointer: coarse) {
+  .custom-scroll::-webkit-scrollbar {
+    width: 3px;
+  }
 }
 </style>

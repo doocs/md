@@ -141,7 +141,7 @@ async function testConnection() {
 </script>
 
 <template>
-  <div class="space-y-4 text-sm">
+  <div class="custom-scroll space-y-4 max-h-[calc(100dvh-10rem)] overflow-y-auto pr-1 text-xs sm:max-h-none sm:text-sm">
     <div class="font-medium">
       AI 配置
     </div>
@@ -255,7 +255,7 @@ async function testConnection() {
     </div>
 
     <!-- 操作按钮区域 -->
-    <div class="mt-2 flex gap-2">
+    <div class="mt-2 flex flex-col gap-2 sm:flex-row">
       <Button size="sm" @click="saveConfig">
         保存
       </Button>
@@ -278,3 +278,27 @@ async function testConnection() {
     </div>
   </div>
 </template>
+
+<style scoped>
+.custom-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+@media (pointer: coarse) {
+  /* 触屏设备更细 */
+  .custom-scroll::-webkit-scrollbar {
+    width: 3px;
+  }
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+  @apply rounded-full bg-gray-400/40 hover:bg-gray-400/60;
+  @apply dark:bg-gray-500/40 dark:hover:bg-gray-500/70;
+}
+.custom-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(156 163 175 / 0.4) transparent;
+}
+.dark .custom-scroll {
+  scrollbar-color: rgb(107 114 128 / 0.4) transparent;
+}
+</style>
