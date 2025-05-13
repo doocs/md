@@ -27,6 +27,7 @@ const {
   pasteFromClipboard,
   resetStyleConfirm,
   dowloadAsCardImage,
+  clearContent,
 } = store
 
 const {
@@ -466,6 +467,9 @@ const isOpenHeadingSlider = ref(false)
               </ContextMenuItem>
               <ContextMenuItem inset @click="importDefaultContent()">
                 重置文档
+              </ContextMenuItem>
+              <ContextMenuItem inset @click="clearContent()">
+                清空内容
               </ContextMenuItem>
               <ContextMenuSeparator />
               <ContextMenuItem inset @click="importMarkdownContent()">

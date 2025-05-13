@@ -625,6 +625,12 @@ export const useStore = defineStore(`store`, () => {
     toast.success(`文档已重置`)
   }
 
+  // 清空内容
+  const clearContent = () => {
+    editor.value!.setValue(``)
+    toast.success(`内容已清空`)
+  }
+
   const copyToClipboard = async () => {
     try {
       const selectedText = editor.value!.getSelection()
@@ -728,6 +734,7 @@ export const useStore = defineStore(`store`, () => {
 
     importMarkdownContent,
     importDefaultContent,
+    clearContent,
 
     copyToClipboard,
     pasteFromClipboard,
