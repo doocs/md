@@ -502,7 +502,7 @@ async function sendMessage() {
 
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
@@ -512,10 +512,21 @@ async function sendMessage() {
             @keydown="handleKeydown"
           />
           <!-- 引用全文按钮 -->
-          <Button variant="ghost" size="icon" :class="isQuoteAllContent ? 'bg-gray-100' : 'text-gray-500'" class="h-8 w-20 border text-white color-black" aria-label="引用全文" @click="quoteAllContent">
-            <Copy class="mr-1 h-4 w-4 color-gray-500" />
-            <span class="text-xs text-gray-500">引用全文</span>
+          <Button
+            size="sm"
+            variant="outline"
+            class="h-8 flex items-center gap-1 rounded-md px-3 font-medium transition-colors duration-150" :class="[
+              isQuoteAllContent
+                ? 'bg-primary text-white border-primary dark:bg-white dark:text-black dark:border-white'
+                : 'bg-background text-muted-foreground border-border hover:text-foreground hover:border-foreground dark:bg-muted dark:text-gray-400 dark:hover:text-white dark:hover:border-white/60',
+            ]"
+            aria-label="引用全文"
+            @click="quoteAllContent"
+          >
+            <component :is="isQuoteAllContent ? Check : Copy" class="h-4 w-4" />
+            <span class="text-xs">引用全文</span>
           </Button>
+
           <!-- 发送按钮 -->
           <Button
             :disabled="!input.trim() && !loading"

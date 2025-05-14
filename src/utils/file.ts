@@ -66,7 +66,7 @@ function getDir() {
 function getDateFilename(filename: string) {
   const currentTimestamp = new Date().getTime()
   // 获取最后一个点号后的内容作为文件扩展名
-  const fileSuffix = filename.split('.').pop()
+  const fileSuffix = filename.split(`.`).pop()
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
 }
 
