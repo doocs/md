@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/* ---------- 依赖 ---------- */
 import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
 import { Button } from '@/components/ui/button'
 import {
@@ -10,11 +11,47 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
 import { useQuickCommands } from '@/stores/useQuickCommands'
-import { Check, Copy, Edit, Pause, Plus, RefreshCcw, Send, Settings, Trash } from 'lucide-vue-next'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import hljs from 'highlight.js'
+import {
+  Check,
+  Copy,
+  Edit,
+  Pause,
+  Plus,
+  RefreshCcw,
+  Send,
+  Settings,
+  Trash,
+} from 'lucide-vue-next'
 
+/* ---------- Markdown & highlight.js ---------- */
+import { Marked } from 'marked'
+import { markedHighlight } from 'marked-highlight'
+import { nextTick, onMounted, ref, watch } from 'vue'
+/* ---------- 组件属性 ---------- */
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
+// 浅色主题
+
+const aiMarked = new Marked(
+  markedHighlight({
+    highlight(code: string, lang: string) {
+      return lang && hljs.getLanguage(lang)
+        ? hljs.highlight(code, { language: lang }).value
+        : hljs.highlightAuto(code).value
+    },
+  }),
+)
+
+aiMarked.setOptions({
+  gfm: true,
+  breaks: true,
+})
+
+function renderMarkdown(text: string) {
+  return aiMarked.parse(text)
+}
+
 const store = useStore()
 const { editor } = storeToRefs(store)
 
@@ -41,6 +78,7 @@ const memoryKey = `ai_memory_context`
 const isQuoteAllContent = ref(false)
 const cmdMgrOpen = ref(false)
 
+/* ---------- 消息结构 ---------- */
 interface ChatMessage {
   role: `user` | `assistant` | `system`
   content: string
@@ -95,11 +133,12 @@ function getDefaultMessages(): ChatMessage[] {
   return [{ role: `assistant`, content: `你好，我是 AI 助手，有什么可以帮你的？` }]
 }
 
-/* ---------- 事件 ---------- */
+/* ---------- 事件处理 ---------- */
 function handleConfigSaved() {
   configVisible.value = false
   scrollToBottom(true)
 }
+
 function handleKeydown(e: KeyboardEvent) {
   if (e.isComposing || e.keyCode === 229)
     return
@@ -134,6 +173,7 @@ function handleKeydown(e: KeyboardEvent) {
     }
   }
 }
+
 async function copyToClipboard(text: string, index: number) {
   try {
     await navigator.clipboard.writeText(text)
@@ -144,11 +184,14 @@ async function copyToClipboard(text: string, index: number) {
     console.error(`复制失败:`, err)
   }
 }
+
 function editMessage(content: string) {
   input.value = content
   historyIndex.value = null
   nextTick(() => {
-    const textarea = document.querySelector(`textarea[placeholder*="说些什么" ]`) as HTMLTextAreaElement | null
+    const textarea = document.querySelector(
+      `textarea[placeholder*="说些什么" ]`,
+    ) as HTMLTextAreaElement | null
     textarea?.focus()
     if (textarea) {
       const len = textarea.value.length
@@ -156,6 +199,7 @@ function editMessage(content: string) {
     }
   })
 }
+
 function resetMessages() {
   if (fetchController.value) {
     fetchController.value.abort()
@@ -178,12 +222,13 @@ function pauseStreaming() {
   scrollToBottom(true)
 }
 
-/* ---------- 滚动 ---------- */
+/* ---------- 滚动控制 ---------- */
 async function scrollToBottom(force = false) {
   await nextTick()
   const container = document.querySelector(`.chat-container`)
   if (container) {
-    const isNearBottom = (container.scrollTop + container.clientHeight) >= (container.scrollHeight - 50)
+    const isNearBottom = (container.scrollTop + container.clientHeight)
+      >= (container.scrollHeight - 50)
     if (force || isNearBottom) {
       container.scrollTop = container.scrollHeight
       await new Promise(resolve => setTimeout(resolve, 50))
@@ -214,6 +259,8 @@ async function regenerateLast() {
 async function sendMessage() {
   if (!input.value.trim() || loading.value)
     return
+
+  /* 记录历史输入 */
   inputHistory.value.push(input.value.trim())
   historyIndex.value = null
 
@@ -227,6 +274,7 @@ async function sendMessage() {
   const replyMessageProxy = messages.value[messages.value.length - 1]
   await scrollToBottom(true)
 
+  /* 组装上下文 */
   const allHistory = messages.value
     .slice(-12)
     .filter((msg, idx, arr) =>
@@ -253,7 +301,7 @@ async function sendMessage() {
     ? [{
         role: `system`,
         content:
-        `下面是一篇 Markdown 文章全文，请严格以此为主完成后续指令：\n\n${editor.value!.getValue()}`,
+          `下面是一篇 Markdown 文章全文，请严格以此为主完成后续指令：\n\n${editor.value!.getValue()}`,
       }]
     : []
 
@@ -340,7 +388,8 @@ async function sendMessage() {
     }
     else {
       console.error(`请求失败:`, e)
-      messages.value[messages.value.length - 1].content = `❌ 请求失败: ${(e as Error).message}`
+      messages.value[messages.value.length - 1].content
+        = `❌ 请求失败: ${(e as Error).message}`
     }
     await scrollToBottom(true)
   }
@@ -354,10 +403,14 @@ async function sendMessage() {
 
 <template>
   <Dialog v-model:open="dialogVisible">
-    <DialogContent class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl">
+    <DialogContent
+      class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl"
+    >
+      <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 对话</DialogTitle>
+
           <Button
             title="配置参数"
             aria-label="配置参数"
@@ -383,52 +436,51 @@ async function sendMessage() {
         </p>
       </DialogHeader>
 
-      <!-- 快捷指令按钮 -->
-      <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
-        <div v-if="!configVisible" class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1">
-          <!-- 有指令时 -->
-          <template v-if="quickCmdStore.commands.length">
-            <Button
-              v-for="cmd in quickCmdStore.commands"
-              :key="cmd.id"
-              variant="secondary"
-              size="sm"
-              class="text-xs"
-              @click="applyQuickCommand(cmd)"
-            >
-              {{ cmd.label }}
-            </Button>
-          </template>
-
-          <!-- 空态提示 -->
-          <template v-else>
-            <div
-              class="text-muted-foreground flex items-center gap-2 border rounded-md border-dashed px-3 py-1 text-xs"
-            >
-              还没有任何快捷指令，点击右侧添加
-            </div>
-          </template>
-
+      <!-- ============ 快捷指令 ============ -->
+      <div
+        v-if="!configVisible"
+        class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1"
+      >
+        <template v-if="quickCmdStore.commands.length">
           <Button
-            variant="ghost"
-            size="icon"
-            title="管理指令"
-            @click="cmdMgrOpen = true"
+            v-for="cmd in quickCmdStore.commands"
+            :key="cmd.id"
+            variant="secondary"
+            size="sm"
+            class="text-xs"
+            @click="applyQuickCommand(cmd)"
           >
-            <Plus class="h-4 w-4" />
+            {{ cmd.label }}
           </Button>
-        </div>
+        </template>
+        <template v-else>
+          <div
+            class="text-muted-foreground flex items-center gap-2 border rounded-md border-dashed px-3 py-1 text-xs"
+          >
+            还没有任何快捷指令，点击右侧添加
+          </div>
+        </template>
+        <Button
+          variant="ghost"
+          size="icon"
+          title="管理指令"
+          @click="cmdMgrOpen = true"
+        >
+          <Plus class="h-4 w-4" />
+        </Button>
 
         <!-- 指令管理弹窗 -->
         <QuickCommandManager v-model:open="cmdMgrOpen" />
       </div>
 
+      <!-- ============ 参数配置面板 ============ -->
       <AIConfig
         v-if="configVisible"
         class="mb-4 w-full border rounded-md p-4"
         @saved="handleConfigSaved"
       />
 
+      <!-- ============ 聊天内容 ============ -->
       <div
         v-if="!configVisible"
         class="custom-scroll space-y-3 chat-container mb-4 flex-1 overflow-y-auto pr-2"
@@ -445,21 +497,28 @@ async function sendMessage() {
               ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground'
               : 'bg-gray-100 text-gray-800 dark:bg-muted/60 dark:text-muted-foreground'"
           >
-            <template v-if="msg.reasoning">
-              <div class="text-muted-foreground mb-1 italic">
-                {{ msg.reasoning }}
-              </div>
-            </template>
-            <div
-              class="whitespace-pre-wrap"
-              :class="msg.content ? '' : 'animate-pulse text-muted-foreground'"
-            >
-              {{
-                msg.content
-                  || (msg.role === 'assistant' && !msg.done ? '思考中…' : '')
-              }}
+            <!-- reasoning -->
+            <div v-if="msg.reasoning" class="text-muted-foreground mb-1 italic">
+              {{ msg.reasoning }}
             </div>
 
+            <!-- Markdown 内容 -->
+            <div v-if="msg.content" class="space-y-2 overflow-x-auto">
+              <div
+                class="chat-markdown prose prose-sm dark:prose-invert max-w-none"
+                v-html="renderMarkdown(msg.content)"
+              />
+            </div>
+
+            <!-- 占位/加载动画 -->
+            <div
+              v-else
+              class="text-muted-foreground animate-pulse whitespace-pre-wrap"
+            >
+              {{ msg.role === 'assistant' && !msg.done ? '思考中…' : '' }}
+            </div>
+
+            <!-- 工具按钮 -->
             <div
               class="mt-1 flex"
               :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
@@ -472,7 +531,10 @@ async function sendMessage() {
                 aria-label="复制内容"
                 @click="copyToClipboard(msg.content, index)"
               >
-                <Check v-if="copiedIndex === index" class="h-3 w-3 text-green-600" />
+                <Check
+                  v-if="copiedIndex === index"
+                  class="h-3 w-3 text-green-600"
+                />
                 <Copy v-else class="text-muted-foreground h-3 w-3" />
               </Button>
               <Button
@@ -500,6 +562,7 @@ async function sendMessage() {
         </div>
       </div>
 
+      <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative mt-2">
         <div
           class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
@@ -511,11 +574,13 @@ async function sendMessage() {
             class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"
           />
+
           <!-- 引用全文按钮 -->
           <Button
             size="sm"
             variant="outline"
-            class="h-8 flex items-center gap-1 rounded-md px-3 font-medium transition-colors duration-150" :class="[
+            class="h-8 flex items-center gap-1 rounded-md px-3 font-medium transition-colors duration-150"
+            :class="[
               isQuoteAllContent
                 ? 'bg-primary text-white border-primary dark:bg-white dark:text-black dark:border-white'
                 : 'bg-background text-muted-foreground border-border hover:text-foreground hover:border-foreground dark:bg-muted dark:text-gray-400 dark:hover:text-white dark:hover:border-white/60',
@@ -527,7 +592,7 @@ async function sendMessage() {
             <span class="text-xs">引用全文</span>
           </Button>
 
-          <!-- 发送按钮 -->
+          <!-- 发送 / 暂停按钮 -->
           <Button
             :disabled="!input.trim() && !loading"
             size="icon"
@@ -549,10 +614,34 @@ async function sendMessage() {
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
+/* 聊天容器底部内边距，适配安全区 */
 .chat-container {
   padding-bottom: calc(1rem + var(--safe-bottom));
 }
 
+/* 让代码块可横向滚动 */
+.chat-container pre {
+  overflow-x: auto;
+}
+
+/* highlight.js 暗黑主题适配 */
+.dark .hljs {
+  background: #0d1117 !important;
+  color: #c9d1d9 !important;
+}
+
+.chat-markdown > * + * {
+  margin-top: 0.5rem; /* 8 px */
+}
+
+/* 让代码块更紧凑一点，同时保留主题自带颜色 */
+.chat-markdown pre {
+  padding: 0.75rem; /* 内边距 */
+  border-radius: 0.375rem; /* 圆角 */
+  overflow-x: auto; /* 横向滚动 */
+}
+
+/* 自定义滚动条 */
 @media (pointer: coarse) {
   .custom-scroll::-webkit-scrollbar {
     width: 3px;
