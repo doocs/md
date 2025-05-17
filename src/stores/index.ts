@@ -395,6 +395,10 @@ export const useStore = defineStore(`store`, () => {
           overflow-x: auto;
           text-indent: 0;
         }
+
+        h2 strong {
+          color: inherit !important;
+        }
       </style>
     `
 
