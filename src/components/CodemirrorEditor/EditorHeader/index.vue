@@ -48,7 +48,7 @@ const formatItems = [
 
 const store = useStore()
 
-const { isDark, isCiteStatus, isCountStatus, output, primaryColor, isOpenPostSlider } = storeToRefs(store)
+const { isDark, isCiteStatus, isCountStatus, output, primaryColor, isOpenPostSlider, editor } = storeToRefs(store)
 
 const { toggleDark, editorRefresh, citeStatusChanged, countStatusChanged } = store
 
@@ -58,7 +58,18 @@ const { copy: copyContent } = useClipboard({ source })
 
 // 复制到微信公众号
 function copy() {
+  // 如果是 Markdown 源码，直接复制并返回
+  if (copyMode.value === `md`) {
+    const mdContent = editor.value?.getValue() || ``
+    copyToClipboard(mdContent)
+    toast.success(`已复制 Markdown 源码到剪贴板。`)
+    editorRefresh()
+    return
+  }
+
+  // 以下处理非 Markdown 的复制流程
   emit(`startCopy`)
+
   setTimeout(() => {
     // 如果是深色模式，复制之前需要先切换到白天模式
     const isBeforeDark = isDark.value
@@ -72,6 +83,7 @@ function copy() {
       clipboardDiv.focus()
       window.getSelection()!.removeAllRanges()
       const temp = clipboardDiv.innerHTML
+
       if (copyMode.value === `txt`) {
         const range = document.createRange()
         range.setStartBefore(clipboardDiv.firstChild!)
@@ -80,10 +92,13 @@ function copy() {
         document.execCommand(`copy`)
         window.getSelection()!.removeAllRanges()
       }
+
       clipboardDiv.innerHTML = output.value
+
       if (isBeforeDark) {
         nextTick(() => toggleDark())
       }
+
       if (copyMode.value === `html`) {
         await copyContent(temp)
       }
@@ -99,6 +114,15 @@ function copy() {
       emit(`endCopy`)
     })
   }, 350)
+}
+
+async function copyToClipboard(text: string) {
+  try {
+    await navigator.clipboard.writeText(text)
+  }
+  catch (err) {
+    console.error(`复制失败:`, err)
+  }
 }
 </script>
 
@@ -189,6 +213,9 @@ function copy() {
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html">
                 HTML 格式
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="md">
+                MD 格式
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
