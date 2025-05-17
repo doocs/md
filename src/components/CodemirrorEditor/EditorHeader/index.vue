@@ -58,7 +58,18 @@ const { copy: copyContent } = useClipboard({ source })
 
 // 复制到微信公众号
 function copy() {
+  // 如果是 Markdown 源码，直接复制并返回
+  if (copyMode.value === `md`) {
+    const mdContent = editor.value?.getValue() || ``
+    copyToClipboard(mdContent)
+    toast.success(`已复制 Markdown 源码到剪贴板。`)
+    editorRefresh()
+    return
+  }
+
+  // 以下处理非 Markdown 的复制流程
   emit(`startCopy`)
+
   setTimeout(() => {
     // 如果是深色模式，复制之前需要先切换到白天模式
     const isBeforeDark = isDark.value
@@ -67,40 +78,36 @@ function copy() {
     }
 
     nextTick(async () => {
-      if (copyMode.value === `md`) {
-        const mdContent = editor.value?.getValue() || ``
-        copyToClipboard(mdContent)
-      }
-      else {
-        processClipboardContent(primaryColor.value)
-        const clipboardDiv = document.getElementById(`output`)!
-        clipboardDiv.focus()
+      processClipboardContent(primaryColor.value)
+      const clipboardDiv = document.getElementById(`output`)!
+      clipboardDiv.focus()
+      window.getSelection()!.removeAllRanges()
+      const temp = clipboardDiv.innerHTML
+
+      if (copyMode.value === `txt`) {
+        const range = document.createRange()
+        range.setStartBefore(clipboardDiv.firstChild!)
+        range.setEndAfter(clipboardDiv.lastChild!)
+        window.getSelection()!.addRange(range)
+        document.execCommand(`copy`)
         window.getSelection()!.removeAllRanges()
-        const temp = clipboardDiv.innerHTML
-        if (copyMode.value === `txt`) {
-          const range = document.createRange()
-          range.setStartBefore(clipboardDiv.firstChild!)
-          range.setEndAfter(clipboardDiv.lastChild!)
-          window.getSelection()!.addRange(range)
-          document.execCommand(`copy`)
-          window.getSelection()!.removeAllRanges()
-        }
-        clipboardDiv.innerHTML = output.value
-        if (isBeforeDark) {
-          nextTick(() => toggleDark())
-        }
-        if (copyMode.value === `html`) {
-          await copyContent(temp)
-        }
+      }
+
+      clipboardDiv.innerHTML = output.value
+
+      if (isBeforeDark) {
+        nextTick(() => toggleDark())
+      }
+
+      if (copyMode.value === `html`) {
+        await copyContent(temp)
       }
 
       // 输出提示
       toast.success(
         copyMode.value === `html`
           ? `已复制 HTML 源码，请进行下一步操作。`
-          : copyMode.value === `md`
-            ? `已复制 Markdown 源码到剪贴板。`
-            : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
+          : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
       )
 
       editorRefresh()
@@ -108,6 +115,7 @@ function copy() {
     })
   }, 350)
 }
+
 async function copyToClipboard(text: string) {
   try {
     await navigator.clipboard.writeText(text)
