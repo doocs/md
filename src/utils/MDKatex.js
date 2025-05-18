@@ -10,13 +10,15 @@ function createRenderer(display, inlineStyle, blockStyle) {
     const svg = mjxContainer.firstChild
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
-    svg.style = `max-width: 300vw !important;`
+
+    svg.style = `max-width: 300vw !important; display: initial;`
     svg.style.width = width
-    svg.style.display = `initial`
-    if (display) {
-      return `<section ${blockStyle}>${svg.outerHTML}</section>`
+
+    if (!display) {
+      return `<span ${inlineStyle}>${svg.outerHTML}</span>`
     }
-    return `<span ${inlineStyle}>${svg.outerHTML}</span>`
+
+    return `<section ${blockStyle}>${svg.outerHTML}</section>`
   }
 }
 
