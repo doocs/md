@@ -216,7 +216,12 @@ const defaultTheme: Theme = {
       'margin': `1.5em 0`,
     },
 
-    block_katex: {},
+    block_katex: {
+      'max-width': `100%`,
+      'overflow-x': `auto`,
+      '-webkit-overflow-scrolling': `touch`,
+      'padding': `0.5em 0`,
+    },
   },
   inline: {
     listitem: {
@@ -287,7 +292,13 @@ const defaultTheme: Theme = {
       'font-size': `0.8em`,
     },
 
-    inline_katex: {},
+    inline_katex: {
+      'display': `inline-block`,
+      'max-width': `100%`,
+      'overflow-x': `auto`,
+      'padding-bottom': `5px`,
+      'vertical-align': `middle`,
+    },
   },
 }
 
