@@ -9,6 +9,7 @@ import {
 
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
+import { copyPlain } from '@/utils/clipboard'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
@@ -61,7 +62,7 @@ function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
     const mdContent = editor.value?.getValue() || ``
-    copyToClipboard(mdContent)
+    copyPlain(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
     editorRefresh()
     return
@@ -114,15 +115,6 @@ function copy() {
       emit(`endCopy`)
     })
   }, 350)
-}
-
-async function copyToClipboard(text: string) {
-  try {
-    await navigator.clipboard.writeText(text)
-  }
-  catch (err) {
-    console.error(`复制失败:`, err)
-  }
 }
 </script>
 

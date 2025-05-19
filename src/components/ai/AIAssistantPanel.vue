@@ -11,7 +11,9 @@ import {
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
 import { useQuickCommands } from '@/stores/useQuickCommands'
+import { copyPlain } from '@/utils/clipboard'
 import hljs from 'highlight.js'
+
 import {
   Check,
   Copy,
@@ -175,14 +177,9 @@ function handleKeydown(e: KeyboardEvent) {
 }
 
 async function copyToClipboard(text: string, index: number) {
-  try {
-    await navigator.clipboard.writeText(text)
-    copiedIndex.value = index
-    setTimeout(() => (copiedIndex.value = null), 1500)
-  }
-  catch (err) {
-    console.error(`复制失败:`, err)
-  }
+  copyPlain(text)
+  copiedIndex.value = index
+  setTimeout(() => (copiedIndex.value = null), 1500)
 }
 
 function editMessage(content: string) {
@@ -565,7 +562,7 @@ async function sendMessage() {
       <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
