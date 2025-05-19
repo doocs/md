@@ -11,7 +11,7 @@ function createRenderer(display, inlineStyle, blockStyle) {
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
 
-    svg.style = `max-width: 300vw !important; display: initial;`
+    svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
     svg.style.width = width
 
     if (!display) {
