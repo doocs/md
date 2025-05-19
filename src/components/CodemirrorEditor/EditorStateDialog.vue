@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { storeLabels } from '@/config/store'
 import { getAllStoreStates, useDisplayStore, useStore } from '@/stores'
+import { copyPlain } from '@/utils/clipboard'
 import { Expand, UploadCloud } from 'lucide-vue-next'
 
 const props = defineProps({
@@ -123,15 +124,10 @@ const currentMaximizedJSON = computed(() => {
   }
   return {}
 })
+
 function copyToClipboard(text: string) {
-  navigator.clipboard.writeText(text)
-    .then(() => {
-      // 可以添加 toast 提示
-      toast.success(`复制成功`)
-    })
-    .catch((_err) => {
-      toast.error(`复制失败`)
-    })
+  copyPlain(text)
+  toast.success(`复制成功`)
 }
 
 // 处理文件导入
