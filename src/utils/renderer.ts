@@ -1,6 +1,6 @@
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { PropertiesHyphen } from 'csstype'
-import type { Renderer, RendererObject, Tokens } from 'marked'
+import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
@@ -149,8 +149,8 @@ export function initRenderer(opts: IOpts) {
   let footnoteIndex: number = 0
   let styleMapping: ThemeStyles = buildTheme(opts)
   let codeIndex: number = 0
-  let listIndex: number = 0
-  let isOrdered: boolean = false
+  let listIdx = 0
+  let listOrdered = false
 
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)
@@ -262,22 +262,35 @@ export function initRenderer(opts: IOpts) {
       return styledContent(`codespan`, escapedText, `code`)
     },
 
-    listitem(item: Tokens.ListItem): string {
-      const prefix = isOrdered ? `${listIndex + 1}. ` : `• `
-      const content = item.tokens.map(t => (this[t.type as keyof Renderer] as <T>(token: T) => string)(t)).join(``)
+    listitem(token) {
+      let content: string
+
+      try {
+        // 普通列表：直接 inline 渲染，不会包 <p>
+        content = this.parser.parseInline(token.tokens)
+      }
+      catch {
+        // 嵌套列表或其它块级节点：用 parse，再去掉最外层的 <p>…</p>
+        content = this.parser
+          .parse(token.tokens)
+          .replace(/^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/, `$1`)
+      }
+
+      const prefix = listOrdered ? `${listIdx}. ` : `• `
       return styledContent(`listitem`, `${prefix}${content}`, `li`)
     },
 
-    list({ ordered, items, start = 1 }: Tokens.List): string {
-      const listItems = []
-      for (let i = 0; i < items.length; i++) {
-        isOrdered = ordered
-        listIndex = Number(start) + i - 1
-        const item = items[i]
-        listItems.push(this.listitem(item))
-      }
-      const label = ordered ? `ol` : `ul`
-      return styledContent(label, listItems.join(``))
+    list({ ordered, items, start = 1 }) {
+      listOrdered = ordered
+      return styledContent(
+        ordered ? `ol` : `ul`,
+        items
+          .map((item, i) => {
+            listIdx = Number(start) + i
+            return this.listitem(item)
+          })
+          .join(``),
+      )
     },
 
     image({ href, title, text }: Tokens.Image): string {
