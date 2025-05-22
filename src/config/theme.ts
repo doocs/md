@@ -107,6 +107,17 @@ const defaultTheme: Theme = {
     },
 
     blockquote_caution: {
+      'font-style': `italic`,
+    },
+
+    blockquote_question: {
+      'font-style': `italic`,
+      'background-color': `#b97729`,
+      'padding': `1em`,
+      'margin-bottom': `1em`,
+      'border-radius': `6px`,
+      'color': `#FFFFFF`,
+      'border-left': `none`,
     },
 
     // GFM 警告块标题
@@ -137,6 +148,13 @@ const defaultTheme: Theme = {
       color: `#e5534b`,
     },
 
+    blockquote_title_question: {
+      'color': `#FFFFFF`,
+      'font-weight': `bold`,
+      'margin-bottom': `0.5em`,
+      'font-style': `normal`,
+    },
+
     blockquote_p_note: {
     },
 
@@ -150,6 +168,12 @@ const defaultTheme: Theme = {
     },
 
     blockquote_p_caution: {
+    },
+
+    blockquote_p_question: {
+      'color': `#FFFFFF`,
+      'font-style': `normal`,
+      'line-height': `1.6`,
     },
 
     // 代码块
@@ -293,7 +317,7 @@ const defaultTheme: Theme = {
     },
 
     inline_katex: {
-      'display': `inline-flex`,
+      'display': `inline-block`,
       'max-width': `100%`,
       'overflow-x': `auto`,
       'padding-bottom': `5px`,
@@ -517,6 +541,16 @@ const simpleTheme = toMerged(defaultTheme, {
       'font-style': `italic`,
     },
 
+    blockquote_question: {
+      'font-style': `italic`,
+      'background-color': `#b97729`,
+      'padding': `1em`,
+      'margin-bottom': `1em`,
+      'border-radius': `6px`,
+      'color': `#FFFFFF`,
+      'border-left': `none`,
+    },
+
     blockquote_title: {
     },
 
@@ -536,6 +570,9 @@ const simpleTheme = toMerged(defaultTheme, {
     blockquote_title_caution: {
     },
 
+    blockquote_title_question: {
+    },
+
     blockquote_p_note: {
     },
 
@@ -549,6 +586,9 @@ const simpleTheme = toMerged(defaultTheme, {
     },
 
     blockquote_p_caution: {
+    },
+
+    blockquote_p_question: {
     },
 
     code_pre: {
