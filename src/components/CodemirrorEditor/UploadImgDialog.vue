@@ -137,6 +137,24 @@ function minioOSSSubmit(formValues: any) {
   toast.success(`保存成功`)
 }
 
+// Telegram 图床
+const telegramSchema = toTypedSchema(
+  yup.object({
+    token: yup.string().required(`Bot Token 不能为空`),
+    chatId: yup.string().required(`Chat ID 不能为空`),
+  }),
+)
+const telegramConfig = ref(
+  localStorage.getItem(`telegramConfig`)
+    ? JSON.parse(localStorage.getItem(`telegramConfig`)!)
+    : { token: ``, chatId: `` },
+)
+function telegramSubmit(values: any) {
+  localStorage.setItem(`telegramConfig`, JSON.stringify(values))
+  telegramConfig.value = values
+  toast.success(`保存成功`)
+}
+
 // 公众号
 // 当前是否为网页（http/https 协议）
 const isWebsite = window.location.protocol.startsWith(`http`)
@@ -273,6 +291,7 @@ const options = [
     value: `upyun`,
     label: `又拍云`,
   },
+  { value: `telegram`, label: `Telegram` },
   {
     value: `formCustom`,
     label: `自定义代码`,
@@ -965,6 +984,37 @@ function onDrop(e: DragEvent) {
               </Button>
             </FormItem>
 
+            <FormItem>
+              <Button type="submit">
+                保存配置
+              </Button>
+            </FormItem>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="telegram">
+          <Form :validation-schema="telegramSchema" :initial-values="telegramConfig" @submit="telegramSubmit">
+            <Field v-slot="{ field, errorMessage }" name="token">
+              <FormItem label="Bot Token" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：123456789:ABCdefGHIjkl-MNOPqrSTUvwxYZ" />
+              </FormItem>
+            </Field>
+            <Field v-slot="{ field, errorMessage }" name="chatId">
+              <FormItem label="Chat ID" required :error="errorMessage">
+                <Input v-bind="field" v-model="field.value" placeholder="如：-1001234567890" />
+              </FormItem>
+            </Field>
+            <FormItem>
+              <Button
+                variant="link"
+                class="p-0"
+                as="a"
+                href="https://github.com/doocs/md/blob/main/docs/telegram-usage.md"
+                target="_blank"
+              >
+                如何使用 Telegram？
+              </Button>
+            </FormItem>
             <FormItem>
               <Button type="submit">
                 保存配置
