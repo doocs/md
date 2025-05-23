@@ -362,7 +362,9 @@ export const useStore = defineStore(`store`, () => {
 
     outputTemp = div.innerHTML
 
-    outputTemp = DOMPurify.sanitize(outputTemp)
+    outputTemp = DOMPurify.sanitize(outputTemp, {
+      ADD_TAGS: ['mp-common-profile'],
+    })
 
     // 阅读时间及字数统计
     outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
