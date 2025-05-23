@@ -442,6 +442,51 @@ async function upyunUpload(file: File) {
 }
 
 // -----------------------------------------------------------------------
+// Telegram File Upload
+// -----------------------------------------------------------------------
+async function telegramUpload(file: File): Promise<string> {
+  const { token, chatId } = JSON.parse(localStorage.getItem(`telegramConfig`)!)
+
+  // 1. sendPhoto
+  const form = new FormData()
+  form.append(`chat_id`, chatId)
+  form.append(`photo`, file, file.name)
+
+  const sendRes = await fetch<any, {
+    ok: boolean
+    result: {
+      photo: { file_id: string }[]
+    }
+  }>({
+    url: `https://api.telegram.org/bot${token}/sendPhoto`,
+    method: `POST`,
+    data: form,
+  })
+
+  if (!sendRes.ok || !sendRes.result.photo.length) {
+    throw new Error(`Telegram sendPhoto 失败`)
+  }
+  // 取最大的分辨率那张图
+  const fileId = sendRes.result.photo[sendRes.result.photo.length - 1].file_id
+
+  // 2. getFile
+  const fileRes = await fetch<any, {
+    ok: boolean
+    result: { file_path: string }
+  }>({
+    url: `https://api.telegram.org/bot${token}/getFile?file_id=${fileId}`,
+    method: `GET`,
+  })
+  if (!fileRes.ok) {
+    throw new Error(`Telegram getFile 失败`)
+  }
+
+  const filePath = fileRes.result.file_path
+  // 3. 拼出下载地址
+  return `https://api.telegram.org/file/bot${token}/${filePath}`
+}
+
+// -----------------------------------------------------------------------
 // formCustom File Upload
 // -----------------------------------------------------------------------
 
@@ -502,6 +547,8 @@ function fileUpload(content: string, file: File) {
       return r2Upload(file)
     case `upyun`:
       return upyunUpload(file)
+    case `telegram`:
+      return telegramUpload(file)
     case `formCustom`:
       return formCustomUpload(content, file)
     default:
