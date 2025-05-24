@@ -363,7 +363,7 @@ export const useStore = defineStore(`store`, () => {
     outputTemp = div.innerHTML
 
     outputTemp = DOMPurify.sanitize(outputTemp, {
-      ADD_TAGS: ['mp-common-profile'],
+      ADD_TAGS: [`mp-common-profile`],
     })
 
     // 阅读时间及字数统计
@@ -773,6 +773,10 @@ export const useDisplayStore = defineStore(`display`, () => {
   const isShowInsertFormDialog = ref(false)
   const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
 
+  // 是否展示插入公众号名片对话框
+  const isShowInsertMpCardDialog = ref(false)
+  const toggleShowInsertMpCardDialog = useToggle(isShowInsertMpCardDialog)
+
   // 是否展示上传图片对话框
   const isShowUploadImgDialog = ref(false)
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
@@ -789,6 +793,8 @@ export const useDisplayStore = defineStore(`display`, () => {
     toggleShowCssEditor,
     isShowInsertFormDialog,
     toggleShowInsertFormDialog,
+    isShowInsertMpCardDialog,
+    toggleShowInsertMpCardDialog,
     isShowUploadImgDialog,
     toggleShowUploadImgDialog,
     aiDialogVisible,
@@ -829,6 +835,7 @@ export function getAllStoreStates() {
     isShowCssEditor: displayStore.isShowCssEditor,
     isShowInsertFormDialog: displayStore.isShowInsertFormDialog,
     isShowUploadImgDialog: displayStore.isShowUploadImgDialog,
+    isShowInsertMpCardDialog: displayStore.isShowInsertMpCardDialog,
     aiDialogVisible: displayStore.aiDialogVisible,
   }
 }

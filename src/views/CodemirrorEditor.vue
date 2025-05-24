@@ -32,6 +32,7 @@ const {
 
 const {
   toggleShowInsertFormDialog,
+  toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
 } = displayStore
 
@@ -462,6 +463,9 @@ const isOpenHeadingSlider = ref(false)
               <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
                 插入表格
               </ContextMenuItem>
+              <ContextMenuItem inset @click="toggleShowInsertMpCardDialog()">
+                插入公众号名片
+              </ContextMenuItem>
               <ContextMenuItem inset @click="resetStyleConfirm()">
                 重置样式
               </ContextMenuItem>
@@ -562,6 +566,8 @@ const isOpenHeadingSlider = ref(false)
       <UploadImgDialog @upload-image="uploadImage" />
 
       <InsertFormDialog />
+
+      <InsertMpCardDialog />
 
       <RunLoading />
 
