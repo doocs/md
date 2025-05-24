@@ -1,6 +1,7 @@
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import App from './App.vue'
+import { setupComponents } from './utils/setup-components'
 
 import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
@@ -19,6 +20,8 @@ import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/css-hint'
+
+setupComponents()
 
 const app = createApp(App)
 
