@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useDisplayStore, useStore } from '@/stores'
-import { ref, toRaw } from 'vue'
+import { useLocalStorage } from '@vueuse/core'
+import { toRaw } from 'vue'
 
 /** 编辑器实例和全局弹窗状态 */
 const store = useStore()
@@ -8,18 +9,10 @@ const displayStore = useDisplayStore()
 const { toggleShowInsertMpCardDialog } = displayStore
 
 /** 表单字段 */
-const mpName = ref(``)
-const mpDesc = ref(``)
-const mpLogo = ref(``)
-const mpId = ref(``)
-
-/** 重置 */
-function resetVal() {
-  mpName.value = ``
-  mpDesc.value = ``
-  mpLogo.value = ``
-  mpId.value = ``
-}
+const mpName = useLocalStorage(`mpName`, ``)
+const mpDesc = useLocalStorage(`mpDesc`, ``)
+const mpLogo = useLocalStorage(`mpLogo`, ``)
+const mpId = useLocalStorage(`mpId`, ``)
 
 /** 组装 HTML 片段 */
 function buildMpHtml() {
@@ -48,7 +41,6 @@ function insertMp() {
   if (!html)
     return
   toRaw(store.editor!).replaceSelection(`\n${html}\n`, `end`)
-  resetVal()
   toggleShowInsertMpCardDialog(false)
 }
 
