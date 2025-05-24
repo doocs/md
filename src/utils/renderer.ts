@@ -273,7 +273,6 @@ export function initRenderer(opts: IOpts) {
       listOrderedStack.pop()
       listCounters.pop()
 
-      // 用 styledContent 或 tagWithStyles 包一层 ol/ul
       return styledContent(
         ordered ? `ol` : `ul`,
         html,
