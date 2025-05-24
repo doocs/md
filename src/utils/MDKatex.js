@@ -1,7 +1,7 @@
 const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1(?=[\s?!.,:？！。，：]|$)/
 const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/ // Non-standard, even if there are no spaces before and after $ or $$, try to parse
 
-const blockRule = /^(\${1,2})\n((?:\\[\s\S]|[^\\])+?)\n\1(?:\n|$)/
+const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n((?:(?!\n\s{0,3}\1\b)[\s\S])*)\n\s{0,3}\1[ \t]*(?:\n|$)/
 
 function createRenderer(display, inlineStyle, blockStyle) {
   return (token) => {
