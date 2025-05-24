@@ -1,7 +1,14 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import { ArrowUpNarrowWide, Edit3, Ellipsis, History, Plus, Trash } from 'lucide-vue-next'
+import {
+  ArrowUpNarrowWide,
+  Edit3,
+  Ellipsis,
+  History,
+  Plus,
+  Trash,
+} from 'lucide-vue-next'
 
 const store = useStore()
 
@@ -107,21 +114,30 @@ const sortedPosts = computed(() => {
 <template>
   <!-- 侧栏外框 -->
   <div
-    class="overflow-hidden bg-gray/20 transition-width duration-300 dark:bg-[#191c20]"
+    class="overflow-hidden bg-gray/20 bg-gray/20 transition-width duration-300 dark:bg-[#191c20]"
     :class="{ 'w-0': !store.isOpenPostSlider, 'w-50': store.isOpenPostSlider }"
   >
     <nav
-      class="space-y-1 h-full overflow-auto border-r-2 border-gray/20 p-2 transition-transform"
+      class="space-y-1 h-full flex flex-col border-r-2 border-gray/20 py-2 transition-transform"
       :class="{ 'translate-x-100': store.isOpenPostSlider, '-translate-x-full': !store.isOpenPostSlider }"
     >
       <!-- 顶部：新增 + 排序按钮 -->
-      <div class="space-x-4 flex justify-center">
+      <div class="space-x-4 mb-2 flex justify-center">
         <!-- 新增 -->
         <Dialog v-model:open="isOpenAddDialog">
-          <DialogTrigger as-child>
-            <Button variant="outline" size="icon">
-              <Plus />
-            </Button>
+          <DialogTrigger>
+            <TooltipProvider :delay-duration="200">
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button variant="outline" size="icon">
+                    <Plus />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  新增文章
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
@@ -139,10 +155,19 @@ const sortedPosts = computed(() => {
 
         <!-- 排序 -->
         <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button variant="outline" size="icon">
-              <ArrowUpNarrowWide />
-            </Button>
+          <DropdownMenuTrigger>
+            <TooltipProvider :delay-duration="200">
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button variant="outline" size="icon">
+                    <ArrowUpNarrowWide />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  排序模式
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuRadioGroup v-model="sortMode">
@@ -172,42 +197,43 @@ const sortedPosts = computed(() => {
       </div>
 
       <!-- 列表 -->
-      <a
-        v-for="post in sortedPosts"
-        :key="post.id"
-        href="#"
-        class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex items-center gap-2 rounded px-2 text-sm transition-colors"
-        :class="{
-          'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
-            store.currentPostId === post.id,
-          'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark':
-            store.currentPostId === post.id,
-        }"
-        @click="store.currentPostId = post.id"
-      >
-        <span class="line-clamp-1">{{ post.title }}</span>
+      <ul class="space-y-1 overflow-auto px-2">
+        <li
+          v-for="post in sortedPosts"
+          :key="post.id"
+          class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-2 rounded p-2 text-sm transition-colors"
+          :class="{
+            'bg-primary text-primary-foreground shadow':
+              store.currentPostId === post.id,
+          }"
+          @click="store.currentPostId = post.id"
+        >
+          <span class="line-clamp-1">{{ post.title }}</span>
 
-        <!-- 每条文章操作 -->
-        <DropdownMenu>
-          <DropdownMenuTrigger as-child>
-            <Button size="xs" variant="ghost" class="ml-auto px-1.5"><Ellipsis class="size-4" /></Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem @click.stop="startRenamePost(post.id)">
-              <Edit3 class="mr-2 size-4" /> 重命名
-            </DropdownMenuItem>
-            <DropdownMenuItem @click.stop="openHistoryDialog(post.id)">
-              <History class="mr-2 size-4" /> 历史记录
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              v-if="store.posts.length > 1"
-              @click.stop="startDelPost(post.id)"
-            >
-              <Trash class="mr-2 size-4" /> 删除
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </a>
+          <!-- 每条文章操作 -->
+          <DropdownMenu>
+            <DropdownMenuTrigger as-child>
+              <Button size="xs" variant="ghost" class="ml-auto px-1.5">
+                <Ellipsis class="size-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem @click.stop="startRenamePost(post.id)">
+                <Edit3 class="mr-2 size-4" /> 重命名
+              </DropdownMenuItem>
+              <DropdownMenuItem @click.stop="openHistoryDialog(post.id)">
+                <History class="mr-2 size-4" /> 历史记录
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                v-if="store.posts.length > 1"
+                @click.stop="startDelPost(post.id)"
+              >
+                <Trash class="mr-2 size-4" /> 删除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </li>
+      </ul>
 
       <!-- 重命名弹窗 -->
       <Dialog v-model:open="isOpenEditDialog">
