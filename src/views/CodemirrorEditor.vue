@@ -242,6 +242,21 @@ function initEditor() {
           const selected = editor.getSelection()
           editor.replaceSelection(`\`${selected}\``)
         },
+        [`${ctrlKey}-H`]: function heading(editor) {
+          const selected = editor.getSelection()
+          editor.replaceSelection(`# ${selected}`)
+        },
+        [`${ctrlKey}-U`]: function unorderedList(editor) {
+          const selected = editor.getSelection()
+          const lines = selected.split(`\n`).map(line => `- ${line}`)
+          editor.replaceSelection(lines.join(`\n`))
+        },
+
+        [`${ctrlKey}-O`]: function orderedList(editor) {
+          const selected = editor.getSelection()
+          const lines = selected.split(`\n`).map((line, i) => `${i + 1}. ${line}`)
+          editor.replaceSelection(lines.join(`\n`))
+        },
         // 预备弃用
         [`${ctrlKey}-L`]: function code(editor) {
           const selected = editor.getSelection()
