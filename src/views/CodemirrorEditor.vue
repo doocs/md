@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import CodeMirror from 'codemirror'
-import { Eye, List, Pen } from 'lucide-vue-next'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
@@ -11,6 +9,8 @@ import {
   toBase64,
 } from '@/utils'
 import fileApi from '@/utils/file'
+import CodeMirror from 'codemirror'
+import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
