@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
+import CodeMirror from 'codemirror'
+import { Eye, List, Pen } from 'lucide-vue-next'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
@@ -9,8 +11,6 @@ import {
   toBase64,
 } from '@/utils'
 import fileApi from '@/utils/file'
-import CodeMirror from 'codemirror'
-import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -231,9 +231,12 @@ function initEditor() {
           const selected = editor.getSelection()
           editor.replaceSelection(`~~${selected}~~`)
         },
-        [`${ctrlKey}-K`]: function italic(editor) {
+        [`${ctrlKey}-K`]: function link(editor) {
           const selected = editor.getSelection()
           editor.replaceSelection(`[${selected}]()`)
+          // now will slightly move the cursor to the left to fill in the link
+          const { line, ch } = editor.getCursor()
+          editor.setCursor({ line, ch: ch - 1 })
         },
         [`${ctrlKey}-E`]: function code(editor) {
           const selected = editor.getSelection()
