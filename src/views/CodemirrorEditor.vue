@@ -231,9 +231,12 @@ function initEditor() {
           const selected = editor.getSelection()
           editor.replaceSelection(`~~${selected}~~`)
         },
-        [`${ctrlKey}-K`]: function italic(editor) {
+        [`${ctrlKey}-K`]: function link(editor) {
           const selected = editor.getSelection()
           editor.replaceSelection(`[${selected}]()`)
+          // now will slightly move the cursor to the left to fill in the link
+          const { line, ch } = editor.getCursor()
+          editor.setCursor({ line, ch: ch - 1 })
         },
         [`${ctrlKey}-E`]: function code(editor) {
           const selected = editor.getSelection()
