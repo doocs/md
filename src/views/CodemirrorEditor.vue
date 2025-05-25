@@ -8,6 +8,7 @@ import {
   formatDoc,
   toBase64,
 } from '@/utils'
+import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
 import { Eye, List, Pen } from 'lucide-vue-next'
@@ -215,52 +216,78 @@ function initEditor() {
       autoCloseBrackets: true,
       extraKeys: {
         [`${shiftKey}-${altKey}-F`]: function autoFormat(editor) {
-          formatDoc(editor.getValue()).then((doc) => {
+          const value = editor.getValue()
+          formatDoc(value).then((doc: string) => {
             editor.setValue(doc)
           })
         },
+
         [`${ctrlKey}-B`]: function bold(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`**${selected}**`)
+          toggleFormat(editor, {
+            prefix: `**`,
+            suffix: `**`,
+            check: s => s.startsWith(`**`) && s.endsWith(`**`),
+          })
         },
+
         [`${ctrlKey}-I`]: function italic(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`*${selected}*`)
+          toggleFormat(editor, {
+            prefix: `*`,
+            suffix: `*`,
+            check: s => s.startsWith(`*`) && s.endsWith(`*`),
+          })
         },
+
         [`${ctrlKey}-D`]: function del(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`~~${selected}~~`)
+          toggleFormat(editor, {
+            prefix: `~~`,
+            suffix: `~~`,
+            check: s => s.startsWith(`~~`) && s.endsWith(`~~`),
+          })
         },
+
         [`${ctrlKey}-K`]: function link(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`[${selected}]()`)
-          // now will slightly move the cursor to the left to fill in the link
-          const { line, ch } = editor.getCursor()
-          editor.setCursor({ line, ch: ch - 1 })
+          toggleFormat(editor, {
+            prefix: `[`,
+            suffix: `]()`,
+            check: s => s.startsWith(`[`) && s.endsWith(`]()`),
+            afterInsertCursorOffset: -1,
+          })
         },
+
         [`${ctrlKey}-E`]: function code(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`\`${selected}\``)
+          toggleFormat(editor, {
+            prefix: `\``,
+            suffix: `\``,
+            check: s => s.startsWith(`\``) && s.endsWith(`\``),
+          })
         },
+
+        // 标题：单行逻辑，手动处理
         [`${ctrlKey}-H`]: function heading(editor) {
           const selected = editor.getSelection()
-          editor.replaceSelection(`# ${selected}`)
+          const replaced = selected.startsWith(`# `) ? selected.slice(2) : `# ${selected}`
+          editor.replaceSelection(replaced)
         },
+
         [`${ctrlKey}-U`]: function unorderedList(editor) {
           const selected = editor.getSelection()
-          const lines = selected.split(`\n`).map(line => `- ${line}`)
-          editor.replaceSelection(lines.join(`\n`))
+          const lines = selected.split(`\n`)
+          const isList = lines.every(line => line.trim().startsWith(`- `))
+          const updated = isList
+            ? lines.map(line => line.replace(/^- +/, ``)).join(`\n`)
+            : lines.map(line => `- ${line}`).join(`\n`)
+          editor.replaceSelection(updated)
         },
 
         [`${ctrlKey}-O`]: function orderedList(editor) {
           const selected = editor.getSelection()
-          const lines = selected.split(`\n`).map((line, i) => `${i + 1}. ${line}`)
-          editor.replaceSelection(lines.join(`\n`))
-        },
-        // 预备弃用
-        [`${ctrlKey}-L`]: function code(editor) {
-          const selected = editor.getSelection()
-          editor.replaceSelection(`\`${selected}\``)
+          const lines = selected.split(`\n`)
+          const isList = lines.every(line => /^\d+\.\s/.test(line.trim()))
+          const updated = isList
+            ? lines.map(line => line.replace(/^\d+\.\s+/, ``)).join(`\n`)
+            : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
+          editor.replaceSelection(updated)
         },
       },
     })
