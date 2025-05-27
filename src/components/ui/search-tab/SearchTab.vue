@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type CodeMirror from 'codemirror'
-import { ChevronDown, ChevronRight, ChevronUp } from 'lucide-vue-next'
+import { ChevronDown, ChevronRight, ChevronUp, X } from 'lucide-vue-next'
 
 import 'codemirror/addon/search/search.js' // 搜索功能
 import 'codemirror/addon/search/searchcursor.js'
@@ -64,19 +64,37 @@ function closeSearchTab() {
     return
   editor.focus()
 }
+
+function handleInputKeyDown(e: KeyboardEvent) {
+  switch (e.key) {
+    case `ArrowUp`:
+      prevMatch()
+      e.preventDefault()
+      break
+    case `ArrowDown`:
+    case `Enter`:
+      if (numberOfMatches.value === 0)
+        return
+      nextMatch()
+      e.preventDefault()
+  }
+}
 </script>
 
+<!-- TODO 增加hover的说明 -->
 <template>
-  <div class="bg-background search-tab-container">
-    <div class="flex items-center justify-between gap-2 p-2" :class="showReplace ? 'h-32' : 'h-16'">
+  <div class="search-tab-container bg-background">
+    <div class="flex items-center justify-between gap-2 p-2" :class="showReplace ? 'h-30' : 'h-16'">
       <Button variant="ghost" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
         <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
       </Button>
-      <div class="direction-normal flex flex-col gap-2 p-2">
-        <div class="flex flex-row items-center gap-1">
-          <span class="leading-10">查找</span>
-          <Input v-model="searchWord" class="flex-1" />
-          {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
+      <div class="direction-normal flex flex-col gap-2">
+        <div class="h-12 flex items-center gap-1">
+          <span class="w-8 leading-10">查找</span>
+          <Input v-model="searchWord" class="w-40" @keydown="handleInputKeyDown" />
+          <span class="w-12 text-center">
+            {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
+          </span>
           <Button variant="ghost" size="xs" @click="prevMatch">
             <ChevronUp class="h-4 w-4" />
           </Button>
@@ -84,12 +102,12 @@ function closeSearchTab() {
             <ChevronDown class="h-4 w-4" />
           </Button>
           <Button variant="ghost" size="xs" @click="closeSearchTab">
-            <ChevronDown class="h-4 w-4" />
+            <X class="h-4 w-4" />
           </Button>
         </div>
-        <div v-if="showReplace" class="flex flex-row gap-1">
-          <span class="leading-10">替换</span>
-          <Input v-model="replaceWord" class="flex-1" />
+        <div v-if="showReplace" class="h-12 flex items-center gap-1">
+          <span class="w-8 leading-10">替换</span>
+          <Input v-model="replaceWord" class="w-40" />
         </div>
       </div>
     </div>

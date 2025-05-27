@@ -304,6 +304,9 @@ function initEditor() {
             : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
           editor.replaceSelection(updated)
         },
+        [`${ctrlKey}-F`]: function search() {
+          // do nothing
+        },
       },
     })
 
