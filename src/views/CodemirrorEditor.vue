@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
+import CodeMirror from 'codemirror'
+import { Eye, List, Pen } from 'lucide-vue-next'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
+import { SearchTab } from '@/components/ui/search-tab'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -10,8 +13,9 @@ import {
 } from '@/utils'
 import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
-import CodeMirror from 'codemirror'
-import { Eye, List, Pen } from 'lucide-vue-next'
+
+import 'codemirror/addon/search/search' // 搜索功能
+import 'codemirror/addon/search/searchcursor'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -42,10 +46,21 @@ const timeout = ref<NodeJS.Timeout>()
 
 const showEditor = ref(true)
 
+const showSearchTab = ref(false)
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
+
+  document.addEventListener(`keydown`, (e) => {
+    if (e.key === `f`) {
+      if (e.metaKey || e.ctrlKey) {
+        e.preventDefault()
+        showSearchTab.value = true
+      }
+    }
+  })
 })
 
 // 切换编辑/预览视图（仅限移动端）
@@ -633,6 +648,8 @@ const isOpenHeadingSlider = ref(false)
         </AlertDialogContent>
       </AlertDialog>
     </main>
+
+    <SearchTab v-if="showSearchTab && editor" :editor="editor" />
   </div>
 </template>
 

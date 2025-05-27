@@ -72,4 +72,10 @@ body {
     background: #f0f0f0;
   }
 }
+.search-match {
+  background-color: #ffeb3b; /* 所有匹配项颜色 */
+}
+.current-match {
+  background-color: #ff5722; /* 当前匹配项更鲜艳的颜色 */
+}
 </style>

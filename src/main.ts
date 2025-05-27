@@ -20,6 +20,10 @@ import 'codemirror/addon/edit/matchbrackets'
 import 'codemirror/addon/selection/active-line'
 import 'codemirror/addon/hint/show-hint'
 import 'codemirror/addon/hint/css-hint'
+import 'codemirror/addon/search/search' // 搜索功能
+import 'codemirror/addon/search/searchcursor'
+import 'codemirror/addon/dialog/dialog' // 搜索替换功能
+import 'codemirror/addon/dialog/dialog.css'
 
 setupComponents()
 
