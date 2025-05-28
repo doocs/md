@@ -14,9 +14,6 @@ import {
 import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
 
-import 'codemirror/addon/search/search' // 搜索功能
-import 'codemirror/addon/search/searchcursor'
-
 const store = useStore()
 const displayStore = useDisplayStore()
 const { isDark, output, editor, readingTime } = storeToRefs(store)
@@ -46,7 +43,7 @@ const timeout = ref<NodeJS.Timeout>()
 
 const showEditor = ref(true)
 
-const showSearchTab = ref(false)
+const searchTabRef = ref<InstanceType<typeof SearchTab>>()
 
 onMounted(() => {
   setTimeout(() => {
@@ -57,7 +54,9 @@ onMounted(() => {
     if (e.key === `f`) {
       if (e.metaKey || e.ctrlKey) {
         e.preventDefault()
-        showSearchTab.value = true
+        if (searchTabRef.value) {
+          searchTabRef.value.showSearchTab = true
+        }
       }
     }
   })
@@ -652,7 +651,7 @@ const isOpenHeadingSlider = ref(false)
       </AlertDialog>
     </main>
 
-    <SearchTab v-if="showSearchTab && editor" :editor="editor" />
+    <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
   </div>
 </template>
 
