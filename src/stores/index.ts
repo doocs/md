@@ -45,6 +45,10 @@ interface Post {
   }[]
   createDatetime: Date
   updateDatetime: Date
+  // 父标签
+  parentId?: string | null
+  // 展开状态
+  isExpanded?: boolean
 }
 
 export const useStore = defineStore(`store`, () => {
@@ -202,6 +206,14 @@ export const useStore = defineStore(`store`, () => {
       return
     posts.value.splice(idx, 1)
     currentPostId.value = posts.value[Math.min(idx, posts.value.length - 1)]?.id ?? ``
+  }
+
+  const updatePostParentId = (postId: string, parentId: string | null) => {
+    const post = getPostById(postId)
+    if (post) {
+      post.parentId = parentId
+      post.updateDatetime = new Date()
+    }
   }
 
   /********************************
@@ -761,6 +773,7 @@ export const useStore = defineStore(`store`, () => {
 
     titleList,
     isMobile,
+    updatePostParentId,
   }
 })
 
