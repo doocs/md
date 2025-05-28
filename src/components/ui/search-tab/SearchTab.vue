@@ -10,11 +10,14 @@ const showSearchTab = ref(false)
 
 const searchWord = ref(``)
 const indexOfMatch = ref(0)
-const numberOfMatches = ref(0)
 const showReplace = ref(false)
 const replaceWord = ref(``)
 
 const matchPositions = ref<CodeMirror.Position[][]>([])
+const numberOfMatches = computed(() => {
+  return matchPositions.value.length
+})
+
 const currentMatchPosition = computed(() => {
   if (numberOfMatches.value === 0)
     return null
@@ -22,10 +25,19 @@ const currentMatchPosition = computed(() => {
 })
 
 watch(searchWord, () => {
-  indexOfMatch.value = 0
-  numberOfMatches.value = 0
-  matchPositions.value = []
-  findAllMatches()
+  const debouncedSearch = useDebounceFn(() => {
+    matchPositions.value = []
+
+    if (searchWord.value === ``) {
+      clearAllMarks()
+    }
+    else {
+      indexOfMatch.value = 0
+      findAllMatches()
+    }
+  }, 300)
+
+  debouncedSearch()
 })
 
 watch([indexOfMatch, matchPositions], () => {
@@ -76,7 +88,6 @@ function findAllMatches() {
     matchCount++
   }
   matchPositions.value = _matchPositions
-  numberOfMatches.value = matchCount
   if (matchCount === indexOfMatch.value) {
     indexOfMatch.value -= 1
   }
@@ -101,17 +112,20 @@ function closeSearchTab() {
   showSearchTab.value = false
 }
 
-function handleInputKeyDown(e: KeyboardEvent) {
+function handleSearchInputKeyDown(e: KeyboardEvent) {
   switch (e.key) {
-    case `ArrowUp`:
-      prevMatch()
-      e.preventDefault()
-      break
-    case `ArrowDown`:
     case `Enter`:
       if (numberOfMatches.value === 0)
         return
       nextMatch()
+      e.preventDefault()
+  }
+}
+
+function handleReplaceInputKeyDown(e: KeyboardEvent) {
+  switch (e.key) {
+    case `Enter`:
+      handleReplace()
       e.preventDefault()
   }
 }
@@ -145,8 +159,8 @@ function handleReplaceAll() {
 }
 
 function handleEditorChange() {
-  // 使用异步的方式来避免输入卡顿
-  setTimeout(findAllMatches, 0)
+  const debouncedSearch = useDebounceFn(findAllMatches, 300)
+  debouncedSearch()
 }
 
 onMounted(() => {
@@ -163,56 +177,41 @@ defineExpose({
 })
 </script>
 
-<!-- TODO 增加hover的说明 -->
 <template>
-  <div v-if="showSearchTab" class="search-tab-container bg-background">
-    <div class="flex items-center justify-between gap-2 p-2" :class="showReplace ? 'h-28' : 'h-16'">
-      <Button variant="ghost" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
-        <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
-      </Button>
-      <div class="direction-normal flex flex-col gap-0">
-        <div class="h-12 flex items-center justify-start gap-1">
-          <span class="w-8 leading-10">查找</span>
-          <Input v-model="searchWord" class="w-40" @keydown="handleInputKeyDown" />
-          <span class="w-12 text-center">
-            {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
-          </span>
-          <Button variant="ghost" size="xs" @click="prevMatch">
-            <ChevronUp class="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="xs" @click="nextMatch">
-            <ChevronDown class="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="xs" @click="closeSearchTab">
-            <X class="h-4 w-4" />
-          </Button>
-        </div>
-        <div v-if="showReplace" class="h-12 flex items-center justify-start gap-1">
-          <span class="w-8 leading-10">替换</span>
-          <Input v-model="replaceWord" class="w-40" />
-          <Button variant="ghost" size="xs" @click="handleReplace">
-            <Replace class="h-4 w-4" />
-          </Button>
-          <Button variant="ghost" size="xs" @click="handleReplaceAll">
-            <ReplaceAll class="h-4 w-4" />
-          </Button>
-        </div>
+  <div v-if="showSearchTab" class="bg-background fixed right-0 top-15 z-50 w-[406px] flex items-center justify-between gap-2 border rounded-t-lg p-2 shadow-lg" :class="showReplace ? 'h-28' : 'h-16'">
+    <Button variant="ghost" title="切换替换" aria-label="切换替换" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
+      <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
+    </Button>
+    <div class="direction-normal flex flex-col gap-0">
+      <div class="h-12 flex items-center justify-start gap-1">
+        <span class="w-8 leading-10">查找</span>
+        <Input v-model="searchWord" class="w-40" @keydown="handleSearchInputKeyDown" />
+        <span class="w-12 text-center">
+          {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
+        </span>
+        <Button variant="ghost" size="xs" title="上一处" aria-label="上一处" class="h-8 w-8 p-0" @click="prevMatch">
+          <ChevronUp class="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="xs" title="下一处" aria-label="下一处" class="h-8 w-8 p-0" @click="nextMatch">
+          <ChevronDown class="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="xs" title="关闭" aria-label="关闭" class="h-8 w-8 p-0" @click="closeSearchTab">
+          <X class="h-4 w-4" />
+        </Button>
+      </div>
+      <div v-if="showReplace" class="h-12 flex items-center justify-start gap-1">
+        <span class="w-8 leading-10">替换</span>
+        <Input v-model="replaceWord" class="w-40" @keydown="handleReplaceInputKeyDown" />
+        <Button variant="ghost" size="xs" title="替换" aria-label="替换" class="h-8 w-8 p-0" @click="handleReplace">
+          <Replace class="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="xs" title="全部替换" aria-label="全部替换" class="h-8 w-8 p-0" @click="handleReplaceAll">
+          <ReplaceAll class="h-4 w-4" />
+        </Button>
       </div>
     </div>
   </div>
 </template>
 
 <style scoped lang='less'>
-.search-tab-container {
-  touch-action: none;
-  width: 406px;
-  min-height: calc(24px);
-
-  position: absolute;
-  top: 60px;
-  right: 0;
-
-  border-radius: calc(var(--radius) - 2px);
-  border-width: 1px;
-}
 </style>

@@ -304,7 +304,7 @@ function initEditor() {
           editor.replaceSelection(updated)
         },
         [`${ctrlKey}-F`]: function search() {
-          // do nothing
+          // use this to avoid CodeMirror's built-in search functionality
         },
       },
     })
