@@ -3,8 +3,7 @@ import type CodeMirror from 'codemirror'
 import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
 
 const props = defineProps<{
-  editor: CodeMirror.EditorFromTextArea
-//   showSearchTab: boolean
+  editor: CodeMirror.Editor
 }>()
 
 const showSearchTab = ref(false)
@@ -14,18 +13,31 @@ const indexOfMatch = ref(0)
 const numberOfMatches = ref(0)
 const showReplace = ref(false)
 const replaceWord = ref(``)
-const currentMatchPosition = ref<[CodeMirror.Position, CodeMirror.Position] | null>(null)
 
-watch([searchWord, indexOfMatch], () => {
+const matchPositions = ref<CodeMirror.Position[][]>([])
+const currentMatchPosition = computed(() => {
+  if (numberOfMatches.value === 0)
+    return null
+  return matchPositions.value[indexOfMatch.value]
+})
+
+watch(searchWord, () => {
+  indexOfMatch.value = 0
+  numberOfMatches.value = 0
+  matchPositions.value = []
   findAllMatches()
 })
 
-watch(showSearchTab, () => {
+watch([indexOfMatch, matchPositions], () => {
+  markMatch()
+})
+
+watch(showSearchTab, async () => {
   if (!showSearchTab.value) {
     clearAllMarks()
   }
   else {
-    findAllMatches()
+    markMatch()
   }
 })
 
@@ -34,36 +46,40 @@ function clearAllMarks() {
   editor.getAllMarks().forEach(mark => mark.clear())
 }
 
+function markMatch() {
+  const editor = props.editor
+  if (!editor)
+    return
+  clearAllMarks()
+  matchPositions.value.forEach((pos, i) => {
+    editor.markText(pos[0], pos[1], { className: i === indexOfMatch.value
+      ? `current-match`
+      : `search-match` })
+  })
+  if (matchPositions.value[indexOfMatch.value]?.[0])
+    editor.scrollIntoView(matchPositions.value[indexOfMatch.value][0])
+}
+
 function findAllMatches() {
   const editor = props.editor
   if (!editor)
     return
   if (!searchWord.value || !showSearchTab.value)
     return
-  // 清除之前的高亮
-  clearAllMarks()
-
-  currentMatchPosition.value = null
 
   // 获取所有匹配项
   const cursor = editor.getSearchCursor(searchWord.value, undefined, true)
-  let index = 0
+  let matchCount = 0
+  const _matchPositions: CodeMirror.Position[][] = []
   while (cursor.findNext()) {
-    // 高亮所有匹配项
-    editor.markText(
-      cursor.from(),
-      cursor.to(),
-      { className: index === indexOfMatch.value
-        ? `current-match`
-        : `search-match` },
-    )
-    if (index === indexOfMatch.value) {
-      editor.scrollIntoView(cursor.from())
-      currentMatchPosition.value = [cursor.from(), cursor.to()]
-    }
-    index++
+    _matchPositions.push([cursor.from(), cursor.to()])
+    matchCount++
   }
-  numberOfMatches.value = index
+  matchPositions.value = _matchPositions
+  numberOfMatches.value = matchCount
+  if (matchCount === indexOfMatch.value) {
+    indexOfMatch.value -= 1
+  }
 }
 
 function nextMatch() {
@@ -121,24 +137,20 @@ function handleReplaceAll() {
     return
   if (!currentMatchPosition.value)
     return
-  const cursor = editor.getSearchCursor(searchWord.value, undefined, true)
-  while (cursor.findNext()) {
-    editor.setSelection(cursor.from(), cursor.to())
+  matchPositions.value.forEach((pos) => {
+    editor.setSelection(pos[0], pos[1])
     editor.replaceSelection(replaceWord.value)
-  }
+  })
   findAllMatches()
 }
 
 function handleEditorChange() {
-  if (searchWord.value) {
-    setTimeout(findAllMatches, 0)
-  }
+  // 使用异步的方式来避免输入卡顿
+  setTimeout(findAllMatches, 0)
 }
 
 onMounted(() => {
   const editor = props.editor
-  if (!editor)
-    return
   editor.on(`changes`, handleEditorChange)
 })
 onUnmounted(() => {
@@ -153,7 +165,7 @@ defineExpose({
 
 <!-- TODO 增加hover的说明 -->
 <template>
-  <div v-if="showSearchTab" class="bg-background search-tab-container">
+  <div v-if="showSearchTab" class="search-tab-container bg-background">
     <div class="flex items-center justify-between gap-2 p-2" :class="showReplace ? 'h-28' : 'h-16'">
       <Button variant="ghost" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
         <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
