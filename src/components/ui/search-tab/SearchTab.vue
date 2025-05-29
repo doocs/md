@@ -19,7 +19,7 @@ const numberOfMatches = computed(() => {
 })
 
 const currentMatchPosition = computed(() => {
-  if (numberOfMatches.value === 0)
+  if (!checkMatchNumber())
     return null
   return matchPositions.value[indexOfMatch.value]
 })
@@ -60,8 +60,6 @@ function clearAllMarks() {
 
 function markMatch() {
   const editor = props.editor
-  if (!editor)
-    return
   clearAllMarks()
   matchPositions.value.forEach((pos, i) => {
     editor.markText(pos[0], pos[1], { className: i === indexOfMatch.value
@@ -74,8 +72,6 @@ function markMatch() {
 
 function findAllMatches() {
   const editor = props.editor
-  if (!editor)
-    return
   if (!searchWord.value || !showSearchTab.value)
     return
 
@@ -94,12 +90,12 @@ function findAllMatches() {
 }
 
 function nextMatch() {
-  if (numberOfMatches.value === 0)
+  if (!checkMatchNumber())
     return
   indexOfMatch.value = (indexOfMatch.value + 1) % numberOfMatches.value
 }
 function prevMatch() {
-  if (numberOfMatches.value === 0)
+  if (!checkMatchNumber())
     return
   indexOfMatch.value = (indexOfMatch.value - 1 + numberOfMatches.value) % numberOfMatches.value
 }
@@ -115,8 +111,6 @@ function closeSearchTab() {
 function handleSearchInputKeyDown(e: KeyboardEvent) {
   switch (e.key) {
     case `Enter`:
-      if (numberOfMatches.value === 0)
-        return
       nextMatch()
       e.preventDefault()
   }
@@ -131,11 +125,9 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 }
 
 function handleReplace() {
-  if (numberOfMatches.value === 0)
+  if (!checkMatchNumber ())
     return
   const editor = props.editor
-  if (!editor)
-    return
   if (!currentMatchPosition.value)
     return
   editor.setSelection(currentMatchPosition.value[0], currentMatchPosition.value[1])
@@ -144,11 +136,9 @@ function handleReplace() {
 }
 
 function handleReplaceAll() {
-  if (numberOfMatches.value === 0)
+  if (!checkMatchNumber())
     return
   const editor = props.editor
-  if (!editor)
-    return
   if (!currentMatchPosition.value)
     return
   matchPositions.value.forEach((pos) => {
@@ -168,8 +158,20 @@ onMounted(() => {
   editor.on(`changes`, handleEditorChange)
 })
 onUnmounted(() => {
-  props.editor.off(`change`, handleEditorChange)
+  props.editor.off(`changes`, handleEditorChange)
 })
+
+/**
+ * 检查是否有匹配项
+ * 返回 false 表示没有匹配项
+ * 返回 true 表示有匹配项
+ */
+function checkMatchNumber(): boolean {
+  if (numberOfMatches.value === 0) {
+    return false
+  }
+  return true
+}
 
 defineExpose({
   showSearchTab,
@@ -178,7 +180,7 @@ defineExpose({
 </script>
 
 <template>
-  <div v-if="showSearchTab" class="bg-background fixed right-0 top-15 z-50 w-[406px] flex items-center justify-between gap-2 border rounded-t-lg p-2 shadow-lg" :class="showReplace ? 'h-28' : 'h-16'">
+  <div v-if="showSearchTab" class="bg-background absolute right-0 top-0 z-50 w-[406px] flex items-center justify-between gap-2 border rounded-t-lg p-2 shadow-lg" :class="showReplace ? 'h-28' : 'h-16'">
     <Button variant="ghost" title="切换替换" aria-label="切换替换" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
       <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
     </Button>

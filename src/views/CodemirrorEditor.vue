@@ -513,6 +513,7 @@ const isOpenHeadingSlider = ref(false)
             'border-r': store.isEditOnLeft,
           }"
         >
+          <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
           <AIFixedBtn :is-mobile="store.isMobile" :show-editor="showEditor" />
           <ContextMenu>
             <ContextMenuTrigger>
@@ -650,8 +651,6 @@ const isOpenHeadingSlider = ref(false)
         </AlertDialogContent>
       </AlertDialog>
     </main>
-
-    <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
   </div>
 </template>
 
