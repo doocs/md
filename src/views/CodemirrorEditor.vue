@@ -59,6 +59,11 @@ onMounted(() => {
         }
       }
     }
+    if (e.key === `Escape`) {
+      if (searchTabRef.value) {
+        searchTabRef.value.showSearchTab = false
+      }
+    }
   })
 })
 
