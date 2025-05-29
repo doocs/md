@@ -125,7 +125,7 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 }
 
 function handleReplace() {
-  if (!checkMatchNumber ())
+  if (!checkMatchNumber())
     return
   const editor = props.editor
   if (!currentMatchPosition.value)
