@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
+import CodeMirror from 'codemirror'
+import { Eye, List, Pen } from 'lucide-vue-next'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
+import { SearchTab } from '@/components/ui/search-tab'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -10,8 +13,6 @@ import {
 } from '@/utils'
 import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
-import CodeMirror from 'codemirror'
-import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -42,10 +43,28 @@ const timeout = ref<NodeJS.Timeout>()
 
 const showEditor = ref(true)
 
+const searchTabRef = ref<InstanceType<typeof SearchTab>>()
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
+
+  document.addEventListener(`keydown`, (e) => {
+    if (e.key === `f`) {
+      if (e.metaKey || e.ctrlKey) {
+        e.preventDefault()
+        if (searchTabRef.value) {
+          searchTabRef.value.showSearchTab = true
+        }
+      }
+    }
+    if (e.key === `Escape`) {
+      if (searchTabRef.value) {
+        searchTabRef.value.showSearchTab = false
+      }
+    }
+  })
 })
 
 // 切换编辑/预览视图（仅限移动端）
@@ -289,6 +308,9 @@ function initEditor() {
             : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
           editor.replaceSelection(updated)
         },
+        [`${ctrlKey}-F`]: function search() {
+          // use this to avoid CodeMirror's built-in search functionality
+        },
       },
     })
 
@@ -496,6 +518,7 @@ const isOpenHeadingSlider = ref(false)
             'border-r': store.isEditOnLeft,
           }"
         >
+          <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
           <AIFixedBtn :is-mobile="store.isMobile" :show-editor="showEditor" />
           <ContextMenu>
             <ContextMenuTrigger>
