@@ -1,14 +1,7 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import {
-  ArrowUpNarrowWide,
-  Edit3,
-  Ellipsis,
-  History,
-  Plus,
-  Trash,
-} from 'lucide-vue-next'
+import { ArrowUpNarrowWide, ChevronRight, Edit3, Ellipsis, History, Plus, Trash } from 'lucide-vue-next'
 
 const store = useStore()
 
@@ -97,7 +90,9 @@ function recoverHistory() {
 /* ============ 排序 ============ */
 const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
-  return [...store.posts].sort((a, b) => {
+  // 先过滤出 parentId 为空的文章，再排序
+  const rootPosts = store.posts.filter(post => !post.parentId) // 过滤条件：parentId 不存在或为 null
+  return [...rootPosts].sort((a, b) => {
     switch (sortMode.value) {
       case `A-Z`: return a.title.localeCompare(b.title)
       case `Z-A`: return b.title.localeCompare(a.title)
@@ -109,6 +104,57 @@ const sortedPosts = computed(() => {
     }
   })
 })
+
+/* ============ 拖拽功能 ============ */
+const dragPostId = ref<string | null>(null)
+
+// 新增：拖拽开始时记录ID并设置数据
+function handleDragStart(id: string, e: DragEvent) {
+  dragPostId.value = id
+  e.dataTransfer?.setData(`text/plain`, id)
+  e.dataTransfer!.effectAllowed = `move` // 明确拖拽效果
+}
+
+// 新增：拖拽结束时重置状态
+function handleDragEnd() {
+  dragPostId.value = null
+}
+
+// 修改：支持空白区域解除父子关系
+function handleDrop(targetId: string | null) { // 允许targetId为null（空白区域）
+  const sourceId = dragPostId.value
+  if (!sourceId)
+    return
+
+  if (sourceId === targetId) { // 拖拽到自身
+    dragPostId.value = null
+    return
+  }
+
+  if (targetId) { // 拖拽到具体文章项
+    store.updatePostParentId(sourceId, targetId)
+    toast.success(`文章「${store.getPostById(sourceId)?.title}」已移动到「${store.getPostById(targetId)?.title}」下`)
+  }
+  else { // 拖拽到空白区域（解除父子关系）
+    store.updatePostParentId(sourceId, null) // 假设store支持传入null清除parentId
+    toast.success(`文章「${store.getPostById(sourceId)?.title}」已回归全局列表`)
+  }
+
+  dragPostId.value = null
+}
+
+function handleDragOver(e: DragEvent) {
+  e.preventDefault() // 允许放置
+  // e.dataTransfer?.dropEffect = `move`
+}
+
+/* ============ 折叠展开 ============ */
+function togglePostExpanded(postId: string) {
+  const targetPost = store.posts.find(p => p.id === postId)
+  if (targetPost) {
+    targetPost.isExpanded = !targetPost.isExpanded
+  }
+}
 </script>
 
 <template>
@@ -120,6 +166,8 @@ const sortedPosts = computed(() => {
     <nav
       class="space-y-1 h-full flex flex-col border-r-2 border-gray/20 py-2 transition-transform"
       :class="{ 'translate-x-100': store.isOpenPostSlider, '-translate-x-full': !store.isOpenPostSlider }"
+      @dragover="handleDragOver"
+      @drop.prevent="handleDrop(null)"
     >
       <!-- 顶部：新增 + 排序按钮 -->
       <div class="space-x-4 mb-2 flex justify-center">
@@ -197,43 +245,129 @@ const sortedPosts = computed(() => {
       </div>
 
       <!-- 列表 -->
-      <ul class="space-y-1 overflow-auto px-2">
-        <li
-          v-for="post in sortedPosts"
-          :key="post.id"
-          class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-2 rounded p-2 text-sm transition-colors"
-          :class="{
-            'bg-primary text-primary-foreground shadow':
-              store.currentPostId === post.id,
-          }"
-          @click="store.currentPostId = post.id"
-        >
-          <span class="line-clamp-1">{{ post.title }}</span>
+      <div class="space-y-1">
+        <!-- 包裹根文章和子文章，保持间距 -->
+        <div v-for="post in sortedPosts" :key="post.id">
+          <!-- 根文章外层容器 -->
+          <a
+            href="#"
+            class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex items-center gap-2 rounded px-2 text-sm transition-colors"
+            :class="{
+              'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary': store.currentPostId === post.id,
+              'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': store.currentPostId === post.id,
+              'bg-yellow-100 dark:bg-yellow-900/30': dragPostId === post.id,
+              'opacity-50': dragPostId === post.id,
+            }"
+            draggable="true"
+            @dragstart="handleDragStart(post.id, $event)"
+            @dragend="handleDragEnd()"
+            @dragover="handleDragOver($event)"
+            @drop.prevent="handleDrop(post.id)"
+            @click="store.currentPostId = post.id"
+          >
+            <!-- 折叠展开图标 -->
+            <Button
+              size="xs"
+              variant="ghost"
+              class="h-max p-0"
+              @click.stop="togglePostExpanded(post.id)"
+            >
+              <ChevronRight
+                class="size-4 transition-transform"
+                :class="{ 'rotate-90': post.isExpanded }"
+              />
+            </Button>
 
-          <!-- 每条文章操作 -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button size="xs" variant="ghost" class="ml-auto px-1.5">
-                <Ellipsis class="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem @click.stop="startRenamePost(post.id)">
-                <Edit3 class="mr-2 size-4" /> 重命名
-              </DropdownMenuItem>
-              <DropdownMenuItem @click.stop="openHistoryDialog(post.id)">
-                <History class="mr-2 size-4" /> 历史记录
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                v-if="store.posts.length > 1"
-                @click.stop="startDelPost(post.id)"
+            <span class="line-clamp-1">{{ post.title }}</span>
+
+            <!-- 每条文章操作 -->
+            <DropdownMenu>
+              <DropdownMenuTrigger as-child>
+                <Button size="xs" variant="ghost" class="ml-auto px-1.5"><Ellipsis class="size-4" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem @click.stop="startRenamePost(post.id)">
+                  <Edit3 class="mr-2 size-4" /> 重命名
+                </DropdownMenuItem>
+                <DropdownMenuItem @click.stop="openHistoryDialog(post.id)">
+                  <History class="mr-2 size-4" /> 历史记录
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  v-if="store.posts.length > 1"
+                  @click.stop="startDelPost(post.id)"
+                >
+                  <Trash class="mr-2 size-4" /> 删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </a>
+
+          <!-- 子文章渲染区域（仅一层） -->
+          <div
+            v-if="post.isExpanded"
+            class="space-y-1 ml-4 mt-1 border-l-2 border-gray-300 pl-3 dark:border-gray-700"
+          >
+            <span v-if="store.posts.filter(p => p.parentId === post.id).length === 0" class="text-xs">
+              暂无内容
+            </span>
+            <a
+              v-for="childPost in store.posts.filter(p => p.parentId === post.id)"
+              :key="childPost.id"
+              href="#"
+              class="hover:bg-primary/90 hover:text-primary-foreground dark:hover:border-primary-dark h-8 w-full inline-flex items-center gap-2 rounded px-2 text-sm transition-colors"
+              :class="{
+                'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary': dragPostId !== childPost.id && store.currentPostId === childPost.id,
+                'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark': dragPostId !== childPost.id && store.currentPostId === childPost.id,
+                'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragPostId === childPost.id,
+                // 'bg-yellow-100 dark:bg-yellow-900/30': dragPostId === childPost.id,
+                'opacity-50': dragPostId === childPost.id,
+              }"
+              draggable="true"
+              @dragstart="handleDragStart(childPost.id, $event)"
+              @dragend="handleDragEnd()"
+              @dragover="handleDragOver($event)"
+              @drop.prevent="handleDrop(childPost.id)"
+              @click="store.currentPostId = childPost.id"
+            >
+              <!-- 子文章折叠图标 -->
+              <Button
+                size="xs"
+                variant="ghost"
+                class="h-max p-0"
+                @click.stop="togglePostExpanded(childPost.id)"
               >
-                <Trash class="mr-2 size-4" /> 删除
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </li>
-      </ul>
+                <ChevronRight
+                  class="size-4 transition-transform"
+                  :class="{ 'rotate-90': childPost.isExpanded }"
+                />
+              </Button>
+
+              <span class="line-clamp-1">{{ childPost.title }}</span>
+
+              <!-- 子文章操作菜单 -->
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button size="xs" variant="ghost" class="ml-auto px-1.5"><Ellipsis class="size-4" /></Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent>
+                  <DropdownMenuItem @click.stop="startRenamePost(childPost.id)">
+                    <Edit3 class="mr-2 size-4" /> 重命名
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @click.stop="openHistoryDialog(childPost.id)">
+                    <History class="mr-2 size-4" /> 历史记录
+                  </DropdownMenuItem>
+                  <DropdownMenuItem
+                    v-if="store.posts.length > 1"
+                    @click.stop="startDelPost(childPost.id)"
+                  >
+                    <Trash class="mr-2 size-4" /> 删除
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </a>
+          </div>
+        </div>
+      </div>
 
       <!-- 重命名弹窗 -->
       <Dialog v-model:open="isOpenEditDialog">
