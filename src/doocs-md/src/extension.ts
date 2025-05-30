@@ -1,44 +1,46 @@
-import * as path from 'node:path'
+import { marked } from 'marked'
 import * as vscode from 'vscode'
+import { modifyHtmlContent } from '../../platform/md2html'
 
 export function activate(context: vscode.ExtensionContext) {
-  context.subscriptions.push(
-    vscode.commands.registerCommand(`catCoding.start`, () => {
-      const panel = vscode.window.createWebviewPanel(
-        `catCoding`,
-        `Cat Coding`,
-        vscode.ViewColumn.One,
-        {
-          // Enable scripts in the webview
-          enableScripts: true,
-        },
-      )
+  // 注册命令
+  const disposable = vscode.commands.registerCommand(`markdown.preview`, () => {
+    // 创建并显示新的webview面板
+    const panel = vscode.window.createWebviewPanel(
+      `markdownPreview`, // 视图类型
+      `Markdown Preview`, // 面板标题
+      vscode.ViewColumn.Two, // 在第二栏显示
+      {
+        enableScripts: true, // 启用JS
+      },
+    )
 
-      panel.webview.html = getWebviewContent()
-    }),
-  )
+    // 获取当前活动的Markdown编辑器
+    const editor = vscode.window.activeTextEditor
+    if (editor && editor.document.languageId === `markdown`) {
+      // 设置webview内容为当前Markdown内容
+
+      const documentText = editor.document.getText()
+      const html = marked.parse(documentText) as string
+      const modifiedHtml = modifyHtmlContent(html)
+
+      panel.webview.html = wrapHtmlTag(modifiedHtml)
+    }
+  })
+
+  context.subscriptions.push(disposable)
+
+  // 当打开Markdown文件时，在状态栏显示预览按钮
+  vscode.window.onDidChangeActiveTextEditor((editor) => {
+    if (editor && editor.document.languageId === `markdown`) {
+      vscode.commands.executeCommand(`setContext`, `markdownFileActive`, true)
+    }
+    else {
+      vscode.commands.executeCommand(`setContext`, `markdownFileActive`, false)
+    }
+  })
 }
 
-function getWebviewContent() {
-  return `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cat Coding</title>
-</head>
-<body>
-    <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" width="300" />
-    <h1 id="lines-of-code-counter">0</h1>
-
-    <script>
-        const counter = document.getElementById('lines-of-code-counter');
-
-        let count = 0;
-        setInterval(() => {
-            counter.textContent = count++;
-        }, 100);
-    </script>
-</body>
-</html>`
+function wrapHtmlTag(html: string) {
+  return `<html><head><meta charset="utf-8" /></head><body><div style="width: 375px; margin: auto;padding:20px;background:white;position: relative;min-height: 100%;margin: 0 auto;padding: 20px;font-size: 14px;box-sizing: border-box;outline: none;transition: all 300ms ease-in-out;word-wrap: break-word;">${html}</div></body></html>`
 }
