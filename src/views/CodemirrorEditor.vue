@@ -311,6 +311,9 @@ function initEditor() {
         [`${ctrlKey}-F`]: function search() {
           // use this to avoid CodeMirror's built-in search functionality
         },
+        [`${ctrlKey}-G`]: function search() {
+          // use this to avoid CodeMirror's built-in search functionality
+        },
       },
     })
 

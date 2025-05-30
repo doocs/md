@@ -1,105 +1,236 @@
 <script setup lang="ts">
 import type CodeMirror from 'codemirror'
-import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
+import {
+  BoxSelect,
+  ChevronDown,
+  ChevronRight,
+  ChevronUp,
+  Replace,
+  ReplaceAll,
+  X,
+} from 'lucide-vue-next'
 
-const props = defineProps<{
-  editor: CodeMirror.Editor
-}>()
+/* -------------------------------------------------------------------------- */
+/* Props & Refs                                                               */
+/* -------------------------------------------------------------------------- */
+const props = defineProps<{ editor: CodeMirror.Editor }>()
 
 const showSearchTab = ref(false)
+const showReplace = ref(false)
 
 const searchWord = ref(``)
-const indexOfMatch = ref(0)
-const showReplace = ref(false)
 const replaceWord = ref(``)
+const indexOfMatch = ref(0)
 
+const searchInSelection = ref(false)
+let selectionSnapshot: { from: CodeMirror.Position, to: CodeMirror.Position }[] = []
+
+/* -------------------------------------------------------------------------- */
+/* Match Information                                                          */
+/* -------------------------------------------------------------------------- */
 const matchPositions = ref<CodeMirror.Position[][]>([])
-const numberOfMatches = computed(() => {
-  return matchPositions.value.length
-})
+const numberOfMatches = computed(() => matchPositions.value.length)
+const hasMatches = computed(() => numberOfMatches.value > 0)
+const currentMatchPos = computed(() =>
+  hasMatches.value ? matchPositions.value[indexOfMatch.value] : null,
+)
 
-const currentMatchPosition = computed(() => {
-  if (!checkMatchNumber())
-    return null
-  return matchPositions.value[indexOfMatch.value]
-})
+/* -------------------------------------------------------------------------- */
+/* Selection State (for button disabling)                                     */
+/* -------------------------------------------------------------------------- */
+const hasSelection = ref(false)
+function updateHasSelection() {
+  hasSelection.value = props.editor
+    .listSelections()
+    .some(sel =>
+      sel.anchor.line !== sel.head.line || sel.anchor.ch !== sel.head.ch,
+    )
+}
 
+/* -------------------------------------------------------------------------- */
+/* Watchers                                                                   */
+/* -------------------------------------------------------------------------- */
 watch(searchWord, () => {
-  const debouncedSearch = useDebounceFn(() => {
-    matchPositions.value = []
-
-    if (searchWord.value === ``) {
+  useDebounceFn(() => {
+    if (!searchWord.value) {
+      matchPositions.value = []
       clearAllMarks()
     }
     else {
       indexOfMatch.value = 0
       findAllMatches()
     }
-  }, 300)
-
-  debouncedSearch()
+  }, 300)()
 })
 
-watch([indexOfMatch, matchPositions], () => {
-  markMatch()
+watch([indexOfMatch, matchPositions], markMatch)
+
+watch(showSearchTab, () => {
+  showSearchTab.value ? markMatch() : clearAllMarks()
 })
 
-watch(showSearchTab, async () => {
-  if (!showSearchTab.value) {
-    clearAllMarks()
-  }
-  else {
-    markMatch()
-  }
+watch(searchInSelection, () => {
+  indexOfMatch.value = 0
+  findAllMatches()
 })
 
+/* -------------------------------------------------------------------------- */
+/* Lifecycle Hooks                                                            */
+/* -------------------------------------------------------------------------- */
+onMounted(() => {
+  const ed = props.editor
+
+  ed.on(`changes`, () => {
+    useDebounceFn(findAllMatches, 300)()
+  })
+
+  ed.on(`cursorActivity`, updateHasSelection)
+
+  updateHasSelection()
+})
+
+onUnmounted(() => {
+  const ed = props.editor
+
+  ed.off(`changes`, findAllMatches)
+  ed.off(`cursorActivity`, updateHasSelection)
+})
+
+/* -------------------------------------------------------------------------- */
+/* Helpers                                                                    */
+/* -------------------------------------------------------------------------- */
 function clearAllMarks() {
-  const editor = props.editor
-  editor.getAllMarks().forEach(mark => mark.clear())
+  props.editor.getAllMarks().forEach(mark => mark.clear())
 }
 
 function markMatch() {
-  const editor = props.editor
+  const ed = props.editor
+
   clearAllMarks()
+
   matchPositions.value.forEach((pos, i) => {
-    editor.markText(pos[0], pos[1], { className: i === indexOfMatch.value
-      ? `current-match`
-      : `search-match` })
+    ed.markText(pos[0], pos[1], {
+      className: i === indexOfMatch.value ? `current-match` : `search-match`,
+    })
   })
-  if (matchPositions.value[indexOfMatch.value]?.[0])
-    editor.scrollIntoView(matchPositions.value[indexOfMatch.value][0])
+
+  if (currentMatchPos.value) {
+    ed.scrollIntoView(currentMatchPos.value[0])
+  }
 }
 
+function isBeforeOrEqual(
+  a: CodeMirror.Position,
+  b: CodeMirror.Position,
+) {
+  return (
+    a.line < b.line
+    || (a.line === b.line && a.ch <= b.ch)
+  )
+}
+
+/* -------------------------------------------------------------------------- */
+/* Search Logic                                                               */
+/* -------------------------------------------------------------------------- */
 function findAllMatches() {
-  const editor = props.editor
+  const ed = props.editor
+
   if (!searchWord.value || !showSearchTab.value)
     return
 
-  // 获取所有匹配项
-  const cursor = editor.getSearchCursor(searchWord.value, undefined, true)
-  let matchCount = 0
-  const _matchPositions: CodeMirror.Position[][] = []
-  while (cursor.findNext()) {
-    _matchPositions.push([cursor.from(), cursor.to()])
-    matchCount++
+  const results: CodeMirror.Position[][] = []
+  const ranges = searchInSelection.value ? selectionSnapshot : []
+
+  if (ranges.length) {
+    ranges.forEach((range) => {
+      const cur = ed.getSearchCursor(searchWord.value, range.from, true)
+
+      while (cur.findNext()) {
+        if (!isBeforeOrEqual(cur.to(), range.to))
+          break
+        results.push([cur.from(), cur.to()])
+      }
+    })
   }
-  matchPositions.value = _matchPositions
-  if (matchCount === indexOfMatch.value) {
-    indexOfMatch.value -= 1
+  else {
+    const cur = ed.getSearchCursor(searchWord.value, undefined, true)
+    while (cur.findNext()) {
+      results.push([cur.from(), cur.to()])
+    }
+  }
+
+  matchPositions.value = results
+
+  if (indexOfMatch.value >= results.length) {
+    indexOfMatch.value = results.length - 1
   }
 }
 
+/* -------------------------------------------------------------------------- */
+/* Selection-Search Mode                                                      */
+/* -------------------------------------------------------------------------- */
+function toggleSearchInSelection() {
+  // 无选区且尝试开启 → 忽略
+  if (!hasSelection.value && !searchInSelection.value)
+    return
+
+  searchInSelection.value = !searchInSelection.value
+
+  if (searchInSelection.value) {
+    // 记录当前选区快照
+    selectionSnapshot = props.editor.listSelections().map((sel) => {
+      const from = sel.anchor < sel.head ? sel.anchor : sel.head
+      const to = sel.anchor < sel.head ? sel.head : sel.anchor
+      return { from, to }
+    })
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Navigation                                                                 */
+/* -------------------------------------------------------------------------- */
 function nextMatch() {
-  if (!checkMatchNumber())
+  if (!hasMatches.value)
     return
   indexOfMatch.value = (indexOfMatch.value + 1) % numberOfMatches.value
 }
+
 function prevMatch() {
-  if (!checkMatchNumber())
+  if (!hasMatches.value)
     return
-  indexOfMatch.value = (indexOfMatch.value - 1 + numberOfMatches.value) % numberOfMatches.value
+  indexOfMatch.value
+    = (indexOfMatch.value - 1 + numberOfMatches.value) % numberOfMatches.value
 }
 
+/* -------------------------------------------------------------------------- */
+/* Replace                                                                    */
+/* -------------------------------------------------------------------------- */
+function handleReplace() {
+  if (!currentMatchPos.value)
+    return
+
+  const [from, to] = currentMatchPos.value
+  props.editor.replaceRange(replaceWord.value, from, to)
+
+  findAllMatches()
+}
+
+function handleReplaceAll() {
+  if (!matchPositions.value.length)
+    return
+
+  // 倒序替换，防止坐标偏移
+  for (let i = matchPositions.value.length - 1; i >= 0; i--) {
+    const [from, to] = matchPositions.value[i]
+    props.editor.replaceRange(replaceWord.value, from, to)
+  }
+
+  findAllMatches()
+}
+
+/* -------------------------------------------------------------------------- */
+/* Misc UI Actions                                                            */
+/* -------------------------------------------------------------------------- */
 function toggleShowReplace() {
   showReplace.value = !showReplace.value
 }
@@ -108,72 +239,24 @@ function closeSearchTab() {
   showSearchTab.value = false
 }
 
-function handleSearchInputKeyDown(e: KeyboardEvent) {
-  switch (e.key) {
-    case `Enter`:
-      nextMatch()
-      e.preventDefault()
+function handleSearchKey(e: KeyboardEvent) {
+  if (e.key === `Enter`) {
+    nextMatch()
+    e.preventDefault()
   }
 }
 
-function handleReplaceInputKeyDown(e: KeyboardEvent) {
-  switch (e.key) {
-    case `Enter`:
-      handleReplace()
-      e.preventDefault()
+function handleReplaceKey(e: KeyboardEvent) {
+  if (e.key === `Enter`) {
+    handleReplace()
+    e.preventDefault()
   }
 }
 
-function handleReplace() {
-  if (!checkMatchNumber())
-    return
-  const editor = props.editor
-  if (!currentMatchPosition.value)
-    return
-  editor.setSelection(currentMatchPosition.value[0], currentMatchPosition.value[1])
-  props.editor.replaceSelection(replaceWord.value)
-  findAllMatches()
-}
-
-function handleReplaceAll() {
-  if (!checkMatchNumber())
-    return
-  const editor = props.editor
-  if (!currentMatchPosition.value)
-    return
-  matchPositions.value.forEach((pos) => {
-    editor.setSelection(pos[0], pos[1])
-    editor.replaceSelection(replaceWord.value)
-  })
-  findAllMatches()
-}
-
-function handleEditorChange() {
-  const debouncedSearch = useDebounceFn(findAllMatches, 300)
-  debouncedSearch()
-}
-
-onMounted(() => {
-  const editor = props.editor
-  editor.on(`changes`, handleEditorChange)
-})
-onUnmounted(() => {
-  props.editor.off(`changes`, handleEditorChange)
-})
-
-/**
- * 检查是否有匹配项
- * 返回 false 表示没有匹配项
- * 返回 true 表示有匹配项
- */
-function checkMatchNumber(): boolean {
-  return numberOfMatches.value > 0
-}
-
-defineExpose({
-  showSearchTab,
-  handleEditorChange,
-})
+/* -------------------------------------------------------------------------- */
+/* Expose                                                                     */
+/* -------------------------------------------------------------------------- */
+defineExpose({ showSearchTab })
 </script>
 
 <template>
@@ -183,18 +266,21 @@ defineExpose({
       class="bg-background absolute right-0 top-0 z-50 min-w-[300px] w-fit flex gap-1 border rounded-lg px-2 py-1 shadow-md transition-all"
       :class="showReplace ? 'items-start' : 'items-center'"
     >
-      <!-- 折叠/展开按钮 -->
+      <!-- 折叠 / 展开 -->
       <Button
         variant="ghost"
-        title="切换替换"
+        class="h-7 w-5 p-0"
         aria-label="切换替换"
-        class="h-7 w-5 flex items-center justify-center p-0"
+        title="切换替换"
         @click="toggleShowReplace"
       >
-        <component :is="showReplace ? ChevronDown : ChevronRight" class="h-3.5 w-3.5" />
+        <component
+          :is="showReplace ? ChevronDown : ChevronRight"
+          class="h-3.5 w-3.5"
+        />
       </Button>
 
-      <!-- 查找 / 替换主体 -->
+      <!-- 主体 -->
       <div class="flex flex-col gap-0.5">
         <!-- 查找行 -->
         <div class="flex items-center gap-1">
@@ -202,67 +288,94 @@ defineExpose({
             v-model="searchWord"
             placeholder="查找"
             class="h-7 w-40 text-sm"
-            @keydown="handleSearchInputKeyDown"
+            @keydown="handleSearchKey"
           />
-          <span class="w-10 select-none text-center text-xs">
-            {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
-          </span>
+
+          <!-- 仅选区查找 -->
           <Button
             variant="ghost"
             size="xs"
-            title="上一处"
-            aria-label="上一处"
             class="h-6 w-6 p-0"
+            :class="searchInSelection ? 'bg-muted opacity-70' : ''"
+            :disabled="!hasSelection && !searchInSelection"
+            aria-label="仅在选区查找"
+            title="仅在选区查找"
+            @click="toggleSearchInSelection"
+          >
+            <BoxSelect class="h-3 w-3" />
+          </Button>
+
+          <!-- 命中计数 -->
+          <span class="w-10 select-none text-center text-xs">
+            {{ hasMatches ? indexOfMatch + 1 : 0 }} / {{ numberOfMatches }}
+          </span>
+
+          <!-- 上下导航 -->
+          <Button
+            variant="ghost"
+            size="xs"
+            class="h-6 w-6 p-0"
+            :disabled="!hasMatches"
+            aria-label="上一处"
+            title="上一处"
             @click="prevMatch"
           >
             <ChevronUp class="h-3 w-3" />
           </Button>
+
           <Button
             variant="ghost"
             size="xs"
-            title="下一处"
-            aria-label="下一处"
             class="h-6 w-6 p-0"
+            :disabled="!hasMatches"
+            aria-label="下一处"
+            title="下一处"
             @click="nextMatch"
           >
             <ChevronDown class="h-3 w-3" />
           </Button>
+
+          <!-- 关闭 -->
           <Button
             variant="ghost"
             size="xs"
-            title="关闭"
-            aria-label="关闭"
             class="h-6 w-6 p-0"
+            aria-label="关闭"
+            title="关闭"
             @click="closeSearchTab"
           >
             <X class="h-3 w-3" />
           </Button>
         </div>
 
-        <!-- 替换行（可折叠） -->
+        <!-- 替换行 -->
         <div v-if="showReplace" class="flex items-center gap-1">
           <Input
             v-model="replaceWord"
             placeholder="替换"
             class="h-7 w-40 text-sm"
-            @keydown="handleReplaceInputKeyDown"
+            @keydown="handleReplaceKey"
           />
+
           <Button
             variant="ghost"
             size="xs"
-            title="替换"
-            aria-label="替换"
             class="h-6 w-6 p-0"
+            :disabled="!hasMatches"
+            aria-label="替换"
+            title="替换"
             @click="handleReplace"
           >
             <Replace class="h-3 w-3" />
           </Button>
+
           <Button
             variant="ghost"
             size="xs"
-            title="全部替换"
-            aria-label="全部替换"
             class="h-6 w-6 p-0"
+            :disabled="!hasMatches"
+            aria-label="全部替换"
+            title="全部替换"
             @click="handleReplaceAll"
           >
             <ReplaceAll class="h-3 w-3" />
@@ -280,6 +393,7 @@ defineExpose({
     transform 0.2s ease,
     opacity 0.2s ease;
 }
+
 .slide-down-enter-from,
 .slide-down-leave-to {
   transform: translateY(-100%);
