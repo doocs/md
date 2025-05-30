@@ -3,6 +3,7 @@
   "type": "module",
   "version": "2.0.3",
   "private": false,
+  "packageManager": "pnpm@8.11.0+sha512.9df87c16c98db27b4e051d787e67f2207ec47e809ccb07bf7b5ec4acdcd1613355839a38d0b900144923d6a7057700b74d2a0ccb1558beb241647a1206a9a7ab",
   "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "homepage": "https://github.com/doocs/md",
   "repository": {
@@ -11,6 +12,27 @@
   },
   "bugs": {
     "url": "https://github.com/doocs/md/issues"
+  },
+  "main": "./src/doocs-md/dist/extension.js",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "markdown.preview",
+        "title": "Open Markdown Preview"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markdown.preview",
+          "group": "navigation",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    }
   },
   "scripts": {
     "start": "npm run dev",
@@ -53,6 +75,7 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
+    "isomorphic-dompurify": "^2.25.0",
     "juice": "^11.0.0",
     "lucide-vue-next": "^0.473.0",
     "marked": "^15.0.6",

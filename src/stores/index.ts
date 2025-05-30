@@ -1,4 +1,10 @@
 import type { ReadTimeResults } from 'reading-time'
+import CodeMirror from 'codemirror'
+import DOMPurify from 'dompurify'
+import { toPng } from 'html-to-image'
+import { marked } from 'marked'
+import { v4 as uuid } from 'uuid'
+
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
@@ -24,13 +30,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
-
 import { initRenderer } from '@/utils/renderer'
-import CodeMirror from 'codemirror'
-import DOMPurify from 'dompurify'
-import { toPng } from 'html-to-image'
-import { marked } from 'marked'
-import { v4 as uuid } from 'uuid'
 
 /**********************************
  * Post 结构接口
@@ -45,6 +45,54 @@ interface Post {
   }[]
   createDatetime: Date
   updateDatetime: Date
+}
+
+export function modifyHtmlContent(outputTemp: string): string {
+  outputTemp = DOMPurify.sanitize(outputTemp, {
+    ADD_TAGS: [`mp-common-profile`],
+  })
+
+  // 阅读时间及字数统计
+  // outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
+
+  // 去除第一行的 margin-top
+  outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+  // 引用脚注
+  // outputTemp += renderer.buildFootnotes()
+  // // 附加的一些 style
+  // outputTemp += renderer.buildAddition()
+
+  // if (isMacCodeBlock.value) {
+  if (true) {
+    outputTemp += `
+      <style>
+        .hljs.code__pre > .mac-sign {
+          display: flex;
+        }
+      </style>
+    `
+  }
+
+  outputTemp += `
+    <style>
+      .code__pre {
+        padding: 0 !important;
+      }
+
+      .hljs.code__pre code {
+        display: -webkit-box;
+        padding: 0.5em 1em 1em;
+        overflow-x: auto;
+        text-indent: 0;
+      }
+
+      h2 strong {
+        color: inherit !important;
+      }
+    </style>
+  `
+  return outputTemp
+  // return renderer.createContainer(outputTemp)
 }
 
 export const useStore = defineStore(`store`, () => {
@@ -341,7 +389,7 @@ export const useStore = defineStore(`store`, () => {
       readingTime: readingTimeResult,
     } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
     readingTime.value = readingTimeResult
-    let outputTemp = marked.parse(markdownContent) as string
+    const outputTemp = marked.parse(markdownContent) as string
 
     // 提取标题
     const div = document.createElement(`div`)
@@ -359,53 +407,7 @@ export const useStore = defineStore(`store`, () => {
       })
       i++
     }
-
-    outputTemp = div.innerHTML
-
-    outputTemp = DOMPurify.sanitize(outputTemp, {
-      ADD_TAGS: [`mp-common-profile`],
-    })
-
-    // 阅读时间及字数统计
-    outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
-
-    // 去除第一行的 margin-top
-    outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-    // 引用脚注
-    outputTemp += renderer.buildFootnotes()
-    // 附加的一些 style
-    outputTemp += renderer.buildAddition()
-
-    if (isMacCodeBlock.value) {
-      outputTemp += `
-        <style>
-          .hljs.code__pre > .mac-sign {
-            display: flex;
-          }
-        </style>
-      `
-    }
-
-    outputTemp += `
-      <style>
-        .code__pre {
-          padding: 0 !important;
-        }
-
-        .hljs.code__pre code {
-          display: -webkit-box;
-          padding: 0.5em 1em 1em;
-          overflow-x: auto;
-          text-indent: 0;
-        }
-
-        h2 strong {
-          color: inherit !important;
-        }
-      </style>
-    `
-
-    output.value = renderer.createContainer(outputTemp)
+    output.value = modifyHtmlContent(outputTemp, renderer)
   }
 
   // 更新 CSS
