@@ -60,22 +60,19 @@ function openSearchWithSelection(cm: CodeMirror.Editor) {
   }
 }
 
+function handleGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
+    searchTabRef.value.showSearchTab = false
+    e.preventDefault()
+    editor.value?.focus()
+  }
+}
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
-
-  document.addEventListener(`keydown`, (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === `f`) {
-      e.preventDefault()
-      if (editor.value)
-        openSearchWithSelection(editor.value)
-    }
-
-    if (e.key === `Escape`) {
-      searchTabRef.value && (searchTabRef.value.showSearchTab = false)
-    }
-  })
+  document.addEventListener(`keydown`, handleGlobalKeydown)
 })
 
 // 切换编辑/预览视图（仅限移动端）
