@@ -45,24 +45,35 @@ const showEditor = ref(true)
 
 const searchTabRef = ref<InstanceType<typeof SearchTab>>()
 
+function openSearchWithSelection(cm: CodeMirror.Editor) {
+  const selected = cm.getSelection().trim()
+  if (!searchTabRef.value)
+    return
+
+  if (selected) {
+    // 自动带入选中文本
+    searchTabRef.value.setSearchWord(selected)
+  }
+  else {
+    // 仅打开面板
+    searchTabRef.value.showSearchTab = true
+  }
+}
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
 
   document.addEventListener(`keydown`, (e) => {
-    if (e.key === `f`) {
-      if (e.metaKey || e.ctrlKey) {
-        e.preventDefault()
-        if (searchTabRef.value) {
-          searchTabRef.value.showSearchTab = true
-        }
-      }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === `f`) {
+      e.preventDefault()
+      if (editor.value)
+        openSearchWithSelection(editor.value)
     }
+
     if (e.key === `Escape`) {
-      if (searchTabRef.value) {
-        searchTabRef.value.showSearchTab = false
-      }
+      searchTabRef.value && (searchTabRef.value.showSearchTab = false)
     }
   })
 })
@@ -308,7 +319,10 @@ function initEditor() {
             : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
           editor.replaceSelection(updated)
         },
-        [`${ctrlKey}-F`]: function search() {
+        [`${ctrlKey}-F`]: (cm: CodeMirror.Editor) => {
+          openSearchWithSelection(cm)
+        },
+        [`${ctrlKey}-G`]: function search() {
           // use this to avoid CodeMirror's built-in search functionality
         },
       },

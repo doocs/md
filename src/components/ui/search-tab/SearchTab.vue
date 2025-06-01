@@ -153,6 +153,13 @@ function handleEditorChange() {
   debouncedSearch()
 }
 
+function setSearchWord(word: string) {
+  searchWord.value = word
+  if (!showSearchTab.value) {
+    showSearchTab.value = true
+  }
+}
+
 onMounted(() => {
   const editor = props.editor
   editor.on(`changes`, handleEditorChange)
@@ -172,6 +179,8 @@ function checkMatchNumber(): boolean {
 
 defineExpose({
   showSearchTab,
+  searchWord,
+  setSearchWord,
   handleEditorChange,
 })
 </script>
