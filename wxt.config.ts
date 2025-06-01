@@ -31,6 +31,11 @@ export default defineConfig({
   },
   vite: () => ({
     ...ViteConfig,
+    plugins: ViteConfig.plugins!.filter(plugin =>
+      typeof plugin === `object`
+      && plugin !== null
+      && !(`name` in plugin && plugin.name === `vite-plugin-Radar`),
+    ),
     base: `/`,
   }),
 })
