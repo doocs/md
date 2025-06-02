@@ -1,14 +1,14 @@
-import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
-
 import type { PropertiesHyphen } from 'csstype'
-import { prefix } from '@/config'
-import { autoSpace } from '@/utils/autoSpace'
+
 import juice from 'juice'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
+import { prefix } from '@/config'
+import type { Block, Inline, Theme } from '@/types'
+import { autoSpace } from '@/utils/autoSpace'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
@@ -83,65 +83,6 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
   mergeProperties(newTheme.block, jsonString, blockKeys)
   mergeProperties(newTheme.inline, jsonString, inlineKeys)
   return newTheme
-}
-
-/**
- * 将 CSS 字符串转换为 JSON 对象
- *
- * @param {string} css - CSS 字符串
- * @returns {object} - JSON 格式的 CSS
- */
-export function css2json(css: string): Partial<Record<Block | Inline, PropertiesHyphen>> {
-  // 去除所有 CSS 注释
-  css = css.replace(/\/\*[\s\S]*?\*\//g, ``)
-
-  const json: Partial<Record<Block | Inline, PropertiesHyphen>> = {}
-
-  // 辅助函数：将声明数组转换为对象
-  const toObject = (array: any[]) =>
-    array.reduce<{ [k: string]: string }>((obj, item) => {
-      const [property, ...value] = item.split(`:`).map((part: string) => part.trim())
-      if (property)
-        obj[property] = value.join(`:`)
-      return obj
-    }, {})
-
-  while (css.includes(`{`) && css.includes(`}`)) {
-    const lbracket = css.indexOf(`{`)
-    const rbracket = css.indexOf(`}`)
-
-    // 获取声明块并转换为对象
-    const declarations = css.substring(lbracket + 1, rbracket)
-      .split(`;`)
-      .map(e => e.trim())
-      .filter(Boolean)
-
-    // 获取选择器并去除空格
-    const selectors = css.substring(0, lbracket)
-      .split(`,`)
-      .map(selector => selector.trim()) as (Block | Inline)[]
-
-    const declarationObj = toObject(declarations)
-
-    // 将声明对象关联到相应的选择器
-    selectors.forEach((selector) => {
-      json[selector] = { ...(json[selector] || {}), ...declarationObj }
-    })
-
-    // 处理下一个声明块
-    css = css.slice(rbracket + 1).trim()
-  }
-
-  return json
-}
-
-/**
- * 将样式对象转换为 CSS 字符串
- * @param {ExtendedProperties} style - 样式对象
- * @returns {string} - CSS 字符串
- */
-export function getStyleString(style: ExtendedProperties) {
-  return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
 }
 
 /**

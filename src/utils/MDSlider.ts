@@ -1,6 +1,6 @@
-import type { ThemeStyles } from '@/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString } from '.'
+import type { ThemeStyles } from '../types'
+import { getStyleString } from './css-helper'
 
 /**
  * A marked extension to support horizontal sliding images.

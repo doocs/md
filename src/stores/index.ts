@@ -1,6 +1,5 @@
 import type { ReadTimeResults } from 'reading-time'
 import CodeMirror from 'codemirror'
-import DOMPurify from 'dompurify'
 import { toPng } from 'html-to-image'
 import { marked } from 'marked'
 import { v4 as uuid } from 'uuid'
@@ -21,7 +20,6 @@ import {
 } from '@/config'
 import {
   addPrefix,
-  css2json,
   customCssWithTemplate,
   customizeTheme,
   downloadMD,
@@ -30,6 +28,8 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { css2json, modifyHtmlContent } from '@/utils/css-helper'
+
 import { initRenderer } from '@/utils/renderer'
 
 /**********************************
@@ -45,54 +45,6 @@ interface Post {
   }[]
   createDatetime: Date
   updateDatetime: Date
-}
-
-export function modifyHtmlContent(outputTemp: string): string {
-  outputTemp = DOMPurify.sanitize(outputTemp, {
-    ADD_TAGS: [`mp-common-profile`],
-  })
-
-  // 阅读时间及字数统计
-  // outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
-
-  // 去除第一行的 margin-top
-  outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-  // 引用脚注
-  // outputTemp += renderer.buildFootnotes()
-  // // 附加的一些 style
-  // outputTemp += renderer.buildAddition()
-
-  // if (isMacCodeBlock.value) {
-  if (true) {
-    outputTemp += `
-      <style>
-        .hljs.code__pre > .mac-sign {
-          display: flex;
-        }
-      </style>
-    `
-  }
-
-  outputTemp += `
-    <style>
-      .code__pre {
-        padding: 0 !important;
-      }
-
-      .hljs.code__pre code {
-        display: -webkit-box;
-        padding: 0.5em 1em 1em;
-        overflow-x: auto;
-        text-indent: 0;
-      }
-
-      h2 strong {
-        color: inherit !important;
-      }
-    </style>
-  `
-  return outputTemp
-  // return renderer.createContainer(outputTemp)
 }
 
 export const useStore = defineStore(`store`, () => {

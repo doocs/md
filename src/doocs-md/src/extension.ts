@@ -1,6 +1,8 @@
 import { marked } from 'marked'
 import * as vscode from 'vscode'
-import { modifyHtmlContent } from '../../platform/md2html'
+import { modifyHtmlContent } from '../../utils/css-helper'
+import { css } from './css'
+import { getRenderer } from './renderer'
 
 export function activate(context: vscode.ExtensionContext) {
   // 注册命令
@@ -15,6 +17,8 @@ export function activate(context: vscode.ExtensionContext) {
       },
     )
 
+    const renderer = getRenderer()
+
     // 获取当前活动的Markdown编辑器
     const editor = vscode.window.activeTextEditor
     if (editor && editor.document.languageId === `markdown`) {
@@ -22,9 +26,9 @@ export function activate(context: vscode.ExtensionContext) {
 
       const documentText = editor.document.getText()
       const html = marked.parse(documentText) as string
-      const modifiedHtml = modifyHtmlContent(html)
+      const modifiedHtml = modifyHtmlContent(html, renderer)
 
-      panel.webview.html = wrapHtmlTag(modifiedHtml)
+      panel.webview.html = wrapHtmlTag(modifiedHtml, css)
     }
   })
 
@@ -41,6 +45,6 @@ export function activate(context: vscode.ExtensionContext) {
   })
 }
 
-function wrapHtmlTag(html: string) {
-  return `<html><head><meta charset="utf-8" /></head><body><div style="width: 375px; margin: auto;padding:20px;background:white;position: relative;min-height: 100%;margin: 0 auto;padding: 20px;font-size: 14px;box-sizing: border-box;outline: none;transition: all 300ms ease-in-out;word-wrap: break-word;">${html}</div></body></html>`
+function wrapHtmlTag(html: string, css: string) {
+  return `<html><head><meta charset="utf-8" /><style>${css}</style></head><body><div style="width: 375px; margin: auto;padding:20px;background:white;position: relative;min-height: 100%;margin: 0 auto;padding: 20px;font-size: 14px;box-sizing: border-box;outline: none;transition: all 300ms ease-in-out;word-wrap: break-word;">${html}</div></body></html>`
 }
