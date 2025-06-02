@@ -1,12 +1,14 @@
+import type { themeMap } from '../../config/theme'
 import * as vscode from 'vscode'
-import { colorOptions, fontSizeOptions, themeOptions } from './styleChoices'
+import { colorOptions, fontFamilyOptions, fontSizeOptions, themeOptions } from './styleChoices'
 
 export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>()
   readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event
   private currentFontSize: string
-  private currentTheme: string
+  private currentTheme: keyof typeof themeMap
   private currentPrimaryColor: string
+  private currentFontFamily: string
   private context: vscode.ExtensionContext
 
   constructor(context: vscode.ExtensionContext) {
@@ -14,6 +16,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this.currentFontSize = this.context.workspaceState.get(`markdownPreview.fontSize`, fontSizeOptions[0].value)
     this.currentTheme = this.context.workspaceState.get(`markdownPreview.theme`, themeOptions[0].value)
     this.currentPrimaryColor = this.context.workspaceState.get(`markdownPreview.primaryColor`, colorOptions[0].value)
+    this.currentFontFamily = this.context.workspaceState.get(`markdownPreview.fontFamily`, fontFamilyOptions[0].value)
   }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
@@ -24,6 +27,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     if (!element) {
       return Promise.resolve([
         new vscode.TreeItem(`字号`, vscode.TreeItemCollapsibleState.Expanded),
+        new vscode.TreeItem(`字体`, vscode.TreeItemCollapsibleState.Expanded),
         new vscode.TreeItem(`主题`, vscode.TreeItemCollapsibleState.Expanded),
         new vscode.TreeItem(`主题色`, vscode.TreeItemCollapsibleState.Expanded),
       ])
@@ -40,6 +44,23 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
           arguments: [size],
         }
         if (size === this.currentFontSize) {
+          item.iconPath = new vscode.ThemeIcon(`check`)
+        }
+        return item
+      }))
+    }
+    else if (element.label === `字体`) {
+      return Promise.resolve(fontFamilyOptions.map((option) => {
+        const font = option.value
+        const label = option.label
+        const desc = option.desc
+        const item = new vscode.TreeItem(`${label}  ${desc}`)
+        item.command = {
+          command: `markdown.setFontFamily`,
+          title: `Set Font Family`,
+          arguments: [font],
+        }
+        if (font === this.currentFontFamily) {
           item.iconPath = new vscode.ThemeIcon(`check`)
         }
         return item
@@ -88,7 +109,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this._onDidChangeTreeData.fire(undefined)
   }
 
-  updateTheme(theme: string) {
+  updateTheme(theme: keyof typeof themeMap) {
     this.currentTheme = theme
     this.context.workspaceState.update(`markdownPreview.theme`, theme)
     this._onDidChangeTreeData.fire(undefined)
@@ -100,15 +121,29 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this._onDidChangeTreeData.fire(undefined)
   }
 
+  updateFontFamily(font: string) {
+    this.currentFontFamily = font
+    this.context.workspaceState.update(`markdownPreview.fontFamily`, font)
+    this._onDidChangeTreeData.fire(undefined)
+  }
+
   getCurrentFontSize() {
     return this.currentFontSize
   }
 
-  getCurrentTheme() {
+  getCurrentFontSizeNumber() {
+    return Number(this.currentFontSize.replace(`px`, ``))
+  }
+
+  getCurrentTheme(): keyof typeof themeMap {
     return this.currentTheme
   }
 
   getCurrentPrimaryColor() {
     return this.currentPrimaryColor
+  }
+
+  getCurrentFontFamily() {
+    return this.currentFontFamily
   }
 }

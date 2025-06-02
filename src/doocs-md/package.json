@@ -52,6 +52,11 @@
         "command": "markdown.setPrimaryColor",
         "title": "Set Primary Color",
         "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.setFontFamily",
+        "title": "Set Font Family",
+        "category": "Markdown Preview"
       }
     ]
   },

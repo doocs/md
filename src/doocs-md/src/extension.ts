@@ -1,8 +1,9 @@
 import { marked } from 'marked'
 import * as vscode from 'vscode'
-import { modifyHtmlContent } from '../../utils/css-helper'
+import { themeMap } from '../../config/theme'
+import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '../../utils/css-helper'
+import { initRenderer } from '../../utils/renderer'
 import { css } from './css'
-import { getRenderer } from './renderer'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
 
 let activePanel: vscode.WebviewPanel | undefined
@@ -12,18 +13,21 @@ export function activate(context: vscode.ExtensionContext) {
   const treeDataProvider = new MarkdownTreeDataProvider(context)
   vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider)
 
-  // 注册字体大小设置命令
+  // 注册样式设置的命令
   context.subscriptions.push(
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
       // 这里可以添加实际修改预览字体大小的逻辑
       vscode.window.showInformationMessage(`Font size set to ${size}`)
     }),
-    vscode.commands.registerCommand(`markdown.setTheme`, (theme: string) => {
+    vscode.commands.registerCommand(`markdown.setTheme`, (theme: keyof typeof themeMap) => {
       treeDataProvider.updateTheme(theme)
     }),
     vscode.commands.registerCommand(`markdown.setPrimaryColor`, (color: string) => {
       treeDataProvider.updatePrimaryColor(color)
+    }),
+    vscode.commands.registerCommand(`markdown.setFontFamily`, (font: string) => {
+      treeDataProvider.updateFontFamily(font)
     }),
   )
 
@@ -58,11 +62,23 @@ export function activate(context: vscode.ExtensionContext) {
       activePanel = undefined
     })
 
-    const renderer = getRenderer()
-
+    treeDataProvider.onDidChangeTreeData(updateWebview)
     function updateWebview() {
       if (!editor)
         return
+      const renderer = initRenderer({
+        theme: customCssWithTemplate(
+          css2json(``),
+          treeDataProvider.getCurrentPrimaryColor(),
+          customizeTheme(themeMap[treeDataProvider.getCurrentTheme()], {
+            fontSize: treeDataProvider.getCurrentFontSizeNumber(),
+            color: treeDataProvider.getCurrentPrimaryColor(),
+          }),
+        ),
+        fonts: treeDataProvider.getCurrentFontFamily(),
+        size: treeDataProvider.getCurrentFontSize(),
+        isUseIndent: false,
+      })
       const documentText = editor.document.getText()
       const html = marked.parse(documentText) as string
       const modifiedHtml = modifyHtmlContent(html, renderer)
