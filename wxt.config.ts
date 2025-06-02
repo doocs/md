@@ -3,14 +3,13 @@ import ViteConfig from './vite.config'
 
 export default defineConfig({
   srcDir: `src`,
-  publicDir: `../public`,
-  extensionApi: `chrome`,
+  modulesDir: `src/modules`,
   manifest: ({ mode }) => ({
     name: `公众号内容编辑器`,
     icons: {
       256: mode === `development` ? `/mpmd/icon-256-gray.png` : `/mpmd/icon-256.png`,
     },
-    permissions: [`storage`],
+    permissions: [`storage`, `tabs`, `activeTab`, `sidePanel`, `contextMenus`],
     host_permissions: [
       `https://*.github.com/*`,
       `https://*.githubusercontent.com/*`,
@@ -21,7 +20,7 @@ export default defineConfig({
     ],
     web_accessible_resources: [
       {
-        resources: [`*.png`, `*.svg`],
+        resources: [`*.png`, `*.svg`, `injected.js`],
         matches: [`<all_urls>`],
       },
     ],

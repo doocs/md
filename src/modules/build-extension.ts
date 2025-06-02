@@ -15,6 +15,7 @@ interface FakeRollupOptions {
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
+    wxt.config.alias[`/src/sidepannel.ts`] = `./src/sidepannel.ts`
     wxt.config.manifest.options_page = `options.html`
     wxt.hook(`entrypoints:grouped`, (_, groups) => {
       groups.push([{
@@ -25,11 +26,19 @@ export default defineWxtModule({
         outputDir: wxt.config.outDir,
         skipped: false,
       }])
+      groups.push([{
+        type: `sidepanel`,
+        name: `sidepanel`,
+        options: { openAtInstall: true, browserStyle: true },
+        inputPath: path.resolve(wxt.config.root, `./index.html`),
+        outputDir: wxt.config.outDir,
+        skipped: false,
+      }])
     })
     wxt.hook(`vite:build:extendConfig`, (_, config) => {
-      if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.input) {
+      if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.output) {
         const input = config.build?.rollupOptions.input as Record<string, string>
-        if (input.options) {
+        if (input.options || input.sidepanel) {
           const output = config.build?.rollupOptions.output as FakeRollupOptions
           output.manualChunks = (id) => {
             if (id.includes(`prettier`)) {

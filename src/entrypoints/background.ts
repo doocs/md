@@ -1,5 +1,4 @@
-import { browser } from 'wxt/browser'
-import { defineBackground } from 'wxt/sandbox'
+import { browser, defineBackground } from '#imports'
 
 export default defineBackground({
   type: `module`,
@@ -14,6 +13,41 @@ export default defineBackground({
       }
       else if (detail.reason === `update`) {
         browser.runtime.openOptionsPage()
+      }
+    })
+
+    const MP_EDITOR_PAGE_REGEX = /https:\/\/mp.weixin.qq.com\/cgi-bin\/appmsg\?t=.*/
+    browser.tabs.onUpdated.addListener(async (tabId, _info, tab) => {
+      if (!tab.url)
+        return
+      const url = new URL(tab.url)
+      if (MP_EDITOR_PAGE_REGEX.test(url.href)) {
+        await browser.sidePanel.setOptions({
+          tabId,
+          path: `sidepanel.html`,
+          enabled: true,
+        })
+      }
+      else {
+        // Disables the side panel on all other sites
+        await browser.sidePanel.setOptions({
+          tabId,
+          enabled: false,
+        })
+      }
+    })
+    browser.runtime.onInstalled.addListener(() => {
+      browser.contextMenus.create({
+        id: `openSidePanel`,
+        title: `MD 公众号编辑器`,
+        documentUrlPatterns: [`https://mp.weixin.qq.com/cgi-bin/appmsg*`],
+        contexts: [`all`],
+      })
+    })
+
+    browser.contextMenus.onClicked.addListener((info, tab) => {
+      if (info.menuItemId === `openSidePanel`) {
+        browser.sidePanel.open({ tabId: tab!.id! })
       }
     })
   },
