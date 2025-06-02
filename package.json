@@ -21,7 +21,11 @@
     "commands": [
       {
         "command": "markdown.preview",
-        "title": "Open Markdown Preview"
+        "title": "Open Markdown Preview",
+        "icon": {
+          "light": "public/mpmd/icon-256-gray.png",
+          "dark": "public/mpmd/icon-256-gray.png"
+        }
       }
     ],
     "menus": {

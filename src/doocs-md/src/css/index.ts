@@ -1,4 +1,5 @@
-export const css = `:root {
+export const css = `
+:root {
   --background: 0 0% 100%;
   --foreground: 0 0% 3.9%;
 
