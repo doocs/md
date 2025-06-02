@@ -15,7 +15,7 @@ const { toggleAIDialog } = displayStore
 <template>
   <button
     v-if="!isMobile || (isMobile && showEditor)"
-    class="bg-primary absolute top-4 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+    class="bg-primary absolute top-4 z-49 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
     :class="isMobile ? 'right-4' : 'right-6'"
     aria-label="AI 助手"
     @click="() => toggleAIDialog(true)"

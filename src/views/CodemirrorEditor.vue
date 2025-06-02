@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
+import { SearchTab } from '@/components/ui/search-tab'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import {
@@ -42,10 +43,36 @@ const timeout = ref<NodeJS.Timeout>()
 
 const showEditor = ref(true)
 
+const searchTabRef = ref<InstanceType<typeof SearchTab>>()
+
+function openSearchWithSelection(cm: CodeMirror.Editor) {
+  const selected = cm.getSelection().trim()
+  if (!searchTabRef.value)
+    return
+
+  if (selected) {
+    // 自动带入选中文本
+    searchTabRef.value.setSearchWord(selected)
+  }
+  else {
+    // 仅打开面板
+    searchTabRef.value.showSearchTab = true
+  }
+}
+
+function handleGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
+    searchTabRef.value.showSearchTab = false
+    e.preventDefault()
+    editor.value?.focus()
+  }
+}
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
+  document.addEventListener(`keydown`, handleGlobalKeydown)
 })
 
 // 切换编辑/预览视图（仅限移动端）
@@ -289,6 +316,12 @@ function initEditor() {
             : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
           editor.replaceSelection(updated)
         },
+        [`${ctrlKey}-F`]: (cm: CodeMirror.Editor) => {
+          openSearchWithSelection(cm)
+        },
+        [`${ctrlKey}-G`]: function search() {
+          // use this to avoid CodeMirror's built-in search functionality
+        },
       },
     })
 
@@ -496,6 +529,7 @@ const isOpenHeadingSlider = ref(false)
             'border-r': store.isEditOnLeft,
           }"
         >
+          <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
           <AIFixedBtn :is-mobile="store.isMobile" :show-editor="showEditor" />
           <ContextMenu>
             <ContextMenuTrigger>

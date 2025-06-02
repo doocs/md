@@ -640,13 +640,13 @@ export const useStore = defineStore(`store`, () => {
 
   // 导入默认文档
   const importDefaultContent = () => {
-    editor.value!.setValue(DEFAULT_CONTENT)
+    toRaw(editor.value!).setValue(DEFAULT_CONTENT)
     toast.success(`文档已重置`)
   }
 
   // 清空内容
   const clearContent = () => {
-    editor.value!.setValue(``)
+    toRaw(editor.value!).setValue(``)
     toast.success(`内容已清空`)
   }
 
