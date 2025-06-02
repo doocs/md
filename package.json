@@ -18,6 +18,23 @@
     "vscode": "^1.100.0"
   },
   "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "markdown-sidebar",
+          "title": "Markdown Preview",
+          "icon": "public/mpmd/icon-256-gray.png"
+        }
+      ]
+    },
+    "views": {
+      "markdown-sidebar": [
+        {
+          "id": "markdown.preview.view",
+          "name": "Preview"
+        }
+      ]
+    },
     "commands": [
       {
         "command": "markdown.preview",
@@ -26,6 +43,11 @@
           "light": "public/mpmd/icon-256-gray.png",
           "dark": "public/mpmd/icon-256-gray.png"
         }
+      },
+      {
+        "command": "markdown.setFontSize",
+        "title": "Set Font Size",
+        "category": "Markdown Preview"
       }
     ],
     "menus": {

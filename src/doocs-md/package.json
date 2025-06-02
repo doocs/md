@@ -11,6 +11,50 @@
     "vscode": "^1.100.0"
   },
   "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "markdown-sidebar",
+          "title": "Markdown Preview",
+          "icon": "resources/preview.svg"
+        }
+      ]
+    },
+    "views": {
+      "markdown-sidebar": [
+        {
+          "id": "markdown.preview.view",
+          "name": "Preview"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "markdown.preview",
+        "title": "Open Markdown Preview",
+        "icon": {
+          "light": "resources/light/preview.svg",
+          "dark": "resources/dark/preview.svg"
+        }
+      },
+      {
+        "command": "markdown.setFontSize",
+        "title": "Set Font Size",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.setTheme",
+        "title": "Set Theme",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.setPrimaryColor",
+        "title": "Set Primary Color",
+        "category": "Markdown Preview"
+      }
+    ]
+  },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
     "compile": "webpack",

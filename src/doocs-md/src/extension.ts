@@ -3,10 +3,30 @@ import * as vscode from 'vscode'
 import { modifyHtmlContent } from '../../utils/css-helper'
 import { css } from './css'
 import { getRenderer } from './renderer'
+import { MarkdownTreeDataProvider } from './treeDataProvider'
 
 let activePanel: vscode.WebviewPanel | undefined
 
 export function activate(context: vscode.ExtensionContext) {
+  // 注册TreeDataProvider
+  const treeDataProvider = new MarkdownTreeDataProvider(context)
+  vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider)
+
+  // 注册字体大小设置命令
+  context.subscriptions.push(
+    vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
+      treeDataProvider.updateFontSize(size)
+      // 这里可以添加实际修改预览字体大小的逻辑
+      vscode.window.showInformationMessage(`Font size set to ${size}`)
+    }),
+    vscode.commands.registerCommand(`markdown.setTheme`, (theme: string) => {
+      treeDataProvider.updateTheme(theme)
+    }),
+    vscode.commands.registerCommand(`markdown.setPrimaryColor`, (color: string) => {
+      treeDataProvider.updatePrimaryColor(color)
+    }),
+  )
+
   // 注册命令
   const disposable = vscode.commands.registerCommand(`markdown.preview`, () => {
     const editor = vscode.window.activeTextEditor

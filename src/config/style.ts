@@ -1,4 +1,4 @@
-import type { IConfigOption } from '@/types'
+import type { IConfigOption } from '../types'
 
 export const fontFamilyOptions: IConfigOption[] = [
   {
