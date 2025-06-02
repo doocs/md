@@ -587,10 +587,24 @@ const simpleTheme = toMerged(defaultTheme, {
   },
 })
 
+const mocaTheme = toMerged(defaultTheme, {
+  // Initially, no overrides are needed here, as we want it to be based on defaultTheme.
+  // The --md-primary-color will be inherited and should pick up the new color
+  // from the style.ts settings automatically if the theme selection mechanism
+  // correctly applies the chosen primary color.
+  // If specific overrides for moca theme are needed later, they can be added here.
+  base: {
+    // Example: If we wanted to ensure --md-primary-color is explicitly set,
+    // though it should not be necessary if the global theme color is applied.
+    // '--md-primary-color': '#519325', // This is just an example.
+  },
+});
+
 export const themeMap = {
   default: defaultTheme,
   grace: graceTheme,
   simple: simpleTheme,
+  moca: mocaTheme,
 }
 
 export const themeOptions: IConfigOption<keyof typeof themeMap>[] = [
@@ -608,5 +622,10 @@ export const themeOptions: IConfigOption<keyof typeof themeMap>[] = [
     label: `简洁`,
     value: `simple`,
     desc: `@okooo5km`,
+  },
+  {
+    label: `摩卡`,
+    value: `moca`,
+    desc: `深沉优雅`,
   },
 ]
