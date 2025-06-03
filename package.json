@@ -22,7 +22,7 @@
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
     "build:cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
-    "compile:extension": "npm --prefix ./src/doocs-md run compile",
+    "compile:extension": "npm --prefix ./src/extension run compile",
     "preview": "npm run build && vite preview",
     "preview:pages": "cross-env CF_PAGES=1 npm run build:h5-netlify && wrangler pages dev ./dist",
     "release:cli": "node ./scripts/release.js",

@@ -7,10 +7,10 @@
       "request": "launch",
       "trace": true,
       "sourceMaps": true,
-      "cwd": "${workspaceFolder}/src/doocs-md",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/doocs-md", "--enable-proposed-api=vscode.vscode-js-debug"],
+      "cwd": "${workspaceFolder}/src/extension",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/extension", "--enable-proposed-api=vscode.vscode-js-debug"],
       "runtimeExecutable": "${execPath}",
-      "outFiles": ["${workspaceFolder}/src/doocs-md/dist/*.js"],
+      "outFiles": ["${workspaceFolder}/src/extension/dist/*.js"],
       "preLaunchTask": "compile extension"
     }
   ]

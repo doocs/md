@@ -4,7 +4,7 @@
     {
       "type": "npm",
       "script": "compile",
-      "path": "src/doocs-md",
+      "path": "src/extension",
       "group": "build",
       "problemMatcher": [],
       "label": "compile extension",
