@@ -9,11 +9,11 @@ import { MarkdownTreeDataProvider } from './treeDataProvider'
 let activePanel: vscode.WebviewPanel | undefined
 
 export function activate(context: vscode.ExtensionContext) {
-  // 注册TreeDataProvider
+  // Register TreeDataProvider
   const treeDataProvider = new MarkdownTreeDataProvider(context)
   vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider)
 
-  // 注册样式设置的命令
+  // Command for registering style settings
   context.subscriptions.push(
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
@@ -31,7 +31,6 @@ export function activate(context: vscode.ExtensionContext) {
     }),
   )
 
-  // 注册命令
   const disposable = vscode.commands.registerCommand(`markdown.preview`, () => {
     const editor = vscode.window.activeTextEditor
     if (!editor || editor.document.languageId !== `markdown`) {
@@ -57,7 +56,6 @@ export function activate(context: vscode.ExtensionContext) {
 
     activePanel = panel
 
-    // 面板关闭时清除引用
     panel.onDidDispose(() => {
       activePanel = undefined
     })
@@ -85,17 +83,17 @@ export function activate(context: vscode.ExtensionContext) {
       panel.webview.html = wrapHtmlTag(modifiedHtml, css)
     }
 
-    // 初始渲染
+    // render first webview
     updateWebview()
 
-    // 监听文档变化
+    // Monitor the changes of documents
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
       if (e.document === editor.document) {
         updateWebview()
       }
     })
 
-    // 面板关闭时取消订阅
+    // Cancel the subscription when the panel is closed
     panel.onDidDispose(() => {
       changeSubscription.dispose()
     })
@@ -103,7 +101,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(disposable)
 
-  // 当打开Markdown文件时，在状态栏显示预览按钮
+  // When the Markdown file is opened, the preview button is displayed in the status bar.
   vscode.window.onDidChangeActiveTextEditor((editor) => {
     if (editor && editor.document.languageId === `markdown`) {
       vscode.commands.executeCommand(`setContext`, `markdownFileActive`, true)
@@ -112,18 +110,6 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand(`setContext`, `markdownFileActive`, false)
     }
   })
-
-  const disposable1 = vscode.commands.registerCommand(
-    `helloworld-web-sample.helloWorld`,
-    () => {
-      // The code you place here will be executed every time your command is executed
-
-      // Display a message box to the user
-      vscode.window.showInformationMessage(`114514`)
-    },
-  )
-
-  context.subscriptions.push(disposable1)
 }
 
 function wrapHtmlTag(html: string, css: string) {

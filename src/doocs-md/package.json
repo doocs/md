@@ -43,10 +43,6 @@
         "command": "markdown.setFontSize",
         "title": "Set Font Size",
         "category": "Markdown Preview"
-      },
-      {
-        "command": "helloworld-web-sample.helloWorld",
-        "title": "Hello World"
       }
     ],
     "menus": {

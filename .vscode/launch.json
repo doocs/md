@@ -7,27 +7,11 @@
       "request": "launch",
       "trace": true,
       "sourceMaps": true,
-      "cwd": "${workspaceFolder}/src/doocs-md", // 指定在doocs-md目录下运行扩展
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/doocs-md", // 指定扩展开发路径
-        "--enable-proposed-api=vscode.vscode-js-debug"],
+      "cwd": "${workspaceFolder}/src/doocs-md",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/doocs-md", "--enable-proposed-api=vscode.vscode-js-debug"],
       "runtimeExecutable": "${execPath}",
       "outFiles": ["${workspaceFolder}/src/doocs-md/dist/*.js"],
       "preLaunchTask": "compile extension"
-    },
-    {
-      "name": "Run Desktop Extension (without build)",
-      "type": "extensionHost",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/src/doocs-md",
-      "trace": true,
-      "sourceMaps": true,
-      "runtimeExecutable": "${execPath}",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/doocs-md", "--enable-proposed-api=vscode.vscode-js-debug"],
-      "outFiles": ["${workspaceFolder}/src/doocs-md/dist/*.js"],
-      "env": {
-        // Set the debug environment variable
-        "FABRIC_SYNAPSE_VSCODE_EXTENSION_ENV": "PROD"
-      }
     }
   ]
 }
