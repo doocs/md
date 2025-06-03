@@ -6,7 +6,7 @@ import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'l
 const store = useStore()
 
 /* ============ 新增内容 ============ */
-const parendId = ref<string | null>(null)
+const parentId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
 const addPostInputVal = ref(``)
 watch(isOpenAddDialog, (o) => {
@@ -14,8 +14,8 @@ watch(isOpenAddDialog, (o) => {
     addPostInputVal.value = ``
 })
 
-function openAddPostDialog(parentId: string) {
-  parendId.value = parentId
+function openAddPostDialog(id: string) {
+  parentId.value = id
   isOpenAddDialog.value = true
 }
 
@@ -24,7 +24,7 @@ function addPost() {
     return toast.error(`内容标题不可为空`)
   if (store.posts.some(post => post.title === addPostInputVal.value.trim()))
     return toast.error(`内容标题已存在`)
-  store.addPost(addPostInputVal.value.trim(), parendId.value)
+  store.addPost(addPostInputVal.value.trim(), parentId.value)
   isOpenAddDialog.value = false
   toast.success(`内容新增成功`)
 }
@@ -102,7 +102,6 @@ function recoverHistory() {
 /* ============ 排序 ============ */
 const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
-  // 先过滤出 parentId 为空的文章，再排序
   const rootPosts = store.posts
   return [...rootPosts].sort((a, b) => {
     switch (sortMode.value) {
