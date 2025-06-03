@@ -26,16 +26,27 @@ interface Post {
 }
 
 const props = defineProps<{
-  startRenamePost: (id: string) => void
-  openHistoryDialog: (id: string) => void
-  startDelPost: (id: string) => void
-  dropId: string | null
-  setDropId: (id: string | null) => void
-  dragPostId: string | null
-  setDragPostId: (id: string | null) => void
-  sortedPosts: Post[]
+  // 父文章的 ID，如果值是 null，则日表示这是第一层文件
   parentId: string | null
+  // 排序好的文章列表
+  sortedPosts: Post[]
+  // 开始重命名文章
+  startRenamePost: (id: string) => void
+  // 打开历史记录对话框
+  openHistoryDialog: (id: string) => void
+  // 开始删除文章
+  startDelPost: (id: string) => void
+  // 拖拽目的地 ID
+  dropTargetId: string | null
+  // 设置拖拽目的地
+  setDropTargetId: (id: string | null) => void
+  // 被拖拽对象
+  dragSourceId: string | null
+  // 设置被拖拽对象
+  setDragSourceId: (id: string | null) => void
+  handleDrop: (targetId: string | null) => void
   handleDragEnd: () => void
+  // 以添加子文章的方式打开对话框
   openAddPostDialog: (parentId: string) => void
 }>()
 
@@ -51,44 +62,9 @@ watch(isOpenAddDialog, (o) => {
 
 // 新增：拖拽开始时记录ID并设置数据
 function handleDragStart(id: string, e: DragEvent) {
-  props.setDragPostId(id)
+  props.setDragSourceId(id)
   e.dataTransfer?.setData(`text/plain`, id)
   e.dataTransfer!.effectAllowed = `move` // 明确拖拽效果
-}
-
-function handleDrop(targetId: string | null) {
-  const sourceId = props.dragPostId
-  if (!sourceId) {
-    return
-  }
-
-  if (sourceId === targetId) {
-    // 拖拽到自身
-    props.setDragPostId(null)
-    return
-  }
-
-  if (targetId) {
-    // 拖拽到具体文章项
-    store.updatePostParentId(sourceId, targetId)
-    toast.success(
-      `文章「${store.getPostById(sourceId)?.title}」已移动到「${
-        store.getPostById(targetId)?.title
-      }」下`,
-    )
-  }
-  else {
-    // 拖拽到空白区域（解除父子关系）
-    store.updatePostParentId(sourceId, null) // 假设store支持传入null清除parentId
-    toast.success(`文章「${store.getPostById(sourceId)?.title}」已回归全局列表`)
-  }
-
-  props.setDragPostId(null)
-}
-
-function handleDragOver(e: DragEvent) {
-  e.preventDefault() // 允许放置
-  // e.dataTransfer?.dropEffect = `move`
 }
 
 /* ============ 折叠展开 ============ */
@@ -107,17 +83,16 @@ function togglePostExpanded(postId: string) {
       class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors"
       :class="{
         'bg-primary text-primary-foreground shadow': store.currentPostId === post.id,
-        'bg-yellow-100 dark:bg-yellow-900/30': props.dragPostId === post.id,
-        'opacity-50': props.dragPostId === post.id,
+        'opacity-50': props.dragSourceId === post.id,
         'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
-          props.dropId === post.id,
+          props.dropTargetId === post.id,
       }"
       draggable="true"
       @dragstart="handleDragStart(post.id, $event)"
       @dragend="props.handleDragEnd"
-      @drop.prevent="handleDrop(post.id)"
-      @dragover.stop="handleDragOver($event), props.setDropId(post.id)"
-      @dragleave.prevent="props.setDropId(null)"
+      @drop.prevent="props.handleDrop(post.id)"
+      @dragover.stop.prevent="props.setDropTargetId(post.id)"
+      @dragleave.prevent="props.setDropTargetId(null)"
       @click="store.currentPostId = post.id"
     >
       <!-- 折叠展开图标 -->
@@ -183,11 +158,12 @@ function togglePostExpanded(postId: string) {
         :start-rename-post="props.startRenamePost"
         :open-history-dialog="props.openHistoryDialog"
         :start-del-post="props.startDelPost"
-        :drag-post-id="props.dragPostId"
-        :set-drag-post-id="props.setDragPostId"
-        :drop-id="props.dropId"
-        :set-drop-id="props.setDropId"
+        :drag-source-id="props.dragSourceId"
+        :set-drag-source-id="props.setDragSourceId"
+        :drop-target-id="props.dropTargetId"
+        :set-drop-target-id="props.setDropTargetId"
         :handle-drag-end="props.handleDragEnd"
+        :handle-drop="props.handleDrop"
         :open-add-post-dialog="props.openAddPostDialog"
       />
     </div>

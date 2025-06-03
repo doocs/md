@@ -10,8 +10,9 @@ const parentId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
 const addPostInputVal = ref(``)
 watch(isOpenAddDialog, (o) => {
-  if (o)
+  if (o) {
     addPostInputVal.value = ``
+  }
 })
 
 function openAddPostDialog(id: string) {
@@ -40,8 +41,10 @@ function startRenamePost(id: string) {
   isOpenEditDialog.value = true
 }
 function renamePost() {
-  if (!renamePostInputVal.value.trim())
+  if (!renamePostInputVal.value.trim()) {
     return toast.error(`内容标题不可为空`)
+  }
+
   if (
     store.posts.some(
       post => post.title === renamePostInputVal.value.trim() && post.id !== editId.value,
@@ -54,6 +57,7 @@ function renamePost() {
     isOpenEditDialog.value = false
     return
   }
+
   store.renamePost(editId.value!, renamePostInputVal.value.trim())
   toast.success(`内容重命名成功`)
   isOpenEditDialog.value = false
@@ -90,8 +94,11 @@ function openHistoryDialog(id: string) {
 }
 function recoverHistory() {
   const post = store.getPostById(currentPostId.value!)
-  if (!post)
-    return (isOpenHistoryDialog.value = false)
+  if (!post) {
+    isOpenHistoryDialog.value = false
+    return
+  }
+
   const content = post.history[currentHistoryIndex.value].content
   post.content = content
   toRaw(store.editor!).setValue(content)
@@ -102,8 +109,7 @@ function recoverHistory() {
 /* ============ 排序 ============ */
 const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
-  const rootPosts = store.posts
-  return [...rootPosts].sort((a, b) => {
+  return [...store.posts].sort((a, b) => {
     switch (sortMode.value) {
       case `A-Z`:
         return a.title.localeCompare(b.title)
@@ -123,31 +129,42 @@ const sortedPosts = computed(() => {
 })
 
 /* ============ 拖拽功能 ============ */
-const dragPostId = ref<string | null>(null)
-
 const dragover = ref(false)
-const dropId = ref<string | null>(null)
+const dragSourceId = ref<string | null>(null)
+const dropTargetId = ref<string | null>(null)
 
 function handleDrop(targetId: string | null) {
-  const sourceId = dragPostId.value
-  if (!sourceId)
-    return
-
-  if (sourceId === targetId) {
-    // 拖拽到自身
-    dragPostId.value = null
+  const sourceId = dragSourceId.value
+  if (!sourceId) {
     return
   }
 
-  if (targetId) {
-    // 拖拽到具体文章项
-    store.updatePostParentId(sourceId, targetId)
-  }
-  else {
-    store.updatePostParentId(sourceId, null)
+  // 递归检索 ID，是不是父文件拖拽到了子文件上面
+  const isParent = (id: string | null | undefined) => {
+    if (!id) {
+      return false
+    }
+
+    const post = store.getPostById(id)
+    if (!post) {
+      return false
+    }
+
+    if (post.parentId === sourceId) {
+      return true
+    }
+
+    return isParent(post.parentId)
   }
 
-  dragPostId.value = null
+  if (isParent(targetId)) {
+    toast.error(`不能将内容拖拽到其子内容下面`)
+  }
+  else if (sourceId !== targetId) {
+    store.updatePostParentId(sourceId, targetId || null)
+  }
+
+  dragSourceId.value = null
 }
 
 function handleDragOver(e: DragEvent) {
@@ -155,8 +172,8 @@ function handleDragOver(e: DragEvent) {
 }
 
 function handleDragEnd() {
-  dragPostId.value = null
-  dropId.value = null
+  dragSourceId.value = null
+  dropTargetId.value = null
   dragover.value = false
 }
 </script>
@@ -164,7 +181,7 @@ function handleDragEnd() {
 <template>
   <!-- 侧栏外框 -->
   <div
-    class="overflow-hidden border-2 border-dashed bg-gray/20 transition-colors transition-width duration-300 dark:bg-[#191c20]"
+    class="overflow-hidden border-2 border-dashed bg-gray/20 transition-colors duration-300 dark:bg-[#191c20]"
     :class="{
       'w-0': !store.isOpenPostSlider,
       'w-50': store.isOpenPostSlider,
@@ -293,10 +310,11 @@ function handleDragEnd() {
           :start-rename-post="startRenamePost"
           :open-history-dialog="openHistoryDialog"
           :start-del-post="startDelPost"
-          :drop-id="dropId"
-          :set-drop-id="(id: string | null) => (dropId = id)"
-          :drag-post-id="dragPostId"
-          :set-drag-post-id="(id: string | null) => (dragPostId = id)"
+          :drop-target-id="dropTargetId"
+          :set-drop-target-id="(id: string | null) => (dropTargetId = id)"
+          :drag-source-id="dragSourceId"
+          :set-drag-source-id="(id: string | null) => (dragSourceId = id)"
+          :handle-drop="handleDrop"
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
         />
