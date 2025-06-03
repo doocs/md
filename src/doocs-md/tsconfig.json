@@ -14,7 +14,7 @@
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */
     // "noUnusedParameters": true,  /* Report errors on unused parameters. */
   },
-  "include": ["../../platform/md2html", "src/*"],
+  "include": ["src/**/*"], // 包含src目录下所有文件
   "exclude": ["node_modules", "dist"]
 
 }

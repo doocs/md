@@ -1,7 +1,6 @@
 {
   "name": "doocs-md",
   "displayName": "doocs-md",
-  "type": "module",
   "version": "0.0.1",
   "description": "",
   "categories": [
@@ -18,7 +17,7 @@
         {
           "id": "markdown-sidebar",
           "title": "Markdown Preview",
-          "icon": "resources/preview.svg"
+          "icon": "../../public/mpmd/icon-256-gray.png"
         }
       ]
     },
@@ -26,7 +25,8 @@
       "markdown-sidebar": [
         {
           "id": "markdown.preview.view",
-          "name": "Preview"
+          "name": "Preview",
+          "icon": "../../public/mpmd/icon-256-gray.png"
         }
       ]
     },
@@ -35,8 +35,8 @@
         "command": "markdown.preview",
         "title": "Open Markdown Preview",
         "icon": {
-          "light": "resources/light/preview.svg",
-          "dark": "resources/dark/preview.svg"
+          "light": "../../public/mpmd/icon-256-gray.png",
+          "dark": "../../public/mpmd/icon-256-gray.png"
         }
       },
       {
@@ -45,21 +45,19 @@
         "category": "Markdown Preview"
       },
       {
-        "command": "markdown.setTheme",
-        "title": "Set Theme",
-        "category": "Markdown Preview"
-      },
-      {
-        "command": "markdown.setPrimaryColor",
-        "title": "Set Primary Color",
-        "category": "Markdown Preview"
-      },
-      {
-        "command": "markdown.setFontFamily",
-        "title": "Set Font Family",
-        "category": "Markdown Preview"
+        "command": "helloworld-web-sample.helloWorld",
+        "title": "Hello World"
       }
-    ]
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markdown.preview",
+          "group": "navigation",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",

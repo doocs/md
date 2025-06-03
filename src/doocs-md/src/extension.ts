@@ -112,6 +112,18 @@ export function activate(context: vscode.ExtensionContext) {
       vscode.commands.executeCommand(`setContext`, `markdownFileActive`, false)
     }
   })
+
+  const disposable1 = vscode.commands.registerCommand(
+    `helloworld-web-sample.helloWorld`,
+    () => {
+      // The code you place here will be executed every time your command is executed
+
+      // Display a message box to the user
+      vscode.window.showInformationMessage(`114514`)
+    },
+  )
+
+  context.subscriptions.push(disposable1)
 }
 
 function wrapHtmlTag(html: string, css: string) {

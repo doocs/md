@@ -13,53 +13,6 @@
   "bugs": {
     "url": "https://github.com/doocs/md/issues"
   },
-  "main": "./src/doocs-md/dist/extension.js",
-  "engines": {
-    "vscode": "^1.100.0"
-  },
-  "contributes": {
-    "viewsContainers": {
-      "activitybar": [
-        {
-          "id": "markdown-sidebar",
-          "title": "Markdown Preview",
-          "icon": "public/mpmd/icon-256-gray.png"
-        }
-      ]
-    },
-    "views": {
-      "markdown-sidebar": [
-        {
-          "id": "markdown.preview.view",
-          "name": "Preview"
-        }
-      ]
-    },
-    "commands": [
-      {
-        "command": "markdown.preview",
-        "title": "Open Markdown Preview",
-        "icon": {
-          "light": "public/mpmd/icon-256-gray.png",
-          "dark": "public/mpmd/icon-256-gray.png"
-        }
-      },
-      {
-        "command": "markdown.setFontSize",
-        "title": "Set Font Size",
-        "category": "Markdown Preview"
-      }
-    ],
-    "menus": {
-      "editor/title": [
-        {
-          "command": "markdown.preview",
-          "group": "navigation",
-          "when": "editorLangId == markdown"
-        }
-      ]
-    }
-  },
   "scripts": {
     "start": "npm run dev",
     "dev": "vite --host",
