@@ -71,6 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
         return
       const renderer = initRenderer({
         theme: customCssWithTemplate(
+          // TODO
           css2json(``),
           treeDataProvider.getCurrentPrimaryColor(),
           customizeTheme(themeMap[treeDataProvider.getCurrentTheme()], {
