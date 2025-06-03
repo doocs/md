@@ -17,7 +17,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
-      // 这里可以添加实际修改预览字体大小的逻辑
       vscode.window.showInformationMessage(`Font size set to ${size}`)
     }),
     vscode.commands.registerCommand(`markdown.setTheme`, (theme: keyof typeof themeMap) => {
@@ -43,7 +42,7 @@ export function activate(context: vscode.ExtensionContext) {
       return
     }
 
-    // 创建并显示新的webview面板
+    // Create and display a new webview panel
     const panel = vscode.window.createWebviewPanel(
       `markdownPreview`, // 视图类型
       `Markdown Preview - ${editor.document.fileName}`, // 面板标题
