@@ -4,7 +4,7 @@ import ViteConfig from './vite.config'
 export default defineConfig({
   srcDir: `src`,
   modulesDir: `src/modules`,
-  manifest: ({ mode }) => ({
+  manifest: ({ mode, browser }) => ({
     name: `公众号内容编辑器`,
     icons: {
       256: mode === `development` ? `/mpmd/icon-256-gray.png` : `/mpmd/icon-256.png`,
@@ -24,6 +24,15 @@ export default defineConfig({
         matches: [`<all_urls>`],
       },
     ],
+    sidebar_action: browser === `firefox`
+      ? {
+          default_panel: `sidepanel.html`,
+          default_icon: {
+            256: `mpmd/icon-256.png`,
+          },
+          default_title: `MD 公众号编辑器`,
+        }
+      : undefined,
   }),
   analysis: {
     open: true,

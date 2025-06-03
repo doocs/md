@@ -15,7 +15,7 @@ interface FakeRollupOptions {
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
-    wxt.config.alias[`/src/sidepannel.ts`] = `./src/sidepannel.ts`
+    wxt.config.alias[`/src/sidepanel.ts`] = `./src/sidepanel.ts`
     wxt.config.manifest.options_page = `options.html`
     wxt.hook(`entrypoints:grouped`, (_, groups) => {
       groups.push([{

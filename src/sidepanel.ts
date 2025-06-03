@@ -19,6 +19,10 @@ console.log(`Running in extension context?`, isInExtension)
 
 async function getCurrentTab() {
   const queryOptions = { active: true, lastFocusedWindow: true }
+  if (typeof browser !== `undefined` && browser.tabs && browser.tabs.query) {
+    const [tab] = await browser.tabs.query(queryOptions)
+    return tab
+  }
   const [tab] = await chrome.tabs.query(queryOptions)
   return tab
 }

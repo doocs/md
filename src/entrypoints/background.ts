@@ -20,6 +20,8 @@ export default defineBackground({
     browser.tabs.onUpdated.addListener(async (tabId, _info, tab) => {
       if (!tab.url)
         return
+      if (typeof browser.sidePanel === `undefined`)
+        return
       const url = new URL(tab.url)
       if (MP_EDITOR_PAGE_REGEX.test(url.href)) {
         await browser.sidePanel.setOptions({
@@ -37,6 +39,8 @@ export default defineBackground({
       }
     })
     browser.runtime.onInstalled.addListener(() => {
+      if (typeof browser.sidePanel === `undefined`)
+        return
       browser.contextMenus.create({
         id: `openSidePanel`,
         title: `MD 公众号编辑器`,
