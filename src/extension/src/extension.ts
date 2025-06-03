@@ -95,7 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
     updateWebview()
 
     // Monitor the changes of documents
-    const changeSubscription = vscode.workspace.onDidChangeTextDocument((e) => {
+    const changeSubscription = vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (e.document === editor.document) {
         updateWebview()
       }
@@ -110,7 +110,7 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(disposable)
 
   // When the Markdown file is opened, the preview button is displayed in the status bar.
-  vscode.window.onDidChangeActiveTextEditor((editor) => {
+  vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
     if (editor && editor.document.languageId === `markdown`) {
       vscode.commands.executeCommand(`setContext`, `markdownFileActive`, true)
     }

@@ -53,7 +53,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleDark = useToggle(isDark)
 
   // 是否开启 Mac 代码块
-  const isMacCodeBlock = useStorage(`isMacCodeBlock`, true)
+  const isMacCodeBlock = useStorage<boolean>(`isMacCodeBlock`, true)
   const toggleMacCodeBlock = useToggle(isMacCodeBlock)
 
   // 是否在左侧编辑
@@ -69,7 +69,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleAIToolbox = useToggle(showAIToolbox)
 
   // 是否统计字数和阅读时间
-  const isCountStatus = useStorage(`isCountStatus`, false)
+  const isCountStatus = useStorage<boolean>(`isCountStatus`, false)
   const toggleCountStatus = useToggle(isCountStatus)
 
   // 是否开启段落首行缩进
