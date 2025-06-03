@@ -5,6 +5,7 @@ import {
   Edit3,
   Ellipsis,
   History,
+  PlusSquare,
   Trash,
 } from 'lucide-vue-next'
 
@@ -21,7 +22,7 @@ interface Post {
   // 父标签
   parentId?: string | null
   // 展开状态
-  isExpanded?: boolean
+  collapsed?: boolean
 }
 
 const props = defineProps<{
@@ -35,6 +36,7 @@ const props = defineProps<{
   sortedPosts: Post[]
   parentId: string | null
   handleDragEnd: () => void
+  openAddPostDialog: (parentId: string) => void
 }>()
 
 const store = useStore()
@@ -93,7 +95,7 @@ function handleDragOver(e: DragEvent) {
 function togglePostExpanded(postId: string) {
   const targetPost = store.posts.find(p => p.id === postId)
   if (targetPost) {
-    targetPost.isExpanded = !targetPost.isExpanded
+    targetPost.collapsed = !targetPost.collapsed
   }
 }
 </script>
@@ -102,7 +104,7 @@ function togglePostExpanded(postId: string) {
   <div v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)" :key="post.id">
     <!-- 根文章外层容器 -->
     <a
-      class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-2 rounded p-2 text-sm transition-colors"
+      class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors"
       :class="{
         'bg-primary text-primary-foreground shadow': store.currentPostId === post.id,
         'bg-yellow-100 dark:bg-yellow-900/30': props.dragPostId === post.id,
@@ -122,12 +124,12 @@ function togglePostExpanded(postId: string) {
       <Button
         size="xs"
         variant="ghost"
-        class="h-max p-0"
+        class="h-max p-0.5"
         @click.stop="togglePostExpanded(post.id)"
       >
         <ChevronRight
           class="size-4 transition-transform"
-          :class="{ 'rotate-90': post.isExpanded }"
+          :class="{ 'rotate-90': !post.collapsed }"
         />
       </Button>
 
@@ -136,11 +138,18 @@ function togglePostExpanded(postId: string) {
       <!-- 每条文章操作 -->
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button size="xs" variant="ghost" class="ml-auto px-1.5">
+          <Button
+            size="xs"
+            variant="ghost"
+            class="ml-auto h-max p-0.5"
+          >
             <Ellipsis class="size-4" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
+          <DropdownMenuItem @click.stop="props.openAddPostDialog(post.id)">
+            <PlusSquare class="mr-2 size-4" /> 新增内容
+          </DropdownMenuItem>
           <DropdownMenuItem @click.stop="props.startRenamePost(post.id)">
             <Edit3 class="mr-2 size-4" /> 重命名
           </DropdownMenuItem>
@@ -158,7 +167,7 @@ function togglePostExpanded(postId: string) {
     </a>
 
     <div
-      v-if="post.isExpanded"
+      v-if="!post.collapsed"
       class="space-y-1 ml-4 mt-1 border-l-2 border-gray-300 pl-1 dark:border-gray-700"
     >
       <span
@@ -179,6 +188,7 @@ function togglePostExpanded(postId: string) {
         :drop-id="props.dropId"
         :set-drop-id="props.setDropId"
         :handle-drag-end="props.handleDragEnd"
+        :open-add-post-dialog="props.openAddPostDialog"
       />
     </div>
   </div>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import { ArrowUpNarrowWide, Plus } from 'lucide-vue-next'
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 
 const store = useStore()
 
 /* ============ 新增内容 ============ */
+const parendId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
 const addPostInputVal = ref(``)
 watch(isOpenAddDialog, (o) => {
@@ -13,12 +14,17 @@ watch(isOpenAddDialog, (o) => {
     addPostInputVal.value = ``
 })
 
+function openAddPostDialog(parentId: string) {
+  parendId.value = parentId
+  isOpenAddDialog.value = true
+}
+
 function addPost() {
   if (!addPostInputVal.value.trim())
     return toast.error(`内容标题不可为空`)
   if (store.posts.some(post => post.title === addPostInputVal.value.trim()))
     return toast.error(`内容标题已存在`)
-  store.addPost(addPostInputVal.value.trim())
+  store.addPost(addPostInputVal.value.trim(), parendId.value)
   isOpenAddDialog.value = false
   toast.success(`内容新增成功`)
 }
@@ -186,12 +192,12 @@ function handleDragEnd() {
             <TooltipProvider :delay-duration="200">
               <Tooltip>
                 <TooltipTrigger as-child>
-                  <Button variant="outline" size="icon">
-                    <Plus />
+                  <Button variant="ghost" size="xs" class="h-max p-1">
+                    <PlusSquare class="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  新增文章
+                  新增内容
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -216,8 +222,8 @@ function handleDragEnd() {
             <TooltipProvider :delay-duration="200">
               <Tooltip>
                 <TooltipTrigger as-child>
-                  <Button variant="outline" size="icon">
-                    <ArrowUpNarrowWide />
+                  <Button variant="ghost" size="xs" class="h-max p-1">
+                    <ArrowUpNarrowWide class="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -251,6 +257,32 @@ function handleDragEnd() {
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <TooltipProvider :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="store.collapseAllPosts">
+                <ChevronsDownUp class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              全部收起
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="store.expandAllPosts">
+                <ChevronsUpDown class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              全部展开
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <!-- 列表 -->
@@ -267,6 +299,7 @@ function handleDragEnd() {
           :drag-post-id="dragPostId"
           :set-drag-post-id="(id: string | null) => (dragPostId = id)"
           :handle-drag-end="handleDragEnd"
+          :open-add-post-dialog="openAddPostDialog"
         />
       </div>
 
