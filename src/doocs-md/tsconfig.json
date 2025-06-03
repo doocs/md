@@ -3,10 +3,12 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "module": "commonjs",
+    "paths": {
+      "@/*": ["../*"]
+    },
     "strict": true /* enable all strict type-checking options */,
     "sourceMap": true,
     "esModuleInterop": true
-
     /* Additional Checks */
     // "noImplicitReturns": true, /* Report error when not all code paths in function return a value. */
     // "noFallthroughCasesInSwitch": true, /* Report errors for fallthrough cases in switch statement. */

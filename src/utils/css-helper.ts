@@ -1,6 +1,6 @@
 import type { PropertiesHyphen } from 'csstype'
-import type { Block, ExtendedProperties, Inline, Theme } from '../types'
 import DOMPurify from 'isomorphic-dompurify'
+import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 /**
  * 将 CSS 字符串转换为 JSON 对象

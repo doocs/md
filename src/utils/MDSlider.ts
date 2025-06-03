@@ -1,5 +1,5 @@
 import type { MarkedExtension, Tokens } from 'marked'
-import type { ThemeStyles } from '../types'
+import type { ThemeStyles } from '@/types'
 import { getStyleString } from './css-helper'
 
 /**
