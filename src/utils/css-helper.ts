@@ -54,11 +54,77 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
 
 /**
  * 将样式对象转换为 CSS 字符串
- * @param {ExtendedProperties} style - 样式对象
- * @returns {string} - CSS 字符串
  */
-export function getStyleString(style: ExtendedProperties) {
+export function getStyleString(style: ExtendedProperties): string {
   return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
+}
+
+export function modifyHtmlContent(outputTemp: string, renderer: any): string {
+  const {
+    markdownContent,
+    readingTime: readingTimeResult,
+  } = renderer.parseFrontMatterAndContent(outputTemp)
+  let _outputTemp = DOMPurify.sanitize(markdownContent, {
+    ADD_TAGS: [`mp-common-profile`],
+  })
+
+  // 阅读时间及字数统计
+  _outputTemp = renderer.buildReadingTime(readingTimeResult) + _outputTemp
+
+  // 去除第一行的 margin-top
+  _outputTemp = _outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+  // 引用脚注
+  _outputTemp += renderer.buildFootnotes()
+  // // 附加的一些 style
+  _outputTemp += renderer.buildAddition()
+
+  if (renderer.getOpts().isMacCodeBlock) {
+    _outputTemp += `
+        <style>
+          .hljs.code__pre > .mac-sign {
+            display: flex;
+          }
+        </style>
+      `
+  }
+
+  _outputTemp += `
+      <style>
+        .code__pre {
+          padding: 0 !important;
+        }
+  
+        .hljs.code__pre code {
+          display: -webkit-box;
+          padding: 0.5em 1em 1em;
+          overflow-x: auto;
+          text-indent: 0;
+        }
+  
+        h2 strong {
+          color: inherit !important;
+        }
+      </style>
+    `
+  return renderer.createContainer(_outputTemp)
+}
+
+export function customizeTheme(theme: Theme, options: {
+  fontSize?: number
+  color?: string
+}) {
+  const newTheme = JSON.parse(JSON.stringify(theme))
+  const { fontSize, color } = options
+  if (fontSize) {
+    for (let i = 1; i <= 6; i++) {
+      const v = newTheme.block[`h${i}`][`font-size`]
+      newTheme.block[`h${i}`][`font-size`] = `${fontSize * Number.parseFloat(v)}px`
+    }
+  }
+  if (color) {
+    newTheme.base[`--md-primary-color`] = color
+  }
+  return newTheme as Theme
 }
 
 export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
@@ -112,71 +178,4 @@ export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline,
   mergeProperties(newTheme.block, jsonString, blockKeys)
   mergeProperties(newTheme.inline, jsonString, inlineKeys)
   return newTheme
-}
-export function customizeTheme(theme: Theme, options: {
-  fontSize?: number
-  color?: string
-}) {
-  const newTheme = JSON.parse(JSON.stringify(theme))
-  const { fontSize, color } = options
-  if (fontSize) {
-    for (let i = 1; i <= 6; i++) {
-      const v = newTheme.block[`h${i}`][`font-size`]
-      newTheme.block[`h${i}`][`font-size`] = `${fontSize * Number.parseFloat(v)}px`
-    }
-  }
-  if (color) {
-    newTheme.base[`--md-primary-color`] = color
-  }
-  return newTheme as Theme
-}
-
-export function modifyHtmlContent(outputTemp: string, renderer: any): string {
-  const {
-    markdownContent,
-    readingTime: readingTimeResult,
-  } = renderer.parseFrontMatterAndContent(outputTemp)
-  let _outputTemp = DOMPurify.sanitize(markdownContent, {
-    ADD_TAGS: [`mp-common-profile`],
-  })
-
-  // 阅读时间及字数统计
-  _outputTemp = renderer.buildReadingTime(readingTimeResult) + _outputTemp
-
-  // 去除第一行的 margin-top
-  _outputTemp = _outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-  // 引用脚注
-  _outputTemp += renderer.buildFootnotes()
-  // // 附加的一些 style
-  _outputTemp += renderer.buildAddition()
-
-  if (renderer.getOpts().isMacCodeBlock) {
-    _outputTemp += `
-        <style>
-          .hljs.code__pre > .mac-sign {
-            display: flex;
-          }
-        </style>
-      `
-  }
-
-  _outputTemp += `
-      <style>
-        .code__pre {
-          padding: 0 !important;
-        }
-  
-        .hljs.code__pre code {
-          display: -webkit-box;
-          padding: 0.5em 1em 1em;
-          overflow-x: auto;
-          text-indent: 0;
-        }
-  
-        h2 strong {
-          color: inherit !important;
-        }
-      </style>
-    `
-  return renderer.createContainer(_outputTemp)
 }

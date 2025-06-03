@@ -1,5 +1,3 @@
-import type { PropertiesHyphen } from 'csstype'
-
 import juice from 'juice'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
@@ -7,82 +5,10 @@ import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
 import { prefix } from '@/config'
-import type { Block, Inline, Theme } from '@/types'
 import { autoSpace } from '@/utils/autoSpace'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
-}
-
-export function customizeTheme(theme: Theme, options: {
-  fontSize?: number
-  color?: string
-}) {
-  const newTheme = JSON.parse(JSON.stringify(theme))
-  const { fontSize, color } = options
-  if (fontSize) {
-    for (let i = 1; i <= 6; i++) {
-      const v = newTheme.block[`h${i}`][`font-size`]
-      newTheme.block[`h${i}`][`font-size`] = `${fontSize * Number.parseFloat(v)}px`
-    }
-  }
-  if (color) {
-    newTheme.base[`--md-primary-color`] = color
-  }
-  return newTheme as Theme
-}
-
-export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
-  const newTheme = customizeTheme(theme, { color })
-
-  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
-    keys.forEach((key) => {
-      if (source[key]) {
-        target[key] = Object.assign(target[key] || {}, source[key])
-      }
-    })
-  }
-
-  const blockKeys: Block[] = [
-    `container`,
-    `h1`,
-    `h2`,
-    `h3`,
-    `h4`,
-    `h5`,
-    `h6`,
-    `code`,
-    `code_pre`,
-    `p`,
-    `hr`,
-    `blockquote`,
-    `blockquote_note`,
-    `blockquote_tip`,
-    `blockquote_important`,
-    `blockquote_warning`,
-    `blockquote_caution`,
-    `blockquote_p`,
-    `blockquote_p_note`,
-    `blockquote_p_tip`,
-    `blockquote_p_important`,
-    `blockquote_p_warning`,
-    `blockquote_p_caution`,
-    `blockquote_title`,
-    `blockquote_title_note`,
-    `blockquote_title_tip`,
-    `blockquote_title_important`,
-    `blockquote_title_warning`,
-    `blockquote_title_caution`,
-    `image`,
-    `ul`,
-    `ol`,
-    `block_katex`,
-  ]
-  const inlineKeys: Inline[] = [`listitem`, `codespan`, `link`, `wx_link`, `strong`, `table`, `thead`, `td`, `footnote`, `figcaption`, `em`, `inline_katex`]
-
-  mergeProperties(newTheme.block, jsonString, blockKeys)
-  mergeProperties(newTheme.inline, jsonString, inlineKeys)
-  return newTheme
 }
 
 /**

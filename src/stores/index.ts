@@ -20,15 +20,13 @@ import {
 } from '@/config'
 import {
   addPrefix,
-  customCssWithTemplate,
-  customizeTheme,
   downloadMD,
   exportHTML,
   formatDoc,
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
-import { css2json, modifyHtmlContent } from '@/utils/css-helper'
+import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@/utils/css-helper'
 
 import { initRenderer } from '@/utils/renderer'
 
