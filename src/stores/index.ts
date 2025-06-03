@@ -315,6 +315,7 @@ export const useStore = defineStore(`store`, () => {
     fonts: fontFamily.value,
     size: fontSize.value,
     isUseIndent: isUseIndent.value,
+    isMacCodeBlock: isMacCodeBlock.value,
   })
 
   const readingTime = ref<ReadTimeResults | null>(null)
@@ -334,6 +335,7 @@ export const useStore = defineStore(`store`, () => {
       legend: legend.value,
       isUseIndent: isUseIndent.value,
       countStatus: isCountStatus.value,
+      isMacCodeBlock: isMacCodeBlock.value,
     })
 
     const {

@@ -132,23 +132,26 @@ export function customizeTheme(theme: Theme, options: {
 }
 
 export function modifyHtmlContent(outputTemp: string, renderer: any): string {
-  outputTemp = DOMPurify.sanitize(outputTemp, {
+  const {
+    markdownContent,
+    readingTime: readingTimeResult,
+  } = renderer.parseFrontMatterAndContent(outputTemp)
+  let _outputTemp = DOMPurify.sanitize(markdownContent, {
     ADD_TAGS: [`mp-common-profile`],
   })
 
   // 阅读时间及字数统计
-  //   outputTemp = renderer.buildReadingTime(readingTimeResult) + outputTemp
+  _outputTemp = renderer.buildReadingTime(readingTimeResult) + _outputTemp
 
   // 去除第一行的 margin-top
-  outputTemp = outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+  _outputTemp = _outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
   // 引用脚注
-  outputTemp += renderer.buildFootnotes()
+  _outputTemp += renderer.buildFootnotes()
   // // 附加的一些 style
-  outputTemp += renderer.buildAddition()
+  _outputTemp += renderer.buildAddition()
 
-  //   if (isMacCodeBlock.value) {
-  if (true) {
-    outputTemp += `
+  if (renderer.getOpts().isMacCodeBlock) {
+    _outputTemp += `
         <style>
           .hljs.code__pre > .mac-sign {
             display: flex;
@@ -157,7 +160,7 @@ export function modifyHtmlContent(outputTemp: string, renderer: any): string {
       `
   }
 
-  outputTemp += `
+  _outputTemp += `
       <style>
         .code__pre {
           padding: 0 !important;
@@ -175,6 +178,5 @@ export function modifyHtmlContent(outputTemp: string, renderer: any): string {
         }
       </style>
     `
-  //   return outputTemp
-  return renderer.createContainer(outputTemp)
+  return renderer.createContainer(_outputTemp)
 }

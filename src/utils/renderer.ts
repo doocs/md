@@ -152,6 +152,10 @@ export function initRenderer(opts: IOpts) {
   const listOrderedStack: boolean[] = []
   const listCounters: number[] = []
 
+  function getOpts(): IOpts {
+    return opts
+  }
+
   function styles(tag: string, addition: string = ``): string {
     return getStyles(styleMapping, tag, addition)
   }
@@ -390,5 +394,6 @@ export function initRenderer(opts: IOpts) {
     createContainer(content: string) {
       return styledContent(`container`, content, `section`)
     },
+    getOpts,
   }
 }

@@ -28,6 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(`markdown.setFontFamily`, (font: string) => {
       treeDataProvider.updateFontFamily(font)
     }),
+    vscode.commands.registerCommand(`markdown.toggleCountStatus`, () => {
+      treeDataProvider.updateCountStatus(!treeDataProvider.getCurrentCountStatus())
+    }),
+    vscode.commands.registerCommand(`markdown.toggleMacCodeBlock`, () => {
+      treeDataProvider.updateMacCodeBlock(!treeDataProvider.getCurrentMacCodeBlock())
+    }),
   )
 
   const disposable = vscode.commands.registerCommand(`markdown.preview`, () => {
@@ -75,6 +81,8 @@ export function activate(context: vscode.ExtensionContext) {
         fonts: treeDataProvider.getCurrentFontFamily(),
         size: treeDataProvider.getCurrentFontSize(),
         isUseIndent: false,
+        countStatus: treeDataProvider.getCurrentCountStatus(),
+        isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
       })
       const documentText = editor.document.getText()
       const html = marked.parse(documentText) as string

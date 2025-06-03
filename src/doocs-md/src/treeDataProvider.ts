@@ -9,6 +9,8 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
   private currentTheme: keyof typeof themeMap
   private currentPrimaryColor: string
   private currentFontFamily: string
+  private countStatus: boolean
+  private isMacCodeBlock: boolean
   private context: vscode.ExtensionContext
 
   constructor(context: vscode.ExtensionContext) {
@@ -17,10 +19,32 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this.currentTheme = this.context.workspaceState.get(`markdownPreview.theme`, themeOptions[0].value)
     this.currentPrimaryColor = this.context.workspaceState.get(`markdownPreview.primaryColor`, colorOptions[0].value)
     this.currentFontFamily = this.context.workspaceState.get(`markdownPreview.fontFamily`, fontFamilyOptions[0].value)
+    this.countStatus = this.context.workspaceState.get(`markdownPreview.countStatus`, false)
+    this.isMacCodeBlock = this.context.workspaceState.get(`markdownPreview.isMacCodeBlock`, false)
   }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
     return element
+  }
+
+  updateCountStatus(status: boolean): void {
+    this.countStatus = status
+    this.context.workspaceState.update(`markdownPreview.countStatus`, status)
+    this._onDidChangeTreeData.fire(undefined)
+  }
+
+  updateMacCodeBlock(status: boolean): void {
+    this.isMacCodeBlock = status
+    this.context.workspaceState.update(`markdownPreview.isMacCodeBlock`, status)
+    this._onDidChangeTreeData.fire(undefined)
+  }
+
+  getCurrentMacCodeBlock(): boolean {
+    return this.isMacCodeBlock
+  }
+
+  getCurrentCountStatus(): boolean {
+    return this.countStatus
   }
 
   getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
@@ -30,7 +54,31 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
         new vscode.TreeItem(`字体`, vscode.TreeItemCollapsibleState.Expanded),
         new vscode.TreeItem(`主题`, vscode.TreeItemCollapsibleState.Expanded),
         new vscode.TreeItem(`主题色`, vscode.TreeItemCollapsibleState.Expanded),
-      ])
+        new vscode.TreeItem(`计数状态`, vscode.TreeItemCollapsibleState.None),
+        new vscode.TreeItem(`Mac代码块`, vscode.TreeItemCollapsibleState.None),
+      ].map((item) => {
+        if (item.label === `计数状态`) {
+          item.command = {
+            command: `markdown.toggleCountStatus`,
+            title: `Toggle Count Status`,
+            arguments: [],
+          }
+          if (this.countStatus) {
+            item.iconPath = new vscode.ThemeIcon(`check`)
+          }
+        }
+        else if (item.label === `Mac代码块`) {
+          item.command = {
+            command: `markdown.toggleMacCodeBlock`,
+            title: `Toggle Mac Code Block`,
+            arguments: [],
+          }
+          if (this.isMacCodeBlock) {
+            item.iconPath = new vscode.ThemeIcon(`check`)
+          }
+        }
+        return item
+      }))
     }
     else if (element.label === `字号`) {
       return Promise.resolve(fontSizeOptions.map((option) => {
