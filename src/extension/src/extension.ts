@@ -1,8 +1,9 @@
+import { themeMap } from '@/config/theme'
+import { css2json, customCssWithTemplate, customizeTheme } from '@/utils'
+import { modifyHtmlContent } from '@/utils/css-helper'
+import { initRenderer } from '@/utils/renderer'
 import { marked } from 'marked'
 import * as vscode from 'vscode'
-import { themeMap } from '../../config/theme'
-import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '../../utils/css-helper'
-import { initRenderer } from '../../utils/renderer'
 import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
 

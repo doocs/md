@@ -1,4 +1,4 @@
-import type { themeMap } from '../../config/theme'
+import type { themeMap } from '@/config/theme'
 import * as vscode from 'vscode'
 import { colorOptions, fontFamilyOptions, fontSizeOptions, themeOptions } from './styleChoices'
 

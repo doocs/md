@@ -1,9 +1,4 @@
 import type { ReadTimeResults } from 'reading-time'
-import CodeMirror from 'codemirror'
-import { toPng } from 'html-to-image'
-import { marked } from 'marked'
-import { v4 as uuid } from 'uuid'
-
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
@@ -25,10 +20,16 @@ import {
   formatDoc,
   sanitizeTitle,
 } from '@/utils'
-import { copyPlain } from '@/utils/clipboard'
-import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@/utils/css-helper'
 
+import { css2json, customCssWithTemplate, customizeTheme } from '@/utils/'
+import { copyPlain } from '@/utils/clipboard'
+import { modifyHtmlContent } from '@/utils/css-helper'
 import { initRenderer } from '@/utils/renderer'
+import CodeMirror from 'codemirror'
+import { toPng } from 'html-to-image'
+
+import { marked } from 'marked'
+import { v4 as uuid } from 'uuid'
 
 /**********************************
  * Post 结构接口
