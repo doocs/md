@@ -21,9 +21,8 @@ import {
   sanitizeTitle,
 } from '@/utils'
 
-import { css2json, customCssWithTemplate, customizeTheme } from '@/utils/'
+import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@/utils/'
 import { copyPlain } from '@/utils/clipboard'
-import { modifyHtmlContent } from '@/utils/css-helper'
 import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'

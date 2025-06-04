@@ -1,6 +1,6 @@
 import { themeMap } from '@/config/theme'
 import { css2json, customCssWithTemplate, customizeTheme } from '@/utils'
-import { modifyHtmlContent } from '@/utils/css-helper'
+import { modifyHtmlContent } from '@/utils/'
 import { initRenderer } from '@/utils/renderer'
 import { marked } from 'marked'
 import * as vscode from 'vscode'
