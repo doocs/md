@@ -13,5 +13,6 @@ export default antfu({
     'no-unused-vars': `off`,
     'no-console': `off`,
     'no-debugger': `off`,
+    'ts/no-namespace': `off`,
   },
 })
