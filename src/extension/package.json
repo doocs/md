@@ -69,7 +69,7 @@
     "vscode:prepublish": "pnpm run package",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "package": "webpack --mode production --devtool hidden-source-map"
+    "build": "webpack --mode production --devtool hidden-source-map"
   },
   "dependencies": {
     "@types/webpack": "^5.28.5",

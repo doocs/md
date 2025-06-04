@@ -1,73 +1,44 @@
-# TODO
+# doocs-md VS Code Extension
 
-# doocs-md README
+为 doocs-md 提供的 VS Code 扩展，支持在编辑器内实时预览 Markdown 渲染效果。
 
-This is the README for your extension "doocs-md". After writing up a brief description, we recommend including the following sections.
+## 功能特性
 
-## Features
+- 侧边栏Markdown预览视图
+- 支持微信图文特有的样式渲染
+- 可自定义字体
+- 支持自定义字体大小
+- 支持自定义文本主题颜色
+- 支持自定义主题样式
+- 显示字数统计状态
+- 支持Mac风格代码块切换
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+## 使用方法
 
-For example if there is an image subfolder under your extension project workspace:
+1. 安装扩展后，打开Markdown文件
+2. 点击活动栏中的 doocs-md 的 icon 图标
+3. 在侧边栏查看实时渲染效果
 
-\!\[feature X\]\(images/feature-x.png\)
+## 命令
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+- `markdown.preview`: 打开Markdown预览
+- `markdown.setFontFamily`: 设置预览字体
+- `markdown.toggleCountStatus`: 切换字数统计显示
+- `markdown.toggleMacCodeBlock`: 切换Mac风格代码块
 
-## Requirements
+## 与主项目的关系
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+本扩展是[doocs-md](https://github.com/doocs/md)的配套工具，使用相同的渲染方式，确保预览效果与最终微信图文完全一致。
 
-## Extension Settings
+## 开发
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+```sh
+# 安装依赖
+npm install
 
-For example:
+# 开发模式
+npm run watch
 
-This extension contributes the following settings:
-
-- `myExtension.enable`: Enable/disable this extension.
-- `myExtension.thing`: Set to `blah` to do something.
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
-
-## Release Notes
-
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-- [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-- Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-- Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-- Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-- [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-- [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+# 打包
+npm run build
+```
