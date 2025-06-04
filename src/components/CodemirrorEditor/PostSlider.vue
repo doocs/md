@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import {
-  ArrowUpNarrowWide,
-  Edit3,
-  Ellipsis,
-  History,
-  Plus,
-  Trash,
-} from 'lucide-vue-next'
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 
 const store = useStore()
 
 /* ============ 新增内容 ============ */
+const parentId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
 const addPostInputVal = ref(``)
 watch(isOpenAddDialog, (o) => {
-  if (o)
+  if (o) {
     addPostInputVal.value = ``
+  }
 })
+
+function openAddPostDialog(id: string) {
+  parentId.value = id
+  isOpenAddDialog.value = true
+}
 
 function addPost() {
   if (!addPostInputVal.value.trim())
     return toast.error(`内容标题不可为空`)
   if (store.posts.some(post => post.title === addPostInputVal.value.trim()))
     return toast.error(`内容标题已存在`)
-  store.addPost(addPostInputVal.value.trim())
+  store.addPost(addPostInputVal.value.trim(), parentId.value)
   isOpenAddDialog.value = false
   toast.success(`内容新增成功`)
 }
@@ -41,14 +41,23 @@ function startRenamePost(id: string) {
   isOpenEditDialog.value = true
 }
 function renamePost() {
-  if (!renamePostInputVal.value.trim())
+  if (!renamePostInputVal.value.trim()) {
     return toast.error(`内容标题不可为空`)
-  if (store.posts.some(post => post.title === renamePostInputVal.value.trim() && post.id !== editId.value))
+  }
+
+  if (
+    store.posts.some(
+      post => post.title === renamePostInputVal.value.trim() && post.id !== editId.value,
+    )
+  ) {
     return toast.error(`内容标题已存在`)
+  }
+
   if (renamePostInputVal.value === store.getPostById(editId.value!)?.title) {
     isOpenEditDialog.value = false
     return
   }
+
   store.renamePost(editId.value!, renamePostInputVal.value.trim())
   toast.success(`内容重命名成功`)
   isOpenEditDialog.value = false
@@ -85,8 +94,11 @@ function openHistoryDialog(id: string) {
 }
 function recoverHistory() {
   const post = store.getPostById(currentPostId.value!)
-  if (!post)
-    return (isOpenHistoryDialog.value = false)
+  if (!post) {
+    isOpenHistoryDialog.value = false
+    return
+  }
+
   const content = post.history[currentHistoryIndex.value].content
   post.content = content
   toRaw(store.editor!).setValue(content)
@@ -99,27 +111,92 @@ const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
   return [...store.posts].sort((a, b) => {
     switch (sortMode.value) {
-      case `A-Z`: return a.title.localeCompare(b.title)
-      case `Z-A`: return b.title.localeCompare(a.title)
-      case `update-new-old`: return +new Date(b.updateDatetime) - +new Date(a.updateDatetime)
-      case `update-old-new`: return +new Date(a.updateDatetime) - +new Date(b.updateDatetime)
-      case `create-new-old`: return +new Date(b.createDatetime) - +new Date(a.createDatetime)
-      default: /* create-old-new */
+      case `A-Z`:
+        return a.title.localeCompare(b.title)
+      case `Z-A`:
+        return b.title.localeCompare(a.title)
+      case `update-new-old`:
+        return +new Date(b.updateDatetime) - +new Date(a.updateDatetime)
+      case `update-old-new`:
+        return +new Date(a.updateDatetime) - +new Date(b.updateDatetime)
+      case `create-new-old`:
+        return +new Date(b.createDatetime) - +new Date(a.createDatetime)
+      default:
+        /* create-old-new */
         return +new Date(a.createDatetime) - +new Date(b.createDatetime)
     }
   })
 })
+
+/* ============ 拖拽功能 ============ */
+const dragover = ref(false)
+const dragSourceId = ref<string | null>(null)
+const dropTargetId = ref<string | null>(null)
+
+function handleDrop(targetId: string | null) {
+  const sourceId = dragSourceId.value
+  if (!sourceId) {
+    return
+  }
+
+  // 递归检索 ID，是不是父文件拖拽到了子文件上面
+  const isParent = (id: string | null | undefined) => {
+    if (!id) {
+      return false
+    }
+
+    const post = store.getPostById(id)
+    if (!post) {
+      return false
+    }
+
+    if (post.parentId === sourceId) {
+      return true
+    }
+
+    return isParent(post.parentId)
+  }
+
+  if (isParent(targetId)) {
+    toast.error(`不能将内容拖拽到其子内容下面`)
+  }
+  else if (sourceId !== targetId) {
+    store.updatePostParentId(sourceId, targetId || null)
+  }
+
+  dragSourceId.value = null
+}
+
+function handleDragOver(e: DragEvent) {
+  e.preventDefault()
+}
+
+function handleDragEnd() {
+  dragSourceId.value = null
+  dropTargetId.value = null
+  dragover.value = false
+}
 </script>
 
 <template>
   <!-- 侧栏外框 -->
   <div
-    class="overflow-hidden bg-gray/20 bg-gray/20 transition-width duration-300 dark:bg-[#191c20]"
-    :class="{ 'w-0': !store.isOpenPostSlider, 'w-50': store.isOpenPostSlider }"
+    class="h-full w-full overflow-hidden border-2 border-dashed bg-gray/20 transition-colors duration-300 dark:bg-[#191c20]"
+    :class="{
+      'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
+    }"
+    @dragover.prevent="dragover = true"
+    @dragleave.prevent="dragover = false"
+    @dragend="handleDragEnd"
   >
     <nav
       class="space-y-1 h-full flex flex-col border-r-2 border-gray/20 py-2 transition-transform"
-      :class="{ 'translate-x-100': store.isOpenPostSlider, '-translate-x-full': !store.isOpenPostSlider }"
+      :class="{
+        'translate-x-100': store.isOpenPostSlider,
+        '-translate-x-full': !store.isOpenPostSlider,
+      }"
+      @dragover="handleDragOver"
+      @drop.prevent="handleDrop(null)"
     >
       <!-- 顶部：新增 + 排序按钮 -->
       <div class="space-x-4 mb-2 flex justify-center">
@@ -129,12 +206,12 @@ const sortedPosts = computed(() => {
             <TooltipProvider :delay-duration="200">
               <Tooltip>
                 <TooltipTrigger as-child>
-                  <Button variant="outline" size="icon">
-                    <Plus />
+                  <Button variant="ghost" size="xs" class="h-max p-1">
+                    <PlusSquare class="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  新增文章
+                  新增内容
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -159,8 +236,8 @@ const sortedPosts = computed(() => {
             <TooltipProvider :delay-duration="200">
               <Tooltip>
                 <TooltipTrigger as-child>
-                  <Button variant="outline" size="icon">
-                    <ArrowUpNarrowWide />
+                  <Button variant="ghost" size="xs" class="h-max p-1">
+                    <ArrowUpNarrowWide class="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
@@ -194,46 +271,52 @@ const sortedPosts = computed(() => {
             </DropdownMenuRadioGroup>
           </DropdownMenuContent>
         </DropdownMenu>
+
+        <TooltipProvider :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="store.collapseAllPosts">
+                <ChevronsDownUp class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              全部收起
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+
+        <TooltipProvider :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="store.expandAllPosts">
+                <ChevronsUpDown class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              全部展开
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <!-- 列表 -->
-      <ul class="space-y-1 overflow-auto px-2">
-        <li
-          v-for="post in sortedPosts"
-          :key="post.id"
-          class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-2 rounded p-2 text-sm transition-colors"
-          :class="{
-            'bg-primary text-primary-foreground shadow':
-              store.currentPostId === post.id,
-          }"
-          @click="store.currentPostId = post.id"
-        >
-          <span class="line-clamp-1">{{ post.title }}</span>
-
-          <!-- 每条文章操作 -->
-          <DropdownMenu>
-            <DropdownMenuTrigger as-child>
-              <Button size="xs" variant="ghost" class="ml-auto px-1.5">
-                <Ellipsis class="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem @click.stop="startRenamePost(post.id)">
-                <Edit3 class="mr-2 size-4" /> 重命名
-              </DropdownMenuItem>
-              <DropdownMenuItem @click.stop="openHistoryDialog(post.id)">
-                <History class="mr-2 size-4" /> 历史记录
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                v-if="store.posts.length > 1"
-                @click.stop="startDelPost(post.id)"
-              >
-                <Trash class="mr-2 size-4" /> 删除
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </li>
-      </ul>
+      <div class="space-y-1 px-1">
+        <!-- 包裹根文章和子文章，保持间距 -->
+        <PostItem
+          :parent-id="null"
+          :sorted-posts="sortedPosts"
+          :start-rename-post="startRenamePost"
+          :open-history-dialog="openHistoryDialog"
+          :start-del-post="startDelPost"
+          :drop-target-id="dropTargetId"
+          :set-drop-target-id="(id: string | null) => (dropTargetId = id)"
+          :drag-source-id="dragSourceId"
+          :set-drag-source-id="(id: string | null) => (dragSourceId = id)"
+          :handle-drop="handleDrop"
+          :handle-drag-end="handleDragEnd"
+          :open-add-post-dialog="openAddPostDialog"
+        />
+      </div>
 
       <!-- 重命名弹窗 -->
       <Dialog v-model:open="isOpenEditDialog">
@@ -316,7 +399,9 @@ const sortedPosts = computed(() => {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>提示</AlertDialogTitle>
-                  <AlertDialogDescription>此操作将用该记录替换当前文章内容，是否继续？</AlertDialogDescription>
+                  <AlertDialogDescription>
+                    此操作将用该记录替换当前文章内容，是否继续？
+                  </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
                   <AlertDialogCancel>取消</AlertDialogCancel>
