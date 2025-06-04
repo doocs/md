@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import CodeMirror from 'codemirror'
-import { Eye, List, Pen } from 'lucide-vue-next'
 import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
 import { SearchTab } from '@/components/ui/search-tab'
 import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
@@ -13,6 +11,8 @@ import {
 } from '@/utils'
 import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
+import CodeMirror from 'codemirror'
+import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -45,26 +45,34 @@ const showEditor = ref(true)
 
 const searchTabRef = ref<InstanceType<typeof SearchTab>>()
 
+function openSearchWithSelection(cm: CodeMirror.Editor) {
+  const selected = cm.getSelection().trim()
+  if (!searchTabRef.value)
+    return
+
+  if (selected) {
+    // 自动带入选中文本
+    searchTabRef.value.setSearchWord(selected)
+  }
+  else {
+    // 仅打开面板
+    searchTabRef.value.showSearchTab = true
+  }
+}
+
+function handleGlobalKeydown(e: KeyboardEvent) {
+  if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
+    searchTabRef.value.showSearchTab = false
+    e.preventDefault()
+    editor.value?.focus()
+  }
+}
+
 onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
-
-  document.addEventListener(`keydown`, (e) => {
-    if (e.key === `f`) {
-      if (e.metaKey || e.ctrlKey) {
-        e.preventDefault()
-        if (searchTabRef.value) {
-          searchTabRef.value.showSearchTab = true
-        }
-      }
-    }
-    if (e.key === `Escape`) {
-      if (searchTabRef.value) {
-        searchTabRef.value.showSearchTab = false
-      }
-    }
-  })
+  document.addEventListener(`keydown`, handleGlobalKeydown)
 })
 
 // 切换编辑/预览视图（仅限移动端）
@@ -308,7 +316,10 @@ function initEditor() {
             : lines.map((line, i) => `${i + 1}. ${line}`).join(`\n`)
           editor.replaceSelection(updated)
         },
-        [`${ctrlKey}-F`]: function search() {
+        [`${ctrlKey}-F`]: (cm: CodeMirror.Editor) => {
+          openSearchWithSelection(cm)
+        },
+        [`${ctrlKey}-G`]: function search() {
           // use this to avoid CodeMirror's built-in search functionality
         },
       },

@@ -153,6 +153,13 @@ function handleEditorChange() {
   debouncedSearch()
 }
 
+function setSearchWord(word: string) {
+  searchWord.value = word
+  if (!showSearchTab.value) {
+    showSearchTab.value = true
+  }
+}
+
 onMounted(() => {
   const editor = props.editor
   editor.on(`changes`, handleEditorChange)
@@ -172,39 +179,102 @@ function checkMatchNumber(): boolean {
 
 defineExpose({
   showSearchTab,
+  searchWord,
+  setSearchWord,
   handleEditorChange,
 })
 </script>
 
 <template>
   <Transition name="slide-down">
-    <div v-if="showSearchTab" class="bg-background absolute right-0 top-0 z-50 w-[370px] flex items-center justify-between gap-2 border rounded-t-lg p-2 shadow-lg" :class="showReplace ? 'h-28' : 'h-16'">
-      <Button variant="ghost" title="切换替换" aria-label="切换替换" class="h-[100%] w-6 flex items-center justify-center p-0" @click="toggleShowReplace">
-        <component :is="showReplace ? ChevronDown : ChevronRight" class="h-4 w-4" />
+    <div
+      v-if="showSearchTab"
+      class="bg-background absolute right-0 top-0 z-50 min-w-[300px] w-fit flex gap-1 border rounded-lg px-2 py-1 shadow-md transition-all"
+      :class="showReplace ? 'items-start' : 'items-center'"
+    >
+      <!-- 折叠/展开按钮 -->
+      <Button
+        variant="ghost"
+        title="切换替换"
+        aria-label="切换替换"
+        class="h-7 w-5 flex items-center justify-center p-0"
+        @click="toggleShowReplace"
+      >
+        <component :is="showReplace ? ChevronDown : ChevronRight" class="h-3.5 w-3.5" />
       </Button>
-      <div class="direction-normal flex flex-col gap-0">
-        <div class="h-12 flex items-center justify-start gap-1">
-          <Input v-model="searchWord" placeholder="查找" class="w-40" @keydown="handleSearchInputKeyDown" />
-          <span class="w-12 text-center">
+
+      <!-- 查找 / 替换主体 -->
+      <div class="flex flex-col gap-0.5">
+        <!-- 查找行 -->
+        <div class="flex items-center gap-1">
+          <Input
+            v-model="searchWord"
+            placeholder="查找"
+            class="h-7 w-40 text-sm"
+            @keydown="handleSearchInputKeyDown"
+          />
+          <span class="w-10 select-none text-center text-xs">
             {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
           </span>
-          <Button variant="ghost" size="xs" title="上一处" aria-label="上一处" class="h-8 w-8 p-0" @click="prevMatch">
-            <ChevronUp class="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="上一处"
+            aria-label="上一处"
+            class="h-6 w-6 p-0"
+            @click="prevMatch"
+          >
+            <ChevronUp class="h-3 w-3" />
           </Button>
-          <Button variant="ghost" size="xs" title="下一处" aria-label="下一处" class="h-8 w-8 p-0" @click="nextMatch">
-            <ChevronDown class="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="下一处"
+            aria-label="下一处"
+            class="h-6 w-6 p-0"
+            @click="nextMatch"
+          >
+            <ChevronDown class="h-3 w-3" />
           </Button>
-          <Button variant="ghost" size="xs" title="关闭" aria-label="关闭" class="h-8 w-8 p-0" @click="closeSearchTab">
-            <X class="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="关闭"
+            aria-label="关闭"
+            class="h-6 w-6 p-0"
+            @click="closeSearchTab"
+          >
+            <X class="h-3 w-3" />
           </Button>
         </div>
-        <div v-if="showReplace" class="h-12 flex items-center justify-start gap-1">
-          <Input v-model="replaceWord" placeholder="替换" class="w-40" @keydown="handleReplaceInputKeyDown" />
-          <Button variant="ghost" size="xs" title="替换" aria-label="替换" class="h-8 w-8 p-0" @click="handleReplace">
-            <Replace class="h-4 w-4" />
+
+        <!-- 替换行（可折叠） -->
+        <div v-if="showReplace" class="flex items-center gap-1">
+          <Input
+            v-model="replaceWord"
+            placeholder="替换"
+            class="h-7 w-40 text-sm"
+            @keydown="handleReplaceInputKeyDown"
+          />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="替换"
+            aria-label="替换"
+            class="h-6 w-6 p-0"
+            @click="handleReplace"
+          >
+            <Replace class="h-3 w-3" />
           </Button>
-          <Button variant="ghost" size="xs" title="全部替换" aria-label="全部替换" class="h-8 w-8 p-0" @click="handleReplaceAll">
-            <ReplaceAll class="h-4 w-4" />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="全部替换"
+            aria-label="全部替换"
+            class="h-6 w-6 p-0"
+            @click="handleReplaceAll"
+          >
+            <ReplaceAll class="h-3 w-3" />
           </Button>
         </div>
       </div>
@@ -212,10 +282,12 @@ defineExpose({
   </Transition>
 </template>
 
-<style scoped lang='less'>
+<style scoped lang="less">
 .slide-down-enter-active,
 .slide-down-leave-active {
-  transition: all 0.3s ease;
+  transition:
+    transform 0.2s ease,
+    opacity 0.2s ease;
 }
 .slide-down-enter-from,
 .slide-down-leave-to {
