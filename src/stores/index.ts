@@ -341,7 +341,7 @@ export const useStore = defineStore(`store`, () => {
       readingTime: readingTimeResult,
     } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
     readingTime.value = readingTimeResult
-    const outputTemp = marked.parse(markdownContent) as string
+    let outputTemp = marked.parse(markdownContent) as string
 
     // 提取标题
     const div = document.createElement(`div`)
@@ -359,6 +359,7 @@ export const useStore = defineStore(`store`, () => {
       })
       i++
     }
+    outputTemp = div.innerHTML
     output.value = modifyHtmlContent(outputTemp, renderer)
   }
 
