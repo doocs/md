@@ -181,10 +181,8 @@ function handleDragEnd() {
 <template>
   <!-- 侧栏外框 -->
   <div
-    class="overflow-hidden border-2 border-dashed bg-gray/20 transition-colors duration-300 dark:bg-[#191c20]"
+    class="h-full w-full overflow-hidden border-2 border-dashed bg-gray/20 transition-colors duration-300 dark:bg-[#191c20]"
     :class="{
-      'w-0': !store.isOpenPostSlider,
-      'w-50': store.isOpenPostSlider,
       'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
     }"
     @dragover.prevent="dragover = true"
