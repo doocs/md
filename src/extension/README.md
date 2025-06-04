@@ -32,6 +32,8 @@
 
 ## 开发
 
+- **Node.js ≥ 20**
+
 ```sh
 # 安装依赖
 npm install
