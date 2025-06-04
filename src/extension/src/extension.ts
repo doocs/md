@@ -18,7 +18,6 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
-      vscode.window.showInformationMessage(`Font size set to ${size}`)
     }),
     vscode.commands.registerCommand(`markdown.setTheme`, (theme: keyof typeof themeMap) => {
       treeDataProvider.updateTheme(theme)
