@@ -13,7 +13,7 @@ const {
   exportEditorContent2HTML,
   exportEditorContent2MD,
   importMarkdownContent,
-  dowloadAsCardImage,
+  downloadAsCardImage,
 } = store
 
 const editorStateDialogVisible = ref(false)
@@ -37,7 +37,7 @@ const editorStateDialogVisible = ref(false)
         <FileCode class="mr-2 size-4" />
         导出 .html
       </MenubarItem>
-      <MenubarItem @click="dowloadAsCardImage()">
+      <MenubarItem @click="downloadAsCardImage()">
         <Download class="mr-2 size-4" />
         导出 .png
       </MenubarItem>

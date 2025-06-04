@@ -584,7 +584,7 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 下载卡片
-  const dowloadAsCardImage = () => {
+  const downloadAsCardImage = () => {
     const el = document.querySelector(`#output-wrapper>.preview`)! as HTMLElement
     toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
@@ -712,7 +712,7 @@ export const useStore = defineStore(`store`, () => {
     formatContent,
     exportEditorContent2HTML,
     exportEditorContent2MD,
-    dowloadAsCardImage,
+    downloadAsCardImage,
 
     importMarkdownContent,
     importDefaultContent,
