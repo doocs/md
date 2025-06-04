@@ -64,6 +64,7 @@
     "qiniu-js": "^3.4.2",
     "radix-vue": "^1.9.12",
     "reading-time": "^1.5.0",
+    "reka-ui": "^2.3.0",
     "tailwind-merge": "^2.6.0",
     "tailwindcss-animate": "^1.0.7",
     "tiny-oss": "^0.5.1",

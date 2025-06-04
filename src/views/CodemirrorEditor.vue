@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import { AIPolishButton, AIPolishPopover, useAIPolish } from '@/components/AIPolish'
-import { SearchTab } from '@/components/ui/search-tab'
-import { altKey, altSign, ctrlKey, ctrlSign, shiftKey, shiftSign } from '@/config'
-import { useDisplayStore, useStore } from '@/stores'
 import {
-  checkImage,
-  formatDoc,
-  toBase64,
-} from '@/utils'
+  AIPolishButton,
+  AIPolishPopover,
+  useAIPolish,
+} from '@/components/AIPolish'
+import {
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+} from '@/components/ui/resizable'
+import { SearchTab } from '@/components/ui/search-tab'
+import {
+  altKey,
+  altSign,
+  ctrlKey,
+  ctrlSign,
+  shiftKey,
+  shiftSign,
+} from '@/config'
+import { useDisplayStore, useStore } from '@/stores'
+import { checkImage, formatDoc, toBase64 } from '@/utils'
 import { toggleFormat } from '@/utils/editor'
 import fileApi from '@/utils/file'
 import CodeMirror from 'codemirror'
@@ -136,7 +148,7 @@ function leftAndRightScroll() {
     scrollCB(`preview`)
   }
 
-  (preview.value!).addEventListener(`scroll`, previewScrollCB, false)
+  preview.value!.addEventListener(`scroll`, previewScrollCB, false)
   editor.value!.on(`scroll`, editorScrollCB)
 }
 
@@ -196,7 +208,11 @@ function uploaded(imageUrl: string) {
   toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
   toast.success(`图片上传成功`)
 }
-function uploadImage(file: File, cb?: { (url: any): void, (arg0: unknown): void } | undefined) {
+
+function uploadImage(
+  file: File,
+  cb?: { (url: any): void, (arg0: unknown): void } | undefined,
+) {
   isImgLoading.value = true
 
   toBase64(file)
@@ -293,7 +309,9 @@ function initEditor() {
         // 标题：单行逻辑，手动处理
         [`${ctrlKey}-H`]: function heading(editor) {
           const selected = editor.getSelection()
-          const replaced = selected.startsWith(`# `) ? selected.slice(2) : `# ${selected}`
+          const replaced = selected.startsWith(`# `)
+            ? selected.slice(2)
+            : `# ${selected}`
           editor.replaceSelection(replaced)
         },
 
@@ -386,7 +404,9 @@ function addFormat(cmd: string | number) {
   (editor.value as any).options.extraKeys[cmd](editor.value)
 }
 
-const codeMirrorWrapper = ref<ComponentPublicInstance<HTMLDivElement> | null>(null)
+const codeMirrorWrapper = ref<ComponentPublicInstance<HTMLDivElement> | null>(
+  null,
+)
 
 // 转换 markdown 中的本地图片为线上图片
 // todo 处理事件覆盖
@@ -394,7 +414,13 @@ function mdLocalToRemote() {
   const dom = codeMirrorWrapper.value!
 
   // 上传 md 中的图片
-  const uploadMdImg = async ({ md, list }: { md: { str: string, path: string, file: File }, list: { path: string, file: File }[] }) => {
+  const uploadMdImg = async ({
+    md,
+    list,
+  }: {
+    md: { str: string, path: string, file: File }
+    list: { path: string, file: File }[]
+  }) => {
     const mdImgList = [
       ...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || []),
     ].filter((item) => {
@@ -426,18 +452,23 @@ function mdLocalToRemote() {
   dom.ondrop = async (evt: any) => {
     evt.preventDefault()
     for (const item of evt.dataTransfer.items) {
-      item.getAsFileSystemHandle().then(async (handle: { kind: string, getFile: () => any }) => {
-        if (handle.kind === `directory`) {
-          const list = await showFileStructure(handle) as { path: string, file: File }[]
-          const md = await getMd({ list })
-          uploadMdImg({ md, list })
-        }
-        else {
-          const file = await handle.getFile()
-          console.log(`file`, file)
-          beforeUpload(file) && uploadImage(file)
-        }
-      })
+      item
+        .getAsFileSystemHandle()
+        .then(async (handle: { kind: string, getFile: () => any }) => {
+          if (handle.kind === `directory`) {
+            const list = (await showFileStructure(handle)) as {
+              path: string
+              file: File
+            }[]
+            const md = await getMd({ list })
+            uploadMdImg({ md, list })
+          }
+          else {
+            const file = await handle.getFile()
+            console.log(`file`, file)
+            beforeUpload(file) && uploadImage(file)
+          }
+        })
     }
   }
 
@@ -497,7 +528,12 @@ const isOpenHeadingSlider = ref(false)
 
 <template>
   <div ref="container" class="container flex flex-col">
-    <EditorHeader @add-format="addFormat" @format-content="formatContent" @start-copy="startCopy" @end-copy="endCopy" />
+    <EditorHeader
+      @add-format="addFormat"
+      @format-content="formatContent"
+      @start-copy="startCopy"
+      @end-copy="endCopy"
+    />
     <AIPolishButton
       v-if="store.showAIToolbox"
       ref="AIPolishBtnRef"
@@ -518,126 +554,175 @@ const isOpenHeadingSlider = ref(false)
     />
 
     <main class="container-main flex flex-1 flex-col">
-      <div class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1">
-        <PostSlider />
-        <div
-          v-show="!store.isMobile || (store.isMobile && showEditor)"
-          ref="codeMirrorWrapper"
-          class="codeMirror-wrapper relative flex-1"
-          :class="{
-            'order-1 border-l': !store.isEditOnLeft,
-            'border-r': store.isEditOnLeft,
-          }"
-        >
-          <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
-          <AIFixedBtn :is-mobile="store.isMobile" :show-editor="showEditor" />
-          <ContextMenu>
-            <ContextMenuTrigger>
-              <textarea id="editor" type="textarea" placeholder="Your markdown text here." />
-            </ContextMenuTrigger>
-            <ContextMenuContent class="w-64">
-              <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
-                上传图片
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
-                插入表格
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="toggleShowInsertMpCardDialog()">
-                插入公众号名片
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="resetStyleConfirm()">
-                重置样式
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="importDefaultContent()">
-                重置文档
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="clearContent()">
-                清空内容
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem inset @click="importMarkdownContent()">
-                导入 .md 文档
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="exportEditorContent2MD()">
-                导出 .md 文档
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="exportEditorContent2HTML()">
-                导出 .html
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="dowloadAsCardImage()">
-                导出 .png
-              </ContextMenuItem>
-              <ContextMenuSeparator />
-              <ContextMenuItem inset @click="copyToClipboard()">
-                复制
-                <ContextMenuShortcut> {{ ctrlSign }} + C</ContextMenuShortcut>
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="pasteFromClipboard">
-                粘贴
-                <ContextMenuShortcut> {{ ctrlSign }} + V</ContextMenuShortcut>
-              </ContextMenuItem>
-              <ContextMenuItem inset @click="formatContent()">
-                格式化
-                <ContextMenuShortcut>{{ altSign }} + {{ shiftSign }} + F</ContextMenuShortcut>
-              </ContextMenuItem>
-            </ContextMenuContent>
-          </ContextMenu>
-        </div>
-        <div
-          v-show="!store.isMobile || (store.isMobile && !showEditor)" class="relative flex-1 overflow-x-hidden transition-width"
-          :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
-        >
-          <div id="preview" ref="preview" class="preview-wrapper w-full p-5">
-            <div id="output-wrapper" class="w-full" :class="{ output_night: !backLight }">
-              <div
-                class="preview border-x-1 shadow-xl"
-                :class="[store.previewWidth]"
-              >
-                <section id="output" class="w-full" v-html="output" />
-                <div v-if="isCoping" class="loading-mask">
-                  <div class="loading-mask-box">
-                    <div class="loading__img" />
-                    <span>正在生成</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <BackTop target="preview" :right="store.isMobile ? 24 : 20" :bottom="store.isMobile ? 90 : 20" />
-          </div>
-          <div
-            class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
-            @mouseenter="() => isOpenHeadingSlider = true" @mouseleave="() => isOpenHeadingSlider = false"
+      <div
+        class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1"
+      >
+        <ResizablePanelGroup direction="horizontal">
+          <ResizablePanel
+            :default-size="15"
+            :max-size="store.isOpenPostSlider ? 30 : 0"
+            :min-size="store.isOpenPostSlider ? 10 : 0"
           >
-            <List class="size-6" />
-            <ul
-              class="overflow-auto transition-all" :class="{
-                'max-h-0 w-0': !isOpenHeadingSlider,
-                'max-h-100 w-60 mt-2': isOpenHeadingSlider,
+            <PostSlider />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel class="flex">
+            <div
+              v-show="!store.isMobile || (store.isMobile && showEditor)"
+              ref="codeMirrorWrapper"
+              class="codeMirror-wrapper relative flex-1"
+              :class="{
+                'order-1 border-l': !store.isEditOnLeft,
+                'border-r': store.isEditOnLeft,
               }"
             >
-              <li
-                v-for="(item, index) in store.titleList" :key="index"
-                class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600"
-                :style="{ paddingLeft: `${item.level - 0.5}em` }"
+              <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
+              <AIFixedBtn
+                :is-mobile="store.isMobile"
+                :show-editor="showEditor"
+              />
+              <ContextMenu>
+                <ContextMenuTrigger>
+                  <textarea
+                    id="editor"
+                    type="textarea"
+                    placeholder="Your markdown text here."
+                  />
+                </ContextMenuTrigger>
+                <ContextMenuContent class="w-64">
+                  <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
+                    上传图片
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
+                    插入表格
+                  </ContextMenuItem>
+                  <ContextMenuItem
+                    inset
+                    @click="toggleShowInsertMpCardDialog()"
+                  >
+                    插入公众号名片
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="resetStyleConfirm()">
+                    重置样式
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="importDefaultContent()">
+                    重置文档
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="clearContent()">
+                    清空内容
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem inset @click="importMarkdownContent()">
+                    导入 .md 文档
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="exportEditorContent2MD()">
+                    导出 .md 文档
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="exportEditorContent2HTML()">
+                    导出 .html
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="dowloadAsCardImage()">
+                    导出 .png
+                  </ContextMenuItem>
+                  <ContextMenuSeparator />
+                  <ContextMenuItem inset @click="copyToClipboard()">
+                    复制
+                    <ContextMenuShortcut>
+                      {{ ctrlSign }} + C
+                    </ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="pasteFromClipboard">
+                    粘贴
+                    <ContextMenuShortcut>
+                      {{ ctrlSign }} + V
+                    </ContextMenuShortcut>
+                  </ContextMenuItem>
+                  <ContextMenuItem inset @click="formatContent()">
+                    格式化
+                    <ContextMenuShortcut>
+                      {{ altSign }} + {{ shiftSign }} + F
+                    </ContextMenuShortcut>
+                  </ContextMenuItem>
+                </ContextMenuContent>
+              </ContextMenu>
+            </div>
+            <div
+              v-show="!store.isMobile || (store.isMobile && !showEditor)"
+              class="relative flex-1 overflow-x-hidden transition-width"
+              :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
+            >
+              <div
+                id="preview"
+                ref="preview"
+                class="preview-wrapper w-full p-5"
               >
-                <a :href="item.url">
-                  {{ item.title }}
-                </a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <CssEditor class="order-2 flex-1" />
-        <RightSlider class="order-2" />
+                <div
+                  id="output-wrapper"
+                  class="w-full"
+                  :class="{ output_night: !backLight }"
+                >
+                  <div
+                    class="preview border-x-1 shadow-xl"
+                    :class="[store.previewWidth]"
+                  >
+                    <section id="output" class="w-full" v-html="output" />
+                    <div v-if="isCoping" class="loading-mask">
+                      <div class="loading-mask-box">
+                        <div class="loading__img" />
+                        <span>正在生成</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <BackTop
+                  target="preview"
+                  :right="store.isMobile ? 24 : 20"
+                  :bottom="store.isMobile ? 90 : 20"
+                />
+              </div>
+              <div
+                class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
+                @mouseenter="() => (isOpenHeadingSlider = true)"
+                @mouseleave="() => (isOpenHeadingSlider = false)"
+              >
+                <List class="size-6" />
+                <ul
+                  class="overflow-auto transition-all"
+                  :class="{
+                    'max-h-0 w-0': !isOpenHeadingSlider,
+                    'max-h-100 w-60 mt-2': isOpenHeadingSlider,
+                  }"
+                >
+                  <li
+                    v-for="(item, index) in store.titleList"
+                    :key="index"
+                    class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600"
+                    :style="{ paddingLeft: `${item.level - 0.5}em` }"
+                  >
+                    <a :href="item.url">
+                      {{ item.title }}
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <CssEditor class="order-2 flex-1" />
+            <RightSlider class="order-2" />
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
-      <footer class="h-[30px] flex select-none items-center justify-end px-4 text-[12px]">
-        字数 {{ readingTime?.words }}， 阅读大约需 {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
+      <footer
+        class="h-[30px] flex select-none items-center justify-end px-4 text-[12px]"
+      >
+        字数 {{ readingTime?.words }}， 阅读大约需
+        {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
       </footer>
 
       <button
         v-if="store.isMobile"
         class="bg-primary fixed bottom-16 right-6 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-        aria-label="切换编辑/预览" @click="toggleView"
+        aria-label="切换编辑/预览"
+        @click="toggleView"
       >
         <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
       </button>
