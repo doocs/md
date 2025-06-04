@@ -1,0 +1,17 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "trace": true,
+      "sourceMaps": true,
+      "cwd": "${workspaceFolder}/src/extension",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/extension", "--enable-proposed-api=vscode.vscode-js-debug"],
+      "runtimeExecutable": "${execPath}",
+      "outFiles": ["${workspaceFolder}/src/extension/dist/*.js"],
+      "preLaunchTask": "compile extension"
+    }
+  ]
+}
