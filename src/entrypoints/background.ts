@@ -16,28 +16,6 @@ export default defineBackground({
       }
     })
 
-    const MP_EDITOR_PAGE_REGEX = /https:\/\/mp.weixin.qq.com\/cgi-bin\/appmsg\?t=.*/
-    browser.tabs.onUpdated.addListener(async (tabId, _info, tab) => {
-      if (!tab.url)
-        return
-      if (typeof browser.sidePanel === `undefined`)
-        return
-      const url = new URL(tab.url)
-      if (MP_EDITOR_PAGE_REGEX.test(url.href)) {
-        await browser.sidePanel.setOptions({
-          tabId,
-          path: `sidepanel.html`,
-          enabled: true,
-        })
-      }
-      else {
-        // Disables the side panel on all other sites
-        await browser.sidePanel.setOptions({
-          tabId,
-          enabled: false,
-        })
-      }
-    })
     browser.runtime.onInstalled.addListener(() => {
       if (typeof browser.sidePanel === `undefined`)
         return
