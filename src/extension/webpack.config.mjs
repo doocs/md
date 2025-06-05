@@ -49,5 +49,9 @@ export default function config() {
     infrastructureLogging: {
       level: `log`,
     },
+    optimization: {
+      usedExports: true,
+      sideEffects: true,
+    },
   }
 }

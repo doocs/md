@@ -1,7 +1,7 @@
 import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 import type { PropertiesHyphen } from 'csstype'
-import { prefix } from '@/config'
+import { prefix } from '@/config/prefix'
 import { autoSpace } from '@/utils/autoSpace'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
