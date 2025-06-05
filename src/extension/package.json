@@ -1,8 +1,13 @@
 {
+  "publisher": "doocs",
   "name": "doocs-md",
   "displayName": "doocs-md",
   "version": "0.0.1",
   "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doocs/md"
+  },
   "categories": [
     "Other"
   ],
@@ -17,7 +22,7 @@
         {
           "id": "markdown-sidebar",
           "title": "Markdown Preview",
-          "icon": "../../public/mpmd/icon-256-gray.png"
+          "icon": "./public/icon-256-gray.png"
         }
       ]
     },
@@ -26,7 +31,7 @@
         {
           "id": "markdown.preview.view",
           "name": "Preview",
-          "icon": "../../public/mpmd/icon-256-gray.png"
+          "icon": "./public/icon-256-gray.png"
         }
       ]
     },
@@ -35,8 +40,8 @@
         "command": "markdown.preview",
         "title": "Open Markdown Preview",
         "icon": {
-          "light": "../../public/mpmd/icon-256-gray.png",
-          "dark": "../../public/mpmd/icon-256-gray.png"
+          "light": "./public/icon-256-gray.png",
+          "dark": "./public/icon-256-gray.png"
         }
       },
       {
@@ -66,10 +71,11 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "pnpm run package",
+    "vscode:prepublish": "npm run build",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "build": "webpack --mode production --devtool hidden-source-map"
+    "build": "webpack --mode production --devtool hidden-source-map",
+    "package": "vsce package --no-dependencies --allow-package-secrets github"
   },
   "dependencies": {
     "@types/webpack": "^5.28.5",
@@ -79,6 +85,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.91.0",
+    "@vscode/vsce": "^3.4.2",
     "webpack-cli": "^6.0.1"
   }
 }
