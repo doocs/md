@@ -2,8 +2,6 @@ export * from './api'
 export * from './style'
 export * from './theme'
 
-export const prefix = `MD`
-
 const isMac = /Mac/i.test(navigator.userAgent)
 
 export const ctrlKey = isMac ? `Cmd` : `Ctrl`

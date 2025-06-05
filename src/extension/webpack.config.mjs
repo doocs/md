@@ -29,6 +29,7 @@ export default function config() {
         'bufferutil': false,
         'utf-8-validate': false,
         'canvas': false,
+        'navigator': `navigator`,
       },
       plugins: [new TsconfigPathsPlugin({ configFile: path.resolve(currentDir, `tsconfig.json`) })],
     },
@@ -48,6 +49,10 @@ export default function config() {
     devtool: `nosources-source-map`,
     infrastructureLogging: {
       level: `log`,
+    },
+    optimization: {
+      usedExports: true,
+      sideEffects: true,
     },
   }
 }
