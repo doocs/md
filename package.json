@@ -31,7 +31,8 @@
     "firefox:zip": "wxt zip -b firefox",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
-    "postinstall": "simple-git-hooks && wxt prepare"
+    "postinstall": "simple-git-hooks && wxt prepare",
+    "package:extension": "npm --prefix ./src/extension run package"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.777.0",
