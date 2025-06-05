@@ -56,7 +56,7 @@ function formCustomSave() {
       variant="link"
       class="p-0"
       as="a"
-      href="https://github.com/doocs/md#自定义上传逻辑"
+      href="https://github.com/doocs/md/blob/main/docs/custom-upload.md"
       target="_blank"
     >
       参数详情？
