@@ -238,37 +238,35 @@ function applyImportedConfig() {
 
         <TabsContent value="export">
           <div class="grid grid-cols-2 my-5 h-96 gap-4 text-center">
-            <div class="overflow-auto">
-              <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
+            <div class="flex flex-col overflow-hidden">
+              <p class="bg-white p-2 dark:bg-gray-900">
                 请选择需要导出的配置
               </p>
-              <div v-if="storeStates.data">
-                <ul class="space-y-2">
-                  <li v-for="(_, key) in storeStates.data" :key="key" class="space-x-2 flex items-center">
-                    <input
-                      :id="`export-${key}`"
-                      v-model="storeStates.selected[key]"
-                      type="checkbox"
-                      class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                    >
-                    <label :for="`export-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ storeLabels[key] || key }}
-                    </label>
-                  </li>
-                </ul>
-              </div>
+              <ul v-if="storeStates.data" class="space-y-2 overflow-auto">
+                <li v-for="(_, key) in storeStates.data" :key="key" class="space-x-2 flex items-center">
+                  <input
+                    :id="`export-${key}`"
+                    v-model="storeStates.selected[key]"
+                    type="checkbox"
+                    class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                  >
+                  <label :for="`export-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
+                    {{ storeLabels[key] || key }}
+                  </label>
+                </li>
+              </ul>
               <div v-else>
                 <p class="text-sm text-gray-500 dark:text-gray-400">
                   加载中...
                 </p>
               </div>
             </div>
-            <div class="overflow-auto">
-              <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
+            <div class="flex flex-col overflow-hidden">
+              <p class="relative bg-white p-2 dark:bg-gray-900">
                 <span>当前 JSON 预览</span>
                 <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
               </p>
-              <div class="w-fit border rounded-md bg-gray-50 p-2 dark:bg-gray-800">
+              <div class="w-full overflow-auto border rounded-md bg-gray-50 p-2 dark:bg-gray-800">
                 <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
               </div>
             </div>
@@ -381,8 +379,10 @@ function applyImportedConfig() {
           当前配置的完整 JSON 数据
         </DialogDescription>
       </DialogHeader>
-      <div class="h-full overflow-auto border rounded-md bg-gray-50 p-4 dark:bg-gray-800">
-        <pre class="break-all text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(currentMaximizedJSON, null, 2) }}</pre>
+      <div class="max-h-[70vh] overflow-hidden">
+        <div class="h-full overflow-auto border rounded-md bg-gray-50 p-4 dark:bg-gray-800">
+          <pre class="break-all text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(currentMaximizedJSON, null, 2) }}</pre>
+        </div>
       </div>
       <DialogFooter>
         <Button
