@@ -24,6 +24,11 @@ export default defineConfig({
         matches: [`<all_urls>`],
       },
     ],
+    side_panel: browser === `chrome`
+      ? {
+          default_path: `sidepanel.html`,
+        }
+      : undefined,
     sidebar_action: browser === `firefox`
       ? {
           default_panel: `sidepanel.html`,
@@ -33,6 +38,14 @@ export default defineConfig({
           default_title: `MD 公众号编辑器`,
         }
       : undefined,
+    commands: {
+      _execute_sidebar_action: {
+        description: `Open MD Editor Side Panel`,
+        suggested_key: {
+          default: `Ctrl+Shift+Y`,
+        },
+      },
+    },
   }),
   analysis: {
     open: true,
