@@ -13,6 +13,14 @@ const props = defineProps({
 
 const emit = defineEmits([`close`])
 
+watch(
+  () => props.visible,
+  (val) => {
+    if (val)
+      fetchStoreStates()
+  },
+)
+
 function onUpdate(val: boolean) {
   if (!val) {
     emit(`close`)
@@ -43,7 +51,7 @@ const storeStates = ref<{
 // 获取状态并初始化选中状态
 async function fetchStoreStates() {
   try {
-    const states = await getAllStoreStates()
+    const states = getAllStoreStates()
     storeStates.value = {
       data: states,
       selected: Object.keys(states).reduce((acc, key) => {
@@ -67,10 +75,6 @@ const filteredExportJSON = computed(() => {
     }
     return acc
   }, {} as Record<string, any>)
-})
-
-onMounted(() => {
-  fetchStoreStates()
 })
 
 // 导入的配置数据
