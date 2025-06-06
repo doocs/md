@@ -72,6 +72,29 @@ function openSearchWithSelection(cm: CodeMirror.Editor) {
   }
 }
 
+function applyHeading(level: number, editor: CodeMirror.Editor) {
+  editor.operation(() => {
+    const ranges = editor.listSelections()
+
+    ranges.forEach((range) => {
+      const from = range.from()
+      const to = range.to()
+
+      for (let line = from.line; line <= to.line; line++) {
+        const text = editor.getLine(line)
+        // 去掉已有的 # 前缀（1~6 个）+ 空格
+        const cleaned = text.replace(/^#{1,6}\s+/, ``).trimStart()
+        const heading = `${`#`.repeat(level)} ${cleaned}`
+        editor.replaceRange(
+          heading,
+          { line, ch: 0 },
+          { line, ch: text.length },
+        )
+      }
+    })
+  })
+}
+
 function handleGlobalKeydown(e: KeyboardEvent) {
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
@@ -306,14 +329,12 @@ function initEditor() {
           })
         },
 
-        // 标题：单行逻辑，手动处理
-        [`${ctrlKey}-H`]: function heading(editor) {
-          const selected = editor.getSelection()
-          const replaced = selected.startsWith(`# `)
-            ? selected.slice(2)
-            : `# ${selected}`
-          editor.replaceSelection(replaced)
-        },
+        [`${ctrlKey}-1`]: (ed: CodeMirror.Editor) => applyHeading(1, ed),
+        [`${ctrlKey}-2`]: (ed: CodeMirror.Editor) => applyHeading(2, ed),
+        [`${ctrlKey}-3`]: (ed: CodeMirror.Editor) => applyHeading(3, ed),
+        [`${ctrlKey}-4`]: (ed: CodeMirror.Editor) => applyHeading(4, ed),
+        [`${ctrlKey}-5`]: (ed: CodeMirror.Editor) => applyHeading(5, ed),
+        [`${ctrlKey}-6`]: (ed: CodeMirror.Editor) => applyHeading(6, ed),
 
         [`${ctrlKey}-U`]: function unorderedList(editor) {
           const selected = editor.getSelection()
