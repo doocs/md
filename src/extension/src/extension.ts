@@ -84,6 +84,7 @@ export function activate(context: vscode.ExtensionContext) {
         isUseIndent: false,
         countStatus: treeDataProvider.getCurrentCountStatus(),
         isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
+        legend: `none`,
       })
       const documentText = editor.document.getText()
       const html = marked.parse(documentText) as string
