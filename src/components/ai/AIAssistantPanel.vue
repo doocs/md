@@ -23,7 +23,7 @@ import {
   RefreshCcw,
   Send,
   Settings,
-  Trash,
+  Trash2,
 } from 'lucide-vue-next'
 
 /* ---------- Markdown & highlight.js ---------- */
@@ -425,7 +425,7 @@ async function sendMessage() {
             size="icon"
             @click="resetMessages"
           >
-            <Trash class="h-4 w-4" />
+            <Trash2 class="h-4 w-4" />
           </Button>
         </div>
         <p class="text-muted-foreground text-sm">
