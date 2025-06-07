@@ -3,14 +3,9 @@ import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
   altKey,
-  codeBlockThemeOptions,
-  colorOptions,
-  fontFamilyOptions,
-  fontSizeOptions,
-  legendOptions,
+  defaultStyleConfig,
   shiftKey,
   themeMap,
-  themeOptions,
   widthOptions,
 } from '@/config'
 import {
@@ -55,7 +50,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleDark = useToggle(isDark)
 
   // 是否开启 Mac 代码块
-  const isMacCodeBlock = useStorage<boolean>(`isMacCodeBlock`, true)
+  const isMacCodeBlock = useStorage(`isMacCodeBlock`, defaultStyleConfig.isMacCodeBlock)
   const toggleMacCodeBlock = useToggle(isMacCodeBlock)
 
   // 是否在左侧编辑
@@ -63,7 +58,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleEditOnLeft = useToggle(isEditOnLeft)
 
   // 是否开启微信外链接底部引用
-  const isCiteStatus = useStorage(`isCiteStatus`, false)
+  const isCiteStatus = useStorage(`isCiteStatus`, defaultStyleConfig.isCiteStatus)
   const toggleCiteStatus = useToggle(isCiteStatus)
 
   // 是否开启 AI 工具箱
@@ -71,7 +66,7 @@ export const useStore = defineStore(`store`, () => {
   const toggleAIToolbox = useToggle(showAIToolbox)
 
   // 是否统计字数和阅读时间
-  const isCountStatus = useStorage<boolean>(`isCountStatus`, false)
+  const isCountStatus = useStorage(`isCountStatus`, defaultStyleConfig.isCountStatus)
   const toggleCountStatus = useToggle(isCountStatus)
 
   // 是否开启段落首行缩进
@@ -81,17 +76,17 @@ export const useStore = defineStore(`store`, () => {
   const output = ref(``)
 
   // 文本字体
-  const theme = useStorage<keyof typeof themeMap>(addPrefix(`theme`), themeOptions[0].value)
+  const theme = useStorage<keyof typeof themeMap>(addPrefix(`theme`), defaultStyleConfig.theme)
   // 文本字体
-  const fontFamily = useStorage(`fonts`, fontFamilyOptions[0].value)
+  const fontFamily = useStorage(`fonts`, defaultStyleConfig.fontFamily)
   // 文本大小
-  const fontSize = useStorage(`size`, fontSizeOptions[2].value)
+  const fontSize = useStorage(`size`, defaultStyleConfig.fontSize)
   // 主色
-  const primaryColor = useStorage(`color`, colorOptions[0].value)
+  const primaryColor = useStorage(`color`, defaultStyleConfig.primaryColor)
   // 代码块主题
-  const codeBlockTheme = useStorage(`codeBlockTheme`, codeBlockThemeOptions[23].value)
+  const codeBlockTheme = useStorage(`codeBlockTheme`, defaultStyleConfig.codeBlockTheme)
   // 图注格式
-  const legend = useStorage(`legend`, legendOptions[3].value)
+  const legend = useStorage(`legend`, defaultStyleConfig.legend)
 
   // 预览宽度
   const previewWidth = useStorage(`previewWidth`, widthOptions[0].value)
@@ -457,17 +452,16 @@ export const useStore = defineStore(`store`, () => {
 
   // 重置样式
   const resetStyle = () => {
-    isCiteStatus.value = false
-    isMacCodeBlock.value = true
-    isCountStatus.value = false
+    isCiteStatus.value = defaultStyleConfig.isCiteStatus
+    isMacCodeBlock.value = defaultStyleConfig.isMacCodeBlock
+    isCountStatus.value = defaultStyleConfig.isCountStatus
 
-    theme.value = themeOptions[0].value
-    fontFamily.value = fontFamilyOptions[0].value
-    fontFamily.value = fontFamilyOptions[0].value
-    fontSize.value = fontSizeOptions[2].value
-    primaryColor.value = colorOptions[0].value
-    codeBlockTheme.value = codeBlockThemeOptions[23].value
-    legend.value = legendOptions[3].value
+    theme.value = defaultStyleConfig.theme
+    fontFamily.value = defaultStyleConfig.fontFamily
+    fontSize.value = defaultStyleConfig.fontSize
+    primaryColor.value = defaultStyleConfig.primaryColor
+    codeBlockTheme.value = defaultStyleConfig.codeBlockTheme
+    legend.value = defaultStyleConfig.legend
 
     cssContentConfig.value = {
       active: `方案 1`,
@@ -769,7 +763,6 @@ export const useDisplayStore = defineStore(`display`, () => {
   const aiDialogVisible = ref(false)
 
   function toggleAIDialog(value?: boolean) {
-    console.log(`toggleAIDialog`, value)
     aiDialogVisible.value = value ?? !aiDialogVisible.value
   }
 
