@@ -6,7 +6,7 @@ import {
   Ellipsis,
   History,
   PlusSquare,
-  Trash,
+  Trash2,
 } from 'lucide-vue-next'
 
 interface Post {
@@ -135,7 +135,7 @@ function togglePostExpanded(postId: string) {
             v-if="store.posts.length > 1"
             @click.stop="props.startDelPost(post.id)"
           >
-            <Trash class="mr-2 size-4" /> 删除
+            <Trash2 class="mr-2 size-4" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
