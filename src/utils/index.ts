@@ -5,6 +5,7 @@ import { prefix } from '@/config/prefix'
 import { autoSpace } from '@/utils/autoSpace'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
+import { marked } from 'marked'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
@@ -458,27 +459,29 @@ export function processClipboardContent(primaryColor: string) {
   })
 }
 
-export function modifyHtmlContent(outputTemp: string, renderer: any): string {
+export function modifyHtmlContent(content: string, renderer: any): string {
   const {
     markdownContent,
     readingTime: readingTimeResult,
-  } = renderer.parseFrontMatterAndContent(outputTemp)
-  let _outputTemp = DOMPurify.sanitize(markdownContent, {
+  } = renderer.parseFrontMatterAndContent(content)
+
+  let html = marked.parse(markdownContent) as string
+  html = DOMPurify.sanitize(html, {
     ADD_TAGS: [`mp-common-profile`],
   })
 
   // 阅读时间及字数统计
-  _outputTemp = renderer.buildReadingTime(readingTimeResult) + _outputTemp
+  html = renderer.buildReadingTime(readingTimeResult) + html
 
   // 去除第一行的 margin-top
-  _outputTemp = _outputTemp.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
+  html = html.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
   // 引用脚注
-  _outputTemp += renderer.buildFootnotes()
+  html += renderer.buildFootnotes()
   // // 附加的一些 style
-  _outputTemp += renderer.buildAddition()
+  html += renderer.buildAddition()
 
   if (renderer.getOpts().isMacCodeBlock) {
-    _outputTemp += `
+    html += `
         <style>
           .hljs.code__pre > .mac-sign {
             display: flex;
@@ -487,7 +490,7 @@ export function modifyHtmlContent(outputTemp: string, renderer: any): string {
       `
   }
 
-  _outputTemp += `
+  html += `
       <style>
         .code__pre {
           padding: 0 !important;
@@ -505,5 +508,5 @@ export function modifyHtmlContent(outputTemp: string, renderer: any): string {
         }
       </style>
     `
-  return renderer.createContainer(_outputTemp)
+  return renderer.createContainer(html)
 }
