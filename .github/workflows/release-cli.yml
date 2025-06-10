@@ -14,12 +14,12 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
-          registry-url: 'https://registry.npmjs.org/'
+          node-version: 20
 
       - run: npm install
       - run: npm run build:cli
+      - run: echo "registry=https://registry.npmjs.org/" > md-cli/.npmrc
 
-      - run: cd md-cli && npm ci && npm publish
+      - run: cd md-cli && npm ci && npm publish --registry=https://registry.npmjs.org/
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
