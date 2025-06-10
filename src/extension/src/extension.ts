@@ -2,7 +2,6 @@ import { themeMap } from '@/config/theme'
 import { css2json, customCssWithTemplate, customizeTheme } from '@/utils'
 import { modifyHtmlContent } from '@/utils/'
 import { initRenderer } from '@/utils/renderer'
-import { marked } from 'marked'
 import * as vscode from 'vscode'
 import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
@@ -86,10 +85,9 @@ export function activate(context: vscode.ExtensionContext) {
         isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
         legend: `none`,
       })
-      const documentText = editor.document.getText()
-      const html = marked.parse(documentText) as string
-      const modifiedHtml = modifyHtmlContent(html, renderer)
-      panel.webview.html = wrapHtmlTag(modifiedHtml, css)
+      const markdownContent = editor.document.getText()
+      const html = modifyHtmlContent(markdownContent, renderer)
+      panel.webview.html = wrapHtmlTag(html, css)
     }
 
     // render first webview

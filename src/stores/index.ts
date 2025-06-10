@@ -22,7 +22,6 @@ import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 
-import { marked } from 'marked'
 import { v4 as uuid } from 'uuid'
 
 /**********************************
@@ -357,17 +356,10 @@ export const useStore = defineStore(`store`, () => {
       countStatus: isCountStatus.value,
       isMacCodeBlock: isMacCodeBlock.value,
     })
-
-    const {
-      markdownContent,
-      readingTime: readingTimeResult,
-    } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
-    readingTime.value = readingTimeResult
-    let outputTemp = marked.parse(markdownContent) as string
-
+    output.value = modifyHtmlContent(editor.value!.getValue(), renderer)
     // 提取标题
     const div = document.createElement(`div`)
-    div.innerHTML = outputTemp
+    div.innerHTML = output.value
     const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
 
     titleList.value = []
@@ -381,8 +373,7 @@ export const useStore = defineStore(`store`, () => {
       })
       i++
     }
-    outputTemp = div.innerHTML
-    output.value = modifyHtmlContent(outputTemp, renderer)
+    output.value = div.innerHTML
   }
 
   // 更新 CSS
