@@ -1,7 +1,7 @@
 {
   "name": "@doocs/md-cli",
-  "version": "0.1.2",
-  "description": "✍ 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 所有基础语法、色盘取色、一键复制并粘贴到公众号后台、多图上传、一键下载文档、自定义 CSS 样式、一键重置等特性",
+  "version": "0.1.3",
+  "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -23,7 +23,7 @@
     "@wll8/process-manager": "^1.0.4",
     "form-data": "4.0.2",
     "get-port": "5.1.1",
-    "mockm": "^1.1.27-alpha.11",
+    "mockm": "^1.1.27-alpha.12",
     "node-fetch": "^3.3.2"
   }
 }
