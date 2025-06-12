@@ -1,34 +1,41 @@
-const unicode: Record<string, string[]> = {
-  latin: [`[A-Za-z0-9\u00C0-\u00FF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]`],
-  punc: [`[@&=_,\.\?!$%^*\-+\/]`, `[\(\['"<‘“]`, `[\)\]'">”’]`],
-  hanzi: [
-    `[\u4E00-\u9FFF]`,
-    `[\u3400-\u4DB5\u9FA6-\u9FBB\uFA70-\uFAD9\u9FBC-\u9FC3\u3007\u3040-\u309E\u30A1-\u30FA\u30FD\u30FE\uFA0E-\uFA0F\uFA11\uFA13-\uFA14\uFA1F\uFA21\uFA23-\uFA24\uFA27-\uFA29]`,
-    `[\uD840-\uD868][\uDC00-\uDFFF]|\uD869[\uDC00-\uDEDF]`,
-    `\uD86D[\uDC00-\uDF3F]|[\uD86A-\uD86C][\uDC00-\uDFFF]|\uD869[\uDF00-\uDFFF]`,
-    `\uD86D[\uDF40-\uDFFF]|\uD86E[\uDC00-\uDC1F]`,
-    `[\u31C0-\u31E3]`,
-  ],
+import type { Link } from 'mdast'
+import type { Parent } from 'unist'
+import remarkParse from 'remark-parse'
+import remarkStringify from 'remark-stringify'
+
+import { unified } from 'unified'
+import { visit } from 'unist-util-visit'
+
+export async function addSpacingToMarkdown(markdown: string): Promise<string> {
+  const result = await unified()
+    .use(remarkParse)
+    .use(() => (tree) => {
+      visit(tree as any, `text`, (node: any, _i: number | null | undefined, parent?: Parent) => {
+        if (!parent)
+          return
+
+        if (parent.type === `code` || parent.type === `inlineCode`)
+          return
+
+        if (parent.type === `link`) {
+          const link = parent as unknown as Link
+          const first = link.children?.[0] as any
+          if (first?.type === `text` && first.value === link.url)
+            return
+        }
+
+        node.value = insertSpace(String(node.value))
+      })
+    })
+    .use(remarkStringify, { fences: true, bullet: `-` })
+    .process(markdown)
+
+  return String(result)
 }
 
-function unicodeSet(set: string): string {
-  return Array.isArray(unicode[set]) ? unicode[set].join(`|`) : unicode[set]
-}
-
-function autoSpace(text: string): string {
-  const hanzi = unicodeSet(`hanzi`)
-  const latin = `${unicodeSet(`latin`)}|${unicode.punc[0]}`
-  const punc = unicode.punc
-  const patterns: RegExp[] = [
-    new RegExp(`(${hanzi})(${latin}|${punc[1]})`, `ig`),
-    new RegExp(`(${latin}|${punc[2]})(${hanzi})`, `ig`),
-  ]
-
-  patterns.forEach((exp) => {
-    text = text.replace(exp, `$1 $2`)
-  })
-
+function insertSpace(text: string): string {
   return text
+    .replace(/([\u4E00-\u9FA5])([A-Za-z0-9@#&\u0080-\u00FF`])/g, `$1 $2`)
+    .replace(/([\w~!$%^&*+\-=|\\;:'",.<>/?@#\u0080-\u00FF`])([\u4E00-\u9FA5])/g, `$1 $2`)
+    .replace(/\s{2,}/g, ` `)
 }
-
-export { autoSpace }
