@@ -2,7 +2,7 @@ import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
 import type { PropertiesHyphen } from 'csstype'
 import { prefix } from '@/config/prefix'
-import { autoSpace } from '@/utils/autoSpace'
+import { addSpacingToMarkdown } from '@/utils/autoSpace'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
 import { marked } from 'marked'
@@ -158,7 +158,7 @@ export async function formatDoc(content: string, type: `markdown` | `css` = `mar
     markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
     css: [prettierPluginCss],
   }
-  const addSpaceContent = autoSpace(content)
+  const addSpaceContent = await addSpacingToMarkdown(content)
 
   const parser = type in plugins ? type : `markdown`
   return await format(addSpaceContent, {
