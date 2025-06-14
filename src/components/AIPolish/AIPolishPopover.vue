@@ -307,7 +307,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
       />
 
       <!-- main content -->
-      <section v-else class="space-y-3 custom-scroll flex-1 overflow-y-auto px-4 pb-2 pt-3 sm:px-6">
+      <section v-else class="custom-scroll space-y-3 flex-1 overflow-y-auto px-4 pb-2 pt-3 sm:px-6">
         <!-- action selector -->
         <div>
           <div class="mb-1 text-sm font-semibold">

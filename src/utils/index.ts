@@ -1,6 +1,8 @@
 import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 
+import type { RendererAPI } from '@/types/renderer-types'
 import type { PropertiesHyphen } from 'csstype'
+import type { ReadTimeResults } from 'reading-time'
 import { prefix } from '@/config/prefix'
 import { addSpacingToMarkdown } from '@/utils/autoSpace'
 import DOMPurify from 'isomorphic-dompurify'
@@ -459,27 +461,30 @@ export function processClipboardContent(primaryColor: string) {
   })
 }
 
-export function modifyHtmlContent(content: string, renderer: any): string {
-  const {
-    markdownContent,
-    readingTime: readingTimeResult,
-  } = renderer.parseFrontMatterAndContent(content)
+export function renderMarkdown(raw: string, renderer: RendererAPI) {
+  // 解析 front-matter 和正文
+  const { markdownContent, readingTime }
+    = renderer.parseFrontMatterAndContent(raw)
 
+  // marked -> html
   let html = marked.parse(markdownContent) as string
-  html = DOMPurify.sanitize(html, {
-    ADD_TAGS: [`mp-common-profile`],
-  })
 
+  // XSS 处理
+  html = DOMPurify.sanitize(html, { ADD_TAGS: [`mp-common-profile`] })
+
+  return { html, readingTime }
+}
+
+export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, renderer: RendererAPI): string {
   // 阅读时间及字数统计
-  html = renderer.buildReadingTime(readingTimeResult) + html
-
+  let html = baseHtml
+  html = renderer.buildReadingTime(reading) + html
   // 去除第一行的 margin-top
   html = html.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
   // 引用脚注
   html += renderer.buildFootnotes()
-  // // 附加的一些 style
+  // 附加的一些 style
   html += renderer.buildAddition()
-
   if (renderer.getOpts().isMacCodeBlock) {
     html += `
         <style>
@@ -489,7 +494,6 @@ export function modifyHtmlContent(content: string, renderer: any): string {
         </style>
       `
   }
-
   html += `
       <style>
         .code__pre {
@@ -502,11 +506,24 @@ export function modifyHtmlContent(content: string, renderer: any): string {
           overflow-x: auto;
           text-indent: 0;
         }
-  
         h2 strong {
           color: inherit !important;
         }
       </style>
     `
+  // 包裹 HTML
   return renderer.createContainer(html)
+}
+
+export function modifyHtmlContent(content: string, renderer: RendererAPI): string {
+  const {
+    markdownContent,
+    readingTime: readingTimeResult,
+  } = renderer.parseFrontMatterAndContent(content)
+
+  let html = marked.parse(markdownContent) as string
+  html = DOMPurify.sanitize(html, {
+    ADD_TAGS: [`mp-common-profile`],
+  })
+  return postProcessHtml(html, readingTimeResult, renderer)
 }

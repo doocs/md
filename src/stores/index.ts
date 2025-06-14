@@ -16,7 +16,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 
-import { css2json, customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@/utils/'
+import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils/'
 import { copyPlain } from '@/utils/clipboard'
 import { initRenderer } from '@/utils/renderer'
 import CodeMirror from 'codemirror'
@@ -356,10 +356,12 @@ export const useStore = defineStore(`store`, () => {
       countStatus: isCountStatus.value,
       isMacCodeBlock: isMacCodeBlock.value,
     })
-    const { readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
-    readingTime.value = readingTimeResult
 
-    output.value = modifyHtmlContent(editor.value!.getValue(), renderer)
+    const raw = editor.value!.getValue()
+    const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
+    readingTime.value = readingTimeResult
+    output.value = postProcessHtml(baseHtml, readingTimeResult, renderer)
+
     // 提取标题
     const div = document.createElement(`div`)
     div.innerHTML = output.value

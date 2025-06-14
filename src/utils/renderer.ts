@@ -1,4 +1,5 @@
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
+import type { RendererAPI } from '@/types/renderer-types'
 import type { PropertiesHyphen } from 'csstype'
 import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
@@ -144,7 +145,7 @@ function parseFrontMatterAndContent(markdownText: string): ParseResult {
   }
 }
 
-export function initRenderer(opts: IOpts) {
+export function initRenderer(opts: IOpts): RendererAPI {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
   let styleMapping: ThemeStyles = buildTheme(opts)
