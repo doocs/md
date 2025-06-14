@@ -356,6 +356,9 @@ export const useStore = defineStore(`store`, () => {
       countStatus: isCountStatus.value,
       isMacCodeBlock: isMacCodeBlock.value,
     })
+    const { readingTime: readingTimeResult } = renderer.parseFrontMatterAndContent(editor.value!.getValue())
+    readingTime.value = readingTimeResult
+
     output.value = modifyHtmlContent(editor.value!.getValue(), renderer)
     // 提取标题
     const div = document.createElement(`div`)
