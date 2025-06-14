@@ -11,13 +11,10 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-// https://vitejs.dev/config/
 export default defineConfig({
-  base: process.env.SERVER_ENV === `NETLIFY` ? `/` : `/md/`, // 基本路径, 建议以绝对路径跟随访问目录
-  define: {
-    process,
-  },
-  envPrefix: [`VITE_`, `CF_`], // 允许 VITE_ 和 CF_ 前缀的变量
+  base: process.env.SERVER_ENV === `NETLIFY` ? `/` : `/md/`,
+  define: { process },
+  envPrefix: [`VITE_`, `CF_`],
   plugins: [
     vue(),
     UnoCSS(),
@@ -30,43 +27,45 @@ export default defineConfig({
       },
     }),
     VitePluginRadar({
-      analytics: {
-        id: `G-7NZL3PZ0NK`,
-      },
+      analytics: { id: `G-7NZL3PZ0NK` },
     }),
-    process.env.ANALYZE === `true` && visualizer({
-      emitFile: true,
-      filename: `stats.html`,
-    }),
+    process.env.ANALYZE === `true`
+    && visualizer({ emitFile: true, filename: `stats.html` }),
     AutoImport({
-      imports: [
-        `vue`,
-        `pinia`,
-        `@vueuse/core`,
-      ],
-      dirs: [
-        `./src/stores`,
-        `./src/utils/toast`,
-      ],
+      imports: [`vue`, `pinia`, `@vueuse/core`],
+      dirs: [`./src/stores`, `./src/utils/toast`],
     }),
     Components({
       resolvers: [],
     }),
   ],
   resolve: {
-    alias: {
-      '@': path.resolve(__dirname, `./src`),
-    },
+    alias: { '@': path.resolve(__dirname, `./src`) },
   },
-  css: {
-    devSourcemap: true,
-  },
+  css: { devSourcemap: true },
   build: {
     rollupOptions: {
       output: {
         chunkFileNames: `static/js/md-[name]-[hash].js`,
         entryFileNames: `static/js/md-[name]-[hash].js`,
         assetFileNames: `static/[ext]/md-[name]-[hash].[ext]`,
+        manualChunks(id) {
+          if (id.includes(`node_modules`)) {
+            if (id.includes(`katex`))
+              return `katex`
+            if (id.includes(`mermaid`))
+              return `mermaid`
+            if (id.includes(`cytoscape`))
+              return `cytoscape`
+            if (id.includes(`highlight.js`))
+              return `hljs`
+            const pkg = id
+              .split(`node_modules/`)[1]
+              .split(`/`)[0]
+              .replace(`@`, `npm_`)
+            return `vendor_${pkg}`
+          }
+        },
       },
     },
   },
