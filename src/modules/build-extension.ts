@@ -1,3 +1,4 @@
+import type { OutputOptions } from 'rollup'
 import type * as vite from 'vite'
 import type * as wxt from 'wxt'
 import { writeFile } from 'node:fs/promises'
@@ -9,9 +10,6 @@ import {
   defineWxtModule,
 } from 'wxt/modules'
 
-interface FakeRollupOptions {
-  manualChunks: (id: string) => string | undefined
-}
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
@@ -39,13 +37,19 @@ export default defineWxtModule({
       if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.output) {
         const input = config.build?.rollupOptions.input as Record<string, string>
         if (input.options || input.sidepanel) {
-          const output = config.build?.rollupOptions.output as FakeRollupOptions
-          output.manualChunks = (id) => {
-            if (id.includes(`prettier`)) {
-              return `prettier-chunk`
-            }
-            if (id.includes(`highlight.js`)) {
-              return `highlight-chunk`
+          const wxtOutput = config.build?.rollupOptions.output as OutputOptions
+          wxtOutput.manualChunks = (id) => {
+            if (id.includes(`node_modules`)) {
+              if (id.includes(`prettier`))
+                return `prettier`
+              if (id.includes(`katex`))
+                return `katex`
+              if (id.includes(`mermaid`))
+                return `mermaid`
+              if (id.includes(`cytoscape`))
+                return `cytoscape`
+              if (id.includes(`highlight.js`))
+                return `hljs`
             }
           }
         }
