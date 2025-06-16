@@ -58,7 +58,6 @@
     "juice": "^11.0.0",
     "lucide-vue-next": "^0.473.0",
     "marked": "^15.0.6",
-    "marked-highlight": "^2.2.1",
     "mermaid": "^11.6.0",
     "node-fetch": "^3.3.2",
     "pinia": "^3.0.1",
