@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Pause, Settings, X } from 'lucide-vue-next'
+import { nextTick, ref, toRaw, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -9,8 +11,6 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Pause, Settings, X } from 'lucide-vue-next'
-import { nextTick, ref, toRaw, watch } from 'vue'
 
 /* -------------------- props / emits -------------------- */
 const props = defineProps<{
@@ -337,7 +337,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
             原文
           </div>
           <div
-            class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
+            class="border-border custom-scroll text-muted-foreground bg-muted/20 max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
           >
             {{ currentText }}
           </div>
