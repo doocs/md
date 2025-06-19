@@ -5,7 +5,7 @@ FROM --platform=$TARGETPLATFORM lipanski/docker-static-website
 
 WORKDIR /home/static
 
-COPY --from=assets /app /home/static
+COPY --from=assets /app/assets /home/static
 
 EXPOSE 80
 
