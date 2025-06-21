@@ -13,11 +13,8 @@ import {
 import { SearchTab } from '@/components/ui/search-tab'
 import {
   altKey,
-  altSign,
   ctrlKey,
-  ctrlSign,
   shiftKey,
-  shiftSign,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { checkImage, formatDoc, toBase64 } from '@/utils'
