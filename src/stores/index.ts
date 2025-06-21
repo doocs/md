@@ -1,4 +1,3 @@
-import type { ReadTimeResults } from 'reading-time'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
@@ -337,7 +336,11 @@ export const useStore = defineStore(`store`, () => {
     isMacCodeBlock: isMacCodeBlock.value,
   })
 
-  const readingTime = ref<ReadTimeResults | null>(null)
+  const readingTime = reactive({
+    chars: 0,
+    words: 0,
+    minutes: 0,
+  })
 
   // 文章标题
   const titleList = ref<{
@@ -359,7 +362,9 @@ export const useStore = defineStore(`store`, () => {
 
     const raw = editor.value!.getValue()
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
-    readingTime.value = readingTimeResult
+    readingTime.chars = raw.length
+    readingTime.words = readingTimeResult.words
+    readingTime.minutes = Math.ceil(readingTimeResult.minutes)
     output.value = postProcessHtml(baseHtml, readingTimeResult, renderer)
 
     // 提取标题
