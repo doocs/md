@@ -13,11 +13,8 @@ import {
 import { SearchTab } from '@/components/ui/search-tab'
 import {
   altKey,
-  altSign,
   ctrlKey,
-  ctrlSign,
   shiftKey,
-  shiftSign,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
 import { checkImage, formatDoc, toBase64 } from '@/utils'
@@ -32,21 +29,10 @@ const { isDark, output, editor, readingTime } = storeToRefs(store)
 
 const {
   editorRefresh,
-  exportEditorContent2HTML,
-  exportEditorContent2MD,
   formatContent,
-  importMarkdownContent,
-  importDefaultContent,
-  copyToClipboard,
-  pasteFromClipboard,
-  resetStyleConfirm,
-  downloadAsCardImage,
-  clearContent,
 } = store
 
 const {
-  toggleShowInsertFormDialog,
-  toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
 } = displayStore
 
@@ -602,70 +588,14 @@ const isOpenHeadingSlider = ref(false)
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
               />
-              <ContextMenu>
-                <ContextMenuTrigger>
-                  <textarea
-                    id="editor"
-                    type="textarea"
-                    placeholder="Your markdown text here."
-                  />
-                </ContextMenuTrigger>
-                <ContextMenuContent class="w-64">
-                  <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
-                    上传图片
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
-                    插入表格
-                  </ContextMenuItem>
-                  <ContextMenuItem
-                    inset
-                    @click="toggleShowInsertMpCardDialog()"
-                  >
-                    插入公众号名片
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="resetStyleConfirm()">
-                    重置样式
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="importDefaultContent()">
-                    重置文档
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="clearContent()">
-                    清空内容
-                  </ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem inset @click="importMarkdownContent()">
-                    导入 .md 文档
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="exportEditorContent2MD()">
-                    导出 .md 文档
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="exportEditorContent2HTML()">
-                    导出 .html
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="downloadAsCardImage()">
-                    导出 .png
-                  </ContextMenuItem>
-                  <ContextMenuSeparator />
-                  <ContextMenuItem inset @click="copyToClipboard()">
-                    复制
-                    <ContextMenuShortcut>
-                      {{ ctrlSign }} + C
-                    </ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="pasteFromClipboard">
-                    粘贴
-                    <ContextMenuShortcut>
-                      {{ ctrlSign }} + V
-                    </ContextMenuShortcut>
-                  </ContextMenuItem>
-                  <ContextMenuItem inset @click="formatContent()">
-                    格式化
-                    <ContextMenuShortcut>
-                      {{ altSign }} + {{ shiftSign }} + F
-                    </ContextMenuShortcut>
-                  </ContextMenuItem>
-                </ContextMenuContent>
-              </ContextMenu>
+
+              <EditorContextMenu>
+                <textarea
+                  id="editor"
+                  type="textarea"
+                  placeholder="Your markdown text here."
+                />
+              </EditorContextMenu>
             </div>
             <div
               v-show="!store.isMobile || (store.isMobile && !showEditor)"
