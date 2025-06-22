@@ -25,7 +25,7 @@ import { Eye, List, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
-const { isDark, output, editor, readingTime } = storeToRefs(store)
+const { isDark, output, editor } = storeToRefs(store)
 
 const {
   editorRefresh,
@@ -662,12 +662,6 @@ const isOpenHeadingSlider = ref(false)
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
-      <footer
-        class="h-[30px] flex select-none items-center justify-end px-4 text-[12px]"
-      >
-        字数 {{ readingTime?.words }}， 阅读大约需
-        {{ Math.ceil(readingTime?.minutes ?? 0) }} 分钟
-      </footer>
 
       <button
         v-if="store.isMobile"
@@ -703,6 +697,8 @@ const isOpenHeadingSlider = ref(false)
         </AlertDialogContent>
       </AlertDialog>
     </main>
+
+    <Footer />
   </div>
 </template>
 
