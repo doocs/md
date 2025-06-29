@@ -33,7 +33,7 @@ export default defineConfig({
     && visualizer({ emitFile: true, filename: `stats.html` }),
     AutoImport({
       imports: [`vue`, `pinia`, `@vueuse/core`],
-      dirs: [`./src/stores`, `./src/utils/toast`],
+      dirs: [`./src/stores`, `./src/utils/toast`, `./src/composables`],
     }),
     Components({
       resolvers: [],
