@@ -1149,6 +1149,3 @@ function onDrop(e: DragEvent) {
     </DialogContent>
   </Dialog>
 </template>
-
-<style lang="less" scoped>
-</style>
