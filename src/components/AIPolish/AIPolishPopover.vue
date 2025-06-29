@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Pause, Settings, X } from 'lucide-vue-next'
-import { nextTick, ref, toRaw, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Select,
@@ -11,6 +9,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import useAIConfigStore from '@/stores/AIConfig'
+import { Pause, Settings, X } from 'lucide-vue-next'
 
 /* -------------------- props / emits -------------------- */
 const props = defineProps<{
