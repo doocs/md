@@ -630,32 +630,7 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
-  // 导入 Markdown 文档
-  const importMarkdownContent = () => {
-    const body = document.body
-    const input = document.createElement(`input`)
-    input.type = `file`
-    input.name = `filename`
-    input.accept = `.md`
-    input.onchange = () => {
-      const file = input.files![0]
-      if (!file) {
-        return
-      }
-
-      const reader = new FileReader()
-      reader.readAsText(file)
-      reader.onload = (event) => {
-        editor.value!.setValue(event.target!.result as string)
-        toast.success(`文档导入成功`)
-      }
-    }
-
-    body.appendChild(input)
-    input.click()
-    body.removeChild(input)
-  }
-
+  // 是否打开重置样式对话框
   const isOpenConfirmDialog = ref(false)
 
   // 重置样式
@@ -709,7 +684,6 @@ export const useStore = defineStore(`store`, () => {
     exportEditorContent2MD,
     downloadAsCardImage,
 
-    importMarkdownContent,
     importDefaultContent,
     clearContent,
 

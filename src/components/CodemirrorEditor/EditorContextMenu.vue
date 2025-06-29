@@ -6,7 +6,6 @@ const {
   exportEditorContent2HTML,
   exportEditorContent2MD,
   formatContent,
-  importMarkdownContent,
   importDefaultContent,
   copyToClipboard,
   pasteFromClipboard,
@@ -20,6 +19,8 @@ const {
   toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
 } = useDisplayStore()
+
+const importMarkdownContent = useImportMarkdownContent()
 </script>
 
 <template>

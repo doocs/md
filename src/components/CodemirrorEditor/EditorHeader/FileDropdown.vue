@@ -12,11 +12,12 @@ const {
 const {
   exportEditorContent2HTML,
   exportEditorContent2MD,
-  importMarkdownContent,
   downloadAsCardImage,
 } = store
 
 const editorStateDialogVisible = ref(false)
+
+const importMarkdownContent = useImportMarkdownContent()
 </script>
 
 <template>
