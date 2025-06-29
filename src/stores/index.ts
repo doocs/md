@@ -345,7 +345,7 @@ export const useStore = defineStore(`store`, () => {
     minutes: 0,
   })
 
-  // 文章标题
+  // 文章标题,用于生成目录
   const titleList = ref<{
     url: string
     title: string

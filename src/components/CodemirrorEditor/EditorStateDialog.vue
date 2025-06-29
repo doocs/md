@@ -235,7 +235,7 @@ function applyImportedConfig() {
           <TabsTrigger value="import">
             导入配置
           </TabsTrigger>
-          <TabsTrigger v-for="item in tabs.filter(item => item.value !== 'import')" :key="item.value" :value="item.value">
+          <TabsTrigger v-for="item in tabs.filter(tab => tab.value !== 'import')" :key="item.value" :value="item.value">
             {{ item.label }}
           </TabsTrigger>
         </TabsList>
