@@ -271,7 +271,10 @@ export const useStore = defineStore(`store`, () => {
   const setCssEditorValue = (content: string) => {
     cssEditor.value!.setValue(content)
   }
-  // 自定义 CSS 内容
+  /**
+   * 自定义 CSS 内容
+   * @deprecated 在后续版本中将会移除
+   */
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
   const cssContentConfig = useStorage(addPrefix(`css_content_config`), {
     active: `方案1`,
