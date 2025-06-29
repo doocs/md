@@ -26,11 +26,11 @@ const { copyToClipboard, pasteFromClipboard } = useStore()
         插入公众号名片
       </MenubarItem>
       <MenubarSeparator />
-      <MenubarItem @click="copyToClipboard">
+      <MenubarItem @click="copyToClipboard()">
         <CopyIcon class="mr-2 h-4 w-4" />
         复制
       </MenubarItem>
-      <MenubarItem @click="pasteFromClipboard">
+      <MenubarItem @click="pasteFromClipboard()">
         <ClipboardPasteIcon class="mr-2 h-4 w-4" />
         粘贴
       </MenubarItem>
