@@ -678,8 +678,6 @@ const isOpenHeadingSlider = ref(false)
 
       <InsertMpCardDialog />
 
-      <RunLoading />
-
       <AlertDialog v-model:open="store.isOpenConfirmDialog">
         <AlertDialogContent>
           <AlertDialogHeader>
