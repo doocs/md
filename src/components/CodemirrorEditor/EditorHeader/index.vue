@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Toaster } from '@/components/ui/sonner'
 import {
   altSign,
   ctrlKey,
@@ -231,8 +230,6 @@ function copy() {
       <Button variant="outline" size="icon" @click="store.isOpenRightSlider = !store.isOpenRightSlider">
         <Settings class="size-4" />
       </Button>
-
-      <Toaster rich-colors position="top-center" />
     </div>
   </header>
 </template>
