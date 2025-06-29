@@ -8,7 +8,6 @@ import {
 
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
-import { copyPlain } from '@/utils/clipboard'
 import { ChevronDownIcon, Moon, PanelLeftClose, PanelLeftOpen, Settings, Sun } from 'lucide-vue-next'
 
 const emit = defineEmits([`addFormat`, `formatContent`, `startCopy`, `endCopy`])
@@ -68,17 +67,18 @@ const { isDark, isCiteStatus, isCountStatus, output, primaryColor, isOpenPostSli
 const { toggleDark, editorRefresh, citeStatusChanged, countStatusChanged } = store
 
 const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
-const source = ref(``)
-const { copy: copyContent } = useClipboard({ source })
+
+const { copy: copyContent } = useClipboard({
+  legacy: true,
+})
 
 // 复制到微信公众号
-function copy() {
+async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
     const mdContent = editor.value?.getValue() || ``
-    copyPlain(mdContent)
+    await copyContent(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
-    editorRefresh()
     return
   }
 
@@ -97,15 +97,29 @@ function copy() {
       const clipboardDiv = document.getElementById(`output`)!
       clipboardDiv.focus()
       window.getSelection()!.removeAllRanges()
+
       const temp = clipboardDiv.innerHTML
 
       if (copyMode.value === `txt`) {
-        const range = document.createRange()
-        range.setStartBefore(clipboardDiv.firstChild!)
-        range.setEndAfter(clipboardDiv.lastChild!)
-        window.getSelection()!.addRange(range)
-        document.execCommand(`copy`)
-        window.getSelection()!.removeAllRanges()
+        try {
+          await navigator.clipboard.write([
+            new ClipboardItem({
+              'text/html': new Blob([temp], {
+                type: `text/html`,
+              }),
+            }),
+          ])
+        }
+        catch (error) {
+          // 不支持 navigator.clipboard 的情况下，使用 execCommand
+          console.error(error)
+          const range = document.createRange()
+          range.setStartBefore(clipboardDiv.firstChild!)
+          range.setEndAfter(clipboardDiv.lastChild!)
+          window.getSelection()!.addRange(range)
+          document.execCommand(`copy`)
+          window.getSelection()!.removeAllRanges()
+        }
       }
 
       clipboardDiv.innerHTML = output.value
@@ -124,11 +138,13 @@ function copy() {
           ? `已复制 HTML 源码，请进行下一步操作。`
           : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
       )
-      window.dispatchEvent(new CustomEvent(`copyToMp`, {
-        detail: {
-          content: output.value,
-        },
-      }))
+      window.dispatchEvent(
+        new CustomEvent(`copyToMp`, {
+          detail: {
+            content: output.value,
+          },
+        }),
+      )
       editorRefresh()
       emit(`endCopy`)
     })
