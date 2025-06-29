@@ -20,7 +20,6 @@ const visible = ref(false)
 const target = ref<Target>(null)
 
 function scrollToTop(e: MouseEvent) {
-  console.log(`scrollToTop`)
   target.value?.scrollTo({ top: 0, left: 0, behavior: `smooth` })
   props.onClick?.(e)
 }
