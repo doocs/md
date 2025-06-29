@@ -582,23 +582,23 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 下载卡片
-  const downloadAsCardImage = () => {
-    const el = document.querySelector(`#output-wrapper>.preview`)! as HTMLElement
-    toPng(el, {
+  const downloadAsCardImage = async () => {
+    const el = document.querySelector<HTMLElement>(`#output-wrapper>.preview`)!
+    const url = await toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
       skipFonts: true,
       pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
       style: {
         margin: `0`,
       },
-    }).then((url) => {
-      const a = document.createElement(`a`)
-      a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
-      document.body.appendChild(a)
-      a.href = url
-      a.click()
-      document.body.removeChild(a)
     })
+
+    const a = document.createElement(`a`)
+    a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
+    document.body.appendChild(a)
+    a.href = url
+    a.click()
+    document.body.removeChild(a)
   }
 
   // 导出编辑器内容到本地
