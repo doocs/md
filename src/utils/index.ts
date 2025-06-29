@@ -351,7 +351,7 @@ export function checkImage(file: File) {
     }
   }
 
-  return { ok: true }
+  return { ok: true, msg: `` }
 }
 
 /**

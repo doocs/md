@@ -186,7 +186,7 @@ function beforeUpload(file: File) {
   // validate image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    toast.error(checkResult.msg!)
+    toast.error(checkResult.msg)
     return false
   }
 
@@ -200,6 +200,7 @@ function beforeUpload(file: File) {
     toast.error(`请先配置 ${imgHost} 图床参数`)
     return false
   }
+
   return true
 }
 
