@@ -271,7 +271,10 @@ export const useStore = defineStore(`store`, () => {
   const setCssEditorValue = (content: string) => {
     cssEditor.value!.setValue(content)
   }
-  // 自定义 CSS 内容
+  /**
+   * 自定义 CSS 内容
+   * @deprecated 在后续版本中将会移除
+   */
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
   const cssContentConfig = useStorage(addPrefix(`css_content_config`), {
     active: `方案1`,
@@ -342,7 +345,7 @@ export const useStore = defineStore(`store`, () => {
     minutes: 0,
   })
 
-  // 文章标题
+  // 文章标题,用于生成目录
   const titleList = ref<{
     url: string
     title: string
@@ -579,23 +582,23 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 下载卡片
-  const downloadAsCardImage = () => {
-    const el = document.querySelector(`#output-wrapper>.preview`)! as HTMLElement
-    toPng(el, {
+  const downloadAsCardImage = async () => {
+    const el = document.querySelector<HTMLElement>(`#output-wrapper>.preview`)!
+    const url = await toPng(el, {
       backgroundColor: isDark.value ? `` : `#fff`,
       skipFonts: true,
       pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
       style: {
         margin: `0`,
       },
-    }).then((url) => {
-      const a = document.createElement(`a`)
-      a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
-      document.body.appendChild(a)
-      a.href = url
-      a.click()
-      document.body.removeChild(a)
     })
+
+    const a = document.createElement(`a`)
+    a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
+    document.body.appendChild(a)
+    a.href = url
+    a.click()
+    document.body.removeChild(a)
   }
 
   // 导出编辑器内容到本地

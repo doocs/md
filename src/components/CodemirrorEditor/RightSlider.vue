@@ -294,5 +294,3 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
     </div>
   </div>
 </template>
-
-<style scoped lang="less"></style>

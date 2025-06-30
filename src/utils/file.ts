@@ -601,7 +601,7 @@ async function formCustomUpload(content: string, file: File) {
   })
 }
 
-function fileUpload(content: string, file: File) {
+export function fileUpload(content: string, file: File) {
   const imgHost = localStorage.getItem(`imgHost`)
   if (!imgHost) {
     localStorage.setItem(`imgHost`, `default`)
@@ -637,8 +637,4 @@ function fileUpload(content: string, file: File) {
       //     : ghFileUpload(content, file.name);
       return ghFileUpload(content, file.name)
   }
-}
-
-export default {
-  fileUpload,
 }

@@ -357,7 +357,7 @@ function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
-    toast.error(checkResult.msg || ``)
+    toast.error(checkResult.msg)
     return false
   }
   // check image host
@@ -1149,6 +1149,3 @@ function onDrop(e: DragEvent) {
     </DialogContent>
   </Dialog>
 </template>
-
-<style lang="less" scoped>
-</style>
