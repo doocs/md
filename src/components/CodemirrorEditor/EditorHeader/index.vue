@@ -121,25 +121,12 @@ async function copy() {
       const temp = clipboardDiv.innerHTML
 
       if (copyMode.value === `txt`) {
-        try {
-          await navigator.clipboard.write([
-            new ClipboardItem({
-              'text/html': new Blob([temp], {
-                type: `text/html`,
-              }),
-            }),
-          ])
-        }
-        catch (error) {
-          // 不支持 navigator.clipboard 的情况下，使用 execCommand
-          console.error(error)
-          const range = document.createRange()
-          range.setStartBefore(clipboardDiv.firstChild!)
-          range.setEndAfter(clipboardDiv.lastChild!)
-          window.getSelection()!.addRange(range)
-          document.execCommand(`copy`)
-          window.getSelection()!.removeAllRanges()
-        }
+        const range = document.createRange()
+        range.setStartBefore(clipboardDiv.firstChild!)
+        range.setEndAfter(clipboardDiv.lastChild!)
+        window.getSelection()!.addRange(range)
+        document.execCommand(`copy`)
+        window.getSelection()!.removeAllRanges()
       }
 
       clipboardDiv.innerHTML = output.value
