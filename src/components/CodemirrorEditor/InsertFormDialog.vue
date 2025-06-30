@@ -83,6 +83,3 @@ function onUpdate(val: boolean) {
     </DialogContent>
   </Dialog>
 </template>
-
-<style lang="less" scoped>
-</style>

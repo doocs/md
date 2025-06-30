@@ -12,7 +12,6 @@ import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
-
 import { format } from 'prettier/standalone'
 
 export function addPrefix(str: string) {
@@ -40,7 +39,7 @@ export function customizeTheme(theme: Theme, options: {
 export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
   const newTheme = customizeTheme(theme, { color })
 
-  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline | string, PropertiesHyphen>>, keys: T[]) => {
+  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline, PropertiesHyphen>>, keys: T[]) => {
     keys.forEach((key) => {
       if (source[key]) {
         target[key] = Object.assign(target[key] || {}, source[key])
@@ -145,17 +144,17 @@ export function css2json(css: string): Partial<Record<Block | Inline, Properties
  * @param {ExtendedProperties} style - 样式对象
  * @returns {string} - CSS 字符串
  */
-export function getStyleString(style: ExtendedProperties) {
+export function getStyleString(style: ExtendedProperties): string {
   return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
 }
 
 /**
  * 格式化内容
  * @param {string} content - 要格式化的内容
- * @param {'markdown' | 'css'} [type] - 内容类型，决定使用的解析器，默认为'markdown'
+ * @param {'markdown' | 'css'} [type] - 内容类型，决定使用的解析器，默认为 'markdown'
  * @returns {Promise<string>} - 格式化后的内容
  */
-export async function formatDoc(content: string, type: `markdown` | `css` = `markdown`) {
+export async function formatDoc(content: string, type: `markdown` | `css` = `markdown`): Promise<string> {
   const plugins = {
     markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
     css: [prettierPluginCss],
@@ -307,7 +306,7 @@ export function exportHTML(primaryColor: string, title: string = `untitled`) {
  * @param {number} options.cols - 列数
  * @returns {string} 生成的 Markdown 表格
  */
-export function createTable({ data, rows, cols }: { data: { [k: string]: string }, rows: number, cols: number }) {
+export function createTable({ data, rows, cols }: { data: { [k: string]: string }, rows: number, cols: number }): string {
   let table = ``
   for (let i = 0; i < rows + 2; ++i) {
     table += `| `
@@ -351,7 +350,7 @@ export function checkImage(file: File) {
     }
   }
 
-  return { ok: true }
+  return { ok: true, msg: `` }
 }
 
 /**
@@ -384,23 +383,14 @@ export function solveWeChatImage() {
   })
 }
 
-export function mergeCss(html: string): string {
+function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
     preserveImportant: true,
   })
 }
 
-export function createEmptyNode(): HTMLElement {
-  const node = document.createElement(`p`)
-  node.style.fontSize = `0`
-  node.style.lineHeight = `0`
-  node.style.margin = `0`
-  node.innerHTML = `&nbsp;`
-  return node
-}
-
-export function modifyHtmlStructure(htmlString: string): string {
+function modifyHtmlStructure(htmlString: string): string {
   const tempDiv = document.createElement(`div`)
   tempDiv.innerHTML = htmlString
 
@@ -410,6 +400,15 @@ export function modifyHtmlStructure(htmlString: string): string {
   })
 
   return tempDiv.innerHTML
+}
+
+function createEmptyNode(): HTMLElement {
+  const node = document.createElement(`p`)
+  node.style.fontSize = `0`
+  node.style.lineHeight = `0`
+  node.style.margin = `0`
+  node.innerHTML = `&nbsp;`
+  return node
 }
 
 export function processClipboardContent(primaryColor: string) {
@@ -495,22 +494,22 @@ export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, rend
       `
   }
   html += `
-      <style>
-        .code__pre {
-          padding: 0 !important;
-        }
-  
-        .hljs.code__pre code {
-          display: -webkit-box;
-          padding: 0.5em 1em 1em;
-          overflow-x: auto;
-          text-indent: 0;
-        }
-        h2 strong {
-          color: inherit !important;
-        }
-      </style>
-    `
+    <style>
+      .code__pre {
+        padding: 0 !important;
+      }
+
+      .hljs.code__pre code {
+        display: -webkit-box;
+        padding: 0.5em 1em 1em;
+        overflow-x: auto;
+        text-indent: 0;
+      }
+      h2 strong {
+        color: inherit !important;
+      }
+    </style>
+  `
   // 包裹 HTML
   return renderer.createContainer(html)
 }
