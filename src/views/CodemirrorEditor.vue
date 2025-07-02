@@ -16,13 +16,13 @@ import { checkImage, toBase64 } from '@/utils'
 import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
 import { fromTextArea } from 'codemirror'
-import { Eye, Pen } from 'lucide-vue-next'
+import { Eye, Pen, Redo2Icon, Undo2Icon } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()
 
 const { isDark, output, editor } = storeToRefs(store)
-const { editorRefresh } = store
+const { editorRefresh, redo, undo } = store
 
 const { toggleShowUploadImgDialog } = displayStore
 
@@ -335,6 +335,7 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     styleActiveLine: true,
     autoCloseBrackets: true,
     extraKeys: createExtraKeys(openSearchWithSelection),
+    undoDepth: 200,
   })
 
   textArea.on(`change`, (editor) => {
@@ -512,14 +513,35 @@ onUnmounted(() => {
         </ResizablePanelGroup>
       </div>
 
-      <button
-        v-if="store.isMobile"
-        class="bg-primary fixed bottom-16 right-6 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-        aria-label="切换编辑/预览"
-        @click="toggleView"
-      >
-        <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
-      </button>
+      <!-- 移动端浮动按钮组 -->
+      <div v-if="store.isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
+        <!-- 撤销/重做按钮组 -->
+        <div class="flex gap-2">
+          <button
+            class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+            aria-label="撤销"
+            @click="undo()"
+          >
+            <Undo2Icon class="h-5 w-5" />
+          </button>
+          <button
+            class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+            aria-label="重做"
+            @click="redo()"
+          >
+            <Redo2Icon class="h-5 w-5" />
+          </button>
+        </div>
+
+        <!-- 切换编辑/预览按钮 -->
+        <button
+          class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+          aria-label="切换编辑/预览"
+          @click="toggleView"
+        >
+          <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
+        </button>
+      </div>
 
       <AIPolishButton
         v-if="store.showAIToolbox"
