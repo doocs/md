@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { cn } from '@/lib/utils'
 import { Check } from 'lucide-vue-next'
 import {
   MenubarCheckboxItem,
@@ -9,6 +8,7 @@ import {
   useForwardPropsEmits,
 } from 'radix-vue'
 import { computed, type HTMLAttributes } from 'vue'
+import { cn } from '@/lib/utils'
 
 const props = defineProps<MenubarCheckboxItemProps & { class?: HTMLAttributes[`class`] }>()
 const emits = defineEmits<MenubarCheckboxItemEmits>()

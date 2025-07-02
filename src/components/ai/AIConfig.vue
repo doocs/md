@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { Info } from 'lucide-vue-next'
 import { serviceOptions } from '@/config/ai-services'
 import { DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
 import useAIConfigStore from '@/stores/AIConfig'
-import { Info } from 'lucide-vue-next'
 
 /* -------------------------- 基础数据 -------------------------- */
 

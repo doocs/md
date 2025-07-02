@@ -5,21 +5,28 @@
 为 Markdown 编辑器添加了完整的撤销和重做功能，支持以下操作方式：
 
 ### 1. 快捷键操作
+
 - **撤销**: `Ctrl + Z`
 - **重做**: `Ctrl + Y`
 
 ### 2. 工具栏按钮
+
 在编辑器顶部工具栏添加了撤销和重做按钮：
+
 - 撤销按钮 (↶): 点击撤销上一次操作
 - 重做按钮 (↷): 点击重做上一次撤销的操作
 
 ### 3. 菜单操作
+
 在"编辑"菜单中添加了撤销和重做选项：
+
 - 撤销 (Ctrl+Z)
 - 重做 (Ctrl+Y)
 
 ### 4. 移动端浮动按钮
+
 在移动端设备上，添加了浮动按钮组：
+
 - 撤销按钮: 位于右下角浮动区域
 - 重做按钮: 位于右下角浮动区域
 - 与编辑/预览切换按钮组合显示
@@ -27,7 +34,9 @@
 ## 技术实现
 
 ### 1. CodeMirror 配置
+
 在 `src/views/CodemirrorEditor.vue` 中为 CodeMirror 编辑器添加了撤销历史配置：
+
 ```javascript
 const textArea = fromTextArea(dom, {
   // ... 其他配置
@@ -36,8 +45,11 @@ const textArea = fromTextArea(dom, {
 ```
 
 ### 2. 快捷键映射
+
 在 `src/utils/editor.ts` 中添加了撤销和重做的快捷键映射：
-```javascript
+
+```
+javascript
 [`${ctrlKey}-Z`]: function undo(editor) {
   editor.undo()
 },
@@ -48,6 +60,7 @@ const textArea = fromTextArea(dom, {
 ```
 
 ### 3. UI 组件更新
+
 - **EditorHeader**: 添加了撤销/重做按钮到工具栏
 - **EditDropdown**: 在编辑菜单中添加了撤销/重做选项
 - **CodemirrorEditor**: 为移动端添加了浮动撤销/重做按钮组
@@ -72,4 +85,4 @@ const textArea = fromTextArea(dom, {
 
 - 撤销历史仅在当前会话中有效
 - 关闭浏览器或刷新页面会清空撤销历史
-- 撤销功能不影响文章的历史记录功能（30秒自动保存） 
+- 撤销功能不影响文章的历史记录功能（30秒自动保存）

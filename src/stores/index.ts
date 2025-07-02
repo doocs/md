@@ -1,4 +1,8 @@
+import CodeMirror from 'codemirror'
+import { toPng } from 'html-to-image'
+import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
   altKey,
@@ -14,14 +18,10 @@ import {
   formatDoc,
   sanitizeTitle,
 } from '@/utils'
-
 import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils/'
 import { copyPlain } from '@/utils/clipboard'
-import { initRenderer } from '@/utils/renderer'
-import CodeMirror from 'codemirror'
-import { toPng } from 'html-to-image'
 
-import { v4 as uuid } from 'uuid'
+import { initRenderer } from '@/utils/renderer'
 
 /**********************************
  * Post 结构接口
@@ -633,14 +633,14 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
-  //撤销操作
+  // 撤销操作
   const undo = () => {
     if (editor.value) {
       editor.value.undo()
     }
   }
 
-  //重做操作
+  // 重做操作
   const redo = () => {
     if (editor.value) {
       editor.value.redo()
@@ -654,8 +654,6 @@ export const useStore = defineStore(`store`, () => {
   const resetStyleConfirm = () => {
     isOpenConfirmDialog.value = true
   }
-
-
 
   return {
     isDark,

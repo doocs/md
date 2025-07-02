@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useStore } from '@/stores'
 import { Download, FileCode, FileCog, Upload } from 'lucide-vue-next'
+import { useStore } from '@/stores'
 
 const store = useStore()
 
