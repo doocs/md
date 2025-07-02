@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/config'
-import { useStore } from '@/stores'
-import { addPrefix, processClipboardContent } from '@/utils'
 import {
   ChevronDownIcon,
   Moon,
   PanelLeftClose,
   PanelLeftOpen,
+  Redo2Icon,
   Settings,
   Sun,
+  Undo2Icon,
 } from 'lucide-vue-next'
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/config'
+import { useStore } from '@/stores'
+import { addPrefix, processClipboardContent } from '@/utils'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
@@ -31,6 +33,8 @@ const {
   citeStatusChanged,
   countStatusChanged,
   formatContent,
+  redo,
+  undo,
 } = store
 
 // 工具函数，添加格式
@@ -213,6 +217,22 @@ async function copy() {
 
     <!-- 右侧操作区：移动端保留核心按钮 -->
     <div class="space-x-2 flex flex-wrap">
+      <!-- 撤销/重做按钮 -->
+      <Button
+        variant="outline"
+        size="icon"
+        @click="undo()"
+      >
+        <Undo2Icon class="size-4" />
+      </Button>
+      <Button
+        variant="outline"
+        size="icon"
+        @click="redo()"
+      >
+        <Redo2Icon class="size-4" />
+      </Button>
+
       <!-- 展开/收起左侧内容栏 -->
       <Button
         variant="outline"
