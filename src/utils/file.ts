@@ -1,16 +1,16 @@
-import { giteeConfig, githubConfig } from '@/config'
-import fetch from '@/utils/fetch'
-import * as tokenTools from '@/utils/tokenTools'
-
-import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import Buffer from 'buffer-from'
+
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
+import { giteeConfig, githubConfig } from '@/config'
+import fetch from '@/utils/fetch'
+import * as tokenTools from '@/utils/tokenTools'
+import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 
 function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useStore } from '@/stores'
 import {
   ChevronRight,
   Edit3,
@@ -8,6 +7,7 @@ import {
   PlusSquare,
   Trash2,
 } from 'lucide-vue-next'
+import { useStore } from '@/stores'
 
 interface Post {
   id: string

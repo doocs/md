@@ -1,10 +1,6 @@
-import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
-
-import type { RendererAPI } from '@/types/renderer-types'
 import type { PropertiesHyphen } from 'csstype'
+
 import type { ReadTimeResults } from 'reading-time'
-import { prefix } from '@/config/prefix'
-import { addSpacingToMarkdown } from '@/utils/autoSpace'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
 import { marked } from 'marked'
@@ -13,6 +9,10 @@ import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
+import { prefix } from '@/config/prefix'
+import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
+import type { RendererAPI } from '@/types/renderer-types'
+import { addSpacingToMarkdown } from '@/utils/autoSpace'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { Post } from '@/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import type { Post } from '@/types'
 
 const props = defineProps<{
   post: Post

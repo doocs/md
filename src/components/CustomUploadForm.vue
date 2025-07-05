@@ -1,7 +1,7 @@
 <script setup lang='ts'>
+import CodeMirror from 'codemirror'
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
-import CodeMirror from 'codemirror'
 
 const store = useStore()
 

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import PickColors, { type Format } from 'vue-pick-colors'
 import {
   codeBlockThemeOptions,
   colorOptions,
@@ -8,7 +9,6 @@ import {
   themeOptions,
 } from '@/config'
 import { useDisplayStore, useStore } from '@/stores'
-import PickColors, { type Format } from 'vue-pick-colors'
 
 const store = useStore()
 const { toggleShowCssEditor } = useDisplayStore()

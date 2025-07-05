@@ -1,5 +1,5 @@
-import type { themeMap } from '@/config/theme'
 import * as vscode from 'vscode'
+import type { themeMap } from '@/config/theme'
 import { colorOptions, fontFamilyOptions, fontSizeOptions, themeOptions } from './styleChoices'
 
 export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.TreeItem> {

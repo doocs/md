@@ -1,8 +1,8 @@
+import * as vscode from 'vscode'
 import { themeMap } from '@/config/theme'
 import { css2json, customCssWithTemplate, customizeTheme } from '@/utils'
 import { modifyHtmlContent } from '@/utils/'
 import { initRenderer } from '@/utils/renderer'
-import * as vscode from 'vscode'
 import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
 

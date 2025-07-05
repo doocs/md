@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
-import { cn } from '@/lib/utils'
 import { useVModel } from '@vueuse/core'
+import { cn } from '@/lib/utils'
 
 const props = defineProps<{
   defaultValue?: string | number
