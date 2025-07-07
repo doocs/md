@@ -15,6 +15,7 @@ import {
   addPrefix,
   downloadMD,
   exportHTML,
+  exportPDF,
   formatDoc,
   sanitizeTitle,
 } from '@/utils'
@@ -601,6 +602,12 @@ export const useStore = defineStore(`store`, () => {
     document.body.removeChild(a)
   }
 
+  // 导出编辑器内容为 PDF
+  const exportEditorContent2PDF = () => {
+    exportPDF(primaryColor.value, posts.value[currentPostIndex.value].title)
+    document.querySelector(`#output`)!.innerHTML = output.value
+  }
+
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
     downloadMD(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
@@ -699,6 +706,7 @@ export const useStore = defineStore(`store`, () => {
     formatContent,
     exportEditorContent2HTML,
     exportEditorContent2MD,
+    exportEditorContent2PDF,
     downloadAsCardImage,
 
     importDefaultContent,

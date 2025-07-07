@@ -36,8 +36,11 @@ export default defineWxtModule({
     wxt.hook(`vite:build:extendConfig`, (_, config) => {
       if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.output) {
         const input = config.build?.rollupOptions.input as Record<string, string>
+        const wxtOutput = config.build?.rollupOptions.output as OutputOptions
+        wxtOutput.chunkFileNames = `chunks/[name].js`
+        wxtOutput.entryFileNames = `chunks/[name].js`
+        wxtOutput.assetFileNames = `assets/[name].[ext]`
         if (input.options || input.sidepanel) {
-          const wxtOutput = config.build?.rollupOptions.output as OutputOptions
           wxtOutput.manualChunks = (id) => {
             if (id.includes(`node_modules`)) {
               if (id.includes(`prettier`))
@@ -52,6 +55,9 @@ export default defineWxtModule({
                 return `hljs`
             }
           }
+        }
+        if (input.background) {
+          wxtOutput.entryFileNames = `[name].js`
         }
       }
     })
