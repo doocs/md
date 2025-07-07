@@ -89,6 +89,14 @@ export function createExtraKeys(openSearchWithSelection: (cm: CodeMirror.Editor)
       })
     },
 
+    [`${ctrlKey}-Z`]: function undo(editor) {
+      editor.undo()
+    },
+
+    [`${ctrlKey}-Y`]: function redo(editor) {
+      editor.redo()
+    },
+
     [`${ctrlKey}-B`]: function bold(editor) {
       toggleFormat(editor, {
         prefix: `**`,

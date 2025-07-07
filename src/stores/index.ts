@@ -640,6 +640,20 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
+  // 撤销操作
+  const undo = () => {
+    if (editor.value) {
+      editor.value.undo()
+    }
+  }
+
+  // 重做操作
+  const redo = () => {
+    if (editor.value) {
+      editor.value.redo()
+    }
+  }
+
   // 是否打开重置样式对话框
   const isOpenConfirmDialog = ref(false)
 
@@ -700,6 +714,9 @@ export const useStore = defineStore(`store`, () => {
 
     copyToClipboard,
     pasteFromClipboard,
+
+    undo,
+    redo,
 
     isOpenConfirmDialog,
     resetStyleConfirm,
