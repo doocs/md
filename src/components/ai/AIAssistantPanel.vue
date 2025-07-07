@@ -1,16 +1,4 @@
 <script setup lang="ts">
-import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
-import { Button } from '@/components/ui/button'
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
-import { Textarea } from '@/components/ui/textarea'
-import useAIConfigStore from '@/stores/AIConfig'
-import { useQuickCommands } from '@/stores/useQuickCommands'
-import { copyPlain } from '@/utils/clipboard'
 import {
   Check,
   Copy,
@@ -22,6 +10,18 @@ import {
   Settings,
   Trash2,
 } from 'lucide-vue-next'
+import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { Textarea } from '@/components/ui/textarea'
+import useAIConfigStore from '@/stores/AIConfig'
+import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
+import { useQuickCommands } from '@/stores/useQuickCommands'
+import { copyPlain } from '@/utils/clipboard'
 
 /* ---------- 组件属性 ---------- */
 const props = defineProps<{ open: boolean }>()
@@ -530,7 +530,7 @@ async function sendMessage() {
       <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="item-start bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
