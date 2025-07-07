@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 
 const store = useStore()
 
