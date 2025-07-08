@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useQuickCommands } from '@/stores/useQuickCommands'
-import { ref, watch } from 'vue'
 
 /* ---------- 弹窗开关 ---------- */
 const props = defineProps<{ open: boolean }>()

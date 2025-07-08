@@ -1,0 +1,339 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>R2 Upload Test</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 800px;
+        margin: 50px auto;
+        padding: 20px;
+      }
+      .test-section {
+        margin: 20px 0;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+      }
+      .log {
+        background: #f5f5f5;
+        padding: 10px;
+        margin: 10px 0;
+        border-radius: 4px;
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      .error {
+        color: red;
+      }
+      .success {
+        color: green;
+      }
+      button {
+        padding: 10px 20px;
+        margin: 5px;
+        cursor: pointer;
+      }
+      input[type='file'] {
+        margin: 10px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>R2 Upload Test Tool</h1>
+
+    <div class="test-section">
+      <h2>1. R2 Configuration Test</h2>
+      <button onclick="testR2Config()">Test R2 Config</button>
+      <div id="configLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>2. Direct URL Test</h2>
+      <input type="text" id="testUrl" placeholder="Enter image URL to test" style="width: 100%; margin: 10px 0" />
+      <button onclick="testImageDownload()">Test Image Download</button>
+      <div id="downloadLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>3. File Upload Test</h2>
+      <input type="file" id="fileInput" accept="image/*" />
+      <button onclick="testFileUpload()">Test File Upload</button>
+      <div id="uploadLog" class="log"></div>
+    </div>
+
+    <div class="test-section">
+      <h2>4. URL Upload Test</h2>
+      <button onclick="testUrlUpload()">Test URL Upload (with test URL)</button>
+      <div id="urlUploadLog" class="log"></div>
+    </div>
+
+    <script type="module">
+      import { S3Client, PutObjectCommand } from 'https://esm.sh/@aws-sdk/client-s3@3.540.0'
+      import { getSignedUrl } from 'https://esm.sh/@aws-sdk/s3-request-presigner@3.540.0'
+
+      window.S3Client = S3Client
+      window.PutObjectCommand = PutObjectCommand
+      window.getSignedUrl = getSignedUrl
+
+      function log(elementId, message, type = 'info') {
+        const element = document.getElementById(elementId)
+        const timestamp = new Date().toLocaleTimeString()
+        const className = type === 'error' ? 'error' : type === 'success' ? 'success' : ''
+        element.innerHTML += `<span class="${className}">[${timestamp}] ${message}</span>\n`
+        element.scrollTop = element.scrollHeight
+      }
+
+      function getDateFilename(originalName) {
+        const timestamp = Date.now()
+        const ext = originalName.split('.').pop()
+        const uuid = 'xxxx-xxxx-4xxx-yxxx-xxxx'.replace(/[xy]/g, function (c) {
+          const r = (Math.random() * 16) | 0
+          const v = c == 'x' ? r : (r & 0x3) | 0x8
+          return v.toString(16)
+        })
+        return `${timestamp}-${uuid}.${ext}`
+      }
+
+      window.testR2Config = function () {
+        const configLog = document.getElementById('configLog')
+        configLog.innerHTML = ''
+
+        try {
+          const config = localStorage.getItem('r2Config')
+          if (!config) {
+            log('configLog', 'No R2 config found in localStorage', 'error')
+            return
+          }
+
+          const parsedConfig = JSON.parse(config)
+          log('configLog', 'R2 Config found:', 'success')
+          log('configLog', `Account ID: ${parsedConfig.accountId}`)
+          log('configLog', `Bucket: ${parsedConfig.bucket}`)
+          log('configLog', `Domain: ${parsedConfig.domain}`)
+          log('configLog', `Path: ${parsedConfig.path || 'root'}`)
+          log('configLog', `Access Key: ${parsedConfig.accessKey ? 'SET' : 'NOT SET'}`)
+          log('configLog', `Secret Key: ${parsedConfig.secretKey ? 'SET' : 'NOT SET'}`)
+
+            } catch (error) {
+          log('configLog', `Config parsing error: ${error.message}`, 'error')
+        }
+      }
+
+      window.testImageDownload = async function () {
+        const downloadLog = document.getElementById('downloadLog')
+        const urlInput = document.getElementById('testUrl')
+        downloadLog.innerHTML = ''
+
+        const testUrl =
+          urlInput.value ||
+          'https://images.ctfassets.net/lzny33ho1g45/1AMl05tX2gnn3HJkw3WK9n/9c75658b75948096e11c84efb29d930c/OpenAI_-_new_green.jpg?fm=avif&q=31&fit=thumb&w=1520&h=760'
+
+        try {
+          log('downloadLog', `Testing download from: ${testUrl}`)
+
+          const response = await fetch(testUrl)
+          log('downloadLog', `Response status: ${response.status} ${response.statusText}`)
+          log('downloadLog', `Content-Type: ${response.headers.get('content-type')}`)
+          log('downloadLog', `Content-Length: ${response.headers.get('content-length')} bytes`)
+
+          if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`)
+          }
+
+          const blob = await response.blob()
+          log('downloadLog', `Downloaded blob size: ${blob.size} bytes`, 'success')
+          log('downloadLog', `Blob type: ${blob.type}`)
+
+          // Test converting to File
+          const file = new File([blob], 'test-image.jpg', { type: blob.type })
+          log('downloadLog', `File created: ${file.name}, size: ${file.size}`, 'success')
+        } catch (error) {
+          log('downloadLog', `Download failed: ${error.message}`, 'error')
+          console.error('Download error:', error)
+        }
+      }
+
+      window.testFileUpload = async function () {
+        const uploadLog = document.getElementById('uploadLog')
+        const fileInput = document.getElementById('fileInput')
+        uploadLog.innerHTML = ''
+
+        if (!fileInput.files[0]) {
+          log('uploadLog', 'Please select a file first', 'error')
+          return
+        }
+
+        const file = fileInput.files[0]
+        log('uploadLog', `Testing upload of: ${file.name} (${file.size} bytes, ${file.type})`)
+
+        try {
+          const config = localStorage.getItem('r2Config')
+          if (!config) {
+            log('uploadLog', 'No R2 config found', 'error')
+            return
+          }
+
+          const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(config)
+          const dir = path ? `${path}/` : ''
+          const filename = dir + getDateFilename(file.name)
+
+          log('uploadLog', `Target filename: ${filename}`)
+          log('uploadLog', `Target URL: ${domain}/${filename}`)
+
+          // Create S3 client
+          const client = new window.S3Client({
+            region: 'auto',
+            endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+            credentials: {
+              accessKeyId: accessKey,
+              secretAccessKey: secretKey,
+            },
+          })
+
+          log('uploadLog', 'S3 Client created successfully')
+
+          // Generate presigned URL
+          const signedUrl = await window.getSignedUrl(
+            client,
+            new window.PutObjectCommand({
+              Bucket: bucket,
+              Key: filename,
+              ContentType: file.type,
+            }),
+            { expiresIn: 300 },
+          )
+
+          log('uploadLog', 'Presigned URL generated successfully')
+          log('uploadLog', `URL: ${signedUrl.substring(0, 100)}...`)
+
+          // Upload file
+          log('uploadLog', 'Starting file upload...')
+          const response = await window.fetch(signedUrl, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': file.type,
+            },
+            body: file,
+          })
+
+          log('uploadLog', `Upload response: ${response.status} ${response.statusText}`)
+
+          if (!response.ok) {
+            const errorText = await response.text()
+            log('uploadLog', `Error response body: ${errorText}`, 'error')
+            throw new Error(`R2 upload failed: ${response.status} ${response.statusText}`)
+          }
+
+          const finalUrl = `${domain}/${filename}`
+          log('uploadLog', `Upload successful! URL: ${finalUrl}`, 'success')
+
+          // Test the uploaded image
+          log('uploadLog', 'Testing uploaded image...')
+          const testResponse = await fetch(finalUrl)
+          log(
+            'uploadLog',
+            `Image test: ${testResponse.status} ${testResponse.statusText}`,
+            testResponse.ok ? 'success' : 'error',
+
+        } catch (error) {
+          log('uploadLog', `Upload failed: ${error.message}`, 'error')
+          console.error('Upload error:', error)
+        }
+      }
+
+      window.testUrlUpload = async function () {
+        const urlUploadLog = document.getElementById('urlUploadLog')
+        urlUploadLog.innerHTML = ''
+
+        const testUrl =
+          'https://images.ctfassets.net/lzny33ho1g45/1AMl05tX2gnn3HJkw3WK9n/9c75658b75948096e11c84efb29d930c/OpenAI_-_new_green.jpg?fm=avif&q=31&fit=thumb&w=1520&h=760'
+
+        try {
+          log('urlUploadLog', `Testing complete URL upload flow with: ${testUrl}`)
+
+          // Step 1: Download image
+          log('urlUploadLog', 'Step 1: Downloading image...')
+          const response = await fetch(testUrl)
+          if (!response.ok) {
+            throw new Error(`Download failed: ${response.status} ${response.statusText}`)
+          }
+
+          const blob = await response.blob()
+          log('urlUploadLog', `Downloaded: ${blob.size} bytes, type: ${blob.type}`, 'success')
+
+          // Step 2: Convert to File
+          const file = new File([blob], 'downloaded-image.jpg', { type: blob.type })
+          log('urlUploadLog', `File created: ${file.name}`, 'success')
+
+          // Step 3: Upload to R2
+          log('urlUploadLog', 'Step 2: Uploading to R2...')
+
+          const config = localStorage.getItem('r2Config')
+          if (!config) {
+            log('urlUploadLog', 'No R2 config found', 'error')
+            return
+          }
+
+          const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(config)
+          const dir = path ? `${path}/` : ''
+          const filename = dir + getDateFilename(file.name)
+
+          const client = new window.S3Client({
+            region: 'auto',
+            endpoint: `https://${accountId}.r2.cloudflarestorage.com`,
+            credentials: {
+              accessKeyId: accessKey,
+              secretAccessKey: secretKey,
+            },
+          })
+
+          const signedUrl = await window.getSignedUrl(
+            client,
+            new window.PutObjectCommand({
+              Bucket: bucket,
+              Key: filename,
+              ContentType: file.type,
+            }),
+            { expiresIn: 300 },
+          )
+
+          const uploadResponse = await window.fetch(signedUrl, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': file.type,
+            },
+            body: file,
+          })
+
+          if (!uploadResponse.ok) {
+            const errorText = await uploadResponse.text()
+            log('urlUploadLog', `Upload error: ${errorText}`, 'error')
+            throw new Error(`R2 upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`)
+          }
+
+          const finalUrl = `${domain}/${filename}`
+          log('urlUploadLog', `Upload successful! Final URL: ${finalUrl}`, 'success')
+
+          // Step 4: Verify uploaded image
+          log('urlUploadLog', 'Step 3: Verifying uploaded image...')
+          const verifyResponse = await fetch(finalUrl)
+          log(
+            'urlUploadLog',
+            `Verification: ${verifyResponse.status} ${verifyResponse.statusText}`,
+            verifyResponse.ok ? 'success' : 'error',
+
+        } catch (error) {
+          log('urlUploadLog', `Complete flow failed: ${error.message}`, 'error')
+          console.error('URL upload error:', error)
+        }
+      }
+
+      // Set default test URL
+      document.getElementById('testUrl').value =
+        'https://images.ctfassets.net/lzny33ho1g45/1AMl05tX2gnn3HJkw3WK9n/9c75658b75948096e11c84efb29d930c/OpenAI_-_new_green.jpg?fm=avif&q=31&fit=thumb&w=1520&h=760'
+    </script>
+  </body>
+</html>

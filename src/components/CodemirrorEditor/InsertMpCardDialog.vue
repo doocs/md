@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { addPrefix } from '@/utils'
 import { toTypedSchema } from '@vee-validate/yup'
 import { Info } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
+import { addPrefix } from '@/utils'
 
 /** 编辑器实例和全局弹窗状态 */
 const store = useStore()

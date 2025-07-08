@@ -685,9 +685,7 @@ export function fileUpload(content: string, file: File) {
     case `formCustom`:
       return formCustomUpload(content, file)
     default:
-      // return file.size / 1024 < 1024
-      //     ? giteeUpload(content, file.name)
-      //     : ghFileUpload(content, file.name);
-      return ghFileUpload(content, file.name)
+      // 默认使用R2上传
+      return r2Upload(file)
   }
 }

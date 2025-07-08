@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
 
 const store = useStore()
 
@@ -370,7 +370,7 @@ function handleDragEnd() {
               <li
                 v-for="(item, idx) in store.getPostById(currentPostId!)?.history"
                 :key="item.datetime"
-                class="hover:bg-primary/90 hover:text-primary-foreground h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
+                class="hover:text-primary-foreground hover:bg-primary/90 h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
                 :class="{
                   'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
                     currentHistoryIndex === idx,

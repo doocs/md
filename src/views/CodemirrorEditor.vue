@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import { fromTextArea } from 'codemirror'
+import { Eye, Pen } from 'lucide-vue-next'
 import {
   AIPolishButton,
   AIPolishPopover,
@@ -15,8 +17,6 @@ import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
 import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
-import { fromTextArea } from 'codemirror'
-import { Eye, Pen } from 'lucide-vue-next'
 
 const store = useStore()
 const displayStore = useDisplayStore()

@@ -12,6 +12,7 @@ interface ImageItem {
   newUrl?: string
   error?: string
   index: number
+  customName?: string
 }
 
 const store = useStore()
@@ -23,13 +24,12 @@ const imageItems = ref<ImageItem[]>([])
 
 // 图床选项列表
 const hostOptions = [
+  { value: `r2`, label: `Cloudflare R2` },
   { value: `github`, label: `GitHub` },
-  { value: `gitee`, label: `Gitee` },
   { value: `aliOSS`, label: `阿里云 OSS` },
   { value: `txCOS`, label: `腾讯云 COS` },
   { value: `qiniu`, label: `七牛云` },
   { value: `minio`, label: `MinIO` },
-  { value: `r2`, label: `Cloudflare R2` },
   { value: `upyun`, label: `又拍云` },
   { value: `mp`, label: `微信公众号` },
   { value: `cloudinary`, label: `Cloudinary` },
@@ -39,7 +39,7 @@ const hostOptions = [
 
 // 检查图床是否已配置
 function isHostConfigured(host: string): boolean {
-  if (host === `default` || host === `github` || host === `gitee`) {
+  if (host === `default` || host === `github`) {
     return true
   }
   const config = localStorage.getItem(`${host}Config`)
@@ -53,7 +53,7 @@ const configuredHosts = computed(() => {
 
 // 获取当前使用的图床
 const currentHost = computed(() => {
-  return localStorage.getItem(`imgHost`) || `default`
+  return localStorage.getItem(`imgHost`) || `r2`
 })
 
 // 选中的图片数量
@@ -126,7 +126,9 @@ async function uploadSingleImage(item: ImageItem) {
     // Create file with proper extension
     const extension = getFileExtension(item.url)
     const timestamp = Date.now()
-    const filename = `image-${timestamp}.${extension}`
+    const filename = item.customName
+      ? `${item.customName}.${extension}`
+      : `image-${timestamp}.${extension}`
 
     const file = new File([blob], filename, {
       type: blob.type || `image/${extension}`,
@@ -331,6 +333,16 @@ defineExpose({ open })
 
                   <div class="text-muted-foreground line-clamp-1 break-all text-xs" :title="item.url">
                     {{ item.url }}
+                  </div>
+
+                  <!-- 自定义文件名输入 -->
+                  <div v-if="item.selected" class="mt-2">
+                    <Input
+                      v-model="item.customName"
+                      placeholder="自定义文件名 (可选)"
+                      class="h-7 text-xs"
+                      :disabled="item.status === 'uploading'"
+                    />
                   </div>
 
                   <!-- 错误信息 -->
