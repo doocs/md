@@ -40,7 +40,7 @@ const hostOptions = [
 
 // 检查图床是否已配置
 function isHostConfigured(host: string): boolean {
-  if (host === `default` || host === `github`) {
+  if (host === `default` || host === `github` || host === `r2`) {
     return true
   }
   const config = localStorage.getItem(`${host}Config`)
