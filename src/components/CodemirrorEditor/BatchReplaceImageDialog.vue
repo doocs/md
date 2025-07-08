@@ -206,7 +206,7 @@ async function retryImage(item: ImageItem) {
 
 function open() {
   isOpen.value = true
-  selectedHost.value = currentHost.value === `default` ? `github` : currentHost.value
+  selectedHost.value = currentHost.value === `default` ? `r2` : currentHost.value
 
   // 获取所有图片
   const currentContent = store.editor?.getValue() || ``
