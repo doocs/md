@@ -312,7 +312,6 @@ defineExpose({ open })
                 v-for="host in configuredHosts"
                 :key="host.value"
                 :value="host.value"
-                :disabled="host.value === currentHost"
               >
                 {{ host.label }}
                 <span v-if="host.value === currentHost" class="text-muted-foreground ml-2 text-xs">
