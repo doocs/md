@@ -13,6 +13,8 @@ interface ImageItem {
   error?: string
   index: number
   customName?: string
+  hash?: string
+  thumbnailUrl?: string
 }
 
 const store = useStore()
@@ -71,6 +73,19 @@ const selectAll = computed({
     })
   },
 })
+
+/**
+ * 计算字符串的简单哈希值
+ */
+function simpleHash(str: string): string {
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i)
+    hash = ((hash << 5) - hash) + char
+    hash = hash & hash // 转换为32位整数
+  }
+  return Math.abs(hash).toString(36).substring(0, 8)
+}
 
 /**
  * 将图片转换为WebP格式
@@ -173,7 +188,7 @@ async function uploadSingleImage(item: ImageItem) {
     const finalExtension = processedExtension
     const timestamp = Date.now()
     const filename = item.customName
-      ? `${item.customName}.${finalExtension}`
+      ? `${item.customName}_${item.hash}.${finalExtension}`
       : `image-${timestamp}.${finalExtension}`
 
     const file = new File([processedBlob], filename, {
@@ -212,13 +227,18 @@ function open() {
   const currentContent = store.editor?.getValue() || ``
   const images = extractImageUrls(currentContent)
 
-  imageItems.value = images.map((img, index) => ({
-    url: img.url,
-    alt: img.alt,
-    selected: true,
-    status: `pending` as const,
-    index,
-  }))
+  imageItems.value = images.map((img, index) => {
+    const hash = simpleHash(img.url)
+    return {
+      url: img.url,
+      alt: img.alt,
+      selected: true,
+      status: `pending` as const,
+      index,
+      hash,
+      thumbnailUrl: img.url, // 直接使用原图作为缩略图
+    }
+  })
 }
 
 async function handleReplace() {
@@ -314,9 +334,6 @@ defineExpose({ open })
                 :value="host.value"
               >
                 {{ host.label }}
-                <span v-if="host.value === currentHost" class="text-muted-foreground ml-2 text-xs">
-                  (当前使用)
-                </span>
               </SelectItem>
             </SelectContent>
           </Select>
@@ -372,6 +389,16 @@ defineExpose({ open })
                   class="mt-1 flex-shrink-0 rounded"
                 >
 
+                <!-- 缩略图 -->
+                <div class="flex-shrink-0">
+                  <img
+                    :src="item.thumbnailUrl"
+                    :alt="item.alt || `图片 ${index + 1}`"
+                    class="object-cover h-12 w-12 border rounded"
+                    @error="($event.target as HTMLImageElement).style.display = 'none'"
+                  >
+                </div>
+
                 <div class="flex-1 overflow-hidden">
                   <div class="mb-1 flex items-center gap-2">
                     <span class="truncate text-sm font-medium">
@@ -398,12 +425,17 @@ defineExpose({ open })
 
                   <!-- 自定义文件名输入 -->
                   <div v-if="item.selected" class="mt-2">
-                    <Input
-                      v-model="item.customName"
-                      placeholder="自定义文件名 (可选)"
-                      class="h-7 text-xs"
-                      :disabled="item.status === 'uploading'"
-                    />
+                    <div class="relative">
+                      <Input
+                        v-model="item.customName"
+                        placeholder="自定义文件名 (可选)"
+                        class="h-7 pr-20 text-xs"
+                        :disabled="item.status === 'uploading'"
+                      />
+                      <span class="text-muted-foreground absolute right-2 top-1/2 text-xs -translate-y-1/2">
+                        _{{ item.hash }}
+                      </span>
+                    </div>
                   </div>
 
                   <!-- 错误信息 -->
