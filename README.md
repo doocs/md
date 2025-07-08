@@ -85,6 +85,16 @@ npm run build
 # 部署在根目录
 npm run build:h5-netlify
 # 访问 http://127.0.0.1:9000/
+
+# Chrome 插件启动及调试
+npm run ext:dev
+# 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 .output/chrome-mv3-dev 目录
+
+# Chrome 插件打包
+npm run ext:zip
+
+# Firefox 扩展打包(how to build Firefox addon)
+npm run firefox:zip # output zip file at in .output/md-{version}-firefox.zip
 ```
 
 ## 快速搭建私有服务
