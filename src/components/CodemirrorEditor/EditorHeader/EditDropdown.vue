@@ -1,9 +1,17 @@
 <script setup lang="ts">
-import { ClipboardPasteIcon, Contact2Icon, CopyIcon, TableIcon, UploadCloudIcon } from 'lucide-vue-next'
+import { ClipboardPasteIcon, Contact2Icon, CopyIcon, RefreshCwIcon, TableIcon, UploadCloudIcon } from 'lucide-vue-next'
+import BatchReplaceImageDialog from '../BatchReplaceImageDialog.vue'
 
 const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = useDisplayStore()
 
-const { copyToClipboard, pasteFromClipboard } = useStore()
+const store = useStore()
+const { copyToClipboard, pasteFromClipboard } = store
+
+const batchReplaceImageDialogRef = ref<InstanceType<typeof BatchReplaceImageDialog>>()
+
+function handleReplaceImages() {
+  batchReplaceImageDialogRef.value?.open()
+}
 </script>
 
 <template>
@@ -25,6 +33,11 @@ const { copyToClipboard, pasteFromClipboard } = useStore()
         插入公众号名片
       </MenubarItem>
       <MenubarSeparator />
+      <MenubarItem @click="handleReplaceImages">
+        <RefreshCwIcon class="mr-2 h-4 w-4" />
+        替换图片源
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarItem @click="copyToClipboard()">
         <CopyIcon class="mr-2 h-4 w-4" />
         复制
@@ -35,4 +48,7 @@ const { copyToClipboard, pasteFromClipboard } = useStore()
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
+
+  <!-- 批量替换图片源对话框 -->
+  <BatchReplaceImageDialog ref="batchReplaceImageDialogRef" />
 </template>

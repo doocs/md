@@ -1,16 +1,16 @@
-import { giteeConfig, githubConfig } from '@/config'
-import fetch from '@/utils/fetch'
-import * as tokenTools from '@/utils/tokenTools'
-
-import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import Buffer from 'buffer-from'
+
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
+import { giteeConfig, githubConfig } from '@/config'
+import fetch from '@/utils/fetch'
+import * as tokenTools from '@/utils/tokenTools'
+import { base64encode, safe64, utf16to8 } from '@/utils/tokenTools'
 
 function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {
@@ -41,7 +41,7 @@ function getConfig(useDefault: boolean, platform: string) {
   return {
     username: repoUrl[0],
     repo: repoUrl[1],
-    branch: customConfig.branch || `master`,
+    branch: customConfig.branch || `main`,
     accessToken: customConfig.accessToken,
   }
 }
@@ -76,36 +76,84 @@ function getDateFilename(filename: string) {
 
 async function ghFileUpload(content: string, filename: string) {
   const useDefault = localStorage.getItem(`imgHost`) === `default`
-  const { username, repo, branch, accessToken } = getConfig(
-    useDefault,
-    `github`,
-  )
+  const config = getConfig(useDefault, `github`)
+  const { username, repo, accessToken } = config
+  let { branch } = config
+
   const dir = getDir()
   const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
   const dateFilename = getDateFilename(filename)
-  const res = await fetch<{ content: {
-    download_url: string
-  } }, {
-      content: {
-        download_url: string
-      }
-      data?: {
+
+  // Try upload with configured branch first
+  let res
+  try {
+    res = await fetch<{ content: {
+      download_url: string
+    } }, {
         content: {
           download_url: string
         }
+        data?: {
+          content: {
+            download_url: string
+          }
+        }
+      }>({
+      url: url + dateFilename,
+      method: `put`,
+      headers: {
+        Authorization: `token ${accessToken}`,
+      },
+      data: {
+        content,
+        branch,
+        message: `Upload by ${window.location.href}`,
+      },
+    })
+  }
+  catch (error: any) {
+    // If branch not found, try with alternative branch
+    if (error?.status === 404 && error?.message?.includes(`Branch`)) {
+      const altBranch = branch === `master` ? `main` : `master`
+      console.log(`Branch ${branch} not found, trying ${altBranch}`)
+
+      res = await fetch<{ content: {
+        download_url: string
+      } }, {
+          content: {
+            download_url: string
+          }
+          data?: {
+            content: {
+              download_url: string
+            }
+          }
+        }>({
+        url: url + dateFilename,
+        method: `put`,
+        headers: {
+          Authorization: `token ${accessToken}`,
+        },
+        data: {
+          content,
+          branch: altBranch,
+          message: `Upload by ${window.location.href}`,
+        },
+      })
+
+      // Update branch in config for next time
+      branch = altBranch
+      if (!useDefault) {
+        const customConfig = JSON.parse(localStorage.getItem(`githubConfig`)!)
+        customConfig.branch = altBranch
+        localStorage.setItem(`githubConfig`, JSON.stringify(customConfig))
       }
-    }>({
-    url: url + dateFilename,
-    method: `put`,
-    headers: {
-      Authorization: `token ${accessToken}`,
-    },
-    data: {
-      content,
-      branch,
-      message: `Upload by ${window.location.href}`,
-    },
-  })
+    }
+    else {
+      throw error
+    }
+  }
+
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
   const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
   res.content = res.data?.content || res.content
@@ -283,13 +331,17 @@ async function minioFileUpload(file: File) {
     ContentType: file.type,
   })
   const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
-  await fetch(presignedUrl, {
+  const response = await window.fetch(presignedUrl, {
     method: `PUT`,
     headers: {
       'Content-Type': file.type,
     },
-    data: file,
-  }).catch((err) => { console.log(err) })
+    body: file,
+  })
+
+  if (!response.ok) {
+    throw new Error(`MinIO upload failed: ${response.status} ${response.statusText}`)
+  }
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
 
@@ -396,13 +448,14 @@ async function r2Upload(file: File) {
     new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: file.type }),
     { expiresIn: 300 },
   )
-  await fetch(signedUrl, {
+  const response = await window.fetch(signedUrl, {
     method: `PUT`,
-    headers: {
-      'Content-Type': file.type,
-    },
-    data: file,
-  }).catch((err) => { console.log(err) })
+    body: file,
+  })
+
+  if (!response.ok) {
+    throw new Error(`R2 upload failed: ${response.status} ${response.statusText}`)
+  }
   return `${domain}/${filename}`
 }
 
