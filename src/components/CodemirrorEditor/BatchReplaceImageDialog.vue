@@ -21,6 +21,7 @@ const isOpen = ref(false)
 const selectedHost = ref(``)
 const isReplacing = ref(false)
 const imageItems = ref<ImageItem[]>([])
+const convertToWebP = ref(true) // 默认启用WebP转换
 
 // 图床选项列表
 const hostOptions = [
@@ -72,6 +73,35 @@ const selectAll = computed({
 })
 
 /**
+ * 将图片转换为WebP格式
+ */
+function convertBlobToWebP(blob: Blob, quality = 0.8): Promise<Blob> {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement(`canvas`)
+    const ctx = canvas.getContext(`2d`)
+    const img = new Image()
+
+    img.onload = () => {
+      canvas.width = img.width
+      canvas.height = img.height
+      ctx?.drawImage(img, 0, 0)
+
+      canvas.toBlob((webpBlob) => {
+        if (webpBlob) {
+          resolve(webpBlob)
+        }
+        else {
+          reject(new Error(`WebP转换失败`))
+        }
+      }, `image/webp`, quality)
+    }
+
+    img.onerror = () => reject(new Error(`图片加载失败`))
+    img.src = URL.createObjectURL(blob)
+  })
+}
+
+/**
  * 获取文件扩展名
  */
 function getFileExtension(url: string): string {
@@ -120,18 +150,34 @@ async function uploadSingleImage(item: ImageItem) {
 
     const blob = await response.blob()
 
-    // Convert to base64
-    const base64 = await toBase64(blob)
-
     // Create file with proper extension
     const extension = getFileExtension(item.url)
+    let processedBlob = blob
+    let processedExtension = extension
+
+    // 转换为WebP格式（如果启用）
+    if (convertToWebP.value && extension !== `svg`) {
+      try {
+        processedBlob = await convertBlobToWebP(blob)
+        processedExtension = `webp`
+      }
+      catch (error) {
+        console.warn(`WebP转换失败，使用原格式:`, error)
+      }
+    }
+
+    // Convert to base64
+    const base64 = await toBase64(processedBlob)
+
+    // Create file with proper extension
+    const finalExtension = processedExtension
     const timestamp = Date.now()
     const filename = item.customName
-      ? `${item.customName}.${extension}`
-      : `image-${timestamp}.${extension}`
+      ? `${item.customName}.${finalExtension}`
+      : `image-${timestamp}.${finalExtension}`
 
-    const file = new File([blob], filename, {
-      type: blob.type || `image/${extension}`,
+    const file = new File([processedBlob], filename, {
+      type: processedExtension === `webp` ? `image/webp` : (blob.type || `image/${finalExtension}`),
     })
 
     // Upload to new host
@@ -275,6 +321,22 @@ defineExpose({ open })
               </SelectItem>
             </SelectContent>
           </Select>
+        </div>
+
+        <!-- 转换选项 -->
+        <div class="flex items-center gap-4">
+          <Label class="shrink-0">转换选项：</Label>
+          <div class="space-x-2 flex items-center">
+            <input
+              id="convert-webp"
+              v-model="convertToWebP"
+              type="checkbox"
+              class="rounded"
+            >
+            <Label for="convert-webp" class="text-sm font-normal">
+              转换为WebP格式 (减小文件大小)
+            </Label>
+          </div>
         </div>
 
         <!-- 图片列表 -->

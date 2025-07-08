@@ -441,7 +441,10 @@ async function r2Upload(file: File) {
     localStorage.getItem(`r2Config`)!,
   )
   const dir = path ? `${path}/` : ``
-  const filename = dir + getDateFilename(file.name)
+  // 使用传入的文件名，如果是默认格式则重新生成
+  const filename = file.name.includes(`image-`) && file.name.match(/\d{13}-/)
+    ? dir + getDateFilename(file.name)
+    : dir + file.name
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
   const signedUrl = await getSignedUrl(
     client,

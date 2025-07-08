@@ -343,8 +343,13 @@ const imgHost = ref(`r2`)
 const activeName = ref(`upload`)
 
 onBeforeMount(() => {
-  if (localStorage.getItem(`imgHost`)) {
-    imgHost.value = localStorage.getItem(`imgHost`)!
+  const savedHost = localStorage.getItem(`imgHost`)
+  if (savedHost) {
+    imgHost.value = savedHost
+  }
+  else {
+    // 首次使用，设置默认值并保存
+    localStorage.setItem(`imgHost`, `r2`)
   }
 })
 
