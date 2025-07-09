@@ -6,13 +6,48 @@ on:
       - main
   workflow_dispatch:
 
+env:
+  # 默认的Docker Hub组织/用户名
+  # fork仓库可以通过设置DOCKER_REGISTRY_USER secret来覆盖
+  DEFAULT_DOCKER_USER: doocs
+  # 默认的镜像名称
+  DEFAULT_IMAGE_NAME: md
+
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: github.repository == 'doocs/md'
+    # 只有在满足以下条件之一时才执行：
+    # 1. 是官方仓库 (doocs/md)
+    # 2. fork仓库设置了DOCKER_REGISTRY_USER secret
+    if: |
+      github.repository == 'doocs/md' || 
+      (github.repository != 'doocs/md' && 
+       github.event.repository.private == false &&
+       vars.ENABLE_DOCKER_BUILD == 'true')
+    
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+
+    # 动态设置Docker配置
+    - name: Set Docker configuration
+      id: docker-config
+      run: |
+        if [ "${{ github.repository }}" = "doocs/md" ]; then
+          # 官方仓库使用默认配置
+          echo "registry_user=${{ env.DEFAULT_DOCKER_USER }}" >> $GITHUB_OUTPUT
+          echo "image_name=${{ env.DEFAULT_IMAGE_NAME }}" >> $GITHUB_OUTPUT
+          echo "image_tag=doocs/md" >> $GITHUB_OUTPUT
+        else
+          # fork仓库使用自定义配置
+          REPO_OWNER=$(echo "${{ github.repository }}" | cut -d'/' -f1)
+          echo "registry_user=${DOCKER_REGISTRY_USER:-$REPO_OWNER}" >> $GITHUB_OUTPUT
+          echo "image_name=${DOCKER_IMAGE_NAME:-${{ env.DEFAULT_IMAGE_NAME }}}" >> $GITHUB_OUTPUT
+          echo "image_tag=${DOCKER_REGISTRY_USER:-$REPO_OWNER}/${DOCKER_IMAGE_NAME:-${{ env.DEFAULT_IMAGE_NAME }}}" >> $GITHUB_OUTPUT
+        fi
+      env:
+        DOCKER_REGISTRY_USER: ${{ vars.DOCKER_REGISTRY_USER }}
+        DOCKER_IMAGE_NAME: ${{ vars.DOCKER_IMAGE_NAME }}
 
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v3
@@ -20,13 +55,30 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    # 根据仓库类型选择不同的凭据
     - name: Log in to Docker Hub
       uses: docker/login-action@v3
       with:
-        username: ${{ secrets.DOCKER_USERNAME }}
-        password: ${{ secrets.DOCKER_PASSWORD }}
+        username: ${{ github.repository == 'doocs/md' && secrets.DOCKER_USERNAME || vars.DOCKER_REGISTRY_USER }}
+        password: ${{ github.repository == 'doocs/md' && secrets.DOCKER_PASSWORD || secrets.DOCKER_REGISTRY_TOKEN }}
 
+    # 构建多架构镜像，支持自定义标签
     - name: Build and push multi-arch images
       run: |
+        # 设置环境变量供构建脚本使用
+        export DOCKER_IMAGE_TAG="${{ steps.docker-config.outputs.image_tag }}"
+        export DOCKER_REGISTRY_USER="${{ steps.docker-config.outputs.registry_user }}"
+        export DOCKER_IMAGE_NAME="${{ steps.docker-config.outputs.image_name }}"
+        
         chmod +x scripts/build-multiarch.sh
         bash scripts/build-multiarch.sh
+
+    # 输出构建信息
+    - name: Output build information
+      run: |
+        echo "✅ Successfully built and pushed Docker image:"
+        echo "🏷️  Image: ${{ steps.docker-config.outputs.image_tag }}"
+        echo "🏢 Registry User: ${{ steps.docker-config.outputs.registry_user }}"
+        echo "📦 Repository: ${{ github.repository }}"
+        echo "🌿 Branch: ${{ github.ref_name }}"
+        echo "📝 Commit: ${{ github.sha }}"
