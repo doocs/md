@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { ClipboardPasteIcon, Contact2Icon, CopyIcon, RefreshCwIcon, TableIcon, UploadCloudIcon } from 'lucide-vue-next'
+import { ClipboardPasteIcon, Contact2Icon, CopyIcon, Redo2Icon, RefreshCwIcon, TableIcon, Undo2Icon, UploadCloudIcon } from 'lucide-vue-next'
 import BatchReplaceImageDialog from '../BatchReplaceImageDialog.vue'
 
 const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = useDisplayStore()
 
 const store = useStore()
-const { copyToClipboard, pasteFromClipboard } = store
+const { copyToClipboard, pasteFromClipboard, undo, redo } = useStore()
 
 const batchReplaceImageDialogRef = ref<InstanceType<typeof BatchReplaceImageDialog>>()
 
@@ -20,6 +20,15 @@ function handleReplaceImages() {
       编辑
     </MenubarTrigger>
     <MenubarContent align="start">
+      <MenubarItem @click="undo()">
+        <Undo2Icon class="mr-2 h-4 w-4" />
+        撤销
+      </MenubarItem>
+      <MenubarItem @click="redo()">
+        <Redo2Icon class="mr-2 h-4 w-4" />
+        重做
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <UploadCloudIcon class="mr-2 h-4 w-4" />
         上传图片

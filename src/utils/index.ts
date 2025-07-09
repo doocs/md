@@ -5,6 +5,7 @@ import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
 import { marked } from 'marked'
 import * as prettierPluginBabel from 'prettier/plugins/babel'
+
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
@@ -211,19 +212,91 @@ export function downloadMD(doc: string, title: string = `untitled`) {
 }
 
 /**
+ * 设置元素样式，确保导出时的样式正确
+ * @param {Element} element - 要设置样式的元素
+ */
+function setStyles(element: Element) {
+  /**
+   * 获取一个 DOM 元素的所有样式，
+   * @param {DOM 元素} element DOM 元素
+   * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
+   * @returns 行内样式拼接结果
+   */
+  function getElementStyles(element: Element, excludes = [`width`, `height`, `inlineSize`, `webkitLogicalWidth`, `webkitLogicalHeight`]) {
+    const styles = getComputedStyle(element, null)
+    return Object.entries(styles)
+      .filter(
+        ([key]) => {
+          // 将驼峰转换为短横线格式
+          const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
+          return styles.getPropertyValue(kebabKey) && !excludes.includes(key)
+        },
+      )
+      .map(([key, value]) => {
+        // 将驼峰转换为短横线格式
+        const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
+        return `${kebabKey}:${value};`
+      })
+      .join(``)
+  }
+
+  switch (true) {
+    case isPre(element):
+    case isCode(element):
+    case isSpan(element):
+      element.setAttribute(`style`, getElementStyles(element))
+  }
+  if (element.children.length) {
+    Array.from(element.children).forEach(child => setStyles(child))
+  }
+
+  // 判断是否是包裹代码块的 pre 元素
+  function isPre(element: Element) {
+    return (
+      element.tagName === `PRE`
+      && Array.from(element.classList).includes(`code__pre`)
+    )
+  }
+
+  // 判断是否是包裹代码块的 code 元素
+  function isCode(element: Element | null) {
+    if (element == null) {
+      return false
+    }
+    return element.tagName === `CODE`
+  }
+
+  // 判断是否是包裹代码字符的 span 元素
+  function isSpan(element: Element) {
+    return (
+      element.tagName === `SPAN`
+      && (isCode(element.parentElement)
+        || isCode((element.parentElement!).parentElement))
+    )
+  }
+}
+
+/**
+ * 处理HTML内容，应用样式和颜色变量
+ * @param {string} primaryColor - 主色调
+ * @returns {string} 处理后的HTML字符串
+ */
+function processHtmlContent(primaryColor: string): string {
+  const element = document.querySelector(`#output`)!
+  setStyles(element)
+
+  return element.innerHTML
+    .replace(/var\(--md-primary-color\)/g, primaryColor)
+    .replace(/--md-primary-color:.+?;/g, ``)
+}
+
+/**
  * 导出 HTML 生成内容
  */
 export function exportHTML(primaryColor: string, title: string = `untitled`) {
-  const element = document.querySelector(`#output`)!
-
-  setStyles(element)
-
-  const htmlStr = element.innerHTML
-    .replace(/var\(--md-primary-color\)/g, primaryColor)
-    .replace(/--md-primary-color:.+?;/g, ``)
+  const htmlStr = processHtmlContent(primaryColor)
 
   const downLink = document.createElement(`a`)
-
   downLink.download = `${title}.html`
   downLink.style.display = `none`
   const blob = new Blob([
@@ -234,67 +307,6 @@ export function exportHTML(primaryColor: string, title: string = `untitled`) {
   document.body.appendChild(downLink)
   downLink.click()
   document.body.removeChild(downLink)
-
-  function setStyles(element: Element) {
-    /**
-     * 获取一个 DOM 元素的所有样式，
-     * @param {DOM 元素} element DOM 元素
-     * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
-     * @returns 行内样式拼接结果
-     */
-    function getElementStyles(element: Element, excludes = [`width`, `height`, `inlineSize`, `webkitLogicalWidth`, `webkitLogicalHeight`]) {
-      const styles = getComputedStyle(element, null)
-      return Object.entries(styles)
-        .filter(
-          ([key]) => {
-            // 将驼峰转换为短横线格式
-            const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-            return styles.getPropertyValue(kebabKey) && !excludes.includes(key)
-          },
-        )
-        .map(([key, value]) => {
-          // 将驼峰转换为短横线格式
-          const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-          return `${kebabKey}:${value};`
-        })
-        .join(``)
-    }
-
-    switch (true) {
-      case isPre(element):
-      case isCode(element):
-      case isSpan(element):
-        element.setAttribute(`style`, getElementStyles(element))
-    }
-    if (element.children.length) {
-      Array.from(element.children).forEach(child => setStyles(child))
-    }
-
-    // 判断是否是包裹代码块的 pre 元素
-    function isPre(element: Element) {
-      return (
-        element.tagName === `PRE`
-        && Array.from(element.classList).includes(`code__pre`)
-      )
-    }
-
-    // 判断是否是包裹代码块的 code 元素
-    function isCode(element: Element | null) {
-      if (element == null) {
-        return false
-      }
-      return element.tagName === `CODE`
-    }
-
-    // 判断是否是包裹代码字符的 span 元素
-    function isSpan(element: Element) {
-      return (
-        element.tagName === `SPAN`
-        && (isCode(element.parentElement)
-          || isCode((element.parentElement!).parentElement))
-      )
-    }
-  }
 }
 
 /**
@@ -329,6 +341,73 @@ export function toBase64(file: Blob) {
     reader.onload = () => resolve((reader.result as string).split(`,`).pop()!)
     reader.onerror = error => reject(error)
   })
+}
+
+/**
+ * 导出 PDF 文档
+ * @param {string} primaryColor - 主色调
+ * @param {string} title - 文档标题
+ */
+export function exportPDF(primaryColor: string, title: string = `untitled`) {
+  const htmlStr = processHtmlContent(primaryColor)
+  const safeTitle = sanitizeTitle(title)
+
+  // 创建新窗口用于打印
+  const printWindow = window.open(``, `_blank`)
+  if (!printWindow) {
+    console.error(`无法打开打印窗口`)
+    return
+  }
+
+  // 写入HTML内容，包含自定义页眉页脚
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="utf-8">
+      <title>${safeTitle}</title>
+      <style>
+        @page {
+          @top-center {
+            content: "${safeTitle}";
+            font-size: 12px;
+            color: #666;
+          }
+          @bottom-left {
+            content: "微信 Markdown 编辑器";
+            font-size: 10px;
+            color: #999;
+          }
+          @bottom-right {
+            content: "第 " counter(page) " 页，共 " counter(pages) " 页";
+            font-size: 10px;
+            color: #999;
+          }
+        }
+        
+        @media print {
+          body { margin: 0; }
+        }
+      </style>
+    </head>
+    <body>
+      <div style="width: 100%; max-width: 750px; margin: auto;">
+        ${htmlStr}
+      </div>
+    </body>
+    </html>
+  `)
+
+  printWindow.document.close()
+
+  // 等待内容加载完成后自动打开打印对话框
+  printWindow.onload = () => {
+    printWindow.print()
+    // 打印完成后关闭窗口
+    printWindow.onafterprint = () => {
+      printWindow.close()
+    }
+  }
 }
 
 export function checkImage(file: File) {

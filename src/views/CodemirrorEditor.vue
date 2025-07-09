@@ -335,6 +335,7 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     styleActiveLine: true,
     autoCloseBrackets: true,
     extraKeys: createExtraKeys(openSearchWithSelection),
+    undoDepth: 200,
   })
 
   textArea.on(`change`, (editor) => {
@@ -512,14 +513,17 @@ onUnmounted(() => {
         </ResizablePanelGroup>
       </div>
 
-      <button
-        v-if="store.isMobile"
-        class="bg-primary fixed bottom-16 right-6 z-50 flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-        aria-label="切换编辑/预览"
-        @click="toggleView"
-      >
-        <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
-      </button>
+      <!-- 移动端浮动按钮组 -->
+      <div v-if="store.isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
+        <!-- 切换编辑/预览按钮 -->
+        <button
+          class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
+          aria-label="切换编辑/预览"
+          @click="toggleView"
+        >
+          <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
+        </button>
+      </div>
 
       <AIPolishButton
         v-if="store.showAIToolbox"
