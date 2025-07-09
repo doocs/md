@@ -4,7 +4,6 @@ import BatchReplaceImageDialog from '../BatchReplaceImageDialog.vue'
 
 const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = useDisplayStore()
 
-const store = useStore()
 const { copyToClipboard, pasteFromClipboard, undo, redo } = useStore()
 
 const batchReplaceImageDialogRef = ref<InstanceType<typeof BatchReplaceImageDialog>>()
