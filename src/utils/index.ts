@@ -3,9 +3,9 @@ import type { PropertiesHyphen } from 'csstype'
 import type { ReadTimeResults } from 'reading-time'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
-import { marked } from 'marked'
-import * as prettierPluginBabel from 'prettier/plugins/babel'
+import { Marked, marked } from 'marked'
 
+import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
@@ -14,6 +14,8 @@ import { prefix } from '@/config/prefix'
 import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
 import type { RendererAPI } from '@/types/renderer-types'
 import { addSpacingToMarkdown } from '@/utils/autoSpace'
+import markedAlert from './MDAlert'
+import { MDKatex } from './MDKatex'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
@@ -194,21 +196,7 @@ export function sanitizeTitle(title: string) {
  */
 export function downloadMD(doc: string, title: string = `untitled`) {
   const safeTitle = sanitizeTitle(title)
-  const downLink = document.createElement(`a`)
-
-  downLink.download = `${safeTitle}.md`
-  downLink.style.display = `none`
-
-  const blob = new Blob([doc], { type: `text/markdown;charset=utf-8` })
-  const objectUrl = URL.createObjectURL(blob)
-  downLink.href = objectUrl
-
-  document.body.appendChild(downLink)
-  downLink.click()
-  document.body.removeChild(downLink)
-
-  // 释放 URL 对象，避免内存泄漏
-  URL.revokeObjectURL(objectUrl)
+  downloadFile(doc, `${safeTitle}.md`, `text/markdown;charset=utf-8`)
 }
 
 /**
@@ -295,18 +283,55 @@ function processHtmlContent(primaryColor: string): string {
  */
 export function exportHTML(primaryColor: string, title: string = `untitled`) {
   const htmlStr = processHtmlContent(primaryColor)
+  const fullHtml = `<html><head><meta charset="utf-8" /></head><body><div style="width: 750px; margin: auto;">${htmlStr}</div></body></html>`
 
+  downloadFile(fullHtml, `${sanitizeTitle(title)}.html`, `text/html`)
+}
+
+export async function exportPureHTML(raw: string, title: string = `untitled`) {
+  const safeTitle = sanitizeTitle(title)
+
+  const marked = new Marked()
+  marked.use(markedAlert({ withoutStyle: true }))
+  marked.use(
+    MDKatex({ nonStandard: true }, ``, ``),
+  )
+  const pureHtml = await marked.parse(raw)
+
+  downloadFile(pureHtml, `${safeTitle}.html`, `text/html`)
+}
+
+/**
+ * 通用文件下载函数
+ * @param content - 文件内容
+ * @param filename - 文件名
+ * @param mimeType - MIME 类型，默认为 text/plain
+ */
+export function downloadFile(content: string, filename: string, mimeType: string = `text/plain`) {
   const downLink = document.createElement(`a`)
-  downLink.download = `${title}.html`
+  downLink.download = filename
   downLink.style.display = `none`
-  const blob = new Blob([
-    `<html><head><meta charset="utf-8" /></head><body><div style="width: 750px; margin: auto;">${htmlStr}</div></body></html>`,
-  ])
 
-  downLink.href = URL.createObjectURL(blob)
+  // 检查是否是 base64 data URL
+  if (content.startsWith(`data:`)) {
+    downLink.href = content
+  }
+  else if (mimeType === `text/html`) {
+    downLink.href = `data:text/html;charset=utf-8,${encodeURIComponent(content)}`
+  }
+  else {
+    const blob = new Blob([content], { type: mimeType })
+    downLink.href = URL.createObjectURL(blob)
+  }
+
   document.body.appendChild(downLink)
   downLink.click()
   document.body.removeChild(downLink)
+
+  // 如果是 blob URL，释放内存
+  if (!content.startsWith(`data:`) && mimeType !== `text/html`) {
+    URL.revokeObjectURL(downLink.href)
+  }
 }
 
 /**
