@@ -110,7 +110,7 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
         },
         tokenizer(src, _tokens) {
           // eslint-disable-next-line regexp/no-super-linear-backtracking
-          const match = /^:::\s*(\w+)\s*\n([\s\S]+?)\n:::/.exec(src)
+          const match = /^:::\s*(\w+)\s*\n([\s\S]*?)\n:::/.exec(src)
 
           if (match) {
             const [raw, variant, content] = match
