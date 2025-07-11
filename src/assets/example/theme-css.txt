@@ -84,6 +84,9 @@ blockquote_note {
 /* GFM tip 样式 */
 blockquote_tip {
 }
+/* GFM info 样式 */
+blockquote_info {
+}
 /* GFM important 样式 */
 blockquote_important {
 }
@@ -102,6 +105,9 @@ blockquote_title_note {
 /* GFM tip 标题 */
 blockquote_title_tip {
 }
+/* GFM info 标题 */
+blockquote_title_info {
+}
 /* GFM important 标题 */
 blockquote_title_important {
 }
@@ -116,6 +122,9 @@ blockquote_p_note {
 }
 /* GFM tip 段落样式 */
 blockquote_p_tip {
+}
+/* GFM info 段落样式 */
+blockquote_p_info {
 }
 /* GFM important 段落样式 */
 blockquote_p_important {

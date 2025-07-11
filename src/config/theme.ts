@@ -100,6 +100,9 @@ const defaultTheme: Theme = {
     blockquote_tip: {
     },
 
+    blockquote_info: {
+    },
+
     blockquote_important: {
     },
 
@@ -125,6 +128,10 @@ const defaultTheme: Theme = {
       color: `#57ab5a`,
     },
 
+    blockquote_title_info: {
+      color: `#93c5fd`,
+    },
+
     blockquote_title_important: {
       color: `#986ee2`,
     },
@@ -141,6 +148,9 @@ const defaultTheme: Theme = {
     },
 
     blockquote_p_tip: {
+    },
+
+    blockquote_p_info: {
     },
 
     blockquote_p_important: {
@@ -505,6 +515,10 @@ const simpleTheme = toMerged(defaultTheme, {
       'font-style': `italic`,
     },
 
+    blockquote_info: {
+      'font-style': `italic`,
+    },
+
     blockquote_important: {
       'font-style': `italic`,
     },
@@ -527,6 +541,9 @@ const simpleTheme = toMerged(defaultTheme, {
     blockquote_title_tip: {
     },
 
+    blockquote_title_info: {
+    },
+
     blockquote_title_important: {
     },
 
@@ -540,6 +557,9 @@ const simpleTheme = toMerged(defaultTheme, {
     },
 
     blockquote_p_tip: {
+    },
+
+    blockquote_p_info: {
     },
 
     blockquote_p_important: {

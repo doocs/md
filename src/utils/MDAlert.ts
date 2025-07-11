@@ -11,6 +11,53 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
   const { className = `markdown-alert`, variants = [], withoutStyle = false } = options
   const resolvedVariants = resolveVariants(variants)
 
+  // 提取公共的元数据构建逻辑
+  function buildMeta(variantType: string, matchedVariant: AlertVariantItem, fromContainer = false) {
+    const { styles } = options
+    return {
+      className,
+      variant: variantType,
+      icon: matchedVariant.icon,
+      title: matchedVariant.title ?? ucfirst(variantType),
+      titleClassName: `${className}-title`,
+      fromContainer,
+      wrapperStyle: {
+        ...styles?.blockquote,
+        ...styles?.[`blockquote_${variantType}` as keyof typeof styles],
+      },
+      titleStyle: {
+        ...styles?.blockquote_title,
+        ...styles?.[`blockquote_title_${variantType}` as keyof typeof styles],
+      },
+      contentStyle: {
+        ...styles?.blockquote_p,
+        ...styles?.[`blockquote_p_${variantType}` as keyof typeof styles],
+      },
+    }
+  }
+
+  // 提取公共的渲染逻辑
+  function renderAlert(token: any) {
+    const { meta, tokens = [] } = token
+    // @ts-expect-error marked renderer context has parser property
+    let text = this.parser.parse(tokens)
+    text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
+    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
+    tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
+    if (!withoutStyle) {
+      tmpl += meta.icon.replace(
+        `<svg`,
+        `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
+      )
+    }
+    tmpl += meta.title
+    tmpl += `</p>\n`
+    tmpl += text
+    tmpl += `</blockquote>\n`
+
+    return tmpl
+  }
+
   return {
     walkTokens(token) {
       if (token.type !== `blockquote`)
@@ -21,37 +68,12 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
       )
 
       if (matchedVariant) {
-        const {
-          type: variantType,
-          icon,
-          title = ucfirst(variantType),
-          titleClassName = `${className}-title`,
-        } = matchedVariant
+        const { type: variantType } = matchedVariant
         const typeRegexp = new RegExp(createSyntaxPattern(variantType), `i`)
-
-        const { styles } = options
 
         Object.assign(token, {
           type: `alert`,
-          meta: {
-            className,
-            variant: variantType,
-            icon,
-            title,
-            titleClassName,
-            wrapperStyle: {
-              ...styles?.blockquote,
-              ...styles?.[`blockquote_${variantType}` as keyof typeof styles],
-            },
-            titleStyle: {
-              ...styles?.blockquote_title,
-              ...styles?.[`blockquote_title_${variantType}` as keyof typeof styles],
-            },
-            contentStyle: {
-              ...styles?.blockquote_p,
-              ...styles?.[`blockquote_p_${variantType}` as keyof typeof styles],
-            },
-          },
+          meta: buildMeta(variantType, matchedVariant),
         })
 
         const firstLine = token.tokens?.[0] as Tokens.Paragraph
@@ -78,24 +100,34 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
       {
         name: `alert`,
         level: `block`,
-        renderer({ meta, tokens = [] }) {
-          let text = this.parser.parse(tokens)
-          text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
-          let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
-          tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
-          if (!withoutStyle) {
-            tmpl += meta.icon.replace(
-              `<svg`,
-              `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
-            )
-          }
-          tmpl += meta.title
-          tmpl += `</p>\n`
-          tmpl += text
-          tmpl += `</blockquote>\n`
-
-          return tmpl
+        renderer: renderAlert,
+      },
+      {
+        name: `alertContainer`,
+        level: `block`,
+        start(src) {
+          return src.match(/^:::/)?.index
         },
+        tokenizer(src, _tokens) {
+          // eslint-disable-next-line regexp/no-super-linear-backtracking
+          const match = /^:::\s*(\w+)\s*\n([\s\S]+?)\n:::/.exec(src)
+
+          if (match) {
+            const [raw, variant, content] = match
+            const matchedVariant = resolvedVariants.find(v => v.type === variant)
+            if (!matchedVariant)
+              return
+
+            return {
+              type: `alert`,
+              raw,
+              text: content.trim(),
+              tokens: this.lexer.blockTokens(content.trim()),
+              meta: buildMeta(variant, matchedVariant, true),
+            }
+          }
+        },
+        renderer: renderAlert,
       },
     ],
   }
@@ -107,6 +139,10 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
 const defaultAlertVariant: AlertVariantItem[] = [
   {
     type: `note`,
+    icon: `<svg class="octicon octicon-info" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>`,
+  },
+  {
+    type: `info`,
     icon: `<svg class="octicon octicon-info" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8Zm8-6.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13ZM6.5 7.75A.75.75 0 0 1 7.25 7h1a.75.75 0 0 1 .75.75v2.75h.25a.75.75 0 0 1 0 1.5h-2a.75.75 0 0 1 0-1.5h.25v-2h-.25a.75.75 0 0 1-.75-.75ZM8 6a1 1 0 1 1 0-2 1 1 0 0 1 0 2Z"></path></svg>`,
   },
   {
