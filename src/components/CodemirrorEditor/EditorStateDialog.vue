@@ -2,6 +2,7 @@
 import { Expand, UploadCloud } from 'lucide-vue-next'
 import { storeLabels } from '@/config/store'
 import { getAllStoreStates, useDisplayStore, useStore } from '@/stores'
+import { downloadFile } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
 
 const props = defineProps({
@@ -106,13 +107,7 @@ function exportSelectedConfig() {
     return acc
   }, {} as Record<string, any>)
 
-  const blob = new Blob([JSON.stringify(selectedConfig, null, 2)], { type: `application/json` })
-  const url = URL.createObjectURL(blob)
-  const a = document.createElement(`a`)
-  a.href = url
-  a.download = `exported_config.json`
-  a.click()
-  URL.revokeObjectURL(url)
+  downloadFile(JSON.stringify(selectedConfig, null, 2), `exported_config.json`, `application/json`)
   toast.success(`配置文件导出成功`)
   emit(`close`)
 }

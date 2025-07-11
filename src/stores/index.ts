@@ -13,9 +13,11 @@ import {
 } from '@/config'
 import {
   addPrefix,
+  downloadFile,
   downloadMD,
   exportHTML,
   exportPDF,
+  exportPureHTML,
   formatDoc,
   sanitizeTitle,
 } from '@/utils'
@@ -582,6 +584,11 @@ export const useStore = defineStore(`store`, () => {
     document.querySelector(`#output`)!.innerHTML = output.value
   }
 
+  // 导出编辑器内容为无样式 HTML
+  const exportEditorContent2PureHTML = () => {
+    exportPureHTML(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
+  }
+
   // 下载卡片
   const downloadAsCardImage = async () => {
     const el = document.querySelector<HTMLElement>(`#output-wrapper>.preview`)!
@@ -594,12 +601,7 @@ export const useStore = defineStore(`store`, () => {
       },
     })
 
-    const a = document.createElement(`a`)
-    a.download = sanitizeTitle(posts.value[currentPostIndex.value].title)
-    document.body.appendChild(a)
-    a.href = url
-    a.click()
-    document.body.removeChild(a)
+    downloadFile(url, `${sanitizeTitle(posts.value[currentPostIndex.value].title)}.png`, `image/png`)
   }
 
   // 导出编辑器内容为 PDF
@@ -705,6 +707,7 @@ export const useStore = defineStore(`store`, () => {
 
     formatContent,
     exportEditorContent2HTML,
+    exportEditorContent2PureHTML,
     exportEditorContent2MD,
     exportEditorContent2PDF,
     downloadAsCardImage,

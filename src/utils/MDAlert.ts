@@ -8,7 +8,7 @@ import { getStyleString } from '.'
  * A [marked](https://marked.js.org/) extension to support [GFM alerts](https://github.com/orgs/community/discussions/16925).
  */
 export default function markedAlert(options: AlertOptions = {}): MarkedExtension {
-  const { className = `markdown-alert`, variants = [] } = options
+  const { className = `markdown-alert`, variants = [], withoutStyle = false } = options
   const resolvedVariants = resolveVariants(variants)
 
   return {
@@ -83,10 +83,12 @@ export default function markedAlert(options: AlertOptions = {}): MarkedExtension
           text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
           let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
           tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
-          tmpl += meta.icon.replace(
-            `<svg`,
-            `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
-          )
+          if (!withoutStyle) {
+            tmpl += meta.icon.replace(
+              `<svg`,
+              `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
+            )
+          }
           tmpl += meta.title
           tmpl += `</p>\n`
           tmpl += text
