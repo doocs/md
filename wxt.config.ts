@@ -57,6 +57,7 @@ export default defineConfig({
       && plugin !== null
       && !(`name` in plugin && plugin.name === `vite-plugin-Radar`),
     ),
+    define: undefined,
     build: undefined,
     base: `/`,
   }),
