@@ -44,8 +44,6 @@ export default defineWxtModule({
                 return `prettier`
               if (id.includes(`katex`))
                 return `katex`
-              if (id.includes(`diagram`) || id.includes(`Diagram`))
-                return `diagram`
               if (id.includes(`mermaid`))
                 return `mermaid`
               if (id.includes(`cytoscape`))
