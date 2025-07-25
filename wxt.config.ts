@@ -47,6 +47,17 @@ export default defineConfig({
       },
     },
   }),
+  zip: {
+    excludeSources: [
+      `dist/**`,
+      `docker/**`,
+      `docs/**`,
+      `example/**`,
+      `functions/**`,
+      `md-cli/**`,
+      `scripts/**`,
+    ],
+  },
   analysis: {
     open: true,
   },
