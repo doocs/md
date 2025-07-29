@@ -16,6 +16,7 @@ import markedAlert from './MDAlert'
 import markedFootnotes from './MDFootnotes'
 import { MDKatex } from './MDKatex'
 import markedSlider from './MDSlider'
+import { markedToc } from './MDToc'
 
 marked.setOptions({
   breaks: true,
@@ -377,6 +378,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
   }
 
   marked.use({ renderer })
+  marked.use(markedToc())
   marked.use(markedSlider({ styles: styleMapping }))
   marked.use(markedAlert({ styles: styleMapping }))
   marked.use(
