@@ -138,6 +138,13 @@ docker run -d -p 8080:80 doocs/md:latest
 
 关于本项目 Docker 镜像的更多详细信息，可以关注 https://github.com/doocs/docker-md
 
+## VsCode扩展
+请查看 [README](src/extension/README.md) 文件了解
+
+插件地址：[doocs-md](https://marketplace.visualstudio.com/items?itemName=doocs.doocs-md)
+
+> 任何基于VsCode开发的IDE都可用，如`Cursor`、`Trae`等
+
 ## 谁在使用
 
 请查看 [USERS.md](USERS.md) 文件，了解使用本项目的公众号。
