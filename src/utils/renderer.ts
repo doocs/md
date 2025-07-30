@@ -324,7 +324,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
 
     link({ href, title, text, tokens }: Tokens.Link): string {
       const parsedText = this.parser.parseInline(tokens)
-      if (href.startsWith(`https://mp.weixin.qq.com`)) {
+      if (/^https?:\/\/mp\.weixin\.qq\.com/.test(href)) {
         return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${parsedText}</a>`
       }
       if (href === text) {
