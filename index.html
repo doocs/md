@@ -77,6 +77,9 @@
       <div class="loading">
         <strong>致力于让 Markdown 编辑更简单</strong>
         <p class="txt">正在加载编辑器</p>
+        <p class="timeout-tip" style="display: none; color: #e53935; font-size: 16px; margin-top: 2em">
+          加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息
+        </p>
       </div>
     </div>
     <script>
@@ -84,6 +87,13 @@
       if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
         document.querySelector('.loading').classList.add('dark')
       }
+
+      setTimeout(() => {
+        const tip = document.querySelector('.loading .timeout-tip')
+        if (tip) {
+          tip.style.display = 'block'
+        }
+      }, 30000)
     </script>
     <script>
       window.MathJax = {
