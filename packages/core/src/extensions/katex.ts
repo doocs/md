@@ -19,7 +19,13 @@ function createRenderer(display: boolean, inlineStyle: string, blockStyle: strin
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
 
-    svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
+    // 行内公式对齐 https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
+    // 直接覆盖 style 会覆盖 MathJax 的样式，需要手动设置
+    // svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
+
+    svg.style.display = `initial`
+    svg.style.maxWidth = `300vw`
+    svg.style.flexShrink = `0`
     svg.style.width = width
 
     if (!display) {
