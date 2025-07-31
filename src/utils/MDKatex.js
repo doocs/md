@@ -11,8 +11,14 @@ function createRenderer(display, inlineStyle, blockStyle) {
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
 
+    // 行内公式对齐 https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
+    // 提取 MathJax 提供的 vertical-align 值
+    const originalVerticalAlign = svg.style.verticalAlign || `0ex`
+
     svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
     svg.style.width = width
+    // 保持 MathJax 的原始 vertical-align 值
+    svg.style.verticalAlign = originalVerticalAlign
 
     if (!display) {
       return `<span ${inlineStyle}>${svg.outerHTML}</span>`
