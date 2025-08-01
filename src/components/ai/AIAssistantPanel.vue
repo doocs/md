@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
 import {
   Check,
   Copy,
@@ -19,7 +20,6 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/AIConfig'
-import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
 import { useQuickCommands } from '@/stores/useQuickCommands'
 import { copyPlain } from '@/utils/clipboard'
 
@@ -530,7 +530,7 @@ async function sendMessage() {
       <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative mt-2">
         <div
-          class="bg-background border-border item-start flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
+          class="bg-background item-start border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
         >
           <Textarea
             v-model="input"
@@ -561,7 +561,7 @@ async function sendMessage() {
           <Button
             :disabled="!input.trim() && !loading"
             size="icon"
-            class="hover:bg-primary/90 bg-primary text-primary-foreground absolute bottom-3 right-3 rounded-full disabled:opacity-40"
+            class="bg-primary text-primary-foreground hover:bg-primary/90 absolute bottom-3 right-3 rounded-full disabled:opacity-40"
             :aria-label="loading ? '暂停' : '发送'"
             @click="loading ? pauseStreaming() : sendMessage()"
           >

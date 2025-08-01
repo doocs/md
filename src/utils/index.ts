@@ -1,18 +1,16 @@
 import type { PropertiesHyphen } from 'csstype'
-
 import type { ReadTimeResults } from 'reading-time'
+import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
+import type { RendererAPI } from '@/types/renderer-types'
 import DOMPurify from 'isomorphic-dompurify'
 import juice from 'juice'
 import { Marked, marked } from 'marked'
-
 import * as prettierPluginBabel from 'prettier/plugins/babel'
 import * as prettierPluginEstree from 'prettier/plugins/estree'
 import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
 import * as prettierPluginCss from 'prettier/plugins/postcss'
 import { format } from 'prettier/standalone'
 import { prefix } from '@/config/prefix'
-import type { Block, ExtendedProperties, Inline, Theme } from '@/types'
-import type { RendererAPI } from '@/types/renderer-types'
 import { addSpacingToMarkdown } from '@/utils/autoSpace'
 import markedAlert from './MDAlert'
 import { MDKatex } from './MDKatex'
@@ -409,7 +407,7 @@ export function exportPDF(primaryColor: string, title: string = `untitled`) {
             color: #999;
           }
         }
-        
+
         @media print {
           body { margin: 0; }
         }

@@ -1,16 +1,14 @@
 import type { PropertiesHyphen } from 'csstype'
 import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
+import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
+import type { RendererAPI } from '@/types/renderer-types'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js'
 import { marked } from 'marked'
-
 import mermaid from 'mermaid'
 import readingTime from 'reading-time'
-import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
-import type { RendererAPI } from '@/types/renderer-types'
-
 import { getStyleString } from '.'
 import markedAlert from './MDAlert'
 import markedFootnotes from './MDFootnotes'

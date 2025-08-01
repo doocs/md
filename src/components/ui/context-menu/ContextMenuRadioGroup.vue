@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { ContextMenuRadioGroupEmits, ContextMenuRadioGroupProps } from 'radix-vue'
 import {
   ContextMenuRadioGroup,
-  type ContextMenuRadioGroupEmits,
-  type ContextMenuRadioGroupProps,
+
   useForwardPropsEmits,
 } from 'radix-vue'
 

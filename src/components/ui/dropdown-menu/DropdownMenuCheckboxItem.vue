@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import type { DropdownMenuCheckboxItemEmits, DropdownMenuCheckboxItemProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
 import { Check } from 'lucide-vue-next'
 import {
   DropdownMenuCheckboxItem,
-  type DropdownMenuCheckboxItemEmits,
-  type DropdownMenuCheckboxItemProps,
+
   DropdownMenuItemIndicator,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<DropdownMenuCheckboxItemProps & { class?: HTMLAttributes[`class`] }>()

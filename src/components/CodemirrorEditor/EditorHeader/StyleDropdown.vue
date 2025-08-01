@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import PickColors, { type Format } from 'vue-pick-colors'
+import type { Format } from 'vue-pick-colors'
+import PickColors from 'vue-pick-colors'
 import {
   codeBlockThemeOptions,
   colorOptions,

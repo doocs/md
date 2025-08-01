@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import type { Format } from 'vue-pick-colors'
 import { Moon, Sun } from 'lucide-vue-next'
-import PickColors, { type Format } from 'vue-pick-colors'
+import PickColors from 'vue-pick-colors'
 import {
   codeBlockThemeOptions,
   colorOptions,

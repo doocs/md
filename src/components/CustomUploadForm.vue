@@ -20,7 +20,7 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
 
 const formCustomTextarea = useTemplateRef<HTMLTextAreaElement>(`formCustomTextarea`)
 
-const editor = ref< CodeMirror.EditorFromTextArea | null>(null)
+const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
 
 onMounted(() => {
   editor.value = markRaw(CodeMirror.fromTextArea(formCustomTextarea.value!, {

@@ -1,12 +1,13 @@
 <script setup lang="ts">
+import type { DropdownMenuContentEmits, DropdownMenuContentProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
 import {
   DropdownMenuContent,
-  type DropdownMenuContentEmits,
-  type DropdownMenuContentProps,
+
   DropdownMenuPortal,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = withDefaults(

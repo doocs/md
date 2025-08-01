@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { MenubarMenu, type MenubarMenuProps } from 'radix-vue'
+import type { MenubarMenuProps } from 'radix-vue'
+import { MenubarMenu } from 'radix-vue'
 
 const props = defineProps<MenubarMenuProps>()
 </script>

@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { ContextMenuItemEmits, ContextMenuItemProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
 import {
   ContextMenuItem,
-  type ContextMenuItemEmits,
-  type ContextMenuItemProps,
+
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<ContextMenuItemProps & { class?: HTMLAttributes[`class`], inset?: boolean }>()

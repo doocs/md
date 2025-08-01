@@ -1,13 +1,14 @@
 <script setup lang="ts">
+import type { MenubarCheckboxItemEmits, MenubarCheckboxItemProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
 import { Check } from 'lucide-vue-next'
 import {
   MenubarCheckboxItem,
-  type MenubarCheckboxItemEmits,
-  type MenubarCheckboxItemProps,
+
   MenubarItemIndicator,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<MenubarCheckboxItemProps & { class?: HTMLAttributes[`class`] }>()

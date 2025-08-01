@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { MenubarRadioGroupEmits, MenubarRadioGroupProps } from 'radix-vue'
 import {
   MenubarRadioGroup,
-  type MenubarRadioGroupEmits,
-  type MenubarRadioGroupProps,
+
   useForwardPropsEmits,
 } from 'radix-vue'
 
