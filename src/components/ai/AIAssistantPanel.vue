@@ -561,7 +561,12 @@ async function sendMessage() {
           <Button
             :disabled="!input.trim() && !loading"
             size="icon"
-            class="bg-primary text-primary-foreground hover:bg-primary/90 absolute bottom-3 right-3 rounded-full disabled:opacity-40"
+            :class="[
+              // eslint-disable-next-line vue/prefer-separate-static-class
+              'absolute bottom-3 right-3 rounded-full disabled:opacity-40',
+              // eslint-disable-next-line vue/prefer-separate-static-class
+              'bg-primary hover:bg-primary/90 text-primary-foreground',
+            ]"
             :aria-label="loading ? '暂停' : '发送'"
             @click="loading ? pauseStreaming() : sendMessage()"
           >

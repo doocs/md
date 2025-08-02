@@ -370,13 +370,17 @@ function handleDragEnd() {
               <li
                 v-for="(item, idx) in store.getPostById(currentPostId!)?.history"
                 :key="item.datetime"
-                class="hover:text-primary-foreground hover:bg-primary/90 h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
-                :class="{
-                  'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
-                    currentHistoryIndex === idx,
-                  'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark':
-                    currentHistoryIndex === idx,
-                }"
+                class="h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
+                :class="[
+                  // eslint-disable-next-line vue/prefer-separate-static-class
+                  'hover:bg-primary/90 hover:text-primary-foreground',
+                  {
+                    'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
+                      currentHistoryIndex === idx,
+                    'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark':
+                      currentHistoryIndex === idx,
+                  },
+                ]"
                 @click="currentHistoryIndex = idx"
               >
                 {{ item.datetime }}

@@ -80,13 +80,17 @@ function togglePostExpanded(postId: string) {
   <div v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)" :key="post.id">
     <!-- 根文章外层容器 -->
     <a
-      class="hover:bg-primary hover:text-primary-foreground w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors"
-      :class="{
-        'bg-primary text-primary-foreground shadow': store.currentPostId === post.id,
-        'opacity-50': props.dragSourceId === post.id,
-        'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
-          props.dropTargetId === post.id,
-      }"
+      class="w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors"
+      :class="[
+        // eslint-disable-next-line vue/prefer-separate-static-class
+        'hover:text-primary-foreground hover:bg-primary',
+        {
+          'bg-primary text-primary-foreground shadow': store.currentPostId === post.id,
+          'opacity-50': props.dragSourceId === post.id,
+          'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
+            props.dropTargetId === post.id,
+        },
+      ]"
       draggable="true"
       @dragstart="handleDragStart(post.id, $event)"
       @dragend="props.handleDragEnd"
