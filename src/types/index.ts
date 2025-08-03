@@ -7,7 +7,7 @@ type GFMBlock = `blockquote_note` | `blockquote_tip` | `blockquote_info` | `bloc
   | `blockquote_p` | `blockquote_p_note` | `blockquote_p_tip` | `blockquote_p_info` | `blockquote_p_important` | `blockquote_p_warning` | `blockquote_p_caution`
 
 export type Block = `container` | `h1` | `h2` | `h3` | `h4` | `h5` | `h6` | `p` | `blockquote` | `blockquote_p` | `code_pre` | `code` | `image` | `ol` | `ul` | `footnotes` | `figure` | `hr` | `block_katex` | GFMBlock
-export type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `td` | `footnote` | `figcaption` | `em` | `inline_katex`
+export type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `th` | `td` | `footnote` | `figcaption` | `em` | `inline_katex`
 
 interface CustomCSSProperties {
   [`--md-primary-color`]?: string
