@@ -345,7 +345,10 @@ export function initRenderer(opts: IOpts): RendererAPI {
 
     table({ header, rows }: Tokens.Table): string {
       const headerRow = header
-        .map(cell => this.tablecell(cell))
+        .map((cell) => {
+          const text = this.parser.parseInline(cell.tokens)
+          return styledContent(`th`, text)
+        })
         .join(``)
       const body = rows
         .map((row) => {

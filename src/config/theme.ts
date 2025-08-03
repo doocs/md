@@ -278,15 +278,22 @@ const defaultTheme: Theme = {
     },
 
     thead: {
-      'background': `rgba(0, 0, 0, 0.05)`,
       'font-weight': `bold`,
       'color': `hsl(var(--foreground))`,
+    },
+
+    th: {
+      'border': `1px solid #dfdfdf`,
+      'padding': `0.25em 0.5em`,
+      'color': `hsl(var(--foreground))`,
+      'word-break': `keep-all`,
+      'background': `rgba(0, 0, 0, 0.05)`,
     },
 
     td: {
       'border': `1px solid #dfdfdf`,
       'padding': `0.25em 0.5em`,
-      'color': `#3f3f3f`,
+      'color': `hsl(var(--foreground))`,
       'word-break': `keep-all`,
     },
 
