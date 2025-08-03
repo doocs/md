@@ -208,6 +208,7 @@ const r2Schema = toTypedSchema(yup.object({
   bucket: yup.string().required(`Bucket 不能为空`),
   domain: yup.string().required(`Bucket 对应域名不能为空`),
   path: yup.string().optional(),
+  compression: yup.number().min(0).max(10).optional(),
 }))
 
 const r2Config = ref(localStorage.getItem(`r2Config`)
@@ -219,6 +220,7 @@ const r2Config = ref(localStorage.getItem(`r2Config`)
       bucket: ``,
       domain: ``,
       path: ``,
+      compression: 8,
     })
 
 function r2Submit(formValues: any) {
@@ -946,6 +948,23 @@ function onDrop(e: DragEvent) {
             <Field v-slot="{ field, errorMessage }" name="path">
               <FormItem label="存储路径" :error="errorMessage">
                 <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="compression">
+              <FormItem label="图片压缩等级" :error="errorMessage">
+                <div class="flex items-center gap-2">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="number"
+                    min="0"
+                    max="10"
+                    placeholder="压缩等级 0-10，0表示不压缩，默认8"
+                    class="w-20"
+                  />
+                  <small class="whitespace-nowrap text-gray-500">压缩等级 0-10，0表示不压缩，数字越大压缩比例越高，压缩后自动转为webp格式，具体压缩情况可在console中查看</small>
+                </div>
               </FormItem>
             </Field>
 
