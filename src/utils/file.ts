@@ -86,15 +86,15 @@ async function ghFileUpload(content: string, filename: string) {
   const res = await fetch<{ content: {
     download_url: string
   } }, {
+    content: {
+      download_url: string
+    }
+    data?: {
       content: {
         download_url: string
       }
-      data?: {
-        content: {
-          download_url: string
-        }
-      }
-    }>({
+    }
+  }>({
     url: url + dateFilename,
     method: `put`,
     headers: {
@@ -127,15 +127,15 @@ async function giteeUpload(content: any, filename: string) {
   const res = await fetch<{ content: {
     download_url: string
   } }, {
+    content: {
+      download_url: string
+    }
+    data: {
       content: {
         download_url: string
       }
-      data: {
-        content: {
-          download_url: string
-        }
-      }
-    }>({
+    }
+  }>({
     url,
     method: `POST`,
     data: {

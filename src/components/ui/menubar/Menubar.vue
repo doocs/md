@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import type { MenubarRootEmits, MenubarRootProps } from 'radix-vue'
+import type { HTMLAttributes } from 'vue'
 import {
   MenubarRoot,
-  type MenubarRootEmits,
-  type MenubarRootProps,
+
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed, type HTMLAttributes } from 'vue'
+import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<MenubarRootProps & { class?: HTMLAttributes[`class`] }>()

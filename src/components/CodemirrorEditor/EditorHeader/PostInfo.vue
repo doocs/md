@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import type { Post, PostAccount } from '@/types'
 import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 import { useStore } from '@/stores'
-import type { Post, PostAccount } from '@/types'
 
 const store = useStore()
 const { output, editor } = storeToRefs(store)

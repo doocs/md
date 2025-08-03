@@ -1,6 +1,5 @@
-import { toMerged } from 'es-toolkit'
-
 import type { IConfigOption, Theme } from '@/types'
+import { toMerged } from 'es-toolkit'
 
 const defaultTheme: Theme = {
   base: {
