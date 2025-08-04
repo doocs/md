@@ -1,5 +1,6 @@
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
+import imageCompression from 'browser-image-compression'
 import Buffer from 'buffer-from'
 
 import COS from 'cos-js-sdk-v5'
@@ -68,6 +69,53 @@ function getDateFilename(filename: string) {
   // 获取最后一个点号后的内容作为文件扩展名
   const fileSuffix = filename.split(`.`).pop()
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
+}
+
+/**
+ * 压缩图片并转换为webp格式
+ * @param {File} file 原始图片文件
+ * @param {number} compressionLevel 压缩等级 0-10，0表示不压缩
+ * @returns {Promise<File>} 压缩后的文件
+ */
+async function compressImage(file: File, compressionLevel: number): Promise<File> {
+  if (compressionLevel === 0 || !file.type.startsWith(`image/`)) {
+    return file
+  }
+
+  try {
+    // 根据压缩等级计算质量 (等级越高，质量越低，压缩比越大)
+    const initialQuality = Math.max(0.1, 1 - (compressionLevel / 10) * 0.8)
+
+    const options = {
+      maxSizeMB: 1,
+      maxWidthOrHeight: 1920,
+      maxIteration: 10,
+      useWebWorker: true,
+      fileType: `image/webp` as const,
+      initialQuality,
+    }
+
+    const compressedFile = await imageCompression(file, options)
+
+    // 计算文件大小
+    const originalSizeKB = (file.size / 1024).toFixed(1)
+    const compressedSizeKB = (compressedFile.size / 1024).toFixed(1)
+    const reducedSizeKB = (file.size - compressedFile.size) / 1024
+    const reducedText = reducedSizeKB >= 0 ? `-${reducedSizeKB.toFixed(1)}KB` : `+${Math.abs(reducedSizeKB).toFixed(1)}KB`
+
+    console.log(`[图片压缩] ${file.name}: ${originalSizeKB}KB → ${compressedSizeKB}KB (${reducedText})`)
+
+    // 确保文件名以 .webp 结尾
+    const originalName = file.name.split(`.`)[0]
+    return new File([compressedFile], `${originalName}.webp`, {
+      type: `image/webp`,
+      lastModified: Date.now(),
+    })
+  }
+  catch {
+    console.warn(`[图片压缩] ${file.name} 压缩失败，使用原文件`)
+    return file
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -385,23 +433,27 @@ async function mpFileUpload(file: File) {
 // -----------------------------------------------------------------------
 
 async function r2Upload(file: File) {
-  const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(
+  const { accountId, accessKey, secretKey, bucket, path, domain, compression = 8 } = JSON.parse(
     localStorage.getItem(`r2Config`)!,
   )
+
+  // 压缩图片
+  const processedFile = await compressImage(file, compression)
+
   const dir = path ? `${path}/` : ``
-  const filename = dir + getDateFilename(file.name)
+  const filename = dir + getDateFilename(processedFile.name)
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
   const signedUrl = await getSignedUrl(
     client,
-    new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: file.type }),
+    new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: processedFile.type }),
     { expiresIn: 300 },
   )
   await fetch(signedUrl, {
     method: `PUT`,
     headers: {
-      'Content-Type': file.type,
+      'Content-Type': processedFile.type,
     },
-    data: file,
+    data: processedFile,
   }).catch((err) => { console.log(err) })
   return `${domain}/${filename}`
 }
