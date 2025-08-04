@@ -1,16 +1,11 @@
-/**
- * @typedef {object} Env
- * @property
- */
-
 export default {
   /**
    * @param {Request} request
-   * @param {Env} env
-   * @param {ExecutionContext} ctx
-   * @returns {Promise<Response>}
+   * @param {Env} _env
+   * @param {ExecutionContext} _ctx
+   * @returns {Promise<Response>} promise
    */
-  async fetch(request, env, ctx) {
+  async fetch(request, _env, _ctx) {
     const url = new URL(request.url)
     const targetUrl = `https://api.weixin.qq.com`
     const proxyRequest = new Request(targetUrl + url.pathname + url.search, {
