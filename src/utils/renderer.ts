@@ -3,6 +3,7 @@ import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
 import type { ExtendedProperties, IOpts, ThemeStyles } from '@/types'
 import type { RendererAPI } from '@/types/renderer-types'
+import gdscript from '@exercism/highlightjs-gdscript'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js'
@@ -15,6 +16,8 @@ import markedFootnotes from './MDFootnotes'
 import { MDKatex } from './MDKatex'
 import markedSlider from './MDSlider'
 import { markedToc } from './MDToc'
+
+hljs.registerLanguage(`gdscript`, gdscript)
 
 marked.setOptions({
   breaks: true,

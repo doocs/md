@@ -8,3 +8,8 @@ interface Window {
     }) => void
   }
 }
+
+// eslint-disable-next-line
+declare module '@exercism/highlightjs-gdscript' {
+  export default LanguageFn
+}
