@@ -230,8 +230,9 @@ export const useStore = defineStore(`store`, () => {
    ********************************/
   watch(currentPostId, () => {
     const post = getPostById(currentPostId.value)
-    if (post)
-      toRaw(editor.value!).setValue(post.content)
+    if (post) {
+      editor.value && toRaw(editor.value).setValue(post.content)
+    }
   })
 
   onMounted(() => {
