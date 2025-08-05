@@ -1,7 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import packageJson from '../md-cli/package.json' assert { type: 'json' };
+import packageJson from '../packages/md-cli/package.json' assert { type: 'json' };
 import child_process from 'child_process';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -34,7 +34,7 @@ const __dirname = path.dirname(__filename);
     version: getNewVersion(packageJson.version, process.argv[2]),
   };
   await fs.writeFile(
-    path.resolve(__dirname, "../md-cli/package.json"),
+    path.resolve(__dirname, "../packages/md-cli/package.json"),
     JSON.stringify(Object.assign({}, packageJson, newVersionObj), null, 2) +
       "\n"
   );
