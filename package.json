@@ -13,17 +13,17 @@
     "url": "https://github.com/doocs/md/issues"
   },
   "scripts": {
-    "start": "npm run dev",
+    "start": "pnpm run dev",
     "dev": "vite --host",
     "build": "run-p type-check \"build:only {@}\" --",
     "build:only": "vite build",
     "build:h5-netlify": "run-p type-check \"build:h5-netlify:only {@}\" --",
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
-    "build:cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
+    "build:cli": "pnpm run build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
-    "compile:extension": "npm --prefix ./src/extension run compile",
-    "preview": "npm run build && vite preview",
-    "preview:pages": "cross-env CF_PAGES=1 npm run build:h5-netlify && wrangler pages dev ./dist",
+    "compile:extension": "pnpm --prefix ./src/extension run compile",
+    "preview": "pnpm run build && vite preview",
+    "preview:pages": "cross-env CF_PAGES=1 pnpm run build:h5-netlify && wrangler pages dev ./dist",
     "release:cli": "node ./scripts/release.js",
     "ext:dev": "wxt",
     "ext:zip": "wxt zip",
@@ -32,7 +32,7 @@
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
     "postinstall": "simple-git-hooks && wxt prepare",
-    "package:extension": "npm --prefix ./src/extension run package"
+    "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.777.0",
@@ -124,6 +124,6 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*": "npm run lint"
+    "*": "pnpm run lint"
   }
 }
