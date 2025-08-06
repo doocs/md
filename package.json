@@ -14,6 +14,7 @@
   },
   "scripts": {
     "start": "pnpm run dev",
+    "web": "pnpm --filter @md/web",
     "dev": "vite --host",
     "build": "run-p type-check \"build:only {@}\" --",
     "build:only": "vite build",
