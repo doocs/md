@@ -21,7 +21,7 @@ jobs:
       - name: Build
         run: |
           pnpm install
-          pnpm run build:h5-netlify
+          pnpm web build:h5-netlify
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
