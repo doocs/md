@@ -12,8 +12,10 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const base = process.env.SERVER_ENV === `NETLIFY` ? `/` : `/md/`
+
 export default defineConfig({
-  base: process.env.SERVER_ENV === `NETLIFY` ? `/` : `/md/`,
+  base,
   define: { process },
   envPrefix: [`VITE_`, `CF_`],
   plugins: [
@@ -29,17 +31,17 @@ export default defineConfig({
         theme_color: `#ffffff`,
         icons: [
           {
-            src: `/md/pwa-192x192.png`,
+            src: `${base}/pwa-192x192.png`,
             sizes: `192x192`,
             type: `image/png`,
           },
           {
-            src: `/md/pwa-512x512.png`,
+            src: `${base}/pwa-512x512.png`,
             sizes: `512x512`,
             type: `image/png`,
           },
           {
-            src: `/md/pwa-512x512.png`,
+            src: `${base}/pwa-512x512.png`,
             sizes: `512x512`,
             type: `image/png`,
             purpose: `any maskable`,
