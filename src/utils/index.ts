@@ -267,7 +267,7 @@ function setStyles(element: Element) {
  * @param {string} primaryColor - 主色调
  * @returns {string} 处理后的HTML字符串
  */
-function processHtmlContent(primaryColor: string): string {
+export function processHtmlContent(primaryColor: string): string {
   const element = document.querySelector(`#output`)!
   setStyles(element)
 
