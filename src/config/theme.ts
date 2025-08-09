@@ -309,11 +309,8 @@ const defaultTheme: Theme = {
     },
 
     inline_katex: {
-      'display': `inline-flex`,
       'max-width': `100%`,
       'overflow-x': `auto`,
-      'padding-bottom': `5px`,
-      'vertical-align': `middle`,
     },
   },
 }
