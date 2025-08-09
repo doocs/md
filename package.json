@@ -110,6 +110,7 @@
     "unplugin-vue-components": "^28.4.1",
     "vite": "^6.3.4",
     "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-pwa": "^1.0.2",
     "vite-plugin-radar": "^0.10.0",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vue-tsc": "^2.2.0",

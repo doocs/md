@@ -57,3 +57,6 @@ components.d.ts
 .output
 web-ext.config.ts
 .wrangler
+
+# vite-plugin-pwa dev output
+/dev-dist/
