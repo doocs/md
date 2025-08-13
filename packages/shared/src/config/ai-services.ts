@@ -1,4 +1,4 @@
-import { DEFAULT_SERVICE_ENDPOINT } from '@/constants/AIConfig'
+import { DEFAULT_SERVICE_ENDPOINT } from '../constants'
 
 export interface ServiceOption {
   value: string

@@ -1,5 +1,5 @@
-import type { IConfigOption } from '@/types'
-import { themeOptions } from '@/config/theme'
+import type { IConfigOption } from '../types'
+import { themeOptions } from './theme'
 
 export const fontFamilyOptions: IConfigOption[] = [
   {

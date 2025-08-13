@@ -1,5 +1,5 @@
+import type { ThemeStyles } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import type { ThemeStyles } from '@/types'
 import { getStyleString } from '.'
 
 /**

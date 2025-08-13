@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { serviceOptions } from '@md/shared/config'
+import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
-import { serviceOptions } from '@/config/ai-services'
-import { DEFAULT_SERVICE_TYPE } from '@/constants/AIConfig'
 import useAIConfigStore from '@/stores/AIConfig'
 
 /* -------------------------- 基础数据 -------------------------- */

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { Format } from 'vue-pick-colors'
-import PickColors from 'vue-pick-colors'
 import {
   codeBlockThemeOptions,
   colorOptions,
@@ -8,7 +7,8 @@ import {
   fontSizeOptions,
   legendOptions,
   themeOptions,
-} from '@/config'
+} from '@md/shared/config'
+import PickColors from 'vue-pick-colors'
 import { useDisplayStore, useStore } from '@/stores'
 
 const store = useStore()

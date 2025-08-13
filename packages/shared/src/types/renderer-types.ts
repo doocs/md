@@ -1,5 +1,5 @@
 import type { ReadTimeResults } from 'reading-time'
-import type { IOpts } from '@/types'
+import type { IOpts } from './common'
 
 export interface RendererAPI {
   /* —— 生命周期 —— */

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { IConfigOption } from '@/types'
+import type { IConfigOption } from '@md/shared/types'
 
 const props = defineProps<{
   title: string

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { storeLabels } from '@md/shared/config'
 import { Expand, UploadCloud } from 'lucide-vue-next'
-import { storeLabels } from '@/config/store'
 import { getAllStoreStates, useDisplayStore, useStore } from '@/stores'
 import { downloadFile } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'

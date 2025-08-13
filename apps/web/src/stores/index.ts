@@ -1,16 +1,16 @@
-import CodeMirror from 'codemirror'
-import { toPng } from 'html-to-image'
-import { v4 as uuid } from 'uuid'
-import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
   altKey,
   defaultStyleConfig,
   shiftKey,
   themeMap,
   widthOptions,
-} from '@/config'
+} from '@md/shared/config'
+import CodeMirror from 'codemirror'
+import { toPng } from 'html-to-image'
+import { v4 as uuid } from 'uuid'
+
+import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import {
   addPrefix,
   downloadFile,

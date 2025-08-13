@@ -28,6 +28,7 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.777.0",
     "@aws-sdk/s3-request-presigner": "^3.777.0",
+    "@md/shared": "workspace:*",
     "@ssttevee/multipart-parser": "^0.1.9",
     "@vee-validate/yup": "^4.15.0",
     "@vueuse/core": "^12.5.0",
