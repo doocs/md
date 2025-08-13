@@ -74,6 +74,13 @@ function togglePostExpanded(postId: string) {
     targetPost.collapsed = !targetPost.collapsed
   }
 }
+
+/*
+ * 判断文章是否有子文章
+ */
+function isHasChild(postId: string) {
+  return props.sortedPosts.some(p => p.parentId === postId)
+}
 </script>
 
 <template>
@@ -104,7 +111,8 @@ function togglePostExpanded(postId: string) {
         size="xs"
         variant="ghost"
         class="h-max p-0.5"
-        @click.stop="togglePostExpanded(post.id)"
+        :class="isHasChild(post.id) ? 'opacity-100' : 'opacity-0'"
+        @click.stop="isHasChild(post.id) && togglePostExpanded(post.id)"
       >
         <ChevronRight
           class="size-4 transition-transform"
@@ -146,17 +154,10 @@ function togglePostExpanded(postId: string) {
     </a>
 
     <div
-      v-if="!post.collapsed"
+      v-if="isHasChild(post.id) && !post.collapsed"
       class="space-y-1 ml-4 mt-1 border-l-2 border-gray-300 pl-1 dark:border-gray-700"
     >
-      <span
-        v-if="!props.sortedPosts.some((p) => p.parentId === post.id)"
-        class="ml-2 text-xs"
-      >
-        暂无内容
-      </span>
       <PostItem
-        v-else
         :parent-id="post.id"
         :sorted-posts="props.sortedPosts"
         :start-rename-post="props.startRenamePost"
