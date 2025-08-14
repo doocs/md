@@ -1,16 +1,15 @@
+import { initRenderer } from '@md/core'
 import {
-  altKey,
   defaultStyleConfig,
-  shiftKey,
   themeMap,
   widthOptions,
-} from '@md/shared/config'
+} from '@md/shared/configs'
 import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
-
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
   downloadFile,
@@ -23,8 +22,6 @@ import {
 } from '@/utils'
 import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils/'
 import { copyPlain } from '@/utils/clipboard'
-
-import { initRenderer } from '@/utils/renderer'
 
 /**********************************
  * Post 结构接口

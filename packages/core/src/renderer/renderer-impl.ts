@@ -8,12 +8,8 @@ import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import readingTime from 'reading-time'
-import { getStyleString } from '.'
-import markedAlert from './MDAlert'
-import markedFootnotes from './MDFootnotes'
-import { MDKatex } from './MDKatex'
-import markedSlider from './MDSlider'
-import { markedToc } from './MDToc'
+import { markedAlert, markedFootnotes, markedSlider, markedToc, MDKatex } from '../extensions'
+import { getStyleString } from '../utils'
 
 marked.setOptions({
   breaks: true,

@@ -78,6 +78,8 @@
     "package": "vsce package --no-dependencies --allow-package-secrets github"
   },
   "dependencies": {
+    "@md/core": "workspace:*",
+    "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
     "isomorphic-dompurify": "^2.25.0",
     "ts-loader": "^9.5.2",

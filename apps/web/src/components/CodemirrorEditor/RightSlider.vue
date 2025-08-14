@@ -8,7 +8,7 @@ import {
   legendOptions,
   themeOptions,
   widthOptions,
-} from '@md/shared/config'
+} from '@md/shared/configs'
 import { Moon, Sun } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
 import { useDisplayStore, useStore } from '@/stores'

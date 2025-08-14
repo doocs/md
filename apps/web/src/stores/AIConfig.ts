@@ -1,4 +1,4 @@
-import { serviceOptions } from '@md/shared/config'
+import { serviceOptions } from '@md/shared/configs'
 import {
   DEFAULT_SERVICE_KEY,
   DEFAULT_SERVICE_MAX_TOKEN,

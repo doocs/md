@@ -14,7 +14,7 @@ interface MapContent {
 }
 const fnMap = new Map<string, MapContent>()
 
-export default function markedFootnotes(): MarkedExtension {
+export function markedFootnotes(): MarkedExtension {
   return {
     extensions: [
       {

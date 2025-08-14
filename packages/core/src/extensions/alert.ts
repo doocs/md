@@ -1,13 +1,13 @@
 import type { AlertOptions, AlertVariantItem } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString } from '.'
+import { getStyleString, ucfirst } from '../utils'
 
 /**
  * https://github.com/bent10/marked-extensions/tree/main/packages/alert
  * To support theme, we need to modify the source code.
  * A [marked](https://marked.js.org/) extension to support [GFM alerts](https://github.com/orgs/community/discussions/16925).
  */
-export default function markedAlert(options: AlertOptions = {}): MarkedExtension {
+export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   const { className = `markdown-alert`, variants = [], withoutStyle = false } = options
   const resolvedVariants = resolveVariants(variants)
 
@@ -187,11 +187,4 @@ export function resolveVariants(variants: AlertVariantItem[]) {
  */
 export function createSyntaxPattern(type: string) {
   return `^(?:\\[!${type}])\\s*?\n*`
-}
-
-/**
- * Capitalizes the first letter of a string.
- */
-export function ucfirst(str: string) {
-  return str.slice(0, 1).toUpperCase() + str.slice(1).toLowerCase()
 }

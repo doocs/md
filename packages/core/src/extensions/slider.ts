@@ -1,12 +1,12 @@
 import type { ThemeStyles } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString } from '.'
+import { getStyleString } from '../utils'
 
 /**
  * A marked extension to support horizontal sliding images.
  * Syntax: <![alt1](url1),![alt2](url2),![alt3](url3)>
  */
-export default function markedSlider(options: { styles?: ThemeStyles } = {}): MarkedExtension {
+export function markedSlider(options: { styles?: ThemeStyles } = {}): MarkedExtension {
   return {
     extensions: [
       {

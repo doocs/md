@@ -1,8 +1,7 @@
+import { initRenderer } from '@md/core/renderer'
+import { customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@md/core/utils'
+import { css2json, themeMap } from '@md/shared'
 import * as vscode from 'vscode'
-import { themeMap } from '@/config/theme'
-import { css2json, customCssWithTemplate, customizeTheme } from '@/utils'
-import { modifyHtmlContent } from '@/utils/'
-import { initRenderer } from '@/utils/renderer'
 import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
 

@@ -7,7 +7,7 @@ import {
   fontSizeOptions,
   legendOptions,
   themeOptions,
-} from '@md/shared/config'
+} from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
 import { useDisplayStore, useStore } from '@/stores'
 

@@ -1,189 +1,31 @@
-import type { Block, ExtendedProperties, Inline, RendererAPI, Theme } from '@md/shared/types'
-import type { PropertiesHyphen } from 'csstype'
-import type { ReadTimeResults } from 'reading-time'
-import { prefix } from '@md/shared/config'
-import { addSpacingToMarkdown } from '@md/shared/utils'
-import DOMPurify from 'isomorphic-dompurify'
+import { markedAlert, MDKatex } from '@md/core'
+import { prefix } from '@md/shared/configs'
+
 import juice from 'juice'
-import { Marked, marked } from 'marked'
-import * as prettierPluginBabel from 'prettier/plugins/babel'
-import * as prettierPluginEstree from 'prettier/plugins/estree'
-import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
-import * as prettierPluginCss from 'prettier/plugins/postcss'
-import { format } from 'prettier/standalone'
-import markedAlert from './MDAlert'
-import { MDKatex } from './MDKatex'
+import { Marked } from 'marked'
+
+export {
+  customCssWithTemplate,
+  customizeTheme,
+  getStyleString,
+  modifyHtmlContent,
+  postProcessHtml,
+  renderMarkdown,
+} from '@md/core/utils'
+
+export {
+  checkImage,
+  createTable,
+  css2json,
+  downloadFile,
+  formatDoc,
+  removeLeft,
+  sanitizeTitle,
+  toBase64,
+} from '@md/shared/utils'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
-}
-
-export function customizeTheme(theme: Theme, options: {
-  fontSize?: number
-  color?: string
-}) {
-  const newTheme = JSON.parse(JSON.stringify(theme))
-  const { fontSize, color } = options
-  if (fontSize) {
-    for (let i = 1; i <= 6; i++) {
-      const v = newTheme.block[`h${i}`][`font-size`]
-      newTheme.block[`h${i}`][`font-size`] = `${fontSize * Number.parseFloat(v)}px`
-    }
-  }
-  if (color) {
-    newTheme.base[`--md-primary-color`] = color
-  }
-  return newTheme as Theme
-}
-
-export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
-  const newTheme = customizeTheme(theme, { color })
-
-  const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline, PropertiesHyphen>>, keys: T[]) => {
-    keys.forEach((key) => {
-      if (source[key]) {
-        target[key] = Object.assign(target[key] || {}, source[key])
-      }
-    })
-  }
-
-  const blockKeys: Block[] = [
-    `container`,
-    `h1`,
-    `h2`,
-    `h3`,
-    `h4`,
-    `h5`,
-    `h6`,
-    `code`,
-    `code_pre`,
-    `p`,
-    `hr`,
-    `blockquote`,
-    `blockquote_note`,
-    `blockquote_tip`,
-    `blockquote_important`,
-    `blockquote_warning`,
-    `blockquote_caution`,
-    `blockquote_p`,
-    `blockquote_p_note`,
-    `blockquote_p_tip`,
-    `blockquote_p_important`,
-    `blockquote_p_warning`,
-    `blockquote_p_caution`,
-    `blockquote_title`,
-    `blockquote_title_note`,
-    `blockquote_title_tip`,
-    `blockquote_title_important`,
-    `blockquote_title_warning`,
-    `blockquote_title_caution`,
-    `image`,
-    `ul`,
-    `ol`,
-    `block_katex`,
-  ]
-  const inlineKeys: Inline[] = [`listitem`, `codespan`, `link`, `wx_link`, `strong`, `table`, `thead`, `td`, `footnote`, `figcaption`, `em`, `inline_katex`]
-
-  mergeProperties(newTheme.block, jsonString, blockKeys)
-  mergeProperties(newTheme.inline, jsonString, inlineKeys)
-  return newTheme
-}
-
-/**
- * 将 CSS 字符串转换为 JSON 对象
- *
- * @param {string} css - CSS 字符串
- * @returns {object} - JSON 格式的 CSS
- */
-export function css2json(css: string): Partial<Record<Block | Inline, PropertiesHyphen>> {
-  // 去除所有 CSS 注释
-  css = css.replace(/\/\*[\s\S]*?\*\//g, ``)
-
-  const json: Partial<Record<Block | Inline, PropertiesHyphen>> = {}
-
-  // 辅助函数：将声明数组转换为对象
-  const toObject = (array: any[]) =>
-    array.reduce<{ [k: string]: string }>((obj, item) => {
-      const [property, ...value] = item.split(`:`).map((part: string) => part.trim())
-      if (property)
-        obj[property] = value.join(`:`)
-      return obj
-    }, {})
-
-  while (css.includes(`{`) && css.includes(`}`)) {
-    const lbracket = css.indexOf(`{`)
-    const rbracket = css.indexOf(`}`)
-
-    // 获取声明块并转换为对象
-    const declarations = css.substring(lbracket + 1, rbracket)
-      .split(`;`)
-      .map(e => e.trim())
-      .filter(Boolean)
-
-    // 获取选择器并去除空格
-    const selectors = css.substring(0, lbracket)
-      .split(`,`)
-      .map(selector => selector.trim()) as (Block | Inline)[]
-
-    const declarationObj = toObject(declarations)
-
-    // 将声明对象关联到相应的选择器
-    selectors.forEach((selector) => {
-      json[selector] = { ...(json[selector] || {}), ...declarationObj }
-    })
-
-    // 处理下一个声明块
-    css = css.slice(rbracket + 1).trim()
-  }
-
-  return json
-}
-
-/**
- * 将样式对象转换为 CSS 字符串
- * @param {ExtendedProperties} style - 样式对象
- * @returns {string} - CSS 字符串
- */
-export function getStyleString(style: ExtendedProperties): string {
-  return Object.entries(style ?? {}).map(([key, value]) => `${key}: ${value}`).join(`; `)
-}
-
-/**
- * 格式化内容
- * @param {string} content - 要格式化的内容
- * @param {'markdown' | 'css'} [type] - 内容类型，决定使用的解析器，默认为 'markdown'
- * @returns {Promise<string>} - 格式化后的内容
- */
-export async function formatDoc(content: string, type: `markdown` | `css` = `markdown`): Promise<string> {
-  const plugins = {
-    markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
-    css: [prettierPluginCss],
-  }
-  const addSpaceContent = await addSpacingToMarkdown(content)
-
-  const parser = type in plugins ? type : `markdown`
-  return await format(addSpaceContent, {
-    parser,
-    plugins: plugins[parser],
-  })
-}
-
-export function sanitizeTitle(title: string) {
-  const MAX_FILENAME_LENGTH = 100
-
-  // Windows 禁止字符，包含所有平台非法字符合集
-  const INVALID_CHARS = /[\\/:*?"<>|]/g
-
-  if (!INVALID_CHARS.test(title) && title.length <= MAX_FILENAME_LENGTH) {
-    return title.trim() || `untitled`
-  }
-
-  const replaced = title.replace(INVALID_CHARS, `_`).trim()
-  const safe = replaced.length > MAX_FILENAME_LENGTH
-    ? replaced.slice(0, MAX_FILENAME_LENGTH)
-    : replaced
-
-  return safe || `untitled`
 }
 
 /**
@@ -288,81 +130,14 @@ export function exportHTML(primaryColor: string, title: string = `untitled`) {
 export async function exportPureHTML(raw: string, title: string = `untitled`) {
   const safeTitle = sanitizeTitle(title)
 
-  const marked = new Marked()
-  marked.use(markedAlert({ withoutStyle: true }))
-  marked.use(
+  const markedInstance = new Marked()
+  markedInstance.use(markedAlert({ withoutStyle: true }))
+  markedInstance.use(
     MDKatex({ nonStandard: true }, ``, ``),
   )
-  const pureHtml = await marked.parse(raw)
+  const pureHtml = await markedInstance.parse(raw)
 
   downloadFile(pureHtml, `${safeTitle}.html`, `text/html`)
-}
-
-/**
- * 通用文件下载函数
- * @param content - 文件内容
- * @param filename - 文件名
- * @param mimeType - MIME 类型，默认为 text/plain
- */
-export function downloadFile(content: string, filename: string, mimeType: string = `text/plain`) {
-  const downLink = document.createElement(`a`)
-  downLink.download = filename
-  downLink.style.display = `none`
-
-  // 检查是否是 base64 data URL
-  if (content.startsWith(`data:`)) {
-    downLink.href = content
-  }
-  else if (mimeType === `text/html`) {
-    downLink.href = `data:text/html;charset=utf-8,${encodeURIComponent(content)}`
-  }
-  else {
-    const blob = new Blob([content], { type: mimeType })
-    downLink.href = URL.createObjectURL(blob)
-  }
-
-  document.body.appendChild(downLink)
-  downLink.click()
-  document.body.removeChild(downLink)
-
-  // 如果是 blob URL，释放内存
-  if (!content.startsWith(`data:`) && mimeType !== `text/html`) {
-    URL.revokeObjectURL(downLink.href)
-  }
-}
-
-/**
- * 根据数据生成 Markdown 表格
- *
- * @param {object} options - 选项
- * @param {object} options.data - 表格数据
- * @param {number} options.rows - 行数
- * @param {number} options.cols - 列数
- * @returns {string} 生成的 Markdown 表格
- */
-export function createTable({ data, rows, cols }: { data: { [k: string]: string }, rows: number, cols: number }): string {
-  let table = ``
-  for (let i = 0; i < rows + 2; ++i) {
-    table += `| `
-    const currRow = []
-    for (let j = 0; j < cols; ++j) {
-      const rowIdx = i > 1 ? i - 1 : i
-      currRow.push(i === 1 ? `---` : data[`k_${rowIdx}_${j}`] || `     `)
-    }
-    table += currRow.join(` | `)
-    table += ` |\n`
-  }
-
-  return table
-}
-
-export function toBase64(file: Blob) {
-  return new Promise<string>((resolve, reject) => {
-    const reader = new FileReader()
-    reader.readAsDataURL(file)
-    reader.onload = () => resolve((reader.result as string).split(`,`).pop()!)
-    reader.onerror = error => reject(error)
-  })
 }
 
 /**
@@ -430,44 +205,6 @@ export function exportPDF(primaryColor: string, title: string = `untitled`) {
       printWindow.close()
     }
   }
-}
-
-export function checkImage(file: File) {
-  // 检查文件名后缀
-  const isValidSuffix = /\.(?:gif|jpe?g|png)$/i.test(file.name)
-  if (!isValidSuffix) {
-    return {
-      ok: false,
-      msg: `请上传 JPG/PNG/GIF 格式的图片`,
-    }
-  }
-
-  // 检查文件大小
-  const maxSizeMB = 10
-  if (file.size > maxSizeMB * 1024 * 1024) {
-    return {
-      ok: false,
-      msg: `由于公众号限制，图片大小不能超过 ${maxSizeMB}M`,
-    }
-  }
-
-  return { ok: true, msg: `` }
-}
-
-/**
- * 移除左边多余空格
- * @param {string} str
- * @returns string
- */
-export function removeLeft(str: string) {
-  const lines = str.split(`\n`)
-  // 获取应该删除的空白符数量
-  const minSpaceNum = lines
-    .filter(item => item.trim())
-    .map(item => (item.match(/(^\s+)?/)!)[0].length)
-    .sort((a, b) => a - b)[0]
-  // 删除空白符
-  return lines.map(item => item.slice(minSpaceNum)).join(`\n`)
 }
 
 export function solveWeChatImage() {
@@ -559,71 +296,4 @@ export function processClipboardContent(primaryColor: string) {
     grand.innerHTML = ``
     grand.appendChild(section)
   })
-}
-
-export function renderMarkdown(raw: string, renderer: RendererAPI) {
-  // 解析 front-matter 和正文
-  const { markdownContent, readingTime }
-    = renderer.parseFrontMatterAndContent(raw)
-
-  // marked -> html
-  let html = marked.parse(markdownContent) as string
-
-  // XSS 处理
-  html = DOMPurify.sanitize(html, { ADD_TAGS: [`mp-common-profile`] })
-
-  return { html, readingTime }
-}
-
-export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, renderer: RendererAPI): string {
-  // 阅读时间及字数统计
-  let html = baseHtml
-  html = renderer.buildReadingTime(reading) + html
-  // 去除第一行的 margin-top
-  html = html.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
-  // 引用脚注
-  html += renderer.buildFootnotes()
-  // 附加的一些 style
-  html += renderer.buildAddition()
-  if (renderer.getOpts().isMacCodeBlock) {
-    html += `
-        <style>
-          .hljs.code__pre > .mac-sign {
-            display: flex;
-          }
-        </style>
-      `
-  }
-  html += `
-    <style>
-      .code__pre {
-        padding: 0 !important;
-      }
-
-      .hljs.code__pre code {
-        display: -webkit-box;
-        padding: 0.5em 1em 1em;
-        overflow-x: auto;
-        text-indent: 0;
-      }
-      h2 strong {
-        color: inherit !important;
-      }
-    </style>
-  `
-  // 包裹 HTML
-  return renderer.createContainer(html)
-}
-
-export function modifyHtmlContent(content: string, renderer: RendererAPI): string {
-  const {
-    markdownContent,
-    readingTime: readingTimeResult,
-  } = renderer.parseFrontMatterAndContent(content)
-
-  let html = marked.parse(markdownContent) as string
-  html = DOMPurify.sanitize(html, {
-    ADD_TAGS: [`mp-common-profile`],
-  })
-  return postProcessHtml(html, readingTimeResult, renderer)
 }

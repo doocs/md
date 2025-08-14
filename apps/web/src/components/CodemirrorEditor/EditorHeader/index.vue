@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/config'
 import {
   ChevronDownIcon,
   Moon,
@@ -8,6 +7,7 @@ import {
   Settings,
   Sun,
 } from 'lucide-vue-next'
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 

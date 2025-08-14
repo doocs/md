@@ -1,5 +1,5 @@
 import type CodeMirror from 'codemirror'
-import { altKey, ctrlKey, shiftKey } from '@md/shared/config'
+import { altKey, ctrlKey, shiftKey } from '@/configs/shortcut-key'
 import { formatDoc } from '@/utils'
 
 interface ToggleFormatOptions {

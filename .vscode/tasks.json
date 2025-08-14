@@ -4,7 +4,7 @@
     {
       "type": "npm",
       "script": "compile",
-      "path": "src/extension",
+      "path": "apps/vscode",
       "group": "build",
       "problemMatcher": [],
       "label": "compile extension",
