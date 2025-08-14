@@ -46,8 +46,6 @@ export default defineWxtModule({
                 return `katex`
               if (id.includes(`mermaid`))
                 return `mermaid`
-              if (id.includes(`cytoscape`))
-                return `cytoscape`
               if (id.includes(`highlight.js`))
                 return `hljs`
             }
