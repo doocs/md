@@ -8,6 +8,7 @@ import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
@@ -18,6 +19,7 @@ import {
   exportPDF,
   exportPureHTML,
   formatDoc,
+  processHtmlContent,
   sanitizeTitle,
 } from '@/utils'
 import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils/'
@@ -576,6 +578,12 @@ export const useStore = defineStore(`store`, () => {
     toggleAIToolbox()
   })
 
+  const editorContent2HTML = () => {
+    const temp = processHtmlContent(primaryColor.value)
+    document.querySelector(`#output`)!.innerHTML = output.value
+    return temp
+  }
+
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = () => {
     exportHTML(primaryColor.value, posts.value[currentPostIndex.value].title)
@@ -744,6 +752,8 @@ export const useStore = defineStore(`store`, () => {
     updatePostParentId,
     collapseAllPosts,
     expandAllPosts,
+
+    editorContent2HTML,
   }
 })
 

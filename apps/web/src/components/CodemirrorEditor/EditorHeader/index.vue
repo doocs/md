@@ -138,6 +138,9 @@ async function copy() {
       if (copyMode.value === `html`) {
         await copyContent(temp)
       }
+      else if (copyMode.value === `html-and-style`) {
+        await copyContent(store.editorContent2HTML())
+      }
 
       // 输出提示
       toast.success(
@@ -250,6 +253,9 @@ async function copy() {
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html">
                 HTML 格式
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="html-and-style">
+                HTML 格式（兼容样式）
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="md">
                 MD 格式
