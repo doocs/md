@@ -13,16 +13,20 @@ import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
+  css2json,
+  customCssWithTemplate,
+  customizeTheme,
   downloadFile,
   downloadMD,
   exportHTML,
   exportPDF,
   exportPureHTML,
   formatDoc,
+  postProcessHtml,
   processHtmlContent,
+  renderMarkdown,
   sanitizeTitle,
 } from '@/utils'
-import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils/'
 import { copyPlain } from '@/utils/clipboard'
 
 /**********************************
