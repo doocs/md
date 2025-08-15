@@ -32,7 +32,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist
+          path: apps/web/dist
           retention-days: 5
 
       - name: Save PR number
