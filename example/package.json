@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
-  },
-  "devDependencies": {
-    "wrangler": "^3.109.2"
-  }
-}

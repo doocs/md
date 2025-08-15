@@ -1,0 +1,93 @@
+{
+  "publisher": "doocs",
+  "name": "doocs-md",
+  "displayName": "doocs-md",
+  "version": "0.0.1",
+  "description": "",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doocs/md"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.js",
+  "engines": {
+    "vscode": "^1.91.0"
+  },
+  "activationEvents": [],
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "markdown-sidebar",
+          "title": "Markdown Preview",
+          "icon": "./public/icon-256-gray.png"
+        }
+      ]
+    },
+    "views": {
+      "markdown-sidebar": [
+        {
+          "id": "markdown.preview.view",
+          "name": "Preview",
+          "icon": "./public/icon-256-gray.png"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "markdown.preview",
+        "title": "Open Markdown Preview",
+        "icon": {
+          "light": "./public/icon-256-gray.png",
+          "dark": "./public/icon-256-gray.png"
+        }
+      },
+      {
+        "command": "markdown.setFontFamily",
+        "title": "Set Font Family",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.toggleCountStatus",
+        "title": "Toggle Count Status",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.toggleMacCodeBlock",
+        "title": "Toggle Mac Code Block",
+        "category": "Markdown Preview"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "markdown.preview",
+          "group": "navigation",
+          "when": "editorLangId == markdown"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "build": "webpack --mode production --devtool hidden-source-map",
+    "package": "vsce package --no-dependencies --allow-package-secrets github"
+  },
+  "dependencies": {
+    "@md/core": "workspace:*",
+    "@md/shared": "workspace:*",
+    "@types/webpack": "^5.28.5",
+    "isomorphic-dompurify": "^2.25.0",
+    "ts-loader": "^9.5.2",
+    "tsconfig-paths-webpack-plugin": "^4.2.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.91.0",
+    "@vscode/vsce": "^3.4.2",
+    "webpack-cli": "^6.0.1"
+  }
+}

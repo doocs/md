@@ -18,16 +18,21 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Build
         run: |
-          npm install
-          npm run build:h5-netlify
+          pnpm install
+          pnpm web build:h5-netlify
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
           name: dist
-          path: dist
+          path: apps/web/dist
           retention-days: 5
 
       - name: Save PR number
