@@ -56,6 +56,7 @@ export default defineConfig({
       `functions/**`,
       `md-cli/**`,
       `scripts/**`,
+      `src/extension/**`,
     ],
   },
   analysis: {
