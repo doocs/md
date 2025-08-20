@@ -419,9 +419,15 @@ onMounted(() => {
   }, 30 * 1000)
 })
 
-// 销毁，清理定时器
+// 销毁时清理定时器和全局事件监听器
 onUnmounted(() => {
+  // 清理定时器 - 防止回调访问已销毁的DOM
   clearTimeout(historyTimer.value)
+  clearTimeout(timeout.value)
+  clearTimeout(changeTimer.value)
+
+  // 清理全局事件监听器 - 防止全局事件触发已销毁的组件
+  document.removeEventListener(`keydown`, handleGlobalKeydown)
 })
 </script>
 
