@@ -13,7 +13,12 @@ export function useImportMarkdownContent() {
     const reader = new FileReader()
     reader.readAsText(file)
     reader.onload = (event) => {
-      store.editor!.setValue(event.target!.result as string)
+      // 清空编辑器
+      store.editor!.setValue(``)
+
+      requestAnimationFrame(() => {
+        store.editor!.setValue(event.target!.result as string)
+      })
       toast.success(`文档导入成功`)
     }
   })
