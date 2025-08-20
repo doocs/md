@@ -1,5 +1,16 @@
 import { markedAlert, MDKatex } from '@md/core'
 import { prefix } from '@md/shared/configs'
+// 直接导入供本文件内部使用
+import {
+  checkImage,
+  createTable,
+  css2json,
+  downloadFile,
+  formatDoc,
+  removeLeft,
+  sanitizeTitle,
+  toBase64,
+} from '@md/shared/utils'
 
 import juice from 'juice'
 import { Marked } from 'marked'
@@ -13,6 +24,7 @@ export {
   renderMarkdown,
 } from '@md/core/utils'
 
+// 重新导出供外部使用
 export {
   checkImage,
   createTable,
@@ -22,7 +34,7 @@ export {
   removeLeft,
   sanitizeTitle,
   toBase64,
-} from '@md/shared/utils'
+}
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`
