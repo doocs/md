@@ -45,12 +45,12 @@ jobs:
         run: pnpm run ${{ env.BUILD_COMMAND }}
 
       - name: Generate CNAME
-        run: echo "md.doocs.org" > dist/CNAME
+        run: echo "md.doocs.org" > apps/web/dist/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist
+          path: apps/web/dist
 
   deploy:
     needs: build
