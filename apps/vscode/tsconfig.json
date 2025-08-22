@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "module": "es2015",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@/*": ["../*"]
+    },
+    "types": ["vscode"],
+    "strict": true,
+    "sourceMap": true,
+    "esModuleInterop": true
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

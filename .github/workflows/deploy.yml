@@ -24,8 +24,13 @@ jobs:
         with:
           node-version: 20
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: Install dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Determine build command
         id: build-command
@@ -37,7 +42,7 @@ jobs:
           fi
 
       - name: Run build
-        run: npm run ${{ env.BUILD_COMMAND }}
+        run: pnpm run ${{ env.BUILD_COMMAND }}
 
       - name: Generate CNAME
         run: echo "md.doocs.org" > dist/CNAME

@@ -13,17 +13,18 @@
     "url": "https://github.com/doocs/md/issues"
   },
   "scripts": {
-    "start": "npm run dev",
+    "start": "pnpm run dev",
+    "web": "pnpm --filter @md/web",
+    "vscode": "pnpm --prefix ./apps/vscode",
     "dev": "vite --host",
     "build": "run-p type-check \"build:only {@}\" --",
     "build:only": "vite build",
     "build:h5-netlify": "run-p type-check \"build:h5-netlify:only {@}\" --",
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
-    "build:cli": "npm run build && npx shx rm -rf md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist md-cli/ && cd md-cli && npm pack",
+    "build:cli": "pnpm run build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
-    "compile:extension": "npm --prefix ./src/extension run compile",
-    "preview": "npm run build && vite preview",
-    "preview:pages": "cross-env CF_PAGES=1 npm run build:h5-netlify && wrangler pages dev ./dist",
+    "preview": "pnpm run build && vite preview",
+    "preview:pages": "cross-env CF_PAGES=1 pnpm run build:h5-netlify && wrangler pages dev ./dist",
     "release:cli": "node ./scripts/release.js",
     "ext:dev": "wxt",
     "ext:zip": "wxt zip",
@@ -31,8 +32,7 @@
     "firefox:zip": "wxt zip -b firefox",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
-    "postinstall": "simple-git-hooks && wxt prepare",
-    "package:extension": "npm --prefix ./src/extension run package"
+    "postinstall": "simple-git-hooks && wxt prepare"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.777.0",
@@ -89,6 +89,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/mdast": "^4.0.4",
     "@types/node": "^22.13.14",
+    "@types/unist": "^3.0.3",
     "@types/uuid": "^10.0.0",
     "@unocss/eslint-plugin": "^66.3.3",
     "@vitejs/plugin-vue": "^5.2.1",
@@ -97,9 +98,12 @@
     "eslint": "^9.32.0",
     "eslint-plugin-format": "^1.0.1",
     "less": "^4.2.2",
+    "linkedom": "^0.18.11",
     "npm-run-all": "^4.1.5",
+    "ohash": "^2.0.11",
     "postcss": "^8.5.1",
     "prettier": "3.3.3",
+    "rollup": "^4.46.2",
     "rollup-plugin-visualizer": "^5.12.0",
     "shx": "^0.3.4",
     "simple-git-hooks": "^2.12.1",
@@ -109,7 +113,7 @@
     "unplugin-auto-import": "^19.1.2",
     "unplugin-vue-components": "^28.4.1",
     "vite": "^6.3.4",
-    "vite-plugin-node-polyfills": "^0.23.0",
+    "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-radar": "^0.10.0",
     "vite-plugin-vue-devtools": "^7.7.2",
     "vue-tsc": "^2.2.0",
@@ -120,6 +124,6 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*": "npm run lint"
+    "*": "pnpm run lint"
   }
 }

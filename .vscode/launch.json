@@ -7,10 +7,10 @@
       "request": "launch",
       "trace": true,
       "sourceMaps": true,
-      "cwd": "${workspaceFolder}/src/extension",
-      "args": ["--extensionDevelopmentPath=${workspaceFolder}/src/extension", "--enable-proposed-api=vscode.vscode-js-debug"],
+      "cwd": "${workspaceFolder}/apps/vscode",
+      "args": ["--extensionDevelopmentPath=${workspaceFolder}/apps/vscode", "--enable-proposed-api=vscode.vscode-js-debug"],
       "runtimeExecutable": "${execPath}",
-      "outFiles": ["${workspaceFolder}/src/extension/dist/*.js"],
+      "outFiles": ["${workspaceFolder}/apps/vscode/dist/*.js"],
       "preLaunchTask": "compile extension"
     }
   ]

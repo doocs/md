@@ -1,0 +1,8 @@
+{
+  "name": "@md/config",
+  "type": "module",
+  "private": true,
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json"
+  }
+}

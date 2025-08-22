@@ -1,0 +1,77 @@
+@nightPreviewColor: #191919;
+@nightCodeMirrorColor: #191919;
+@nightActiveCodeMirrorColor: gray;
+@nightFontColor: gray;
+@nightLinkColor: #8e9eb9;
+@nightLinkTextColor: #84868b;
+@nightLineColor: #84868b;
+
+.dark {
+  .container {
+    .CodeMirror-wrap {
+      background-color: @nightCodeMirrorColor;
+    }
+
+    .output_night {
+      .preview {
+        background-color: @nightPreviewColor;
+        box-shadow: 0 0 70px rgba(0, 0, 0, 0.3);
+      }
+
+      .preview-wrapper {
+        background-color: @nightCodeMirrorColor;
+        box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
+      }
+
+      .code-snippet__fix {
+        background-color: rgb(238, 238, 238);
+      }
+    }
+
+    ::-webkit-scrollbar {
+      background-color: @nightCodeMirrorColor;
+    }
+  }
+}
+
+.CodeMirror {
+  padding-bottom: 0;
+  height: 100% !important;
+  font-size: 14px;
+  font-family: 'PingFang SC', BlinkMacSystemFont, Roboto, 'Helvetica Neue', sans-serif !important;
+}
+
+.CodeMirror-vscrollbar:focus {
+  outline: none;
+}
+
+.CodeMirror-scroll {
+  padding: 0 20px;
+  overflow-x: hidden !important;
+  overflow-y: scroll !important;
+}
+
+.cssEditor-wrapper {
+  .CodeMirror-scroll {
+    margin-right: 0;
+  }
+}
+
+.CodeMirror-vscrollbar {
+  width: 0px;
+  height: 0px;
+}
+
+.CodeMirror-wrap {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  box-sizing: border-box;
+}
+
+.cm-em {
+  font-style: normal;
+}
+
+.cm-comment {
+  font-style: normal !important;
+}
