@@ -10,7 +10,6 @@ RUN npm install -g pnpm
 # Copy workspace configuration
 COPY ./patch/vite.config.ts /app/apps/web/vite.config.ts
 ENV NODE_OPTIONS="--openssl-legacy-provider"
-ENV SERVER_ENV="NETLIFY"
 # Install dependencies and build
 RUN pnpm install && pnpm web build
 
