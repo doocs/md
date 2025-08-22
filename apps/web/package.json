@@ -51,7 +51,7 @@
     "juice": "^11.0.0",
     "lucide-vue-next": "^0.473.0",
     "marked": "^15.0.6",
-    "mermaid": "^11.6.0",
+    "mermaid": "^11.10.0",
     "node-fetch": "^3.3.2",
     "pinia": "^3.0.1",
     "qiniu-js": "^3.4.2",
