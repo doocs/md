@@ -73,28 +73,28 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 nvm i && nvm use
 
 # 安装依赖
-npm i
+pnpm i
 
 # 启动开发模式
-npm start
+pnpm web dev
 
 # 部署在 /md 目录
-npm run build
+pnpm web build
 # 访问 http://127.0.0.1:9000/md
 
 # 部署在根目录
-npm run build:h5-netlify
+pnpm web build:h5-netlify
 # 访问 http://127.0.0.1:9000/
 
 # Chrome 插件启动及调试
-npm run ext:dev
+pnpm web ext:dev
 # 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 .output/chrome-mv3-dev 目录
 
 # Chrome 插件打包
-npm run ext:zip
+pnpm web ext:zip
 
 # Firefox 扩展打包(how to build Firefox addon)
-npm run firefox:zip # output zip file at in .output/md-{version}-firefox.zip
+pnpm web firefox:zip # output zip file at in .output/md-{version}-firefox.zip
 ```
 
 ## 快速搭建私有服务

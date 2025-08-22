@@ -55,8 +55,6 @@ export default defineConfig({
               return `katex`
             if (id.includes(`mermaid`))
               return `mermaid`
-            if (id.includes(`cytoscape`))
-              return `cytoscape`
             if (id.includes(`highlight.js`))
               return `hljs`
             const pkg = id
