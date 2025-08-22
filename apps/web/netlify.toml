@@ -1,5 +1,5 @@
 [build]
-command = "npm run build:h5-netlify"
+command = "pnpm run build:h5-netlify"
 publish = "dist"
 
 # 设置重定向规则，确保SPA路由正常工作

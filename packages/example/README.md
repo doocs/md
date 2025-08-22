@@ -7,14 +7,14 @@
 开发调试：
 
 ```bash
-cd example
+cd packages/example
 npx wrangler dev worker.js
 ```
 
 或者安装依赖后启动
 
 ```bash
-cd example
+cd packages/example
 pnpm i
 pnpm dev
 ```

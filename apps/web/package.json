@@ -19,8 +19,6 @@
     "ext:zip": "wxt zip",
     "firefox:dev": "wxt -b firefox",
     "firefox:zip": "wxt zip -b firefox",
-    "chrome:dev": "wxt -b chrome",
-    "chrome:zip": "wxt zip -b chrome",
     "type-check": "vue-tsc --build --force",
     "postinstall": "simple-git-hooks && wxt prepare",
     "package:extension": "pnpm --prefix ./src/extension run package"

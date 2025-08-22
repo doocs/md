@@ -4,21 +4,44 @@
 
 ## 目录
 
-- [前置条件](#前置条件)
-- [快速开始](#快速开始)
-- [开发流程](#开发流程)
-- [代码规范](#代码规范)
-- [提交规范](#提交规范)
-- [Pull Request 流程](#pull-request-流程)
-- [Issue 报告](#issue-报告)
-- [行为准则](#行为准则)
-- [沟通渠道](#沟通渠道)
+- [贡献指南](#贡献指南)
+  - [目录](#目录)
+  - [前置条件](#前置条件)
+  - [快速开始](#快速开始)
+  - [开发流程](#开发流程)
+  - [代码规范](#代码规范)
+  - [提交规范](#提交规范)
+    - [Branch 命名](#branch-命名)
+    - [Pull Request 标题](#pull-request-标题)
+  - [Pull Request 流程](#pull-request-流程)
+  - [Issue 报告](#issue-报告)
+  - [行为准则](#行为准则)
+  - [沟通渠道](#沟通渠道)
 
 ## 前置条件
 
 - **Node.js ≥ 20**
+- **pnpm ≥ 10**
 
 ## 快速开始
+
+该项目为 pnpm monorepo 项目，使用 pnpm 管理依赖。
+
+项目结构如下：
+
+```shell
+- apps
+  - web           # 网页及浏览器插件
+  - vscode        # VSCode 插件
+- packages
+  - config        # 项目级别配置
+  - core          # 核心 markdown 渲染器
+  - shared        # 共享的配置、常量、类型和工具函数
+  - example       # 公众号 openapi 接口代理服务示例
+  - md-cli        # 命令行工具
+```
+
+以开发 `@md/web` 为例：
 
 ```bash
 # 1. Fork 本仓库并克隆
@@ -29,10 +52,10 @@ cd md
 git remote add upstream https://github.com/doocs/md.git
 
 # 3. 安装依赖
-npm install
+pnpm install
 
 # 4. 启动本地开发
-npm run dev
+pnpm web dev
 ```
 
 ## 开发流程
@@ -54,9 +77,9 @@ npm run dev
 4. 运行检查：
 
    ```bash
-   npm run lint        # ESLint + Prettier
-   npm run type-check  # TypeScript 类型检查
-   npm run build       # 产物验证
+   pnpm run lint        # ESLint + Prettier
+   pnpm run type-check  # TypeScript 类型检查
+   pnpm run web build       # 产物验证
    ```
 
 5. 提交并推送：
@@ -72,7 +95,7 @@ npm run dev
 ## 代码规范
 
 - 遵循项目自带的 **ESLint**、**Prettier** 与 **Stylelint** 配置。
-- 所有提交必须通过 `npm run lint` 检查，无警告、无错误。
+- 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
 
 ## 提交规范
