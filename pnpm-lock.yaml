@@ -385,6 +385,9 @@ importers:
       es-toolkit:
         specifier: ^1.39.10
         version: 1.39.10
+      marked:
+        specifier: ^15.0.6
+        version: 15.0.12
       reading-time:
         specifier: ^1.5.0
         version: 1.5.0
