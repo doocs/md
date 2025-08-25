@@ -1,7 +1,4 @@
 {
   "extends": "./packages/config/tsconfig.base.json",
-  "compilerOptions": {
-    "types": []
-  },
   "exclude": ["apps", "packages"]
 }
