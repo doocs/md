@@ -38,6 +38,6 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*": "pnpm run lint"
+    "*": "eslint --fix"
   }
 }
