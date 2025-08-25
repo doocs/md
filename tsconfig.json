@@ -1,11 +1,4 @@
 {
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    },
-    {
-      "path": "./tsconfig.node.json"
-    }
-  ],
-  "files": []
+  "extends": "./packages/config/tsconfig.base.json",
+  "exclude": ["apps", "packages"]
 }
