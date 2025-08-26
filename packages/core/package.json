@@ -17,7 +17,7 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.26.0",
-    "marked": "^15.0.6",
+    "marked": "^16.2.0",
     "mermaid": "^11.10.0",
     "reading-time": "^1.5.0"
   },
