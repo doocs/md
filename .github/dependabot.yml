@@ -1,0 +1,27 @@
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: tuesday
+      time: '14:00'
+      timezone: Asia/Shanghai
+    target-branch: main
+    ignore:
+      - dependency-name: vue
+
+    open-pull-requests-limit: 100
+    groups:
+      minor-and-patch:
+        applies-to: version-updates
+        update-types:
+          - minor
+          - patch
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    target-branch: main
+    open-pull-requests-limit: 100
