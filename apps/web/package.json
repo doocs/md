@@ -37,7 +37,7 @@
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
-    "codemirror": "^5.65.19",
+    "codemirror": "^6.0.2",
     "core-js": "^3.40.0",
     "cos-js-sdk-v5": "^1.8.7",
     "crypto-js": "^4.2.0",
