@@ -107,8 +107,12 @@ function leftAndRightScroll() {
     scrollCB(`preview`)
   }
 
-  previewRef.value!.addEventListener(`scroll`, previewScrollCB, false)
-  editor.value!.on(`scroll`, editorScrollCB)
+  if (previewRef.value) {
+    previewRef.value.addEventListener(`scroll`, previewScrollCB, false)
+  }
+  if (editor.value) {
+    editor.value.on(`scroll`, editorScrollCB)
+  }
 }
 
 onMounted(() => {
