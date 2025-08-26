@@ -22,7 +22,7 @@
   "dependencies": {
     "@wll8/process-manager": "^1.0.4",
     "form-data": "4.0.4",
-    "get-port": "5.1.1",
+    "get-port": "7.1.0",
     "mockm": "^1.1.27-alpha.12",
     "node-fetch": "^3.3.2"
   }
