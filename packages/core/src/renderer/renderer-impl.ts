@@ -382,7 +382,9 @@ export function initRenderer(opts: IOpts): RendererAPI {
     ),
   )
   marked.use(markedFootnotes())
-  marked.use(markedPlantUML())
+  marked.use(markedPlantUML({
+    inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
+  }))
 
   return {
     buildAddition,

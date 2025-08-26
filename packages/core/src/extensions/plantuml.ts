@@ -18,6 +18,11 @@ export interface PlantUMLOptions {
    */
   className?: string
   /**
+   * 是否内嵌SVG内容（用于微信公众号等不支持外链图片的环境）
+   * @default false
+   */
+  inlineSvg?: boolean
+  /**
    * 自定义样式
    */
   styles?: {
@@ -147,27 +152,80 @@ function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOpt
   const { text: code } = token
 
   // 检查代码是否包含 PlantUML 标记
-  if (!code.trim().includes(`@start`) || !code.trim().includes(`@end`)) {
-    // 如果没有标记，自动添加
-    const wrappedCode = `@startuml\n${code.trim()}\n@enduml`
-    const imageUrl = generatePlantUMLUrl(wrappedCode, options)
-    return createPlantUMLHTML(imageUrl, options)
+  const finalCode = (!code.trim().includes(`@start`) || !code.trim().includes(`@end`))
+    ? `@startuml\n${code.trim()}\n@enduml`
+    : code
+
+  const imageUrl = generatePlantUMLUrl(finalCode, options)
+
+  // 如果启用了内嵌SVG且格式是SVG
+  if (options.inlineSvg && options.format === `svg`) {
+    // 由于marked是同步的，我们需要返回一个占位符，然后异步替换
+    const placeholder = `plantuml-placeholder-${Math.random().toString(36).slice(2, 11)}`
+
+    // 异步获取SVG内容并替换
+    fetchSvgContent(imageUrl).then((svgContent) => {
+      const placeholderElement = document.querySelector(`[data-placeholder="${placeholder}"]`)
+      if (placeholderElement) {
+        placeholderElement.outerHTML = createPlantUMLHTML(imageUrl, options, svgContent)
+      }
+    })
+
+    const containerStyles = options.styles.container
+      ? Object.entries(options.styles.container)
+          .map(([key, value]) => `${key.replace(/([A-Z])/g, `-$1`).toLowerCase()}: ${value}`)
+          .join(`; `)
+      : ``
+
+    return `<div class="${options.className}" style="${containerStyles}" data-placeholder="${placeholder}">
+      <div style="color: #666; font-style: italic;">正在加载PlantUML图表...</div>
+    </div>`
   }
 
-  const imageUrl = generatePlantUMLUrl(code, options)
   return createPlantUMLHTML(imageUrl, options)
+}
+
+/**
+ * 获取SVG内容
+ */
+async function fetchSvgContent(svgUrl: string): Promise<string> {
+  try {
+    const response = await fetch(svgUrl)
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`)
+    }
+    const svgContent = await response.text()
+    // 移除SVG标签中的width和height属性，使其响应式
+    return svgContent.replace(/<svg[^>]*width="[^"]*"[^>]*>/g, match =>
+      match.replace(/\s+width="[^"]*"/g, ``))
+      .replace(/<svg[^>]*height="[^"]*"[^>]*>/g, match =>
+        match.replace(/\s+height="[^"]*"/g, ``))
+      .replace(/<svg([^>]*)>/g, `<svg$1 style="max-width: 100%; height: auto;">`)
+  }
+  catch (error) {
+    console.warn(`Failed to fetch SVG content from ${svgUrl}:`, error)
+    return `<div style="color: #666; font-style: italic;">PlantUML图表加载失败</div>`
+  }
 }
 
 /**
  * 创建 PlantUML HTML 元素
  */
-function createPlantUMLHTML(imageUrl: string, options: Required<PlantUMLOptions>): string {
+function createPlantUMLHTML(imageUrl: string, options: Required<PlantUMLOptions>, svgContent?: string): string {
   const containerStyles = options.styles.container
     ? Object.entries(options.styles.container)
         .map(([key, value]) => `${key.replace(/([A-Z])/g, `-$1`).toLowerCase()}: ${value}`)
         .join(`; `)
     : ``
 
+  // 如果有SVG内容，直接嵌入
+  if (svgContent) {
+    return `<div class="${options.className}" style="${containerStyles}">
+      ${svgContent}
+    </div>`
+  }
+
+  // 否则使用图片链接
   return `<div class="${options.className}" style="${containerStyles}">
     <img src="${imageUrl}" alt="PlantUML Diagram" style="max-width: 100%; height: auto;" />
   </div>`
@@ -181,6 +239,7 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
     serverUrl: options.serverUrl || `https://www.plantuml.com/plantuml`,
     format: options.format || `svg`,
     className: options.className || `plantuml-diagram`,
+    inlineSvg: options.inlineSvg || false,
     styles: {
       container: {
         textAlign: `center`,
