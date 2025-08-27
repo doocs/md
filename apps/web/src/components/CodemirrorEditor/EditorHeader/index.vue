@@ -121,12 +121,25 @@ async function copy() {
       const temp = clipboardDiv.innerHTML
 
       if (copyMode.value === `txt`) {
-        const range = document.createRange()
-        range.setStartBefore(clipboardDiv.firstChild!)
-        range.setEndAfter(clipboardDiv.lastChild!)
-        window.getSelection()!.addRange(range)
-        document.execCommand(`copy`)
-        window.getSelection()!.removeAllRanges()
+        // execCommand 已废弃，且会丢失 SVG 等复杂内容
+        try {
+          const plainText = clipboardDiv.textContent || ``
+          const clipboardItem = new ClipboardItem({
+            'text/html': new Blob([temp], { type: `text/html` }),
+            'text/plain': new Blob([plainText], { type: `text/plain` }),
+          })
+          navigator.clipboard.write([clipboardItem])
+        }
+        catch (error) {
+          console.warn(`Clipboard API 失败，回退到传统方式:`, error)
+          // 回退到传统选择复制方式
+          const range = document.createRange()
+          range.setStartBefore(clipboardDiv.firstChild!)
+          range.setEndAfter(clipboardDiv.lastChild!)
+          window.getSelection()!.addRange(range)
+          document.execCommand(`copy`)
+          window.getSelection()!.removeAllRanges()
+        }
       }
 
       clipboardDiv.innerHTML = output.value
