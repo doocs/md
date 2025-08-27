@@ -233,6 +233,23 @@ export function solveWeChatImage() {
   })
 }
 
+async function getHljsStyles(): Promise<string> {
+  const hljsLink = document.querySelector(`#hljs`) as HTMLLinkElement
+  if (!hljsLink)
+    return ``
+
+  try {
+    const response = await fetch(hljsLink.href)
+    const cssText = await response.text()
+    console.log(cssText, `cssText`)
+    return `<style>${cssText}</style>`
+  }
+  catch (error) {
+    console.warn(`Failed to fetch highlight.js styles:`, error)
+    return ``
+  }
+}
+
 function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
@@ -261,8 +278,14 @@ function createEmptyNode(): HTMLElement {
   return node
 }
 
-export function processClipboardContent(primaryColor: string) {
+export async function processClipboardContent(primaryColor: string) {
   const clipboardDiv = document.getElementById(`output`)!
+
+  // 获取highlight.js样式并添加到HTML中
+  const hljsStyles = await getHljsStyles()
+  if (hljsStyles) {
+    clipboardDiv.innerHTML = hljsStyles + clipboardDiv.innerHTML
+  }
 
   // 先合并 CSS 和修改 HTML 结构
   clipboardDiv.innerHTML = modifyHtmlStructure(mergeCss(clipboardDiv.innerHTML))

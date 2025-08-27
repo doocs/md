@@ -106,14 +106,8 @@ async function copy() {
   emit(`startCopy`)
 
   setTimeout(() => {
-    // 如果是深色模式，复制之前需要先切换到白天模式
-    const isBeforeDark = isDark.value
-    if (isBeforeDark) {
-      toggleDark()
-    }
-
     nextTick(async () => {
-      processClipboardContent(primaryColor.value)
+      await processClipboardContent(primaryColor.value)
       const clipboardDiv = document.getElementById(`output`)!
       clipboardDiv.focus()
       window.getSelection()!.removeAllRanges()
@@ -128,25 +122,15 @@ async function copy() {
             'text/html': new Blob([temp], { type: `text/html` }),
             'text/plain': new Blob([plainText], { type: `text/plain` }),
           })
-          navigator.clipboard.write([clipboardItem])
+          await navigator.clipboard.write([clipboardItem])
         }
         catch (error) {
           console.warn(`Clipboard API 失败，回退到传统方式:`, error)
-          // 回退到传统选择复制方式
-          const range = document.createRange()
-          range.setStartBefore(clipboardDiv.firstChild!)
-          range.setEndAfter(clipboardDiv.lastChild!)
-          window.getSelection()!.addRange(range)
-          document.execCommand(`copy`)
-          window.getSelection()!.removeAllRanges()
+          toast.error(`复制失败，请联系开发者。`)
         }
       }
 
       clipboardDiv.innerHTML = output.value
-
-      if (isBeforeDark) {
-        nextTick(() => toggleDark())
-      }
 
       if (copyMode.value === `html`) {
         await copyContent(temp)
