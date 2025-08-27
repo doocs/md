@@ -8,7 +8,7 @@ import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import readingTime from 'reading-time'
-import { markedAlert, markedFootnotes, markedSlider, markedToc, MDKatex } from '../extensions'
+import { markedAlert, markedFootnotes, markedPlantUML, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
 
 marked.setOptions({
@@ -382,6 +382,9 @@ export function initRenderer(opts: IOpts): RendererAPI {
     ),
   )
   marked.use(markedFootnotes())
+  marked.use(markedPlantUML({
+    inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
+  }))
 
   return {
     buildAddition,

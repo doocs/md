@@ -186,6 +186,32 @@ pie
 
 > 更多用法，参见：[Mermaid User Guide](https://mermaid.js.org/intro/getting-started.html)。
 
+### 3. PlantUML 流程图：可视化流程
+
+PlantUML 是强大的可视化工具，可以在 Markdown 中创建流程图、时序图等。
+
+```plantuml
+@startuml
+participant Participant as Foo
+actor       Actor       as Foo1
+boundary    Boundary    as Foo2
+control     Control     as Foo3
+entity      Entity      as Foo4
+database    Database    as Foo5
+collections Collections as Foo6
+queue       Queue       as Foo7
+Foo -> Foo1 : To actor
+Foo -> Foo2 : To boundary
+Foo -> Foo3 : To control
+Foo -> Foo4 : To entity
+Foo -> Foo5 : To database
+Foo -> Foo6 : To collections
+Foo -> Foo7: To queue
+@enduml
+```
+
+> 更多用法，参见：[PlantUML 主页](https://plantuml.com/zh/)。
+
 ## 结语
 
 Markdown 是一种简单、强大且易于掌握的标记语言，通过学习基础和进阶语法，你可以快速创作内容并有效传达信息。无论是技术文档、个人博客还是项目说明，Markdown 都是你的得力助手。希望这篇内容能够带你全面了解 Markdown 的潜力，让你的写作更加丰富多彩！
