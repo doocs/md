@@ -195,12 +195,14 @@ async function fetchSvgContent(svgUrl: string): Promise<string> {
       throw new Error(`HTTP ${response.status}`)
     }
     const svgContent = await response.text()
-    // 移除SVG标签中的width和height属性，使其响应式
-    return svgContent.replace(/<svg[^>]*width="[^"]*"[^>]*>/g, match =>
-      match.replace(/\s+width="[^"]*"/g, ``))
-      .replace(/<svg[^>]*height="[^"]*"[^>]*>/g, match =>
-        match.replace(/\s+height="[^"]*"/g, ``))
-      .replace(/<svg([^>]*)>/g, `<svg$1 style="max-width: 100%; height: auto;">`)
+    // 移除SVG根元素的固定尺寸，使其响应式
+    return svgContent
+      // 移除width和height属性
+      .replace(/(<svg[^>]*)\swidth="[^"]*"/g, `$1`)
+      .replace(/(<svg[^>]*)\sheight="[^"]*"/g, `$1`)
+      // 移除style中的width和height
+      .replace(/(<svg[^>]*style="[^"]*?)width:[^;]*;?/g, `$1`)
+      .replace(/(<svg[^>]*style="[^"]*?)height:[^;]*;?/g, `$1`)
   }
   catch (error) {
     console.warn(`Failed to fetch SVG content from ${svgUrl}:`, error)
@@ -244,6 +246,7 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
       container: {
         textAlign: `center`,
         margin: `16px 8px`,
+        overflowX: `auto`,
         ...options.styles?.container,
       },
     },
