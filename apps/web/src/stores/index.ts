@@ -77,6 +77,9 @@ export const useStore = defineStore(`store`, () => {
   const isUseIndent = useStorage(addPrefix(`use_indent`), false)
   const toggleUseIndent = useToggle(isUseIndent)
 
+  const isUseJustify = useStorage(addPrefix(`use_justify`), false)
+  const toggleUseJustify = useToggle(isUseJustify)
+
   const output = ref(``)
 
   // 文本字体
@@ -343,6 +346,7 @@ export const useStore = defineStore(`store`, () => {
     fonts: fontFamily.value,
     size: fontSize.value,
     isUseIndent: isUseIndent.value,
+    isUseJustify: isUseJustify.value,
     isMacCodeBlock: isMacCodeBlock.value,
   })
 
@@ -366,6 +370,7 @@ export const useStore = defineStore(`store`, () => {
       citeStatus: isCiteStatus.value,
       legend: legend.value,
       isUseIndent: isUseIndent.value,
+      isUseJustify: isUseJustify.value,
       countStatus: isCountStatus.value,
       isMacCodeBlock: isMacCodeBlock.value,
     })
@@ -578,6 +583,10 @@ export const useStore = defineStore(`store`, () => {
     toggleUseIndent()
   })
 
+  const useJustifyChanged = withAfterRefresh(() => {
+    toggleUseJustify()
+  })
+
   const aiToolboxChanged = withAfterRefresh(() => {
     toggleAIToolbox()
   })
@@ -688,6 +697,8 @@ export const useStore = defineStore(`store`, () => {
     aiToolboxChanged,
     isUseIndent,
     useIndentChanged,
+    isUseJustify,
+    useJustifyChanged,
 
     isCountStatus,
     countStatusChanged,
@@ -812,6 +823,7 @@ export function getAllStoreStates() {
     showAIToolbox: store.showAIToolbox,
     isCountStatus: store.isCountStatus,
     isUseIndent: store.isUseIndent,
+    isUseJustify: store.isUseJustify,
     isOpenRightSlider: store.isOpenRightSlider,
     isOpenPostSlider: store.isOpenPostSlider,
     theme: store.theme,
