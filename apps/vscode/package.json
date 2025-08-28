@@ -82,11 +82,11 @@
     "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
     "isomorphic-dompurify": "^2.25.0",
-    "ts-loader": "^9.5.2",
+    "ts-loader": "^9.5.4",
     "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
   "devDependencies": {
-    "@types/vscode": "^1.91.0",
+    "@types/vscode": "^1.103.0",
     "@vscode/vsce": "^3.4.2",
     "webpack-cli": "^6.0.1"
   }
