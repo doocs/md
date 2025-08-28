@@ -80,7 +80,7 @@
     "@types/unist": "^3.0.3",
     "@types/uuid": "^10.0.0",
     "@unocss/eslint-plugin": "^66.3.3",
-    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue": "^6.0.1",
     "autoprefixer": "^10.4.20",
     "less": "^4.2.2",
     "linkedom": "^0.18.11",
