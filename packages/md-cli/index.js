@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 
 const { ProcessManager } = require(`@wll8/process-manager`);
-const getPort = require(`get-port`)
 const {
   handleSpace,
   colors,
@@ -11,6 +10,8 @@ const {
 const arg = parseArgv()
 
 new Promise(async () => {
+  const getPort = (await import("get-port")).default;
+  
   let { port = 8800, testPort, replayPort } = arg
   port = Number(port)
   ;[port, testPort, replayPort] = await Promise.all([port, port+1, port+2].map(item => getPort({port: item}) )).catch(err => console.log(`err`, err))
