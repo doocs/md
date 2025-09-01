@@ -251,10 +251,17 @@ export function initRenderer(opts: IOpts): RendererAPI {
       }
       const langText = lang.split(` `)[0]
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
+
       let highlighted = hljs.highlight(text, { language }).value
 
-      highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>)/g, (_, span1, spaces, span2) => {
-        return span1.replace(/<\/span>$/, `${spaces}</span>`) + span2
+      // 处理两个完整 span 标签之间的空格
+      highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => {
+        return span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`)
+      })
+
+      // 处理 span 标签开始前的空格
+      highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => {
+        return span.replace(/^(<span[^>]*>)/, `$1${spaces}`)
       })
 
       // tab to 4 spaces
