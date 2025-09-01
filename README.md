@@ -34,6 +34,7 @@ Markdown 文档自动即时渲染为微信图文，让你不再为微信内容�
 
 - [x] 支持 Markdown 所有基础语法、数学公式
 - [x] 提供对 Mermaid 图表的渲染和 [GFM 警告块](https://github.com/orgs/community/discussions/16925)的支持
+- [x] 提供 PlantUML 渲染支持
 - [x] 丰富的代码块高亮主题，提升代码可读性
 - [x] 允许自定义主题色和 CSS 样式，灵活定制展示效果
 - [x] 提供多图上传功能，并可自定义配置图床

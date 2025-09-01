@@ -6,6 +6,7 @@ export const storeLabels: Record<string, string> = {
   isCiteStatus: `微信外链接底部引用状态`,
   isCountStatus: `字数统计状态`,
   isUseIndent: `使用缩进`,
+  isUseJustify: `使用两端对齐`,
   isOpenRightSlider: `开启右侧滑块`,
   isOpenPostSlider: `开启右侧发布滑块`,
   showAIToolbox: `AI 工具箱状态`,

@@ -80,6 +80,7 @@ export function activate(context: vscode.ExtensionContext) {
         fonts: treeDataProvider.getCurrentFontFamily(),
         size: treeDataProvider.getCurrentFontSize(),
         isUseIndent: false,
+        isUseJustify: false,
         countStatus: treeDataProvider.getCurrentCountStatus(),
         isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
         legend: `none`,

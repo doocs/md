@@ -8,7 +8,7 @@ import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import readingTime from 'reading-time'
-import { markedAlert, markedFootnotes, markedSlider, markedToc, MDKatex } from '../extensions'
+import { markedAlert, markedFootnotes, markedPlantUML, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
 
 marked.setOptions({
@@ -16,7 +16,7 @@ marked.setOptions({
 })
 marked.use(markedSlider())
 
-function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeStyles {
+function buildTheme({ theme: _theme, fonts, size, isUseIndent, isUseJustify }: IOpts): ThemeStyles {
   const theme = cloneDeep(_theme)
   const base = toMerged(theme.base, {
     'font-family': fonts,
@@ -26,6 +26,13 @@ function buildTheme({ theme: _theme, fonts, size, isUseIndent }: IOpts): ThemeSt
   if (isUseIndent) {
     theme.block.p = {
       'text-indent': `2em`,
+      ...theme.block.p,
+    }
+  }
+
+  if (isUseJustify) {
+    theme.block.p = {
+      'text-align': `justify`,
       ...theme.block.p,
     }
   }
@@ -244,7 +251,19 @@ export function initRenderer(opts: IOpts): RendererAPI {
       }
       const langText = lang.split(` `)[0]
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
+
       let highlighted = hljs.highlight(text, { language }).value
+
+      // 处理两个完整 span 标签之间的空格
+      highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => {
+        return span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`)
+      })
+
+      // 处理 span 标签开始前的空格
+      highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => {
+        return span.replace(/^(<span[^>]*>)/, `$1${spaces}`)
+      })
+
       // tab to 4 spaces
       highlighted = highlighted.replace(/\t/g, `    `)
       highlighted = highlighted
@@ -382,6 +401,9 @@ export function initRenderer(opts: IOpts): RendererAPI {
     ),
   )
   marked.use(markedFootnotes())
+  marked.use(markedPlantUML({
+    inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
+  }))
 
   return {
     buildAddition,

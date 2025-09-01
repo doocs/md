@@ -234,10 +234,9 @@ const defaultTheme: Theme = {
   },
   inline: {
     listitem: {
-      'text-indent': `-1em`,
-      'display': `block`,
-      'margin': `0.2em 8px`,
-      'color': `hsl(var(--foreground))`,
+      display: `block`,
+      margin: `0.2em 8px`,
+      color: `hsl(var(--foreground))`,
     },
 
     codespan: {
