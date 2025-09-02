@@ -1,0 +1,52 @@
+name: Stale Bot
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # 每天北京时间 14:00 运行
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+          # Issue 设置
+          days-before-stale: 60      # 超过 60 天无活动 -> 标记 stale
+          days-before-close: 7       # 被标记后 7 天仍无活动 -> 关闭
+          stale-issue-message: "此 Issue 因长期无回复而被标记为过期，如果 7 天内无回复将自动关闭。"
+          close-issue-message: "此 Issue 已因无长期无回复自动关闭。"
+
+          days-before-pr-stale: -1   # 不处理 PR
+          days-before-pr-close: -1
+
+          # 以下标签不会被标记为 stale
+          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
+
+  stale-needs-author-feedback:
+    runs-on: ubuntu-latest
+    permissions:
+      issues: write
+      pull-requests: write
+    steps:
+      - uses: actions/stale@v9
+        with:
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          # 仅处理包含 "Needs: Author Feedback" 标签的 Issue
+          any-of-labels: 'Needs: Author Feedback'
+
+          # Issue 设置
+          days-before-stale: 24
+          days-before-close: 7
+          stale-issue-message: "此 Issue 已等待作者反馈 24 天，请提供所需信息，否则 7 天后将自动关闭。"
+          close-issue-message: "此 Issue 因作者未在 7 天内提供所需反馈而自动关闭。"
+
+          days-before-pr-stale: -1   # 不处理 PR
+          days-before-pr-close: -1
+
+          # 以下标签不会被标记为 stale
+          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
