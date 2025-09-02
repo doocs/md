@@ -25,7 +25,7 @@ jobs:
           days-before-pr-close: -1
 
           # 以下标签不会被标记为 stale
-          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
+          exempt-issue-labels: "help wanted, good first issue, never gets stale, issue: author provided repro"
 
   stale-needs-author-feedback:
     runs-on: ubuntu-latest
@@ -36,8 +36,8 @@ jobs:
       - uses: actions/stale@v9
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          # 仅处理包含 "Needs: Author Feedback" 标签的 Issue
-          any-of-labels: 'Needs: Author Feedback'
+          # 仅处理包含 "needs: author feedback" 标签的 Issue
+          any-of-labels: 'needs: author feedback'
 
           # Issue 设置
           days-before-stale: 24
@@ -49,4 +49,4 @@ jobs:
           days-before-pr-close: -1
 
           # 以下标签不会被标记为 stale
-          exempt-issue-labels: "Help Wanted :octocat:, Good first issue, Never gets stale, Issue: Author Provided Repro"
+          exempt-issue-labels: "help wanted, good first issue, never gets stale, issue: author provided repro"
