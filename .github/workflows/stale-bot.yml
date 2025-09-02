@@ -25,7 +25,7 @@ jobs:
           days-before-pr-close: -1
 
           # 以下标签不会被标记为 stale
-          exempt-issue-labels: "help wanted, good first issue, never gets stale, issue: author provided repro"
+          exempt-issue-labels: "help wanted, good first issue, never gets stale, enhancement, issue: author provided repro"
 
   stale-needs-author-feedback:
     runs-on: ubuntu-latest
@@ -49,4 +49,4 @@ jobs:
           days-before-pr-close: -1
 
           # 以下标签不会被标记为 stale
-          exempt-issue-labels: "help wanted, good first issue, never gets stale, issue: author provided repro"
+          exempt-issue-labels: "help wanted, good first issue, never gets stale, enhancement, issue: author provided repro"
