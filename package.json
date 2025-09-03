@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.0.0",
-    "@types/node": "^22.13.14",
+    "@types/node": "^24.3.0",
     "cross-env": "^10.0.0",
     "eslint": "^9.32.0",
     "eslint-plugin-format": "^1.0.1",
