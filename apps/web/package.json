@@ -96,7 +96,7 @@
     "vite": "^6.3.4",
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-radar": "^0.10.0",
-    "vite-plugin-vue-devtools": "^7.7.2",
+    "vite-plugin-vue-devtools": "^8.0.1",
     "vue-tsc": "^2.2.0",
     "wrangler": "^4.33.2",
     "wxt": "^0.20.7"
