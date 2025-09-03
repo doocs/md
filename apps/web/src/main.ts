@@ -3,6 +3,7 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import { setupComponents } from './utils/setup-components'
 
+import 'vue-sonner/style.css'
 import 'virtual:uno.css'
 import 'codemirror/lib/codemirror.css'
 import 'codemirror/theme/xq-light.css'
