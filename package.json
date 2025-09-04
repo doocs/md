@@ -20,7 +20,8 @@
     "release:cli": "node ./scripts/release.js",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
-    "postinstall": "simple-git-hooks"
+    "postinstall": "simple-git-hooks",
+    "inspector": "pnpx node-modules-inspector"
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.0.0",
