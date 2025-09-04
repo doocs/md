@@ -99,6 +99,6 @@
     "vite-plugin-vue-devtools": "^8.0.1",
     "vue-tsc": "^3.0.6",
     "wrangler": "^4.33.2",
-    "wxt": "^0.20.7"
+    "wxt": "^0.20.10"
   }
 }
