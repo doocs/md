@@ -31,7 +31,7 @@
     "@md/shared": "workspace:*",
     "@ssttevee/multipart-parser": "^0.1.9",
     "@vee-validate/yup": "^4.15.0",
-    "@vueuse/core": "^12.5.0",
+    "@vueuse/core": "^13.9.0",
     "axios": "^1.8.4",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
