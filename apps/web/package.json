@@ -93,7 +93,7 @@
     "unocss": "^66.0.0",
     "unplugin-auto-import": "^19.1.2",
     "unplugin-vue-components": "^28.4.1",
-    "vite": "^6.3.4",
+    "vite": "^7.1.4",
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-radar": "^0.10.0",
     "vite-plugin-vue-devtools": "^8.0.1",
