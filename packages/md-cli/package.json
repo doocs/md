@@ -23,7 +23,7 @@
     "@wll8/process-manager": "^1.0.4",
     "form-data": "4.0.4",
     "get-port": "7.1.0",
-    "mockm": "^1.1.27-alpha.12",
+    "mockm": "^2.0.0-alpha.18",
     "node-fetch": "^3.3.2"
   }
 }
