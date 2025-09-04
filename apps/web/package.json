@@ -91,7 +91,7 @@
     "shx": "^0.3.4",
     "tailwindcss": "^3.4.17",
     "unocss": "^66.0.0",
-    "unplugin-auto-import": "^19.1.2",
+    "unplugin-auto-import": "^20.1.0",
     "unplugin-vue-components": "^28.4.1",
     "vite": "^6.3.4",
     "vite-plugin-node-polyfills": "^0.24.0",
