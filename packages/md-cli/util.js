@@ -8,30 +8,6 @@ import crypto from 'crypto'
 const fetch = (...args) => import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
 
 /**
- * 判断端口是否可用
- * @param {string | Array} port 多个端口用数组
- */
-function portIsOk(port) {
-  if (typeof (port) === `object`) { // 判断多个端口
-    return Promise.all(port.map(item => portIsOk(item)))
-  }
-  return new Promise((resolve) => {
-    const server = net.createServer().listen(port)
-    server.on(`listening`, () => server.close(resolve(true)))
-    server.on(`error`, () => resolve(port))
-  })
-}
-
-/**
- * 处理不同系统的命令行空格差异, 在 cp.spawn 中的参数中, 如果包含空格, win 平台需要使用双引号包裹, unix 不需要
- * @param {string} str
- */
-function handleSpace(str = ``) {
-  const newStr = os.type() === `Windows_NT` && str.match(` `) ? `"${str}"` : str
-  return newStr
-}
-
-/**
  * 自定义控制台颜色
  * https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
  * nodejs 内置颜色: https://nodejs.org/api/util.html#util_foreground_colors
@@ -58,29 +34,6 @@ function colors() {
   // 取消下行注释, 查看所有的颜色和名字:
   // Object.keys(returnValue).forEach((color) => console.log(returnValue[color](color)))
   return colorTable
-}
-
-/**
- * 以 Promise 方式运行 spawn
- * @param {*} cmd 主程序
- * @param {*} args 程序参数数组
- * @param {*} opts spawn 选项
- */
-function spawn(cmd, args, opts) {
-  opts = { stdio: `inherit`, ...opts }
-  opts.shell = opts.shell || process.platform === `win32`
-  return new Promise(async (resolve, reject) => {
-    const { spawn: cpSpawn } = await import('child_process')
-    const child = cpSpawn(cmd, args, opts)
-    let stdout = ``
-    let stderr = ``
-    child.stdout && child.stdout.on(`data`, (d) => { stdout += d })
-    child.stderr && child.stderr.on(`data`, (d) => { stderr += d })
-    child.on(`error`, reject)
-    child.on(`close`, (code) => {
-      resolve({ code, stdout, stderr })
-    })
-  })
 }
 
 /**
@@ -212,9 +165,6 @@ function dcloud(spaceInfo) {
 const colorsInstance = colors()
 
 export {
-  portIsOk,
-  handleSpace,
-  spawn,
   parseArgv,
   dcloud,
   colorsInstance as colors,
