@@ -1,31 +1,11 @@
+import FormData from 'form-data'
+import process from 'process'
+import os from 'os'
+import net from 'net'
+import util from 'util'
+import crypto from 'crypto'
+
 const fetch = (...args) => import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
-const FormData = require(`form-data`)
-const process = require(`process`)
-
-/**
- * 判断端口是否可用
- * @param {string | Array} port 多个端口用数组
- */
-function portIsOk(port) {
-  if (typeof (port) === `object`) { // 判断多个端口
-    return Promise.all(port.map(item => portIsOk(item)))
-  }
-  return new Promise((resolve) => {
-    const net = require(`net`)
-    const server = net.createServer().listen(port)
-    server.on(`listening`, () => server.close(resolve(true)))
-    server.on(`error`, () => resolve(port))
-  })
-}
-
-/**
- * 处理不同系统的命令行空格差异, 在 cp.spawn 中的参数中, 如果包含空格, win 平台需要使用双引号包裹, unix 不需要
- * @param {string} str
- */
-function handleSpace(str = ``) {
-  const newStr = require(`os`).type() === `Windows_NT` && str.match(` `) ? `"${str}"` : str
-  return newStr
-}
 
 /**
  * 自定义控制台颜色
@@ -33,8 +13,6 @@ function handleSpace(str = ``) {
  * nodejs 内置颜色: https://nodejs.org/api/util.html#util_foreground_colors
  */
 function colors() {
-  const util = require(`util`)
-
   function colorize(color, text) {
     const codes = util.inspect.colors[color]
     return `\x1B[${codes[0]}m${text}\x1B[${codes[1]}m`
@@ -59,29 +37,6 @@ function colors() {
 }
 
 /**
- * 以 Promise 方式运行 spawn
- * @param {*} cmd 主程序
- * @param {*} args 程序参数数组
- * @param {*} opts spawn 选项
- */
-function spawn(cmd, args, opts) {
-  opts = { stdio: `inherit`, ...opts }
-  opts.shell = opts.shell || process.platform === `win32`
-  return new Promise((resolve, reject) => {
-    const cp = require(`child_process`)
-    const child = cp.spawn(cmd, args, opts)
-    let stdout = ``
-    let stderr = ``
-    child.stdout && child.stdout.on(`data`, (d) => { stdout += d })
-    child.stderr && child.stderr.on(`data`, (d) => { stderr += d })
-    child.on(`error`, reject)
-    child.on(`close`, (code) => {
-      resolve({ code, stdout, stderr })
-    })
-  })
-}
-
-/**
  * 解析命令行参数
  * @param {*} arr
  * @returns {Record<string, string | boolean>}
@@ -93,14 +48,14 @@ function parseArgv(arr) {
     acc[k] = v === `` // 没有值时, 则表示为 true
       ? true
       : (
-          /^(true|false)$/.test(v) // 转换指明的 true/false
-            ? v === `true`
-            : (
-                /[\d|.]+/.test(v)
-                  ? (Number.isNaN(Number(v)) ? v : Number(v)) // 如果转换为数字失败, 则使用原始字符
-                  : v
-              )
-        )
+        /^(true|false)$/.test(v) // 转换指明的 true/false
+          ? v === `true`
+          : (
+            /[\d|.]+/.test(v)
+              ? (Number.isNaN(Number(v)) ? v : Number(v)) // 如果转换为数字失败, 则使用原始字符
+              : v
+          )
+      )
     return acc
   }, {})
 }
@@ -111,7 +66,7 @@ function dcloud(spaceInfo) {
   }
 
   function sign(data, secret) {
-    const hmac = require(`crypto`).createHmac(`md5`, secret)
+    const hmac = crypto.createHmac(`md5`, secret)
     // 排序 obj 再转换为 key=val&key=val 的格式
     const str = Object.keys(data).sort().reduce((acc, cur) => `${acc}&${cur}=${data[cur]}`, ``).slice(1)
     hmac.update(str)
@@ -207,11 +162,10 @@ function dcloud(spaceInfo) {
   return uploadFile
 }
 
-module.exports = {
-  portIsOk,
-  handleSpace,
-  colors: colors(),
-  spawn,
+const colorsInstance = colors()
+
+export {
   parseArgv,
   dcloud,
+  colorsInstance as colors,
 }

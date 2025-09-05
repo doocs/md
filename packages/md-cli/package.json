@@ -1,6 +1,7 @@
 {
   "name": "@doocs/md-cli",
   "version": "0.1.3",
+  "type": "module",
   "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "main": "index.js",
   "scripts": {
@@ -13,17 +14,18 @@
     "dist",
     "public",
     "index.js",
-    "mm.config.js",
+    "server.js",
     "util.js"
   ],
   "keywords": [],
   "author": "wll8",
   "license": "ISC",
   "dependencies": {
-    "@wll8/process-manager": "^1.0.4",
+    "express": "^5.1.0",
+    "multer": "^2.0.2",
+    "http-proxy-middleware": "^3.0.5",
     "form-data": "4.0.4",
     "get-port": "7.1.0",
-    "mockm": "^1.1.27-alpha.12",
     "node-fetch": "^3.3.2"
   }
 }
