@@ -8,6 +8,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware'
 import {
   dcloud,
   parseArgv,
+  colors
 } from './util.js'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -59,42 +60,28 @@ export function createServer(port = 8800) {
         return res.status(400).json({ error: 'No file uploaded' })
       }
 
-      // 检查是否配置了云存储
-      if (!spaceInfo.spaceId || !spaceInfo.clientSecret) {
-        // 删除临时上传的文件
-        fs.unlinkSync(req.file.path)
-
-        return res.status(400).json({
-          error: '图片上传需要配置云存储服务',
-          message: '微信公众号无法访问本地图片，请配置 unicloud 服务。使用方法：md-cli spaceId=your_space_id clientSecret=your_secret',
-          needCloudConfig: true
-        })
-      }
-
       const file = req.file
+      let url = `http://127.0.0.1:${port}/public/upload/${file.filename}`
 
-      // 上传到 unicloud
       try {
-        const url = await dcloud(spaceInfo)({
-          name: file.originalname,
-          file: fs.createReadStream(file.path)
-        })
+        if (spaceInfo.spaceId && spaceInfo.clientSecret) {
+          url = await dcloud(spaceInfo)({
+            name: file.originalname,
+            file: fs.createReadStream(file.path)
+          })
 
-        // 上传成功后删除本地临时文件
-        fs.unlinkSync(file.path)
-
-        res.json({ url })
+          // 上传成功后删除本地临时文件
+          fs.unlinkSync(file.path)
+          console.log('文件已上传到云端:', url)
+        } else {
+          console.log(`${colors.yellow('未配置云存储，降级到本地存储')}`)
+        }
       } catch (err) {
-        // 上传失败，删除临时文件
-        fs.unlinkSync(file.path)
-
-        console.error('unicloud upload failed:', err.message)
-        res.status(500).json({
-          error: '图片上传到云端失败',
-          message: '请检查 unicloud 配置是否正确：' + err.message,
-          cloudError: true
-        })
+        // 云上传失败，降级到本地存储
+        console.log('云存储上传失败，降级到本地存储:', err.message)
       }
+
+      res.json({ url })
     } catch (error) {
       console.error('Upload error:', error)
       res.status(500).json({ error: error.message })
