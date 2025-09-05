@@ -364,7 +364,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
               </div>
             </template>
             <input
-              class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-none"
+              class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-hidden"
               placeholder="输入提示词后按回车"
               @keydown.enter="addPrompt"
             >

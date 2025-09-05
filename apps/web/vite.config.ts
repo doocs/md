@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 
+import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
 import UnoCSS from 'unocss/vite'
@@ -17,6 +18,7 @@ export default defineConfig({
   envPrefix: [`VITE_`, `CF_`],
   plugins: [
     vue(),
+    tailwindcss(),
     UnoCSS(),
     vueDevTools(),
     nodePolyfills({

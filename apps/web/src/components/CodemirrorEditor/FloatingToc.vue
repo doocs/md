@@ -8,7 +8,7 @@ const isOpenHeadingSlider = ref(false)
 
 <template>
   <div
-    class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow"
+    class="bg-background absolute left-0 top-0 border rounded-2 rounded-lt-none p-2 text-sm shadow-sm"
     @mouseenter="() => (isOpenHeadingSlider = true)"
     @mouseleave="() => (isOpenHeadingSlider = false)"
   >

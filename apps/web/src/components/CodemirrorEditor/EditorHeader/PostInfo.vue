@@ -178,7 +178,7 @@ onBeforeMount(() => {
             <label class="flex flex-row items-center gap-4">
               <CheckboxRoot
                 v-model:checked="account.checked"
-                class="bg-background hover:bg-muted h-[25px] w-[25px] flex appearance-none items-center justify-center border border-gray-200 rounded-[4px] outline-none"
+                class="bg-background hover:bg-muted h-[25px] w-[25px] flex appearance-none items-center justify-center border border-gray-200 rounded-[4px] outline-hidden"
               >
                 <CheckboxIndicator>
                   <Check v-if="account.checked" class="h-4 w-4" />
