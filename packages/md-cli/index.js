@@ -1,39 +1,57 @@
 #!/usr/bin/env node
 
-const { ProcessManager } = require(`@wll8/process-manager`);
-const {
-  handleSpace,
+import { readFileSync } from 'fs'
+import getPort from 'get-port'
+import {
   colors,
   parseArgv,
-} = require(`./util.js`)
+} from './util.js'
+import { createServer } from './server.js'
+
+const packageJson = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8'))
 
 const arg = parseArgv()
 
-new Promise(async () => {
-  const getPort = (await import("get-port")).default;
-  
-  let { port = 8800, testPort, replayPort } = arg
-  port = Number(port)
-  ;[port, testPort, replayPort] = await Promise.all([port, port+1, port+2].map(item => getPort({port: item}) )).catch(err => console.log(`err`, err))
-  const line = Object.entries({
-    ...arg,
-    proxy: `https://doocs-md.pages.dev`,
-    port,
-    testPort,
-    replayPort,
-    '--config': handleSpace(`${__dirname}/mm.config.js`),
-  }).map(([key, val]) => `${key}=${val}`)
-  const cliArg = [handleSpace(`${__dirname}/node_modules/mockm/run.js`), `--log-line`, ...line]
-  console.log(`doocs/md-cli v${require(`./package.json`).version}`)
-  console.log(`服务启动中...`)
-  const cp = new ProcessManager(cliArg)
-  cp.on(`stdout`, (info = ``) => {
-    if(info.match(`:${port}/`)) {
+async function startServer() {
+  try {
+    let { port = 8800 } = arg
+    port = Number(port)
+
+    port = await getPort({ port }).catch(_ => {
+      console.log(`端口 ${port} 被占用，正在寻找可用端口...`)
+      return getPort()
+    })
+
+    console.log(`doocs/md-cli v${packageJson.version}`)
+    console.log(`服务启动中...`)
+
+    const app = createServer(port)
+
+    app.listen(port, '127.0.0.1', () => {
       console.log(`服务已启动:`)
       console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
-    }
-    if(info.match(`Port is occupied`)) {
-      process.exit()
-    }
-  })
-}).catch(err => console.log(err))
+      console.log(``)
+
+      const { spaceId, clientSecret } = arg
+      if (spaceId && clientSecret) {
+        console.log(`${colors.green('✅ 云存储已配置，可通过自定义代码上传图片')}`)
+      }
+    })
+
+    process.once('SIGINT', () => {
+      console.log('\n服务器已关闭')
+      process.exit(0)
+    })
+
+    process.once('SIGTERM', () => {
+      console.log('\n服务器已关闭')
+      process.exit(0)
+    })
+
+  } catch (err) {
+    console.error('启动服务器失败:', err)
+    process.exit(1)
+  }
+}
+
+startServer()
