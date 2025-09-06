@@ -194,10 +194,6 @@ function handleDragEnd() {
   >
     <nav
       class="h-full flex flex-col border-r-2 border-gray/20 transition-transform overflow-hidden"
-      :class="{
-        'translate-x-100': store.isOpenPostSlider,
-        '-translate-x-full': !store.isOpenPostSlider,
-      }"
       @dragover="handleDragOver"
       @drop.prevent="handleDrop(null)"
     >
