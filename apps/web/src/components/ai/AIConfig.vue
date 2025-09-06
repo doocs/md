@@ -280,6 +280,8 @@ async function testConnection() {
 </template>
 
 <style scoped>
+@reference 'tailwindcss';
+
 .custom-scroll::-webkit-scrollbar {
   width: 6px;
 }

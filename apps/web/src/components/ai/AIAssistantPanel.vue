@@ -462,7 +462,7 @@ async function sendMessage() {
           :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
         >
           <div
-            class="ring-border/20 max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-sm ring-1"
+            class="ring-border/20 max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-xs ring-1"
             :class="msg.role === 'user'
               ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground'
               : 'bg-gray-100 text-gray-800 dark:bg-muted/60 dark:text-muted-foreground'"
@@ -536,7 +536,7 @@ async function sendMessage() {
             v-model="input"
             placeholder="说些什么… (Enter 发送，Shift+Enter 换行)"
             rows="2"
-            class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-none focus:outline-none focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
+            class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-hidden focus:outline-hidden focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"
           />
 
@@ -580,6 +580,8 @@ async function sendMessage() {
 </template>
 
 <style scoped>
+@reference 'tailwindcss';
+
 :root {
   --safe-bottom: env(safe-area-inset-bottom);
 }

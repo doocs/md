@@ -444,7 +444,7 @@ onUnmounted(() => {
 
     <main class="container-main flex flex-1 flex-col">
       <div
-        class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border-1"
+        class="container-main-section border-radius-10 relative flex flex-1 overflow-hidden border"
       >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
@@ -496,7 +496,7 @@ onUnmounted(() => {
                   :class="{ output_night: !backLight }"
                 >
                   <div
-                    class="preview border-x-1 shadow-xl"
+                    class="preview border-x shadow-xl"
                     :class="[store.previewWidth]"
                   >
                     <section id="output" class="w-full" v-html="output" />
