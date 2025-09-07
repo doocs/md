@@ -1,11 +1,9 @@
 <script setup lang="ts">
 import {
   ChevronDownIcon,
-  Moon,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
-  Sun,
 } from 'lucide-vue-next'
 import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
 import { useStore } from '@/stores'
@@ -16,7 +14,6 @@ const emit = defineEmits([`startCopy`, `endCopy`])
 const store = useStore()
 
 const {
-  isDark,
   isCiteStatus,
   isCountStatus,
   output,
@@ -26,7 +23,6 @@ const {
 } = storeToRefs(store)
 
 const {
-  toggleDark,
   editorRefresh,
   citeStatusChanged,
   countStatusChanged,
@@ -161,11 +157,11 @@ async function copy() {
 
 <template>
   <header
-    class="header-container h-15 flex flex-wrap items-center justify-between px-5 dark:bg-[#191c20]"
+    class="header-container h-15 flex flex-wrap items-center justify-between px-5"
   >
     <!-- 左侧菜单：移动端隐藏 -->
     <div class="space-x-2 hidden sm:flex">
-      <Menubar class="menubar">
+      <Menubar class="menubar border-0">
         <FileDropdown />
 
         <MenubarMenu>
@@ -221,12 +217,6 @@ async function copy() {
       >
         <PanelLeftOpen v-show="!isOpenPostSlider" class="size-4" />
         <PanelLeftClose v-show="isOpenPostSlider" class="size-4" />
-      </Button>
-
-      <!-- 暗色切换 -->
-      <Button variant="outline" size="icon" @click="toggleDark()">
-        <Moon v-show="isDark" class="size-4" />
-        <Sun v-show="!isDark" class="size-4" />
       </Button>
 
       <!-- 复制按钮组 -->
