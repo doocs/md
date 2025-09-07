@@ -184,7 +184,7 @@ function handleDragEnd() {
 <template>
   <!-- 侧栏外框 -->
   <div
-    class="h-full w-full overflow-hidden border-2 border-[#0000] border-dashed bg-gray/20 transition-colors duration-300 dark:bg-[#191c20]"
+    class="h-full w-full overflow-hidden border-2 border-[#0000] border-dashed bg-gray/20 transition-colors duration-300"
     :class="{
       'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
     }"
