@@ -92,7 +92,7 @@ function isHasChild(postId: string) {
         // eslint-disable-next-line vue/prefer-separate-static-class
         'hover:text-primary-foreground hover:bg-primary',
         {
-          'bg-primary text-primary-foreground shadow': store.currentPostId === post.id,
+          'bg-primary text-primary-foreground shadow-sm': store.currentPostId === post.id,
           'opacity-50': props.dragSourceId === post.id,
           'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
             props.dropTargetId === post.id,

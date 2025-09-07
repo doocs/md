@@ -60,7 +60,7 @@ function onUpdate(val: boolean) {
           </NumberFieldContent>
         </NumberField>
       </div>
-      <div class="space-y-2 border-1 rounded p-2">
+      <div class="space-y-2 border rounded p-2">
         <div v-for="row in rowNum + 1" :key="row" :class="{ 'head-style': row === 1 }" class="space-x-2 flex">
           <Input
             v-for="col in colNum" :key="col"
