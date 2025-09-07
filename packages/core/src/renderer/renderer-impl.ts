@@ -270,7 +270,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
         .replace(/\r\n/g, `<br/>`)
         .replace(/\n/g, `<br/>`)
         .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
-      const span = `<span class="mac-sign" style="padding: 10px 14px 0;" hidden>${macCodeSvg}</span>`
+      const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
       const code = `<code class="language-${lang}" ${styles(`code`)}>${highlighted}</code>`
       return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
     },
