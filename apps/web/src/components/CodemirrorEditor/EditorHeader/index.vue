@@ -118,11 +118,16 @@ async function copy() {
             'text/html': new Blob([temp], { type: `text/html` }),
             'text/plain': new Blob([plainText], { type: `text/plain` }),
           })
-          await navigator.clipboard.write([clipboardItem])
+          // FIX: https://stackoverflow.com/questions/62327358/javascript-clipboard-api-safari-ios-notallowederror-message
+          // NotAllowedError: the request is not allowed by the user agent or the platform in the current context,
+          // possibly because the user denied permission.
+          setTimeout(async () => {
+            await navigator.clipboard.write([clipboardItem])
+          }, 0)
         }
         catch (error) {
-          console.warn(`Clipboard API 失败，回退到传统方式:`, error)
-          toast.error(`复制失败，请联系开发者。`)
+          toast.error(`复制失败，请联系开发者。${error}`)
+          return
         }
       }
 
