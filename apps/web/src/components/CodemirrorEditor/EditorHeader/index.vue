@@ -101,57 +101,56 @@ async function copy() {
   // 以下处理非 Markdown 的复制流程
   emit(`startCopy`)
 
-  setTimeout(() => {
-    nextTick(async () => {
-      await processClipboardContent(primaryColor.value)
-      const clipboardDiv = document.getElementById(`output`)!
-      clipboardDiv.focus()
-      window.getSelection()!.removeAllRanges()
+  // setTimeout(() => {
+  // nextTick(async () => {
+  await processClipboardContent(primaryColor.value)
+  const clipboardDiv = document.getElementById(`output`)!
+  clipboardDiv.focus()
+  window.getSelection()!.removeAllRanges()
 
-      const temp = clipboardDiv.innerHTML
+  const temp = clipboardDiv.innerHTML
 
-      if (copyMode.value === `txt`) {
-        // execCommand 已废弃，且会丢失 SVG 等复杂内容
-        try {
-          const plainText = clipboardDiv.textContent || ``
-          const clipboardItem = new ClipboardItem({
-            'text/html': new Blob([temp], { type: `text/html` }),
-            'text/plain': new Blob([plainText], { type: `text/plain` }),
-          })
-          await navigator.clipboard.write([clipboardItem])
-        }
-        catch (error) {
-          console.warn(`Clipboard API 失败，回退到传统方式:`, error)
-          toast.error(`复制失败，请联系开发者。`)
-        }
-      }
+  if (copyMode.value === `txt`) {
+    // execCommand 已废弃，且会丢失 SVG 等复杂内容
+    try {
+      const plainText = clipboardDiv.textContent || ``
+      const clipboardItem = new ClipboardItem({
+        'text/html': new Blob([temp], { type: `text/html` }),
+        'text/plain': new Blob([plainText], { type: `text/plain` }),
+      })
+      await navigator.clipboard.write([clipboardItem])
+    }
+    catch (error) {
+      toast.error(`复制失败，请联系开发者。${error}`)
+    }
+  }
 
-      clipboardDiv.innerHTML = output.value
+  clipboardDiv.innerHTML = output.value
 
-      if (copyMode.value === `html`) {
-        await copyContent(temp)
-      }
-      else if (copyMode.value === `html-and-style`) {
-        await copyContent(store.editorContent2HTML())
-      }
+  if (copyMode.value === `html`) {
+    await copyContent(temp)
+  }
+  else if (copyMode.value === `html-and-style`) {
+    await copyContent(store.editorContent2HTML())
+  }
 
-      // 输出提示
-      toast.success(
-        copyMode.value === `html`
-          ? `已复制 HTML 源码，请进行下一步操作。`
-          : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
-      )
-      window.dispatchEvent(
-        new CustomEvent(`copyToMp`, {
-          detail: {
-            content: output.value,
-          },
-        }),
-      )
-      editorRefresh()
-      emit(`endCopy`)
-    })
-  }, 350)
+  // 输出提示
+  toast.success(
+    copyMode.value === `html`
+      ? `已复制 HTML 源码，请进行下一步操作。`
+      : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
+  )
+  window.dispatchEvent(
+    new CustomEvent(`copyToMp`, {
+      detail: {
+        content: output.value,
+      },
+    }),
+  )
+  editorRefresh()
+  emit(`endCopy`)
+  // })
+  // }, 350)
 }
 </script>
 
