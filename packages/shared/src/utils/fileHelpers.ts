@@ -100,6 +100,6 @@ export async function formatDoc(content: string, type: `markdown` | `css` = `mar
   const parser = type in plugins ? type : `markdown`
   return await format(addSpaceContent, {
     parser,
-    plugins: plugins[parser],
+    plugins: plugins[parser] as any,
   })
 }
