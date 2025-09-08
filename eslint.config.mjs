@@ -2,7 +2,6 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu({
   vue: true,
-  unocss: false, // UnoCSS config moved to apps/web
   typescript: true,
   formatters: true,
   ignores: [`.github`, `scripts`, `docker`, `packages/md-cli`, `src/assets`, `example`],
