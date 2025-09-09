@@ -1,3 +1,4 @@
+import type { ConfigEnv } from 'vite'
 import { defineConfig } from 'wxt'
 import ViteConfig from './vite.config'
 
@@ -62,15 +63,19 @@ export default defineConfig({
   analysis: {
     open: true,
   },
-  vite: () => ({
-    ...ViteConfig,
-    plugins: ViteConfig.plugins!.filter(plugin =>
-      typeof plugin === `object`
-      && plugin !== null
-      && !(`name` in plugin && plugin.name === `vite-plugin-Radar`),
-    ),
-    define: undefined,
-    build: undefined,
-    base: `/`,
-  }),
+  vite: ({ mode }) => {
+    const config = ViteConfig({ mode } as ConfigEnv)
+
+    return {
+      ...config,
+      plugins: config.plugins!.filter(plugin =>
+        typeof plugin === `object`
+        && plugin !== null
+        && !(`name` in plugin && plugin.name === `vite-plugin-Radar`),
+      ),
+      define: undefined,
+      build: undefined,
+      base: `/`,
+    }
+  },
 })
