@@ -92,6 +92,15 @@ pnpm web dev
 
 6. 在 GitHub 页面发起 **Pull Request**。
 
+> [!TIP]
+> 开发时可在 `apps/web` 目录下新建 `.env.local` 文件，配置 `VITE_LAUNCH_EDITOR` 为 `code` （默认值）或其他 [支持的编辑器](https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors)，方便调试。
+>
+> 例如：
+>
+> ```
+> VITE_LAUNCH_EDITOR=cursor
+> ```
+
 ## 代码规范
 
 - 遵循项目自带的 **ESLint**、**Prettier** 与 **Stylelint** 配置。
