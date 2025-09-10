@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   ChevronDownIcon,
+  Menu,
   PanelLeftClose,
   PanelLeftOpen,
   Settings,
@@ -162,10 +163,10 @@ async function copy() {
 
 <template>
   <header
-    class="header-container h-15 flex flex-wrap items-center justify-between px-5"
+    class="header-container h-15 flex flex-wrap items-center justify-between px-5 relative"
   >
-    <!-- 左侧菜单：移动端隐藏 -->
-    <div class="space-x-2 hidden sm:flex">
+    <!-- 桌面端左侧菜单 -->
+    <div class="space-x-2 hidden md:flex">
       <Menubar class="menubar border-0">
         <FileDropdown />
 
@@ -212,8 +213,66 @@ async function copy() {
       </Menubar>
     </div>
 
-    <!-- 右侧操作区：移动端保留核心按钮 -->
-    <div class="space-x-2 flex flex-wrap">
+    <!-- 移动端汉堡菜单按钮 -->
+    <div class="md:hidden">
+      <Menubar class="menubar border-0 p-0">
+        <MenubarMenu>
+          <MenubarTrigger as-child class="p-0">
+            <Button variant="outline" size="icon">
+              <Menu class="size-4" />
+            </Button>
+          </MenubarTrigger>
+          <MenubarContent align="start" class="w-64 h-[calc(100vh-60px)]">
+            <Menubar class="menubar border-0 flex-col gap-2">
+              <FileDropdown />
+              <MenubarMenu>
+                <MenubarTrigger> 格式</MenubarTrigger>
+                <MenubarContent class="w-60" align="start">
+                  <MenubarCheckboxItem
+                    v-for="{ label, kbd, cmd } in formatItems"
+                    :key="label"
+                    @click="
+                      cmd === 'formatContent' ? formatContent() : addFormat(cmd)
+                    "
+                  >
+                    {{ label }}
+                    <MenubarShortcut>
+                      <kbd
+                        v-for="item in kbd"
+                        :key="item"
+                        class="mx-1 bg-gray-2 dark:bg-stone-9"
+                      >
+                        {{ item }}
+                      </kbd>
+                    </MenubarShortcut>
+                  </MenubarCheckboxItem>
+                  <MenubarSeparator />
+                  <MenubarCheckboxItem
+                    :checked="isCiteStatus"
+                    @click="citeStatusChanged()"
+                  >
+                    微信外链转底部引用
+                  </MenubarCheckboxItem>
+                  <MenubarSeparator />
+                  <MenubarCheckboxItem
+                    :checked="isCountStatus"
+                    @click="countStatusChanged()"
+                  >
+                    统计字数和阅读时间
+                  </MenubarCheckboxItem>
+                </MenubarContent>
+              </MenubarMenu>
+              <EditDropdown />
+              <StyleDropdown />
+              <HelpDropdown />
+            </Menubar>
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    </div>
+
+    <!-- 右侧操作区 -->
+    <div class="space-x-2 flex flex-wrap items-center">
       <!-- 展开/收起左侧内容栏 -->
       <Button
         variant="outline"
@@ -226,9 +285,9 @@ async function copy() {
 
       <!-- 复制按钮组 -->
       <div
-        class="bg-background space-x-1 text-background-foreground mx-2 flex items-center border rounded-md"
+        class="bg-background space-x-1 text-background-foreground flex items-center border rounded-md"
       >
-        <Button variant="ghost" class="shadow-none" @click="copy">
+        <Button variant="ghost" class="shadow-none text-sm px-2 md:px-4" @click="copy">
           复制
         </Button>
         <Separator orientation="vertical" class="h-5" />
@@ -258,7 +317,7 @@ async function copy() {
       </div>
 
       <!-- 文章信息（移动端隐藏） -->
-      <PostInfo class="hidden sm:inline-flex" />
+      <PostInfo class="hidden md:inline-flex" />
 
       <!-- 设置按钮 -->
       <Button
@@ -284,5 +343,18 @@ kbd {
   border: 1px solid #a8a8a8;
   padding: 1px 4px;
   border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .menubar {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+
+    > * {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
 }
 </style>
