@@ -402,8 +402,7 @@ function emitUploads(file: File) {
   progressValue.value = 0
   const intervalId = setInterval(() => {
     const newProgress = progressValue.value + 1
-    if (newProgress >= 99) {
-      clearInterval(intervalId) // 达到99%时清除定时器
+    if (newProgress >= 100) {
       return
     }
     progressValue.value = newProgress
@@ -421,7 +420,7 @@ function emitUploads(file: File) {
 
   // 假设有一个上传完成的事件可以监听
   // 或者需要修改 uploadImage 方法使其返回 Promise
-  emit(`uploadImage`, file, cleanup)
+  emit(`uploadImage`, file, cleanup, true)
 }
 </script>
 
@@ -472,7 +471,7 @@ function emitUploads(file: File) {
             @dragover.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
           >
-            <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 1px;" />
+            <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 2px;" />
             <UploadCloud class="size-20" />
             <p>
               将图片拖到此处，或

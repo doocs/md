@@ -193,6 +193,7 @@ const isImgLoading = ref(false)
 async function uploadImage(
   file: File,
   cb?: { (url: any): void, (arg0: unknown): void } | undefined,
+  applyUrl?: boolean,
 ) {
   try {
     isImgLoading.value = true
@@ -201,10 +202,12 @@ async function uploadImage(
     const url = await fileUpload(base64Content, file)
     if (cb) {
       cb(url)
-      uploaded(url)
     }
     else {
       uploaded(url)
+    }
+    if (applyUrl) {
+      return uploaded(url)
     }
   }
   catch (err) {
@@ -330,7 +333,7 @@ function mdLocalToRemote() {
 const changeTimer = ref<NodeJS.Timeout>()
 
 const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
-
+const progressValue = ref(0)
 function createFormTextArea(dom: HTMLTextAreaElement) {
   const textArea = fromTextArea(dom, {
     mode: `text/x-markdown`,
@@ -360,17 +363,33 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
   })
 
   // 粘贴上传图片并插入
-  textArea.on(`paste`, (_editor, event) => {
+  textArea.on(`paste`, async (_editor, event) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
 
     const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
-
+    // start progress
+    const intervalId = setInterval(() => {
+      const newProgress = progressValue.value + 1
+      if (newProgress >= 100) {
+        return
+      }
+      progressValue.value = newProgress
+    }, 100)
     for (const item of items) {
-      uploadImage(item)
+      await uploadImage(item)
       event.preventDefault()
     }
+    const cleanup = () => {
+      clearInterval(intervalId)
+      progressValue.value = 100 // 设置完成状态
+      // 可选：延迟一段时间后重置进度
+      setTimeout(() => {
+        progressValue.value = 0
+      }, 1000)
+    }
+    cleanup()
   })
 
   return textArea
@@ -438,6 +457,7 @@ onUnmounted(() => {
 
 <template>
   <div class="container flex flex-col">
+    <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="height: 2px;" />
     <EditorHeader
       @start-copy="startCopy"
       @end-copy="endCopy"
