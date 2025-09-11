@@ -387,7 +387,7 @@ onChange((files) => {
 
   const file = files[0]
 
-  beforeImageUpload(file) && emit(`uploadImage`, file)
+  beforeImageUpload(file) && emitUploads(file)
   reset()
 })
 
@@ -395,7 +395,33 @@ function onDrop(e: DragEvent) {
   dragover.value = false
   e.stopPropagation()
   const file = Array.from(e.dataTransfer!.files)[0]
-  beforeImageUpload(file) && emit(`uploadImage`, file)
+  beforeImageUpload(file) && emitUploads(file)
+}
+const progressValue = ref(0)
+function emitUploads(file: File) {
+  progressValue.value = 0
+  const intervalId = setInterval(() => {
+    const newProgress = progressValue.value + 1
+    if (newProgress >= 99) {
+      clearInterval(intervalId) // 达到99%时清除定时器
+      return
+    }
+    progressValue.value = newProgress
+  }, 100)
+
+  // 监听上传完成事件，在真正完成后清除定时器和设置100%
+  const cleanup = () => {
+    clearInterval(intervalId)
+    progressValue.value = 100 // 设置完成状态
+    // 可选：延迟一段时间后重置进度
+    setTimeout(() => {
+      progressValue.value = 0
+    }, 1000)
+  }
+
+  // 假设有一个上传完成的事件可以监听
+  // 或者需要修改 uploadImage 方法使其返回 Promise
+  emit(`uploadImage`, file, cleanup)
 }
 </script>
 
@@ -446,6 +472,7 @@ function onDrop(e: DragEvent) {
             @dragover.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
           >
+            <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 1px;" />
             <UploadCloud class="size-20" />
             <p>
               将图片拖到此处，或

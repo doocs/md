@@ -201,6 +201,7 @@ async function uploadImage(
     const url = await fileUpload(base64Content, file)
     if (cb) {
       cb(url)
+      uploaded(url)
     }
     else {
       uploaded(url)
