@@ -367,7 +367,7 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
-
+    event.preventDefault()
     const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
     // start progress
     const intervalId = setInterval(() => {
