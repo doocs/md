@@ -179,7 +179,9 @@ function uploaded(imageUrl: string) {
     toast.error(`上传图片未知异常`)
     return
   }
-  toggleShowUploadImgDialog(false)
+  setTimeout(() => {
+    toggleShowUploadImgDialog(false)
+  }, 1000)
   // 上传成功，获取光标
   const cursor = editor.value!.getCursor()
   const markdownImage = `![](${imageUrl})`
@@ -192,7 +194,7 @@ const isImgLoading = ref(false)
 
 async function uploadImage(
   file: File,
-  cb?: { (url: any): void, (arg0: unknown): void } | undefined,
+  cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
   applyUrl?: boolean,
 ) {
   try {
@@ -201,7 +203,7 @@ async function uploadImage(
     const base64Content = await toBase64(file)
     const url = await fileUpload(base64Content, file)
     if (cb) {
-      cb(url)
+      cb(url, base64Content)
     }
     else {
       uploaded(url)
@@ -367,7 +369,6 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
-    event.preventDefault()
     const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
     // start progress
     const intervalId = setInterval(() => {
@@ -378,8 +379,8 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
       progressValue.value = newProgress
     }, 100)
     for (const item of items) {
-      await uploadImage(item)
       event.preventDefault()
+      await uploadImage(item)
     }
     const cleanup = () => {
       clearInterval(intervalId)
