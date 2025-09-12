@@ -3,6 +3,7 @@ export const storeLabels: Record<string, string> = {
   isDark: `深色模式`,
   isEditOnLeft: `左侧编辑`,
   isMacCodeBlock: `Mac 代码块`,
+  isShowLineNumber: `代码块行号`,
   isCiteStatus: `微信外链接底部引用状态`,
   isCountStatus: `字数统计状态`,
   isUseIndent: `使用缩进`,

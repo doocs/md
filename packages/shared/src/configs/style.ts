@@ -232,6 +232,7 @@ export const legendOptions: IConfigOption[] = [
 export const defaultStyleConfig = {
   isCiteStatus: false,
   isMacCodeBlock: true,
+  isShowLineNumber: false,
   isCountStatus: false,
   theme: themeOptions[0].value,
   fontFamily: fontFamilyOptions[0].value,
