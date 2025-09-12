@@ -252,39 +252,23 @@ export function initRenderer(opts: IOpts): RendererAPI {
       const langText = lang.split(` `)[0]
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
 
-      let highlighted = hljs.highlight(text, { language }).value
-
-      // 处理两个完整 span 标签之间的空格
-      highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => {
-        return span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`)
-      })
-
-      // 处理 span 标签开始前的空格
-      highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => {
-        return span.replace(/^(<span[^>]*>)/, `$1${spaces}`)
-      })
-
-      // tab to 4 spaces
-      highlighted = highlighted.replace(/\t/g, `    `)
-      highlighted = highlighted
-        .replace(/\r\n/g, `<br/>`)
-        .replace(/\n/g, `<br/>`)
-        .replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
+      let highlighted = ``
 
       if (opts.isShowLineNumber) {
-        const lines = highlighted.split(/<br\s*\/?>/)
+        const rawLines = text.replace(/\r\n/g, `\n`).split(`\n`)
 
-        const lineNumbersHtml = lines
-          .map((_, idx) => `<section style="padding:0 10px 0 0;line-height:1.75">${idx + 1}</section>`)
-          .join(``)
+        const highlightedLines = rawLines.map((lineRaw) => {
+          let lineHtml = hljs.highlight(lineRaw, { language }).value
+          lineHtml = lineHtml.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+          lineHtml = lineHtml.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+          lineHtml = lineHtml.replace(/\t/g, `    `)
+          lineHtml = lineHtml.replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
+          return lineHtml === `` ? `&nbsp;` : lineHtml
+        })
 
-        const codeLinesHtml = lines
-          .map((line) => {
-            const content = line === `` ? `&nbsp;` : line
-            return `<div style="white-space:pre;min-width:max-content;line-height:1.75">${content}</div>`
-          })
-          .join(``)
-
+        const lineNumbersHtml = highlightedLines.map((_, idx) => `<section style="padding:0 10px 0 0;line-height:1.75">${idx + 1}</section>`).join(``)
+        const codeInnerHtml = highlightedLines.join(`<br/>`)
+        const codeLinesHtml = `<div style="white-space:pre;min-width:max-content;line-height:1.75">${codeInnerHtml}</div>`
         const lineNumberColumnStyles = `text-align:right;padding:8px 0;border-right:1px solid rgba(0,0,0,0.04);user-select:none;background:var(--code-bg,transparent);`
 
         highlighted = `
@@ -293,6 +277,13 @@ export function initRenderer(opts: IOpts): RendererAPI {
             <section class="code-scroll" style="flex:1 1 auto;overflow-x:auto;overflow-y:visible;padding:8px;min-width:0;box-sizing:border-box">${codeLinesHtml}</section>
           </section>
         `
+      }
+      else {
+        highlighted = hljs.highlight(text, { language }).value
+        highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+        highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+        highlighted = highlighted.replace(/\t/g, `    `)
+        highlighted = highlighted.replace(/\r\n/g, `<br/>`).replace(/\n/g, `<br/>`).replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
       }
 
       const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
