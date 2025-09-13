@@ -5,6 +5,22 @@ import { addPrefix } from '@/utils'
 
 const store = useStore()
 
+// 控制是否启用动画
+const enableAnimation = ref(false)
+
+// 监听 PostSlider 开关状态变化
+watch(() => store.isOpenPostSlider, () => {
+  if (store.isMobile) {
+    // 在移动端，用户操作时启用动画
+    enableAnimation.value = true
+  }
+})
+
+// 监听设备类型变化，重置动画状态
+watch(() => store.isMobile, () => {
+  enableAnimation.value = false
+})
+
 /* ============ 新增内容 ============ */
 const parentId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
@@ -194,12 +210,16 @@ function handleDragEnd() {
     class="h-full w-full overflow-hidden mobile-drawer"
     :class="{
       // 移动端样式
-      'fixed top-0 left-0 z-50 w-80 bg-background border-r shadow-lg': store.isMobile,
-      'mobile-drawer-closed': store.isMobile && !store.isOpenPostSlider,
-      'mobile-drawer-open': store.isMobile && store.isOpenPostSlider,
+      'fixed top-0 left-0 z-55 bg-background border-r shadow-lg': store.isMobile,
+      'animate': store.isMobile && enableAnimation,
       // 桌面端样式
       'border-2 border-[#0000] border-dashed bg-gray/20 transition-colors': !store.isMobile,
       'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': !store.isMobile && dragover,
+    }"
+    :style="{
+      transform: store.isMobile && store.isOpenPostSlider ? 'translateX(0)'
+        : store.isMobile && !store.isOpenPostSlider ? 'translateX(-100%)'
+          : undefined,
     }"
     @dragover.prevent="dragover = true"
     @dragleave.prevent="dragover = false"
@@ -446,23 +466,15 @@ function handleDragEnd() {
 </template>
 
 <style scoped>
-/* 移动端侧边栏动画 */
-.mobile-drawer {
+/* 移动端侧边栏动画 - 只有添加了 animate 类才启用 */
+.mobile-drawer.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.mobile-drawer-closed {
-  transform: translateX(-100%);
-}
-
-.mobile-drawer-open {
-  transform: translateX(0);
 }
 
 /* 桌面端不应用动画 */
 @media (min-width: 768px) {
   .mobile-drawer {
-    transition: none;
+    transition: none !important;
     transform: none !important;
   }
 }
