@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare } from 'lucide-vue-next'
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from 'lucide-vue-next'
 import { useStore } from '@/stores'
 import { addPrefix } from '@/utils'
 
@@ -182,11 +182,24 @@ function handleDragEnd() {
 </script>
 
 <template>
-  <!-- 侧栏外框 -->
+  <!-- 移动端遮罩层 -->
   <div
-    class="h-full w-full overflow-hidden border-2 border-[#0000] border-dashed bg-gray/20 transition-colors duration-300"
+    v-if="store.isMobile && store.isOpenPostSlider"
+    class="fixed inset-0 bg-black/50 z-40"
+    @click="store.isOpenPostSlider = false"
+  />
+
+  <!-- 侧栏容器 -->
+  <div
+    class="h-full w-full overflow-hidden mobile-drawer"
     :class="{
-      'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
+      // 移动端样式
+      'fixed top-0 left-0 z-50 w-80 bg-background border-r shadow-lg': store.isMobile,
+      'mobile-drawer-closed': store.isMobile && !store.isOpenPostSlider,
+      'mobile-drawer-open': store.isMobile && store.isOpenPostSlider,
+      // 桌面端样式
+      'border-2 border-[#0000] border-dashed bg-gray/20 transition-colors': !store.isMobile,
+      'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': !store.isMobile && dragover,
     }"
     @dragover.prevent="dragover = true"
     @dragleave.prevent="dragover = false"
@@ -194,9 +207,20 @@ function handleDragEnd() {
   >
     <nav
       class="h-full flex flex-col transition-transform overflow-hidden"
+      :class="{ 'p-2': store.isMobile }"
       @dragover="handleDragOver"
       @drop.prevent="handleDrop(null)"
     >
+      <!-- 移动端标题栏 -->
+      <div v-if="store.isMobile" class="flex items-center justify-between px-4 py-3 border-b mb-2">
+        <h2 class="text-lg font-semibold">
+          内容管理
+        </h2>
+        <Button variant="ghost" size="sm" @click="store.isOpenPostSlider = false">
+          <X class="h-4 w-4" />
+        </Button>
+      </div>
+
       <!-- 顶部：新增 + 排序按钮 -->
       <div class="space-x-4 mb-2 flex justify-center shrink-0 py-2">
         <!-- 新增 -->
@@ -316,107 +340,130 @@ function handleDragEnd() {
           :open-add-post-dialog="openAddPostDialog"
         />
       </div>
-
-      <!-- 重命名弹窗 -->
-      <Dialog v-model:open="isOpenEditDialog">
-        <DialogContent class="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>编辑内容名称</DialogTitle>
-            <DialogDescription>请输入新的内容名称</DialogDescription>
-          </DialogHeader>
-          <Input v-model="renamePostInputVal" @keyup.enter="renamePost" />
-          <DialogFooter>
-            <Button variant="outline" @click="isOpenEditDialog = false">
-              取消
-            </Button>
-            <Button @click="renamePost">
-              保存
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <!-- 删除确认 -->
-      <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>提示</AlertDialogTitle>
-            <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction @click="delPost">
-              确认
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      <!-- 历史记录 -->
-      <Dialog v-model:open="isOpenHistoryDialog">
-        <DialogContent class="max-w-max">
-          <DialogHeader>
-            <DialogTitle>历史记录</DialogTitle>
-            <DialogDescription>每隔 30 秒自动保存，最多保留 10 条</DialogDescription>
-          </DialogHeader>
-
-          <div class="h-[50vh] flex">
-            <!-- 左侧时间轴 -->
-            <ul class="space-y-2 w-[150px]">
-              <li
-                v-for="(item, idx) in store.getPostById(currentPostId!)?.history"
-                :key="item.datetime"
-                class="h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
-                :class="[
-                  // eslint-disable-next-line vue/prefer-separate-static-class
-                  'hover:bg-primary/90 hover:text-primary-foreground',
-                  {
-                    'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
-                      currentHistoryIndex === idx,
-                    'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark':
-                      currentHistoryIndex === idx,
-                  },
-                ]"
-                @click="currentHistoryIndex = idx"
-              >
-                {{ item.datetime }}
-              </li>
-            </ul>
-
-            <Separator orientation="vertical" class="mx-2" />
-
-            <!-- 右侧内容 -->
-            <div class="space-y-2 max-h-full w-[500px] overflow-y-auto">
-              <p
-                v-for="(line, idx) in (store.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '').split('\n')"
-                :key="idx"
-              >
-                {{ line }}
-              </p>
-            </div>
-          </div>
-
-          <DialogFooter>
-            <AlertDialog>
-              <AlertDialogTrigger><Button>恢 复</Button></AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>提示</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    此操作将用该记录替换当前文章内容，是否继续？
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>取消</AlertDialogCancel>
-                  <AlertDialogAction @click="recoverHistory">
-                    恢 复
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </nav>
   </div>
+
+  <!-- 重命名弹窗 -->
+  <Dialog v-model:open="isOpenEditDialog">
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>编辑内容名称</DialogTitle>
+        <DialogDescription>请输入新的内容名称</DialogDescription>
+      </DialogHeader>
+      <Input v-model="renamePostInputVal" @keyup.enter="renamePost" />
+      <DialogFooter>
+        <Button variant="outline" @click="isOpenEditDialog = false">
+          取消
+        </Button>
+        <Button @click="renamePost">
+          保存
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <!-- 删除确认 -->
+  <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>提示</AlertDialogTitle>
+        <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction @click="delPost">
+          确认
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+
+  <!-- 历史记录 -->
+  <Dialog v-model:open="isOpenHistoryDialog">
+    <DialogContent class="max-w-max">
+      <DialogHeader>
+        <DialogTitle>历史记录</DialogTitle>
+        <DialogDescription>每隔 30 秒自动保存，最多保留 10 条</DialogDescription>
+      </DialogHeader>
+
+      <div class="h-[50vh] flex">
+        <!-- 左侧时间轴 -->
+        <ul class="space-y-2 w-[150px]">
+          <li
+            v-for="(item, idx) in store.getPostById(currentPostId!)?.history"
+            :key="item.datetime"
+            class="h-8 w-full inline-flex cursor-pointer items-center gap-2 rounded px-2 text-sm transition-colors"
+            :class="[
+              // eslint-disable-next-line vue/prefer-separate-static-class
+              'hover:bg-primary/90 hover:text-primary-foreground',
+              {
+                'bg-primary text-primary-foreground shadow-lg dark:border dark:border-primary':
+                  currentHistoryIndex === idx,
+                'dark:bg-gray/30 dark:text-primary-foreground-dark dark:border-primary-dark':
+                  currentHistoryIndex === idx,
+              },
+            ]"
+            @click="currentHistoryIndex = idx"
+          >
+            {{ item.datetime }}
+          </li>
+        </ul>
+
+        <Separator orientation="vertical" class="mx-2" />
+
+        <!-- 右侧内容 -->
+        <div class="space-y-2 max-h-full w-[500px] overflow-y-auto">
+          <p
+            v-for="(line, idx) in (store.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '').split('\n')"
+            :key="idx"
+          >
+            {{ line }}
+          </p>
+        </div>
+      </div>
+
+      <DialogFooter>
+        <AlertDialog>
+          <AlertDialogTrigger><Button>恢 复</Button></AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>提示</AlertDialogTitle>
+              <AlertDialogDescription>
+                此操作将用该记录替换当前文章内容，是否继续？
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>取消</AlertDialogCancel>
+              <AlertDialogAction @click="recoverHistory">
+                恢 复
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
+
+<style scoped>
+/* 移动端侧边栏动画 */
+.mobile-drawer {
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mobile-drawer-closed {
+  transform: translateX(-100%);
+}
+
+.mobile-drawer-open {
+  transform: translateX(0);
+}
+
+/* 桌面端不应用动画 */
+@media (min-width: 768px) {
+  .mobile-drawer {
+    transition: none;
+    transform: none !important;
+  }
+}
+</style>
