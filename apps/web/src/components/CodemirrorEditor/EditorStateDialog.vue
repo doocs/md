@@ -218,7 +218,7 @@ function applyImportedConfig() {
 
 <template>
   <Dialog :open="props.visible" @update:open="onUpdate">
-    <DialogContent class="max-w-2/3">
+    <DialogContent class="md:max-w-2/3">
       <DialogHeader>
         <DialogTitle>导入/导出项目配置</DialogTitle>
         <DialogDescription>
@@ -236,7 +236,7 @@ function applyImportedConfig() {
         </TabsList>
 
         <TabsContent value="export">
-          <div class="grid grid-cols-2 my-5 h-96 gap-4 text-center">
+          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
             <div class="flex flex-col overflow-hidden">
               <p class="bg-white p-2 dark:bg-gray-900">
                 请选择需要导出的配置
@@ -269,7 +269,7 @@ function applyImportedConfig() {
                 <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
               </div>
             </div>
-            <div class="col-span-2 flex justify-end">
+            <div class="col-span-1 lg:col-span-2 flex justify-end">
               <Button
                 type="primary"
                 :disabled="Object.values(storeStates.selected).every(v => !v)"
@@ -282,13 +282,13 @@ function applyImportedConfig() {
         </TabsContent>
 
         <TabsContent value="import">
-          <div class="grid grid-cols-2 my-5 h-96 gap-4 text-center">
-            <div class="overflow-auto">
+          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
+            <div class="overflow-auto h-full flex flex-col">
               <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
                 <span>导入 JSON 配置文件</span>
                 <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
               </p>
-              <div v-if="!originalImportData" class="m-4 flex flex-col items-center justify-center border-2 rounded-lg border-dashed">
+              <div v-if="!originalImportData" class="m-4 flex-1 flex flex-col items-center justify-center border-2 rounded-lg border-dashed">
                 <input
                   id="json-import-input"
                   ref="fileInputRef"
@@ -299,7 +299,7 @@ function applyImportedConfig() {
                 >
                 <label
                   for="json-import-input"
-                  class="h-64 w-full flex flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                  class="flex-1 w-full flex flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
                 >
                   <UploadCloud class="mb-2 size-16 text-gray-500 dark:text-gray-400" />
                   <span class="text-sm text-gray-500 dark:text-gray-400">
@@ -315,7 +315,7 @@ function applyImportedConfig() {
               </div>
             </div>
 
-            <div class="overflow-auto">
+            <div class="overflow-auto h-full flex flex-col">
               <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
                 选择要导入的配置项
               </p>
@@ -334,11 +334,11 @@ function applyImportedConfig() {
                   </li>
                 </ul>
               </div>
-              <div v-else class="h-32 flex items-center justify-center text-gray-500 dark:text-gray-400">
+              <div v-else class="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
                 请先导入JSON文件
               </div>
             </div>
-            <div class="col-span-2 flex justify-end">
+            <div class="flex-1 col-span-1 lg:col-span-2 flex justify-end">
               <input
                 id="json-import-input"
                 ref="fileInputRef"
