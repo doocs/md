@@ -1,11 +1,5 @@
 <script setup lang="ts">
-import {
-  ChevronDownIcon,
-  Menu,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Settings,
-} from 'lucide-vue-next'
+import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
@@ -14,12 +8,7 @@ const emit = defineEmits([`startCopy`, `endCopy`])
 
 const store = useStore()
 
-const {
-  output,
-  primaryColor,
-  isOpenPostSlider,
-  editor,
-} = storeToRefs(store)
+const { output, primaryColor, editor } = storeToRefs(store)
 
 const { editorRefresh } = store
 
@@ -156,16 +145,6 @@ async function copy() {
 
     <!-- 右侧操作区 -->
     <div class="space-x-2 flex flex-wrap items-center">
-      <!-- 展开/收起左侧内容栏 -->
-      <Button
-        variant="outline"
-        size="icon"
-        @click="isOpenPostSlider = !isOpenPostSlider"
-      >
-        <PanelLeftOpen v-show="!isOpenPostSlider" class="size-4" />
-        <PanelLeftClose v-show="isOpenPostSlider" class="size-4" />
-      </Button>
-
       <!-- 复制按钮组 -->
       <div
         class="bg-background space-x-1 text-background-foreground flex items-center border rounded-md"
