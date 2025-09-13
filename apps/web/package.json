@@ -32,7 +32,7 @@
     "@ssttevee/multipart-parser": "^0.1.9",
     "@vee-validate/yup": "^4.15.0",
     "@vueuse/core": "^13.9.0",
-    "axios": "^1.8.4",
+    "axios": "^1.12.0",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.1",
