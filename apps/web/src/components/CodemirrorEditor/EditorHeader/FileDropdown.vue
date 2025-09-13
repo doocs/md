@@ -14,10 +14,7 @@ const { asSub } = toRefs(props)
 
 const store = useStore()
 
-const {
-  isDark,
-  isEditOnLeft,
-} = storeToRefs(store)
+const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(store)
 
 const {
   exportEditorContent2HTML,
@@ -78,6 +75,10 @@ function openEditorStateDialog() {
       <MenubarCheckboxItem v-model:checked="isEditOnLeft">
         左侧编辑
       </MenubarCheckboxItem>
+      <MenubarSeparator />
+      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
+        内容管理
+      </MenubarCheckboxItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -123,6 +124,10 @@ function openEditorStateDialog() {
       <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isEditOnLeft">
         左侧编辑
+      </MenubarCheckboxItem>
+      <MenubarSeparator />
+      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
+        内容管理
       </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
