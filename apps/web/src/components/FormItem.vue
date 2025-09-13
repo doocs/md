@@ -3,13 +3,18 @@ const props = defineProps<{
   label?: string
   required?: boolean
   error?: string
+  width?: number
 }>()
 </script>
 
 <template>
   <div class="min-h-[64px]">
     <Label class="mb-[24px] flex items-center">
-      <span class="mr-4 min-h-[40px] w-[150px] flex shrink-0 items-center justify-end font-bold" :class="{ required: props.required }">
+      <span
+        class="mr-4 min-h-[40px] flex shrink-0 items-center justify-end font-bold" :class="{ required: props.required }" :style="{
+          width: props.width ? `${props.width}px` : '150px',
+        }"
+      >
         {{ props.label }}
       </span>
       <div class="flex flex-1 flex-col justify-between">
