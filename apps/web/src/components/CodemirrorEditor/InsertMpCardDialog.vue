@@ -33,6 +33,7 @@ const config = useStorage<Config>(addPrefix(`mp-profile`), {
   id: ``,
   name: ``,
   logo: ``,
+  desc: ``,
   serviceType: `1`,
   verify: `0`,
 })
