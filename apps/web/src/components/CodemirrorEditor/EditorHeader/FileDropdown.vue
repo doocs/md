@@ -8,6 +8,8 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
+const emit = defineEmits([`openEditorState`])
+
 const { asSub } = toRefs(props)
 
 const store = useStore()
@@ -25,9 +27,11 @@ const {
   exportEditorContent2PDF,
 } = store
 
-const editorStateDialogVisible = ref(false)
-
 const importMarkdownContent = useImportMarkdownContent()
+
+function openEditorStateDialog() {
+  emit(`openEditorState`)
+}
 </script>
 
 <template>
@@ -62,7 +66,7 @@ const importMarkdownContent = useImportMarkdownContent()
         导出 .png
       </MenubarItem>
       <MenubarSeparator />
-      <MenubarItem @click="editorStateDialogVisible = true">
+      <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         导入/导出项目配置
       </MenubarItem>
@@ -108,7 +112,7 @@ const importMarkdownContent = useImportMarkdownContent()
         导出 .png
       </MenubarItem>
       <MenubarSeparator />
-      <MenubarItem @click="editorStateDialogVisible = true">
+      <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         导入/导出项目配置
       </MenubarItem>
@@ -122,7 +126,4 @@ const importMarkdownContent = useImportMarkdownContent()
       </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
-
-  <!-- 各弹窗挂载 -->
-  <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
 </template>

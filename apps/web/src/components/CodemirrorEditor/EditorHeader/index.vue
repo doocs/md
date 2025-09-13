@@ -26,6 +26,7 @@ const { editorRefresh } = store
 // 对话框状态
 const aboutDialogVisible = ref(false)
 const fundDialogVisible = ref(false)
+const editorStateDialogVisible = ref(false)
 
 // 处理帮助菜单事件
 function handleOpenAbout() {
@@ -34,6 +35,10 @@ function handleOpenAbout() {
 
 function handleOpenFund() {
   fundDialogVisible.value = true
+}
+
+function handleOpenEditorState() {
+  editorStateDialogVisible.value = true
 }
 
 const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
@@ -121,7 +126,7 @@ async function copy() {
     <!-- 桌面端左侧菜单 -->
     <div class="space-x-2 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown />
+        <FileDropdown @open-editor-state="handleOpenEditorState" />
         <FormatDropdown />
         <EditDropdown />
         <StyleDropdown />
@@ -139,7 +144,7 @@ async function copy() {
             </Button>
           </MenubarTrigger>
           <MenubarContent align="start">
-            <FileDropdown :as-sub="true" />
+            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
             <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
@@ -211,6 +216,7 @@ async function copy() {
   <!-- 对话框组件，嵌套菜单无法正常挂载，需要提取层级 -->
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
+  <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
 </template>
 
 <style lang="less" scoped>
