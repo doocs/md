@@ -431,16 +431,21 @@ function emitUploads(file: File) {
 
 <template>
   <Dialog v-model:open="displayStore.isShowUploadImgDialog">
-    <DialogContent class="max-w-max" @pointer-down-outside="ev => ev.preventDefault()">
+    <DialogContent class="md:max-w-max max-h-[90vh] overflow-y-auto" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
-      <Tabs v-model="activeName" class="w-max">
-        <TabsList>
-          <TabsTrigger value="upload">
+      <Tabs v-model="activeName" class="w-full md:w-max">
+        <TabsList class="grid w-full overflow-x-auto grid-cols-3 md:grid-cols-none md:flex md:flex-wrap gap-1">
+          <TabsTrigger value="upload" class="text-xs md:text-sm whitespace-nowrap">
             选择上传
           </TabsTrigger>
-          <TabsTrigger v-for="item in options.filter(item => item.value !== 'default')" :key="item.value" :value="item.value">
+          <TabsTrigger
+            v-for="item in options.filter(item => item.value !== 'default')"
+            :key="item.value"
+            :value="item.value"
+            class="text-xs md:text-sm whitespace-nowrap"
+          >
             {{ item.label }}
           </TabsTrigger>
         </TabsList>
@@ -454,7 +459,7 @@ function emitUploads(file: File) {
               <SelectTrigger>
                 <SelectValue placeholder="请选择" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent class="max-h-64 md:max-h-96">
                 <SelectItem
                   v-for="item in options"
                   :key="item.value"
@@ -477,8 +482,8 @@ function emitUploads(file: File) {
             @dragleave.prevent="dragover = false"
           >
             <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 2px;" />
-            <UploadCloud class="size-20" />
-            <p>
+            <UploadCloud class="size-16 md:size-20" />
+            <p class="text-center text-sm md:text-base px-4">
               将图片拖到此处，或
               <strong>点击上传</strong>
             </p>
@@ -524,7 +529,7 @@ function emitUploads(file: File) {
             <FormItem>
               <Button
                 variant="link"
-                class="p-0"
+                class="p-0 h-auto text-left whitespace-normal"
                 as="a"
                 href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
                 target="_blank"
@@ -618,7 +623,7 @@ function emitUploads(file: File) {
             <FormItem>
               <Button
                 variant="link"
-                class="p-0"
+                class="p-0 h-auto text-left whitespace-normal"
                 as="a"
                 href="https://help.aliyun.com/document_detail/31883.html"
                 target="_blank"
@@ -701,7 +706,7 @@ function emitUploads(file: File) {
             <FormItem>
               <Button
                 variant="link"
-                class="p-0"
+                class="p-0 h-auto text-left whitespace-normal"
                 as="a"
                 href="https://cloud.tencent.com/document/product/436/38484"
                 target="_blank"
@@ -784,7 +789,7 @@ function emitUploads(file: File) {
             <FormItem>
               <Button
                 variant="link"
-                class="p-0"
+                class="p-0 h-auto text-left whitespace-normal"
                 as="a"
                 href="https://developer.qiniu.com/kodo"
                 target="_blank"
@@ -918,7 +923,7 @@ function emitUploads(file: File) {
               <div class="flex flex-col items-start">
                 <Button
                   variant="link"
-                  class="p-0"
+                  class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
                   target="_blank"
@@ -927,7 +932,7 @@ function emitUploads(file: File) {
                 </Button>
                 <Button
                   variant="link"
-                  class="p-0"
+                  class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://md-pages.doocs.org/tutorial/"
                   target="_blank"
@@ -949,7 +954,7 @@ function emitUploads(file: File) {
           <Form :validation-schema="r2Schema" :initial-values="r2Config" @submit="r2Submit">
             <Field v-slot="{ field, errorMessage }" name="accountId">
               <FormItem label="AccountId" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="min-w-[350px]" />
+                <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="w-full min-w-0 md:min-w-[350px]" />
               </FormItem>
             </Field>
 
@@ -987,7 +992,7 @@ function emitUploads(file: File) {
               <div class="flex flex-col items-start">
                 <Button
                   variant="link"
-                  class="p-0"
+                  class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://developers.cloudflare.com/r2/api/s3/api/"
                   target="_blank"
@@ -996,7 +1001,7 @@ function emitUploads(file: File) {
                 </Button>
                 <Button
                   variant="link"
-                  class="p-0"
+                  class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://developers.cloudflare.com/r2/buckets/cors/"
                   target="_blank"
@@ -1018,7 +1023,7 @@ function emitUploads(file: File) {
           <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" @submit="upyunSubmit">
             <Field v-slot="{ field, errorMessage }" name="bucket">
               <FormItem label="Bucket" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: md" class="min-w-[350px]" />
+                <Input v-bind="field" v-model="field.value" placeholder="如: md" class="w-full min-w-0 md:min-w-[350px]" />
               </FormItem>
             </Field>
 

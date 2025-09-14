@@ -46,7 +46,7 @@ function formCustomSave() {
 
 <template>
   <div class="space-y-4">
-    <div class="h-60 border">
+    <div class="h-60 border flex flex-col overflow-hidden">
       <textarea
         ref="formCustomTextarea"
         placeholder="Your custom code here."
@@ -66,3 +66,11 @@ function formCustomSave() {
     </Button>
   </div>
 </template>
+
+<style scoped>
+@media (max-width: 768px) {
+  :deep(.CodeMirror) {
+    font-size: 12px;
+  }
+}
+</style>
