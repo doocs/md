@@ -480,7 +480,7 @@ onUnmounted(() => {
           >
             <PostSlider />
           </ResizablePanel>
-          <ResizableHandle class="md:hidden" />
+          <ResizableHandle class="hidden md:block" />
           <ResizablePanel class="flex">
             <div
               v-show="!store.isMobile || (store.isMobile && showEditor)"
