@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import imageCompression from 'browser-image-compression'
 import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import {
@@ -189,7 +190,15 @@ function uploaded(imageUrl: string) {
 }
 
 const isImgLoading = ref(false)
-
+async function compressImage(file: File) {
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+  }
+  const compressedFile = await imageCompression(file, options)
+  return compressedFile
+}
 async function uploadImage(
   file: File,
   cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
@@ -197,7 +206,11 @@ async function uploadImage(
 ) {
   try {
     isImgLoading.value = true
-
+    // compress image if useCompression is true
+    const useCompression = localStorage.getItem(`useCompression`) === `true`
+    if (useCompression) {
+      file = await compressImage(file)
+    }
     const base64Content = await toBase64(file)
     const url = await fileUpload(base64Content, file)
     if (cb) {
