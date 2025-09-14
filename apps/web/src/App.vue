@@ -33,7 +33,7 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-  background-color: #ffffff;
+  background-color: rgba(243, 244, 247, 0.5);
 }
 
 ::-webkit-scrollbar-track {
