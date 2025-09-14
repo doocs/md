@@ -135,7 +135,7 @@ function tabChanged(tabName: string | number) {
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': store.isMobile,
         'animate': store.isMobile && enableAnimation,
         // 桌面端样式
-        'border-l-2 border-gray/50': !store.isMobile,
+        'border-l-2 flex-1 order-2 border-gray/50': !store.isMobile,
       }"
       :style="{
         transform: store.isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : undefined,

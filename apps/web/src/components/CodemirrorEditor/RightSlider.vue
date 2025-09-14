@@ -71,7 +71,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       'fixed top-0 right-0 w-full h-full z-55 bg-background border-l shadow-lg': store.isMobile,
       'animate': store.isMobile && enableAnimation,
       // 桌面端样式
-      'border-l-2 border-gray/20 bg-white transition-width duration-300 dark:bg-[#191919]': !store.isMobile,
+      'border-l-2 order-2 border-gray/20 bg-white transition-width duration-300 dark:bg-[#191919]': !store.isMobile,
       'w-100': !store.isMobile && store.isOpenRightSlider,
       'w-0 border-l-0': !store.isMobile && !store.isOpenRightSlider,
     }"
