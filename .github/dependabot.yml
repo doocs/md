@@ -10,6 +10,7 @@ updates:
     target-branch: main
     ignore:
       - dependency-name: vue
+      - dependency-name: vite
 
     open-pull-requests-limit: 100
     groups:
