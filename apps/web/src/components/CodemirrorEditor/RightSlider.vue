@@ -83,7 +83,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       class="space-y-4 h-full overflow-auto p-4"
       :class="{
         // 移动端不需要额外的transform
-        '': store.isMobile,
+        'pt-0': store.isMobile,
         // 桌面端保持原有的动画
         'transition-transform': !store.isMobile,
         'translate-x-0': !store.isMobile && store.isOpenRightSlider,
@@ -91,7 +91,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       }"
     >
       <!-- 移动端标题栏 -->
-      <div v-if="store.isMobile" class="flex items-center justify-between -mx-4 -mt-4 px-4 py-3 border-b mb-4">
+      <div v-if="store.isMobile" class="sticky top-0 z-10 flex items-center justify-between -mx-4 px-4 py-3 border-b mb-4 bg-background">
         <h2 class="text-lg font-semibold">
           样式设置
         </h2>

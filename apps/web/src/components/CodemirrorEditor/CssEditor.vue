@@ -142,7 +142,7 @@ function tabChanged(tabName: string | number) {
       }"
     >
       <!-- 移动端标题栏 -->
-      <div v-if="store.isMobile" class="flex items-center justify-between px-4 py-3 border-b mb-2">
+      <div v-if="store.isMobile" class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b mb-2 bg-background">
         <h2 class="text-lg font-semibold">
           自定义 CSS
         </h2>
