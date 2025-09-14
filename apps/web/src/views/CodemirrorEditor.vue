@@ -370,6 +370,10 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
       return
     }
     const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
+    // 即使return了，粘贴的文本内容也会被插入
+    if (items.length === 0) {
+      return
+    }
     // start progress
     const intervalId = setInterval(() => {
       const newProgress = progressValue.value + 1
