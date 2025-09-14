@@ -41,7 +41,7 @@ function onRedirect(url: string) {
           style="width: 40%"
         >
       </div>
-      <DialogFooter class="sm:justify-evenly">
+      <DialogFooter class="sm:justify-evenly flex flex-wrap gap-2">
         <Button
           v-for="link in links"
           :key="link.url"

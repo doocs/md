@@ -1,86 +1,34 @@
 <script setup lang="ts">
-import {
-  ChevronDownIcon,
-  PanelLeftClose,
-  PanelLeftOpen,
-  Settings,
-} from 'lucide-vue-next'
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
+import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
 import { useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
+import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
 const store = useStore()
 
-const {
-  isCiteStatus,
-  isCountStatus,
-  output,
-  primaryColor,
-  isOpenPostSlider,
-  editor,
-} = storeToRefs(store)
+const { output, primaryColor, editor } = storeToRefs(store)
 
-const {
-  editorRefresh,
-  citeStatusChanged,
-  countStatusChanged,
-  formatContent,
-} = store
+const { editorRefresh } = store
 
-// 工具函数，添加格式
-function addFormat(cmd: string) {
-  (editor.value as any).options.extraKeys[cmd](editor.value)
+// 对话框状态
+const aboutDialogVisible = ref(false)
+const fundDialogVisible = ref(false)
+const editorStateDialogVisible = ref(false)
+
+// 处理帮助菜单事件
+function handleOpenAbout() {
+  aboutDialogVisible.value = true
 }
 
-const formatItems = [
-  {
-    label: `加粗`,
-    kbd: [ctrlSign, `B`],
-    cmd: `${ctrlKey}-B`,
-  },
-  {
-    label: `斜体`,
-    kbd: [ctrlSign, `I`],
-    cmd: `${ctrlKey}-I`,
-  },
-  {
-    label: `删除线`,
-    kbd: [ctrlSign, `D`],
-    cmd: `${ctrlKey}-D`,
-  },
-  {
-    label: `超链接`,
-    kbd: [ctrlSign, `K`],
-    cmd: `${ctrlKey}-K`,
-  },
-  {
-    label: `行内代码`,
-    kbd: [ctrlSign, `E`],
-    cmd: `${ctrlKey}-E`,
-  },
-  {
-    label: `标题`,
-    kbd: [ctrlSign, `H`],
-    cmd: `${ctrlKey}-H`,
-  },
-  {
-    label: `无序列表`,
-    kbd: [ctrlSign, `U`],
-    cmd: `${ctrlKey}-U`,
-  },
-  {
-    label: `有序列表`,
-    kbd: [ctrlSign, `O`],
-    cmd: `${ctrlKey}-O`,
-  },
-  {
-    label: `格式化`,
-    kbd: [altSign, shiftSign, `F`],
-    cmd: `formatContent`,
-  },
-] as const
+function handleOpenFund() {
+  fundDialogVisible.value = true
+}
+
+function handleOpenEditorState() {
+  editorStateDialogVisible.value = true
+}
 
 const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
 
@@ -162,73 +110,46 @@ async function copy() {
 
 <template>
   <header
-    class="header-container h-15 flex flex-wrap items-center justify-between px-5"
+    class="header-container h-15 flex flex-wrap items-center justify-between px-5 relative"
   >
-    <!-- 左侧菜单：移动端隐藏 -->
-    <div class="space-x-2 hidden sm:flex">
+    <!-- 桌面端左侧菜单 -->
+    <div class="space-x-2 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown />
-
-        <MenubarMenu>
-          <MenubarTrigger> 格式</MenubarTrigger>
-          <MenubarContent class="w-60" align="start">
-            <MenubarCheckboxItem
-              v-for="{ label, kbd, cmd } in formatItems"
-              :key="label"
-              @click="
-                cmd === 'formatContent' ? formatContent() : addFormat(cmd)
-              "
-            >
-              {{ label }}
-              <MenubarShortcut>
-                <kbd
-                  v-for="item in kbd"
-                  :key="item"
-                  class="mx-1 bg-gray-2 dark:bg-stone-9"
-                >
-                  {{ item }}
-                </kbd>
-              </MenubarShortcut>
-            </MenubarCheckboxItem>
-            <MenubarSeparator />
-            <MenubarCheckboxItem
-              :checked="isCiteStatus"
-              @click="citeStatusChanged()"
-            >
-              微信外链转底部引用
-            </MenubarCheckboxItem>
-            <MenubarSeparator />
-            <MenubarCheckboxItem
-              :checked="isCountStatus"
-              @click="countStatusChanged()"
-            >
-              统计字数和阅读时间
-            </MenubarCheckboxItem>
-          </MenubarContent>
-        </MenubarMenu>
+        <FileDropdown @open-editor-state="handleOpenEditorState" />
+        <FormatDropdown />
         <EditDropdown />
         <StyleDropdown />
-        <HelpDropdown />
+        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
       </Menubar>
     </div>
 
-    <!-- 右侧操作区：移动端保留核心按钮 -->
-    <div class="space-x-2 flex flex-wrap">
-      <!-- 展开/收起左侧内容栏 -->
-      <Button
-        variant="outline"
-        size="icon"
-        @click="isOpenPostSlider = !isOpenPostSlider"
-      >
-        <PanelLeftOpen v-show="!isOpenPostSlider" class="size-4" />
-        <PanelLeftClose v-show="isOpenPostSlider" class="size-4" />
-      </Button>
+    <!-- 移动端汉堡菜单按钮 -->
+    <div class="md:hidden">
+      <Menubar class="menubar border-0 p-0">
+        <MenubarMenu>
+          <MenubarTrigger class="p-0">
+            <Button variant="outline" size="icon">
+              <Menu class="size-4" />
+            </Button>
+          </MenubarTrigger>
+          <MenubarContent align="start">
+            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
+            <FormatDropdown :as-sub="true" />
+            <EditDropdown :as-sub="true" />
+            <StyleDropdown :as-sub="true" />
+            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
+          </MenubarContent>
+        </MenubarMenu>
+      </Menubar>
+    </div>
 
+    <!-- 右侧操作区 -->
+    <div class="space-x-2 flex flex-wrap items-center">
       <!-- 复制按钮组 -->
       <div
-        class="bg-background space-x-1 text-background-foreground mx-2 flex items-center border rounded-md"
+        class="bg-background space-x-1 text-background-foreground flex items-center border rounded-md"
       >
-        <Button variant="ghost" class="shadow-none" @click="copy">
+        <Button variant="ghost" class="shadow-none text-sm px-2 md:px-4" @click="copy">
           复制
         </Button>
         <Separator orientation="vertical" class="h-5" />
@@ -258,7 +179,7 @@ async function copy() {
       </div>
 
       <!-- 文章信息（移动端隐藏） -->
-      <PostInfo class="hidden sm:inline-flex" />
+      <PostInfo class="hidden md:inline-flex" />
 
       <!-- 设置按钮 -->
       <Button
@@ -270,6 +191,11 @@ async function copy() {
       </Button>
     </div>
   </header>
+
+  <!-- 对话框组件，嵌套菜单无法正常挂载，需要提取层级 -->
+  <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
+  <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
+  <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
 </template>
 
 <style lang="less" scoped>
@@ -284,5 +210,18 @@ kbd {
   border: 1px solid #a8a8a8;
   padding: 1px 4px;
   border-radius: 2px;
+}
+
+@media (max-width: 768px) {
+  .menubar {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+
+    > * {
+      width: 100%;
+      justify-content: flex-start;
+    }
+  }
 }
 </style>

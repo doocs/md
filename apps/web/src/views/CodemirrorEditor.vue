@@ -76,7 +76,6 @@ function leftAndRightScroll() {
     if (text === `preview`) {
       source = previewRef.value!
       target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-
       editor.value!.off(`scroll`, editorScrollCB)
       timeout.value = setTimeout(() => {
         editor.value!.on(`scroll`, editorScrollCB)
@@ -85,7 +84,6 @@ function leftAndRightScroll() {
     else {
       source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
       target = previewRef.value!
-
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
         target.addEventListener(`scroll`, previewScrollCB, false)
@@ -480,7 +478,7 @@ onUnmounted(() => {
           >
             <PostSlider />
           </ResizablePanel>
-          <ResizableHandle />
+          <ResizableHandle class="hidden md:block" />
           <ResizablePanel class="flex">
             <div
               v-show="!store.isMobile || (store.isMobile && showEditor)"
@@ -523,7 +521,7 @@ onUnmounted(() => {
                 >
                   <div
                     class="preview border-x shadow-xl"
-                    :class="[store.previewWidth]"
+                    :class="[store.isMobile ? 'w-[100%]' : store.previewWidth]"
                   >
                     <section id="output" class="w-full" v-html="output" />
                     <div v-if="isCoping" class="loading-mask">
@@ -543,8 +541,8 @@ onUnmounted(() => {
 
               <FloatingToc />
             </div>
-            <CssEditor class="order-2 flex-1" />
-            <RightSlider class="order-2" />
+            <CssEditor />
+            <RightSlider />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
