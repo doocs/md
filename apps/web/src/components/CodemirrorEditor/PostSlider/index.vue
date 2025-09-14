@@ -470,12 +470,4 @@ function handleDragEnd() {
 .mobile-drawer.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-/* 桌面端不应用动画 */
-@media (min-width: 768px) {
-  .mobile-drawer {
-    transition: none !important;
-    transform: none !important;
-  }
-}
 </style>

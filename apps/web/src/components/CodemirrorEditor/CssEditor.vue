@@ -250,14 +250,6 @@ function tabChanged(tabName: string | number) {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 桌面端不应用动画 */
-@media (min-width: 768px) {
-  .mobile-css-editor {
-    transition: none !important;
-    transform: none !important;
-  }
-}
-
 /* 桌面端的bounceInRight动画 */
 .bounceInRight {
   animation-name: bounceInRight;
