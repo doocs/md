@@ -45,8 +45,8 @@ function formCustomSave() {
 </script>
 
 <template>
-  <div class="space-y-4">
-    <div class="h-60 border flex flex-col overflow-hidden">
+  <div class="space-y-4 min-w-0">
+    <div class="h-60 border flex flex-col">
       <textarea
         ref="formCustomTextarea"
         placeholder="Your custom code here."
@@ -68,6 +68,12 @@ function formCustomSave() {
 </template>
 
 <style scoped>
+/* 覆盖全局的 overflow-x: hidden 设置 */
+:deep(.CodeMirror-scroll) {
+  overflow-x: auto !important;
+  overflow-y: auto !important;
+}
+
 @media (max-width: 768px) {
   :deep(.CodeMirror) {
     font-size: 12px;

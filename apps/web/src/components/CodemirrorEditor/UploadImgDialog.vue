@@ -1197,7 +1197,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="formCustom">
+        <TabsContent value="formCustom" class="grid">
           <CustomUploadForm />
         </TabsContent>
       </Tabs>
