@@ -339,12 +339,16 @@ const options = [
 ]
 
 const imgHost = ref(`default`)
-
+const useCompression = ref(false)
 const activeName = ref(`upload`)
 
 onBeforeMount(() => {
   if (localStorage.getItem(`imgHost`)) {
     imgHost.value = localStorage.getItem(`imgHost`)!
+  }
+  const storedCompression = localStorage.getItem(`useCompression`)
+  if (storedCompression !== null) {
+    useCompression.value = storedCompression === `true`
   }
 })
 
@@ -352,7 +356,9 @@ function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
   toast.success(`图床已切换`)
 }
-
+function changeCompression() {
+  localStorage.setItem(`useCompression`, useCompression.value.toString())
+}
 function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
@@ -470,6 +476,16 @@ function emitUploads(file: File) {
                 </SelectItem>
               </SelectContent>
             </Select>
+          </Label>
+          <Label label="UseCompression">
+            <span class="my-4 block">
+              开启图片压缩
+            </span>
+            <Switch
+              v-model:checked="useCompression"
+              name="UseCompression"
+              @update:checked="changeCompression"
+            />
           </Label>
           <div
             class="bg-clip-padding mt-4 h-50 relative flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
