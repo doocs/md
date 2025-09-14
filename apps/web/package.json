@@ -24,15 +24,15 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.883.0",
-    "@aws-sdk/s3-request-presigner": "^3.883.0",
+    "@aws-sdk/client-s3": "^3.888.0",
+    "@aws-sdk/s3-request-presigner": "^3.888.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@ssttevee/multipart-parser": "^0.1.9",
     "@vee-validate/yup": "^4.15.0",
     "@vueuse/core": "^13.9.0",
-    "axios": "^1.12.0",
+    "axios": "^1.12.1",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.1",
@@ -48,7 +48,7 @@
     "html-to-image": "^1.11.13",
     "isomorphic-dompurify": "^2.25.0",
     "juice": "^11.0.0",
-    "lucide-vue-next": "^0.542.0",
+    "lucide-vue-next": "^0.544.0",
     "marked": "^16.2.1",
     "node-fetch": "^3.3.2",
     "pinia": "^3.0.1",
@@ -72,7 +72,7 @@
     "yup": "^1.6.1"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250906.0",
+    "@cloudflare/workers-types": "^4.20250913.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.13",
     "@tailwindcss/vite": "^4.1.13",
@@ -87,7 +87,7 @@
     "linkedom": "^0.18.12",
     "ohash": "^2.0.11",
     "postcss": "^8.5.1",
-    "rollup": "^4.46.2",
+    "rollup": "^4.50.1",
     "rollup-plugin-visualizer": "^6.0.3",
     "shx": "^0.4.0",
     "tailwindcss": "^4.1.13",
@@ -97,9 +97,9 @@
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-pwa": "^1.0.3",
     "vite-plugin-radar": "^0.10.0",
-    "vite-plugin-vue-devtools": "^8.0.1",
-    "vue-tsc": "^3.0.6",
-    "wrangler": "^4.34.0",
+    "vite-plugin-vue-devtools": "^8.0.2",
+    "vue-tsc": "^3.0.7",
+    "wrangler": "^4.36.0",
     "wxt": "^0.20.11"
   }
 }
