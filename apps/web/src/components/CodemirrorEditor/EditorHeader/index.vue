@@ -125,7 +125,7 @@ async function copy() {
 
     <!-- 移动端汉堡菜单按钮 -->
     <div class="md:hidden">
-      <Menubar class="menubar border-0">
+      <Menubar class="menubar border-0 p-0">
         <MenubarMenu>
           <MenubarTrigger class="p-0">
             <Button variant="outline" size="icon">
