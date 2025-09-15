@@ -12,7 +12,7 @@ import type { PropertiesHyphen } from 'csstype'
 export function customizeTheme(theme: Theme, options: {
   fontSize?: number
   color?: string
-}) {
+}): Theme {
   const newTheme = JSON.parse(JSON.stringify(theme))
   const { fontSize, color } = options
   if (fontSize) {
@@ -34,7 +34,7 @@ export function customizeTheme(theme: Theme, options: {
  * @param theme - 基础主题
  * @returns 合并后的主题
  */
-export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme) {
+export function customCssWithTemplate(jsonString: Partial<Record<Block | Inline, PropertiesHyphen>>, color: string, theme: Theme): Theme {
   const newTheme = customizeTheme(theme, { color })
 
   const mergeProperties = <T extends Block | Inline = Block>(target: Record<T, PropertiesHyphen>, source: Partial<Record<Block | Inline, PropertiesHyphen>>, keys: T[]) => {

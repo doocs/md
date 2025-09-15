@@ -9,7 +9,7 @@ import { marked } from 'marked'
  * @param renderer - 渲染器 API
  * @returns 渲染结果，包含 HTML 和阅读时间
  */
-export function renderMarkdown(raw: string, renderer: RendererAPI) {
+export function renderMarkdown(raw: string, renderer: RendererAPI): { html: string, readingTime: ReadTimeResults } {
   // 解析 front-matter 和正文
   const { markdownContent, readingTime }
     = renderer.parseFrontMatterAndContent(raw)

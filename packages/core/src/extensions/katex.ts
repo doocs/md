@@ -9,7 +9,7 @@ const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]
 
 const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 
-function createRenderer(display: boolean, inlineStyle: string, blockStyle: string) {
+function createRenderer(display: boolean, inlineStyle: string, blockStyle: string): (token: any) => string {
   return (token: any) => {
     // @ts-expect-error MathJax is a global variable
     window.MathJax.texReset()

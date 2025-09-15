@@ -4,10 +4,34 @@
   "version": "2.0.4",
   "private": true,
   "exports": {
-    ".": "./src/index.ts",
-    "./renderer": "./src/renderer/index.ts",
-    "./extensions": "./src/extensions/index.ts",
-    "./utils": "./src/utils/index.ts"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    },
+    "./extensions": {
+      "types": "./dist/extensions/index.d.ts",
+      "import": "./dist/extensions/index.js",
+      "require": "./dist/extensions/index.cjs"
+    },
+    "./renderer": {
+      "types": "./dist/renderer/index.d.ts",
+      "import": "./dist/renderer/index.js",
+      "require": "./dist/renderer/index.cjs"
+    },
+    "./utils": {
+      "types": "./dist/utils/index.d.ts",
+      "import": "./dist/utils/index.js",
+      "require": "./dist/utils/index.cjs"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "dev": "tsdown --watch",
+    "build": "tsdown"
   },
   "dependencies": {
     "@md/shared": "workspace:*",
@@ -22,6 +46,7 @@
     "reading-time": "^1.5.0"
   },
   "devDependencies": {
-    "@md/config": "workspace:*"
+    "@md/config": "workspace:*",
+    "tsdown": "^0.15.1"
   }
 }

@@ -167,7 +167,7 @@ const defaultAlertVariant: AlertVariantItem[] = [
  * Resolves the variants configuration, combining the provided variants with
  * the default variants.
  */
-export function resolveVariants(variants: AlertVariantItem[]) {
+export function resolveVariants(variants: AlertVariantItem[]): AlertVariantItem[] {
   if (!variants.length)
     return defaultAlertVariant
 
@@ -185,6 +185,6 @@ export function resolveVariants(variants: AlertVariantItem[]) {
 /**
  * Returns regex pattern to match alert syntax.
  */
-export function createSyntaxPattern(type: string) {
+export function createSyntaxPattern(type: string): string {
   return `^(?:\\[!${type}])\\s*?\n*`
 }
