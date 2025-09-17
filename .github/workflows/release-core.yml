@@ -1,0 +1,31 @@
+name: Create Core Release
+
+on:
+  push:
+    tags:
+      - 'core-v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm core build
+      - run: echo "registry=https://registry.npmjs.org/" > packages/core/.npmrc
+
+      - run: cd packages/core && npm publish --registry=https://registry.npmjs.org/
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}
