@@ -81,7 +81,7 @@
     "@types/crypto-js": "^4.2.2",
     "@types/mdast": "^4.0.4",
     "@types/unist": "^3.0.3",
-    "@types/uuid": "^10.0.0",
+    "@types/uuid": "^11.0.0",
     "@vitejs/plugin-vue": "^6.0.1",
     "less": "^4.4.1",
     "linkedom": "^0.18.12",
