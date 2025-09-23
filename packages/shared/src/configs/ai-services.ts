@@ -235,6 +235,12 @@ export const serviceOptions: ServiceOption[] = [
     ],
   },
   {
+    value: `302ai`,
+    label: `302.AI`,
+    endpoint: ` https://api.302.ai/v1`,
+    models: [`chatgpt-4o-latest`, `gpt-4o`, `gpt-4o-mini`, `gpt-4-turbo`, `o1-preview`, `o1-mini`, `claude-3-5-sonnet-latest`, `claude-3-5-sonnet-20241022`, `claude-3-5-haiku-20241022`, `grok-beta`],
+  },
+  {
     value: `bigmodel`,
     label: `智谱 AI`,
     endpoint: `https://open.bigmodel.cn/api/paas/v4/`,
