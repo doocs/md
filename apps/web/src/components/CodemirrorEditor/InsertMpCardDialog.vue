@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { toTypedSchema } from '@vee-validate/yup'
-import { Info } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { addPrefix } from '@/utils'
@@ -82,18 +81,6 @@ function submit(formValues: any) {
         <DialogTitle>插入公众号名片</DialogTitle>
       </DialogHeader>
 
-      <Alert>
-        <Info class="h-4 w-4" />
-        <AlertDescription>
-          <p class="mb-4">
-            此功能用于插入微信公众号名片，数据会缓存至本地，可长期使用。请务必确保公众号 ID 正确，否则可能导致公众号中粘贴后无法保存。如发现 ID 无问题但在公众号号中保存失败，可提 issue 或在群中留言。
-          </p>
-          <p>
-            其他的内容，例如：公众号名称、Logo 和认证，都会在发布后的文章中，自动根据 ID 修正。所以实际的显示效果，请以发文内容为主。此处的填写，仅限于优化当前站点的显示。
-          </p>
-        </AlertDescription>
-      </Alert>
-
       <Form :validation-schema="schema" :initial-values="config" @submit="submit">
         <Field v-slot="{ field, errorMessage }" name="id">
           <FormItem label="公众号 ID" required :error="errorMessage" :width="90">
@@ -169,6 +156,18 @@ function submit(formValues: any) {
             </RadioGroup>
           </FormItem>
         </Field>
+
+        <FormItem>
+          <Button
+            variant="link"
+            class="p-0 h-auto text-left whitespace-normal"
+            as="a"
+            href="https://github.com/doocs/md/blob/main/docs/mp-card.md"
+            target="_blank"
+          >
+            如何获取公众号 ID？
+          </Button>
+        </FormItem>
 
         <FormItem>
           <Button type="submit">
