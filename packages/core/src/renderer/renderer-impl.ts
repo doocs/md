@@ -169,6 +169,13 @@ export function initRenderer(opts: IOpts): RendererAPI {
   }
 
   function addFootnote(title: string, link: string): number {
+    // 检查是否已经存在相同的链接
+    const existingFootnote = footnotes.find(([, , existingLink]) => existingLink === link)
+    if (existingFootnote) {
+      return existingFootnote[0] // 返回已存在的脚注索引
+    }
+
+    // 如果不存在，创建新的脚注
     footnotes.push([++footnoteIndex, title, link])
     return footnoteIndex
   }

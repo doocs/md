@@ -5,6 +5,22 @@ import { useDisplayStore, useStore } from '@/stores'
 const store = useStore()
 const displayStore = useDisplayStore()
 
+// 控制是否启用动画
+const enableAnimation = ref(false)
+
+// 监听 CssEditor 开关状态变化
+watch(() => displayStore.isShowCssEditor, () => {
+  if (store.isMobile) {
+    // 在移动端，用户操作时启用动画
+    enableAnimation.value = true
+  }
+})
+
+// 监听设备类型变化，重置动画状态
+watch(() => store.isMobile, () => {
+  enableAnimation.value = false
+})
+
 const isOpenEditDialog = ref(false)
 const editInputVal = ref(``)
 const tabHistory = ref([``, store.cssContentConfig.active])
@@ -103,8 +119,37 @@ function tabChanged(tabName: string | number) {
 </script>
 
 <template>
+  <!-- 移动端遮罩层 -->
+  <div
+    v-if="store.isMobile && displayStore.isShowCssEditor"
+    class="fixed inset-0 bg-black/50 z-40"
+    @click="displayStore.isShowCssEditor = false"
+  />
+
   <transition enter-active-class="bounceInRight">
-    <div v-show="displayStore.isShowCssEditor" class="cssEditor-wrapper h-full flex flex-col border-l-2 border-gray/50">
+    <div
+      v-show="displayStore.isShowCssEditor"
+      class="cssEditor-wrapper h-full flex flex-col mobile-css-editor"
+      :class="{
+        // 移动端样式
+        'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': store.isMobile,
+        'animate': store.isMobile && enableAnimation,
+        // 桌面端样式
+        'border-l-2 flex-1 order-2 border-gray/50': !store.isMobile,
+      }"
+      :style="{
+        transform: store.isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : undefined,
+      }"
+    >
+      <!-- 移动端标题栏 -->
+      <div v-if="store.isMobile" class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b mb-2 bg-background">
+        <h2 class="text-lg font-semibold">
+          自定义 CSS
+        </h2>
+        <Button variant="ghost" size="sm" @click="displayStore.isShowCssEditor = false">
+          <X class="h-4 w-4" />
+        </Button>
+      </div>
       <Tabs
         v-model="store.cssContentConfig.active"
         @update:model-value="tabChanged"
@@ -200,6 +245,12 @@ function tabChanged(tabName: string | number) {
 </template>
 
 <style lang="less" scoped>
+/* 移动端CSS编辑器动画 - 只有添加了 animate 类才启用 */
+.mobile-css-editor.animate {
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 桌面端的bounceInRight动画 */
 .bounceInRight {
   animation-name: bounceInRight;
   animation-duration: 1s;

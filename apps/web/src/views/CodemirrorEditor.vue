@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import imageCompression from 'browser-image-compression'
 import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import {
@@ -76,7 +77,6 @@ function leftAndRightScroll() {
     if (text === `preview`) {
       source = previewRef.value!
       target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-
       editor.value!.off(`scroll`, editorScrollCB)
       timeout.value = setTimeout(() => {
         editor.value!.on(`scroll`, editorScrollCB)
@@ -85,7 +85,6 @@ function leftAndRightScroll() {
     else {
       source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
       target = previewRef.value!
-
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
         target.addEventListener(`scroll`, previewScrollCB, false)
@@ -191,7 +190,15 @@ function uploaded(imageUrl: string) {
 }
 
 const isImgLoading = ref(false)
-
+async function compressImage(file: File) {
+  const options = {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+  }
+  const compressedFile = await imageCompression(file, options)
+  return compressedFile
+}
 async function uploadImage(
   file: File,
   cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
@@ -199,7 +206,11 @@ async function uploadImage(
 ) {
   try {
     isImgLoading.value = true
-
+    // compress image if useCompression is true
+    const useCompression = localStorage.getItem(`useCompression`) === `true`
+    if (useCompression) {
+      file = await compressImage(file)
+    }
     const base64Content = await toBase64(file)
     const url = await fileUpload(base64Content, file)
     if (cb) {
@@ -370,6 +381,10 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
       return
     }
     const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
+    // 即使return了，粘贴的文本内容也会被插入
+    if (items.length === 0) {
+      return
+    }
     // start progress
     const intervalId = setInterval(() => {
       const newProgress = progressValue.value + 1
@@ -476,7 +491,7 @@ onUnmounted(() => {
           >
             <PostSlider />
           </ResizablePanel>
-          <ResizableHandle />
+          <ResizableHandle class="hidden md:block" />
           <ResizablePanel class="flex">
             <div
               v-show="!store.isMobile || (store.isMobile && showEditor)"
@@ -519,7 +534,7 @@ onUnmounted(() => {
                 >
                   <div
                     class="preview border-x shadow-xl"
-                    :class="[store.previewWidth]"
+                    :class="[store.isMobile ? 'w-[100%]' : store.previewWidth]"
                   >
                     <section id="output" class="w-full" v-html="output" />
                     <div v-if="isCoping" class="loading-mask">
@@ -539,8 +554,8 @@ onUnmounted(() => {
 
               <FloatingToc />
             </div>
-            <CssEditor class="order-2 flex-1" />
-            <RightSlider class="order-2" />
+            <CssEditor />
+            <RightSlider />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

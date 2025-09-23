@@ -1,23 +1,49 @@
 <script setup lang="ts">
-const aboutDialogVisible = ref(false)
-const fundDialogVisible = ref(false)
+const props = withDefaults(defineProps<{
+  asSub?: boolean
+}>(), {
+  asSub: false,
+})
+
+const emit = defineEmits([`openAbout`, `openFund`])
+
+const { asSub } = toRefs(props)
+
+function openAboutDialog() {
+  emit(`openAbout`)
+}
+
+function openFundDialog() {
+  emit(`openFund`)
+}
 </script>
 
 <template>
-  <!-- 帮助菜单 -->
-  <MenubarMenu>
+  <!-- 作为 MenubarSub 使用 -->
+  <MenubarSub v-if="asSub">
+    <MenubarSubTrigger>
+      帮助
+    </MenubarSubTrigger>
+    <MenubarSubContent align="start">
+      <MenubarCheckboxItem @click="openAboutDialog()">
+        关于
+      </MenubarCheckboxItem>
+      <MenubarCheckboxItem @click="openFundDialog()">
+        赞赏
+      </MenubarCheckboxItem>
+    </MenubarSubContent>
+  </MenubarSub>
+
+  <!-- 作为 MenubarMenu 使用（默认） -->
+  <MenubarMenu v-else>
     <MenubarTrigger>帮助</MenubarTrigger>
     <MenubarContent align="start">
-      <MenubarCheckboxItem @click="aboutDialogVisible = true">
+      <MenubarCheckboxItem @click="openAboutDialog()">
         <span>关于</span>
       </MenubarCheckboxItem>
-      <MenubarCheckboxItem @click="fundDialogVisible = true">
+      <MenubarCheckboxItem @click="openFundDialog()">
         <span>赞赏</span>
       </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
-
-  <!-- 各弹窗挂载 -->
-  <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
-  <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
 </template>

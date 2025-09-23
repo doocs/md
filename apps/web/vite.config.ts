@@ -70,8 +70,7 @@ export default defineConfig(({ mode }) => {
       VitePluginRadar({
         analytics: { id: `G-7NZL3PZ0NK` },
       }),
-      process.env.ANALYZE === `true`
-      && visualizer({ emitFile: true, filename: `stats.html` }),
+      ...(process.env.ANALYZE === `true` ? [visualizer({ emitFile: true, filename: `stats.html` }) as any] : []),
       AutoImport({
         imports: [`vue`, `pinia`, `@vueuse/core`],
         dirs: [`./src/stores`, `./src/utils/toast`, `./src/composables`],
