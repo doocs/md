@@ -138,7 +138,7 @@ function tabChanged(tabName: string | number) {
         'border-l-2 flex-1 order-2 border-gray/50': !store.isMobile,
       }"
       :style="{
-        transform: store.isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : undefined,
+        transform: store.isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
       }"
     >
       <!-- 移动端标题栏 -->

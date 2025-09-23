@@ -241,7 +241,6 @@ async function getHljsStyles(): Promise<string> {
   try {
     const response = await fetch(hljsLink.href)
     const cssText = await response.text()
-    console.log(cssText, `cssText`)
     return `<style>${cssText}</style>`
   }
   catch (error) {
