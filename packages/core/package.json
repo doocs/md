@@ -16,9 +16,9 @@
     "fflate": "^0.8.2",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
-    "isomorphic-dompurify": "^2.26.0",
-    "marked": "^16.2.1",
-    "mermaid": "^11.11.0",
+    "isomorphic-dompurify": "^2.28.0",
+    "marked": "^16.3.0",
+    "mermaid": "^11.12.0",
     "reading-time": "^1.5.0"
   },
   "devDependencies": {
