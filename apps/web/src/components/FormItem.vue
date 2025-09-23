@@ -3,6 +3,7 @@ const props = defineProps<{
   label?: string
   required?: boolean
   error?: string
+  width?: number
 }>()
 </script>
 

@@ -8,6 +8,7 @@ class MpCommonProfile extends HTMLElement {
     const nickname = this.dataset.nickname || ``
     const headimg = this.dataset.headimg || ``
     const signature = this.dataset.signature || ``
+    const serviceType = this.dataset.service_type || `1`
     const verifyStatus = this.dataset.verify_status || `0`
 
     this.shadowRoot!.innerHTML = `
@@ -33,7 +34,7 @@ class MpCommonProfile extends HTMLElement {
                 <div class="weui-flex__item">
                   <div class="wx_profile_nickname_wrp">
                     <strong id="js_a11y_wx_profile_nickname" class="wx_profile_nickname">${nickname}</strong>
-                    <span class="wx_follow_verify ${verifyStatus === `1` ? `show-verify-personal` : ``}"></span>
+                    <span class="wx_follow_verify ${verifyStatus === `1` ? `show-verify-personal` : verifyStatus === `2` ? `show-verify-company` : ``}"></span>
                   </div>
                   <div id="js_a11y_wx_profile_desc" class="wx_profile_desc">${signature}</div>
                 </div>
@@ -42,7 +43,7 @@ class MpCommonProfile extends HTMLElement {
             </div>
           </div>
           <div id="js_a11y_wx_profile_logo" aria-hidden="true" class="wx_profile_card_ft">
-            公众号
+            ${serviceType === `1` ? `公众号` : `服务号`}
           </div>
         </div>
         <span aria-hidden="true" id="js_a11y_comma" class="weui-a11y_ref" style="display: none;">，</span>
