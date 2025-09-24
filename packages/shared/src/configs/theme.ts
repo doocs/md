@@ -311,6 +311,23 @@ const defaultTheme: Theme = {
       'max-width': `100%`,
       'overflow-x': `auto`,
     },
+
+    markup_highlight: {
+      'background-color': `var(--md-primary-color)`,
+      'padding': `2px 4px`,
+      'border-radius': `2px`,
+      'color': `#fff`,
+    },
+    markup_underline: {
+      'text-decoration': `underline`,
+      'text-decoration-color': `var(--md-primary-color)`,
+    },
+    markup_wavyline: {
+      'text-decoration': `underline wavy`,
+      'text-decoration-color': `var(--md-primary-color)`,
+      'text-decoration-thickness': `2px`,
+    },
+
   },
 }
 
