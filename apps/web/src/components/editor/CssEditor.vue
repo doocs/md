@@ -193,7 +193,7 @@ onMounted(() => {
         v-model="cssContentConfig.active"
         @update:model-value="tabChanged"
       >
-        <TabsList class="w-full overflow-x-auto">
+        <TabsList class="w-full overflow-x-auto justify-start">
           <TabsTrigger
             v-for="item in cssContentConfig.tabs"
             :key="item.name"
