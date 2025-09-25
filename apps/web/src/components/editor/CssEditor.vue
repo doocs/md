@@ -200,14 +200,16 @@ onMounted(() => {
             class="flex-1"
           >
             {{ item.title }}
-            <Edit3
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click="rename(item.name)"
-            />
-            <X
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click.self="removeHandler(item.name)"
-            />
+            <template v-if="!item.isBuiltIn">
+              <Edit3
+                v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click="rename(item.name)"
+              />
+              <X
+                v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click.self="removeHandler(item.name)"
+              />
+            </template>
           </TabsTrigger>
           <TabsTrigger value="add">
             <Plus class="h-5 w-5" />
