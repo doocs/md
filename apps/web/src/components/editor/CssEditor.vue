@@ -250,7 +250,7 @@ function exportCurrentTheme() {
 
         <!-- 悬浮导出按钮 -->
         <Button
-          class="absolute bottom-4 right-4 z-10 shadow-lg hover:shadow-xl transition-shadow"
+          class="absolute bottom-4 right-4 z-10 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border"
           size="sm"
           @click="exportCurrentTheme"
         >
