@@ -173,7 +173,7 @@ onMounted(() => {
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': isMobile,
         'animate': isMobile && enableAnimation,
         // 桌面端样式
-        'border-l-2 flex-1 order-2 border-gray/50': !isMobile,
+        'border-l-2 flex-1 order-2 border-gray/50 min-w-0': !isMobile,
       }"
       :style="{
         transform: isMobile ? (uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
