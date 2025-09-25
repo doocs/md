@@ -197,6 +197,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
         MDKatex({ nonStandard: true }, styles(`inline_katex`, `;line-height: 1;`), styles(`block_katex`, `;text-align: center;`),
         ),
       )
+      marked.use(markedMarkup({ styles: styleMapping }))
     }
   }
 
