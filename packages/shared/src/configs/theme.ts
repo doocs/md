@@ -1,4 +1,4 @@
-import type { IConfigOption, Theme } from '../types'
+import type { Block, IConfigOption, Inline, Theme } from '../types'
 import { toMerged } from 'es-toolkit'
 
 const defaultTheme: Theme = {
@@ -664,3 +664,64 @@ export const themeOptions: IConfigOption<keyof typeof themeMap>[] = [
     desc: `@okooo5km`,
   },
 ]
+
+/**
+ * 选择器注释
+ * 自定义 CSS 编辑器中使用
+ */
+export const selectorComments: Record<Block | Inline, string> = {
+  container: `顶层容器样式`,
+  h1: `一级标题样式`,
+  h2: `二级标题样式`,
+  h3: `三级标题样式`,
+  h4: `四级标题样式`,
+  h5: `五级标题样式`,
+  h6: `六级标题样式`,
+  image: `图片样式`,
+  blockquote: `引用样式`,
+  blockquote_p: `引用段落样式`,
+  p: `段落样式`,
+  hr: `分割线样式`,
+  codespan: `行内代码样式`,
+  em: `斜体样式`,
+  strong: `粗体样式`,
+  link: `链接样式`,
+  wx_link: `微信链接样式`,
+  ol: `有序列表样式`,
+  ul: `无序列表样式`,
+  listitem: `列表项样式`,
+  code: `代码块样式`,
+  code_pre: `代码块外层样式`,
+  inline_katex: `行内公式样式`,
+  block_katex: `公式块样式`,
+  table: `表格样式`,
+  thead: `表头样式`,
+  th: `表头单元格样式`,
+  td: `表格单元格样式`,
+  footnotes: `脚注样式`,
+  figure: `图表样式`,
+  figcaption: `图表标题样式`,
+  footnote: `脚注引用样式`,
+  blockquote_note: `GFM note 样式`,
+  blockquote_tip: `GFM tip 样式`,
+  blockquote_info: `GFM info 样式`,
+  blockquote_important: `GFM important 样式`,
+  blockquote_warning: `GFM warning 样式`,
+  blockquote_caution: `GFM caution 样式`,
+  blockquote_title: `GFM 通用标题`,
+  blockquote_title_note: `GFM note 标题`,
+  blockquote_title_tip: `GFM tip 标题`,
+  blockquote_title_info: `GFM info 标题`,
+  blockquote_title_important: `GFM important 标题`,
+  blockquote_title_warning: `GFM warning 标题`,
+  blockquote_title_caution: `GFM caution 标题`,
+  blockquote_p_note: `GFM note 段落样式`,
+  blockquote_p_tip: `GFM tip 段落样式`,
+  blockquote_p_info: `GFM info 段落样式`,
+  blockquote_p_important: `GFM important 段落样式`,
+  blockquote_p_warning: `GFM warning 段落样式`,
+  blockquote_p_caution: `GFM caution 段落样式`,
+  markup_highlight: `高亮标记样式`,
+  markup_underline: `下划线标记样式`,
+  markup_wavyline: `波浪线标记样式`,
+}
