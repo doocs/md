@@ -8,7 +8,7 @@ import hljs from 'highlight.js'
 import { marked } from 'marked'
 import mermaid from 'mermaid'
 import readingTime from 'reading-time'
-import { markedAlert, markedFootnotes, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
+import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
 
 marked.setOptions({
@@ -197,6 +197,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
         MDKatex({ nonStandard: true }, styles(`inline_katex`, `;line-height: 1;`), styles(`block_katex`, `;text-align: center;`),
         ),
       )
+      marked.use(markedMarkup({ styles: styleMapping }))
     }
   }
 
@@ -416,6 +417,7 @@ export function initRenderer(opts: IOpts): RendererAPI {
   }
 
   marked.use({ renderer })
+  marked.use(markedMarkup({ styles: styleMapping }))
   marked.use(markedToc())
   marked.use(markedSlider({ styles: styleMapping }))
   marked.use(markedAlert({ styles: styleMapping }))
