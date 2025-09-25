@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { themeOptions } from '@md/shared'
 import { Edit3, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -112,7 +113,7 @@ function delTab() {
 }
 
 function addHandler() {
-  addInputVal.value = `方案${cssContentConfig.value.tabs.length + 1}`
+  addInputVal.value = `方案${cssContentConfig.value.tabs.length - themeOptions.length + 1}`
   isOpenAddDialog.value = true
 }
 
