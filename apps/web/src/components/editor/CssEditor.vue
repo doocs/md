@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { themeOptions } from '@md/shared'
-import { Edit3, Plus, X } from 'lucide-vue-next'
+import { exportMergedTheme } from '@md/core'
+import { themeMap, themeOptions } from '@md/shared'
+import { Download, Edit3, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -155,6 +156,28 @@ onMounted(() => {
   // 初始化 CSS 编辑器
   cssEditorStore.initCssEditor(handleCssUpdate)
 })
+
+// 导出合并后的主题
+function exportCurrentTheme() {
+  const currentTab = cssContentConfig.value.tabs.find(tab => tab.name === cssContentConfig.value.active)
+  if (!currentTab) {
+    toast.error(`未找到当前方案`)
+    return
+  }
+
+  const currentThemeName = currentTab.title || currentTab.name
+  const fontSizeNumber = Number(themeStore.fontSize.replace(`px`, ``))
+
+  exportMergedTheme(
+    currentTab.content,
+    themeMap[themeStore.theme],
+    themeStore.primaryColor,
+    fontSizeNumber,
+    `${currentThemeName}-merged-theme`,
+  )
+
+  toast.success(`主题导出成功`)
+}
 </script>
 
 <template>
@@ -201,7 +224,7 @@ onMounted(() => {
             class="flex-1"
           >
             {{ item.title }}
-            <template v-if="!item.isBuiltIn">
+            <template v-if="!themeOptions.some(option => option.name === item.name)">
               <Edit3
                 v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
                 @click="rename(item.name)"
@@ -217,11 +240,24 @@ onMounted(() => {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <textarea
-        id="cssEditor"
-        type="textarea"
-        placeholder="Your custom css here."
-      />
+      <!-- CSS编辑器内容区域 -->
+      <div class="relative flex-1 min-h-0">
+        <textarea
+          id="cssEditor"
+          type="textarea"
+          placeholder="Your custom css here."
+        />
+
+        <!-- 悬浮导出按钮 -->
+        <Button
+          class="absolute bottom-4 right-4 z-10 shadow-lg hover:shadow-xl transition-shadow"
+          size="sm"
+          @click="exportCurrentTheme"
+        >
+          <Download class="h-4 w-4 mr-2" />
+          导出主题
+        </Button>
+      </div>
 
       <!-- 新增弹窗 -->
       <Dialog v-model:open="isOpenAddDialog">
