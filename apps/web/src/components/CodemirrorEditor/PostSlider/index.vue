@@ -400,7 +400,7 @@ function handleDragEnd() {
 
   <!-- 历史记录 -->
   <Dialog v-model:open="isOpenHistoryDialog">
-    <DialogContent class="max-w-max">
+    <DialogContent class="sm:max-w-4xl">
       <DialogHeader>
         <DialogTitle>历史记录</DialogTitle>
         <DialogDescription>每隔 30 秒自动保存，最多保留 10 条</DialogDescription>
@@ -432,7 +432,7 @@ function handleDragEnd() {
         <Separator orientation="vertical" class="mx-2" />
 
         <!-- 右侧内容 -->
-        <div class="space-y-2 max-h-full w-[500px] overflow-y-auto">
+        <div class="space-y-2 max-h-full flex-1 overflow-y-auto">
           <p
             v-for="(line, idx) in (store.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '').split('\n')"
             :key="idx"
