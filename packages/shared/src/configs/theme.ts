@@ -629,6 +629,24 @@ export const themeMap = {
   simple: simpleTheme,
 }
 
+export const themeOptionsMap = {
+  default: {
+    label: `经典`,
+    value: `default`,
+    desc: ``,
+  },
+  grace: {
+    label: `优雅`,
+    value: `grace`,
+    desc: `@brzhang`,
+  },
+  simple: {
+    label: `简洁`,
+    value: `simple`,
+    desc: `@okooo5km`,
+  },
+}
+
 export const themeOptions: IConfigOption<keyof typeof themeMap>[] = [
   {
     label: `经典`,
