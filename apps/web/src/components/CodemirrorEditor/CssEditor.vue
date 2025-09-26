@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Edit3, Plus, X } from 'lucide-vue-next'
+import { exportMergedTheme } from '@md/core'
+import { themeMap, themeOptions } from '@md/shared'
+import { Download, Edit3, Plus, X } from 'lucide-vue-next'
 import { useDisplayStore, useStore } from '@/stores'
 
 const store = useStore()
@@ -102,7 +104,7 @@ function delTab() {
 }
 
 function addHandler() {
-  addInputVal.value = `方案${store.cssContentConfig.tabs.length + 1}`
+  addInputVal.value = `方案${store.cssContentConfig.tabs.length - themeOptions.length + 1}`
   isOpenAddDialog.value = true
 }
 
@@ -115,6 +117,28 @@ function tabChanged(tabName: string | number) {
 
   tabHistory.value = [tabHistory.value[1], tabName as string]
   store.tabChanged(tabName as string)
+}
+
+// 导出合并后的主题
+function exportCurrentTheme() {
+  const currentTab = store.cssContentConfig.tabs.find(tab => tab.name === store.cssContentConfig.active)
+  if (!currentTab) {
+    toast.error(`未找到当前方案`)
+    return
+  }
+
+  const currentThemeName = currentTab.title || currentTab.name
+  const fontSizeNumber = Number(store.fontSize.replace(`px`, ``))
+
+  exportMergedTheme(
+    currentTab.content,
+    themeMap[store.theme],
+    store.primaryColor,
+    fontSizeNumber,
+    `${currentThemeName}-merged-theme`,
+  )
+
+  toast.success(`主题导出成功`)
 }
 </script>
 
@@ -135,7 +159,7 @@ function tabChanged(tabName: string | number) {
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': store.isMobile,
         'animate': store.isMobile && enableAnimation,
         // 桌面端样式
-        'border-l-2 flex-1 order-2 border-gray/50': !store.isMobile,
+        'border-l-2 flex-1 order-2 border-gray/50 min-w-0': !store.isMobile,
       }"
       :style="{
         transform: store.isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
@@ -154,7 +178,7 @@ function tabChanged(tabName: string | number) {
         v-model="store.cssContentConfig.active"
         @update:model-value="tabChanged"
       >
-        <TabsList class="w-full overflow-x-auto">
+        <TabsList class="w-full overflow-x-auto justify-start">
           <TabsTrigger
             v-for="item in store.cssContentConfig.tabs"
             :key="item.name"
@@ -162,25 +186,40 @@ function tabChanged(tabName: string | number) {
             class="flex-1"
           >
             {{ item.title }}
-            <Edit3
-              v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click="rename(item.name)"
-            />
-            <X
-              v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click.self="removeHandler(item.name)"
-            />
+            <template v-if="!item.isBuiltIn">
+              <Edit3
+                v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click="rename(item.name)"
+              />
+              <X
+                v-show="store.cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click.self="removeHandler(item.name)"
+              />
+            </template>
           </TabsTrigger>
           <TabsTrigger value="add">
             <Plus class="h-5 w-5" />
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <textarea
-        id="cssEditor"
-        type="textarea"
-        placeholder="Your custom css here."
-      />
+      <!-- CSS编辑器内容区域 -->
+      <div class="relative flex-1 min-h-0">
+        <textarea
+          id="cssEditor"
+          type="textarea"
+          placeholder="Your custom css here."
+        />
+
+        <!-- 悬浮导出按钮 -->
+        <Button
+          class="absolute bottom-4 right-4 z-10 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border"
+          size="sm"
+          @click="exportCurrentTheme"
+        >
+          <Download class="h-4 w-4 mr-2" />
+          导出主题
+        </Button>
+      </div>
 
       <!-- 新增弹窗 -->
       <Dialog v-model:open="isOpenAddDialog">

@@ -1,7 +1,8 @@
-import { initRenderer } from '@md/core'
+import { generateThemeCSS, initRenderer } from '@md/core'
 import {
   defaultStyleConfig,
   themeMap,
+  themeOptionsMap,
   widthOptions,
 } from '@md/shared/configs'
 import CodeMirror from 'codemirror'
@@ -290,20 +291,57 @@ export const useStore = defineStore(`store`, () => {
    * @deprecated 在后续版本中将会移除
    */
   const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
-  const cssContentConfig = useStorage(addPrefix(`css_content_config`), {
+  // 初始化默认配置
+  const defaultCssConfig = {
     active: `方案1`,
     tabs: [
+      ...Object.entries(themeMap).map(([key, value]) => ({
+        title: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+        name: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+        content: generateThemeCSS(value),
+        isBuiltIn: true,
+      })),
       {
         title: `方案1`,
         name: `方案1`,
         // 兼容之前的方案
         content: cssContent.value || DEFAULT_CSS_CONTENT,
+        isBuiltIn: false,
       },
     ],
-  })
+  }
+
+  const cssContentConfig = useStorage(addPrefix(`css_content_config`), defaultCssConfig)
   onMounted(() => {
     // 清空过往历史记录
     cssContent.value = ``
+
+    // 动态合并新增的内置主题
+    const existingBuiltInThemes = new Set(
+      cssContentConfig.value.tabs
+        .filter(tab => tab.isBuiltIn)
+        .map(tab => tab.name),
+    )
+
+    // 检查是否有新增的主题
+    const newThemes = Object.entries(themeMap)
+      .filter(([key]) => !existingBuiltInThemes.has(themeOptionsMap[key as keyof typeof themeOptionsMap].label))
+      .map(([key, value]) => ({
+        title: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+        name: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+        content: generateThemeCSS(value),
+        isBuiltIn: true,
+      }))
+
+    // 如果有新主题，将其插入到内置主题区域
+    if (newThemes.length > 0) {
+      // 找到第一个非内置主题的索引
+      const firstCustomThemeIndex = cssContentConfig.value.tabs.findIndex(tab => !tab.isBuiltIn)
+      const insertIndex = firstCustomThemeIndex === -1 ? cssContentConfig.value.tabs.length : firstCustomThemeIndex
+
+      // 插入新主题
+      cssContentConfig.value.tabs.splice(insertIndex, 0, ...newThemes)
+    }
   })
   const getCurrentTab = () =>
     cssContentConfig.value.tabs.find((tab) => {
@@ -330,6 +368,7 @@ export const useStore = defineStore(`store`, () => {
       name,
       title: name,
       content: DEFAULT_CSS_CONTENT,
+      isBuiltIn: false,
     })
     cssContentConfig.value.active = name
     setCssEditorValue(DEFAULT_CSS_CONTENT)
@@ -489,11 +528,18 @@ export const useStore = defineStore(`store`, () => {
     cssContentConfig.value = {
       active: `方案 1`,
       tabs: [
+        ...Object.entries(themeMap).map(([key, value]) => ({
+          title: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+          name: themeOptionsMap[key as keyof typeof themeOptionsMap].label,
+          content: generateThemeCSS(value),
+          isBuiltIn: true,
+        })),
         {
           title: `方案 1`,
           name: `方案 1`,
           // 兼容之前的方案
           content: cssContent.value || DEFAULT_CSS_CONTENT,
+          isBuiltIn: false,
         },
       ],
     }

@@ -486,7 +486,7 @@ onUnmounted(() => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             :default-size="15"
-            :max-size="store.isOpenPostSlider ? 30 : 0"
+            :max-size="store.isOpenPostSlider ? 20 : 0"
             :min-size="store.isOpenPostSlider ? 10 : 0"
           >
             <PostSlider />
@@ -525,16 +525,19 @@ onUnmounted(() => {
               <div
                 id="preview"
                 ref="previewRef"
-                class="preview-wrapper w-full p-5"
+                class="preview-wrapper w-full p-5 flex justify-center"
               >
                 <div
                   id="output-wrapper"
-                  class="w-full"
+                  class="w-full max-w-full"
                   :class="{ output_night: !backLight }"
                 >
                   <div
-                    class="preview border-x shadow-xl"
-                    :class="[store.isMobile ? 'w-[100%]' : store.previewWidth]"
+                    class="preview border-x shadow-xl mx-auto"
+                    :class="[
+                      store.isMobile ? 'w-full' : store.previewWidth,
+                      store.previewWidth === 'w-[375px]' ? 'max-w-full' : '',
+                    ]"
                   >
                     <section id="output" class="w-full" v-html="output" />
                     <div v-if="isCoping" class="loading-mask">
