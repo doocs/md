@@ -433,12 +433,12 @@ function handleDragEnd() {
 
         <!-- 右侧内容 -->
         <div class="space-y-2 max-h-full flex-1 overflow-y-auto">
-          <p
-            v-for="(line, idx) in (store.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '').split('\n')"
-            :key="idx"
+          <div
+            class="whitespace-pre-wrap p-2"
+            style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-all; hyphens: auto;"
           >
-            {{ line }}
-          </p>
+            {{ store.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '' }}
+          </div>
         </div>
       </div>
 
