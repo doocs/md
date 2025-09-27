@@ -4,6 +4,7 @@ import {
   Check,
   Copy,
   Edit,
+  Image as ImageIcon,
   Pause,
   Plus,
   RefreshCcw,
@@ -29,6 +30,8 @@ const emit = defineEmits([`update:open`])
 
 const store = useStore()
 const { editor } = storeToRefs(store)
+const displayStore = useDisplayStore()
+const { toggleAIImageDialog } = displayStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
@@ -112,6 +115,15 @@ function getDefaultMessages(): ChatMessage[] {
 function handleConfigSaved() {
   configVisible.value = false
   scrollToBottom(true)
+}
+
+function switchToImageGenerator() {
+  // 先关闭当前聊天对话框
+  emit(`update:open`, false)
+  // 然后打开文生图对话框
+  setTimeout(() => {
+    toggleAIImageDialog(true)
+  }, 100)
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -389,6 +401,16 @@ async function sendMessage() {
             @click="configVisible = !configVisible"
           >
             <Settings class="h-4 w-4" />
+          </Button>
+
+          <Button
+            title="AI 文生图"
+            aria-label="AI 文生图"
+            variant="ghost"
+            size="icon"
+            @click="switchToImageGenerator()"
+          >
+            <ImageIcon class="h-4 w-4" />
           </Button>
 
           <Button

@@ -4,7 +4,7 @@ import { DEFAULT_SERVICE_ENDPOINT } from '../constants'
 export const serviceOptions: ServiceOption[] = [
   {
     value: `default`,
-    label: `默认服务（无需配置 sk）`,
+    label: `内置服务`,
     endpoint: DEFAULT_SERVICE_ENDPOINT,
     models: [
       `Qwen/Qwen2.5-7B-Instruct`,
@@ -321,14 +321,10 @@ export const DEFAULT_SERVICE_MODEL = serviceOptions[0].models[0]
 export const imageServiceOptions: ImageServiceOption[] = [
   {
     value: `default`,
-    label: `默认图像服务（无需配置 sk）`,
+    label: `内置服务`,
     endpoint: DEFAULT_SERVICE_ENDPOINT,
     models: [
-      `stabilityai/stable-diffusion-3.5-large`,
-      `stabilityai/stable-diffusion-3.5-large-turbo`,
-      `stabilityai/stable-diffusion-3.5-medium`,
-      `black-forest-labs/flux-schnell`,
-      `black-forest-labs/flux-pro`,
+      `Kwai-Kolors/Kolors`,
     ],
   },
   {
@@ -336,6 +332,15 @@ export const imageServiceOptions: ImageServiceOption[] = [
     label: `OpenAI`,
     endpoint: `https://api.openai.com/v1`,
     models: [`gpt-image-1`, `dall-e-3`],
+  },
+  {
+    value: `siliconflow`,
+    label: `硅基流动`,
+    endpoint: `https://api.siliconflow.cn/v1`,
+    models: [
+      `Kwai-Kolors/Kolors`,
+      `Qwen/Qwen-Image`,
+    ],
   },
 ]
 
