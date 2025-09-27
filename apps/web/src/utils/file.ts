@@ -302,7 +302,7 @@ interface MpResponse {
   errcode: number
   errmsg: string
 }
-async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
+export async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
   const data = localStorage.getItem(`mpToken:${appID}`)
   if (data) {
     const token = JSON.parse(data)
@@ -319,7 +319,8 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
     },
   }
   let url = `https://api.weixin.qq.com/cgi-bin/stable_token`
-  if (proxyOrigin) {
+  // 兼容空字符串情况，本地代理时不需要传入域名
+  if (proxyOrigin !== null && proxyOrigin !== undefined) {
     url = `${proxyOrigin}/cgi-bin/stable_token`
   }
   const res = await fetch<any, MpResponse>(url, requestOptions)

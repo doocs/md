@@ -181,6 +181,9 @@ async function copy() {
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
 
+      <!-- 发布公众号后台（移动端隐藏） -->
+      <WeChatPublish class="hidden md:inline-flex" />
+
       <!-- 设置按钮 -->
       <Button
         variant="outline"

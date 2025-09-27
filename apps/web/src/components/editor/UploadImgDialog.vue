@@ -352,6 +352,15 @@ onBeforeMount(() => {
   }
 })
 
+// 当弹窗打开，且 imgHost 设为 mp 时，默认切换到公众号图床 Tab
+watch(() => displayStore.isShowUploadImgDialog, (open) => {
+  if (open) {
+    const host = localStorage.getItem(`imgHost`) || imgHost.value
+    if (host === `mp`)
+      activeName.value = `mp`
+  }
+}, { immediate: false })
+
 function changeImgHost() {
   localStorage.setItem(`imgHost`, imgHost.value)
   toast.success(`图床已切换`)
