@@ -5,7 +5,7 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openAbout`, `openFund`, `openAiImage`])
+const emit = defineEmits([`openAbout`, `openFund`])
 
 const { asSub } = toRefs(props)
 
@@ -16,12 +16,6 @@ function openAboutDialog() {
 function openFundDialog() {
   emit(`openFund`)
 }
-
-function openAIImageDialog() {
-  console.log(`🚀 HelpDropdown: openAIImageDialog 被调用`)
-  emit(`openAiImage`)
-  console.log(`📤 HelpDropdown: 发送 openAiImage 事件`)
-}
 </script>
 
 <template>
@@ -31,10 +25,6 @@ function openAIImageDialog() {
       帮助
     </MenubarSubTrigger>
     <MenubarSubContent align="start">
-      <MenubarCheckboxItem @click="openAIImageDialog()">
-        AI 文生图
-      </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem @click="openAboutDialog()">
         关于
       </MenubarCheckboxItem>
@@ -48,10 +38,6 @@ function openAIImageDialog() {
   <MenubarMenu v-else>
     <MenubarTrigger>帮助</MenubarTrigger>
     <MenubarContent align="start">
-      <MenubarCheckboxItem @click="openAIImageDialog()">
-        <span>AI 文生图</span>
-      </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem @click="openAboutDialog()">
         <span>关于</span>
       </MenubarCheckboxItem>

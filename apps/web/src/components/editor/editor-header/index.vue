@@ -27,14 +27,6 @@ function handleOpenFund() {
   fundDialogVisible.value = true
 }
 
-function handleOpenAIImage() {
-  console.log(`🎯 handleOpenAIImage 被调用`)
-  console.log(`📋 displayStore:`, displayStore)
-  console.log(`👀 当前 aiImageDialogVisible:`, displayStore.aiImageDialogVisible)
-  displayStore.toggleAIImageDialog(true)
-  console.log(`✅ 调用 toggleAIImageDialog 后:`, displayStore.aiImageDialogVisible)
-}
-
 function handleOpenEditorState() {
   editorStateDialogVisible.value = true
 }
@@ -128,7 +120,7 @@ async function copy() {
         <FormatDropdown />
         <EditDropdown />
         <StyleDropdown />
-        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-ai-image="handleOpenAIImage" />
+        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
       </Menubar>
     </div>
 
@@ -146,7 +138,7 @@ async function copy() {
             <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
-            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-ai-image="handleOpenAIImage" />
+            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
           </MenubarContent>
         </MenubarMenu>
       </Menubar>

@@ -4,6 +4,7 @@ import {
   Download,
   Image as ImageIcon,
   Loader2,
+  MessageCircle,
   RefreshCcw,
   Settings,
   Trash2,
@@ -28,6 +29,8 @@ const emit = defineEmits([`update:open`])
 /* ---------- 编辑器引用 ---------- */
 const store = useStore()
 const { editor } = storeToRefs(store)
+const displayStore = useDisplayStore()
+const { toggleAIDialog } = displayStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
@@ -77,6 +80,15 @@ onMounted(() => {
 /* ---------- 事件处理 ---------- */
 function handleConfigSaved() {
   configVisible.value = false
+}
+
+function switchToChat() {
+  // 先关闭当前文生图对话框
+  emit(`update:open`, false)
+  // 然后打开聊天对话框
+  setTimeout(() => {
+    toggleAIDialog(true)
+  }, 100)
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -355,6 +367,16 @@ function viewFullImage(imageUrl: string) {
             @click="configVisible = !configVisible"
           >
             <Settings class="h-4 w-4" />
+          </Button>
+
+          <Button
+            title="AI 对话"
+            aria-label="AI 对话"
+            variant="ghost"
+            size="icon"
+            @click="switchToChat()"
+          >
+            <MessageCircle class="h-4 w-4" />
           </Button>
 
           <Button
