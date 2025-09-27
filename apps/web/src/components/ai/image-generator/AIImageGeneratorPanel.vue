@@ -83,7 +83,7 @@ function handleKeydown(e: KeyboardEvent) {
   if (e.isComposing || e.keyCode === 229)
     return
 
-  if (e.key === `Enter` && e.ctrlKey) {
+  if (e.key === `Enter` && !e.shiftKey) {
     e.preventDefault()
     generateImage()
   }
@@ -503,7 +503,7 @@ function viewFullImage(imageUrl: string) {
         >
           <Textarea
             v-model="prompt"
-            placeholder="描述你想要生成的图像... (Ctrl+Enter 生成)"
+            placeholder="描述你想要生成的图像... (Enter 生成，Shift+Enter 换行)"
             rows="2"
             class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-hidden focus:outline-hidden focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"

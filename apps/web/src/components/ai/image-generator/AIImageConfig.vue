@@ -297,7 +297,7 @@ const styleOptions = [
         <p class="font-medium">
           默认图像服务
         </p>
-        <p>免费使用，无需配置 API Key，支持 Stable Diffusion 和 Flux 模型。</p>
+        <p>免费使用，无需配置 API Key，支持 Kwai-Kolors/Kolors 模型。</p>
       </div>
     </div>
 
