@@ -330,4 +330,11 @@ export async function processClipboardContent(primaryColor: string) {
     grand.innerHTML = ``
     grand.appendChild(section)
   })
+
+  // fix: mermaid 部分文本颜色被 stroke 覆盖
+  clipboardDiv.innerHTML = clipboardDiv.innerHTML
+    .replace(
+      /<tspan([^>]*)>/g,
+      `<tspan$1 style="fill: #333333 !important; color: #333333 !important; stroke: none !important;">`,
+    )
 }
