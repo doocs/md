@@ -320,7 +320,8 @@ export async function getMpToken(appID: string, appsecret: string, proxyOrigin: 
   }
   let url = `https://api.weixin.qq.com/cgi-bin/stable_token`
   // 兼容空字符串情况，本地代理时不需要传入域名
-  if (proxyOrigin !== null && proxyOrigin !== undefined) {
+  // 兼容浏览器插件环境 proxyOrigin 为空情况
+  if (proxyOrigin !== null && proxyOrigin !== undefined && !(chrome.runtime)) {
     url = `${proxyOrigin}/cgi-bin/stable_token`
   }
   const res = await fetch<any, MpResponse>(url, requestOptions)

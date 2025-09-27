@@ -46,7 +46,7 @@ export async function getMpCoverMediaId(file: File): Promise<{ url: string, medi
   }
 
   let url = `https://api.weixin.qq.com/cgi-bin/material/add_material?access_token=${access_token}&type=image`
-  if (proxyOrigin !== null && proxyOrigin !== undefined) {
+  if (proxyOrigin !== null && proxyOrigin !== undefined && !(chrome.runtime)) {
     url = url.replace(`https://api.weixin.qq.com`, proxyOrigin)
   }
 
@@ -86,7 +86,7 @@ export async function addMpArticleDraft(params: MpArticleDraft) {
   const access_token = await getMpToken(appID, appsecret, proxyOrigin)
 
   let url = `https://api.weixin.qq.com/cgi-bin/draft/add?access_token=${access_token}`
-  if (proxyOrigin !== null && proxyOrigin !== undefined) {
+  if (proxyOrigin !== null && proxyOrigin !== undefined && !(chrome.runtime)) {
     url = url.replace(`https://api.weixin.qq.com`, proxyOrigin)
   }
 

@@ -57,7 +57,8 @@ function extractTitleAndDesc() {
     const derivedCover = firstImg?.src || ``
 
     wechatForm.value.title = derivedTitle
-    wechatForm.value.digest = derivedDesc
+    // 限制摘要最多120个字符
+    wechatForm.value.digest = derivedDesc.length > 120 ? derivedDesc.substring(0, 120) : derivedDesc
     wechatForm.value.coverUrl = derivedCover
   }
   catch (e) {
@@ -355,7 +356,18 @@ async function onLocalCoverFileChange(event: Event) {
           <Label for="wechat-digest" class="w-16 text-end">
             摘要
           </Label>
-          <Textarea id="wechat-digest" v-model="wechatForm.digest" placeholder="文章摘要内容" />
+          <div class="flex-1">
+            <Textarea
+              id="wechat-digest"
+              v-model="wechatForm.digest"
+              placeholder="文章摘要内容"
+              :maxlength="120"
+              class="resize-none"
+            />
+            <div class="text-xs text-muted-foreground mt-1 text-right">
+              {{ wechatForm.digest.length }}/120
+            </div>
+          </div>
         </div>
 
         <div class="w-full flex items-center gap-4">
