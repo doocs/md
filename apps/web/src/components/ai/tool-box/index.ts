@@ -1,7 +1,7 @@
 import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
-import AIPolishButton from './AIPolishButton.vue'
-import AIPolishPopover from './AIPolishPopover.vue'
+import AIPolishButton from './ToolBoxButton.vue'
+import AIPolishPopover from './ToolBoxPopover.vue'
 
 /* ---------- 组件引用类型 ---------- */
 interface BtnRef {

@@ -8,7 +8,7 @@ import {
   AIPolishButton,
   AIPolishPopover,
   useAIPolish,
-} from '@/components/AIPolish'
+} from '@/components/ai/tool-box'
 import {
   ResizableHandle,
   ResizablePanel,
