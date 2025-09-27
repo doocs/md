@@ -408,7 +408,7 @@ function viewFullImage(imageUrl: string) {
         class="flex flex-col space-y-4 flex-shrink-0"
       >
         <!-- 图像显示 -->
-        <div class="flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[300px]">
+        <div class="flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[250px] sm:min-h-[300px]">
           <div v-if="loading" class="flex flex-col items-center gap-4">
             <Loader2 class="h-8 w-8 animate-spin text-primary" />
             <p class="text-sm text-muted-foreground">
@@ -448,12 +448,12 @@ function viewFullImage(imageUrl: string) {
             </div>
 
             <!-- 图像显示 -->
-            <div class="flex items-center justify-center p-4">
-              <div class="relative group cursor-pointer" @click="viewFullImage(generatedImages[currentImageIndex])">
+            <div class="flex items-center justify-center p-2 sm:p-4">
+              <div class="relative group cursor-pointer w-full max-w-sm" @click="viewFullImage(generatedImages[currentImageIndex])">
                 <img
                   :src="generatedImages[currentImageIndex]"
                   :alt="`生成的图像 ${currentImageIndex + 1}`"
-                  class="max-w-[350px] max-h-[350px] w-auto h-auto object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
+                  class="w-full h-auto max-h-[300px] sm:max-h-[350px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
                 >
                 <!-- 点击查看大图提示 -->
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -465,52 +465,52 @@ function viewFullImage(imageUrl: string) {
             </div>
 
             <!-- 图像信息 -->
-            <div class="px-4 py-2 bg-muted/10 rounded space-y-1">
+            <div class="px-2 sm:px-4 py-2 bg-muted/10 rounded space-y-1">
               <p class="text-xs text-muted-foreground text-center">
-                尺寸: {{ size }} | 点击图片查看原图或下载
+                尺寸: {{ size }} | 点击图片查看原图
               </p>
-              <div class="text-xs text-muted-foreground">
+              <div class="text-xs text-muted-foreground break-words">
                 <span class="font-medium">提示词:</span>
                 <span class="ml-1">{{ imagePrompts[currentImageIndex] || '无关联提示词' }}</span>
               </div>
             </div>
 
             <!-- 图像操作按钮 -->
-            <div class="flex flex-wrap justify-center gap-2 p-4 bg-muted/20 border-t border-border rounded-b-lg">
+            <div class="flex flex-wrap justify-center gap-2 p-2 sm:p-4 bg-muted/20 border-t border-border rounded-b-lg">
               <Button
                 variant="outline"
                 size="sm"
-                class="flex-shrink-0 bg-background"
+                class="flex-shrink-0 bg-background text-xs sm:text-sm"
                 @click="insertImageToCursor(generatedImages[currentImageIndex])"
               >
-                <ImageIcon class="h-4 w-4 mr-2" />
+                <ImageIcon class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 插入
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                class="flex-shrink-0 bg-background"
+                class="flex-shrink-0 bg-background text-xs sm:text-sm"
                 @click="downloadImage(generatedImages[currentImageIndex], currentImageIndex)"
               >
-                <Download class="h-4 w-4 mr-2" />
+                <Download class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 下载
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                class="flex-shrink-0 bg-background"
+                class="flex-shrink-0 bg-background text-xs sm:text-sm"
                 @click="copyImageUrl(generatedImages[currentImageIndex])"
               >
-                <Copy class="h-4 w-4 mr-2" />
-                复制链接
+                <Copy class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                复制
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                class="flex-shrink-0 bg-background"
+                class="flex-shrink-0 bg-background text-xs sm:text-sm"
                 @click="regenerateImage"
               >
-                <RefreshCcw class="h-4 w-4 mr-2" />
+                <RefreshCcw class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                 重新生成
               </Button>
             </div>
