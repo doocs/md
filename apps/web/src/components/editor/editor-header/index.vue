@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
 const { output, primaryColor, editor } = storeToRefs(store)
 
@@ -24,6 +25,14 @@ function handleOpenAbout() {
 
 function handleOpenFund() {
   fundDialogVisible.value = true
+}
+
+function handleOpenAIImage() {
+  console.log(`🎯 handleOpenAIImage 被调用`)
+  console.log(`📋 displayStore:`, displayStore)
+  console.log(`👀 当前 aiImageDialogVisible:`, displayStore.aiImageDialogVisible)
+  displayStore.toggleAIImageDialog(true)
+  console.log(`✅ 调用 toggleAIImageDialog 后:`, displayStore.aiImageDialogVisible)
 }
 
 function handleOpenEditorState() {
@@ -119,7 +128,7 @@ async function copy() {
         <FormatDropdown />
         <EditDropdown />
         <StyleDropdown />
-        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
+        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-ai-image="handleOpenAIImage" />
       </Menubar>
     </div>
 
@@ -137,7 +146,7 @@ async function copy() {
             <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
-            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
+            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-ai-image="handleOpenAIImage" />
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
@@ -196,6 +205,7 @@ async function copy() {
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
+  <AIImageGeneratorPanel v-model:open="displayStore.aiImageDialogVisible" />
 </template>
 
 <style lang="less" scoped>
