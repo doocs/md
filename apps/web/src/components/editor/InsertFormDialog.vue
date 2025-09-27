@@ -24,7 +24,7 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  toRaw(store.editor!).replaceSelection(`\n${table}\n`, `end`)
+  toRaw(store.editor!).replaceSelection(`\n${table}\n`)
   resetVal()
   toggleShowInsertFormDialog()
 }

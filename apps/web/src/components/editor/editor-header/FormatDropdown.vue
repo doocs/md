@@ -1,6 +1,16 @@
 <script setup lang="ts">
 import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
 import { useStore } from '@/stores'
+import {
+  applyHeading,
+  formatBold,
+  formatCode,
+  formatItalic,
+  formatLink,
+  formatOrderedList,
+  formatStrikethrough,
+  formatUnorderedList,
+} from '@/utils/editor'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -26,7 +36,56 @@ const {
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {
-  (editor.value as any).options.extraKeys[cmd](editor.value)
+  if (!editor.value)
+    return
+
+  // 获取兼容层编辑器
+  const compatEditor = (editor.value as any).compatibleEditor || editor.value
+
+  switch (cmd) {
+    case `${ctrlKey}-B`:
+      formatBold(compatEditor)
+      break
+    case `${ctrlKey}-I`:
+      formatItalic(compatEditor)
+      break
+    case `${ctrlKey}-D`:
+      formatStrikethrough(compatEditor)
+      break
+    case `${ctrlKey}-K`:
+      formatLink(compatEditor)
+      break
+    case `${ctrlKey}-E`:
+      formatCode(compatEditor)
+      break
+    case `${ctrlKey}-H`:
+      applyHeading(compatEditor, 1)
+      break
+    case `${ctrlKey}-U`:
+      formatUnorderedList(compatEditor)
+      break
+    case `${ctrlKey}-O`:
+      formatOrderedList(compatEditor)
+      break
+    case `${ctrlKey}-1`:
+      applyHeading(compatEditor, 1)
+      break
+    case `${ctrlKey}-2`:
+      applyHeading(compatEditor, 2)
+      break
+    case `${ctrlKey}-3`:
+      applyHeading(compatEditor, 3)
+      break
+    case `${ctrlKey}-4`:
+      applyHeading(compatEditor, 4)
+      break
+    case `${ctrlKey}-5`:
+      applyHeading(compatEditor, 5)
+      break
+    case `${ctrlKey}-6`:
+      applyHeading(compatEditor, 6)
+      break
+  }
 }
 
 const formatItems = [

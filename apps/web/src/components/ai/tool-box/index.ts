@@ -1,5 +1,5 @@
-import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import type { V5CompatibleEditor } from '@/utils/editor'
 import AIPolishButton from './ToolBoxButton.vue'
 import AIPolishPopover from './ToolBoxPopover.vue'
 
@@ -87,12 +87,12 @@ function useAIPolish() {
   }
 
   /* =============== CodeMirror 事件注入 =============== */
-  function initPolishEvent(editor: Editor) {
+  function initPolishEvent(editor: V5CompatibleEditor) {
     /* 1️⃣ 鼠标按下：全部关闭（开启新选区） */
     editor.on(`mousedown`, () => closeAll())
 
     /* 2️⃣ 鼠标抬起：根据选区显示按钮 */
-    editor.getWrapperElement().addEventListener(`mouseup`, (e) => {
+    editor.getWrapperElement().addEventListener(`mouseup`, (e: MouseEvent) => {
       setTimeout(() => {
         const text = editor.getSelection()?.trim() ?? ``
         selectedText.value = text
@@ -123,7 +123,11 @@ function useAIPolish() {
     // 若想更早拦截可用 beforeChange：editor.on('beforeChange', () => closeBtn())
 
     /* 5️⃣ 键盘事件：Select-All 例外，其余隐藏按钮 */
-    editor.on(`keydown`, (_, event: KeyboardEvent) => {
+    editor.on(`keydown`, (_editorInstance: any, event: KeyboardEvent) => {
+      // v5 兼容模式：editor.on 传递 (editor, event)
+      if (!event)
+        return
+
       const isSelectAll
         = (event.ctrlKey || event.metaKey) && event.key.toLowerCase() === `a`
 

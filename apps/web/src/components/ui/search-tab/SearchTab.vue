@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type CodeMirror from 'codemirror'
+import type { V5CompatibleEditor } from '@/utils/editor'
 import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
 
 const props = defineProps<{
-  editor: CodeMirror.Editor
+  editor: V5CompatibleEditor
 }>()
 
 const showSearchTab = ref(false)
@@ -13,7 +13,7 @@ const indexOfMatch = ref(0)
 const showReplace = ref(false)
 const replaceWord = ref(``)
 
-const matchPositions = ref<CodeMirror.Position[][]>([])
+const matchPositions = ref<Array<Array<{ line: number, ch: number }>>>([])
 const numberOfMatches = computed(() => {
   return matchPositions.value.length
 })
@@ -55,19 +55,19 @@ watch(showSearchTab, async () => {
 
 function clearAllMarks() {
   const editor = props.editor
-  editor.getAllMarks().forEach(mark => mark.clear())
+  editor.getAllMarks?.()?.forEach((mark: any) => mark.clear())
 }
 
 function markMatch() {
   const editor = props.editor
   clearAllMarks()
-  matchPositions.value.forEach((pos, i) => {
-    editor.markText(pos[0], pos[1], { className: i === indexOfMatch.value
+  matchPositions.value.forEach((pos: any, i: number) => {
+    editor.markText?.(pos[0], pos[1], { className: i === indexOfMatch.value
       ? `current-match`
       : `search-match` })
   })
   if (matchPositions.value[indexOfMatch.value]?.[0])
-    editor.scrollIntoView(matchPositions.value[indexOfMatch.value][0])
+    editor.scrollIntoView?.(matchPositions.value[indexOfMatch.value][0])
 }
 
 function findAllMatches() {
@@ -76,12 +76,14 @@ function findAllMatches() {
     return
 
   // 获取所有匹配项
-  const cursor = editor.getSearchCursor(searchWord.value, undefined, true)
+  const cursor = editor.getSearchCursor?.(searchWord.value, undefined, true)
   let matchCount = 0
-  const _matchPositions: CodeMirror.Position[][] = []
-  while (cursor.findNext()) {
-    _matchPositions.push([cursor.from(), cursor.to()])
-    matchCount++
+  const _matchPositions: Array<Array<{ line: number, ch: number }>> = []
+  if (cursor) {
+    while (cursor.findNext()) {
+      _matchPositions.push([cursor.from(), cursor.to()])
+      matchCount++
+    }
   }
   matchPositions.value = _matchPositions
   if (matchCount === indexOfMatch.value) {
@@ -141,7 +143,7 @@ function handleReplaceAll() {
   const editor = props.editor
   if (!currentMatchPosition.value)
     return
-  matchPositions.value.forEach((pos) => {
+  matchPositions.value.forEach((pos: any) => {
     editor.setSelection(pos[0], pos[1])
     editor.replaceSelection(replaceWord.value)
   })
@@ -165,7 +167,7 @@ onMounted(() => {
   editor.on(`changes`, handleEditorChange)
 })
 onUnmounted(() => {
-  props.editor.off(`changes`, handleEditorChange)
+  props.editor.off?.(`changes`, handleEditorChange)
 })
 
 /**

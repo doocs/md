@@ -1,7 +1,8 @@
 <script setup lang='ts'>
-import CodeMirror from 'codemirror'
+import type { V5CompatibleEditor } from '@/utils/editor'
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
+import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
 
 const store = useStore()
 
@@ -18,16 +19,24 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
   })
 `).trim())
 
-const formCustomTextarea = useTemplateRef<HTMLTextAreaElement>(`formCustomTextarea`)
+const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
-const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+const editor = ref<V5CompatibleEditor | null>(null)
 
 onMounted(() => {
-  editor.value = markRaw(CodeMirror.fromTextArea(formCustomTextarea.value!, {
-    mode: `javascript`,
-    theme: store.isDark ? `darcula` : `xq-light`,
-    lineNumbers: true,
-  }))
+  const extraKeys = {}
+
+  const editorView = createCodeMirrorV6(
+    formCustomTextarea.value!,
+    code.value,
+    store.isDark,
+    extraKeys,
+    (value: string) => {
+      code.value = value
+    },
+  )
+
+  editor.value = markRaw(editorView.compatibleEditor)
 
   // 嵌套使用 nextTick 才能确保生效，具体原因未知
   nextTick(() => {
@@ -47,9 +56,9 @@ function formCustomSave() {
 <template>
   <div class="space-y-4 min-w-0">
     <div class="h-60 border flex flex-col">
-      <textarea
+      <div
         ref="formCustomTextarea"
-        placeholder="Your custom code here."
+        class="flex-1"
       />
     </div>
     <Button

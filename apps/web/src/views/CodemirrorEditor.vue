@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import type { V5CompatibleEditor } from '@/utils/editor'
 import imageCompression from 'browser-image-compression'
-import { fromTextArea } from 'codemirror'
+
 import { Eye, Pen } from 'lucide-vue-next'
 import {
   AIPolishButton,
@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/resizable'
 import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
+import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
 import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
 
@@ -29,6 +30,12 @@ const { toggleShowUploadImgDialog } = displayStore
 
 const backLight = ref(false)
 const isCoping = ref(false)
+
+// 辅助函数：查找 CodeMirror 滚动容器
+function findCodeMirrorScroller(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(`.cm-scroller`)
+    || document.querySelector<HTMLElement>(`.CodeMirror-scroll`)
+}
 
 function startCopy() {
   backLight.value = true
@@ -70,30 +77,48 @@ function leftAndRightScroll() {
   const scrollCB = (text: string) => {
     // AIPolishBtnRef.value?.close()
 
-    let source: HTMLElement
-    let target: HTMLElement
+    let source: HTMLElement | null
+    let target: HTMLElement | null
 
     clearTimeout(timeout.value)
     if (text === `preview`) {
       source = previewRef.value!
-      target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-      editor.value!.off(`scroll`, editorScrollCB)
+      target = findCodeMirrorScroller()
+      if (!target) {
+        console.warn(`Cannot find CodeMirror scroll container`)
+        return
+      }
+      editor.value?.off?.(`scroll`, editorScrollCB)
       timeout.value = setTimeout(() => {
-        editor.value!.on(`scroll`, editorScrollCB)
+        editor.value?.on?.(`scroll`, editorScrollCB)
       }, 300)
     }
     else {
-      source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
+      source = findCodeMirrorScroller()
       target = previewRef.value!
+      if (!source) {
+        console.warn(`Cannot find CodeMirror scroll container`)
+        return
+      }
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
-        target.addEventListener(`scroll`, previewScrollCB, false)
+        target!.addEventListener(`scroll`, previewScrollCB, false)
       }, 300)
     }
 
-    const percentage
-      = source.scrollTop / (source.scrollHeight - source.offsetHeight)
-    const height = percentage * (target.scrollHeight - target.offsetHeight)
+    if (!source || !target) {
+      return
+    }
+
+    const sourceHeight = source.scrollHeight - source.offsetHeight
+    const targetHeight = target.scrollHeight - target.offsetHeight
+
+    if (sourceHeight <= 0 || targetHeight <= 0) {
+      return
+    }
+
+    const percentage = source.scrollTop / sourceHeight
+    const height = percentage * targetHeight
 
     target.scrollTo(0, height)
   }
@@ -123,31 +148,139 @@ onMounted(() => {
 const searchTabRef
   = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
 
-function openSearchWithSelection(cm: Editor) {
-  const selected = cm.getSelection().trim()
-  if (!searchTabRef.value)
-    return
+// 用于存储待处理的搜索请求
+const pendingSearchRequest = ref<{ selected: string } | null>(null)
 
-  if (selected) {
-    // 自动带入选中文本
-    searchTabRef.value.setSearchWord(selected)
+function openSearchWithSelection(cm: V5CompatibleEditor) {
+  const selected = cm.getSelection().trim()
+
+  if (searchTabRef.value) {
+    // SearchTab 已准备好，直接使用
+    if (selected) {
+      searchTabRef.value.setSearchWord(selected)
+    }
+    else {
+      searchTabRef.value.showSearchTab = true
+    }
   }
   else {
-    // 仅打开面板
-    searchTabRef.value.showSearchTab = true
+    // SearchTab 还没准备好，保存请求
+    pendingSearchRequest.value = { selected }
   }
 }
 
+// 监听 searchTabRef 的变化，处理待处理的请求
+watch(searchTabRef, (newRef) => {
+  if (newRef && pendingSearchRequest.value) {
+    const { selected } = pendingSearchRequest.value
+    if (selected) {
+      newRef.setSearchWord(selected)
+    }
+    else {
+      newRef.showSearchTab = true
+    }
+    pendingSearchRequest.value = null
+  }
+})
+
 function handleGlobalKeydown(e: KeyboardEvent) {
+  // 处理 ESC 键关闭搜索
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
     e.preventDefault()
     editor.value?.focus()
+    return
+  }
+
+  // 如果编辑器存在且获得焦点，让编辑器处理快捷键
+  if (editor.value) {
+    const editorDom = (editor.value as any).getWrapperElement?.() || (editor.value as any).dom
+    if (editorDom && (document.activeElement === editorDom || editorDom.contains(document.activeElement))) {
+      // 编辑器内的键盘事件，让 CodeMirror 处理
+      return
+    }
+  }
+
+  // 处理全局快捷键（当编辑器未获得焦点时）
+  const isCtrlOrCmd = e.ctrlKey || e.metaKey
+  if (isCtrlOrCmd && editor.value) {
+    const compatEditor = (editor.value as any).compatibleEditor
+    if (!compatEditor)
+      return
+
+    let handled = false
+    switch (e.key.toLowerCase()) {
+      case `f`:
+        openSearchWithSelection(editor.value)
+        handled = true
+        break
+      case `b`:
+        compatEditor.replaceSelection(`**${compatEditor.getSelection()}**`)
+        handled = true
+        break
+      case `i`:
+        compatEditor.replaceSelection(`*${compatEditor.getSelection()}*`)
+        handled = true
+        break
+      case `d`:
+        compatEditor.replaceSelection(`~~${compatEditor.getSelection()}~~`)
+        handled = true
+        break
+      case `k`:
+        compatEditor.replaceSelection(`[${compatEditor.getSelection()}]()`)
+        handled = true
+        break
+      case `e`:
+        compatEditor.replaceSelection(`\`${compatEditor.getSelection()}\``)
+        handled = true
+        break
+      case `h`: {
+        if (compatEditor.getSelection()) {
+          compatEditor.replaceSelection(`# ${compatEditor.getSelection()}`)
+        }
+        else {
+          const cursor = compatEditor.getCursor()
+          const line = compatEditor.getLine(cursor.line)
+          if (!line.startsWith(`#`)) {
+            compatEditor.replaceRange(`# `, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: 0 })
+          }
+        }
+        handled = true
+        break
+      }
+      case `u`: {
+        const selectedU = compatEditor.getSelection()
+        if (selectedU) {
+          const lines = selectedU.split(`\n`)
+          const updated = lines.map((line: string) => `- ${line}`).join(`\n`)
+          compatEditor.replaceSelection(updated)
+        }
+        handled = true
+        break
+      }
+      case `o`: {
+        const selectedO = compatEditor.getSelection()
+        if (selectedO) {
+          const lines = selectedO.split(`\n`)
+          const updated = lines.map((line: string, i: number) => `${i + 1}. ${line}`).join(`\n`)
+          compatEditor.replaceSelection(updated)
+        }
+        handled = true
+        break
+      }
+    }
+
+    if (handled) {
+      e.preventDefault()
+      e.stopPropagation()
+      editor.value?.focus()
+    }
   }
 }
 
 onMounted(() => {
-  document.addEventListener(`keydown`, handleGlobalKeydown)
+  // 使用较低优先级确保 CodeMirror 键盘事件先处理
+  document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 })
 
 function beforeUpload(file: File) {
@@ -181,11 +314,10 @@ function uploaded(imageUrl: string) {
   setTimeout(() => {
     toggleShowUploadImgDialog(false)
   }, 1000)
-  // 上传成功，获取光标
-  const cursor = editor.value!.getCursor()
+  // 上传成功，插入图片
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
+  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`)
   toast.success(`图片上传成功`)
 }
 
@@ -345,38 +477,37 @@ function mdLocalToRemote() {
 
 const changeTimer = ref<NodeJS.Timeout>()
 
-const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
+const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
-function createFormTextArea(dom: HTMLTextAreaElement) {
-  const textArea = fromTextArea(dom, {
-    mode: `text/x-markdown`,
-    theme: isDark.value ? `darcula` : `xq-light`,
-    lineNumbers: false,
-    lineWrapping: true,
-    styleActiveLine: true,
-    autoCloseBrackets: true,
-    extraKeys: createExtraKeys(openSearchWithSelection),
-    undoDepth: 200,
-  })
+let codeMirrorView: any = null
 
-  textArea.on(`change`, (editor) => {
-    clearTimeout(changeTimer.value)
-    changeTimer.value = setTimeout(() => {
-      editorRefresh()
+function createFormTextArea(dom: HTMLDivElement) {
+  // 使用 CodeMirror v6 创建编辑器
+  const extraKeys = createExtraKeys(openSearchWithSelection)
 
-      const currentPost = store.posts[store.currentPostIndex]
-      const content = editor.getValue()
-      if (content === currentPost.content) {
-        return
-      }
+  codeMirrorView = createCodeMirrorV6(
+    dom,
+    store.posts[store.currentPostIndex].content,
+    isDark.value,
+    extraKeys,
+    (value: string) => {
+      clearTimeout(changeTimer.value)
+      changeTimer.value = setTimeout(() => {
+        editorRefresh()
 
-      currentPost.updateDatetime = new Date()
-      currentPost.content = content
-    }, 300)
-  })
+        const currentPost = store.posts[store.currentPostIndex]
+        if (value === currentPost.content) {
+          return
+        }
 
-  // 粘贴上传图片并插入
-  textArea.on(`paste`, async (_editor, event) => {
+        currentPost.updateDatetime = new Date()
+        currentPost.content = value
+      }, 300)
+    },
+  )
+
+  // 添加粘贴事件监听
+  codeMirrorView.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
@@ -408,7 +539,8 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     cleanup()
   })
 
-  return textArea
+  // 返回兼容的编辑器接口
+  return codeMirrorView.compatibleEditor || codeMirrorView
 }
 
 // 初始化编辑器
@@ -419,12 +551,12 @@ onMounted(() => {
     return
   }
 
-  editorDom.value = store.posts[store.currentPostIndex].content
-
   nextTick(() => {
     editor.value = createFormTextArea(editorDom)
 
-    initPolishEvent(editor.value)
+    if (editor.value) {
+      initPolishEvent(editor.value)
+    }
     editorRefresh()
     mdLocalToRemote()
   })
@@ -432,8 +564,9 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  const theme = isDark.value ? `darcula` : `xq-light`
-  toRaw(editor.value)?.setOption?.(`theme`, theme)
+  if (codeMirrorView && codeMirrorView.updateTheme) {
+    codeMirrorView.updateTheme(isDark.value)
+  }
 })
 
 // 历史记录的定时器
@@ -509,11 +642,10 @@ onUnmounted(() => {
               />
 
               <EditorContextMenu>
-                <textarea
+                <div
                   id="editor"
                   ref="editorRef"
-                  type="textarea"
-                  placeholder="Your markdown text here."
+                  class="codemirror-container"
                 />
               </EditorContextMenu>
             </div>
