@@ -1,11 +1,5 @@
+import type { ImageServiceOption, ServiceOption } from '../types'
 import { DEFAULT_SERVICE_ENDPOINT } from '../constants'
-
-export interface ServiceOption {
-  value: string
-  label: string
-  endpoint: string
-  models: string[]
-}
 
 export const serviceOptions: ServiceOption[] = [
   {
@@ -322,3 +316,27 @@ export const serviceOptions: ServiceOption[] = [
 ]
 
 export const DEFAULT_SERVICE_MODEL = serviceOptions[0].models[0]
+
+// 图片模型
+export const imageServiceOptions: ImageServiceOption[] = [
+  {
+    value: `default`,
+    label: `默认图像服务（无需配置 sk）`,
+    endpoint: DEFAULT_SERVICE_ENDPOINT,
+    models: [
+      `stabilityai/stable-diffusion-3.5-large`,
+      `stabilityai/stable-diffusion-3.5-large-turbo`,
+      `stabilityai/stable-diffusion-3.5-medium`,
+      `black-forest-labs/flux-schnell`,
+      `black-forest-labs/flux-pro`,
+    ],
+  },
+  {
+    value: `openai`,
+    label: `OpenAI`,
+    endpoint: `https://api.openai.com/v1`,
+    models: [`gpt-image-1`, `dall-e-3`],
+  },
+]
+
+export const DEFAULT_IMAGE_MODEL = imageServiceOptions[0].models[0]
