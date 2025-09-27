@@ -21,6 +21,17 @@ export default defineConfig(({ mode }) => {
     base,
     define: { process },
     envPrefix: [`VITE_`, `CF_`],
+    // Support local dev, resolve cross-origin issues
+    server: {
+      proxy: {
+        '/cgi-bin': {
+          target: `https://api.weixin.qq.com`,
+          changeOrigin: true,
+          secure: true,
+          rewrite: path => path.replace(/^\/cgi-bin/, `/cgi-bin`),
+        },
+      },
+    },
     plugins: [
       vue(),
       tailwindcss(),
