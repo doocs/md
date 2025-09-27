@@ -68,7 +68,7 @@ function buildMpHtml(config: Config) {
 function submit(formValues: any) {
   config.value = formValues as Config
   const html = buildMpHtml(formValues as Config)
-  toRaw(store.editor!).replaceSelection(`\n${html}\n`, `end`)
+  toRaw(store.editor!).replaceSelection(`\n${html}\n`)
   toast.success(`公众号名片插入成功`)
   toggleShowInsertMpCardDialog(false)
 }

@@ -1,15 +1,15 @@
+import type { V5CompatibleEditor } from '@/utils/editor'
 import { initRenderer } from '@md/core'
 import {
   defaultStyleConfig,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
-import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+
 import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
@@ -28,6 +28,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
 
 /**********************************
  * Post 结构接口
@@ -105,7 +106,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const editor = ref<V5CompatibleEditor | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -281,7 +282,7 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器
-  const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const cssEditor = ref<V5CompatibleEditor | null>(null)
   const setCssEditorValue = (content: string) => {
     cssEditor.value!.setValue(content)
   }
@@ -430,41 +431,31 @@ export const useStore = defineStore(`store`, () => {
       `#cssEditor`,
     )!
     cssEditorDom.value = getCurrentTab().content
-    const theme = isDark.value ? `darcula` : `xq-light`
-    cssEditor.value = markRaw(
-      CodeMirror.fromTextArea(cssEditorDom, {
-        mode: `css`,
-        theme,
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autofocus: true,
-        extraKeys: {
-          [`${shiftKey}-${altKey}-F`]: function autoFormat(
-            editor: CodeMirror.Editor,
-          ) {
-            formatDoc(editor.getValue(), `css`).then((doc) => {
-              getCurrentTab().content = doc
-              editor.setValue(doc)
-            })
-          },
-        },
-      } as never),
+    // 创建 CSS 编辑器的容器
+    const cssContainer = document.createElement(`div`)
+    cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
+
+    const extraKeys = {
+      [`${shiftKey}-${altKey}-F`]: function autoFormat(editor: V5CompatibleEditor) {
+        formatDoc(editor.getValue(), `css`).then((doc) => {
+          getCurrentTab().content = doc
+          editor.setValue(doc)
+        })
+      },
+    }
+
+    const cssEditorView = createCodeMirrorV6(
+      cssContainer,
+      getCurrentTab().content,
+      isDark.value,
+      extraKeys,
+      (value: string) => {
+        updateCss()
+        getCurrentTab().content = value
+      },
     )
 
-    // 自动提示
-    cssEditor.value.on(`keyup`, (cm, e) => {
-      if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-        (cm as any).showHint(e)
-      }
-    })
-
-    // 实时保存
-    cssEditor.value.on(`update`, () => {
-      updateCss()
-      getCurrentTab().content = cssEditor.value!.getValue()
-    })
+    cssEditor.value = markRaw(cssEditorView.compatibleEditor)
   })
 
   watch(isDark, () => {

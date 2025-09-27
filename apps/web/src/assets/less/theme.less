@@ -8,6 +8,8 @@
 
 .dark {
   .container {
+    // CodeMirror v6 兼容
+    .cm-editor,
     .CodeMirror-wrap {
       background-color: @nightCodeMirrorColor;
     }
@@ -34,6 +36,7 @@
   }
 }
 
+// CodeMirror v5 兼容样式
 .CodeMirror {
   padding-bottom: 0;
   height: 100% !important;
@@ -51,12 +54,6 @@
   overflow-y: scroll !important;
 }
 
-.cssEditor-wrapper {
-  .CodeMirror-scroll {
-    margin-right: 0;
-  }
-}
-
 .CodeMirror-vscrollbar {
   width: 0px;
   height: 0px;
@@ -66,6 +63,39 @@
   padding-top: 20px;
   padding-bottom: 20px;
   box-sizing: border-box;
+}
+
+// CodeMirror v6 样式
+.cm-editor {
+  height: 100% !important;
+  font-size: 16px;
+  font-family: Consolas, 'Courier New', monospace !important;
+
+  .cm-scroller {
+    padding: 20px;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .cm-content {
+    padding-bottom: 20px;
+  }
+
+  &.cm-focused {
+    outline: none;
+  }
+}
+
+.codemirror-container {
+  height: 100%;
+  width: 100%;
+}
+
+.cssEditor-wrapper {
+  .CodeMirror-scroll,
+  .cm-scroller {
+    margin-right: 0;
+  }
 }
 
 .cm-em {

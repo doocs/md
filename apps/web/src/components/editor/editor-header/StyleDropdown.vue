@@ -54,7 +54,7 @@ function showPicker() {
 function customStyle() {
   toggleShowCssEditor()
   setTimeout(() => {
-    cssEditor.value!.refresh()
+    cssEditor.value?.refresh?.()
   }, 50)
 }
 
