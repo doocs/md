@@ -7,6 +7,7 @@ const props = defineProps<{
 }>()
 
 const showSearchTab = ref(false)
+const searchInputRef = ref<{ focus: () => void, select: () => void } | null>(null)
 
 const searchWord = ref(``)
 const indexOfMatch = ref(0)
@@ -50,6 +51,10 @@ watch(showSearchTab, async () => {
   }
   else {
     markMatch()
+    // 等待DOM更新后聚焦输入框
+    await nextTick()
+    searchInputRef.value?.focus()
+    searchInputRef.value?.select()
   }
 })
 
@@ -160,6 +165,12 @@ function setSearchWord(word: string) {
   if (!showSearchTab.value) {
     showSearchTab.value = true
   }
+  else {
+    nextTick(() => {
+      searchInputRef.value?.focus()
+      searchInputRef.value?.select()
+    })
+  }
 }
 
 onMounted(() => {
@@ -210,6 +221,7 @@ defineExpose({
         <!-- 查找行 -->
         <div class="flex items-center gap-1">
           <Input
+            ref="searchInputRef"
             v-model="searchWord"
             placeholder="查找"
             class="h-7 w-40 text-sm"
