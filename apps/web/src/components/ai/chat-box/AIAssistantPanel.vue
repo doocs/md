@@ -5,6 +5,7 @@ import {
   Copy,
   Edit,
   Image as ImageIcon,
+  MessageCircle,
   Pause,
   Plus,
   RefreshCcw,
@@ -394,13 +395,14 @@ async function sendMessage() {
           <DialogTitle>AI 对话</DialogTitle>
 
           <Button
-            title="配置参数"
-            aria-label="配置参数"
+            :title="configVisible ? 'AI 对话' : '配置参数'"
+            :aria-label="configVisible ? 'AI 对话' : '配置参数'"
             variant="ghost"
             size="icon"
             @click="configVisible = !configVisible"
           >
-            <Settings class="h-4 w-4" />
+            <MessageCircle v-if="configVisible" class="h-4 w-4" />
+            <Settings v-else class="h-4 w-4" />
           </Button>
 
           <Button

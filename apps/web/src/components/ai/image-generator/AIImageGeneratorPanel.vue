@@ -535,13 +535,14 @@ function getTimeRemainingClass(index: number): string {
           <DialogTitle>AI 文生图</DialogTitle>
 
           <Button
-            title="配置参数"
-            aria-label="配置参数"
+            :title="configVisible ? 'AI 文生图' : '配置参数'"
+            :aria-label="configVisible ? 'AI 文生图' : '配置参数'"
             variant="ghost"
             size="icon"
             @click="configVisible = !configVisible"
           >
-            <Settings class="h-4 w-4" />
+            <ImageIcon v-if="configVisible" class="h-4 w-4" />
+            <Settings v-else class="h-4 w-4" />
           </Button>
 
           <Button
