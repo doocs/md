@@ -3,7 +3,7 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
-import { highlightSelectionMatches } from '@codemirror/search'
+import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search'
 import { Compartment, EditorState, Prec } from '@codemirror/state'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
@@ -126,10 +126,20 @@ const darkHighlightStyle = HighlightStyle.define([
   { tag: tags.list, color: `#10b981` },
 ])
 
+// CodeMirror v6 原生接口定义
+export interface CodeMirrorV6Editor {
+  // EditorView 实例
+  view: EditorView
+  // 主题切换方法
+  updateTheme: (isDark: boolean) => void
+  // 销毁编辑器
+  destroy: () => void
+}
+
 // 创建编辑器扩展
-export function createEditorExtensions(_isDark: boolean, extraKeys: Record<string, any> = {}): Extension[] {
-  // 转换 v5 的 extraKeys 到 v6 的 keymap
-  const convertedKeymap = Object.entries(extraKeys).map(([key, handler]) => ({
+export function createEditorExtensions(extraKeyHandlers: Record<string, (view: EditorView) => boolean> = {}): Extension[] {
+  // 转换键盘处理器到 v6 keymap
+  const convertedKeymap = Object.entries(extraKeyHandlers).map(([key, handler]) => ({
     key: convertKeyBinding(key),
     run: (view: EditorView, event?: Event) => {
       // 阻止浏览器默认行为
@@ -138,59 +148,33 @@ export function createEditorExtensions(_isDark: boolean, extraKeys: Record<strin
         event.stopPropagation()
       }
 
-      // 创建一个兼容 v5 API 的编辑器对象
-      const compatibleEditor = createV5CompatibleEditor(view)
-      if (typeof handler === `function`) {
-        try {
-          handler(compatibleEditor)
-          return true // 阻止默认行为
-        }
-        catch (error) {
-          console.error(`Error in keymap handler for ${key}:`, error)
-          return false
-        }
+      try {
+        return handler(view)
       }
-      return true
+      catch (error) {
+        console.error(`Error in keymap handler for ${key}:`, error)
+        return false
+      }
     },
-    preventDefault: true, // 确保阻止浏览器默认行为
+    preventDefault: true,
   }))
 
   const extensions: Extension[] = [
     // 基础功能
     history(),
-    // search({ top: true }), // 移除 v6 内置搜索，使用自定义搜索功能
+    search({ top: true }), // 使用 v6 内置搜索
     highlightSelectionMatches(),
     closeBrackets(),
 
     // 语言支持
     markdown(),
 
-    // 快捷键 - 使用高优先级确保自定义快捷键覆盖默认行为
-    Prec.highest(keymap.of([
-      // 专门处理 Ctrl+F 确保覆盖浏览器默认搜索
-      {
-        key: `Mod-f`,
-        run: (view: EditorView, event?: Event) => {
-          if (event) {
-            event.preventDefault()
-            event.stopPropagation()
-          }
-          // 查找自定义搜索处理函数
-          const ctrlFHandler = convertedKeymap.find(k => k.key === `Mod-f`)
-          if (ctrlFHandler) {
-            return ctrlFHandler.run(view, event)
-          }
-          return true
-        },
-        preventDefault: true,
-      },
-    ])),
+    // 快捷键
     Prec.high(keymap.of(convertedKeymap)), // 自定义快捷键，高优先级
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
-      // 移除 searchKeymap，使用自定义搜索功能
-      // ...searchKeymap,
+      ...searchKeymap,
       ...closeBracketsKeymap,
     ]),
 
@@ -205,196 +189,30 @@ export function createEditorExtensions(_isDark: boolean, extraKeys: Record<strin
   return extensions
 }
 
-// 转换 v5 的键绑定格式到 v6 格式
-function convertKeyBinding(v5Key: string): string {
-  return v5Key
+// 转换键绑定格式
+function convertKeyBinding(key: string): string {
+  return key
     .replace(/Ctrl/g, `Mod`)
     .replace(/Alt/g, `Alt`)
     .replace(/Shift/g, `Shift`)
     .replace(/-/g, `-`)
 }
 
-// 创建与 v5 API 兼容的编辑器对象
-function createV5CompatibleEditor(view: EditorView) {
-  return {
-    getValue: () => view.state.doc.toString(),
-    setValue: (content: string) => {
-      view.dispatch({
-        changes: { from: 0, to: view.state.doc.length, insert: content },
-      })
-    },
-    getSelection: () => {
-      const selection = view.state.selection.main
-      return view.state.doc.sliceString(selection.from, selection.to)
-    },
-    replaceSelection: (text: string, _cursor?: any) => {
-      view.dispatch(view.state.replaceSelection(text))
-    },
-    getCursor: (which?: string) => {
-      const selection = view.state.selection.main
-      const pos = which === `from` ? selection.from : selection.to
-      const line = view.state.doc.lineAt(pos)
-      return {
-        line: line.number - 1, // v5 使用 0 基准的行号
-        ch: pos - line.from,
-      }
-    },
-    setCursor: (line: number | { line: number, ch: number }, ch?: number) => {
-      let pos: number
-      if (typeof line === `object`) {
-        const docLine = view.state.doc.line(line.line + 1) // v6 使用 1 基准的行号
-        pos = docLine.from + line.ch
-      }
-      else {
-        const docLine = view.state.doc.line(line + 1)
-        pos = docLine.from + (ch || 0)
-      }
-      view.dispatch({ selection: { anchor: pos } })
-    },
-    setSelection: (from: { line: number, ch: number }, to: { line: number, ch: number }) => {
-      const fromLine = view.state.doc.line(from.line + 1)
-      const toLine = view.state.doc.line(to.line + 1)
-      const fromPos = fromLine.from + from.ch
-      const toPos = toLine.from + to.ch
-      view.dispatch({ selection: { anchor: fromPos, head: toPos } })
-    },
-    getLine: (line: number) => {
-      const docLine = view.state.doc.line(line + 1)
-      return view.state.doc.sliceString(docLine.from, docLine.to)
-    },
-    replaceRange: (
-      text: string,
-      from: { line: number, ch: number },
-      to: { line: number, ch: number },
-    ) => {
-      const fromLine = view.state.doc.line(from.line + 1)
-      const toLine = view.state.doc.line(to.line + 1)
-      const fromPos = fromLine.from + from.ch
-      const toPos = toLine.from + to.ch
-      view.dispatch({
-        changes: { from: fromPos, to: toPos, insert: text },
-      })
-    },
-    listSelections: () => {
-      return view.state.selection.ranges.map((range: any) => ({
-        from: () => {
-          const line = view.state.doc.lineAt(range.from)
-          return { line: line.number - 1, ch: range.from - line.from }
-        },
-        to: () => {
-          const line = view.state.doc.lineAt(range.to)
-          return { line: line.number - 1, ch: range.to - line.from }
-        },
-      }))
-    },
-    operation: (fn: () => void) => {
-      // v6 中事务是自动批处理的，所以直接执行函数
-      fn()
-    },
-    undo: () => {
-      // 会被键盘快捷键处理
-    },
-    redo: () => {
-      // 会被键盘快捷键处理
-    },
-    focus: () => {
-      view.focus()
-    },
-    getWrapperElement: () => view.dom,
-    on: (event: string, handler: (...args: any[]) => void) => {
-      // v6 使用不同的事件系统，这里提供基础兼容
-      switch (event) {
-        case `change`:
-          // 监听文档变化 - 这个已经通过 onChange 回调处理
-          break
-        case `changes`:
-          // 监听文档变化 (v5 兼容)
-          break
-        case `cursorActivity`:
-          // 监听光标活动
-          break
-        case `mousedown`:
-        case `mouseup`:
-          view.dom.addEventListener(event, handler as EventListener)
-          break
-        case `keydown`:
-          // 键盘事件需要特殊处理以保持 v5 兼容性
-          view.dom.addEventListener(event, (e: Event) => {
-            // v5 的事件处理函数期望 (editor, event) 参数
-            // 我们传递当前的兼容编辑器实例（避免循环调用）
-            const compatEditor = (view as any).compatibleEditor || createV5CompatibleEditor(view)
-            handler(compatEditor, e)
-          }, { capture: true }) // 使用捕获阶段，确保在全局事件之前处理
-          break
-        case `scroll`: {
-          // 滚动事件
-          const scrollEl = view.dom.querySelector(`.cm-scroller`) || view.dom
-          scrollEl.addEventListener(`scroll`, handler as EventListener)
-          break
-        }
-      }
-    },
-    off: (event: string, handler?: (...args: any[]) => void) => {
-      // 移除事件监听器
-      if (handler) {
-        switch (event) {
-          case `scroll`: {
-            const scrollEl = view.dom.querySelector(`.cm-scroller`) || view.dom
-            scrollEl.removeEventListener(`scroll`, handler as EventListener)
-            break
-          }
-          default:
-            view.dom.removeEventListener(event, handler as EventListener)
-            break
-        }
-      }
-    },
-    refresh: () => {
-      // v6 不需要手动刷新
-      console.log(`refresh() is not needed in CodeMirror 6`)
-    },
-    setOption: (option: string, _value: any) => {
-      // v6 不使用 setOption，需要重新配置编辑器
-      console.warn(`setOption is not supported in CodeMirror 6. Option: ${option}`)
-    },
-    // 搜索相关方法的基础实现
-    getAllMarks: () => {
-      console.warn(`getAllMarks is not fully implemented for CodeMirror 6`)
-      return []
-    },
-    markText: (_from: any, _to: any, _options: any) => {
-      console.warn(`markText is not fully implemented for CodeMirror 6`)
-      return { clear: () => {} }
-    },
-    scrollIntoView: (_pos: any) => {
-      console.warn(`scrollIntoView is not fully implemented for CodeMirror 6`)
-    },
-    getSearchCursor: (_query: string, _start?: any, _caseFold?: boolean) => {
-      console.warn(`getSearchCursor is not fully implemented for CodeMirror 6`)
-      return {
-        findNext: () => false,
-        from: () => ({ line: 0, ch: 0 }),
-        to: () => ({ line: 0, ch: 0 }),
-      }
-    },
-  }
-}
-
 // 动态主题切换的 Compartment
-let themeCompartment: any = null
+let themeCompartment: Compartment | null = null
 
 // 创建编辑器实例
 export function createCodeMirrorV6(
   parent: HTMLElement,
   initialValue: string = ``,
   isDark: boolean = false,
-  extraKeys: Record<string, any> = {},
+  extraKeyHandlers: Record<string, (view: EditorView) => boolean> = {},
   onChange?: (value: string) => void,
-): EditorView & { compatibleEditor: any, updateTheme: (isDark: boolean) => void } {
+): CodeMirrorV6Editor {
   // 创建 Compartment 用于动态主题切换
   themeCompartment = new Compartment()
 
-  const extensions = createEditorExtensions(false, extraKeys) // 先不包含主题
+  const extensions = createEditorExtensions(extraKeyHandlers)
 
   // 单独添加主题扩展到 compartment 中
   extensions.push(
@@ -405,7 +223,7 @@ export function createCodeMirrorV6(
   // 添加变化监听器
   if (onChange) {
     extensions.push(
-      EditorView.updateListener.of((update: any) => {
+      EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           onChange(update.state.doc.toString())
         }
@@ -421,34 +239,31 @@ export function createCodeMirrorV6(
   const view = new EditorView({
     state,
     parent,
-  }) as EditorView & { compatibleEditor: any, updateTheme: (isDark: boolean) => void }
+  })
 
-  // 添加主题切换方法
-  view.updateTheme = (isDark: boolean) => {
-    view.dispatch({
-      effects: themeCompartment.reconfigure(
-        [
-          isDark ? [oneDark, darkTheme] : lightTheme,
-          syntaxHighlighting(isDark ? darkHighlightStyle : lightHighlightStyle),
-        ],
-      ),
-    })
-  }
-
-  // 添加兼容层
-  view.compatibleEditor = createV5CompatibleEditor(view)
-
-  // 为兼容层添加 setOption 支持
-  const originalSetOption = view.compatibleEditor.setOption
-  view.compatibleEditor.setOption = (option: string, value: any) => {
-    if (option === `theme`) {
-      const isDarkTheme = value === `darcula`
-      view.updateTheme(isDarkTheme)
-    }
-    else {
-      originalSetOption(option, value)
+  // 主题切换方法
+  const updateTheme = (isDark: boolean) => {
+    if (themeCompartment) {
+      view.dispatch({
+        effects: themeCompartment.reconfigure(
+          [
+            isDark ? [oneDark, darkTheme] : lightTheme,
+            syntaxHighlighting(isDark ? darkHighlightStyle : lightHighlightStyle),
+          ],
+        ),
+      })
     }
   }
 
-  return view
+  // 销毁方法
+  const destroy = () => {
+    view.destroy()
+    themeCompartment = null
+  }
+
+  return {
+    view,
+    updateTheme,
+    destroy,
+  }
 }

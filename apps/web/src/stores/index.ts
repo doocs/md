@@ -1,4 +1,5 @@
-import type { V5CompatibleEditor } from '@/utils/editor'
+import type { EditorView } from '@codemirror/view'
+import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
 import { initRenderer } from '@md/core'
 import {
   defaultStyleConfig,
@@ -8,8 +9,8 @@ import {
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 
+import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
 import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
@@ -106,7 +107,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<V5CompatibleEditor | null>(null)
+  const editor = ref<EditorView | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -241,8 +242,10 @@ export const useStore = defineStore(`store`, () => {
    ********************************/
   watch(currentPostId, () => {
     const post = getPostById(currentPostId.value)
-    if (post) {
-      editor.value && toRaw(editor.value).setValue(post.content)
+    if (post && editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: post.content },
+      })
     }
   })
 
@@ -258,10 +261,14 @@ export const useStore = defineStore(`store`, () => {
 
   // 格式化文档
   const formatContent = () => {
-    formatDoc(editor.value!.getValue()).then((doc) => {
-      posts.value[currentPostIndex.value].content = doc
-      toRaw(editor.value!).setValue(doc)
-    })
+    if (editor.value) {
+      formatDoc(editor.value.state.doc.toString()).then((doc) => {
+        posts.value[currentPostIndex.value].content = doc
+        editor.value!.dispatch({
+          changes: { from: 0, to: editor.value!.state.doc.length, insert: doc },
+        })
+      })
+    }
   }
 
   // 切换 highlight.js 代码主题
@@ -282,9 +289,13 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器
-  const cssEditor = ref<V5CompatibleEditor | null>(null)
+  const cssEditor = ref<CodeMirrorV6Editor | null>(null)
   const setCssEditorValue = (content: string) => {
-    cssEditor.value!.setValue(content)
+    if (cssEditor.value?.view) {
+      cssEditor.value.view.dispatch({
+        changes: { from: 0, to: cssEditor.value.view.state.doc.length, insert: content },
+      })
+    }
   }
   /**
    * 自定义 CSS 内容
@@ -382,7 +393,7 @@ export const useStore = defineStore(`store`, () => {
       isShowLineNumber: isShowLineNumber.value,
     })
 
-    const raw = editor.value!.getValue()
+    const raw = editor.value ? editor.value.state.doc.toString() : ``
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
     readingTime.chars = raw.length
     readingTime.words = readingTimeResult.words
@@ -410,20 +421,22 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    const json = css2json(cssEditor.value!.getValue())
-    const newTheme = customCssWithTemplate(
-      json,
-      primaryColor.value,
-      customizeTheme(themeMap[theme.value], {
-        fontSize: fontSizeNumber.value,
-        color: primaryColor.value,
-      }),
-    )
-    renderer.setOptions({
-      theme: newTheme,
-    })
+    if (cssEditor.value?.view) {
+      const json = css2json(cssEditor.value.view.state.doc.toString())
+      const newTheme = customCssWithTemplate(
+        json,
+        primaryColor.value,
+        customizeTheme(themeMap[theme.value], {
+          fontSize: fontSizeNumber.value,
+          color: primaryColor.value,
+        }),
+      )
+      renderer.setOptions({
+        theme: newTheme,
+      })
 
-    editorRefresh()
+      editorRefresh()
+    }
   }
   // 初始化 CSS 编辑器
   onMounted(() => {
@@ -436,15 +449,18 @@ export const useStore = defineStore(`store`, () => {
     cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
 
     const extraKeys = {
-      [`${shiftKey}-${altKey}-F`]: function autoFormat(editor: V5CompatibleEditor) {
-        formatDoc(editor.getValue(), `css`).then((doc) => {
+      [`${shiftKey}-${altKey}-F`]: function autoFormat(view: EditorView): boolean {
+        formatDoc(view.state.doc.toString(), `css`).then((doc) => {
           getCurrentTab().content = doc
-          editor.setValue(doc)
+          view.dispatch({
+            changes: { from: 0, to: view.state.doc.length, insert: doc },
+          })
         })
+        return true
       },
     }
 
-    const cssEditorView = createCodeMirrorV6(
+    const cssEditorInstance = createCodeMirrorV6(
       cssContainer,
       getCurrentTab().content,
       isDark.value,
@@ -455,12 +471,13 @@ export const useStore = defineStore(`store`, () => {
       },
     )
 
-    cssEditor.value = markRaw(cssEditorView.compatibleEditor)
+    cssEditor.value = markRaw(cssEditorInstance)
   })
 
   watch(isDark, () => {
-    const theme = isDark.value ? `darcula` : `xq-light`
-    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
+    if (cssEditor.value) {
+      cssEditor.value.updateTheme(isDark.value)
+    }
   })
 
   // 重置样式
@@ -489,7 +506,11 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    cssEditor.value!.setValue(DEFAULT_CSS_CONTENT)
+    if (cssEditor.value?.view) {
+      cssEditor.value.view.dispatch({
+        changes: { from: 0, to: cssEditor.value.view.state.doc.length, insert: DEFAULT_CSS_CONTENT },
+      })
+    }
 
     updateCss()
     editorRefresh()
@@ -607,7 +628,9 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容为无样式 HTML
   const exportEditorContent2PureHTML = () => {
-    exportPureHTML(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
+    if (editor.value) {
+      exportPureHTML(editor.value.state.doc.toString(), posts.value[currentPostIndex.value].title)
+    }
   }
 
   // 下载卡片
@@ -633,30 +656,45 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
-    downloadMD(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
+    if (editor.value) {
+      downloadMD(editor.value.state.doc.toString(), posts.value[currentPostIndex.value].title)
+    }
   }
 
   // 导入默认文档
   const importDefaultContent = () => {
-    toRaw(editor.value!).setValue(DEFAULT_CONTENT)
-    toast.success(`文档已重置`)
+    if (editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: DEFAULT_CONTENT },
+      })
+      toast.success(`文档已重置`)
+    }
   }
 
   // 清空内容
   const clearContent = () => {
-    toRaw(editor.value!).setValue(``)
-    toast.success(`内容已清空`)
+    if (editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: `` },
+      })
+      toast.success(`内容已清空`)
+    }
   }
 
   const copyToClipboard = async () => {
-    const selectedText = editor.value!.getSelection()
-    copyPlain(selectedText)
+    if (editor.value) {
+      const selection = editor.value.state.selection.main
+      const selectedText = editor.value.state.doc.sliceString(selection.from, selection.to)
+      copyPlain(selectedText)
+    }
   }
 
   const pasteFromClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText()
-      editor.value!.replaceSelection(text)
+      if (editor.value) {
+        editor.value.dispatch(editor.value.state.replaceSelection(text))
+      }
     }
     catch (error) {
       console.log(`粘贴失败`, error)
@@ -666,14 +704,16 @@ export const useStore = defineStore(`store`, () => {
   // 撤销操作
   const undo = () => {
     if (editor.value) {
-      editor.value.undo()
+      // undo 和 redo 由键盘快捷键处理，这里不需要手动实现
+      console.log(`Undo should be handled by keyboard shortcuts`)
     }
   }
 
   // 重做操作
   const redo = () => {
     if (editor.value) {
-      editor.value.redo()
+      // undo 和 redo 由键盘快捷键处理，这里不需要手动实现
+      console.log(`Redo should be handled by keyboard shortcuts`)
     }
   }
 

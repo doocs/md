@@ -1,5 +1,6 @@
 import type { ComponentPublicInstance } from 'vue'
-import type { V5CompatibleEditor } from '@/utils/editor'
+import { StateEffect } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import AIPolishButton from './ToolBoxButton.vue'
 import AIPolishPopover from './ToolBoxPopover.vue'
 
@@ -87,14 +88,12 @@ function useAIPolish() {
   }
 
   /* =============== CodeMirror 事件注入 =============== */
-  function initPolishEvent(editor: V5CompatibleEditor) {
-    /* 1️⃣ 鼠标按下：全部关闭（开启新选区） */
-    editor.on(`mousedown`, () => closeAll())
-
-    /* 2️⃣ 鼠标抬起：根据选区显示按钮 */
-    editor.getWrapperElement().addEventListener(`mouseup`, (e: MouseEvent) => {
+  function initPolishEvent(editorView: EditorView) {
+    /* 1. 鼠标抬起：根据选区显示按钮 */
+    editorView.dom.addEventListener(`mouseup`, (e: MouseEvent) => {
       setTimeout(() => {
-        const text = editor.getSelection()?.trim() ?? ``
+        const selection = editorView.state.selection.main
+        const text = editorView.state.doc.sliceString(selection.from, selection.to)?.trim() ?? ``
         selectedText.value = text
         if (text) {
           position.left = e.clientX
@@ -107,24 +106,30 @@ function useAIPolish() {
       }, 0)
     })
 
-    /* 3️⃣ 光标移动：Popover 打开时同步文本/位置 */
-    editor.on(`cursorActivity`, () => {
-      if (!AIPolishPopoverRef.value?.visible)
-        return
-      const text = editor.getSelection()?.trim() ?? ``
-      if (text) {
-        selectedText.value = text
-        calcPos(position.left, position.top)
+    /* 2. 光标移动：使用 CodeMirror v6 扩展监听选区变化 */
+    const cursorActivity = EditorView.updateListener.of((update) => {
+      if (update.selectionSet && AIPolishPopoverRef.value?.visible) {
+        const sel = update.state.selection.main
+        const text = update.state.sliceDoc(sel.from, sel.to).trim()
+        if (text) {
+          selectedText.value = text
+          calcPos(position.left, position.top)
+        }
+      }
+
+      /* 3. 内容变动：只隐藏按钮，不动 Popover */
+      if (update.docChanged) {
+        closeBtn()
       }
     })
 
-    /* 4️⃣ **内容变动：只隐藏按钮，不动 Popover** */
-    editor.on(`changes`, () => closeBtn())
-    // 若想更早拦截可用 beforeChange：editor.on('beforeChange', () => closeBtn())
+    // 动态添加扩展到已有编辑器
+    editorView.dispatch({
+      effects: StateEffect.appendConfig.of(cursorActivity),
+    })
 
-    /* 5️⃣ 键盘事件：Select-All 例外，其余隐藏按钮 */
-    editor.on(`keydown`, (_editorInstance: any, event: KeyboardEvent) => {
-      // v5 兼容模式：editor.on 传递 (editor, event)
+    /* 4. 键盘事件：Select-All 例外，其余隐藏按钮 */
+    editorView.dom.addEventListener(`keydown`, (event: KeyboardEvent) => {
       if (!event)
         return
 
@@ -133,11 +138,11 @@ function useAIPolish() {
 
       if (isSelectAll) {
         setTimeout(() => {
-          const raw = editor.getValue() ?? ``
+          const raw = editorView.state.doc.toString() ?? ``
           const cleaned = raw.trim()
           if (cleaned) {
             selectedText.value = cleaned
-            const rect = editor.getWrapperElement().getBoundingClientRect()
+            const rect = editorView.dom.getBoundingClientRect()
             position.left = rect.right - 50
             position.top = rect.top + rect.height / 2
             AIPolishBtnRef.value?.show?.()

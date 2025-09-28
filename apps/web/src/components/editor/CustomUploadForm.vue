@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import type { V5CompatibleEditor } from '@/utils/editor'
+import type { EditorView } from '@codemirror/view'
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
 import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
@@ -21,7 +21,7 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
 
 const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
-const editor = ref<V5CompatibleEditor | null>(null)
+const editor = ref<EditorView | null>(null)
 
 onMounted(() => {
   const extraKeys = {}
@@ -36,18 +36,22 @@ onMounted(() => {
     },
   )
 
-  editor.value = markRaw(editorView.compatibleEditor)
+  editor.value = markRaw(editorView.view)
 
   // 嵌套使用 nextTick 才能确保生效，具体原因未知
   nextTick(() => {
     nextTick(() => {
-      editor.value?.setValue(code.value)
+      if (editor.value) {
+        editor.value.dispatch({
+          changes: { from: 0, to: editor.value.state.doc.length, insert: code.value },
+        })
+      }
     })
   })
 })
 
 function formCustomSave() {
-  const str = editor.value!.getValue()
+  const str = editor.value!.state.doc.toString()
   localStorage.setItem(`formCustomConfig`, str)
   toast.success(`保存成功`)
 }

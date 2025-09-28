@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EditorView } from '@codemirror/view'
 import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
 import { useStore } from '@/stores'
 import {
@@ -36,54 +37,53 @@ const {
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {
+  const editorView = editor.value as EditorView
   if (!editor.value)
     return
 
-  // 获取兼容层编辑器
-  const compatEditor = (editor.value as any).compatibleEditor || editor.value
-
+  // 直接使用 EditorView
   switch (cmd) {
     case `${ctrlKey}-B`:
-      formatBold(compatEditor)
+      formatBold(editorView)
       break
     case `${ctrlKey}-I`:
-      formatItalic(compatEditor)
+      formatItalic(editorView)
       break
     case `${ctrlKey}-D`:
-      formatStrikethrough(compatEditor)
+      formatStrikethrough(editorView)
       break
     case `${ctrlKey}-K`:
-      formatLink(compatEditor)
+      formatLink(editorView)
       break
     case `${ctrlKey}-E`:
-      formatCode(compatEditor)
+      formatCode(editorView)
       break
     case `${ctrlKey}-H`:
-      applyHeading(compatEditor, 1)
+      applyHeading(editorView, 1)
       break
     case `${ctrlKey}-U`:
-      formatUnorderedList(compatEditor)
+      formatUnorderedList(editorView)
       break
     case `${ctrlKey}-O`:
-      formatOrderedList(compatEditor)
+      formatOrderedList(editorView)
       break
     case `${ctrlKey}-1`:
-      applyHeading(compatEditor, 1)
+      applyHeading(editorView, 1)
       break
     case `${ctrlKey}-2`:
-      applyHeading(compatEditor, 2)
+      applyHeading(editorView, 2)
       break
     case `${ctrlKey}-3`:
-      applyHeading(compatEditor, 3)
+      applyHeading(editorView, 3)
       break
     case `${ctrlKey}-4`:
-      applyHeading(compatEditor, 4)
+      applyHeading(editorView, 4)
       break
     case `${ctrlKey}-5`:
-      applyHeading(compatEditor, 5)
+      applyHeading(editorView, 5)
       break
     case `${ctrlKey}-6`:
-      applyHeading(compatEditor, 6)
+      applyHeading(editorView, 6)
       break
   }
 }

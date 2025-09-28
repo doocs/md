@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
 import type { ComponentPublicInstance } from 'vue'
-import type { V5CompatibleEditor } from '@/utils/editor'
 
+import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import {
@@ -72,6 +72,7 @@ const {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
+let codeMirrorView: CodeMirrorV6Editor | null = null
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
@@ -89,10 +90,14 @@ function leftAndRightScroll() {
         console.warn(`Cannot find CodeMirror scroll container`)
         return
       }
-      editor.value?.off?.(`scroll`, editorScrollCB)
-      timeout.value = setTimeout(() => {
-        editor.value?.on?.(`scroll`, editorScrollCB)
-      }, 300)
+      // CodeMirror v6 使用 DOM 事件
+      const scrollEl = findCodeMirrorScroller()
+      if (scrollEl) {
+        scrollEl.removeEventListener(`scroll`, editorScrollCB)
+        timeout.value = setTimeout(() => {
+          scrollEl.addEventListener(`scroll`, editorScrollCB)
+        }, 300)
+      }
     }
     else {
       source = findCodeMirrorScroller()
@@ -135,8 +140,9 @@ function leftAndRightScroll() {
   if (previewRef.value) {
     previewRef.value.addEventListener(`scroll`, previewScrollCB, false)
   }
-  if (editor.value) {
-    editor.value.on(`scroll`, editorScrollCB)
+  const scrollEl = findCodeMirrorScroller()
+  if (scrollEl) {
+    scrollEl.addEventListener(`scroll`, editorScrollCB)
   }
 }
 
@@ -152,8 +158,9 @@ const searchTabRef
 // 用于存储待处理的搜索请求
 const pendingSearchRequest = ref<{ selected: string } | null>(null)
 
-function openSearchWithSelection(cm: V5CompatibleEditor) {
-  const selected = cm.getSelection().trim()
+function openSearchWithSelection(view: EditorView) {
+  const selection = view.state.selection.main
+  const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
 
   if (searchTabRef.value) {
     // SearchTab 已准备好，直接使用
@@ -186,12 +193,12 @@ watch(searchTabRef, (newRef) => {
 
 function handleGlobalKeydown(e: KeyboardEvent) {
   // 处理 ESC 键关闭搜索
-  const compatibleEditor = editor.value
+  const editorView = codeMirrorView?.view
 
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
     e.preventDefault()
-    compatibleEditor?.focus()
+    editorView?.focus()
     return
   }
 
@@ -205,64 +212,86 @@ function handleGlobalKeydown(e: KeyboardEvent) {
 
   // 处理全局快捷键（当编辑器未获得焦点时）
   const isCtrlOrCmd = e.ctrlKey || e.metaKey
-  if (isCtrlOrCmd && compatibleEditor) {
+  if (isCtrlOrCmd && editorView) {
     let handled = false
     switch (e.key.toLowerCase()) {
       case `f`:
         console.log(`openSearchWithSelection`)
-        openSearchWithSelection(compatibleEditor)
+        openSearchWithSelection(editorView)
         handled = true
         break
-      case `b`:
-        compatibleEditor.replaceSelection(`**${compatibleEditor.getSelection()}**`)
+      case `b`: {
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        editorView.dispatch(editorView.state.replaceSelection(`**${selected}**`))
         handled = true
         break
-      case `i`:
-        compatibleEditor.replaceSelection(`*${compatibleEditor.getSelection()}*`)
+      }
+      case `i`: {
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        editorView.dispatch(editorView.state.replaceSelection(`*${selected}*`))
         handled = true
         break
-      case `d`:
-        compatibleEditor.replaceSelection(`~~${compatibleEditor.getSelection()}~~`)
+      }
+      case `d`: {
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        editorView.dispatch(editorView.state.replaceSelection(`~~${selected}~~`))
         handled = true
         break
-      case `k`:
-        compatibleEditor.replaceSelection(`[${compatibleEditor.getSelection()}]()`)
+      }
+      case `k`: {
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        editorView.dispatch(editorView.state.replaceSelection(`[${selected}]()`))
         handled = true
         break
-      case `e`:
-        compatibleEditor.replaceSelection(`\`${compatibleEditor.getSelection()}\``)
+      }
+      case `e`: {
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        editorView.dispatch(editorView.state.replaceSelection(`\`${selected}\``))
         handled = true
         break
+      }
       case `h`: {
-        if (compatibleEditor.getSelection()) {
-          compatibleEditor.replaceSelection(`# ${compatibleEditor.getSelection()}`)
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        if (selected) {
+          editorView.dispatch(editorView.state.replaceSelection(`# ${selected}`))
         }
         else {
-          const cursor = compatibleEditor.getCursor()
-          const line = compatibleEditor.getLine(cursor.line)
-          if (!line.startsWith(`#`)) {
-            compatibleEditor.replaceRange(`# `, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: 0 })
+          const pos = selection.head
+          const line = editorView.state.doc.lineAt(pos)
+          const lineText = editorView.state.doc.sliceString(line.from, line.to)
+          if (!lineText.startsWith(`#`)) {
+            editorView.dispatch({
+              changes: { from: line.from, to: line.from, insert: `# ` },
+            })
           }
         }
         handled = true
         break
       }
       case `u`: {
-        const selectedU = compatibleEditor.getSelection()
-        if (selectedU) {
-          const lines = selectedU.split(`\n`)
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        if (selected) {
+          const lines = selected.split(`\n`)
           const updated = lines.map((line: string) => `- ${line}`).join(`\n`)
-          compatibleEditor.replaceSelection(updated)
+          editorView.dispatch(editorView.state.replaceSelection(updated))
         }
         handled = true
         break
       }
       case `o`: {
-        const selectedO = compatibleEditor.getSelection()
-        if (selectedO) {
-          const lines = selectedO.split(`\n`)
+        const selection = editorView.state.selection.main
+        const selected = editorView.state.doc.sliceString(selection.from, selection.to)
+        if (selected) {
+          const lines = selected.split(`\n`)
           const updated = lines.map((line: string, i: number) => `${i + 1}. ${line}`).join(`\n`)
-          compatibleEditor.replaceSelection(updated)
+          editorView.dispatch(editorView.state.replaceSelection(updated))
         }
         handled = true
         break
@@ -272,7 +301,7 @@ function handleGlobalKeydown(e: KeyboardEvent) {
     if (handled) {
       e.preventDefault()
       e.stopPropagation()
-      compatibleEditor.focus()
+      editorView.focus()
     }
   }
 }
@@ -316,7 +345,9 @@ function uploaded(imageUrl: string) {
   // 上传成功，插入图片
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`)
+  if (codeMirrorView?.view) {
+    codeMirrorView.view.dispatch(codeMirrorView.view.state.replaceSelection(`\n${markdownImage}\n`))
+  }
   toast.success(`图片上传成功`)
 }
 
@@ -435,7 +466,11 @@ async function uploadMdImg({
       .replace(`](./${item.matchStr})`, `](${item.url})`)
       .replace(`](${item.matchStr})`, `](${item.url})`)
   })
-  editor.value!.setValue(md.str)
+  if (codeMirrorView?.view) {
+    codeMirrorView.view.dispatch({
+      changes: { from: 0, to: codeMirrorView.view.state.doc.length, insert: md.str },
+    })
+  }
 }
 
 const codeMirrorWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`codeMirrorWrapper`)
@@ -478,7 +513,6 @@ const changeTimer = ref<NodeJS.Timeout>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
-let codeMirrorView: EditorView & { compatibleEditor: any, updateTheme: (isDark: boolean) => void } | null = null
 
 function createFormTextArea(dom: HTMLDivElement) {
   // 使用 CodeMirror v6 创建编辑器
@@ -506,7 +540,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   )
 
   // 添加粘贴事件监听
-  codeMirrorView.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
+  codeMirrorView.view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
@@ -538,8 +572,8 @@ function createFormTextArea(dom: HTMLDivElement) {
     cleanup()
   })
 
-  // 返回兼容的编辑器接口
-  return codeMirrorView.compatibleEditor
+  // 返回编辑器 view
+  return codeMirrorView.view
 }
 
 // 初始化编辑器
@@ -551,10 +585,11 @@ onMounted(() => {
   }
 
   nextTick(() => {
-    editor.value = createFormTextArea(editorDom)
+    const editorView = createFormTextArea(editorDom)
+    editor.value = editorView
 
-    if (editor.value) {
-      initPolishEvent(editor.value)
+    if (editorView) {
+      initPolishEvent(editorView)
     }
     editorRefresh()
     mdLocalToRemote()
@@ -563,7 +598,7 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  if (codeMirrorView && codeMirrorView.updateTheme) {
+  if (codeMirrorView) {
     codeMirrorView.updateTheme(isDark.value)
   }
 })
@@ -634,7 +669,7 @@ onUnmounted(() => {
                 'border-r': store.isEditOnLeft,
               }"
             >
-              <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
+              <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView.view" />
               <AIFixedBtn
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
