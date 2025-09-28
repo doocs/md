@@ -9,6 +9,8 @@ import {
   Settings,
   Trash2,
 } from 'lucide-vue-next'
+import { storeToRefs } from 'pinia'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -17,7 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 import useAIImageConfigStore from '@/stores/AIImageConfig'
 import { copyPlain } from '@/utils/clipboard'
 import AIImageConfig from './AIImageConfig.vue'
@@ -34,7 +36,13 @@ const { toggleAIDialog } = displayStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
-watch(() => props.open, val => (dialogVisible.value = val))
+watch(() => props.open, (val) => {
+  dialogVisible.value = val
+  // 每次打开面板时检查并清理过期图片
+  if (val) {
+    cleanExpiredImages()
+  }
+})
 watch(dialogVisible, val => emit(`update:open`, val))
 
 /* ---------- 状态管理 ---------- */
@@ -43,38 +51,131 @@ const loading = ref(false)
 const prompt = ref<string>(``)
 const generatedImages = ref<string[]>([])
 const imagePrompts = ref<string[]>([]) // 存储每张图片对应的prompt
+const imageTimestamps = ref<number[]>([]) // 存储每张图片的生成时间戳
 const abortController = ref<AbortController | null>(null)
 const currentImageIndex = ref(0)
+const timeUpdateInterval = ref<NodeJS.Timeout | null>(null)
 
 /* ---------- AI 配置 ---------- */
 const AIImageConfigStore = useAIImageConfigStore()
 const { apiKey, endpoint, model, type, size, quality, style } = storeToRefs(AIImageConfigStore)
 
-/* ---------- 初始数据 ---------- */
-onMounted(() => {
+/* ---------- 过期检查函数 ---------- */
+function isImageExpired(timestamp: number): boolean {
+  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时，单位毫秒
+  const now = Date.now()
+  return now - timestamp > EXPIRY_TIME
+}
+
+function cleanExpiredImages() {
   const savedImages = localStorage.getItem(`ai_generated_images`)
   const savedPrompts = localStorage.getItem(`ai_image_prompts`)
-  if (savedImages) {
-    generatedImages.value = JSON.parse(savedImages)
+  const savedTimestamps = localStorage.getItem(`ai_image_timestamps`)
+
+  if (!savedImages) {
+    return
   }
-  if (savedPrompts) {
-    imagePrompts.value = JSON.parse(savedPrompts)
+
+  const images = JSON.parse(savedImages)
+  const prompts = savedPrompts ? JSON.parse(savedPrompts) : []
+  const timestamps = savedTimestamps ? JSON.parse(savedTimestamps) : []
+
+  // 如果没有时间戳数据，说明是旧版本，默认清除所有数据
+  if (!savedTimestamps || timestamps.length === 0) {
+    console.log(`🧹 检测到旧版本数据，清除所有过期图片`)
+    generatedImages.value = []
+    imagePrompts.value = []
+    imageTimestamps.value = []
+    localStorage.removeItem(`ai_generated_images`)
+    localStorage.removeItem(`ai_image_prompts`)
+    localStorage.removeItem(`ai_image_timestamps`)
+    return
   }
+
+  // 过滤掉过期的图片
+  const validIndices: number[] = []
+  timestamps.forEach((timestamp: number, index: number) => {
+    if (!isImageExpired(timestamp)) {
+      validIndices.push(index)
+    }
+  })
+
+  const validImages = validIndices.map(i => images[i]).filter(Boolean)
+  const validPrompts = validIndices.map(i => prompts[i] || ``).filter((_, index) => validImages[index])
+  const validTimestamps = validIndices.map(i => timestamps[i]).filter(Boolean)
+
+  // 更新数据
+  generatedImages.value = validImages
+  imagePrompts.value = validPrompts
+  imageTimestamps.value = validTimestamps
+
+  // 如果有数据被清除，更新localStorage
+  if (validImages.length < images.length) {
+    console.log(`🧹 清除了 ${images.length - validImages.length} 张过期图片`)
+    if (validImages.length > 0) {
+      localStorage.setItem(`ai_generated_images`, JSON.stringify(validImages))
+      localStorage.setItem(`ai_image_prompts`, JSON.stringify(validPrompts))
+      localStorage.setItem(`ai_image_timestamps`, JSON.stringify(validTimestamps))
+    }
+    else {
+      localStorage.removeItem(`ai_generated_images`)
+      localStorage.removeItem(`ai_image_prompts`)
+      localStorage.removeItem(`ai_image_timestamps`)
+    }
+  }
+
+  console.log(`📊 过期检查完成，有效图片数量:`, validImages.length)
+}
+
+/* ---------- 初始数据 ---------- */
+onMounted(() => {
+  // 先进行过期检查和清理
+  cleanExpiredImages()
 
   // 确保数组长度一致
   const imagesLength = generatedImages.value.length
   const promptsLength = imagePrompts.value.length
+  const timestampsLength = imageTimestamps.value.length
 
-  if (imagesLength > promptsLength) {
-    // 如果图片多于提示词，用空字符串填充
-    imagePrompts.value = [...imagePrompts.value, ...Array.from({ length: imagesLength - promptsLength }, () => ``)]
+  const maxLength = Math.max(imagesLength, promptsLength, timestampsLength)
+
+  if (imagesLength < maxLength) {
+    // 如果图片少于其他数组，说明数据不一致，清除所有数据
+    console.warn(`⚠️ 数据不一致，清除所有数据`)
+    generatedImages.value = []
+    imagePrompts.value = []
+    imageTimestamps.value = []
+    localStorage.removeItem(`ai_generated_images`)
+    localStorage.removeItem(`ai_image_prompts`)
+    localStorage.removeItem(`ai_image_timestamps`)
   }
-  else if (promptsLength > imagesLength) {
-    // 如果提示词多于图片，截断提示词数组
-    imagePrompts.value = imagePrompts.value.slice(0, imagesLength)
+  else {
+    // 补齐较短的数组
+    if (promptsLength < imagesLength) {
+      imagePrompts.value = [...imagePrompts.value, ...Array.from({ length: imagesLength - promptsLength }, () => ``)]
+    }
+    if (timestampsLength < imagesLength) {
+      imageTimestamps.value = [...imageTimestamps.value, ...Array.from({ length: imagesLength - timestampsLength }, () => Date.now())]
+    }
   }
 
-  console.log(`📊 数据加载完成，图片数量:`, imagesLength, `提示词数量:`, imagePrompts.value.length)
+  console.log(`📊 数据加载完成，图片数量:`, generatedImages.value.length, `提示词数量:`, imagePrompts.value.length, `时间戳数量:`, imageTimestamps.value.length)
+
+  // 启动定时器，每30秒检查一次过期图片并更新时间显示
+  timeUpdateInterval.value = setInterval(() => {
+    // 检查并清理过期图片
+    if (generatedImages.value.length > 0) {
+      cleanExpiredImages()
+    }
+  }, 30000) // 30秒
+})
+
+onBeforeUnmount(() => {
+  // 清除定时器
+  if (timeUpdateInterval.value) {
+    clearInterval(timeUpdateInterval.value)
+    timeUpdateInterval.value = null
+  }
 })
 
 /* ---------- 事件处理 ---------- */
@@ -155,18 +256,23 @@ async function generateImage() {
           ? imageUrl
           : `data:image/png;base64,${imageUrl}`
 
+        const currentTimestamp = Date.now()
+
         generatedImages.value.unshift(finalUrl)
         imagePrompts.value.unshift(prompt.value.trim()) // 保存对应的prompt
+        imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
         currentImageIndex.value = 0
 
         // 限制存储的图片数量，避免占用过多存储空间
         if (generatedImages.value.length > 20) {
           generatedImages.value = generatedImages.value.slice(0, 20)
           imagePrompts.value = imagePrompts.value.slice(0, 20)
+          imageTimestamps.value = imageTimestamps.value.slice(0, 20)
         }
 
         localStorage.setItem(`ai_generated_images`, JSON.stringify(generatedImages.value))
         localStorage.setItem(`ai_image_prompts`, JSON.stringify(imagePrompts.value))
+        localStorage.setItem(`ai_image_timestamps`, JSON.stringify(imageTimestamps.value))
       }
     }
     else {
@@ -201,9 +307,11 @@ function cancelGeneration() {
 function clearImages() {
   generatedImages.value = []
   imagePrompts.value = []
+  imageTimestamps.value = []
   currentImageIndex.value = 0
   localStorage.removeItem(`ai_generated_images`)
   localStorage.removeItem(`ai_image_prompts`)
+  localStorage.removeItem(`ai_image_timestamps`)
 }
 
 /* ---------- 下载图像 ---------- */
@@ -346,6 +454,73 @@ function viewFullImage(imageUrl: string) {
     console.error(`❌ 打开图片失败:`, error)
   }
 }
+
+/* ---------- 时间相关函数 ---------- */
+const currentTime = ref(Date.now())
+
+// 每秒更新当前时间，用于实时显示剩余时间
+onMounted(() => {
+  const updateTime = () => {
+    currentTime.value = Date.now()
+  }
+
+  // 启动定时器更新时间显示
+  const timeDisplayInterval = setInterval(updateTime, 1000)
+
+  // 组件卸载时清理定时器
+  onBeforeUnmount(() => {
+    clearInterval(timeDisplayInterval)
+  })
+})
+
+function getTimeRemaining(index: number): string {
+  if (!imageTimestamps.value[index]) {
+    return `未知`
+  }
+
+  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时
+  const timestamp = imageTimestamps.value[index]
+  const elapsed = currentTime.value - timestamp
+  const remaining = EXPIRY_TIME - elapsed
+
+  if (remaining <= 0) {
+    return `已过期`
+  }
+
+  const minutes = Math.floor(remaining / (60 * 1000))
+  const seconds = Math.floor((remaining % (60 * 1000)) / 1000)
+
+  if (minutes > 0) {
+    return `${minutes}分${seconds}秒`
+  }
+  else {
+    return `${seconds}秒`
+  }
+}
+
+function getTimeRemainingClass(index: number): string {
+  if (!imageTimestamps.value[index]) {
+    return `text-muted-foreground`
+  }
+
+  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时
+  const timestamp = imageTimestamps.value[index]
+  const elapsed = currentTime.value - timestamp
+  const remaining = EXPIRY_TIME - elapsed
+
+  if (remaining <= 0) {
+    return `text-red-500 font-medium`
+  }
+  else if (remaining < 10 * 60 * 1000) { // 少于10分钟
+    return `text-orange-500 font-medium`
+  }
+  else if (remaining < 30 * 60 * 1000) { // 少于30分钟
+    return `text-yellow-600`
+  }
+  else {
+    return `text-green-600`
+  }
+}
 </script>
 
 <template>
@@ -472,6 +647,12 @@ function viewFullImage(imageUrl: string) {
               <div class="text-xs text-muted-foreground break-words">
                 <span class="font-medium">提示词:</span>
                 <span class="ml-1">{{ imagePrompts[currentImageIndex] || '无关联提示词' }}</span>
+              </div>
+              <div class="text-xs text-muted-foreground text-center">
+                <span class="font-medium">有效期:</span>
+                <span class="ml-1" :class="getTimeRemainingClass(currentImageIndex)">
+                  {{ getTimeRemaining(currentImageIndex) }}
+                </span>
               </div>
             </div>
 
