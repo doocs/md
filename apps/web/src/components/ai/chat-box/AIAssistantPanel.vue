@@ -4,6 +4,8 @@ import {
   Check,
   Copy,
   Edit,
+  Image as ImageIcon,
+  MessageCircle,
   Pause,
   Plus,
   RefreshCcw,
@@ -29,6 +31,8 @@ const emit = defineEmits([`update:open`])
 
 const store = useStore()
 const { editor } = storeToRefs(store)
+const displayStore = useDisplayStore()
+const { toggleAIImageDialog } = displayStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
@@ -112,6 +116,15 @@ function getDefaultMessages(): ChatMessage[] {
 function handleConfigSaved() {
   configVisible.value = false
   scrollToBottom(true)
+}
+
+function switchToImageGenerator() {
+  // 先关闭当前聊天对话框
+  emit(`update:open`, false)
+  // 然后打开文生图对话框
+  setTimeout(() => {
+    toggleAIImageDialog(true)
+  }, 100)
 }
 
 function handleKeydown(e: KeyboardEvent) {
@@ -382,13 +395,24 @@ async function sendMessage() {
           <DialogTitle>AI 对话</DialogTitle>
 
           <Button
-            title="配置参数"
-            aria-label="配置参数"
+            :title="configVisible ? 'AI 对话' : '配置参数'"
+            :aria-label="configVisible ? 'AI 对话' : '配置参数'"
             variant="ghost"
             size="icon"
             @click="configVisible = !configVisible"
           >
-            <Settings class="h-4 w-4" />
+            <MessageCircle v-if="configVisible" class="h-4 w-4" />
+            <Settings v-else class="h-4 w-4" />
+          </Button>
+
+          <Button
+            title="AI 文生图"
+            aria-label="AI 文生图"
+            variant="ghost"
+            size="icon"
+            @click="switchToImageGenerator()"
+          >
+            <ImageIcon class="h-4 w-4" />
           </Button>
 
           <Button

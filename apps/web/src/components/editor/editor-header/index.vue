@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
-import { useStore } from '@/stores'
+import { useDisplayStore, useStore } from '@/stores'
 import { addPrefix, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
 const { output, primaryColor, editor } = storeToRefs(store)
 
@@ -199,6 +200,7 @@ async function copy() {
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
+  <AIImageGeneratorPanel v-model:open="displayStore.aiImageDialogVisible" />
 </template>
 
 <style lang="less" scoped>
