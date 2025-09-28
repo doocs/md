@@ -49,6 +49,7 @@ watch(dialogVisible, val => emit(`update:open`, val))
 const configVisible = ref(false)
 const loading = ref(false)
 const prompt = ref<string>(``)
+const lastUsedPrompt = ref<string>(``) // 存储最后一次使用的提示词，用于重新生成
 const generatedImages = ref<string[]>([])
 const imagePrompts = ref<string[]>([]) // 存储每张图片对应的prompt
 const imageTimestamps = ref<number[]>([]) // 存储每张图片的生成时间戳
@@ -207,6 +208,10 @@ async function generateImage() {
   if (!prompt.value.trim() || loading.value)
     return
 
+  // 保存当前提示词用于重新生成
+  const currentPrompt = prompt.value.trim()
+  lastUsedPrompt.value = currentPrompt
+
   loading.value = true
   abortController.value = new AbortController()
 
@@ -222,7 +227,7 @@ async function generateImage() {
 
     const payload: any = {
       model: model.value,
-      prompt: prompt.value.trim(),
+      prompt: currentPrompt,
       size: size.value,
       n: 1,
     }
@@ -259,7 +264,7 @@ async function generateImage() {
         const currentTimestamp = Date.now()
 
         generatedImages.value.unshift(finalUrl)
-        imagePrompts.value.unshift(prompt.value.trim()) // 保存对应的prompt
+        imagePrompts.value.unshift(currentPrompt) // 保存对应的prompt
         imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
         currentImageIndex.value = 0
 
@@ -273,6 +278,9 @@ async function generateImage() {
         localStorage.setItem(`ai_generated_images`, JSON.stringify(generatedImages.value))
         localStorage.setItem(`ai_image_prompts`, JSON.stringify(imagePrompts.value))
         localStorage.setItem(`ai_image_timestamps`, JSON.stringify(imageTimestamps.value))
+
+        // 清空输入框
+        prompt.value = ``
       }
     }
     else {
@@ -362,20 +370,103 @@ function regenerateImage() {
   // 使用当前图片对应的prompt
   const currentPrompt = imagePrompts.value[currentImageIndex.value]
   if (currentPrompt) {
-    console.log(`🔄 重新生成图像，使用prompt:`, currentPrompt)
-    // 临时设置prompt为当前图片的prompt
-    const originalPrompt = prompt.value
-    prompt.value = currentPrompt
-    generateImage()
-    // 生成完成后恢复原来的prompt（如果用户正在编辑）
-    if (originalPrompt !== currentPrompt) {
-      setTimeout(() => {
-        prompt.value = originalPrompt
-      }, 100)
-    }
+    console.log(`🔄 重新生成图像，使用当前图片的prompt:`, currentPrompt)
+    // 直接使用当前图片的prompt生成，不修改输入框内容
+    regenerateWithPrompt(currentPrompt)
   }
   else {
     console.warn(`⚠️ 没有找到当前图片的prompt`)
+  }
+}
+
+/* ---------- 使用指定prompt重新生成 ---------- */
+async function regenerateWithPrompt(promptText: string) {
+  if (!promptText.trim() || loading.value)
+    return
+
+  loading.value = true
+  abortController.value = new AbortController()
+
+  const headers: Record<string, string> = { 'Content-Type': `application/json` }
+  if (apiKey.value && type.value !== `default`)
+    headers.Authorization = `Bearer ${apiKey.value}`
+
+  try {
+    const url = new URL(endpoint.value)
+    if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`)) {
+      url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
+    }
+
+    const payload: any = {
+      model: model.value,
+      prompt: promptText.trim(),
+      size: size.value,
+      n: 1,
+    }
+
+    // 只对 DALL-E 模型添加额外参数
+    if (model.value.includes(`dall-e`)) {
+      payload.quality = quality.value
+      payload.style = style.value
+    }
+
+    const res = await window.fetch(url.toString(), {
+      method: `POST`,
+      headers,
+      body: JSON.stringify(payload),
+      signal: abortController.value.signal,
+    })
+
+    if (!res.ok) {
+      const errorText = await res.text()
+      throw new Error(`${res.status}: ${errorText}`)
+    }
+
+    const data = await res.json()
+
+    if (data.data && data.data.length > 0) {
+      const imageUrl = data.data[0].url || data.data[0].b64_json
+
+      if (imageUrl) {
+        // 如果是 base64 格式，转换为 data URL
+        const finalUrl = imageUrl.startsWith(`data:`) || imageUrl.startsWith(`http`)
+          ? imageUrl
+          : `data:image/png;base64,${imageUrl}`
+
+        const currentTimestamp = Date.now()
+
+        generatedImages.value.unshift(finalUrl)
+        imagePrompts.value.unshift(promptText.trim()) // 保存对应的prompt
+        imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
+        currentImageIndex.value = 0
+
+        // 限制存储的图片数量，避免占用过多存储空间
+        if (generatedImages.value.length > 20) {
+          generatedImages.value = generatedImages.value.slice(0, 20)
+          imagePrompts.value = imagePrompts.value.slice(0, 20)
+          imageTimestamps.value = imageTimestamps.value.slice(0, 20)
+        }
+
+        localStorage.setItem(`ai_generated_images`, JSON.stringify(generatedImages.value))
+        localStorage.setItem(`ai_image_prompts`, JSON.stringify(imagePrompts.value))
+        localStorage.setItem(`ai_image_timestamps`, JSON.stringify(imageTimestamps.value))
+      }
+    }
+    else {
+      throw new Error(`未收到有效的图像数据`)
+    }
+  }
+  catch (e) {
+    if ((e as Error).name === `AbortError`) {
+      console.log(`图像生成请求中止`)
+    }
+    else {
+      console.error(`图像生成失败:`, e)
+    }
+  }
+  finally {
+    loading.value = false
+    abortController.value = null
   }
 }
 
@@ -643,17 +734,19 @@ function getTimeRemainingClass(index: number): string {
             <!-- 图像信息 -->
             <div class="px-2 sm:px-4 py-2 bg-muted/10 rounded space-y-1">
               <p class="text-xs text-muted-foreground text-center">
-                尺寸: {{ size }} | 点击图片查看原图
+                尺寸: {{ size }}
               </p>
-              <div class="text-xs text-muted-foreground break-words">
+              <!-- 提示词 -->
+              <div class="text-xs text-muted-foreground break-words text-center">
                 <span class="font-medium">提示词:</span>
                 <span class="ml-1">{{ imagePrompts[currentImageIndex] || '无关联提示词' }}</span>
               </div>
               <div class="text-xs text-muted-foreground text-center">
-                <span class="font-medium">有效期:</span>
+                <span class="font-medium">剩余有效期:</span>
                 <span class="ml-1" :class="getTimeRemainingClass(currentImageIndex)">
                   {{ getTimeRemaining(currentImageIndex) }}
                 </span>
+                <span class="font-medium">，请及时下载保存</span>
               </div>
             </div>
 

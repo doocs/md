@@ -3,6 +3,14 @@ import { imageServiceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
 import useAIImageConfigStore from '@/stores/AIImageConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -183,25 +191,28 @@ const styleOptions = [
 
     <!-- 服务商选择 -->
     <div>
-      <label class="text-sm font-medium">服务商</label>
-      <select
-        v-model="config.type"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-        @change="handleServiceChange"
-      >
-        <option
-          v-for="option in imageServiceOptions"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
+      <Label class="mb-1 block text-sm font-medium">服务商</Label>
+      <Select v-model="config.type" @update:model-value="handleServiceChange">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ currentService.label }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="option in imageServiceOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- 端点配置 -->
     <div>
-      <label class="text-sm font-medium">API 端点</label>
+      <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <input
         v-model="config.endpoint"
         type="url"
@@ -213,7 +224,7 @@ const styleOptions = [
 
     <!-- API Key -->
     <div v-if="config.type !== 'default'">
-      <label class="text-sm font-medium">API Key</label>
+      <Label class="mb-1 block text-sm font-medium">API Key</Label>
       <input
         v-model="config.apiKey"
         type="password"
@@ -224,70 +235,86 @@ const styleOptions = [
 
     <!-- 模型选择 -->
     <div>
-      <label class="text-sm font-medium">模型</label>
-      <select
-        v-model="config.model"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-      >
-        <option
-          v-for="modelName in currentService.models"
-          :key="modelName"
-          :value="modelName"
-        >
-          {{ modelName }}
-        </option>
-      </select>
+      <Label class="mb-1 block text-sm font-medium">模型</Label>
+      <Select v-model="config.model">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ config.model || '请选择模型' }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="modelName in currentService.models"
+            :key="modelName"
+            :value="modelName"
+          >
+            {{ modelName }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- 图像尺寸 -->
     <div>
-      <label class="text-sm font-medium">图像尺寸</label>
-      <select
-        v-model="config.size"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-      >
-        <option
-          v-for="option in sizeOptions"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
+      <Label class="mb-1 block text-sm font-medium">图像尺寸</Label>
+      <Select v-model="config.size">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ sizeOptions.find(opt => opt.value === config.size)?.label || config.size }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="option in sizeOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- 图像质量 -->
     <div v-if="config.model.includes('dall-e')">
-      <label class="text-sm font-medium">图像质量</label>
-      <select
-        v-model="config.quality"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-      >
-        <option
-          v-for="option in qualityOptions"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
+      <Label class="mb-1 block text-sm font-medium">图像质量</Label>
+      <Select v-model="config.quality">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ qualityOptions.find(opt => opt.value === config.quality)?.label || config.quality }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="option in qualityOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- 图像风格 -->
     <div v-if="config.model.includes('dall-e')">
-      <label class="text-sm font-medium">图像风格</label>
-      <select
-        v-model="config.style"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-      >
-        <option
-          v-for="option in styleOptions"
-          :key="option.value"
-          :value="option.value"
-        >
-          {{ option.label }}
-        </option>
-      </select>
+      <Label class="mb-1 block text-sm font-medium">图像风格</Label>
+      <Select v-model="config.style">
+        <SelectTrigger class="w-full">
+          <SelectValue>
+            {{ styleOptions.find(opt => opt.value === config.style)?.label || config.style }}
+          </SelectValue>
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem
+            v-for="option in styleOptions"
+            :key="option.value"
+            :value="option.value"
+          >
+            {{ option.label }}
+          </SelectItem>
+        </SelectContent>
+      </Select>
     </div>
 
     <!-- 说明 -->
