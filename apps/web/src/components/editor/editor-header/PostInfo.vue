@@ -46,7 +46,7 @@ async function prePost() {
         ?.textContent ?? ``,
       desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
       content: output.value,
-      markdown: editor.value?.getValue() ?? ``,
+      markdown: editor.value?.state.doc.toString() ?? ``,
       accounts,
     }
   }

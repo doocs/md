@@ -40,7 +40,7 @@ const { copy: copyContent } = useClipboard({
 async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
-    const mdContent = editor.value?.getValue() || ``
+    const mdContent = editor.value?.state.doc.toString() || ``
     await copyContent(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
     return

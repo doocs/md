@@ -271,7 +271,7 @@ async function sendMessage() {
     ? [{
         role: `system`,
         content:
-          `下面是一篇 Markdown 文章全文，请严格以此为主完成后续指令：\n\n${editor.value!.getValue()}`,
+          `下面是一篇 Markdown 文章全文，请严格以此为主完成后续指令：\n\n${editor.value?.state.doc.toString()}`,
       }]
     : []
 

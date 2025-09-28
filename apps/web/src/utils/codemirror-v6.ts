@@ -129,7 +129,7 @@ const darkHighlightStyle = HighlightStyle.define([
 // CodeMirror v6 原生接口定义
 export interface CodeMirrorV6Editor {
   // EditorView 实例
-  view: EditorView
+  view: any
   // 主题切换方法
   updateTheme: (isDark: boolean) => void
   // 销毁编辑器
