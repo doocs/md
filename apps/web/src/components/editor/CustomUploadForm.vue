@@ -1,13 +1,12 @@
 <script setup lang='ts'>
-import type { EditorView } from '@codemirror/view'
-import { useStore } from '@/stores'
+import { javascript } from '@codemirror/lang-javascript'
+import { oneDark } from '@codemirror/theme-one-dark'
+import { EditorView, lineNumbers } from '@codemirror/view'
+import { basicSetup } from 'codemirror'
 import { removeLeft } from '@/utils'
-import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
-
-const store = useStore()
 
 const code = useLocalStorage(`formCustomConfig`, removeLeft(`
-  const {file, util, okCb, errCb} = CUSTOM_ARG
+  const { file, util, okCb, errCb } = CUSTOM_ARG
   const param = new FormData()
   param.append('file', file)
   util.axios.post('${window.location.origin}/upload', param, {
@@ -23,46 +22,82 @@ const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
 const editor = ref<EditorView | null>(null)
 
+// 检测当前主题
+const isDark = computed(() => {
+  if (typeof window !== `undefined`) {
+    return document.documentElement.classList.contains(`dark`)
+  }
+  return false
+})
+
 onMounted(() => {
-  const extraKeys = {}
+  const extensions = [
+    basicSetup,
+    javascript(),
+    lineNumbers(),
+    ...(isDark.value ? [oneDark] : []),
+    EditorView.theme({
+      '.cm-editor': {
+        fontSize: `14px`,
+        fontFamily: `Consolas, Monaco, "Courier New", monospace`,
+      },
+      '.cm-lineNumbers': {
+        fontSize: `12px`,
+        color: isDark.value ? `#7d8590` : `#656d76`,
+        backgroundColor: isDark.value ? `#161b22` : `#f6f8fa`,
+        paddingLeft: `8px`,
+        minWidth: `40px`,
+      },
+      '.cm-gutters': {
+        backgroundColor: isDark.value ? `#161b22` : `#f6f8fa`,
+        borderRight: `1px solid ${isDark.value ? `#30363d` : `#e1e4e8`}`,
+      },
+      '.cm-gutterElement': {
+        display: `inline-flex`,
+        justifyContent: `center`,
+        alignItems: `center`,
+      },
+      '.cm-gutterElement>span': {
+        display: `inline-flex`,
+        justifyContent: `center`,
+        alignItems: `center`,
+      },
+      '.cm-activeLineGutter': {
+        backgroundColor: isDark.value ? `#1c2128` : `#e3f2fd`,
+        color: isDark.value ? `#58a6ff` : `#1976d2`,
+      },
+    }),
+  ]
 
-  const editorView = createCodeMirrorV6(
-    formCustomTextarea.value!,
-    code.value,
-    store.isDark,
-    extraKeys,
-    (value: string) => {
-      code.value = value
-    },
-  )
-
-  editor.value = markRaw(editorView.view)
-
-  // 嵌套使用 nextTick 才能确保生效，具体原因未知
-  nextTick(() => {
-    nextTick(() => {
-      if (editor.value) {
-        editor.value.dispatch({
-          changes: { from: 0, to: editor.value.state.doc.length, insert: code.value },
-        })
-      }
-    })
+  const editorView = new EditorView({
+    parent: formCustomTextarea.value!,
+    extensions,
+    doc: code.value,
   })
+
+  editor.value = editorView
+})
+
+onUnmounted(() => {
+  if (editor.value) {
+    editor.value.destroy()
+  }
 })
 
 function formCustomSave() {
   const str = editor.value!.state.doc.toString()
   localStorage.setItem(`formCustomConfig`, str)
+  code.value = str
   toast.success(`保存成功`)
 }
 </script>
 
 <template>
   <div class="space-y-4 min-w-0">
-    <div class="h-60 border flex flex-col">
+    <div class="h-60 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col overflow-y-auto">
       <div
         ref="formCustomTextarea"
-        class="flex-1"
+        class="flex-1 custom-codemirror"
       />
     </div>
     <Button
