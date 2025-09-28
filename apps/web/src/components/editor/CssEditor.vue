@@ -129,7 +129,7 @@ function tabChanged(tabName: string | number) {
   <transition enter-active-class="bounceInRight">
     <div
       v-show="displayStore.isShowCssEditor"
-      class="cssEditor-wrapper h-full flex flex-col mobile-css-editor"
+      class="cssEditor-wrapper h-full flex flex-col mobile-css-editor overflow-y-auto"
       :class="{
         // 移动端样式
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': store.isMobile,
