@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { EditorView } from '@codemirror/view'
 import type { ComponentPublicInstance } from 'vue'
 import type { V5CompatibleEditor } from '@/utils/editor'
-import imageCompression from 'browser-image-compression'
 
+import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import {
   AIPolishButton,
@@ -185,85 +186,83 @@ watch(searchTabRef, (newRef) => {
 
 function handleGlobalKeydown(e: KeyboardEvent) {
   // 处理 ESC 键关闭搜索
+  const compatibleEditor = editor.value
+
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
     e.preventDefault()
-    editor.value?.focus()
+    compatibleEditor?.focus()
     return
   }
 
   // 如果编辑器存在且获得焦点，让编辑器处理快捷键
-  if (editor.value) {
-    const editorDom = (editor.value as any).getWrapperElement?.() || (editor.value as any).dom
-    if (editorDom && (document.activeElement === editorDom || editorDom.contains(document.activeElement))) {
-      // 编辑器内的键盘事件，让 CodeMirror 处理
-      return
-    }
-  }
+  // if (editor.value) {
+  //   const editorDom = (editor.value as any).getWrapperElement?.() || (editor.value as any).dom
+  //   if (editorDom && (document.activeElement === editorDom || editorDom.contains(document.activeElement))) {
+  //     // 编辑器内的键盘事件，让 CodeMirror 处理
+  //   }
+  // }
 
   // 处理全局快捷键（当编辑器未获得焦点时）
   const isCtrlOrCmd = e.ctrlKey || e.metaKey
-  if (isCtrlOrCmd && editor.value) {
-    const compatEditor = (editor.value as any).compatibleEditor
-    if (!compatEditor)
-      return
-
+  if (isCtrlOrCmd && compatibleEditor) {
     let handled = false
     switch (e.key.toLowerCase()) {
       case `f`:
-        openSearchWithSelection(editor.value)
+        console.log(`openSearchWithSelection`)
+        openSearchWithSelection(compatibleEditor)
         handled = true
         break
       case `b`:
-        compatEditor.replaceSelection(`**${compatEditor.getSelection()}**`)
+        compatibleEditor.replaceSelection(`**${compatibleEditor.getSelection()}**`)
         handled = true
         break
       case `i`:
-        compatEditor.replaceSelection(`*${compatEditor.getSelection()}*`)
+        compatibleEditor.replaceSelection(`*${compatibleEditor.getSelection()}*`)
         handled = true
         break
       case `d`:
-        compatEditor.replaceSelection(`~~${compatEditor.getSelection()}~~`)
+        compatibleEditor.replaceSelection(`~~${compatibleEditor.getSelection()}~~`)
         handled = true
         break
       case `k`:
-        compatEditor.replaceSelection(`[${compatEditor.getSelection()}]()`)
+        compatibleEditor.replaceSelection(`[${compatibleEditor.getSelection()}]()`)
         handled = true
         break
       case `e`:
-        compatEditor.replaceSelection(`\`${compatEditor.getSelection()}\``)
+        compatibleEditor.replaceSelection(`\`${compatibleEditor.getSelection()}\``)
         handled = true
         break
       case `h`: {
-        if (compatEditor.getSelection()) {
-          compatEditor.replaceSelection(`# ${compatEditor.getSelection()}`)
+        if (compatibleEditor.getSelection()) {
+          compatibleEditor.replaceSelection(`# ${compatibleEditor.getSelection()}`)
         }
         else {
-          const cursor = compatEditor.getCursor()
-          const line = compatEditor.getLine(cursor.line)
+          const cursor = compatibleEditor.getCursor()
+          const line = compatibleEditor.getLine(cursor.line)
           if (!line.startsWith(`#`)) {
-            compatEditor.replaceRange(`# `, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: 0 })
+            compatibleEditor.replaceRange(`# `, { line: cursor.line, ch: 0 }, { line: cursor.line, ch: 0 })
           }
         }
         handled = true
         break
       }
       case `u`: {
-        const selectedU = compatEditor.getSelection()
+        const selectedU = compatibleEditor.getSelection()
         if (selectedU) {
           const lines = selectedU.split(`\n`)
           const updated = lines.map((line: string) => `- ${line}`).join(`\n`)
-          compatEditor.replaceSelection(updated)
+          compatibleEditor.replaceSelection(updated)
         }
         handled = true
         break
       }
       case `o`: {
-        const selectedO = compatEditor.getSelection()
+        const selectedO = compatibleEditor.getSelection()
         if (selectedO) {
           const lines = selectedO.split(`\n`)
           const updated = lines.map((line: string, i: number) => `${i + 1}. ${line}`).join(`\n`)
-          compatEditor.replaceSelection(updated)
+          compatibleEditor.replaceSelection(updated)
         }
         handled = true
         break
@@ -273,7 +272,7 @@ function handleGlobalKeydown(e: KeyboardEvent) {
     if (handled) {
       e.preventDefault()
       e.stopPropagation()
-      editor.value?.focus()
+      compatibleEditor.focus()
     }
   }
 }
@@ -479,7 +478,7 @@ const changeTimer = ref<NodeJS.Timeout>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
-let codeMirrorView: any = null
+let codeMirrorView: EditorView & { compatibleEditor: any, updateTheme: (isDark: boolean) => void } | null = null
 
 function createFormTextArea(dom: HTMLDivElement) {
   // 使用 CodeMirror v6 创建编辑器
@@ -540,7 +539,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   })
 
   // 返回兼容的编辑器接口
-  return codeMirrorView.compatibleEditor || codeMirrorView
+  return codeMirrorView.compatibleEditor
 }
 
 // 初始化编辑器
