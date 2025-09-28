@@ -26,6 +26,9 @@ const wechatPublishing = ref(false)
 const wechatConfigDialogVisible = ref(false)
 const wechatSuccessDialogVisible = ref(false)
 
+const mpConfigured = ref(false)
+recheckMpConfig()
+
 const disabledBtn = computed(() => {
   const content = output.value || ``
   return wechatPublishing.value || content.trim() === ``
@@ -38,7 +41,7 @@ let coverUrlDebounceTimer: number | undefined
 function extractTitleAndDesc() {
   try {
     // 优先从当前选中文章的标题中提取
-    const currentPostTitleEl = document.querySelector(`a.bg-primary.text-primary-foreground.shadow span.line-clamp-1`) as HTMLElement | null
+    const currentPostTitleEl = document.querySelector(`a.bg-primary.text-primary-foreground.shadow-sm span.line-clamp-1`) as HTMLElement | null
     let derivedTitle = currentPostTitleEl?.textContent?.trim() || ``
 
     // 如果没找到当前文章标题，再从 #output 的 h1-h6 中提取
@@ -77,21 +80,26 @@ watch(
   { immediate: false },
 )
 
-// 封面链接变化时，清空已得的 media_id，等待重新上传
+// 观察 coverUrl 和 mpConfigured.value 为true时，触发上传
 watch(
-  () => wechatForm.value.coverUrl,
-  (val) => {
-    wechatForm.value.thumbMediaId = ``
-    const url = (val || ``).trim()
-    if (!url)
+  [() => wechatForm.value.coverUrl, () => mpConfigured.value],
+  ([coverUrl, configured], [prevCoverUrl]) => {
+    const url = (coverUrl || ``).trim()
+    if (!url || !configured)
       return
     if (uploadingThumb.value)
       return
+
+    // 如果封面链接发生变化，清空旧的 thumbMediaId
+    if (prevCoverUrl !== coverUrl) {
+      wechatForm.value.thumbMediaId = ``
+    }
+
     if (coverUrlDebounceTimer)
       clearTimeout(coverUrlDebounceTimer)
     coverUrlDebounceTimer = window.setTimeout(() => {
-      // 若期间用户又清空了，跳过
-      if (!wechatForm.value.coverUrl?.trim())
+      // 若期间用户又清空了或配置失效，跳过
+      if (!wechatForm.value.coverUrl?.trim() || !mpConfigured.value)
         return
       uploadThumbIfNeeded().catch(() => {})
     }, 600)
@@ -106,14 +114,15 @@ function openWechatConfig() {
   }
   // 打开弹窗后提示是否缺少配置
   extractTitleAndDesc()
-  // 预取并上传封面图，获取 thumb_media_id
-  uploadThumbIfNeeded().catch((err) => {
-    console.warn(`uploadThumbIfNeeded error`, err)
-  })
+  if (mpConfigured.value) {
+    // 预取并上传封面图，获取 thumb_media_id
+    uploadThumbIfNeeded().catch((err) => {
+      console.warn(`uploadThumbIfNeeded error`, err)
+    })
+  }
   wechatConfigDialogVisible.value = true
 }
 
-const mpConfigured = ref(true)
 function isMpConfigured(): boolean {
   try {
     const mpConfigStr = localStorage.getItem(`mpConfig`)
@@ -229,7 +238,7 @@ async function uploadThumbIfNeeded(): Promise<string | undefined> {
       return wechatForm.value.thumbMediaId
 
     const sourceUrl = (wechatForm.value.coverUrl || ``).trim()
-    const imgSrc = sourceUrl || (document.querySelector(`#output img`) as HTMLImageElement | null)?.src || ``
+    let imgSrc = sourceUrl || (document.querySelector(`#output img`) as HTMLImageElement | null)?.src || ``
     if (!imgSrc)
       return
 
@@ -240,6 +249,10 @@ async function uploadThumbIfNeeded(): Promise<string | undefined> {
     }
 
     uploadingThumb.value = true
+    // 兼容浏览器插件直接下载微信图片无法成功问题
+    if (imgSrc.startsWith(`http://mmbiz.qpic.cn`) || imgSrc.startsWith(`https://mmbiz.qpic.cn`)) {
+      imgSrc = `https://wsrv.nl?url=${encodeURIComponent(imgSrc)}`
+    }
     const res = await fetch(imgSrc)
     const blob = await res.blob()
 
