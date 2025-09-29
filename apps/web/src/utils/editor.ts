@@ -72,9 +72,10 @@ export function applyHeading(view: EditorView, level: number) {
   }
 }
 
+// v6 大小写敏感
 export function createExtraKeys(openSearchWithSelection: (view: EditorView) => void): Record<string, (view: EditorView) => boolean> {
   return {
-    [`${shiftKey}-${altKey}-F`]: function autoFormat(view: EditorView): boolean {
+    [`${shiftKey}-${altKey}-f`]: function autoFormat(view: EditorView): boolean {
       const value = view.state.doc.toString()
       formatDoc(value).then((doc: string) => {
         view.dispatch({
@@ -84,15 +85,15 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-Z`]: function undoAction(view: EditorView): boolean {
+    [`${ctrlKey}-z`]: function undoAction(view: EditorView): boolean {
       return undo(view)
     },
 
-    [`${ctrlKey}-Y`]: function redoAction(view: EditorView): boolean {
+    [`${ctrlKey}-y`]: function redoAction(view: EditorView): boolean {
       return redo(view)
     },
 
-    [`${ctrlKey}-B`]: function bold(view: EditorView): boolean {
+    [`${ctrlKey}-b`]: function bold(view: EditorView): boolean {
       toggleFormat(view, {
         prefix: `**`,
         suffix: `**`,
@@ -101,7 +102,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-I`]: function italic(view: EditorView): boolean {
+    [`${ctrlKey}-i`]: function italic(view: EditorView): boolean {
       toggleFormat(view, {
         prefix: `*`,
         suffix: `*`,
@@ -110,7 +111,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-D`]: function del(view: EditorView): boolean {
+    [`${ctrlKey}-d`]: function del(view: EditorView): boolean {
       toggleFormat(view, {
         prefix: `~~`,
         suffix: `~~`,
@@ -119,7 +120,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-K`]: function link(view: EditorView): boolean {
+    [`${ctrlKey}-k`]: function link(view: EditorView): boolean {
       toggleFormat(view, {
         prefix: `[`,
         suffix: `]()`,
@@ -129,7 +130,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-E`]: function code(view: EditorView): boolean {
+    [`${ctrlKey}-e`]: function code(view: EditorView): boolean {
       toggleFormat(view, {
         prefix: `\``,
         suffix: `\``,
@@ -138,7 +139,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-H`]: (view: EditorView): boolean => {
+    [`${ctrlKey}-h`]: (view: EditorView): boolean => {
       applyHeading(view, 1)
       return true
     },
@@ -168,7 +169,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-U`]: function unorderedList(view: EditorView): boolean {
+    [`${ctrlKey}-u`]: function unorderedList(view: EditorView): boolean {
       const selection = view.state.selection.main
       const selected = view.state.doc.sliceString(selection.from, selection.to)
       const lines = selected.split(`\n`)
@@ -180,7 +181,7 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       return true
     },
 
-    [`${ctrlKey}-O`]: function orderedList(view: EditorView): boolean {
+    [`${ctrlKey}-o`]: function orderedList(view: EditorView): boolean {
       const selection = view.state.selection.main
       const selected = view.state.doc.sliceString(selection.from, selection.to)
       const lines = selected.split(`\n`)
@@ -191,11 +192,11 @@ export function createExtraKeys(openSearchWithSelection: (view: EditorView) => v
       view.dispatch(view.state.replaceSelection(updated))
       return true
     },
-    [`${ctrlKey}-F`]: (view: EditorView): boolean => {
+    [`${ctrlKey}-f`]: (view: EditorView): boolean => {
       openSearchWithSelection(view)
       return true
     },
-    [`${ctrlKey}-G`]: function search(): boolean {
+    [`${ctrlKey}-g`]: function search(): boolean {
       // use this to avoid CodeMirror's built-in search functionality
       return true
     },
