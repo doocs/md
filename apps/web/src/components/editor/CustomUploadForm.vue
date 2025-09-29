@@ -1,8 +1,10 @@
 <script setup lang='ts'>
-import type { editor as MonacoEditor } from 'monaco-editor'
-import * as monaco from 'monaco-editor'
+import type { editor as MonacoEditor } from 'monaco-editor/esm/vs/editor/editor.api'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
+import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
+import 'monaco-editor/esm/vs/editor/editor.all.js'
 
 const store = useStore()
 

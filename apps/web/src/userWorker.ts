@@ -1,24 +1,17 @@
-import * as monaco from 'monaco-editor'
+import * as monaco from 'monaco-editor/esm/vs/editor/editor.api'
 import EditorWorker from 'monaco-editor/esm/vs/editor/editor.worker?worker'
-import CssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker'
-import HtmlWorker from 'monaco-editor/esm/vs/language/html/html.worker?worker'
-import JsonWorker from 'monaco-editor/esm/vs/language/json/json.worker?worker'
-import TsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker'
+import cssWorker from 'monaco-editor/esm/vs/language/css/css.worker?worker&url'
+import tsWorker from 'monaco-editor/esm/vs/language/typescript/ts.worker?worker&url'
+import 'monaco-editor/esm/vs/language/typescript/monaco.contribution'
 
 // @ts-expect-error
 globalThis.MonacoEnvironment = {
   getWorker(_: any, label: string) {
-    if (label === `json`) {
-      return new JsonWorker()
-    }
     if (label === `css` || label === `scss` || label === `less`) {
-      return new CssWorker()
-    }
-    if (label === `html` || label === `handlebars` || label === `razor`) {
-      return new HtmlWorker()
+      return new Worker(new URL(cssWorker, import.meta.url), { type: `module` })
     }
     if (label === `typescript` || label === `javascript`) {
-      return new TsWorker()
+      return new Worker(new URL(tsWorker, import.meta.url), { type: `module` })
     }
     return new EditorWorker()
   },
