@@ -2,7 +2,7 @@
 import { javascript } from '@codemirror/lang-javascript'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView, lineNumbers } from '@codemirror/view'
-import { basicSetup } from 'codemirror'
+import { basicSetup } from '@md/shared'
 import { removeLeft } from '@/utils'
 
 const code = useLocalStorage(`formCustomConfig`, removeLeft(`
