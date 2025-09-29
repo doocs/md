@@ -27,6 +27,9 @@
     "inspector": "pnpx node-modules-inspector",
     "utools:package": "node ./scripts/package-utools.mjs"
   },
+  "dependencies": {
+    "monaco-editor": "^0.53.0"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
     "@types/node": "^24.6.0",

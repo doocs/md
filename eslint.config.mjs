@@ -13,5 +13,6 @@ export default antfu({
     'no-console': `off`,
     'no-debugger': `off`,
     'ts/no-namespace': `off`,
+    'ts/ban-ts-comment': `off`,
   },
 })
