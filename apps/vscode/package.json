@@ -87,7 +87,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.104.0",
-    "@vscode/vsce": "^3.6.1",
+    "@vscode/vsce": "^3.6.2",
     "webpack-cli": "^6.0.1"
   }
 }
