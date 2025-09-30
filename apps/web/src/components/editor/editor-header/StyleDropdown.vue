@@ -30,7 +30,6 @@ const {
   codeBlockTheme,
   legend,
   isMacCodeBlock,
-  cssEditor,
 } = storeToRefs(store)
 
 const {
@@ -53,9 +52,6 @@ function showPicker() {
 // 自定义CSS样式
 function customStyle() {
   toggleShowCssEditor()
-  setTimeout(() => {
-    cssEditor.value!.refresh()
-  }, 50)
 }
 
 const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
