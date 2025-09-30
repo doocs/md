@@ -64,7 +64,7 @@ onMounted(() => {
 })
 
 function formCustomSave() {
-  const str = editor.value!.getValue()
+  const str = toRaw(editor.value!).getValue()
   localStorage.setItem(`formCustomConfig`, str)
   toast.success(`保存成功`)
 }
