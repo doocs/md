@@ -1,16 +1,16 @@
+import type { MonacoEditor } from '@md/shared'
+import type CodeMirror from 'codemirror'
 import { initRenderer } from '@md/core'
+import { monaco } from '@md/shared'
 import {
   defaultStyleConfig,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
-import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
   css2json,
@@ -28,6 +28,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution'
 
 /**********************************
  * Post 结构接口
@@ -280,10 +281,12 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
-  // 自义定 CSS 编辑器
-  const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  // 自义定 CSS 编辑器 (Monaco Editor)
+  const cssEditor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
   const setCssEditorValue = (content: string) => {
-    cssEditor.value!.setValue(content)
+    if (cssEditor.value) {
+      toRaw(cssEditor.value).setValue(content)
+    }
   }
   /**
    * 自定义 CSS 内容
@@ -381,7 +384,7 @@ export const useStore = defineStore(`store`, () => {
       isShowLineNumber: isShowLineNumber.value,
     })
 
-    const raw = editor.value!.getValue()
+    const raw = toRaw(editor.value!).getValue()
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
     readingTime.chars = raw.length
     readingTime.words = readingTimeResult.words
@@ -409,7 +412,7 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    const json = css2json(cssEditor.value!.getValue())
+    const json = css2json(toRaw(cssEditor.value!).getValue())
     const newTheme = customCssWithTemplate(
       json,
       primaryColor.value,
@@ -429,47 +432,40 @@ export const useStore = defineStore(`store`, () => {
     const cssEditorDom = document.querySelector<HTMLTextAreaElement>(
       `#cssEditor`,
     )!
-    cssEditorDom.value = getCurrentTab().content
-    const theme = isDark.value ? `darcula` : `xq-light`
-    cssEditor.value = markRaw(
-      CodeMirror.fromTextArea(cssEditorDom, {
-        mode: `css`,
-        theme,
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autofocus: true,
-        extraKeys: {
-          [`${shiftKey}-${altKey}-F`]: function autoFormat(
-            editor: CodeMirror.Editor,
-          ) {
-            formatDoc(editor.getValue(), `css`).then((doc) => {
-              getCurrentTab().content = doc
-              editor.setValue(doc)
-            })
-          },
-        },
-      } as never),
-    )
 
-    // 自动提示
-    cssEditor.value.on(`keyup`, (cm, e) => {
-      if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-        (cm as any).showHint(e)
-      }
+    cssEditor.value = monaco.editor.create(cssEditorDom, {
+      value: getCurrentTab().content,
+      language: `css`,
+      theme: isDark.value ? `vs-dark` : `vs`,
+      lineNumbers: `off`,
+      automaticLayout: true,
+      fontSize: 14,
+      lineHeight: 22,
+      tabSize: 2,
+      minimap: { enabled: false },
     })
 
-    // 实时保存
-    cssEditor.value.on(`update`, () => {
-      updateCss()
-      getCurrentTab().content = cssEditor.value!.getValue()
+    // 格式化
+    cssEditor.value.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+      formatDoc(toRaw(cssEditor.value!).getValue(), `css`).then((doc) => {
+        toRaw(cssEditor.value!).setValue(doc)
+      })
+    })
+
+    // 监听内容变化
+    cssEditor.value.onDidChangeModelContent(() => {
+      if (cssEditor.value) {
+        const content = toRaw(cssEditor.value).getValue()
+        getCurrentTab().content = content
+        updateCss()
+      }
     })
   })
 
   watch(isDark, () => {
-    const theme = isDark.value ? `darcula` : `xq-light`
-    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
+    if (cssEditor.value) {
+      cssEditor.value.updateOptions({ theme: isDark.value ? `vs-dark` : `vs` })
+    }
   })
 
   // 重置样式
@@ -498,7 +494,9 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    cssEditor.value!.setValue(DEFAULT_CSS_CONTENT)
+    if (cssEditor.value) {
+      toRaw(cssEditor.value).setValue(DEFAULT_CSS_CONTENT)
+    }
 
     updateCss()
     editorRefresh()

@@ -176,10 +176,9 @@ function tabChanged(tabName: string | number) {
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <textarea
+      <div
         id="cssEditor"
-        type="textarea"
-        placeholder="Your custom css here."
+        class="flex-1 min-h-0"
       />
 
       <!-- 新增弹窗 -->
