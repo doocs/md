@@ -1,3 +1,6 @@
 packages:
-  - 'apps/*'
-  - 'packages/*'
+  - apps/*
+  - packages/*
+
+patchedDependencies:
+  '@codemirror/view@6.38.3': patches/@codemirror__view@6.38.3.patch

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { Editor } from 'codemirror'
+import type { EditorView } from '@codemirror/view'
 import type { ComponentPublicInstance } from 'vue'
+
+import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
 import imageCompression from 'browser-image-compression'
-import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import {
   AIPolishButton,
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/resizable'
 import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
+import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
 import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
 
@@ -29,6 +31,12 @@ const { toggleShowUploadImgDialog } = displayStore
 
 const backLight = ref(false)
 const isCoping = ref(false)
+
+// 辅助函数：查找 CodeMirror 滚动容器
+function findCodeMirrorScroller(): HTMLElement | null {
+  return document.querySelector<HTMLElement>(`.cm-scroller`)
+    || document.querySelector<HTMLElement>(`.CodeMirror-scroll`)
+}
 
 function startCopy() {
   backLight.value = true
@@ -64,36 +72,59 @@ const {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
+let codeMirrorView: CodeMirrorV6Editor | null = null
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
   const scrollCB = (text: string) => {
     // AIPolishBtnRef.value?.close()
 
-    let source: HTMLElement
-    let target: HTMLElement
+    let source: HTMLElement | null
+    let target: HTMLElement | null
 
     clearTimeout(timeout.value)
     if (text === `preview`) {
       source = previewRef.value!
-      target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-      editor.value!.off(`scroll`, editorScrollCB)
-      timeout.value = setTimeout(() => {
-        editor.value!.on(`scroll`, editorScrollCB)
-      }, 300)
+      target = findCodeMirrorScroller()
+      if (!target) {
+        console.warn(`Cannot find CodeMirror scroll container`)
+        return
+      }
+      // CodeMirror v6 使用 DOM 事件
+      const scrollEl = findCodeMirrorScroller()
+      if (scrollEl) {
+        scrollEl.removeEventListener(`scroll`, editorScrollCB)
+        timeout.value = setTimeout(() => {
+          scrollEl.addEventListener(`scroll`, editorScrollCB)
+        }, 300)
+      }
     }
     else {
-      source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
+      source = findCodeMirrorScroller()
       target = previewRef.value!
+      if (!source) {
+        console.warn(`Cannot find CodeMirror scroll container`)
+        return
+      }
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
-        target.addEventListener(`scroll`, previewScrollCB, false)
+        target!.addEventListener(`scroll`, previewScrollCB, false)
       }, 300)
     }
 
-    const percentage
-      = source.scrollTop / (source.scrollHeight - source.offsetHeight)
-    const height = percentage * (target.scrollHeight - target.offsetHeight)
+    if (!source || !target) {
+      return
+    }
+
+    const sourceHeight = source.scrollHeight - source.offsetHeight
+    const targetHeight = target.scrollHeight - target.offsetHeight
+
+    if (sourceHeight <= 0 || targetHeight <= 0) {
+      return
+    }
+
+    const percentage = source.scrollTop / sourceHeight
+    const height = percentage * targetHeight
 
     target.scrollTo(0, height)
   }
@@ -109,8 +140,9 @@ function leftAndRightScroll() {
   if (previewRef.value) {
     previewRef.value.addEventListener(`scroll`, previewScrollCB, false)
   }
-  if (editor.value) {
-    editor.value.on(`scroll`, editorScrollCB)
+  const scrollEl = findCodeMirrorScroller()
+  if (scrollEl) {
+    scrollEl.addEventListener(`scroll`, editorScrollCB)
   }
 }
 
@@ -123,31 +155,56 @@ onMounted(() => {
 const searchTabRef
   = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
 
-function openSearchWithSelection(cm: Editor) {
-  const selected = cm.getSelection().trim()
-  if (!searchTabRef.value)
-    return
+// 用于存储待处理的搜索请求
+const pendingSearchRequest = ref<{ selected: string } | null>(null)
 
-  if (selected) {
-    // 自动带入选中文本
-    searchTabRef.value.setSearchWord(selected)
+function openSearchWithSelection(view: EditorView) {
+  const selection = view.state.selection.main
+  const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
+
+  if (searchTabRef.value) {
+    // SearchTab 已准备好，直接使用
+    if (selected) {
+      searchTabRef.value.setSearchWord(selected)
+    }
+    else {
+      searchTabRef.value.showSearchTab = true
+    }
   }
   else {
-    // 仅打开面板
-    searchTabRef.value.showSearchTab = true
+    // SearchTab 还没准备好，保存请求
+    pendingSearchRequest.value = { selected }
   }
 }
 
+// 监听 searchTabRef 的变化，处理待处理的请求
+watch(searchTabRef, (newRef) => {
+  if (newRef && pendingSearchRequest.value) {
+    const { selected } = pendingSearchRequest.value
+    if (selected) {
+      newRef.setSearchWord(selected)
+    }
+    else {
+      newRef.showSearchTab = true
+    }
+    pendingSearchRequest.value = null
+  }
+})
+
 function handleGlobalKeydown(e: KeyboardEvent) {
+  // 处理 ESC 键关闭搜索
+  const editorView = codeMirrorView?.view
+
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
     e.preventDefault()
-    editor.value?.focus()
+    editorView?.focus()
   }
 }
 
 onMounted(() => {
-  document.addEventListener(`keydown`, handleGlobalKeydown)
+  // 使用较低优先级确保 CodeMirror 键盘事件先处理
+  document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 })
 
 function beforeUpload(file: File) {
@@ -181,11 +238,12 @@ function uploaded(imageUrl: string) {
   setTimeout(() => {
     toggleShowUploadImgDialog(false)
   }, 1000)
-  // 上传成功，获取光标
-  const cursor = editor.value!.getCursor()
+  // 上传成功，插入图片
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
+  if (codeMirrorView?.view) {
+    codeMirrorView.view.dispatch(codeMirrorView.view.state.replaceSelection(`\n${markdownImage}\n`))
+  }
   toast.success(`图片上传成功`)
 }
 
@@ -304,7 +362,11 @@ async function uploadMdImg({
       .replace(`](./${item.matchStr})`, `](${item.url})`)
       .replace(`](${item.matchStr})`, `](${item.url})`)
   })
-  editor.value!.setValue(md.str)
+  if (codeMirrorView?.view) {
+    codeMirrorView.view.dispatch({
+      changes: { from: 0, to: codeMirrorView.view.state.doc.length, insert: md.str },
+    })
+  }
 }
 
 const codeMirrorWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`codeMirrorWrapper`)
@@ -345,38 +407,36 @@ function mdLocalToRemote() {
 
 const changeTimer = ref<NodeJS.Timeout>()
 
-const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
+const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
-function createFormTextArea(dom: HTMLTextAreaElement) {
-  const textArea = fromTextArea(dom, {
-    mode: `text/x-markdown`,
-    theme: isDark.value ? `darcula` : `xq-light`,
-    lineNumbers: false,
-    lineWrapping: true,
-    styleActiveLine: true,
-    autoCloseBrackets: true,
-    extraKeys: createExtraKeys(openSearchWithSelection),
-    undoDepth: 200,
-  })
 
-  textArea.on(`change`, (editor) => {
-    clearTimeout(changeTimer.value)
-    changeTimer.value = setTimeout(() => {
-      editorRefresh()
+function createFormTextArea(dom: HTMLDivElement) {
+  // 使用 CodeMirror v6 创建编辑器
+  const extraKeys = createExtraKeys(openSearchWithSelection)
 
-      const currentPost = store.posts[store.currentPostIndex]
-      const content = editor.getValue()
-      if (content === currentPost.content) {
-        return
-      }
+  codeMirrorView = createCodeMirrorV6(
+    dom,
+    store.posts[store.currentPostIndex].content,
+    isDark.value,
+    extraKeys,
+    (value: string) => {
+      clearTimeout(changeTimer.value)
+      changeTimer.value = setTimeout(() => {
+        editorRefresh()
 
-      currentPost.updateDatetime = new Date()
-      currentPost.content = content
-    }, 300)
-  })
+        const currentPost = store.posts[store.currentPostIndex]
+        if (value === currentPost.content) {
+          return
+        }
 
-  // 粘贴上传图片并插入
-  textArea.on(`paste`, async (_editor, event) => {
+        currentPost.updateDatetime = new Date()
+        currentPost.content = value
+      }, 300)
+    },
+  )
+
+  // 添加粘贴事件监听
+  codeMirrorView.view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
@@ -408,7 +468,8 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     cleanup()
   })
 
-  return textArea
+  // 返回编辑器 view
+  return codeMirrorView.view
 }
 
 // 初始化编辑器
@@ -419,12 +480,13 @@ onMounted(() => {
     return
   }
 
-  editorDom.value = store.posts[store.currentPostIndex].content
-
   nextTick(() => {
-    editor.value = createFormTextArea(editorDom)
+    const editorView = createFormTextArea(editorDom)
+    editor.value = editorView
 
-    initPolishEvent(editor.value)
+    if (editorView) {
+      initPolishEvent(editorView)
+    }
     editorRefresh()
     mdLocalToRemote()
   })
@@ -432,8 +494,9 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  const theme = isDark.value ? `darcula` : `xq-light`
-  toRaw(editor.value)?.setOption?.(`theme`, theme)
+  if (codeMirrorView) {
+    codeMirrorView.updateTheme(isDark.value)
+  }
 })
 
 // 历史记录的定时器
@@ -502,18 +565,17 @@ onUnmounted(() => {
                 'border-r': store.isEditOnLeft,
               }"
             >
-              <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
+              <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView.view" />
               <AIFixedBtn
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
               />
 
               <EditorContextMenu>
-                <textarea
+                <div
                   id="editor"
                   ref="editorRef"
-                  type="textarea"
-                  placeholder="Your markdown text here."
+                  class="codemirror-container"
                 />
               </EditorContextMenu>
             </div>

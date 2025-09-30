@@ -24,7 +24,11 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  toRaw(store.editor!).replaceSelection(`\n${table}\n`, `end`)
+  const editor = toRaw(store.editor!)
+  const selection = editor.state.selection.main
+  editor.dispatch({
+    changes: { from: selection.from, to: selection.to, insert: `\n${table}\n` },
+  })
   resetVal()
   toggleShowInsertFormDialog()
 }

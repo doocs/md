@@ -1,0 +1,13 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index dbd52136fbf39609f6e815f40daf97ed087709ff..e2fa769b9dd9c081f79c83572de5d7e59328ca0f 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -482,7 +482,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+         new (view: EditorView, arg: Arg): V;
+     }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
+ }
+-interface MeasureRequest<T> {
++export interface MeasureRequest<T> {
+     /**
+     Called in a DOM read phase to gather information that requires
+     DOM layout. Should _not_ mutate the document.
