@@ -28,7 +28,7 @@
     "utools:package": "node ./scripts/package-utools.mjs"
   },
   "dependencies": {
-    "monaco-editor": "^0.53.0"
+    "monaco-editor": "0.44.0"
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
