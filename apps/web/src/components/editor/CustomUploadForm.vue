@@ -1,7 +1,9 @@
 <script setup lang='ts'>
-import CodeMirror from 'codemirror'
+import type { MonacoEditor } from '@md/shared'
+import { monaco } from '@md/shared'
 import { useStore } from '@/stores'
 import { removeLeft } from '@/utils'
+import 'monaco-editor/esm/vs/basic-languages/javascript/javascript.contribution'
 
 const store = useStore()
 
@@ -18,27 +20,51 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
   })
 `).trim())
 
-const formCustomTextarea = useTemplateRef<HTMLTextAreaElement>(`formCustomTextarea`)
+const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 
-const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+const editor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
 
 onMounted(() => {
-  editor.value = markRaw(CodeMirror.fromTextArea(formCustomTextarea.value!, {
-    mode: `javascript`,
-    theme: store.isDark ? `darcula` : `xq-light`,
-    lineNumbers: true,
-  }))
+  editor.value = monaco.editor.create(editorRef.value!, {
+    value: code.value,
+    language: `javascript`,
+    theme: store.isDark ? `vs-dark` : `vs`,
+    lineNumbers: `on`,
+    automaticLayout: true,
+    fontSize: 12,
+    lineHeight: 18,
+  })
+})
 
-  // 嵌套使用 nextTick 才能确保生效，具体原因未知
-  nextTick(() => {
-    nextTick(() => {
-      editor.value?.setValue(code.value)
+function updateEditorStyle(fontSize: number, lineHeight: number) {
+  if (editor.value) {
+    editor.value.updateOptions({
+      fontSize,
+      lineHeight,
     })
+  }
+}
+
+onMounted(() => {
+  const updateStyle = () => {
+    if (window.innerWidth >= 768) {
+      updateEditorStyle(14, 24)
+    }
+    else {
+      updateEditorStyle(12, 20)
+    }
+  }
+
+  window.addEventListener(`resize`, updateStyle)
+  updateStyle()
+
+  onUnmounted(() => {
+    window.removeEventListener(`resize`, updateStyle)
   })
 })
 
 function formCustomSave() {
-  const str = editor.value!.getValue()
+  const str = toRaw(editor.value!).getValue()
   localStorage.setItem(`formCustomConfig`, str)
   toast.success(`保存成功`)
 }
@@ -46,10 +72,10 @@ function formCustomSave() {
 
 <template>
   <div class="space-y-4 min-w-0">
-    <div class="h-60 border flex flex-col">
-      <textarea
-        ref="formCustomTextarea"
-        placeholder="Your custom code here."
+    <div class="h-60 border flex flex-col rounded-md">
+      <div
+        ref="editorRef"
+        class="flex-1"
       />
     </div>
     <Button
@@ -68,15 +94,4 @@ function formCustomSave() {
 </template>
 
 <style scoped>
-/* 覆盖全局的 overflow-x: hidden 设置 */
-:deep(.CodeMirror-scroll) {
-  overflow-x: auto !important;
-  overflow-y: auto !important;
-}
-
-@media (max-width: 768px) {
-  :deep(.CodeMirror) {
-    font-size: 12px;
-  }
-}
 </style>

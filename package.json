@@ -23,6 +23,9 @@
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector"
   },
+  "dependencies": {
+    "monaco-editor": "0.44.0"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
     "@types/node": "^24.5.2",

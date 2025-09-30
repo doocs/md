@@ -97,6 +97,8 @@ export default defineConfig(({ mode }) => {
                 return `mermaid`
               if (id.includes(`highlight.js`))
                 return `hljs`
+              if (id.includes(`monaco-editor`))
+                return `monaco-editor`
               const pkg = id
                 .split(`node_modules/`)[1]
                 .split(`/`)[0]
