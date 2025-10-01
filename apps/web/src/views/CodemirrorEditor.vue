@@ -145,11 +145,6 @@ function handleGlobalKeydown(e: KeyboardEvent) {
     e.preventDefault()
     editor.value?.focus()
   }
-  // AI助手快捷键 Ctrl+/
-  if ((e.ctrlKey || e.metaKey) && e.key === `/`) {
-    e.preventDefault()
-    displayStore.toggleAIDialog(true)
-  }
 }
 
 onMounted(() => {
