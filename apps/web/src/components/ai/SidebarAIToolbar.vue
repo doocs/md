@@ -33,42 +33,51 @@ function openAIImageGenerator() {
 
 // 监听编辑区点击，自动收起工具栏
 onMounted(() => {
-  const handleEditorClick = (e: MouseEvent) => {
+  const handleInteraction = (e: Event) => {
     // 只有在展开状态才需要处理
     if (!isExpanded.value)
       return
 
     const target = e.target as Element
+    if (!target)
+      return
+
     const toolbar = document.querySelector(`.editor-ai-toolbar`)
 
     // 如果点击的是工具栏及其子元素，不处理
     if (toolbar && toolbar.contains(target))
       return
 
-    // 检查是否点击在编辑器相关区域内（更宽泛的匹配）
-    const isInEditor = (
-      // CodeMirror编辑器容器
-      target.closest(`.codeMirror-wrapper`)
-      || target.closest(`.cm-editor`)
-      || target.closest(`.cm-content`)
-      || target.closest(`.cm-scroller`)
-      // 编辑器面板
-      || target.closest(`.resizable-panel`)
-      // 如果找不到特定容器，检查是否在主编辑区域
-      || (target.tagName && !target.closest(`dialog`) && !target.closest(`.popover`))
-    )
+    // 排除不应该收起的区域
+    const excludeSelectors = [
+      `dialog`,
+      `.popover`,
+      `.modal`,
+      `[role="dialog"]`,
+      `nav`,
+      `.menu`,
+      `.dropdown`,
+      `.tooltip`,
+      `.floating`,
+      `.ai-assistant-panel`,
+      `.ai-image-generator-panel`,
+    ]
 
-    if (isInEditor) {
-      console.log(`Clicked in editor area, collapsing toolbar`)
+    const shouldNotCollapse = excludeSelectors.some(selector => target.closest(selector))
+
+    if (!shouldNotCollapse) {
+      console.log(`Interaction outside excluded areas, collapsing toolbar. Event type: ${e.type}`)
       isExpanded.value = false
     }
   }
 
-  // 使用捕获阶段确保能够拦截所有点击事件
-  document.addEventListener(`click`, handleEditorClick, true)
+  // 同时监听点击和触摸事件，覆盖桌面端和移动端
+  document.addEventListener(`click`, handleInteraction, true)
+  document.addEventListener(`touchstart`, handleInteraction, true)
 
   onUnmounted(() => {
-    document.removeEventListener(`click`, handleEditorClick, true)
+    document.removeEventListener(`click`, handleInteraction, true)
+    document.removeEventListener(`touchstart`, handleInteraction, true)
   })
 })
 </script>
@@ -86,7 +95,7 @@ onMounted(() => {
       title="展开AI工具栏"
       @click="toggleExpanded"
     >
-      <Settings2 class="h-3.5 w-3.5 text-white drop-shadow-sm group-hover:scale-110 transition-transform duration-200" />
+      <Settings2 class="h-4 w-4 text-white drop-shadow-sm group-hover:scale-110 transition-transform duration-200" />
     </div>
 
     <!-- 展开状态：显示AI图标 -->
@@ -104,7 +113,7 @@ onMounted(() => {
             title="AI助手"
             @click="openAIChat"
           >
-            <Bot class="h-3.5 w-3.5" />
+            <Bot class="h-4 w-4" />
           </button>
 
           <!-- 标签 -->
@@ -125,7 +134,7 @@ onMounted(() => {
             title="AI文生图"
             @click="openAIImageGenerator"
           >
-            <ImageIcon class="h-3.5 w-3.5" />
+            <ImageIcon class="h-4 w-4" />
           </button>
 
           <!-- 标签 -->
@@ -165,8 +174,14 @@ onMounted(() => {
 /* 响应式调整 */
 @media (max-width: 768px) {
   .editor-ai-toolbar {
-    transform: scale(0.9) translateY(-50%);
+    transform: translateY(-50%);
     transform-origin: right center;
+  }
+
+  /* 移动端图标稍微再大一点 */
+  .editor-ai-toolbar .lucide {
+    width: 1.125rem !important; /* h-4.5 w-4.5 */
+    height: 1.125rem !important;
   }
 }
 
