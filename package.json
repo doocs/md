@@ -21,11 +21,13 @@
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
     "postinstall": "simple-git-hooks",
-    "inspector": "pnpx node-modules-inspector"
+    "inspector": "pnpx node-modules-inspector",
+    "utools:package": "node ./scripts/package-utools.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
     "@types/node": "^24.6.0",
+    "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-format": "^1.0.2",
