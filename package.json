@@ -26,7 +26,6 @@
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
     "@types/node": "^24.6.0",
-    "@types/prettier": "^3.0.0",
     "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-format": "^1.0.2",
@@ -34,7 +33,7 @@
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.12.1",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
