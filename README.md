@@ -121,6 +121,9 @@ pnpm web ext:zip
 
 # Firefox 扩展打包(how to build Firefox addon)
 pnpm web firefox:zip # output zip file at in .output/md-{version}-firefox.zip
+
+# uTools 插件打包
+pnpm utools:package # output zip file at apps/utools/release/md-utools-v{version}.zip
 ```
 
 ## 🚀 快速搭建私有服务

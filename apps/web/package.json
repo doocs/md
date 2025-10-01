@@ -9,6 +9,7 @@
     "build:only": "vite build",
     "build:h5-netlify": "run-p type-check \"build:h5-netlify:only {@}\" --",
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
+    "build:utools": "cross-env SERVER_ENV=UTOOLS vite build --outDir ../utools/dist --emptyOutDir",
     "build:cli": "pnpm run build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "build:analyze": "cross-env ANALYZE=true vite build",
     "compile:extension": "pnpm --prefix ./src/extension run compile",
