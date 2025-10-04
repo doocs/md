@@ -2,6 +2,7 @@
 import { serviceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
+import { PasswordInput } from '@/components/ui/password-input'
 import useAIConfigStore from '@/stores/AIConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -180,9 +181,8 @@ async function testConnection() {
     <!-- API 密钥，仅非 default 显示 -->
     <div v-if="config.type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
-      <Input
+      <PasswordInput
         v-model="config.apiKey"
-        type="password"
         placeholder="sk-..."
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
