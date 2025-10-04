@@ -11,6 +11,7 @@ import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
+import { isInExtension } from '../sidepanel'
 
 function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {
@@ -302,7 +303,7 @@ interface MpResponse {
   errcode: number
   errmsg: string
 }
-async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
+export async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
   const data = localStorage.getItem(`mpToken:${appID}`)
   if (data) {
     const token = JSON.parse(data)
@@ -319,7 +320,9 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
     },
   }
   let url = `https://api.weixin.qq.com/cgi-bin/stable_token`
-  if (proxyOrigin) {
+  // 兼容空字符串情况，本地代理时不需要传入域名
+  // 兼容浏览器插件环境 proxyOrigin 为空情况
+  if (proxyOrigin !== null && proxyOrigin !== undefined && !isInExtension) {
     url = `${proxyOrigin}/cgi-bin/stable_token`
   }
   const res = await fetch<any, MpResponse>(url, requestOptions)
@@ -335,6 +338,7 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
 }
 // Cloudflare Pages 环境
 const isCfPage = import.meta.env.CF_PAGES === `1`
+const isDev = import.meta.env.DEV
 async function mpFileUpload(file: File) {
   let { appID, appsecret, proxyOrigin } = JSON.parse(
     localStorage.getItem(`mpConfig`)!,
@@ -361,6 +365,10 @@ async function mpFileUpload(file: File) {
   const fileType = file.type.toLowerCase()
   if (fileSizeInMB < 1 && (fileType === `image/jpeg` || fileType === `image/png`)) {
     url = `https://api.weixin.qq.com/cgi-bin/media/uploadimg?access_token=${access_token}`
+  }
+  // 本地代理转发
+  if (isDev && !isInExtension) {
+    url = url.replace(`https://api.weixin.qq.com`, ``)
   }
   if (proxyOrigin) {
     url = url.replace(`https://api.weixin.qq.com`, proxyOrigin)
