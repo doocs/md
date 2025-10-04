@@ -4,6 +4,7 @@ import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
+import { PasswordInput } from '@/components/ui/password-input'
 import {
   Select,
   SelectContent,
@@ -225,12 +226,11 @@ const styleOptions = [
     <!-- API Key -->
     <div v-if="config.type !== 'default'">
       <Label class="mb-1 block text-sm font-medium">API Key</Label>
-      <input
+      <PasswordInput
         v-model="config.apiKey"
-        type="password"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+        class="w-full mt-1 focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         placeholder="sk-..."
-      >
+      />
     </div>
 
     <!-- 模型选择 -->
