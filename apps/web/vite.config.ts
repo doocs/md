@@ -1,6 +1,7 @@
 import path from 'node:path'
 import process from 'node:process'
 
+import { cloudflare } from '@cloudflare/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -13,8 +14,9 @@ import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
+const isCfWorkers = process.env.CF_PAGES === `1`
 const base
-  = process.env.SERVER_ENV === `NETLIFY`
+  = process.env.SERVER_ENV === `NETLIFY` || isCfWorkers
     ? `/`
     : isUTools
       ? `./`
@@ -29,6 +31,7 @@ export default defineConfig(({ mode }) => {
     envPrefix: [`VITE_`, `CF_`],
     plugins: [
       vue(),
+      isCfWorkers && cloudflare(),
       tailwindcss(),
       vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
@@ -70,7 +73,7 @@ export default defineConfig(({ mode }) => {
             }),
           ]
         : []),
-      nodePolyfills({
+      !isCfWorkers && nodePolyfills({
         include: [`path`, `util`, `timers`, `stream`, `fs`],
         overrides: {
         // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
