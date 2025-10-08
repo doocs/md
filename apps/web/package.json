@@ -2,6 +2,9 @@
   "name": "@md/web",
   "type": "module",
   "private": true,
+  "engines": {
+    "node": ">=22.16.0"
+  },
   "scripts": {
     "start": "pnpm run dev",
     "dev": "vite --host",
