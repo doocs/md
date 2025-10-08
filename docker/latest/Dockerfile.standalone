@@ -1,5 +1,5 @@
-ARG VER_GOLANG=1.17.6-alpine3.15
-ARG VER_ALPINE=3.15
+ARG VER_GOLANG=1.25.2-alpine
+ARG VER_ALPINE=3.20
 
 FROM --platform=$BUILDPLATFORM "doocs/md:latest-assets" AS assets
 
