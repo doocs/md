@@ -9,6 +9,10 @@ const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]
 
 const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 
+// LaTeX style rules for \( ... \) and \[ ... \]
+const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
+const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
+
 function createRenderer(display: boolean, inlineStyle: string, blockStyle: string) {
   return (token: any) => {
     // @ts-expect-error MathJax is a global variable
@@ -97,11 +101,59 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
   }
 }
 
+function inlineLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
+  return {
+    name: `inlineLatexKatex`,
+    level: `inline`,
+    start(src: string) {
+      const index = src.indexOf(`\\(`)
+      return index !== -1 ? index : undefined
+    },
+    tokenizer(src: string) {
+      const match = src.match(inlineLatexRule)
+      if (match) {
+        return {
+          type: `inlineLatexKatex`,
+          raw: match[0],
+          text: match[1].trim(),
+          displayMode: false,
+        }
+      }
+    },
+    renderer,
+  }
+}
+
+function blockLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
+  return {
+    name: `blockLatexKatex`,
+    level: `block`,
+    start(src: string) {
+      const index = src.indexOf(`\\[`)
+      return index !== -1 ? index : undefined
+    },
+    tokenizer(src: string) {
+      const match = src.match(blockLatexRule)
+      if (match) {
+        return {
+          type: `blockLatexKatex`,
+          raw: match[0],
+          text: match[1].trim(),
+          displayMode: true,
+        }
+      }
+    },
+    renderer,
+  }
+}
+
 export function MDKatex(options: MarkedKatexOptions | undefined, inlineStyle: string, blockStyle: string): MarkedExtension {
   return {
     extensions: [
       inlineKatex(options, createRenderer(false, inlineStyle, blockStyle)),
       blockKatex(options, createRenderer(true, inlineStyle, blockStyle)),
+      inlineLatexKatex(options, createRenderer(false, inlineStyle, blockStyle)),
+      blockLatexKatex(options, createRenderer(true, inlineStyle, blockStyle)),
     ],
   }
 }
