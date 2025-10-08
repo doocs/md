@@ -19,19 +19,7 @@ import useAIImageConfigStore from '@/stores/AIImageConfig'
 const emit = defineEmits([`saved`])
 
 const AIImageConfigStore = useAIImageConfigStore()
-const { type, endpoint, model, apiKey, size, quality, style }
-  = storeToRefs(AIImageConfigStore)
-
-/** 本地草稿 */
-const config = reactive({
-  type: ``,
-  endpoint: ``,
-  apiKey: ``,
-  model: ``,
-  size: `1024x1024`,
-  quality: `standard`,
-  style: `natural`,
-})
+const { type, endpoint, model, apiKey, size, quality, style } = storeToRefs(AIImageConfigStore)
 
 /** UI 状态 */
 const loading = ref(false)
@@ -39,84 +27,49 @@ const testResult = ref(``)
 
 /** 当前服务信息 */
 const currentService = computed(
-  () => imageServiceOptions.find(s => s.value === config.type) || imageServiceOptions[0],
+  () => imageServiceOptions.find(s => s.value === type.value) || imageServiceOptions[0],
 )
 
-/* -------------------------- 同步函数 -------------------------- */
+/* -------------------------- 监听 -------------------------- */
 
-function pullFromStore(): void {
-  config.type = type.value
-  config.endpoint = endpoint.value
-  config.apiKey = apiKey.value
-  config.model = model.value
-  config.size = size.value
-  config.quality = quality.value
-  config.style = style.value
-}
+// 监听服务类型变化，清空测试结果
+watch(type, () => {
+  testResult.value = ``
+})
 
-function pushToStore(): void {
-  type.value = config.type
-  apiKey.value = config.apiKey
-  model.value = config.model
-  size.value = config.size
-  quality.value = config.quality
-  style.value = config.style
-}
-
-function handleServiceChange(): void {
-  const svc = imageServiceOptions.find(s => s.value === config.type) || imageServiceOptions[0]
-
-  // 更新端点
-  config.endpoint = svc.endpoint
-
-  // 读取或回退模型
-  const saved = localStorage.getItem(`openai_image_model_${config.type}`) || ``
-  config.model = svc.models.includes(saved) ? saved : svc.models[0]
-
-  // 重置 API Key
-  config.apiKey = localStorage.getItem(`openai_image_key_${config.type}`) || ``
-}
-
-/* -------------------------- 生命周期 -------------------------- */
-
-onMounted(() => {
-  pullFromStore()
+// 监听模型变化，清空测试结果
+watch(model, () => {
+  testResult.value = ``
 })
 
 /* -------------------------- 表单提交 -------------------------- */
 
 function saveConfig() {
-  if (!config.endpoint.trim() || !config.model.trim()) {
+  if (!endpoint.value.trim() || !model.value.trim()) {
     testResult.value = `❌ 请检查配置项是否完整`
     return
   }
 
-  if (config.type !== DEFAULT_SERVICE_TYPE && !config.apiKey.trim()) {
+  if (type.value !== DEFAULT_SERVICE_TYPE && !apiKey.value.trim()) {
     testResult.value = `❌ 请输入 API Key`
     return
   }
 
   try {
     // eslint-disable-next-line no-new
-    new URL(config.endpoint)
+    new URL(endpoint.value)
   }
   catch {
     testResult.value = `❌ 端点格式有误`
     return
   }
 
-  if (config.type === DEFAULT_SERVICE_TYPE) {
-    config.apiKey = ``
-  }
-
-  pushToStore()
   testResult.value = `✅ 配置已保存`
   emit(`saved`)
 }
 
 function clearConfig() {
   AIImageConfigStore.reset()
-  pullFromStore()
   testResult.value = `🗑️ 当前 AI 图像配置已清除`
 }
 
@@ -125,21 +78,21 @@ async function testConnection() {
   loading.value = true
 
   const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (config.apiKey && config.type !== DEFAULT_SERVICE_TYPE)
-    headers.Authorization = `Bearer ${config.apiKey}`
+  if (apiKey.value && type.value !== DEFAULT_SERVICE_TYPE)
+    headers.Authorization = `Bearer ${apiKey.value}`
 
   try {
-    const url = new URL(config.endpoint)
+    const url = new URL(endpoint.value)
     if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`)) {
       url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
     }
 
     const payload = {
-      model: config.model,
+      model: model.value,
       prompt: `test connection`,
-      size: config.size,
-      quality: config.quality,
-      style: config.style,
+      size: size.value,
+      quality: quality.value,
+      style: style.value,
       n: 1,
     }
 
@@ -193,7 +146,7 @@ const styleOptions = [
     <!-- 服务商选择 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">服务商</Label>
-      <Select v-model="config.type" @update:model-value="handleServiceChange">
+      <Select v-model="type">
         <SelectTrigger class="w-full">
           <SelectValue>
             {{ currentService.label }}
@@ -215,7 +168,7 @@ const styleOptions = [
     <div>
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <input
-        v-model="config.endpoint"
+        v-model="endpoint"
         type="url"
         class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         placeholder="https://api.openai.com/v1"
@@ -224,10 +177,10 @@ const styleOptions = [
     </div>
 
     <!-- API Key -->
-    <div v-if="config.type !== 'default'">
+    <div v-if="type !== 'default'">
       <Label class="mb-1 block text-sm font-medium">API Key</Label>
       <PasswordInput
-        v-model="config.apiKey"
+        v-model="apiKey"
         class="w-full mt-1 focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         placeholder="sk-..."
       />
@@ -236,10 +189,10 @@ const styleOptions = [
     <!-- 模型选择 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">模型</Label>
-      <Select v-model="config.model">
+      <Select v-model="model">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ config.model || '请选择模型' }}
+            {{ model || '请选择模型' }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -257,10 +210,10 @@ const styleOptions = [
     <!-- 图像尺寸 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">图像尺寸</Label>
-      <Select v-model="config.size">
+      <Select v-model="size">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ sizeOptions.find(opt => opt.value === config.size)?.label || config.size }}
+            {{ sizeOptions.find(opt => opt.value === size)?.label || size }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -276,12 +229,12 @@ const styleOptions = [
     </div>
 
     <!-- 图像质量 -->
-    <div v-if="config.model.includes('dall-e')">
+    <div v-if="model.includes('dall-e')">
       <Label class="mb-1 block text-sm font-medium">图像质量</Label>
-      <Select v-model="config.quality">
+      <Select v-model="quality">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ qualityOptions.find(opt => opt.value === config.quality)?.label || config.quality }}
+            {{ qualityOptions.find(opt => opt.value === quality)?.label || quality }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -297,12 +250,12 @@ const styleOptions = [
     </div>
 
     <!-- 图像风格 -->
-    <div v-if="config.model.includes('dall-e')">
+    <div v-if="model.includes('dall-e')">
       <Label class="mb-1 block text-sm font-medium">图像风格</Label>
-      <Select v-model="config.style">
+      <Select v-model="style">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ styleOptions.find(opt => opt.value === config.style)?.label || config.style }}
+            {{ styleOptions.find(opt => opt.value === style)?.label || style }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -318,7 +271,7 @@ const styleOptions = [
     </div>
 
     <!-- 说明 -->
-    <div v-if="config.type === 'default'" class="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md text-sm">
+    <div v-if="type === 'default'" class="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-950/30 rounded-md text-sm">
       <Info class="h-4 w-4 text-blue-500 mt-0.5 flex-shrink-0" />
       <div class="text-blue-700 dark:text-blue-300">
         <p class="font-medium">
