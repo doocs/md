@@ -1,5 +1,4 @@
 import type { MonacoEditor } from '@md/shared'
-import type CodeMirror from 'codemirror'
 import { initRenderer } from '@md/core'
 import { monaco } from '@md/shared'
 import {
@@ -106,7 +105,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const editor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -656,14 +655,21 @@ export const useStore = defineStore(`store`, () => {
   }
 
   const copyToClipboard = async () => {
-    const selectedText = editor.value!.getSelection()
+    const selection = editor.value?.getSelection()
+    const selectedText = selection ? editor.value?.getModel()?.getValueInRange(selection) || '' : ''
     copyPlain(selectedText)
   }
 
   const pasteFromClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText()
-      editor.value!.replaceSelection(text)
+      const position = editor.value?.getPosition()
+      if (position && editor.value) {
+        toRaw(editor.value).executeEdits('', [{
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+          text,
+        }])
+      }
     }
     catch (error) {
       console.log(`粘贴失败`, error)
@@ -673,14 +679,14 @@ export const useStore = defineStore(`store`, () => {
   // 撤销操作
   const undo = () => {
     if (editor.value) {
-      editor.value.undo()
+      editor.value.trigger('keyboard', 'undo', {})
     }
   }
 
   // 重做操作
   const redo = () => {
     if (editor.value) {
-      editor.value.redo()
+      editor.value.trigger('keyboard', 'redo', {})
     }
   }
 

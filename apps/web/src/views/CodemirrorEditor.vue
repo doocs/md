@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import { monaco } from '@md/shared'
 import imageCompression from 'browser-image-compression'
-import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import {
@@ -10,10 +9,10 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
-import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
 import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
+import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -63,14 +62,14 @@ function leftAndRightScroll() {
     clearTimeout(timeout.value)
     if (text === `preview`) {
       source = previewRef.value!
-      target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
+      target = document.querySelector<HTMLElement>(`.monaco-editor .monaco-scrollable-element`)!
       editor.value!.off(`scroll`, editorScrollCB)
       timeout.value = setTimeout(() => {
         editor.value!.on(`scroll`, editorScrollCB)
       }, 300)
     }
     else {
-      source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
+      source = document.querySelector<HTMLElement>(`.monaco-editor .monaco-scrollable-element`)!
       target = previewRef.value!
       target.removeEventListener(`scroll`, previewScrollCB, false)
       timeout.value = setTimeout(() => {
@@ -105,36 +104,6 @@ onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
-})
-
-const searchTabRef
-  = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
-
-function openSearchWithSelection(cm: Editor) {
-  const selected = cm.getSelection().trim()
-  if (!searchTabRef.value)
-    return
-
-  if (selected) {
-    // 自动带入选中文本
-    searchTabRef.value.setSearchWord(selected)
-  }
-  else {
-    // 仅打开面板
-    searchTabRef.value.showSearchTab = true
-  }
-}
-
-function handleGlobalKeydown(e: KeyboardEvent) {
-  if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
-    searchTabRef.value.showSearchTab = false
-    e.preventDefault()
-    editor.value?.focus()
-  }
-}
-
-onMounted(() => {
-  document.addEventListener(`keydown`, handleGlobalKeydown)
 })
 
 function beforeUpload(file: File) {
@@ -334,25 +303,27 @@ const changeTimer = ref<NodeJS.Timeout>()
 
 const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
 const progressValue = ref(0)
-function createFormTextArea(dom: HTMLTextAreaElement) {
-  const textArea = fromTextArea(dom, {
-    mode: `text/x-markdown`,
-    theme: isDark.value ? `darcula` : `xq-light`,
-    lineNumbers: false,
-    lineWrapping: true,
-    styleActiveLine: true,
-    autoCloseBrackets: true,
-    extraKeys: createExtraKeys(openSearchWithSelection),
-    undoDepth: 200,
+function createMonacoEditor(dom: HTMLTextAreaElement) {
+  const monacoEditor = monaco.editor.create(dom, {
+    value: store.posts[store.currentPostIndex].content,
+    language: `markdown`,
+    theme: isDark.value ? `vs-dark` : `vs`,
+    lineNumbers: `off`,
+    wordWrap: `on`,
+    automaticLayout: true,
+    fontSize: 14,
+    lineHeight: 22,
+    tabSize: 2,
+    minimap: { enabled: false },
   })
 
-  textArea.on(`change`, (editor) => {
+  monacoEditor.onDidChangeModelContent(() => {
     clearTimeout(changeTimer.value)
     changeTimer.value = setTimeout(() => {
       editorRefresh()
 
       const currentPost = store.posts[store.currentPostIndex]
-      const content = editor.getValue()
+      const content = toRaw(monacoEditor).getValue()
       if (content === currentPost.content) {
         return
       }
@@ -362,40 +333,40 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     }, 300)
   })
 
-  // 粘贴上传图片并插入
-  textArea.on(`paste`, async (_editor, event) => {
-    if (!(event.clipboardData?.items) || isImgLoading.value) {
-      return
-    }
-    const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
-    // 即使return了，粘贴的文本内容也会被插入
-    if (items.length === 0) {
-      return
-    }
-    // start progress
-    const intervalId = setInterval(() => {
-      const newProgress = progressValue.value + 1
-      if (newProgress >= 100) {
-        return
-      }
-      progressValue.value = newProgress
-    }, 100)
-    for (const item of items) {
-      event.preventDefault()
-      await uploadImage(item)
-    }
-    const cleanup = () => {
-      clearInterval(intervalId)
-      progressValue.value = 100 // 设置完成状态
-      // 可选：延迟一段时间后重置进度
-      setTimeout(() => {
-        progressValue.value = 0
-      }, 1000)
-    }
-    cleanup()
-  })
+  // // 粘贴上传图片并插入
+  // textArea.on(`paste`, async (_editor, event) => {
+  //   if (!(event.clipboardData?.items) || isImgLoading.value) {
+  //     return
+  //   }
+  //   const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
+  //   // 即使return了，粘贴的文本内容也会被插入
+  //   if (items.length === 0) {
+  //     return
+  //   }
+  //   // start progress
+  //   const intervalId = setInterval(() => {
+  //     const newProgress = progressValue.value + 1
+  //     if (newProgress >= 100) {
+  //       return
+  //     }
+  //     progressValue.value = newProgress
+  //   }, 100)
+  //   for (const item of items) {
+  //     event.preventDefault()
+  //     await uploadImage(item)
+  //   }
+  //   const cleanup = () => {
+  //     clearInterval(intervalId)
+  //     progressValue.value = 100 // 设置完成状态
+  //     // 可选：延迟一段时间后重置进度
+  //     setTimeout(() => {
+  //       progressValue.value = 0
+  //     }, 1000)
+  //   }
+  //   cleanup()
+  // })
 
-  return textArea
+  return monacoEditor
 }
 
 // 初始化编辑器
@@ -409,7 +380,7 @@ onMounted(() => {
   editorDom.value = store.posts[store.currentPostIndex].content
 
   nextTick(() => {
-    editor.value = createFormTextArea(editorDom)
+    editor.value = createMonacoEditor(editorDom)
 
     // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
@@ -452,9 +423,6 @@ onUnmounted(() => {
   clearTimeout(historyTimer.value)
   clearTimeout(timeout.value)
   clearTimeout(changeTimer.value)
-
-  // 清理全局事件监听器 - 防止全局事件触发已销毁的组件
-  document.removeEventListener(`keydown`, handleGlobalKeydown)
 })
 </script>
 
@@ -489,18 +457,16 @@ onUnmounted(() => {
                 'border-r': store.isEditOnLeft,
               }"
             >
-              <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
               <SidebarAIToolbar
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
               />
 
               <EditorContextMenu>
-                <textarea
+                <div
                   id="editor"
                   ref="editorRef"
-                  type="textarea"
-                  placeholder="Your markdown text here."
+                  class="monaco-editor-container"
                 />
               </EditorContextMenu>
             </div>
