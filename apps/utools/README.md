@@ -15,7 +15,7 @@ pnpm utools:package
 3. 从 `public/mpmd/icon-256.png` 拷贝插件图标至 `apps/utools/logo.png`。
 4. 生成形如 `apps/utools/release/md-utools-vX.Y.Z.zip` 的安装包，可直接导入到 uTools。
 
-> 注意：命令执行前请确认已安装 pnpm 8+ 与 Node.js 20+，并在仓库根目录执行 `pnpm install` 安装依赖。
+> 注意：命令执行前请确认已安装 pnpm 10+ 与 Node.js 22+，并在仓库根目录执行 `pnpm install` 安装依赖。
 
 ## 手动导入调试
 
