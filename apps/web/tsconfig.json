@@ -11,6 +11,9 @@
     },
     {
       "path": "./tsconfig.node.json"
+    },
+    {
+      "path": "./tsconfig.worker.json"
     }
   ],
   "files": []
