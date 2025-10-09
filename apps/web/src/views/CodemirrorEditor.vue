@@ -315,6 +315,7 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
     lineHeight: 22,
     tabSize: 2,
     minimap: { enabled: false },
+    scrollBeyondLastLine: false,
   })
 
   monacoEditor.onDidChangeModelContent(() => {

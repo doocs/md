@@ -442,6 +442,7 @@ export const useStore = defineStore(`store`, () => {
       lineHeight: 22,
       tabSize: 2,
       minimap: { enabled: false },
+      scrollBeyondLastLine: false,
     })
 
     // 格式化
@@ -656,7 +657,7 @@ export const useStore = defineStore(`store`, () => {
 
   const copyToClipboard = async () => {
     const selection = editor.value?.getSelection()
-    const selectedText = selection ? editor.value?.getModel()?.getValueInRange(selection) || '' : ''
+    const selectedText = selection ? editor.value?.getModel()?.getValueInRange(selection) || `` : ``
     copyPlain(selectedText)
   }
 
@@ -665,7 +666,7 @@ export const useStore = defineStore(`store`, () => {
       const text = await navigator.clipboard.readText()
       const position = editor.value?.getPosition()
       if (position && editor.value) {
-        toRaw(editor.value).executeEdits('', [{
+        toRaw(editor.value).executeEdits(``, [{
           range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
           text,
         }])
@@ -679,14 +680,14 @@ export const useStore = defineStore(`store`, () => {
   // 撤销操作
   const undo = () => {
     if (editor.value) {
-      editor.value.trigger('keyboard', 'undo', {})
+      editor.value.trigger(`keyboard`, `undo`, {})
     }
   }
 
   // 重做操作
   const redo = () => {
     if (editor.value) {
-      editor.value.trigger('keyboard', 'redo', {})
+      editor.value.trigger(`keyboard`, `redo`, {})
     }
   }
 

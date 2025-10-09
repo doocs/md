@@ -33,6 +33,7 @@ onMounted(() => {
     automaticLayout: true,
     fontSize: 12,
     lineHeight: 18,
+    scrollBeyondLastLine: false,
   })
 })
 
