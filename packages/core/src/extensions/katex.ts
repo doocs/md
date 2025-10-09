@@ -28,7 +28,7 @@ function createRenderer(display: boolean, inlineStyle: string, blockStyle: strin
     // svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
 
     svg.style.display = `initial`
-    svg.style.maxWidth = `300vw`
+    svg.style.setProperty(`max-width`, `300vw`, `important`)
     svg.style.flexShrink = `0`
     svg.style.width = width
 
