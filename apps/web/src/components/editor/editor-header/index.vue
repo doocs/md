@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
 import { useDisplayStore, useStore } from '@/stores'
-import { addPrefix, processClipboardContent } from '@/utils'
+import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
@@ -162,6 +162,9 @@ async function copy() {
       if (copyMode.value === `html`) {
         await copyContent(temp)
       }
+      else if (copyMode.value === `html-without-style`) {
+        await copyContent(await generatePureHTML(editor.value!.getValue()))
+      }
       else if (copyMode.value === `html-and-style`) {
         await copyContent(store.editorContent2HTML())
       }
@@ -244,6 +247,9 @@ async function copy() {
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html">
                 HTML 格式
+              </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="html-without-style">
+                HTML 格式（无样式）
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html-and-style">
                 HTML 格式（兼容样式）
