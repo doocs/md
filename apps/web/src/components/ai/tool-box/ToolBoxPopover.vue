@@ -1,6 +1,12 @@
 <script setup lang="ts">
-import { Pause, Settings, X } from 'lucide-vue-next'
+import { Pause, Settings, Wand2, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -13,16 +19,15 @@ import useAIConfigStore from '@/stores/AIConfig'
 
 /* -------------------- props / emits -------------------- */
 const props = defineProps<{
-  position: { top: number, left: number }
+  open: boolean
   selectedText: string
-  isDragging: boolean
   isMobile: boolean
 }>()
-const emit = defineEmits([`closeBtn`, `recalcPos`, `startDrag`])
+const emit = defineEmits([`update:open`])
 
 /* -------------------- reactive state -------------------- */
 const configVisible = ref(false)
-const visible = ref(false)
+const dialogVisible = ref(props.open)
 const message = ref(``)
 const loading = ref(false)
 const abortController = ref<AbortController | null>(null)
@@ -37,6 +42,16 @@ const error = ref(``)
 /* -------------------- store & refs -------------------- */
 const store = useStore()
 const resultContainer = ref<HTMLElement | null>(null)
+
+/* -------------------- dialog state sync -------------------- */
+watch(() => props.open, (val) => {
+  dialogVisible.value = val
+  if (val && props.selectedText.trim()) {
+    currentText.value = props.selectedText
+    resetState()
+  }
+})
+watch(dialogVisible, val => emit(`update:open`, val))
 
 /* -------------------- AI config -------------------- */
 const AIConfigStore = useAIConfigStore()
@@ -81,7 +96,6 @@ const actionOptions: ActionOption[] = [
 
 /* -------------------- watchers -------------------- */
 watch(message, async () => {
-  emit(`recalcPos`)
   await nextTick()
   resultContainer.value?.scrollTo({ top: resultContainer.value.scrollHeight })
 })
@@ -91,11 +105,11 @@ watch(selectedAction, (val) => {
     customPrompts.value = []
 })
 
-// 当 visible 且 props.selectedText 变更时，更新原文并重置状态
+// 当 dialogVisible 且 props.selectedText 变更时，更新原文并重置状态
 watch(
   () => props.selectedText,
   (val) => {
-    if (visible.value) {
+    if (dialogVisible.value) {
       currentText.value = val
       resetState()
     }
@@ -110,7 +124,6 @@ function addPrompt(e: KeyboardEvent) {
     customPrompts.value.push(prompt)
   }
   input.value = ``
-  emit(`recalcPos`)
 }
 
 function removePrompt(index: number) {
@@ -250,54 +263,43 @@ function replaceText() {
 }
 
 function show() {
-  emit(`closeBtn`)
-  if (!props.selectedText.trim()) {
-    toast.error(`请选择需要处理的内容`)
-    return
-  }
-  visible.value = true
-  currentText.value = props.selectedText
-  emit(`recalcPos`)
+  dialogVisible.value = true
 }
 
 function close() {
-  visible.value = false
+  dialogVisible.value = false
   customPrompts.value = []
   selectedAction.value = `optimize`
   resetState()
 }
 
-defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
+defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
 </script>
 
 <template>
-  <Transition name="fade-scale">
-    <div
-      v-if="visible"
-      class="bg-card border-border text-card-foreground fixed left-1/2 top-1/2 z-50 max-h-[90dvh] w-[90vw] flex flex-col overflow-hidden border rounded-xl shadow-2xl sm:w-[460px] -translate-x-1/2 -translate-y-1/2 sm:translate-x-0 sm:translate-y-0"
-      :style="props.isMobile ? {} : { left: `${position.left}px`, top: `${position.top}px`, transformOrigin: 'top left' }"
+  <Dialog v-model:open="dialogVisible">
+    <DialogContent
+      class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-2xl overflow-y-auto"
     >
-      <!-- header -->
-      <div
-        class="border-border popover-header flex select-none items-center justify-between border-b px-4 pb-2 pt-3 sm:cursor-move sm:px-6"
-        @mousedown="!props.isMobile && emit('startDrag', $event)"
-      >
-        <div class="flex items-center gap-2">
-          <span class="text-lg font-bold">AI 工具箱</span>
+      <!-- ============ 头部 ============ -->
+      <DialogHeader class="space-y-1 flex flex-col items-start">
+        <div class="space-x-1 flex items-center">
+          <DialogTitle>AI 工具箱</DialogTitle>
+
           <Button
+            :title="configVisible ? 'AI 工具箱' : '配置参数'"
+            :aria-label="configVisible ? 'AI 工具箱' : '配置参数'"
             variant="ghost"
             size="icon"
-            aria-label="配置"
             @click="configVisible = !configVisible"
           >
-            <Settings class="h-4 w-4" />
+            <Wand2 v-if="configVisible" class="h-4 w-4" />
+            <Settings v-else class="h-4 w-4" />
           </Button>
         </div>
-        <Button variant="ghost" size="icon" aria-label="关闭" @click="close">
-          <X class="h-3 w-3" />
-        </Button>
-      </div>
+      </DialogHeader>
 
+      <!-- ============ 内容区域 ============ -->
       <!-- config panel -->
       <AIConfig
         v-if="configVisible"
@@ -306,7 +308,7 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
       />
 
       <!-- main content -->
-      <section v-else class="custom-scroll space-y-3 flex-1 overflow-y-auto px-4 pb-2 pt-3 sm:px-6">
+      <div v-else class="custom-scroll space-y-4 flex-1 overflow-y-auto px-4 pb-4 pt-3 sm:px-6">
         <!-- action selector -->
         <div>
           <div class="mb-1 text-sm font-semibold">
@@ -388,58 +390,34 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
             {{ message }}
           </div>
         </div>
+      </div>
 
-        <!-- footer buttons -->
-        <div class="border-border flex justify-end gap-2 border-t px-6 pb-3 pt-2">
-          <Button v-if="loading" variant="secondary" @click="stopAI">
-            <Pause class="mr-1 h-4 w-4" /> 终止
-          </Button>
-          <Button
-            v-if="hasResult && !loading"
-            variant="default"
-            @click="replaceText"
-          >
-            接受
-          </Button>
-          <Button
-            v-if="!loading"
-            variant="outline"
-            :disabled="!hasResult && !!message"
-            @click="runAIAction"
-          >
-            {{ hasResult ? '重试' : 'AI 处理' }}
-          </Button>
-        </div>
-      </section>
-    </div>
-  </Transition>
+      <!-- ============ 底部按钮 ============ -->
+      <div v-if="!configVisible" class="border-border flex justify-end gap-2 border-t px-4 py-3 sm:px-6">
+        <Button v-if="loading" variant="secondary" @click="stopAI">
+          <Pause class="mr-1 h-4 w-4" /> 终止
+        </Button>
+        <Button
+          v-if="hasResult && !loading"
+          variant="default"
+          @click="replaceText"
+        >
+          接受
+        </Button>
+        <Button
+          v-if="!loading"
+          variant="outline"
+          :disabled="!hasResult && !!message"
+          @click="runAIAction"
+        >
+          {{ hasResult ? '重试' : 'AI 处理' }}
+        </Button>
+      </div>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <style scoped>
-.fade-scale-enter-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-.fade-scale-leave-active {
-  transition:
-    opacity 0.15s ease,
-    transform 0.15s ease;
-}
-
-.fade-scale-enter-from,
-.fade-scale-leave-to {
-  opacity: 0;
-  --tw-scale-x: 0.95;
-  --tw-scale-y: 0.95;
-}
-.fade-scale-enter-to,
-.fade-scale-leave-from {
-  opacity: 1;
-  --tw-scale-x: 1;
-  --tw-scale-y: 1;
-}
-
 .custom-scroll::-webkit-scrollbar {
   width: 6px;
 }
@@ -457,11 +435,6 @@ defineExpose({ visible, runAIAction, replaceText, show, close, stopAI })
 }
 :deep(.dark) .custom-scroll {
   scrollbar-color: rgba(107, 114, 128, 0.4) transparent;
-}
-
-.popover-header {
-  cursor: move;
-  user-select: none;
 }
 
 @media (pointer: coarse) {
