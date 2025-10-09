@@ -138,10 +138,15 @@ function uploaded(imageUrl: string) {
     toggleShowUploadImgDialog(false)
   }, 1000)
   // 上传成功，获取光标
-  const cursor = editor.value!.getCursor()
+  const position = toRaw(editor.value!).getPosition()
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
+  if (position) {
+    toRaw(editor.value!).executeEdits(`insert-image`, [{
+      range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+      text: `\n${markdownImage}\n`,
+    }])
+  }
   toast.success(`图片上传成功`)
 }
 
@@ -300,6 +305,7 @@ function mdLocalToRemote() {
 }
 
 const changeTimer = ref<NodeJS.Timeout>()
+const handlePaste = ref<((event: ClipboardEvent) => Promise<void>) | null>(null)
 
 const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
 const progressValue = ref(0)
@@ -334,38 +340,59 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
     }, 300)
   })
 
-  // // 粘贴上传图片并插入
-  // textArea.on(`paste`, async (_editor, event) => {
-  //   if (!(event.clipboardData?.items) || isImgLoading.value) {
-  //     return
-  //   }
-  //   const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
-  //   // 即使return了，粘贴的文本内容也会被插入
-  //   if (items.length === 0) {
-  //     return
-  //   }
-  //   // start progress
-  //   const intervalId = setInterval(() => {
-  //     const newProgress = progressValue.value + 1
-  //     if (newProgress >= 100) {
-  //       return
-  //     }
-  //     progressValue.value = newProgress
-  //   }, 100)
-  //   for (const item of items) {
-  //     event.preventDefault()
-  //     await uploadImage(item)
-  //   }
-  //   const cleanup = () => {
-  //     clearInterval(intervalId)
-  //     progressValue.value = 100 // 设置完成状态
-  //     // 可选：延迟一段时间后重置进度
-  //     setTimeout(() => {
-  //       progressValue.value = 0
-  //     }, 1000)
-  //   }
-  //   cleanup()
-  // })
+  // 粘贴上传图片并插入 - 使用全局粘贴事件监听
+  handlePaste.value = async (event: ClipboardEvent) => {
+    // 检查焦点是否在编辑器内
+    const editorDomNode = monacoEditor.getDomNode()
+    if (!editorDomNode || !editorDomNode.contains(document.activeElement)) {
+      return
+    }
+
+    if (!(event.clipboardData?.items) || isImgLoading.value) {
+      return
+    }
+
+    const items = [...event.clipboardData.items]
+      .map(item => item.getAsFile())
+      .filter(item => item != null && beforeUpload(item)) as File[]
+
+    console.log(`paste items`, items)
+
+    if (items.length === 0) {
+      return
+    }
+
+    // 有图片文件，阻止默认粘贴行为
+    event.preventDefault()
+    event.stopPropagation()
+
+    // start progress
+    const intervalId = setInterval(() => {
+      const newProgress = progressValue.value + 1
+      if (newProgress >= 100) {
+        return
+      }
+      progressValue.value = newProgress
+    }, 100)
+
+    for (const item of items) {
+      await uploadImage(item)
+    }
+
+    const cleanup = () => {
+      clearInterval(intervalId)
+      progressValue.value = 100 // 设置完成状态
+
+      // 可选：延迟一段时间后重置进度
+      setTimeout(() => {
+        progressValue.value = 0
+      }, 1000)
+    }
+    cleanup()
+  }
+
+  // 在 document 上监听粘贴事件（捕获阶段）
+  document.addEventListener(`paste`, handlePaste.value, true)
 
   return monacoEditor
 }
@@ -424,6 +451,10 @@ onUnmounted(() => {
   clearTimeout(historyTimer.value)
   clearTimeout(timeout.value)
   clearTimeout(changeTimer.value)
+
+  if (handlePaste.value) {
+    document.removeEventListener(`paste`, handlePaste.value, true)
+  }
 })
 </script>
 
