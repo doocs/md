@@ -240,7 +240,7 @@ async function copy() {
               <ChevronDownIcon class="text-secondary-foreground h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" :align-offset="-5" class="w-[200px]">
+          <DropdownMenuContent align="end" :align-offset="-5" class="w-[220px]">
             <DropdownMenuRadioGroup v-model="copyMode">
               <DropdownMenuRadioItem value="txt">
                 公众号格式
@@ -249,10 +249,10 @@ async function copy() {
                 HTML 格式
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html-without-style">
-                HTML 格式（无样式）
+                <span class="whitespace-nowrap">HTML 格式（无样式）</span>
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html-and-style">
-                HTML 格式（兼容样式）
+                <span class="whitespace-nowrap">HTML 格式（兼容样式）</span>
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="md">
                 MD 格式
