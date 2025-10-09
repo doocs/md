@@ -6,11 +6,6 @@ import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import {
-  AIPolishButton,
-  AIPolishPopover,
-  useAIPolish,
-} from '@/components/ai/tool-box'
-import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
@@ -51,16 +46,7 @@ function toggleView() {
   showEditor.value = !showEditor.value
 }
 
-const {
-  AIPolishBtnRef,
-  AIPolishPopoverRef,
-  selectedText,
-  position,
-  isDragging,
-  startDrag,
-  initPolishEvent,
-  recalcPos,
-} = useAIPolish()
+// AI 工具箱已移到侧边栏
 
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
@@ -425,7 +411,7 @@ onMounted(() => {
   nextTick(() => {
     editor.value = createFormTextArea(editorDom)
 
-    initPolishEvent(editor.value)
+    // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
     mdLocalToRemote()
   })
@@ -573,24 +559,7 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <AIPolishButton
-        v-if="store.showAIToolbox"
-        ref="AIPolishBtnRef"
-        :position="position"
-        @click="AIPolishPopoverRef?.show"
-      />
-
-      <AIPolishPopover
-        v-if="store.showAIToolbox"
-        ref="AIPolishPopoverRef"
-        :position="position"
-        :selected-text="selectedText"
-        :is-dragging="isDragging"
-        :is-mobile="store.isMobile"
-        @close-btn="AIPolishBtnRef?.close"
-        @recalc-pos="recalcPos"
-        @start-drag="startDrag"
-      />
+      <!-- AI工具箱已移到侧边栏，这里不再显示 -->
 
       <UploadImgDialog @upload-image="uploadImage" />
 

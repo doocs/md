@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { Bot, Image as ImageIcon, Settings2 } from 'lucide-vue-next'
+import { Bot, Image as ImageIcon, Settings2, Wand2 } from 'lucide-vue-next'
 import { useDisplayStore } from '@/stores'
 import AIAssistantPanel from './chat-box/AIAssistantPanel.vue'
 import AIImageGeneratorPanel from './image-generator/AIImageGeneratorPanel.vue'
+import { AIPolishPopover } from './tool-box'
 
 defineProps<{
   isMobile: boolean
@@ -13,8 +14,36 @@ const displayStore = useDisplayStore()
 const { aiDialogVisible, aiImageDialogVisible } = storeToRefs(displayStore)
 const { toggleAIDialog, toggleAIImageDialog } = displayStore
 
+const store = useStore()
+const { editor } = storeToRefs(store)
+
 // 工具栏状态：false=默认(只显示贴边栏), true=展开(显示AI图标)
 const isExpanded = ref(false) // 默认收起状态
+
+// AI 工具箱相关状态
+const toolBoxVisible = ref(false)
+
+// 检查选中文本的函数
+function getSelectedText() {
+  try {
+    return editor.value?.getSelection()?.trim() || ``
+  }
+  catch {
+    return ``
+  }
+}
+
+// 动态计算是否有选中文本
+const hasSelectedText = computed(() => {
+  if (!editor.value || !isExpanded.value)
+    return false
+  return getSelectedText().length > 0
+})
+
+// 当打开工具箱时，获取当前选中的文本
+const currentSelectedText = computed(() => {
+  return toolBoxVisible.value ? getSelectedText() : ``
+})
 
 // 切换展开/收起状态
 function toggleExpanded() {
@@ -29,6 +58,11 @@ function openAIChat() {
 // 打开AI文生图
 function openAIImageGenerator() {
   toggleAIImageDialog(true)
+}
+
+// 打开AI工具箱
+function openAIToolBox() {
+  toolBoxVisible.value = true
 }
 
 // 监听编辑区点击，自动收起工具栏
@@ -142,12 +176,40 @@ onMounted(() => {
             文生图
           </span>
         </div>
+
+        <!-- 分割线 -->
+        <div v-if="hasSelectedText && isExpanded" class="mx-1.5">
+          <div class="h-px bg-gray-200/50 dark:bg-gray-700/50" />
+        </div>
+
+        <!-- AI工具箱按钮 (只有选中文本且展开时才显示) -->
+        <div v-if="hasSelectedText && isExpanded" class="flex flex-col items-center gap-1 px-1">
+          <button
+            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+            title="AI工具箱"
+            @click="openAIToolBox"
+          >
+            <Wand2 class="h-4 w-4" />
+          </button>
+
+          <!-- 标签 -->
+          <span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">
+            工具箱
+          </span>
+        </div>
       </div>
     </div>
 
     <!-- AI面板组件 -->
     <AIAssistantPanel v-model:open="aiDialogVisible" />
     <AIImageGeneratorPanel v-model:open="aiImageDialogVisible" />
+
+    <!-- AI工具箱弹窗 -->
+    <AIPolishPopover
+      v-model:open="toolBoxVisible"
+      :selected-text="currentSelectedText"
+      :is-mobile="isMobile"
+    />
   </div>
 </template>
 
