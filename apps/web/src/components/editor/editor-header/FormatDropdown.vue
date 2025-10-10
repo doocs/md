@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { applyHeading, toggleFormat, toggleList } from '@md/shared/editor'
 import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
 import { useStore } from '@/stores'
 
@@ -26,7 +27,24 @@ const {
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {
-  (editor.value as any).options.extraKeys[cmd](editor.value)
+  if (!editor.value)
+    return
+
+  const formatMap: Record<string, () => void> = {
+    [`${ctrlKey}-B`]: () => toggleFormat(editor.value!, { prefix: `**`, suffix: `**`, afterOffset: -2 }),
+    [`${ctrlKey}-I`]: () => toggleFormat(editor.value!, { prefix: `*`, suffix: `*`, afterOffset: -1 }),
+    [`${ctrlKey}-D`]: () => toggleFormat(editor.value!, { prefix: `~~`, suffix: `~~`, afterOffset: -2 }),
+    [`${ctrlKey}-K`]: () => toggleFormat(editor.value!, { prefix: `[`, suffix: `]()`, afterOffset: -1 }),
+    [`${ctrlKey}-E`]: () => toggleFormat(editor.value!, { prefix: `\``, suffix: `\``, afterOffset: -1 }),
+    [`${ctrlKey}-H`]: () => applyHeading(editor.value!, 1),
+    [`${ctrlKey}-U`]: () => toggleList(editor.value!, `unordered`),
+    [`${ctrlKey}-O`]: () => toggleList(editor.value!, `ordered`),
+  }
+
+  const handler = formatMap[cmd]
+  if (handler) {
+    handler()
+  }
 }
 
 const formatItems = [

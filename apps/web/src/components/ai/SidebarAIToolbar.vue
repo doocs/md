@@ -26,7 +26,11 @@ const toolBoxVisible = ref(false)
 // 检查选中文本的函数
 function getSelectedText() {
   try {
-    return editor.value?.getSelection()?.trim() || ``
+    const selection = editor.value?.getSelection()
+    const model = editor.value?.getModel()
+    if (!selection || !model)
+      return ``
+    return model.getValueInRange(selection).trim()
   }
   catch {
     return ``

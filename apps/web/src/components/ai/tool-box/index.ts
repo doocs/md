@@ -1,4 +1,4 @@
-import type { Editor } from 'codemirror'
+import type { MonacoEditor } from '@md/shared'
 import AIPolishButton from './ToolBoxButton.vue'
 import AIPolishPopover from './ToolBoxPopover.vue'
 
@@ -10,9 +10,15 @@ function useAIPolish() {
   const selectedText = ref(``)
 
   // 获取当前编辑器选中文本的简单函数
-  function getCurrentSelection(editor: Editor | null): string {
+  function getCurrentSelection(editor: MonacoEditor.IStandaloneCodeEditor | null): string {
     try {
-      return editor?.getSelection()?.trim() || ``
+      if (!editor)
+        return ``
+      const selection = editor.getSelection()
+      const model = editor.getModel()
+      if (!selection || !model)
+        return ``
+      return model.getValueInRange(selection).trim()
     }
     catch {
       return ``

@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { Editor } from 'codemirror'
 import type { ComponentPublicInstance } from 'vue'
+import { monaco, registerShortcuts } from '@md/shared'
 import imageCompression from 'browser-image-compression'
-import { fromTextArea } from 'codemirror'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import {
@@ -10,10 +9,9 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
-import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
-import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
+import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 
 const store = useStore()
 const displayStore = useDisplayStore()
@@ -51,53 +49,62 @@ function toggleView() {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
+let editorScrollDisposable: any = null
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
-  const scrollCB = (text: string) => {
-    // AIPolishBtnRef.value?.close()
+  let isEditorScrolling = false
+  let isPreviewScrolling = false
 
-    let source: HTMLElement
-    let target: HTMLElement
+  function syncScrollTo(source: `editor` | `preview`) {
+    if (!editor.value || !previewRef.value)
+      return
 
-    clearTimeout(timeout.value)
-    if (text === `preview`) {
-      source = previewRef.value!
-      target = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-      editor.value!.off(`scroll`, editorScrollCB)
-      timeout.value = setTimeout(() => {
-        editor.value!.on(`scroll`, editorScrollCB)
-      }, 300)
+    if (source === `editor`) {
+      if (isPreviewScrolling)
+        return
+      isEditorScrolling = true
+
+      const scrollTop = editor.value.getScrollTop()
+      const scrollHeight = editor.value.getScrollHeight()
+      const visibleHeight = editor.value.getLayoutInfo().height
+      const percentage = scrollTop / (scrollHeight - visibleHeight)
+
+      const previewEl = previewRef.value
+      const targetScroll = percentage * (previewEl.scrollHeight - previewEl.offsetHeight)
+      previewEl.scrollTo(0, targetScroll)
+
+      requestAnimationFrame(() => {
+        isEditorScrolling = false
+      })
     }
     else {
-      source = document.querySelector<HTMLElement>(`.CodeMirror-scroll`)!
-      target = previewRef.value!
-      target.removeEventListener(`scroll`, previewScrollCB, false)
-      timeout.value = setTimeout(() => {
-        target.addEventListener(`scroll`, previewScrollCB, false)
-      }, 300)
+      if (isEditorScrolling)
+        return
+      isPreviewScrolling = true
+
+      const previewEl = previewRef.value
+      const percentage = previewEl.scrollTop / (previewEl.scrollHeight - previewEl.offsetHeight)
+
+      const scrollHeight = editor.value.getScrollHeight()
+      const visibleHeight = editor.value.getLayoutInfo().height
+      const targetScroll = percentage * (scrollHeight - visibleHeight)
+      editor.value.setScrollTop(targetScroll)
+
+      requestAnimationFrame(() => {
+        isPreviewScrolling = false
+      })
     }
-
-    const percentage
-      = source.scrollTop / (source.scrollHeight - source.offsetHeight)
-    const height = percentage * (target.scrollHeight - target.offsetHeight)
-
-    target.scrollTo(0, height)
   }
 
-  function editorScrollCB() {
-    scrollCB(`editor`)
-  }
-
-  function previewScrollCB() {
-    scrollCB(`preview`)
-  }
-
+  // 监听预览区滚动
   if (previewRef.value) {
-    previewRef.value.addEventListener(`scroll`, previewScrollCB, false)
+    previewRef.value.addEventListener(`scroll`, () => syncScrollTo(`preview`), false)
   }
+
+  // 监听编辑器滚动
   if (editor.value) {
-    editor.value.on(`scroll`, editorScrollCB)
+    editorScrollDisposable = editor.value.onDidScrollChange(() => syncScrollTo(`editor`))
   }
 }
 
@@ -105,36 +112,6 @@ onMounted(() => {
   setTimeout(() => {
     leftAndRightScroll()
   }, 300)
-})
-
-const searchTabRef
-  = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
-
-function openSearchWithSelection(cm: Editor) {
-  const selected = cm.getSelection().trim()
-  if (!searchTabRef.value)
-    return
-
-  if (selected) {
-    // 自动带入选中文本
-    searchTabRef.value.setSearchWord(selected)
-  }
-  else {
-    // 仅打开面板
-    searchTabRef.value.showSearchTab = true
-  }
-}
-
-function handleGlobalKeydown(e: KeyboardEvent) {
-  if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
-    searchTabRef.value.showSearchTab = false
-    e.preventDefault()
-    editor.value?.focus()
-  }
-}
-
-onMounted(() => {
-  document.addEventListener(`keydown`, handleGlobalKeydown)
 })
 
 function beforeUpload(file: File) {
@@ -169,10 +146,15 @@ function uploaded(imageUrl: string) {
     toggleShowUploadImgDialog(false)
   }, 1000)
   // 上传成功，获取光标
-  const cursor = editor.value!.getCursor()
+  const position = editor.value!.getPosition()
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  toRaw(store.editor!).replaceSelection(`\n${markdownImage}\n`, cursor as any)
+  if (position) {
+    editor.value!.executeEdits(`insert-image`, [{
+      range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+      text: `\n${markdownImage}\n`,
+    }])
+  }
   toast.success(`图片上传成功`)
 }
 
@@ -331,28 +313,44 @@ function mdLocalToRemote() {
 }
 
 const changeTimer = ref<NodeJS.Timeout>()
+const handlePaste = ref<((event: ClipboardEvent) => Promise<void>) | null>(null)
 
 const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
 const progressValue = ref(0)
-function createFormTextArea(dom: HTMLTextAreaElement) {
-  const textArea = fromTextArea(dom, {
-    mode: `text/x-markdown`,
-    theme: isDark.value ? `darcula` : `xq-light`,
-    lineNumbers: false,
-    lineWrapping: true,
-    styleActiveLine: true,
-    autoCloseBrackets: true,
-    extraKeys: createExtraKeys(openSearchWithSelection),
-    undoDepth: 200,
+
+function createMonacoEditor(dom: HTMLTextAreaElement) {
+  const monacoEditor = monaco.editor.create(dom, {
+    value: store.posts[store.currentPostIndex].content,
+    language: `markdown`,
+    theme: isDark.value ? `vs-dark` : `vs`,
+    lineNumbers: `off`,
+    wordWrap: `on`,
+    automaticLayout: true,
+    fontSize: 16,
+    lineHeight: 22,
+    tabSize: 2,
+    minimap: { enabled: false },
+    scrollBeyondLastLine: false,
+    contextmenu: false,
+    // 配置查找功能选项，防止布局变化
+    find: {
+      addExtraSpaceOnTop: false,
+      autoFindInSelection: `never`,
+      seedSearchStringFromSelection: `selection`,
+    },
+    // 固定查找面板，避免影响编辑区布局
+    fixedOverflowWidgets: true,
+    // 给编辑器内容区域添加上边距
+    padding: { top: 20, bottom: 20 },
   })
 
-  textArea.on(`change`, (editor) => {
+  monacoEditor.onDidChangeModelContent(() => {
     clearTimeout(changeTimer.value)
     changeTimer.value = setTimeout(() => {
       editorRefresh()
 
       const currentPost = store.posts[store.currentPostIndex]
-      const content = editor.getValue()
+      const content = monacoEditor.getValue()
       if (content === currentPost.content) {
         return
       }
@@ -362,16 +360,43 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
     }, 300)
   })
 
-  // 粘贴上传图片并插入
-  textArea.on(`paste`, async (_editor, event) => {
+  // 注册快捷键
+  registerShortcuts(monacoEditor, {
+    onFormat: async () => {
+      const { formatDoc } = await import(`@/utils`)
+      const value = monacoEditor.getValue()
+      formatDoc(value).then((doc: string) => {
+        monacoEditor.setValue(doc)
+      })
+    },
+  })
+
+  // 粘贴上传图片并插入 - 使用全局粘贴事件监听
+  handlePaste.value = async (event: ClipboardEvent) => {
+    // 检查焦点是否在编辑器内
+    const editorDomNode = monacoEditor.getDomNode()
+    if (!editorDomNode || !editorDomNode.contains(document.activeElement)) {
+      return
+    }
+
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
-    const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
-    // 即使return了，粘贴的文本内容也会被插入
+
+    const items = [...event.clipboardData.items]
+      .map(item => item.getAsFile())
+      .filter(item => item != null && beforeUpload(item)) as File[]
+
+    console.log(`paste items`, items)
+
     if (items.length === 0) {
       return
     }
+
+    // 有图片文件，阻止默认粘贴行为
+    event.preventDefault()
+    event.stopPropagation()
+
     // start progress
     const intervalId = setInterval(() => {
       const newProgress = progressValue.value + 1
@@ -380,22 +405,27 @@ function createFormTextArea(dom: HTMLTextAreaElement) {
       }
       progressValue.value = newProgress
     }, 100)
+
     for (const item of items) {
-      event.preventDefault()
       await uploadImage(item)
     }
+
     const cleanup = () => {
       clearInterval(intervalId)
       progressValue.value = 100 // 设置完成状态
+
       // 可选：延迟一段时间后重置进度
       setTimeout(() => {
         progressValue.value = 0
       }, 1000)
     }
     cleanup()
-  })
+  }
 
-  return textArea
+  // 在 document 上监听粘贴事件（捕获阶段）
+  document.addEventListener(`paste`, handlePaste.value, true)
+
+  return monacoEditor
 }
 
 // 初始化编辑器
@@ -409,7 +439,7 @@ onMounted(() => {
   editorDom.value = store.posts[store.currentPostIndex].content
 
   nextTick(() => {
-    editor.value = createFormTextArea(editorDom)
+    editor.value = createMonacoEditor(editorDom)
 
     // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
@@ -419,8 +449,8 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  const theme = isDark.value ? `darcula` : `xq-light`
-  toRaw(editor.value)?.setOption?.(`theme`, theme)
+  const theme = isDark.value ? `vs-dark` : `vs`
+  editor.value?.updateOptions?.({ theme })
 })
 
 // 历史记录的定时器
@@ -453,8 +483,14 @@ onUnmounted(() => {
   clearTimeout(timeout.value)
   clearTimeout(changeTimer.value)
 
-  // 清理全局事件监听器 - 防止全局事件触发已销毁的组件
-  document.removeEventListener(`keydown`, handleGlobalKeydown)
+  if (handlePaste.value) {
+    document.removeEventListener(`paste`, handlePaste.value, true)
+  }
+
+  // 清理滚动监听器
+  if (editorScrollDisposable) {
+    editorScrollDisposable.dispose()
+  }
 })
 </script>
 
@@ -489,18 +525,16 @@ onUnmounted(() => {
                 'border-r': store.isEditOnLeft,
               }"
             >
-              <SearchTab v-if="editor" ref="searchTabRef" :editor="editor" />
               <SidebarAIToolbar
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
               />
 
               <EditorContextMenu>
-                <textarea
+                <div
                   id="editor"
                   ref="editorRef"
-                  type="textarea"
-                  placeholder="Your markdown text here."
+                  class="monaco-editor-container"
                 />
               </EditorContextMenu>
             </div>

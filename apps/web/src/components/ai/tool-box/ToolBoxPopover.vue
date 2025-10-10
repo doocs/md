@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { monaco } from '@md/shared'
 import { Pause, Settings, Wand2, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
@@ -250,13 +251,35 @@ function stopAI() {
 }
 
 /* -------------------- actions -------------------- */
-function replaceText() {
-  const cm = toRaw(store.editor!)!
-  const start = cm.getCursor(`start`)
-  cm.replaceSelection(message.value)
-  const end = cm.getCursor(`end`)
-  cm.setSelection(start, end)
-  cm.focus()
+async function replaceText() {
+  const editor = store.editor
+  if (!editor)
+    return
+  const selection = editor.getSelection()
+
+  if (selection) {
+    // 替换选中文本
+    editor.executeEdits(`ai-replace`, [{
+      range: selection,
+      text: message.value,
+    }])
+
+    // 选中替换后的文本
+    const model = editor.getModel()
+    if (model) {
+      const endPosition = model.getPositionAt(
+        model.getOffsetAt({ lineNumber: selection.startLineNumber, column: selection.startColumn }) + message.value.length,
+      )
+      editor.setSelection(new monaco.Selection(
+        selection.startLineNumber,
+        selection.startColumn,
+        endPosition.lineNumber,
+        endPosition.column,
+      ))
+    }
+
+    editor.focus()
+  }
 
   currentText.value = message.value
   resetState()

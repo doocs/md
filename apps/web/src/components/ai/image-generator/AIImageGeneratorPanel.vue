@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { monaco } from '@md/shared'
 import {
   Copy,
   Download,
@@ -504,15 +505,15 @@ function insertImageToCursor(imageUrl: string) {
     const markdownImage = `![${altText}](${imageUrl})`
 
     // 获取当前光标位置并插入
-    const cursor = editor.value.getCursor()
-    editor.value.replaceRange(markdownImage, cursor)
-
-    // 将光标移动到插入内容后面
-    const newCursor = { line: cursor.line, ch: cursor.ch + markdownImage.length }
-    editor.value.setCursor(newCursor)
-
-    // 聚焦编辑器
-    editor.value.focus()
+    const position = editor.value.getPosition()
+    if (position) {
+      editor.value.executeEdits(`insert-image`, [{
+        range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        text: markdownImage,
+      }])
+      // 聚焦编辑器
+      editor.value.focus()
+    }
 
     // 关闭弹窗
     dialogVisible.value = false

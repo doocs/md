@@ -11,6 +11,7 @@ updates:
     ignore:
       - dependency-name: vue
       - dependency-name: vite
+      - dependency-name: monaco-editor
 
     open-pull-requests-limit: 100
     groups:

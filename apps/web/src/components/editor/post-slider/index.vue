@@ -120,7 +120,7 @@ function recoverHistory() {
 
   const content = post.history[currentHistoryIndex.value].content
   post.content = content
-  toRaw(store.editor!).setValue(content)
+  store.editor!.setValue(content)
   toast.success(`记录恢复成功`)
   isOpenHistoryDialog.value = false
 }

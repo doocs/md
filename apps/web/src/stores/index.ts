@@ -1,16 +1,15 @@
+import type { MonacoEditor } from '@md/shared'
 import { initRenderer } from '@md/core'
+import { monaco } from '@md/shared'
 import {
   defaultStyleConfig,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
-import CodeMirror from 'codemirror'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
   css2json,
@@ -28,6 +27,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import 'monaco-editor/esm/vs/basic-languages/css/css.contribution'
 
 /**********************************
  * Post 结构接口
@@ -105,7 +105,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const editor = shallowRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -241,7 +241,7 @@ export const useStore = defineStore(`store`, () => {
   watch(currentPostId, () => {
     const post = getPostById(currentPostId.value)
     if (post) {
-      editor.value && toRaw(editor.value).setValue(post.content)
+      editor.value && editor.value.setValue(post.content)
     }
   })
 
@@ -259,7 +259,7 @@ export const useStore = defineStore(`store`, () => {
   const formatContent = () => {
     formatDoc(editor.value!.getValue()).then((doc) => {
       posts.value[currentPostIndex.value].content = doc
-      toRaw(editor.value!).setValue(doc)
+      editor.value!.setValue(doc)
     })
   }
 
@@ -280,10 +280,12 @@ export const useStore = defineStore(`store`, () => {
     }
   }
 
-  // 自义定 CSS 编辑器
-  const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  // 自义定 CSS 编辑器 (Monaco Editor)
+  const cssEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
   const setCssEditorValue = (content: string) => {
-    cssEditor.value!.setValue(content)
+    if (cssEditor.value) {
+      cssEditor.value.setValue(content)
+    }
   }
   /**
    * 自定义 CSS 内容
@@ -429,47 +431,42 @@ export const useStore = defineStore(`store`, () => {
     const cssEditorDom = document.querySelector<HTMLTextAreaElement>(
       `#cssEditor`,
     )!
-    cssEditorDom.value = getCurrentTab().content
-    const theme = isDark.value ? `darcula` : `xq-light`
-    cssEditor.value = markRaw(
-      CodeMirror.fromTextArea(cssEditorDom, {
-        mode: `css`,
-        theme,
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autofocus: true,
-        extraKeys: {
-          [`${shiftKey}-${altKey}-F`]: function autoFormat(
-            editor: CodeMirror.Editor,
-          ) {
-            formatDoc(editor.getValue(), `css`).then((doc) => {
-              getCurrentTab().content = doc
-              editor.setValue(doc)
-            })
-          },
-        },
-      } as never),
-    )
 
-    // 自动提示
-    cssEditor.value.on(`keyup`, (cm, e) => {
-      if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-        (cm as any).showHint(e)
-      }
+    cssEditor.value = monaco.editor.create(cssEditorDom, {
+      value: getCurrentTab().content,
+      language: `css`,
+      theme: isDark.value ? `vs-dark` : `vs`,
+      lineNumbers: `off`,
+      automaticLayout: true,
+      wordWrap: `on`,
+      fontSize: 16,
+      lineHeight: 22,
+      tabSize: 2,
+      minimap: { enabled: false },
+      scrollBeyondLastLine: false,
     })
 
-    // 实时保存
-    cssEditor.value.on(`update`, () => {
-      updateCss()
-      getCurrentTab().content = cssEditor.value!.getValue()
+    // 格式化
+    cssEditor.value.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
+      formatDoc(cssEditor.value!.getValue(), `css`).then((doc) => {
+        cssEditor.value!.setValue(doc)
+      })
+    })
+
+    // 监听内容变化
+    cssEditor.value.onDidChangeModelContent(() => {
+      if (cssEditor.value) {
+        const content = cssEditor.value.getValue()
+        getCurrentTab().content = content
+        updateCss()
+      }
     })
   })
 
   watch(isDark, () => {
-    const theme = isDark.value ? `darcula` : `xq-light`
-    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
+    if (cssEditor.value) {
+      cssEditor.value.updateOptions({ theme: isDark.value ? `vs-dark` : `vs` })
+    }
   })
 
   // 重置样式
@@ -498,7 +495,9 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    cssEditor.value!.setValue(DEFAULT_CSS_CONTENT)
+    if (cssEditor.value) {
+      cssEditor.value.setValue(DEFAULT_CSS_CONTENT)
+    }
 
     updateCss()
     editorRefresh()
@@ -647,25 +646,32 @@ export const useStore = defineStore(`store`, () => {
 
   // 导入默认文档
   const importDefaultContent = () => {
-    toRaw(editor.value!).setValue(DEFAULT_CONTENT)
+    editor.value!.setValue(DEFAULT_CONTENT)
     toast.success(`文档已重置`)
   }
 
   // 清空内容
   const clearContent = () => {
-    toRaw(editor.value!).setValue(``)
+    editor.value!.setValue(``)
     toast.success(`内容已清空`)
   }
 
   const copyToClipboard = async () => {
-    const selectedText = editor.value!.getSelection()
+    const selection = editor.value?.getSelection()
+    const selectedText = selection ? editor.value?.getModel()?.getValueInRange(selection) || `` : ``
     copyPlain(selectedText)
   }
 
   const pasteFromClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText()
-      editor.value!.replaceSelection(text)
+      const position = editor.value?.getPosition()
+      if (position && editor.value) {
+        editor.value.executeEdits(``, [{
+          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+          text,
+        }])
+      }
     }
     catch (error) {
       console.log(`粘贴失败`, error)
@@ -675,14 +681,14 @@ export const useStore = defineStore(`store`, () => {
   // 撤销操作
   const undo = () => {
     if (editor.value) {
-      editor.value.undo()
+      editor.value.trigger(`keyboard`, `undo`, {})
     }
   }
 
   // 重做操作
   const redo = () => {
     if (editor.value) {
-      editor.value.redo()
+      editor.value.trigger(`keyboard`, `redo`, {})
     }
   }
 
