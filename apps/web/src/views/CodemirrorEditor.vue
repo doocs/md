@@ -331,6 +331,7 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
     tabSize: 2,
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
+    contextmenu: false,
     // 配置查找功能选项，防止布局变化
     find: {
       addExtraSpaceOnTop: false,
