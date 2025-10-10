@@ -397,8 +397,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
         })
         .join(``)
       return `
-        <section style="padding:0 8px; max-width: 100%; overflow: auto">
-          <table class="preview-table">
+        <section style="max-width: 100%; overflow: auto">
+          <table class="preview-table" ${styles(`table`)}>
             <thead ${styles(`thead`)}>${headerRow}</thead>
             <tbody>${body}</tbody>
           </table>
