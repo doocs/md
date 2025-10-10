@@ -10,7 +10,6 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { checkImage, toBase64 } from '@/utils'
-import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
 import 'monaco-editor/esm/vs/basic-languages/markdown/markdown.contribution'
 
@@ -427,8 +426,8 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  const theme = isDark.value ? `darcula` : `xq-light`
-  toRaw(editor.value)?.setOption?.(`theme`, theme)
+  const theme = isDark.value ? `vs-dark` : `vs`
+  toRaw(editor.value)?.updateOptions?.({ theme })
 })
 
 // 历史记录的定时器
