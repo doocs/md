@@ -75,3 +75,63 @@
 .cm-comment {
   font-style: normal !important;
 }
+
+/* Monaco Editor 滚动条样式 */
+.monaco-editor {
+  /* 隐藏装饰概览尺规 */
+  .decorationsOverviewRuler {
+    display: none !important;
+  }
+
+  /* 滚动条容器 */
+  .scrollbar {
+    width: 6px !important;
+
+    &.vertical {
+      width: 6px !important;
+      right: 0 !important;
+    }
+
+    &.horizontal {
+      height: 6px !important;
+      bottom: 0 !important;
+    }
+  }
+
+  /* 滚动条滑块 */
+  .slider {
+    width: 6px !important;
+    background: rgba(128, 128, 128, 0.4) !important;
+    border-radius: 3px !important;
+
+    &:hover {
+      background: rgba(128, 128, 128, 0.6) !important;
+    }
+
+    &:active {
+      background: rgba(128, 128, 128, 0.8) !important;
+    }
+  }
+
+  /* 水平滚动条滑块 */
+  .scrollbar.horizontal .slider {
+    height: 6px !important;
+  }
+}
+
+/* 暗色模式下的滚动条 */
+.dark {
+  .monaco-editor {
+    .slider {
+      background: rgba(200, 200, 200, 0.3) !important;
+
+      &:hover {
+        background: rgba(200, 200, 200, 0.5) !important;
+      }
+
+      &:active {
+        background: rgba(200, 200, 200, 0.7) !important;
+      }
+    }
+  }
+}
