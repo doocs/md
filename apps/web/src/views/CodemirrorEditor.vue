@@ -50,53 +50,62 @@ function toggleView() {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
+let editorScrollDisposable: any = null
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
-  const scrollCB = (text: string) => {
-    // AIPolishBtnRef.value?.close()
+  let isEditorScrolling = false
+  let isPreviewScrolling = false
 
-    let source: HTMLElement
-    let target: HTMLElement
+  function syncScrollTo(source: `editor` | `preview`) {
+    if (!editor.value || !previewRef.value)
+      return
 
-    clearTimeout(timeout.value)
-    if (text === `preview`) {
-      source = previewRef.value!
-      target = document.querySelector<HTMLElement>(`.monaco-editor .monaco-scrollable-element`)!
-      editor.value!.off(`scroll`, editorScrollCB)
-      timeout.value = setTimeout(() => {
-        editor.value!.on(`scroll`, editorScrollCB)
-      }, 300)
+    if (source === `editor`) {
+      if (isPreviewScrolling)
+        return
+      isEditorScrolling = true
+
+      const scrollTop = editor.value.getScrollTop()
+      const scrollHeight = editor.value.getScrollHeight()
+      const visibleHeight = editor.value.getLayoutInfo().height
+      const percentage = scrollTop / (scrollHeight - visibleHeight)
+
+      const previewEl = previewRef.value
+      const targetScroll = percentage * (previewEl.scrollHeight - previewEl.offsetHeight)
+      previewEl.scrollTo(0, targetScroll)
+
+      requestAnimationFrame(() => {
+        isEditorScrolling = false
+      })
     }
     else {
-      source = document.querySelector<HTMLElement>(`.monaco-editor .monaco-scrollable-element`)!
-      target = previewRef.value!
-      target.removeEventListener(`scroll`, previewScrollCB, false)
-      timeout.value = setTimeout(() => {
-        target.addEventListener(`scroll`, previewScrollCB, false)
-      }, 300)
+      if (isEditorScrolling)
+        return
+      isPreviewScrolling = true
+
+      const previewEl = previewRef.value
+      const percentage = previewEl.scrollTop / (previewEl.scrollHeight - previewEl.offsetHeight)
+
+      const scrollHeight = editor.value.getScrollHeight()
+      const visibleHeight = editor.value.getLayoutInfo().height
+      const targetScroll = percentage * (scrollHeight - visibleHeight)
+      editor.value.setScrollTop(targetScroll)
+
+      requestAnimationFrame(() => {
+        isPreviewScrolling = false
+      })
     }
-
-    const percentage
-      = source.scrollTop / (source.scrollHeight - source.offsetHeight)
-    const height = percentage * (target.scrollHeight - target.offsetHeight)
-
-    target.scrollTo(0, height)
   }
 
-  function editorScrollCB() {
-    scrollCB(`editor`)
-  }
-
-  function previewScrollCB() {
-    scrollCB(`preview`)
-  }
-
+  // 监听预览区滚动
   if (previewRef.value) {
-    previewRef.value.addEventListener(`scroll`, previewScrollCB, false)
+    previewRef.value.addEventListener(`scroll`, () => syncScrollTo(`preview`), false)
   }
+
+  // 监听编辑器滚动
   if (editor.value) {
-    editor.value.on(`scroll`, editorScrollCB)
+    editorScrollDisposable = editor.value.onDidScrollChange(() => syncScrollTo(`editor`))
   }
 }
 
@@ -454,6 +463,11 @@ onUnmounted(() => {
 
   if (handlePaste.value) {
     document.removeEventListener(`paste`, handlePaste.value, true)
+  }
+
+  // 清理滚动监听器
+  if (editorScrollDisposable) {
+    editorScrollDisposable.dispose()
   }
 })
 </script>
