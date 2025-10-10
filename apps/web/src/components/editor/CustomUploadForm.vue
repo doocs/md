@@ -22,7 +22,7 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 
-const editor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
+const editor = shallowRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
 
 onMounted(() => {
   editor.value = monaco.editor.create(editorRef.value!, {
@@ -65,7 +65,7 @@ onMounted(() => {
 })
 
 function formCustomSave() {
-  const str = toRaw(editor.value!).getValue()
+  const str = editor.value!.getValue()
   localStorage.setItem(`formCustomConfig`, str)
   toast.success(`保存成功`)
 }

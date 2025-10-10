@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { ComponentPublicInstance } from 'vue'
-import { monaco } from '@md/shared'
+import { monaco, registerShortcuts } from '@md/shared'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
@@ -146,11 +146,11 @@ function uploaded(imageUrl: string) {
     toggleShowUploadImgDialog(false)
   }, 1000)
   // 上传成功，获取光标
-  const position = toRaw(editor.value!).getPosition()
+  const position = editor.value!.getPosition()
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
   if (position) {
-    toRaw(editor.value!).executeEdits(`insert-image`, [{
+    editor.value!.executeEdits(`insert-image`, [{
       range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
       text: `\n${markdownImage}\n`,
     }])
@@ -317,6 +317,7 @@ const handlePaste = ref<((event: ClipboardEvent) => Promise<void>) | null>(null)
 
 const editorRef = useTemplateRef<HTMLTextAreaElement>(`editorRef`)
 const progressValue = ref(0)
+
 function createMonacoEditor(dom: HTMLTextAreaElement) {
   const monacoEditor = monaco.editor.create(dom, {
     value: store.posts[store.currentPostIndex].content,
@@ -338,7 +339,7 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
       editorRefresh()
 
       const currentPost = store.posts[store.currentPostIndex]
-      const content = toRaw(monacoEditor).getValue()
+      const content = monacoEditor.getValue()
       if (content === currentPost.content) {
         return
       }
@@ -346,6 +347,17 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
       currentPost.updateDatetime = new Date()
       currentPost.content = content
     }, 300)
+  })
+
+  // 注册快捷键
+  registerShortcuts(monacoEditor, {
+    onFormat: async () => {
+      const { formatDoc } = await import(`@/utils`)
+      const value = monacoEditor.getValue()
+      formatDoc(value).then((doc: string) => {
+        monacoEditor.setValue(doc)
+      })
+    },
   })
 
   // 粘贴上传图片并插入 - 使用全局粘贴事件监听
@@ -427,7 +439,7 @@ onMounted(() => {
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
   const theme = isDark.value ? `vs-dark` : `vs`
-  toRaw(editor.value)?.updateOptions?.({ theme })
+  editor.value?.updateOptions?.({ theme })
 })
 
 // 历史记录的定时器

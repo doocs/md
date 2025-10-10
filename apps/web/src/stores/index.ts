@@ -105,7 +105,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
+  const editor = shallowRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -241,7 +241,7 @@ export const useStore = defineStore(`store`, () => {
   watch(currentPostId, () => {
     const post = getPostById(currentPostId.value)
     if (post) {
-      editor.value && toRaw(editor.value).setValue(post.content)
+      editor.value && editor.value.setValue(post.content)
     }
   })
 
@@ -259,7 +259,7 @@ export const useStore = defineStore(`store`, () => {
   const formatContent = () => {
     formatDoc(editor.value!.getValue()).then((doc) => {
       posts.value[currentPostIndex.value].content = doc
-      toRaw(editor.value!).setValue(doc)
+      editor.value!.setValue(doc)
     })
   }
 
@@ -281,10 +281,10 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器 (Monaco Editor)
-  const cssEditor = ref<MonacoEditor.IStandaloneCodeEditor | null>(null)
+  const cssEditor = shallowRef<MonacoEditor.IStandaloneCodeEditor | null>(null)
   const setCssEditorValue = (content: string) => {
     if (cssEditor.value) {
-      toRaw(cssEditor.value).setValue(content)
+      cssEditor.value.setValue(content)
     }
   }
   /**
@@ -383,7 +383,7 @@ export const useStore = defineStore(`store`, () => {
       isShowLineNumber: isShowLineNumber.value,
     })
 
-    const raw = toRaw(editor.value!).getValue()
+    const raw = editor.value!.getValue()
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
     readingTime.chars = raw.length
     readingTime.words = readingTimeResult.words
@@ -411,7 +411,7 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    const json = css2json(toRaw(cssEditor.value!).getValue())
+    const json = css2json(cssEditor.value!.getValue())
     const newTheme = customCssWithTemplate(
       json,
       primaryColor.value,
@@ -447,15 +447,15 @@ export const useStore = defineStore(`store`, () => {
 
     // 格式化
     cssEditor.value.addCommand(monaco.KeyMod.Alt | monaco.KeyMod.Shift | monaco.KeyCode.KeyF, () => {
-      formatDoc(toRaw(cssEditor.value!).getValue(), `css`).then((doc) => {
-        toRaw(cssEditor.value!).setValue(doc)
+      formatDoc(cssEditor.value!.getValue(), `css`).then((doc) => {
+        cssEditor.value!.setValue(doc)
       })
     })
 
     // 监听内容变化
     cssEditor.value.onDidChangeModelContent(() => {
       if (cssEditor.value) {
-        const content = toRaw(cssEditor.value).getValue()
+        const content = cssEditor.value.getValue()
         getCurrentTab().content = content
         updateCss()
       }
@@ -495,7 +495,7 @@ export const useStore = defineStore(`store`, () => {
     }
 
     if (cssEditor.value) {
-      toRaw(cssEditor.value).setValue(DEFAULT_CSS_CONTENT)
+      cssEditor.value.setValue(DEFAULT_CSS_CONTENT)
     }
 
     updateCss()
@@ -645,13 +645,13 @@ export const useStore = defineStore(`store`, () => {
 
   // 导入默认文档
   const importDefaultContent = () => {
-    toRaw(editor.value!).setValue(DEFAULT_CONTENT)
+    editor.value!.setValue(DEFAULT_CONTENT)
     toast.success(`文档已重置`)
   }
 
   // 清空内容
   const clearContent = () => {
-    toRaw(editor.value!).setValue(``)
+    editor.value!.setValue(``)
     toast.success(`内容已清空`)
   }
 
@@ -666,7 +666,7 @@ export const useStore = defineStore(`store`, () => {
       const text = await navigator.clipboard.readText()
       const position = editor.value?.getPosition()
       if (position && editor.value) {
-        toRaw(editor.value).executeEdits(``, [{
+        editor.value.executeEdits(``, [{
           range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
           text,
         }])
