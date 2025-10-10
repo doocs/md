@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { monaco } from '@md/shared'
 import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
@@ -68,7 +69,18 @@ function buildMpHtml(config: Config) {
 function submit(formValues: any) {
   config.value = formValues as Config
   const html = buildMpHtml(formValues as Config)
-  toRaw(store.editor!).replaceSelection(`\n${html}\n`, `end`)
+
+  const editor = store.editor
+  if (editor) {
+    const position = editor.getPosition()
+    if (position) {
+      editor.executeEdits(`insert-mp-card`, [{
+        range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        text: `\n${html}\n`,
+      }])
+    }
+  }
+
   toast.success(`公众号名片插入成功`)
   toggleShowInsertMpCardDialog(false)
 }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { monaco } from '@md/shared'
 import { useDisplayStore, useStore } from '@/stores'
 import { createTable } from '@/utils'
 
@@ -24,7 +25,18 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  toRaw(store.editor!).replaceSelection(`\n${table}\n`, `end`)
+
+  const editor = store.editor
+  if (editor) {
+    const position = editor.getPosition()
+    if (position) {
+      editor.executeEdits(`insert-table`, [{
+        range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+        text: `\n${table}\n`,
+      }])
+    }
+  }
+
   resetVal()
   toggleShowInsertFormDialog()
 }
