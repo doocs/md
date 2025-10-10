@@ -117,9 +117,29 @@
   .scrollbar.horizontal .slider {
     height: 6px !important;
   }
+
+  /* 固定查找面板位置在编辑区右上角，避免影响编辑区布局 */
+  .find-widget {
+    position: absolute !important;
+    z-index: 1000 !important;
+    top: 8px !important;
+    right: 8px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+    border-radius: 4px !important;
+  }
+
+  /* 确保查找面板不影响编辑器滚动 */
+  .overflow-guard {
+    position: relative !important;
+  }
+
+  /* 编辑器内容区域样式调整 */
+  .view-lines {
+    padding-top: 0 !important;
+  }
 }
 
-/* 暗色模式下的滚动条 */
+/* 暗色模式下的滚动条和查找面板 */
 .dark {
   .monaco-editor {
     .slider {
@@ -132,6 +152,14 @@
       &:active {
         background: rgba(200, 200, 200, 0.7) !important;
       }
+    }
+
+    /* 暗色模式下的查找面板样式 */
+    .find-widget {
+      background-color: #1e1e1e !important;
+      border: 1px solid #444444 !important;
+      color: #ffffff !important;
+      backdrop-filter: blur(8px) !important;
     }
   }
 }

@@ -326,11 +326,21 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
     lineNumbers: `off`,
     wordWrap: `on`,
     automaticLayout: true,
-    fontSize: 14,
+    fontSize: 16,
     lineHeight: 22,
     tabSize: 2,
     minimap: { enabled: false },
     scrollBeyondLastLine: false,
+    // 配置查找功能选项，防止布局变化
+    find: {
+      addExtraSpaceOnTop: false,
+      autoFindInSelection: `never`,
+      seedSearchStringFromSelection: `selection`,
+    },
+    // 固定查找面板，避免影响编辑区布局
+    fixedOverflowWidgets: true,
+    // 给编辑器内容区域添加上边距
+    padding: { top: 20, bottom: 20 },
   })
 
   monacoEditor.onDidChangeModelContent(() => {
