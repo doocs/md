@@ -249,15 +249,15 @@ export function initRenderer(opts: IOpts): RendererAPI {
       return styledContent(`blockquote`, text)
     },
 
-    code({ text, lang = `` }: Tokens.Code): string {
-      if (lang.startsWith(`mermaid`)) {
+    code({ text, lang }: Tokens.Code): string {
+      if (lang?.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
         codeIndex = setTimeout(() => {
           mermaid.run()
         }, 0) as any as number
         return `<pre class="mermaid">${text}</pre>`
       }
-      const langText = lang.split(` `)[0]
+      const langText = lang?.split(` `)[0] || `plaintext`
       const language = hljs.getLanguage(langText) ? langText : `plaintext`
 
       let highlighted = ``
