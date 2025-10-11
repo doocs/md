@@ -112,17 +112,9 @@ export default defineConfig(({ mode }) => {
               if (id.includes(`highlight.js`))
                 return `hljs`
 
-              // AWS SDK 分包 (很大的库)
-              if (id.includes(`@aws-sdk`))
-                return `aws-sdk`
-
               // 图片处理库分包
               if (id.includes(`browser-image-compression`) || id.includes(`html-to-image`))
                 return `image-tools`
-
-              // 云存储 SDK 分包
-              if (id.includes(`cos-js-sdk-v5`) || id.includes(`qiniu-js`) || id.includes(`tiny-oss`))
-                return `cloud-storage`
 
               // Vue 生态系统
               if (id.includes(`vue`) && !id.includes(`@vue`))
