@@ -352,4 +352,6 @@ export async function processClipboardContent(primaryColor: string) {
       /<tspan([^>]*)>/g,
       `<tspan$1 style="fill: #333333 !important; color: #333333 !important; stroke: none !important;">`,
     )
+  // 新增返回值，公众号发布组件使用
+  return clipboardDiv.innerHTML
 }
