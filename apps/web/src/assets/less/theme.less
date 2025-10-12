@@ -1,6 +1,5 @@
 @nightPreviewColor: #191919;
-@nightCodeMirrorColor: #191919;
-@nightActiveCodeMirrorColor: gray;
+@nightMonacoEditorColor: #191919;
 @nightFontColor: gray;
 @nightLinkColor: #8e9eb9;
 @nightLinkTextColor: #84868b;
@@ -8,10 +7,6 @@
 
 .dark {
   .container {
-    .CodeMirror-wrap {
-      background-color: @nightCodeMirrorColor;
-    }
-
     .output_night {
       .preview {
         background-color: @nightPreviewColor;
@@ -19,7 +14,7 @@
       }
 
       .preview-wrapper {
-        background-color: @nightCodeMirrorColor;
+        background-color: @nightPreviewColor;
         box-shadow: inset 0 0 0 1px rgba(233, 231, 231, 0.102);
       }
 
@@ -29,51 +24,9 @@
     }
 
     ::-webkit-scrollbar {
-      background-color: @nightCodeMirrorColor;
+      background-color: @nightMonacoEditorColor;
     }
   }
-}
-
-.CodeMirror {
-  padding-bottom: 0;
-  height: 100% !important;
-  font-size: 16px;
-  font-family: Consolas, 'Courier New', monospace !important;
-}
-
-.CodeMirror-vscrollbar:focus {
-  outline: none;
-}
-
-.CodeMirror-scroll {
-  padding: 0 20px;
-  overflow-x: hidden !important;
-  overflow-y: scroll !important;
-}
-
-.cssEditor-wrapper {
-  .CodeMirror-scroll {
-    margin-right: 0;
-  }
-}
-
-.CodeMirror-vscrollbar {
-  width: 0px;
-  height: 0px;
-}
-
-.CodeMirror-wrap {
-  padding-top: 20px;
-  padding-bottom: 20px;
-  box-sizing: border-box;
-}
-
-.cm-em {
-  font-style: normal;
-}
-
-.cm-comment {
-  font-style: normal !important;
 }
 
 /* Monaco Editor 滚动条样式 */
@@ -142,6 +95,16 @@
 /* 暗色模式下的滚动条和查找面板 */
 .dark {
   .monaco-editor {
+    /* 暗色模式下的编辑器背景色 */
+    background-color: @nightMonacoEditorColor !important;
+
+    .margin,
+    .view-lines,
+    .monaco-editor-background,
+    .inputarea.ime-input {
+      background-color: @nightMonacoEditorColor !important;
+    }
+
     .slider {
       background: rgba(200, 200, 200, 0.3) !important;
 

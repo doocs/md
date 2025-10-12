@@ -276,12 +276,12 @@ async function uploadMdImg({
   editor.value!.setValue(md.str)
 }
 
-const codeMirrorWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`codeMirrorWrapper`)
+const monacoWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`monacoWrapper`)
 
 // 转换 markdown 中的本地图片为线上图片
 // todo 处理事件覆盖
 function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value!
+  const dom = monacoWrapper.value!
 
   dom.ondragover = evt => evt.preventDefault()
   dom.ondrop = async (evt) => {
@@ -518,8 +518,8 @@ onUnmounted(() => {
           <ResizablePanel class="flex">
             <div
               v-show="!store.isMobile || (store.isMobile && showEditor)"
-              ref="codeMirrorWrapper"
-              class="codeMirror-wrapper relative flex-1"
+              ref="monacoWrapper"
+              class="monaco-wrapper relative flex-1"
               :class="{
                 'order-1 border-l': !store.isEditOnLeft,
                 'border-r': store.isEditOnLeft,
@@ -673,12 +673,12 @@ onUnmounted(() => {
   border-spacing: 0;
 }
 
-.codeMirror-wrapper,
+.monaco-wrapper,
 .preview-wrapper {
   height: 100%;
 }
 
-.codeMirror-wrapper {
+.monaco-wrapper {
   overflow-x: hidden;
   height: 100%;
   position: relative;
