@@ -1,5 +1,4 @@
 @nightPreviewColor: #191919;
-@nightMonacoEditorColor: #191919;
 @nightFontColor: gray;
 @nightLinkColor: #8e9eb9;
 @nightLinkTextColor: #84868b;
@@ -24,7 +23,7 @@
     }
 
     ::-webkit-scrollbar {
-      background-color: @nightMonacoEditorColor;
+      background-color: @nightPreviewColor;
     }
   }
 }
@@ -99,16 +98,6 @@
 /* 暗色模式下的滚动条和查找面板 */
 .dark {
   .monaco-editor {
-    /* 暗色模式下的编辑器背景色 */
-    background-color: @nightMonacoEditorColor !important;
-
-    .margin,
-    .view-lines,
-    .monaco-editor-background,
-    .inputarea.ime-input {
-      background-color: @nightMonacoEditorColor !important;
-    }
-
     .slider {
       background: rgba(200, 200, 200, 0.3) !important;
 
