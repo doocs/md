@@ -15,8 +15,24 @@ export default defineStore(`AIImageConfig`, () => {
   const style = useStorage<string>(`openai_image_style`, `natural`)
 
   /* ————— 与 service 强相关的字段 ————— */
-  const endpoint = ref<string>(``) // 由 watch(type) 初始化
-  const model = ref<string>(``) // 同上
+  const endpoint = customRef<string>((track, trigger) => ({
+    get() {
+      track()
+      if (type.value === `custom`) {
+        return localStorage.getItem(`openai_image_endpoint_${type.value}`) || ``
+      }
+      // 对于非 custom 类型，从配置中获取
+      const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
+      return svc.endpoint
+    },
+    set(val: string) {
+      if (type.value === `custom`) {
+        localStorage.setItem(`openai_image_endpoint_${type.value}`, val)
+      }
+      trigger()
+    },
+  }))
+  const model = ref<string>(``) // 由 watch(type) 初始化
 
   /* ————— apiKey：按 service 前缀持久化 ————— */
   const apiKey = customRef<string>((track, trigger) => ({
@@ -40,15 +56,21 @@ export default defineStore(`AIImageConfig`, () => {
     (newType) => {
       const svc = imageServiceOptions.find(s => s.value === newType) ?? imageServiceOptions[0]
 
-      // 更新端点
-      endpoint.value = svc.endpoint
+      if (newType === `custom`) {
+        // 自定义服务：从存储读取模型
+        const savedModel = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        model.value = savedModel
+      }
+      else {
+        // 预设服务：读取或回退模型
+        const saved = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        model.value = svc.models.includes(saved) ? saved : svc.models[0]
 
-      // 读取或回退模型
-      const saved = localStorage.getItem(`openai_image_model_${newType}`) || ``
-      model.value = svc.models.includes(saved) ? saved : svc.models[0]
-
-      // 如有回退，写回存储保持一致
-      localStorage.setItem(`openai_image_model_${newType}`, model.value)
+        // 如有回退，写回存储保持一致
+        if (!svc.models.includes(saved) && svc.models[0]) {
+          localStorage.setItem(`openai_image_model_${newType}`, svc.models[0])
+        }
+      }
     },
     { immediate: true }, // ⬅️ 关键：首次也执行
   )
@@ -70,6 +92,7 @@ export default defineStore(`AIImageConfig`, () => {
     imageServiceOptions.forEach(({ value }) => {
       localStorage.removeItem(`openai_image_key_${value}`)
       localStorage.removeItem(`openai_image_model_${value}`)
+      localStorage.removeItem(`openai_image_endpoint_${value}`)
     })
   }
 
