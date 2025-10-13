@@ -342,6 +342,12 @@ function createMonacoEditor(dom: HTMLTextAreaElement) {
     fixedOverflowWidgets: true,
     // 给编辑器内容区域添加上边距
     padding: { top: 20, bottom: 20 },
+    // 禁用 Unicode 高亮，避免中文标点符号被标记
+    unicodeHighlight: {
+      ambiguousCharacters: false,
+      invisibleCharacters: false,
+      nonBasicASCII: false,
+    },
   })
 
   monacoEditor.onDidChangeModelContent(() => {
