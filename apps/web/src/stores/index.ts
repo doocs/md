@@ -1,13 +1,13 @@
 import type { EditorView } from '@codemirror/view'
-import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
+import { Compartment, EditorState } from '@codemirror/state'
+import { EditorView as CMEditorView } from '@codemirror/view'
 import { initRenderer } from '@md/core'
 import {
-  altKey,
   defaultStyleConfig,
-  shiftKey,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
+import { cssSetup, theme as editorTheme } from '@md/shared/editor'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
@@ -30,7 +30,6 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
-import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
 
 /**********************************
  * Post 结构接口
@@ -290,11 +289,13 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器
-  const cssEditor = ref<CodeMirrorV6Editor | null>(null)
+  const cssEditor = ref<EditorView | null>(null)
+  const cssEditorThemeCompartment = ref<Compartment | null>(null)
+
   const setCssEditorValue = (content: string) => {
-    if (cssEditor.value?.view) {
-      cssEditor.value.view.dispatch({
-        changes: { from: 0, to: cssEditor.value.view.state.doc.length, insert: content },
+    if (cssEditor.value) {
+      cssEditor.value.dispatch({
+        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: content },
       })
     }
   }
@@ -422,8 +423,8 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    if (cssEditor.value?.view) {
-      const json = css2json(cssEditor.value.view.state.doc.toString())
+    if (cssEditor.value) {
+      const json = css2json(cssEditor.value.state.doc.toString())
       const newTheme = customCssWithTemplate(
         json,
         primaryColor.value,
@@ -449,35 +450,35 @@ export const useStore = defineStore(`store`, () => {
     const cssContainer = document.createElement(`div`)
     cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
 
-    const extraKeys = {
-      [`${shiftKey}-${altKey}-F`]: function autoFormat(view: EditorView): boolean {
-        formatDoc(view.state.doc.toString(), `css`).then((doc) => {
-          getCurrentTab().content = doc
-          view.dispatch({
-            changes: { from: 0, to: view.state.doc.length, insert: doc },
-          })
-        })
-        return true
-      },
-    }
+    // 创建主题 Compartment 用于动态切换
+    cssEditorThemeCompartment.value = new Compartment()
 
-    const cssEditorInstance = createCodeMirrorV6(
-      cssContainer,
-      getCurrentTab().content,
-      isDark.value,
-      extraKeys,
-      (value: string) => {
-        updateCss()
-        getCurrentTab().content = value
-      },
-    )
+    // 创建 CSS 编辑器
+    const state = EditorState.create({
+      doc: getCurrentTab().content,
+      extensions: [
+        cssSetup(),
+        cssEditorThemeCompartment.value.of(editorTheme(isDark.value)),
+        CMEditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            updateCss()
+            getCurrentTab().content = update.state.doc.toString()
+          }
+        }),
+      ],
+    })
 
-    cssEditor.value = markRaw(cssEditorInstance)
+    cssEditor.value = markRaw(new CMEditorView({
+      state,
+      parent: cssContainer,
+    }))
   })
 
   watch(isDark, () => {
-    if (cssEditor.value) {
-      cssEditor.value.updateTheme(isDark.value)
+    if (cssEditor.value && cssEditorThemeCompartment.value) {
+      cssEditor.value.dispatch({
+        effects: cssEditorThemeCompartment.value.reconfigure(editorTheme(isDark.value)),
+      })
     }
   })
 
@@ -507,9 +508,9 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    if (cssEditor.value?.view) {
-      cssEditor.value.view.dispatch({
-        changes: { from: 0, to: cssEditor.value.view.state.doc.length, insert: DEFAULT_CSS_CONTENT },
+    if (cssEditor.value) {
+      cssEditor.value.dispatch({
+        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: DEFAULT_CSS_CONTENT },
       })
     }
 
