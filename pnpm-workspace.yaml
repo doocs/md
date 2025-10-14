@@ -3,4 +3,4 @@ packages:
   - packages/*
 
 patchedDependencies:
-  '@codemirror/view@6.38.6': patches/@codemirror__view@6.38.6.patch
+  '@codemirror/view': patches/@codemirror__view.patch
