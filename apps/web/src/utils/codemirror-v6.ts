@@ -3,7 +3,7 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown } from '@codemirror/lang-markdown'
 import { HighlightStyle, syntaxHighlighting } from '@codemirror/language'
-import { highlightSelectionMatches, search, searchKeymap } from '@codemirror/search'
+import { highlightSelectionMatches } from '@codemirror/search'
 import { Compartment, EditorState, Prec } from '@codemirror/state'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
@@ -162,7 +162,7 @@ export function createEditorExtensions(extraKeyHandlers: Record<string, (view: E
   const extensions: Extension[] = [
     // 基础功能
     history(),
-    search({ top: true }), // 使用 v6 内置搜索
+    // 不使用内置搜索，使用自定义的 SearchTab 组件
     highlightSelectionMatches(),
     closeBrackets(),
 
@@ -174,7 +174,7 @@ export function createEditorExtensions(extraKeyHandlers: Record<string, (view: E
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
-      ...searchKeymap,
+      // 移除 searchKeymap，使用自定义搜索快捷键
       ...closeBracketsKeymap,
     ]),
 

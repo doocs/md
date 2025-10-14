@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import type { EditorView } from '@codemirror/view'
+import type { DecorationSet } from '@codemirror/view'
+import { StateEffect, StateField } from '@codemirror/state'
+import { Decoration, EditorView } from '@codemirror/view'
 import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
 
 const props = defineProps<{
@@ -23,6 +25,36 @@ const currentMatchPosition = computed(() => {
   if (!checkMatchNumber())
     return null
   return matchPositions.value[indexOfMatch.value]
+})
+
+// 定义高亮样式的 StateEffect
+const setSearchHighlights = StateEffect.define<DecorationSet>()
+
+// 创建搜索高亮的 StateField（需要在编辑器初始化时添加）
+const searchHighlightField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none
+  },
+  update(highlights, tr) {
+    for (const effect of tr.effects) {
+      if (effect.is(setSearchHighlights)) {
+        return effect.value
+      }
+    }
+    return highlights
+  },
+  provide: f => EditorView.decorations.from(f),
+})
+
+// 在组件挂载时动态添加 searchHighlightField
+onMounted(() => {
+  // 检查编辑器是否已经有这个 field
+  if (!props.editorView.state.field(searchHighlightField, false)) {
+    // 动态添加 extension
+    props.editorView.dispatch({
+      effects: StateEffect.appendConfig.of(searchHighlightField),
+    })
+  }
 })
 
 watch(searchWord, () => {
@@ -59,14 +91,39 @@ watch(showSearchTab, async () => {
 })
 
 function clearAllMarks() {
-  // CodeMirror v6 使用不同的标记系统，这里为空实现
-  // 实际的标记清理需要使用 v6 的 decoration 系统
+  // 清除所有搜索高亮
+  props.editorView.dispatch({
+    effects: setSearchHighlights.of(Decoration.none),
+  })
 }
 
 function markMatch() {
-  clearAllMarks()
-  // CodeMirror v6 的标记系统需要使用 decoration，这里为简化实现
-  // 实际项目中可能需要实现完整的搜索高亮功能
+  // 清除旧的高亮
+  const decorations: any[] = []
+
+  // 为所有匹配项添加高亮装饰
+  matchPositions.value.forEach((match, idx) => {
+    const from = match[0]
+    const to = match[1]
+    const fromLine = props.editorView.state.doc.line(from.line + 1)
+    const toLine = props.editorView.state.doc.line(to.line + 1)
+    const fromPos = fromLine.from + from.ch
+    const toPos = toLine.from + to.ch
+
+    // 当前选中的匹配项使用不同的样式
+    const isCurrentMatch = idx === indexOfMatch.value
+    const mark = Decoration.mark({
+      class: isCurrentMatch ? `cm-searchMatch-selected` : `cm-searchMatch`,
+    })
+
+    decorations.push(mark.range(fromPos, toPos))
+  })
+
+  // 应用装饰
+  const decorationSet = Decoration.set(decorations, true)
+  props.editorView.dispatch({
+    effects: setSearchHighlights.of(decorationSet),
+  })
 
   // 滚动到当前匹配位置
   if (matchPositions.value[indexOfMatch.value]?.[0]) {
@@ -74,7 +131,7 @@ function markMatch() {
     const docLine = props.editorView.state.doc.line(pos.line + 1)
     const offset = docLine.from + pos.ch
     props.editorView.dispatch({
-      selection: { anchor: offset },
+      selection: { anchor: offset, head: offset },
       scrollIntoView: true,
     })
   }
@@ -214,13 +271,9 @@ function setSearchWord(word: string) {
   }
 }
 
-onMounted(() => {
-  // CodeMirror v6 使用不同的事件系统
-  // 这里可以使用 EditorView.updateListener 或者其他方式监听变化
-  // 为简化，这里暂时不实现自动更新搜索结果
-})
 onUnmounted(() => {
-  // 清理工作
+  // 清理搜索高亮
+  clearAllMarks()
 })
 
 /**
@@ -348,5 +401,32 @@ defineExpose({
 .slide-down-leave-to {
   transform: translateY(-100%);
   opacity: 0;
+}
+</style>
+
+<style lang="less">
+/* 搜索匹配项高亮样式（全局，不使用 scoped） */
+.cm-searchMatch {
+  background-color: rgba(255, 237, 100, 0.4);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.3);
+}
+
+.cm-searchMatch-selected {
+  background-color: rgba(255, 152, 0, 0.6);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.8);
+  font-weight: 500;
+}
+
+/* 暗色主题适配 */
+.dark .cm-searchMatch {
+  background-color: rgba(255, 235, 59, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 235, 59, 0.4);
+}
+
+.dark .cm-searchMatch-selected {
+  background-color: rgba(255, 152, 0, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.7);
 }
 </style>
