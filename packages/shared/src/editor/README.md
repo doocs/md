@@ -44,7 +44,7 @@
 ```typescript
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView, placeholder } from '@codemirror/view'
-import { markdownSetup, markdownTheme } from '@md/shared/editor'
+import { markdownSetup, theme } from '@md/shared/editor'
 
 // 创建主题 Compartment 用于动态切换
 const themeCompartment = new Compartment()
@@ -53,7 +53,7 @@ const state = EditorState.create({
   doc: `# Hello World`,
   extensions: [
     markdownSetup(),
-    themeCompartment.of(markdownTheme(false)), // 浅色主题
+    themeCompartment.of(theme(false)), // 浅色主题
     placeholder(`开始写作...`),
     EditorView.updateListener.of((update) => {
       if (update.docChanged) {
@@ -70,7 +70,7 @@ const view = new EditorView({
 
 // 切换主题
 view.dispatch({
-  effects: themeCompartment.reconfigure(markdownTheme(true)), // 暗色主题
+  effects: themeCompartment.reconfigure(theme(true)), // 暗色主题
 })
 
 // 获取内容
@@ -90,7 +90,7 @@ view.destroy()
 ```typescript
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { javascriptSetup, javascriptTheme } from '@md/shared/editor'
+import { javascriptSetup, theme } from '@md/shared/editor'
 
 const themeCompartment = new Compartment()
 
@@ -100,7 +100,7 @@ const view = new EditorView({
     doc: `console.log("Hello")`,
     extensions: [
       javascriptSetup(),
-      themeCompartment.of(javascriptTheme(false)),
+      themeCompartment.of(theme(false)),
     ],
   }),
 })
@@ -111,7 +111,7 @@ const view = new EditorView({
 ```typescript
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { cssSetup, cssTheme } from '@md/shared/editor'
+import { cssSetup, theme } from '@md/shared/editor'
 
 const themeCompartment = new Compartment()
 
@@ -121,7 +121,7 @@ const view = new EditorView({
     doc: `body { margin: 0; }`,
     extensions: [
       cssSetup(),
-      themeCompartment.of(cssTheme(true)), // 暗色主题
+      themeCompartment.of(theme(true)), // 暗色主题
     ],
   }),
 })
@@ -133,7 +133,7 @@ const view = new EditorView({
 <script setup lang="ts">
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { javascriptSetup, javascriptTheme } from '@md/shared/editor'
+import { javascriptSetup, theme } from '@md/shared/editor'
 
 const editorContainer = ref<HTMLDivElement>()
 const view = ref<EditorView>()
@@ -150,7 +150,7 @@ onMounted(() => {
       doc: `const x = 1`,
       extensions: [
         javascriptSetup(),
-        themeCompartment.of(javascriptTheme(isDark.value)),
+        themeCompartment.of(theme(isDark.value)),
       ],
     }),
   })
@@ -159,7 +159,7 @@ onMounted(() => {
 // 监听主题变化
 watch(isDark, (dark) => {
   view.value?.dispatch({
-    effects: themeCompartment.reconfigure(javascriptTheme(dark)),
+    effects: themeCompartment.reconfigure(theme(dark)),
   })
 })
 
@@ -175,26 +175,39 @@ onUnmounted(() => {
 
 ## API
 
-### Markdown
+### 语言扩展
 
-- `markdownSetup()` - 返回 Markdown 编辑器的基础扩展
-- `markdownLightTheme()` - 返回浅色主题扩展
-- `markdownDarkTheme()` - 返回暗色主题扩展
-- `markdownTheme(isDark: boolean)` - 根据模式返回对应主题
+- `markdownSetup()` - Markdown 编辑器的基础扩展
+- `javascriptSetup()` - JavaScript 编辑器的基础扩展（包含 basicSetup）
+- `cssSetup()` - CSS 编辑器的基础扩展（包含 basicSetup）
 
-### JavaScript
+### 统一主题
 
-- `javascriptSetup()` - 返回 JavaScript 编辑器的基础扩展（包含 basicSetup）
-- `javascriptLightTheme()` - 返回浅色主题扩展
-- `javascriptDarkTheme()` - 返回暗色主题扩展
-- `javascriptTheme(isDark: boolean)` - 根据模式返回对应主题
+所有编辑器使用统一的主题系统（基于 VS Code 主题）：
 
-### CSS
+- `theme(isDark: boolean)` - 根据模式返回对应主题
+- `lightTheme()` - 返回浅色主题
+- `darkTheme()` - 返回暗色主题
 
-- `cssSetup()` - 返回 CSS 编辑器的基础扩展（包含 basicSetup）
-- `cssLightTheme()` - 返回浅色主题扩展
-- `cssDarkTheme()` - 返回暗色主题扩展
-- `cssTheme(isDark: boolean)` - 根据模式返回对应主题
+使用示例：
+
+```typescript
+import { Compartment } from '@codemirror/state'
+import { javascriptSetup, theme } from '@md/shared/editor'
+
+const themeCompartment = new Compartment()
+
+// 使用统一的主题
+const extensions = [
+  javascriptSetup(),
+  themeCompartment.of(theme(false)), // 浅色
+]
+
+// 切换主题
+view.dispatch({
+  effects: themeCompartment.reconfigure(theme(true)) // 暗色
+})
+```
 
 ## 自定义扩展
 
@@ -208,9 +221,7 @@ const view = new EditorView({
   state: EditorState.create({
     extensions: [
       markdownSetup(),
-      markdownTheme(false),
-      // 添加占位符
-      placeholder(`开始写作...`),
+      theme(false), // 使用统一的主题
       // 添加自定义快捷键（Mod- 会自动映射为对应平台的修饰键）
       keymap.of([
         { key: `Mod-s`, run: (view) => { /* 保存 */ return true } },
