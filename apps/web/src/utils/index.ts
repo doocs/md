@@ -139,15 +139,30 @@ export function exportHTML(primaryColor: string, title: string = `untitled`) {
   downloadFile(fullHtml, `${sanitizeTitle(title)}.html`, `text/html`)
 }
 
-export async function exportPureHTML(raw: string, title: string = `untitled`) {
-  const safeTitle = sanitizeTitle(title)
-
+/**
+ * 生成无样式 HTML
+ * @param raw - 原始 Markdown 内容
+ * @returns string
+ */
+export async function generatePureHTML(raw: string): Promise<string> {
   const markedInstance = new Marked()
   markedInstance.use(markedAlert({ withoutStyle: true }))
   markedInstance.use(
-    MDKatex({ nonStandard: true }, ``, ``),
+    MDKatex({ nonStandard: true }, ``, ``, false),
   )
   const pureHtml = await markedInstance.parse(raw)
+  return pureHtml
+}
+
+/**
+ * 导出无样式 HTML 文件
+ * @param raw - 原始 Markdown 内容
+ * @param title - 文档标题
+ */
+export async function exportPureHTML(raw: string, title: string = `untitled`) {
+  const safeTitle = sanitizeTitle(title)
+
+  const pureHtml = await generatePureHTML(raw)
 
   downloadFile(pureHtml, `${safeTitle}.html`, `text/html`)
 }

@@ -2,6 +2,7 @@
 import { serviceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
+import { PasswordInput } from '@/components/ui/password-input'
 import useAIConfigStore from '@/stores/AIConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -9,18 +10,7 @@ import useAIConfigStore from '@/stores/AIConfig'
 const emit = defineEmits([`saved`])
 
 const AIConfigStore = useAIConfigStore()
-const { type, endpoint, model, apiKey, temperature, maxToken }
-  = storeToRefs(AIConfigStore)
-
-/** 本地草稿 */
-const config = reactive({
-  type: ``,
-  endpoint: ``,
-  apiKey: ``,
-  model: ``,
-  temperature: 1,
-  maxToken: 1024,
-})
+const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
 
 /** UI 状态 */
 const loading = ref(false)
@@ -28,48 +18,24 @@ const testResult = ref(``)
 
 /** 当前服务信息 */
 const currentService = computed(
-  () => serviceOptions.find(s => s.value === config.type) || serviceOptions[0],
+  () => serviceOptions.find(s => s.value === type.value) || serviceOptions[0],
 )
-
-/* -------------------------- 同步函数 -------------------------- */
-
-function pullFromStore() {
-  config.type = type.value
-  config.endpoint = endpoint.value
-  config.apiKey = apiKey.value
-  config.model = model.value
-  config.temperature = temperature.value
-  config.maxToken = maxToken.value
-}
-pullFromStore() // 首屏同步一次
 
 /* -------------------------- 监听 -------------------------- */
 
-watch(
-  () => config.type,
-  () => {
-    config.endpoint = currentService.value.endpoint
-    if (!currentService.value.models.includes(config.model)) {
-      config.model = currentService.value.models[0] || ``
-    }
-    testResult.value = ``
-  },
-)
+// 监听服务类型变化，清空测试结果
+watch(type, () => {
+  testResult.value = ``
+})
 
-watch(() => config.model, () => (testResult.value = ``))
+// 监听模型变化，清空测试结果
+watch(model, () => {
+  testResult.value = ``
+})
 
 /* -------------------------- 操作 -------------------------- */
 
 function saveConfig(emitEvent = true) {
-  AIConfigStore.$patch({
-    type: config.type,
-    endpoint: config.endpoint,
-    model: config.model,
-    temperature: config.temperature,
-    maxToken: config.maxToken,
-  })
-  apiKey.value = config.apiKey
-
   if (emitEvent) {
     testResult.value = `✅ 配置已保存`
     emit(`saved`)
@@ -78,7 +44,6 @@ function saveConfig(emitEvent = true) {
 
 function clearConfig() {
   AIConfigStore.reset()
-  pullFromStore()
   testResult.value = `🗑️ 当前 AI 配置已清除`
 }
 
@@ -87,16 +52,16 @@ async function testConnection() {
   loading.value = true
 
   const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (config.apiKey && config.type !== DEFAULT_SERVICE_TYPE)
-    headers.Authorization = `Bearer ${config.apiKey}`
+  if (apiKey.value && type.value !== DEFAULT_SERVICE_TYPE)
+    headers.Authorization = `Bearer ${apiKey.value}`
 
   try {
-    const url = new URL(config.endpoint)
+    const url = new URL(endpoint.value)
     if (!url.pathname.endsWith(`/chat/completions`))
       url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
 
     const payload = {
-      model: config.model,
+      model: model.value,
       messages: [{ role: `user`, content: `ping` }],
       temperature: 0,
       max_tokens: 1,
@@ -122,7 +87,7 @@ async function testConnection() {
           && (error?.code === `ModelNotOpen`
             || /not activated|未开通/i.test(error?.message))
         ) {
-          testResult.value = `⚠️ 测试成功，但当前模型未开通：${config.model}`
+          testResult.value = `⚠️ 测试成功，但当前模型未开通：${model.value}`
           saveConfig(false)
           return
         }
@@ -149,7 +114,7 @@ async function testConnection() {
     <!-- 服务类型 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">服务类型</Label>
-      <Select v-model="config.type">
+      <Select v-model="type">
         <SelectTrigger class="w-full">
           <SelectValue>
             {{ currentService.label }}
@@ -168,21 +133,20 @@ async function testConnection() {
     </div>
 
     <!-- API 端点 -->
-    <div v-if="config.type !== DEFAULT_SERVICE_TYPE">
+    <div v-if="type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">API 端点</Label>
       <Input
-        v-model="config.endpoint"
+        v-model="endpoint"
         placeholder="输入 API 端点 URL"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
     <!-- API 密钥，仅非 default 显示 -->
-    <div v-if="config.type !== DEFAULT_SERVICE_TYPE">
+    <div v-if="type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
-      <Input
-        v-model="config.apiKey"
-        type="password"
+      <PasswordInput
+        v-model="apiKey"
         placeholder="sk-..."
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
@@ -191,10 +155,10 @@ async function testConnection() {
     <!-- 模型名称 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">模型名称</Label>
-      <Select v-if="currentService.models.length > 0" v-model="config.model">
+      <Select v-if="currentService.models.length > 0" v-model="model">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ config.model || '请选择模型' }}
+            {{ model || '请选择模型' }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -209,7 +173,7 @@ async function testConnection() {
       </Select>
       <Input
         v-else
-        v-model="config.model"
+        v-model="model"
         placeholder="输入模型名称"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
@@ -231,7 +195,7 @@ async function testConnection() {
         </TooltipProvider>
       </Label>
       <Input
-        v-model.number="config.temperature"
+        v-model.number="temperature"
         type="number"
         step="0.1"
         min="0"
@@ -245,7 +209,7 @@ async function testConnection() {
     <div>
       <Label class="mb-1 block text-sm font-medium">最大 Token 数</Label>
       <Input
-        v-model.number="config.maxToken"
+        v-model.number="maxToken"
         type="number"
         min="1"
         max="32768"

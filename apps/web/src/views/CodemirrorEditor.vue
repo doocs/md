@@ -5,11 +5,7 @@ import type { ComponentPublicInstance } from 'vue'
 import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
-import {
-  AIPolishButton,
-  AIPolishPopover,
-  useAIPolish,
-} from '@/components/ai/tool-box'
+import { SidebarAIToolbar } from '@/components/ai'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -58,16 +54,7 @@ function toggleView() {
   showEditor.value = !showEditor.value
 }
 
-const {
-  AIPolishBtnRef,
-  AIPolishPopoverRef,
-  selectedText,
-  position,
-  isDragging,
-  startDrag,
-  initPolishEvent,
-  recalcPos,
-} = useAIPolish()
+// AI 工具箱已移到侧边栏
 
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
@@ -484,9 +471,7 @@ onMounted(() => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
 
-    if (editorView) {
-      initPolishEvent(editorView)
-    }
+    // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
     mdLocalToRemote()
   })
@@ -566,7 +551,7 @@ onUnmounted(() => {
               }"
             >
               <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView.view" />
-              <AIFixedBtn
+              <SidebarAIToolbar
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"
               />
@@ -634,24 +619,7 @@ onUnmounted(() => {
         </button>
       </div>
 
-      <AIPolishButton
-        v-if="store.showAIToolbox"
-        ref="AIPolishBtnRef"
-        :position="position"
-        @click="AIPolishPopoverRef?.show"
-      />
-
-      <AIPolishPopover
-        v-if="store.showAIToolbox"
-        ref="AIPolishPopoverRef"
-        :position="position"
-        :selected-text="selectedText"
-        :is-dragging="isDragging"
-        :is-mobile="store.isMobile"
-        @close-btn="AIPolishBtnRef?.close"
-        @recalc-pos="recalcPos"
-        @start-drag="startDrag"
-      />
+      <!-- AI工具箱已移到侧边栏，这里不再显示 -->
 
       <UploadImgDialog @upload-image="uploadImage" />
 
@@ -737,7 +705,8 @@ onUnmounted(() => {
 }
 
 .codeMirror-wrapper {
-  overflow-x: auto;
+  overflow-x: hidden;
   height: 100%;
+  position: relative;
 }
 </style>

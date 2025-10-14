@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
-import { useStore } from '@/stores'
-import { addPrefix, processClipboardContent } from '@/utils'
+import { useDisplayStore, useStore } from '@/stores'
+import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
 const store = useStore()
+const displayStore = useDisplayStore()
 
 const { output, primaryColor, editor } = storeToRefs(store)
 
@@ -36,6 +37,69 @@ const { copy: copyContent } = useClipboard({
   legacy: true,
 })
 
+const delay = (ms: number) => new Promise<void>(resolve => window.setTimeout(resolve, ms))
+
+const normalizeErrorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error))
+
+async function writeClipboardItems(items: ClipboardItem[]) {
+  if (!navigator.clipboard?.write) {
+    throw new Error(`Clipboard API not available.`)
+  }
+
+  await delay(0)
+  await navigator.clipboard.write(items)
+}
+
+function fallbackCopyUsingExecCommand(htmlContent: string) {
+  const selection = window.getSelection()
+
+  if (!selection) {
+    return false
+  }
+
+  const tempContainer = document.createElement(`div`)
+  tempContainer.innerHTML = htmlContent
+  tempContainer.style.position = `fixed`
+  tempContainer.style.left = `-9999px`
+  tempContainer.style.top = `0`
+  tempContainer.style.opacity = `0`
+  tempContainer.style.pointerEvents = `none`
+  tempContainer.style.setProperty(`background-color`, `#ffffff`, `important`)
+  tempContainer.style.setProperty(`color`, `#000000`, `important`)
+
+  document.body.appendChild(tempContainer)
+
+  const htmlElement = document.documentElement
+  const wasDark = htmlElement.classList.contains(`dark`)
+  let successful = false
+
+  try {
+    if (wasDark) {
+      htmlElement.classList.remove(`dark`)
+    }
+
+    const range = document.createRange()
+    range.selectNodeContents(tempContainer)
+    selection.removeAllRanges()
+    selection.addRange(range)
+
+    successful = document.execCommand(`copy`)
+  }
+  catch {
+    successful = false
+  }
+  finally {
+    selection.removeAllRanges()
+    tempContainer.remove()
+
+    if (wasDark) {
+      htmlElement.classList.add(`dark`)
+    }
+  }
+
+  return successful
+}
+
 // 复制到微信公众号
 async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
@@ -52,30 +116,44 @@ async function copy() {
   setTimeout(() => {
     nextTick(async () => {
       await processClipboardContent(primaryColor.value)
-      const clipboardDiv = document.getElementById(`output`)!
+      const clipboardDiv = document.getElementById(`output`)
+
+      if (!clipboardDiv) {
+        toast.error(`未找到复制输出区域，请刷新页面后重试。`)
+        editorRefresh()
+        emit(`endCopy`)
+        return
+      }
+
       clipboardDiv.focus()
-      window.getSelection()!.removeAllRanges()
+      window.getSelection()?.removeAllRanges()
 
       const temp = clipboardDiv.innerHTML
 
       if (copyMode.value === `txt`) {
-        // execCommand 已废弃，且会丢失 SVG 等复杂内容
         try {
+          if (typeof ClipboardItem === `undefined`) {
+            throw new TypeError(`ClipboardItem is not supported in this browser.`)
+          }
+
           const plainText = clipboardDiv.textContent || ``
           const clipboardItem = new ClipboardItem({
             'text/html': new Blob([temp], { type: `text/html` }),
             'text/plain': new Blob([plainText], { type: `text/plain` }),
           })
-          // FIX: https://stackoverflow.com/questions/62327358/javascript-clipboard-api-safari-ios-notallowederror-message
-          // NotAllowedError: the request is not allowed by the user agent or the platform in the current context,
-          // possibly because the user denied permission.
-          setTimeout(async () => {
-            await navigator.clipboard.write([clipboardItem])
-          }, 0)
+
+          await writeClipboardItems([clipboardItem])
         }
         catch (error) {
-          toast.error(`复制失败，请联系开发者。${error}`)
-          return
+          const fallbackSucceeded = fallbackCopyUsingExecCommand(temp)
+          if (!fallbackSucceeded) {
+            clipboardDiv.innerHTML = output.value
+            window.getSelection()?.removeAllRanges()
+            editorRefresh()
+            toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
+            emit(`endCopy`)
+            return
+          }
         }
       }
 
@@ -83,6 +161,9 @@ async function copy() {
 
       if (copyMode.value === `html`) {
         await copyContent(temp)
+      }
+      else if (copyMode.value === `html-without-style`) {
+        await copyContent(await generatePureHTML(editor.value!.getValue()))
       }
       else if (copyMode.value === `html-and-style`) {
         await copyContent(store.editorContent2HTML())
@@ -159,7 +240,7 @@ async function copy() {
               <ChevronDownIcon class="text-secondary-foreground h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" :align-offset="-5" class="w-[200px]">
+          <DropdownMenuContent align="end" :align-offset="-5" class="w-[220px]">
             <DropdownMenuRadioGroup v-model="copyMode">
               <DropdownMenuRadioItem value="txt">
                 公众号格式
@@ -167,8 +248,11 @@ async function copy() {
               <DropdownMenuRadioItem value="html">
                 HTML 格式
               </DropdownMenuRadioItem>
+              <DropdownMenuRadioItem value="html-without-style">
+                <span class="whitespace-nowrap">HTML 格式（无样式）</span>
+              </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="html-and-style">
-                HTML 格式（兼容样式）
+                <span class="whitespace-nowrap">HTML 格式（兼容样式）</span>
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="md">
                 MD 格式
@@ -196,6 +280,7 @@ async function copy() {
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
+  <AIImageGeneratorPanel v-model:open="displayStore.aiImageDialogVisible" />
 </template>
 
 <style lang="less" scoped>

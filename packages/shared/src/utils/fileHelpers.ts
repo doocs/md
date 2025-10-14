@@ -1,9 +1,11 @@
-import * as prettierPluginBabel from 'prettier/plugins/babel'
-import * as prettierPluginEstree from 'prettier/plugins/estree'
-import * as prettierPluginMarkdown from 'prettier/plugins/markdown'
-import * as prettierPluginCss from 'prettier/plugins/postcss'
-import { format } from 'prettier/standalone'
-import { addSpacingToMarkdown } from './autoSpace'
+// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
+import parserBabel from 'prettier/parser-babel'
+// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
+import parserMarkdown from 'prettier/parser-markdown'
+// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
+import parserPostcss from 'prettier/parser-postcss'
+// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
+import * as prettier from 'prettier/standalone'
 
 /**
  * 通用文件下载函数
@@ -91,15 +93,25 @@ export function createTable({ data, rows, cols }: {
  * @returns 格式化后的内容
  */
 export async function formatDoc(content: string, type: `markdown` | `css` = `markdown`): Promise<string> {
-  const plugins = {
-    markdown: [prettierPluginMarkdown, prettierPluginBabel, prettierPluginEstree],
-    css: [prettierPluginCss],
-  }
-  const addSpaceContent = await addSpacingToMarkdown(content)
+  const parser = type === `css` ? `css` : `markdown`
+  const plugins = type === `css` ? [parserPostcss] : [parserMarkdown, parserBabel]
 
-  const parser = type in plugins ? type : `markdown`
-  return await format(addSpaceContent, {
+  return await prettier.format(content, {
     parser,
-    plugins: plugins[parser] as any,
+    plugins,
+    // prettier v2.8.8 配置选项
+    printWidth: 80,
+    tabWidth: 2,
+    useTabs: false,
+    semi: false,
+    singleQuote: true,
+    quoteProps: `as-needed`,
+    trailingComma: `es5`,
+    bracketSpacing: true,
+    bracketSameLine: false,
+    arrowParens: `avoid`,
+    proseWrap: `preserve`,
+    htmlWhitespaceSensitivity: `css`,
+    endOfLine: `lf`,
   })
 }

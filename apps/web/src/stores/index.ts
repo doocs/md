@@ -834,9 +834,14 @@ export const useDisplayStore = defineStore(`display`, () => {
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
 
   const aiDialogVisible = ref(false)
+  const aiImageDialogVisible = ref(false)
 
   function toggleAIDialog(value?: boolean) {
     aiDialogVisible.value = value ?? !aiDialogVisible.value
+  }
+
+  function toggleAIImageDialog(value?: boolean) {
+    aiImageDialogVisible.value = value ?? !aiImageDialogVisible.value
   }
 
   return {
@@ -850,6 +855,8 @@ export const useDisplayStore = defineStore(`display`, () => {
     toggleShowUploadImgDialog,
     aiDialogVisible,
     toggleAIDialog,
+    aiImageDialogVisible,
+    toggleAIImageDialog,
   }
 })
 
@@ -890,5 +897,6 @@ export function getAllStoreStates() {
     isShowUploadImgDialog: displayStore.isShowUploadImgDialog,
     isShowInsertMpCardDialog: displayStore.isShowInsertMpCardDialog,
     aiDialogVisible: displayStore.aiDialogVisible,
+    aiImageDialogVisible: displayStore.aiImageDialogVisible,
   }
 }

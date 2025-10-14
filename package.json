@@ -12,6 +12,9 @@
   "bugs": {
     "url": "https://github.com/doocs/md/issues"
   },
+  "engines": {
+    "node": ">=22.16.0"
+  },
   "scripts": {
     "start": "pnpm web dev",
     "web": "pnpm --filter @md/web",
@@ -21,7 +24,8 @@
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
     "postinstall": "simple-git-hooks",
-    "inspector": "pnpx node-modules-inspector"
+    "inspector": "pnpx node-modules-inspector",
+    "utools:package": "node ./scripts/package-utools.mjs"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.19.0",
@@ -38,15 +42,16 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
-    "@types/node": "^24.5.2",
-    "cross-env": "^10.0.0",
+    "@types/node": "^24.6.0",
+    "archiver": "^7.0.1",
+    "cross-env": "^10.1.0",
     "eslint": "^9.36.0",
     "eslint-plugin-format": "^1.0.2",
     "npm-run-all": "^4.1.5",
-    "prettier": "3.6.2",
+    "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.12.1",
-    "typescript": "~5.9.2"
+    "typescript": "~5.9.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
