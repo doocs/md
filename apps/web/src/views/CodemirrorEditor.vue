@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { EditorView } from '@codemirror/view'
 import type { ComponentPublicInstance } from 'vue'
 
-import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
+import { Compartment, EditorState } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
+import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
@@ -13,8 +14,6 @@ import {
 } from '@/components/ui/resizable'
 import { SearchTab } from '@/components/ui/search-tab'
 import { checkImage, toBase64 } from '@/utils'
-import { createCodeMirrorV6 } from '@/utils/codemirror-v6'
-import { createExtraKeys } from '@/utils/editor'
 import { fileUpload } from '@/utils/file'
 
 const store = useStore()
@@ -59,7 +58,8 @@ function toggleView() {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
-const codeMirrorView = ref<CodeMirrorV6Editor | null>(null)
+const codeMirrorView = ref<EditorView | null>(null)
+const themeCompartment = new Compartment()
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
@@ -180,7 +180,7 @@ watch(searchTabRef, (newRef) => {
 
 function handleGlobalKeydown(e: KeyboardEvent) {
   // 处理 ESC 键关闭搜索
-  const editorView = codeMirrorView.value?.view
+  const editorView = codeMirrorView.value
 
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
@@ -228,8 +228,8 @@ function uploaded(imageUrl: string) {
   // 上传成功，插入图片
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  if (codeMirrorView.value?.view) {
-    codeMirrorView.value.view.dispatch(codeMirrorView.value.view.state.replaceSelection(`\n${markdownImage}\n`))
+  if (codeMirrorView.value) {
+    codeMirrorView.value.dispatch(codeMirrorView.value.state.replaceSelection(`\n${markdownImage}\n`))
   }
   toast.success(`图片上传成功`)
 }
@@ -349,9 +349,9 @@ async function uploadMdImg({
       .replace(`](./${item.matchStr})`, `](${item.url})`)
       .replace(`](${item.matchStr})`, `](${item.url})`)
   })
-  if (codeMirrorView.value?.view) {
-    codeMirrorView.value.view.dispatch({
-      changes: { from: 0, to: codeMirrorView.value.view.state.doc.length, insert: md.str },
+  if (codeMirrorView.value) {
+    codeMirrorView.value.dispatch({
+      changes: { from: 0, to: codeMirrorView.value.state.doc.length, insert: md.str },
     })
   }
 }
@@ -398,32 +398,44 @@ const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
 
 function createFormTextArea(dom: HTMLDivElement) {
-  // 使用 CodeMirror v6 创建编辑器
-  const extraKeys = createExtraKeys(openSearchWithSelection)
+  // 创建编辑器状态
+  const state = EditorState.create({
+    doc: store.posts[store.currentPostIndex].content,
+    extensions: [
+      markdownSetup({
+        onSearch: openSearchWithSelection,
+      }),
+      themeCompartment.of(theme(isDark.value)),
+      EditorView.updateListener.of((update) => {
+        if (update.docChanged) {
+          const value = update.state.doc.toString()
+          clearTimeout(changeTimer.value)
+          changeTimer.value = setTimeout(() => {
+            editorRefresh()
 
-  codeMirrorView.value = createCodeMirrorV6(
-    dom,
-    store.posts[store.currentPostIndex].content,
-    isDark.value,
-    extraKeys,
-    (value: string) => {
-      clearTimeout(changeTimer.value)
-      changeTimer.value = setTimeout(() => {
-        editorRefresh()
+            const currentPost = store.posts[store.currentPostIndex]
+            if (value === currentPost.content) {
+              return
+            }
 
-        const currentPost = store.posts[store.currentPostIndex]
-        if (value === currentPost.content) {
-          return
+            currentPost.updateDatetime = new Date()
+            currentPost.content = value
+          }, 300)
         }
+      }),
+    ],
+  })
 
-        currentPost.updateDatetime = new Date()
-        currentPost.content = value
-      }, 300)
-    },
-  )
+  // 创建编辑器视图
+  const view = new EditorView({
+    state,
+    parent: dom,
+  })
+
+  codeMirrorView.value = view
 
   // 添加粘贴事件监听
-  codeMirrorView.value.view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
+  view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
@@ -456,7 +468,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   })
 
   // 返回编辑器 view
-  return codeMirrorView.value.view
+  return view
 }
 
 // 初始化编辑器
@@ -480,7 +492,9 @@ onMounted(() => {
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
   if (codeMirrorView.value) {
-    codeMirrorView.value.updateTheme(isDark.value)
+    codeMirrorView.value.dispatch({
+      effects: themeCompartment.reconfigure(theme(isDark.value)),
+    })
   }
 })
 
@@ -550,7 +564,7 @@ onUnmounted(() => {
                 'border-r': store.isEditOnLeft,
               }"
             >
-              <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView.view" />
+              <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
               <SidebarAIToolbar
                 :is-mobile="store.isMobile"
                 :show-editor="showEditor"

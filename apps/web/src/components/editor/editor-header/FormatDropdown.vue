@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
 import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
-import { useStore } from '@/stores'
 import {
   applyHeading,
   formatBold,
@@ -11,7 +10,8 @@ import {
   formatOrderedList,
   formatStrikethrough,
   formatUnorderedList,
-} from '@/utils/editor'
+} from '@md/shared/editor'
+import { useStore } from '@/stores'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
