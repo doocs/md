@@ -409,6 +409,42 @@ importers:
 
   packages/shared:
     dependencies:
+      '@codemirror/autocomplete':
+        specifier: ^6.19.0
+        version: 6.19.0
+      '@codemirror/commands':
+        specifier: ^6.9.0
+        version: 6.9.0
+      '@codemirror/lang-css':
+        specifier: ^6.3.1
+        version: 6.3.1
+      '@codemirror/lang-javascript':
+        specifier: ^6.2.4
+        version: 6.2.4
+      '@codemirror/lang-markdown':
+        specifier: ^6.4.0
+        version: 6.4.0
+      '@codemirror/language':
+        specifier: ^6.11.3
+        version: 6.11.3
+      '@codemirror/lint':
+        specifier: ^6.9.0
+        version: 6.9.0
+      '@codemirror/search':
+        specifier: ^6.5.11
+        version: 6.5.11
+      '@codemirror/state':
+        specifier: ^6.5.2
+        version: 6.5.2
+      '@codemirror/theme-one-dark':
+        specifier: ^6.1.3
+        version: 6.1.3
+      '@codemirror/view':
+        specifier: ^6.38.6
+        version: 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@lezer/highlight':
+        specifier: ^1.2.1
+        version: 1.2.1
       axios:
         specifier: ^1.12.2
         version: 1.12.2

@@ -1,6 +1,6 @@
 import type { EditorView } from '@codemirror/view'
 import { redo, undo } from '@codemirror/commands'
-import { altKey, ctrlKey, shiftKey } from '@/configs/shortcut-key'
+import { altKey, ctrlKey, shiftKey } from '@md/shared/configs'
 import { formatDoc } from '@/utils'
 
 interface ToggleFormatOptions {

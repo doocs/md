@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { altSign, ctrlSign, shiftSign } from '@/configs/shortcut-key'
+import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import { useDisplayStore, useStore } from '@/stores'
 
 const {
