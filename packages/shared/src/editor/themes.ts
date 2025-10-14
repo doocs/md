@@ -1,14 +1,22 @@
+import { EditorView } from '@codemirror/view'
 import { vsCodeDark } from '@fsegurai/codemirror-theme-vscode-dark'
 import { vsCodeLight } from '@fsegurai/codemirror-theme-vscode-light'
 
-// 浅色主题
+const customStyles = EditorView.theme({
+  // 垂直居中
+  '.cm-gutterElement': {
+    display: `flex`,
+    justifyContent: `right`,
+    alignItems: `center`,
+  },
+})
+
 export function lightTheme() {
-  return vsCodeLight
+  return [vsCodeLight, customStyles]
 }
 
-// 暗色主题
 export function darkTheme() {
-  return vsCodeDark
+  return [vsCodeDark, customStyles]
 }
 
 // 根据主题模式获取主题扩展

@@ -92,9 +92,9 @@ export function createTable({ data, rows, cols }: {
  * @param type - 内容类型，决定使用的解析器，默认为 'markdown'
  * @returns 格式化后的内容
  */
-export async function formatDoc(content: string, type: `markdown` | `css` = `markdown`): Promise<string> {
-  const parser = type === `css` ? `css` : `markdown`
-  const plugins = type === `css` ? [parserPostcss] : [parserMarkdown, parserBabel]
+export async function formatDoc(content: string, type: `markdown` | `css` | `javascript` = `markdown`): Promise<string> {
+  const parser = type === `css` ? `css` : type === `javascript` ? `babel` : `markdown`
+  const plugins = type === `css` ? [parserPostcss] : type === `javascript` ? [parserBabel] : [parserMarkdown, parserBabel]
 
   return await prettier.format(content, {
     parser,

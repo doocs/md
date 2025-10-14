@@ -1,8 +1,7 @@
 <script setup lang='ts'>
-import { javascript } from '@codemirror/lang-javascript'
-import { oneDark } from '@codemirror/theme-one-dark'
-import { EditorView, lineNumbers } from '@codemirror/view'
-import { basicSetup } from '@md/shared'
+import { Compartment } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
+import { javascriptSetup, theme } from '@md/shared'
 import { removeLeft } from '@/utils'
 
 const code = useLocalStorage(`formCustomConfig`, removeLeft(`
@@ -20,62 +19,27 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
 
 const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
+const store = useStore()
+const { isDark } = storeToRefs(store)
+
 const editor = ref<EditorView | null>(null)
 
-// 检测当前主题
-const isDark = computed(() => {
-  if (typeof window !== `undefined`) {
-    return document.documentElement.classList.contains(`dark`)
-  }
-  return false
-})
+const themeCompartment = new Compartment()
 
 onMounted(() => {
-  const extensions = [
-    basicSetup,
-    javascript(),
-    lineNumbers(),
-    ...(isDark.value ? [oneDark] : []),
-    EditorView.theme({
-      '.cm-editor': {
-        fontSize: `14px`,
-        fontFamily: `Consolas, Monaco, "Courier New", monospace`,
-      },
-      '.cm-lineNumbers': {
-        fontSize: `12px`,
-        color: isDark.value ? `#7d8590` : `#656d76`,
-        backgroundColor: isDark.value ? `#161b22` : `#f6f8fa`,
-        paddingLeft: `8px`,
-        minWidth: `40px`,
-      },
-      '.cm-gutters': {
-        backgroundColor: isDark.value ? `#161b22` : `#f6f8fa`,
-        borderRight: `1px solid ${isDark.value ? `#30363d` : `#e1e4e8`}`,
-      },
-      '.cm-gutterElement': {
-        display: `inline-flex`,
-        justifyContent: `center`,
-        alignItems: `center`,
-      },
-      '.cm-gutterElement>span': {
-        display: `inline-flex`,
-        justifyContent: `center`,
-        alignItems: `center`,
-      },
-      '.cm-activeLineGutter': {
-        backgroundColor: isDark.value ? `#1c2128` : `#e3f2fd`,
-        color: isDark.value ? `#58a6ff` : `#1976d2`,
-      },
-    }),
-  ]
-
   const editorView = new EditorView({
     parent: formCustomTextarea.value!,
-    extensions,
+    extensions: [javascriptSetup(), themeCompartment.of(theme(isDark.value))],
     doc: code.value,
   })
 
   editor.value = editorView
+})
+
+watch(isDark, (dark) => {
+  editor.value?.dispatch({
+    effects: themeCompartment.reconfigure(theme(dark)),
+  })
 })
 
 onUnmounted(() => {
