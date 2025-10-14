@@ -32,7 +32,6 @@
     "@aws-sdk/client-s3": "^3.899.0",
     "@aws-sdk/s3-request-presigner": "^3.899.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
-    "@lezer/highlight": "^1.2.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@ssttevee/multipart-parser": "^0.1.9",
