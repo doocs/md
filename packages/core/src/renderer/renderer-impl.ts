@@ -6,7 +6,6 @@ import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js'
 import { marked } from 'marked'
-import mermaid from 'mermaid'
 import readingTime from 'reading-time'
 import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
@@ -252,8 +251,9 @@ export function initRenderer(opts: IOpts): RendererAPI {
     code({ text, lang = `` }: Tokens.Code): string {
       if (lang.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
-        codeIndex = setTimeout(() => {
-          mermaid.run()
+        codeIndex = setTimeout(async () => {
+          const mermaid = await import(`mermaid`)
+          mermaid.default.run()
         }, 0) as any as number
         return `<pre class="mermaid">${text}</pre>`
       }

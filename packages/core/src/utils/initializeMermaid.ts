@@ -1,5 +1,4 @@
-import mermaid from 'mermaid'
-
-export function initializeMermaid() {
-  mermaid.initialize({ startOnLoad: false })
+export async function initializeMermaid() {
+  const mermaid = await import(`mermaid`)
+  mermaid.default.initialize({ startOnLoad: false })
 }

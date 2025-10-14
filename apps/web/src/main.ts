@@ -11,7 +11,8 @@ import 'vue-sonner/style.css'
 import '@/assets/index.css'
 import '@/assets/less/theme.less'
 
-initializeMermaid()
+// 异步初始化 mermaid，避免初始化顺序问题
+initializeMermaid().catch(console.error)
 
 setupComponents()
 
