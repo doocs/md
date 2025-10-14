@@ -2,7 +2,9 @@ import type { EditorView } from '@codemirror/view'
 import type { CodeMirrorV6Editor } from '@/utils/codemirror-v6'
 import { initRenderer } from '@md/core'
 import {
+  altKey,
   defaultStyleConfig,
+  shiftKey,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
@@ -11,7 +13,6 @@ import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
   css2json,

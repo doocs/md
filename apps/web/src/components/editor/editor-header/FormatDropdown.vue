@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import { useStore } from '@/stores'
 import {
   applyHeading,
