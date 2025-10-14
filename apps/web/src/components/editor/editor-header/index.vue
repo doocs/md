@@ -163,7 +163,7 @@ async function copy() {
         await copyContent(temp)
       }
       else if (copyMode.value === `html-without-style`) {
-        await copyContent(await generatePureHTML(editor.value!.getValue()))
+        await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
       }
       else if (copyMode.value === `html-and-style`) {
         await copyContent(store.editorContent2HTML())

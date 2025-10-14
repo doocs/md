@@ -59,7 +59,7 @@ function toggleView() {
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
 const timeout = ref<NodeJS.Timeout>()
-let codeMirrorView: CodeMirrorV6Editor | null = null
+const codeMirrorView = ref<CodeMirrorV6Editor | null>(null)
 
 // 使浏览区与编辑区滚动条建立同步联系
 function leftAndRightScroll() {
@@ -180,7 +180,7 @@ watch(searchTabRef, (newRef) => {
 
 function handleGlobalKeydown(e: KeyboardEvent) {
   // 处理 ESC 键关闭搜索
-  const editorView = codeMirrorView?.view
+  const editorView = codeMirrorView.value?.view
 
   if (e.key === `Escape` && searchTabRef.value?.showSearchTab) {
     searchTabRef.value.showSearchTab = false
@@ -228,8 +228,8 @@ function uploaded(imageUrl: string) {
   // 上传成功，插入图片
   const markdownImage = `![](${imageUrl})`
   // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  if (codeMirrorView?.view) {
-    codeMirrorView.view.dispatch(codeMirrorView.view.state.replaceSelection(`\n${markdownImage}\n`))
+  if (codeMirrorView.value?.view) {
+    codeMirrorView.value.view.dispatch(codeMirrorView.value.view.state.replaceSelection(`\n${markdownImage}\n`))
   }
   toast.success(`图片上传成功`)
 }
@@ -349,9 +349,9 @@ async function uploadMdImg({
       .replace(`](./${item.matchStr})`, `](${item.url})`)
       .replace(`](${item.matchStr})`, `](${item.url})`)
   })
-  if (codeMirrorView?.view) {
-    codeMirrorView.view.dispatch({
-      changes: { from: 0, to: codeMirrorView.view.state.doc.length, insert: md.str },
+  if (codeMirrorView.value?.view) {
+    codeMirrorView.value.view.dispatch({
+      changes: { from: 0, to: codeMirrorView.value.view.state.doc.length, insert: md.str },
     })
   }
 }
@@ -401,7 +401,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   // 使用 CodeMirror v6 创建编辑器
   const extraKeys = createExtraKeys(openSearchWithSelection)
 
-  codeMirrorView = createCodeMirrorV6(
+  codeMirrorView.value = createCodeMirrorV6(
     dom,
     store.posts[store.currentPostIndex].content,
     isDark.value,
@@ -423,7 +423,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   )
 
   // 添加粘贴事件监听
-  codeMirrorView.view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
+  codeMirrorView.value.view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
@@ -456,7 +456,7 @@ function createFormTextArea(dom: HTMLDivElement) {
   })
 
   // 返回编辑器 view
-  return codeMirrorView.view
+  return codeMirrorView.value.view
 }
 
 // 初始化编辑器
@@ -479,8 +479,8 @@ onMounted(() => {
 
 // 监听暗色模式变化并更新编辑器主题
 watch(isDark, () => {
-  if (codeMirrorView) {
-    codeMirrorView.updateTheme(isDark.value)
+  if (codeMirrorView.value) {
+    codeMirrorView.value.updateTheme(isDark.value)
   }
 })
 
