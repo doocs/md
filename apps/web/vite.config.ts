@@ -112,6 +112,10 @@ export default defineConfig(({ mode }) => {
                 return `hljs`
               if (id.includes(`codemirror`))
                 return `codemirror`
+              if (id.includes(`prettier`))
+                return `prettier`
+              if (id.includes(`cytoscape`))
+                return `cytoscape`
               const pkg = id
                 .split(`node_modules/`)[1]
                 .split(`/`)[0]
