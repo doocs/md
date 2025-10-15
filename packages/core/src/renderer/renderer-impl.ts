@@ -257,8 +257,16 @@ export function initRenderer(opts: IOpts): RendererAPI {
       if (lang.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
         codeIndex = setTimeout(async () => {
-          const mermaid = await import(`mermaid`)
-          mermaid.default.run()
+          // 优先使用全局 CDN 的 mermaid
+          if (typeof window !== `undefined` && (window as any).mermaid) {
+            const mermaid = (window as any).mermaid
+            await mermaid.run()
+          }
+          else {
+            // 回退到动态导入（开发环境）
+            const mermaid = await import(`mermaid`)
+            await mermaid.default.run()
+          }
         }, 0) as any as number
         return `<pre class="mermaid">${text}</pre>`
       }
