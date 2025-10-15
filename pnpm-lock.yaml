@@ -412,9 +412,6 @@ importers:
       '@fsegurai/codemirror-theme-vscode-light':
         specifier: ^6.2.2
         version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.1)
-      '@lezer/highlight':
-        specifier: ^1.2.1
-        version: 1.2.1
       axios:
         specifier: ^1.12.2
         version: 1.12.2
