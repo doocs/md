@@ -110,6 +110,8 @@ export default defineConfig(({ mode }) => {
                 return `mermaid`
               if (id.includes(`highlight.js`))
                 return `hljs`
+              if (id.includes(`codemirror`))
+                return `codemirror`
               const pkg = id
                 .split(`node_modules/`)[1]
                 .split(`/`)[0]
