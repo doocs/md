@@ -4,11 +4,16 @@ import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
 import readingTime from 'reading-time'
 import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
+import { COMMON_LANGUAGES } from '../utils/languages'
+
+Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
+  hljs.registerLanguage(name, lang)
+})
 
 marked.setOptions({
   breaks: true,
