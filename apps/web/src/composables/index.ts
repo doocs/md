@@ -14,10 +14,14 @@ export function useImportMarkdownContent() {
     reader.readAsText(file)
     reader.onload = (event) => {
       // 清空编辑器
-      store.editor!.setValue(``)
+      store.editor!.dispatch({
+        changes: { from: 0, to: store.editor!.state.doc.length, insert: `` },
+      })
 
       requestAnimationFrame(() => {
-        store.editor!.setValue(event.target!.result as string)
+        store.editor!.dispatch({
+          changes: { from: 0, to: store.editor!.state.doc.length, insert: event.target!.result as string },
+        })
       })
       toast.success(`文档导入成功`)
     }

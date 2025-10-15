@@ -1,4 +1,4 @@
-import type { Editor } from 'codemirror'
+import type { EditorView } from '@codemirror/view'
 import AIPolishButton from './ToolBoxButton.vue'
 import AIPolishPopover from './ToolBoxPopover.vue'
 
@@ -10,9 +10,12 @@ function useAIPolish() {
   const selectedText = ref(``)
 
   // 获取当前编辑器选中文本的简单函数
-  function getCurrentSelection(editor: Editor | null): string {
+  function getCurrentSelection(editor: EditorView | null): string {
     try {
-      return editor?.getSelection()?.trim() || ``
+      if (!editor)
+        return ``
+      const selection = editor.state.selection.main
+      return editor.state.doc.sliceString(selection.from, selection.to).trim()
     }
     catch {
       return ``

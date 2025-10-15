@@ -36,9 +36,6 @@ const { isDark, primaryColor } = storeToRefs(store)
 
 function customStyle() {
   displayStore.toggleShowCssEditor()
-  setTimeout(() => {
-    store.cssEditor!.refresh()
-  }, 50)
 }
 
 const isOpen = ref(false)

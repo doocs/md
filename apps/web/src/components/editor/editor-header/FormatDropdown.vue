@@ -1,5 +1,16 @@
 <script setup lang="ts">
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
+import type { EditorView } from '@codemirror/view'
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
+import {
+  applyHeading,
+  formatBold,
+  formatCode,
+  formatItalic,
+  formatLink,
+  formatOrderedList,
+  formatStrikethrough,
+  formatUnorderedList,
+} from '@md/shared/editor'
 import { useStore } from '@/stores'
 
 const props = withDefaults(defineProps<{
@@ -26,7 +37,55 @@ const {
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {
-  (editor.value as any).options.extraKeys[cmd](editor.value)
+  const editorView = editor.value as EditorView
+  if (!editor.value)
+    return
+
+  // 直接使用 EditorView
+  switch (cmd) {
+    case `${ctrlKey}-B`:
+      formatBold(editorView)
+      break
+    case `${ctrlKey}-I`:
+      formatItalic(editorView)
+      break
+    case `${ctrlKey}-D`:
+      formatStrikethrough(editorView)
+      break
+    case `${ctrlKey}-K`:
+      formatLink(editorView)
+      break
+    case `${ctrlKey}-E`:
+      formatCode(editorView)
+      break
+    case `${ctrlKey}-H`:
+      applyHeading(editorView, 1)
+      break
+    case `${ctrlKey}-U`:
+      formatUnorderedList(editorView)
+      break
+    case `${ctrlKey}-O`:
+      formatOrderedList(editorView)
+      break
+    case `${ctrlKey}-1`:
+      applyHeading(editorView, 1)
+      break
+    case `${ctrlKey}-2`:
+      applyHeading(editorView, 2)
+      break
+    case `${ctrlKey}-3`:
+      applyHeading(editorView, 3)
+      break
+    case `${ctrlKey}-4`:
+      applyHeading(editorView, 4)
+      break
+    case `${ctrlKey}-5`:
+      applyHeading(editorView, 5)
+      break
+    case `${ctrlKey}-6`:
+      applyHeading(editorView, 6)
+      break
+  }
 }
 
 const formatItems = [

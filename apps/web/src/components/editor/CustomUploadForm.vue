@@ -1,12 +1,11 @@
 <script setup lang='ts'>
-import CodeMirror from 'codemirror'
-import { useStore } from '@/stores'
+import { Compartment } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
+import { javascriptSetup, theme } from '@md/shared'
 import { removeLeft } from '@/utils'
 
-const store = useStore()
-
 const code = useLocalStorage(`formCustomConfig`, removeLeft(`
-  const {file, util, okCb, errCb} = CUSTOM_ARG
+  const { file, util, okCb, errCb } = CUSTOM_ARG
   const param = new FormData()
   param.append('file', file)
   util.axios.post('${window.location.origin}/upload', param, {
@@ -18,38 +17,51 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
   })
 `).trim())
 
-const formCustomTextarea = useTemplateRef<HTMLTextAreaElement>(`formCustomTextarea`)
+const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
-const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+const store = useStore()
+const { isDark } = storeToRefs(store)
+
+const editor = ref<EditorView | null>(null)
+
+const themeCompartment = new Compartment()
 
 onMounted(() => {
-  editor.value = markRaw(CodeMirror.fromTextArea(formCustomTextarea.value!, {
-    mode: `javascript`,
-    theme: store.isDark ? `darcula` : `xq-light`,
-    lineNumbers: true,
-  }))
+  const editorView = new EditorView({
+    parent: formCustomTextarea.value!,
+    extensions: [javascriptSetup(), themeCompartment.of(theme(isDark.value))],
+    doc: code.value,
+  })
 
-  // 嵌套使用 nextTick 才能确保生效，具体原因未知
-  nextTick(() => {
-    nextTick(() => {
-      editor.value?.setValue(code.value)
-    })
+  editor.value = editorView
+})
+
+watch(isDark, (dark) => {
+  editor.value?.dispatch({
+    effects: themeCompartment.reconfigure(theme(dark)),
   })
 })
 
+onUnmounted(() => {
+  if (editor.value) {
+    editor.value.destroy()
+  }
+})
+
 function formCustomSave() {
-  const str = editor.value!.getValue()
+  const str = editor.value!.state.doc.toString()
   localStorage.setItem(`formCustomConfig`, str)
+  code.value = str
   toast.success(`保存成功`)
 }
 </script>
 
 <template>
   <div class="space-y-4 min-w-0">
-    <div class="h-60 border flex flex-col">
-      <textarea
+    <div class="h-60 border border-gray-200 dark:border-gray-700 rounded-lg flex flex-col overflow-y-auto">
+      <div
         ref="formCustomTextarea"
-        placeholder="Your custom code here."
+        class="flex-1 custom-codemirror"
       />
     </div>
     <Button

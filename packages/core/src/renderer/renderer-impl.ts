@@ -4,12 +4,16 @@ import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
 import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
-import mermaid from 'mermaid'
 import readingTime from 'reading-time'
 import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
+import { COMMON_LANGUAGES } from '../utils/languages'
+
+Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
+  hljs.registerLanguage(name, lang)
+})
 
 marked.setOptions({
   breaks: true,
@@ -252,8 +256,17 @@ export function initRenderer(opts: IOpts): RendererAPI {
     code({ text, lang = `` }: Tokens.Code): string {
       if (lang.startsWith(`mermaid`)) {
         clearTimeout(codeIndex)
-        codeIndex = setTimeout(() => {
-          mermaid.run()
+        codeIndex = setTimeout(async () => {
+          // 优先使用全局 CDN 的 mermaid
+          if (typeof window !== `undefined` && (window as any).mermaid) {
+            const mermaid = (window as any).mermaid
+            await mermaid.run()
+          }
+          else {
+            // 回退到动态导入（开发环境）
+            const mermaid = await import(`mermaid`)
+            await mermaid.default.run()
+          }
         }, 0) as any as number
         return `<pre class="mermaid">${text}</pre>`
       }

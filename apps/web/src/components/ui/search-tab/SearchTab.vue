@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import type CodeMirror from 'codemirror'
+import type { DecorationSet } from '@codemirror/view'
+import { StateEffect, StateField } from '@codemirror/state'
+import { Decoration, EditorView } from '@codemirror/view'
 import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
 
 const props = defineProps<{
-  editor: CodeMirror.Editor
+  editorView: EditorView
 }>()
 
 const showSearchTab = ref(false)
+const searchInputRef = ref<{ focus: () => void, select: () => void } | null>(null)
 
 const searchWord = ref(``)
 const indexOfMatch = ref(0)
 const showReplace = ref(false)
 const replaceWord = ref(``)
 
-const matchPositions = ref<CodeMirror.Position[][]>([])
+const matchPositions = ref<Array<Array<{ line: number, ch: number }>>>([])
 const numberOfMatches = computed(() => {
   return matchPositions.value.length
 })
@@ -22,6 +25,36 @@ const currentMatchPosition = computed(() => {
   if (!checkMatchNumber())
     return null
   return matchPositions.value[indexOfMatch.value]
+})
+
+// 定义高亮样式的 StateEffect
+const setSearchHighlights = StateEffect.define<DecorationSet>()
+
+// 创建搜索高亮的 StateField（需要在编辑器初始化时添加）
+const searchHighlightField = StateField.define<DecorationSet>({
+  create() {
+    return Decoration.none
+  },
+  update(highlights, tr) {
+    for (const effect of tr.effects) {
+      if (effect.is(setSearchHighlights)) {
+        return effect.value
+      }
+    }
+    return highlights
+  },
+  provide: f => EditorView.decorations.from(f),
+})
+
+// 在组件挂载时动态添加 searchHighlightField
+onMounted(() => {
+  // 检查编辑器是否已经有这个 field
+  if (!props.editorView.state.field(searchHighlightField, false)) {
+    // 动态添加 extension
+    props.editorView.dispatch({
+      effects: StateEffect.appendConfig.of(searchHighlightField),
+    })
+  }
 })
 
 watch(searchWord, () => {
@@ -50,42 +83,89 @@ watch(showSearchTab, async () => {
   }
   else {
     markMatch()
+    // 等待DOM更新后聚焦输入框
+    await nextTick()
+    searchInputRef.value?.focus()
+    searchInputRef.value?.select()
   }
 })
 
 function clearAllMarks() {
-  const editor = props.editor
-  editor.getAllMarks().forEach(mark => mark.clear())
+  // 清除所有搜索高亮
+  props.editorView.dispatch({
+    effects: setSearchHighlights.of(Decoration.none),
+  })
 }
 
 function markMatch() {
-  const editor = props.editor
-  clearAllMarks()
-  matchPositions.value.forEach((pos, i) => {
-    editor.markText(pos[0], pos[1], { className: i === indexOfMatch.value
-      ? `current-match`
-      : `search-match` })
+  // 清除旧的高亮
+  const decorations: any[] = []
+
+  // 为所有匹配项添加高亮装饰
+  matchPositions.value.forEach((match, idx) => {
+    const from = match[0]
+    const to = match[1]
+    const fromLine = props.editorView.state.doc.line(from.line + 1)
+    const toLine = props.editorView.state.doc.line(to.line + 1)
+    const fromPos = fromLine.from + from.ch
+    const toPos = toLine.from + to.ch
+
+    // 当前选中的匹配项使用不同的样式
+    const isCurrentMatch = idx === indexOfMatch.value
+    const mark = Decoration.mark({
+      class: isCurrentMatch ? `cm-searchMatch-selected` : `cm-searchMatch`,
+    })
+
+    decorations.push(mark.range(fromPos, toPos))
   })
-  if (matchPositions.value[indexOfMatch.value]?.[0])
-    editor.scrollIntoView(matchPositions.value[indexOfMatch.value][0])
+
+  // 应用装饰
+  const decorationSet = Decoration.set(decorations, true)
+  props.editorView.dispatch({
+    effects: setSearchHighlights.of(decorationSet),
+  })
+
+  // 滚动到当前匹配位置
+  if (matchPositions.value[indexOfMatch.value]?.[0]) {
+    const pos = matchPositions.value[indexOfMatch.value][0]
+    const docLine = props.editorView.state.doc.line(pos.line + 1)
+    const offset = docLine.from + pos.ch
+    props.editorView.dispatch({
+      selection: { anchor: offset, head: offset },
+      scrollIntoView: true,
+    })
+  }
 }
 
 function findAllMatches() {
-  const editor = props.editor
   if (!searchWord.value || !showSearchTab.value)
     return
 
-  // 获取所有匹配项
-  const cursor = editor.getSearchCursor(searchWord.value, undefined, true)
-  let matchCount = 0
-  const _matchPositions: CodeMirror.Position[][] = []
-  while (cursor.findNext()) {
-    _matchPositions.push([cursor.from(), cursor.to()])
-    matchCount++
+  // 使用 v6 的方式搜索文本
+  const content = props.editorView.state.doc.toString()
+  const searchTerm = searchWord.value
+  const _matchPositions: Array<Array<{ line: number, ch: number }>> = []
+
+  if (searchTerm) {
+    const lines = content.split(`\n`)
+    lines.forEach((line, lineIndex) => {
+      let startIndex = 0
+      let index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+
+      while (index !== -1) {
+        _matchPositions.push([
+          { line: lineIndex, ch: index },
+          { line: lineIndex, ch: index + searchTerm.length },
+        ])
+        startIndex = index + 1
+        index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+      }
+    })
   }
+
   matchPositions.value = _matchPositions
-  if (matchCount === indexOfMatch.value) {
-    indexOfMatch.value -= 1
+  if (matchPositions.value.length > 0 && indexOfMatch.value >= matchPositions.value.length) {
+    indexOfMatch.value = matchPositions.value.length - 1
   }
 }
 
@@ -127,45 +207,73 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 function handleReplace() {
   if (!checkMatchNumber())
     return
-  const editor = props.editor
   if (!currentMatchPosition.value)
     return
-  editor.setSelection(currentMatchPosition.value[0], currentMatchPosition.value[1])
-  props.editor.replaceSelection(replaceWord.value)
+
+  const from = currentMatchPosition.value[0]
+  const to = currentMatchPosition.value[1]
+  const fromLine = props.editorView.state.doc.line(from.line + 1)
+  const toLine = props.editorView.state.doc.line(to.line + 1)
+  const fromPos = fromLine.from + from.ch
+  const toPos = toLine.from + to.ch
+
+  props.editorView.dispatch({
+    changes: { from: fromPos, to: toPos, insert: replaceWord.value },
+    selection: { anchor: fromPos + replaceWord.value.length },
+  })
   findAllMatches()
 }
 
 function handleReplaceAll() {
   if (!checkMatchNumber())
     return
-  const editor = props.editor
   if (!currentMatchPosition.value)
     return
-  matchPositions.value.forEach((pos) => {
-    editor.setSelection(pos[0], pos[1])
-    editor.replaceSelection(replaceWord.value)
+
+  // 从后往前替换，避免位置偏移
+  const sortedPositions = [...matchPositions.value].sort((a, b) => {
+    if (a[0].line !== b[0].line) {
+      return b[0].line - a[0].line
+    }
+    return b[0].ch - a[0].ch
   })
+
+  const changes = sortedPositions.map((pos: any) => {
+    const from = pos[0]
+    const to = pos[1]
+    const fromLine = props.editorView.state.doc.line(from.line + 1)
+    const toLine = props.editorView.state.doc.line(to.line + 1)
+    const fromPos = fromLine.from + from.ch
+    const toPos = toLine.from + to.ch
+
+    return { from: fromPos, to: toPos, insert: replaceWord.value }
+  })
+
+  props.editorView.dispatch({ changes })
   findAllMatches()
 }
 
-function handleEditorChange() {
-  const debouncedSearch = useDebounceFn(findAllMatches, 300)
-  debouncedSearch()
-}
+// function handleEditorChange() {
+//   const debouncedSearch = useDebounceFn(findAllMatches, 300)
+//   debouncedSearch()
+// }
 
 function setSearchWord(word: string) {
   searchWord.value = word
   if (!showSearchTab.value) {
     showSearchTab.value = true
   }
+  else {
+    nextTick(() => {
+      searchInputRef.value?.focus()
+      searchInputRef.value?.select()
+    })
+  }
 }
 
-onMounted(() => {
-  const editor = props.editor
-  editor.on(`changes`, handleEditorChange)
-})
 onUnmounted(() => {
-  props.editor.off(`changes`, handleEditorChange)
+  // 清理搜索高亮
+  clearAllMarks()
 })
 
 /**
@@ -181,7 +289,6 @@ defineExpose({
   showSearchTab,
   searchWord,
   setSearchWord,
-  handleEditorChange,
 })
 </script>
 
@@ -208,6 +315,7 @@ defineExpose({
         <!-- 查找行 -->
         <div class="flex items-center gap-1">
           <Input
+            ref="searchInputRef"
             v-model="searchWord"
             placeholder="查找"
             class="h-7 w-40 text-sm"
@@ -293,5 +401,32 @@ defineExpose({
 .slide-down-leave-to {
   transform: translateY(-100%);
   opacity: 0;
+}
+</style>
+
+<style lang="less">
+/* 搜索匹配项高亮样式（全局，不使用 scoped） */
+.cm-searchMatch {
+  background-color: rgba(255, 237, 100, 0.4);
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 193, 7, 0.3);
+}
+
+.cm-searchMatch-selected {
+  background-color: rgba(255, 152, 0, 0.6);
+  border-radius: 2px;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.8);
+  font-weight: 500;
+}
+
+/* 暗色主题适配 */
+.dark .cm-searchMatch {
+  background-color: rgba(255, 235, 59, 0.3);
+  box-shadow: 0 0 0 1px rgba(255, 235, 59, 0.4);
+}
+
+.dark .cm-searchMatch-selected {
+  background-color: rgba(255, 152, 0, 0.5);
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.7);
 }
 </style>

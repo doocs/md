@@ -98,18 +98,23 @@ export default defineConfig(({ mode }) => {
     css: { devSourcemap: true },
     build: {
       rollupOptions: {
+        external: [`mermaid`],
         output: {
           chunkFileNames: `static/js/md-[name]-[hash].js`,
           entryFileNames: `static/js/md-[name]-[hash].js`,
           assetFileNames: `static/[ext]/md-[name]-[hash].[ext]`,
+          globals: { mermaid: `mermaid` },
           manualChunks(id) {
             if (id.includes(`node_modules`)) {
               if (id.includes(`katex`))
                 return `katex`
-              if (id.includes(`mermaid`))
-                return `mermaid`
+              // mermaid 已改为外部 CDN 依赖
               if (id.includes(`highlight.js`))
                 return `hljs`
+              if (id.includes(`codemirror`))
+                return `codemirror`
+              if (id.includes(`prettier`))
+                return `prettier`
               const pkg = id
                 .split(`node_modules/`)[1]
                 .split(`/`)[0]

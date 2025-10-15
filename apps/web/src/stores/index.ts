@@ -1,16 +1,18 @@
+import type { EditorView } from '@codemirror/view'
+import { Compartment, EditorState } from '@codemirror/state'
+import { EditorView as CMEditorView } from '@codemirror/view'
 import { initRenderer } from '@md/core'
 import {
   defaultStyleConfig,
   themeMap,
   widthOptions,
 } from '@md/shared/configs'
-import CodeMirror from 'codemirror'
+import { cssSetup, theme as editorTheme } from '@md/shared/editor'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { altKey, shiftKey } from '@/configs/shortcut-key'
 import {
   addPrefix,
   css2json,
@@ -105,7 +107,7 @@ export const useStore = defineStore(`store`, () => {
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
   // 内容编辑器
-  const editor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const editor = ref<EditorView | null>(null)
   // 预备弃用的旧字段
   const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
 
@@ -240,8 +242,10 @@ export const useStore = defineStore(`store`, () => {
    ********************************/
   watch(currentPostId, () => {
     const post = getPostById(currentPostId.value)
-    if (post) {
-      editor.value && toRaw(editor.value).setValue(post.content)
+    if (post && editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: post.content },
+      })
     }
   })
 
@@ -257,10 +261,14 @@ export const useStore = defineStore(`store`, () => {
 
   // 格式化文档
   const formatContent = () => {
-    formatDoc(editor.value!.getValue()).then((doc) => {
-      posts.value[currentPostIndex.value].content = doc
-      toRaw(editor.value!).setValue(doc)
-    })
+    if (editor.value) {
+      formatDoc(editor.value.state.doc.toString()).then((doc) => {
+        posts.value[currentPostIndex.value].content = doc
+        editor.value!.dispatch({
+          changes: { from: 0, to: editor.value!.state.doc.length, insert: doc },
+        })
+      })
+    }
   }
 
   // 切换 highlight.js 代码主题
@@ -281,9 +289,15 @@ export const useStore = defineStore(`store`, () => {
   }
 
   // 自义定 CSS 编辑器
-  const cssEditor = ref<CodeMirror.EditorFromTextArea | null>(null)
+  const cssEditor = ref<EditorView | null>(null)
+  const cssEditorThemeCompartment = ref<Compartment | null>(null)
+
   const setCssEditorValue = (content: string) => {
-    cssEditor.value!.setValue(content)
+    if (cssEditor.value) {
+      cssEditor.value.dispatch({
+        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: content },
+      })
+    }
   }
   /**
    * 自定义 CSS 内容
@@ -381,7 +395,7 @@ export const useStore = defineStore(`store`, () => {
       isShowLineNumber: isShowLineNumber.value,
     })
 
-    const raw = editor.value!.getValue()
+    const raw = editor.value ? editor.value.state.doc.toString() : ``
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(raw, renderer)
     readingTime.chars = raw.length
     readingTime.words = readingTimeResult.words
@@ -409,20 +423,22 @@ export const useStore = defineStore(`store`, () => {
 
   // 更新 CSS
   const updateCss = () => {
-    const json = css2json(cssEditor.value!.getValue())
-    const newTheme = customCssWithTemplate(
-      json,
-      primaryColor.value,
-      customizeTheme(themeMap[theme.value], {
-        fontSize: fontSizeNumber.value,
-        color: primaryColor.value,
-      }),
-    )
-    renderer.setOptions({
-      theme: newTheme,
-    })
+    if (cssEditor.value) {
+      const json = css2json(cssEditor.value.state.doc.toString())
+      const newTheme = customCssWithTemplate(
+        json,
+        primaryColor.value,
+        customizeTheme(themeMap[theme.value], {
+          fontSize: fontSizeNumber.value,
+          color: primaryColor.value,
+        }),
+      )
+      renderer.setOptions({
+        theme: newTheme,
+      })
 
-    editorRefresh()
+      editorRefresh()
+    }
   }
   // 初始化 CSS 编辑器
   onMounted(() => {
@@ -430,46 +446,40 @@ export const useStore = defineStore(`store`, () => {
       `#cssEditor`,
     )!
     cssEditorDom.value = getCurrentTab().content
-    const theme = isDark.value ? `darcula` : `xq-light`
-    cssEditor.value = markRaw(
-      CodeMirror.fromTextArea(cssEditorDom, {
-        mode: `css`,
-        theme,
-        lineNumbers: false,
-        lineWrapping: true,
-        styleActiveLine: true,
-        matchBrackets: true,
-        autofocus: true,
-        extraKeys: {
-          [`${shiftKey}-${altKey}-F`]: function autoFormat(
-            editor: CodeMirror.Editor,
-          ) {
-            formatDoc(editor.getValue(), `css`).then((doc) => {
-              getCurrentTab().content = doc
-              editor.setValue(doc)
-            })
-          },
-        },
-      } as never),
-    )
+    // 创建 CSS 编辑器的容器
+    const cssContainer = document.createElement(`div`)
+    cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
 
-    // 自动提示
-    cssEditor.value.on(`keyup`, (cm, e) => {
-      if ((e.keyCode >= 65 && e.keyCode <= 90) || e.keyCode === 189) {
-        (cm as any).showHint(e)
-      }
+    // 创建主题 Compartment 用于动态切换
+    cssEditorThemeCompartment.value = new Compartment()
+
+    // 创建 CSS 编辑器
+    const state = EditorState.create({
+      doc: getCurrentTab().content,
+      extensions: [
+        cssSetup(),
+        cssEditorThemeCompartment.value.of(editorTheme(isDark.value)),
+        CMEditorView.updateListener.of((update) => {
+          if (update.docChanged) {
+            updateCss()
+            getCurrentTab().content = update.state.doc.toString()
+          }
+        }),
+      ],
     })
 
-    // 实时保存
-    cssEditor.value.on(`update`, () => {
-      updateCss()
-      getCurrentTab().content = cssEditor.value!.getValue()
-    })
+    cssEditor.value = markRaw(new CMEditorView({
+      state,
+      parent: cssContainer,
+    }))
   })
 
   watch(isDark, () => {
-    const theme = isDark.value ? `darcula` : `xq-light`
-    toRaw(cssEditor.value)?.setOption?.(`theme`, theme)
+    if (cssEditor.value && cssEditorThemeCompartment.value) {
+      cssEditor.value.dispatch({
+        effects: cssEditorThemeCompartment.value.reconfigure(editorTheme(isDark.value)),
+      })
+    }
   })
 
   // 重置样式
@@ -498,7 +508,11 @@ export const useStore = defineStore(`store`, () => {
       ],
     }
 
-    cssEditor.value!.setValue(DEFAULT_CSS_CONTENT)
+    if (cssEditor.value) {
+      cssEditor.value.dispatch({
+        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: DEFAULT_CSS_CONTENT },
+      })
+    }
 
     updateCss()
     editorRefresh()
@@ -616,7 +630,9 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容为无样式 HTML
   const exportEditorContent2PureHTML = () => {
-    exportPureHTML(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
+    if (editor.value) {
+      exportPureHTML(editor.value.state.doc.toString(), posts.value[currentPostIndex.value].title)
+    }
   }
 
   // 下载卡片
@@ -642,30 +658,45 @@ export const useStore = defineStore(`store`, () => {
 
   // 导出编辑器内容到本地
   const exportEditorContent2MD = () => {
-    downloadMD(editor.value!.getValue(), posts.value[currentPostIndex.value].title)
+    if (editor.value) {
+      downloadMD(editor.value.state.doc.toString(), posts.value[currentPostIndex.value].title)
+    }
   }
 
   // 导入默认文档
   const importDefaultContent = () => {
-    toRaw(editor.value!).setValue(DEFAULT_CONTENT)
-    toast.success(`文档已重置`)
+    if (editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: DEFAULT_CONTENT },
+      })
+      toast.success(`文档已重置`)
+    }
   }
 
   // 清空内容
   const clearContent = () => {
-    toRaw(editor.value!).setValue(``)
-    toast.success(`内容已清空`)
+    if (editor.value) {
+      editor.value.dispatch({
+        changes: { from: 0, to: editor.value.state.doc.length, insert: `` },
+      })
+      toast.success(`内容已清空`)
+    }
   }
 
   const copyToClipboard = async () => {
-    const selectedText = editor.value!.getSelection()
-    copyPlain(selectedText)
+    if (editor.value) {
+      const selection = editor.value.state.selection.main
+      const selectedText = editor.value.state.doc.sliceString(selection.from, selection.to)
+      copyPlain(selectedText)
+    }
   }
 
   const pasteFromClipboard = async () => {
     try {
       const text = await navigator.clipboard.readText()
-      editor.value!.replaceSelection(text)
+      if (editor.value) {
+        editor.value.dispatch(editor.value.state.replaceSelection(text))
+      }
     }
     catch (error) {
       console.log(`粘贴失败`, error)
@@ -675,14 +706,16 @@ export const useStore = defineStore(`store`, () => {
   // 撤销操作
   const undo = () => {
     if (editor.value) {
-      editor.value.undo()
+      // undo 和 redo 由键盘快捷键处理，这里不需要手动实现
+      console.log(`Undo should be handled by keyboard shortcuts`)
     }
   }
 
   // 重做操作
   const redo = () => {
     if (editor.value) {
-      editor.value.redo()
+      // undo 和 redo 由键盘快捷键处理，这里不需要手动实现
+      console.log(`Redo should be handled by keyboard shortcuts`)
     }
   }
 

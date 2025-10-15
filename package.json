@@ -27,6 +27,10 @@
     "inspector": "pnpx node-modules-inspector",
     "utools:package": "node ./scripts/package-utools.mjs"
   },
+  "dependencies": {
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.6"
+  },
   "devDependencies": {
     "@antfu/eslint-config": "5.4.1",
     "@types/node": "^24.6.0",

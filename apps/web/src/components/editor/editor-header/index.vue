@@ -104,7 +104,7 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
 async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
-    const mdContent = editor.value?.getValue() || ``
+    const mdContent = editor.value?.state.doc.toString() || ``
     await copyContent(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
     return
@@ -163,7 +163,7 @@ async function copy() {
         await copyContent(temp)
       }
       else if (copyMode.value === `html-without-style`) {
-        await copyContent(await generatePureHTML(editor.value!.getValue()))
+        await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
       }
       else if (copyMode.value === `html-and-style`) {
         await copyContent(store.editorContent2HTML())
