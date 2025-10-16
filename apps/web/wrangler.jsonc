@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "md-web",
+  "name": "md",
   "compatibility_date": "2025-09-06",
   "main": "worker/index.ts",
   "assets": {
