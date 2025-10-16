@@ -420,6 +420,7 @@ function createFormTextArea(dom: HTMLDivElement) {
 
             currentPost.updateDatetime = new Date()
             currentPost.content = value
+            store.putPost(currentPost.id, currentPost)
           }, 300)
         }
       }),
@@ -515,6 +516,10 @@ onMounted(() => {
     currentPost.history.unshift({
       content: currentPost.content,
       datetime: new Date().toLocaleString(`zh-CN`),
+    })
+    window.storex.post(`history`, {
+      postsId: currentPost.id,
+      content: currentPost.content,
     })
 
     currentPost.history.length = Math.min(currentPost.history.length, 10)
