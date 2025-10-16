@@ -48,12 +48,6 @@
   outline: none;
 }
 
-.CodeMirror-scroll {
-  padding: 0 20px;
-  overflow-x: hidden !important;
-  overflow-y: scroll !important;
-}
-
 .CodeMirror-vscrollbar {
   width: 0px;
   height: 0px;
@@ -72,8 +66,13 @@
   font-family: Consolas, 'Courier New', monospace !important;
 
   .cm-scroller {
-    overflow-x: hidden !important;
+    overflow-x: auto !important;
     overflow-y: auto !important;
+
+    // 只隐藏 x 方向的滚动条
+    &::-webkit-scrollbar:horizontal {
+      display: none; /* Chrome/Safari/Webkit - 横向滚动条 */
+    }
   }
 
   .cm-content {

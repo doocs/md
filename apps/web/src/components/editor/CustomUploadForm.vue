@@ -80,12 +80,6 @@ function formCustomSave() {
 </template>
 
 <style scoped>
-/* 覆盖全局的 overflow-x: hidden 设置 */
-:deep(.CodeMirror-scroll) {
-  overflow-x: auto !important;
-  overflow-y: auto !important;
-}
-
 @media (max-width: 768px) {
   :deep(.CodeMirror) {
     font-size: 12px;
