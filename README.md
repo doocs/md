@@ -103,7 +103,7 @@ pnpm i
 
 # 启动开发模式
 pnpm web dev
-# 访问 http://localhost:5173/md
+# 访问 http://localhost:5173/md/
 
 # 部署在 /md 目录
 pnpm web build
