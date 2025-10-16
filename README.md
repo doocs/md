@@ -103,14 +103,13 @@ pnpm i
 
 # 启动开发模式
 pnpm web dev
+# 访问 http://localhost:5173/md
 
 # 部署在 /md 目录
 pnpm web build
-# 访问 http://127.0.0.1:9000/md
 
 # 部署在根目录
 pnpm web build:h5-netlify
-# 访问 http://127.0.0.1:9000/
 
 # Chrome 插件启动及调试
 pnpm web ext:dev
