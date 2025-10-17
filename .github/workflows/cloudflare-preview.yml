@@ -3,6 +3,7 @@ name: Cloudflare Workers Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+  workflow_dispatch:
 
 concurrency:
   group: cloudflare-preview-${{ github.event.pull_request.number }}
@@ -66,27 +67,27 @@ jobs:
           script: |
             const previewUrl = '${{ steps.deployment-url.outputs.url }}';
             const prNumber = context.issue.number;
-            
+
             // Find existing comment
             const comments = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: prNumber,
             });
-            
-            const botComment = comments.data.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes('Cloudflare Workers Preview')
             );
-            
+
             const commentBody = `## 🚀 Cloudflare Workers Preview
-            
+
             Your preview is ready!
-            
+
             **Preview URL:** ${previewUrl}
-            
+
             <sub>Built with commit ${context.sha}</sub>`;
-            
+
             if (botComment) {
               // Update existing comment
               await github.rest.issues.updateComment({
