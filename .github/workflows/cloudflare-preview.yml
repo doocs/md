@@ -39,7 +39,7 @@ jobs:
       - name: Build for Cloudflare Workers
         run: pnpm web build:h5-netlify
         env:
-          CF_PAGES: 1
+          CF_WORKERS: 1
 
       - name: Deploy to Cloudflare Workers
         id: deploy

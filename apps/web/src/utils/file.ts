@@ -333,14 +333,15 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
   }
   return ``
 }
-// Cloudflare Pages 环境
-const isCfPage = import.meta.env.CF_PAGES === `1`
+// Cloudflare Workers 环境
+const isCfWorkers = import.meta.env.CF_WORKERS === `1`
+
 async function mpFileUpload(file: File) {
   let { appID, appsecret, proxyOrigin } = JSON.parse(
     localStorage.getItem(`mpConfig`)!,
   )
-  // 未填写代理域名且是cfpages环境
-  if (!proxyOrigin && isCfPage) {
+  // 未填写代理域名且是 Cloudflare Workers 环境时，使用当前域名作为代理域名
+  if (!proxyOrigin && isCfWorkers) {
     proxyOrigin = window.location.origin
   }
   const access_token = await getMpToken(appID, appsecret, proxyOrigin)

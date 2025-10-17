@@ -159,15 +159,15 @@ function telegramSubmit(values: any) {
 // 当前是否为网页（http/https 协议）
 const isWebsite = window.location.protocol.startsWith(`http`)
 
-// Cloudflare Pages 环境
-const isCfPage = import.meta.env.CF_PAGES === `1`
+// Cloudflare Workers 环境
+const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 
 // 插件模式运行（如 chrome-extension://）
 const isPluginMode = !isWebsite
 
 // 是否需要填写 proxyOrigin（只在 非插件 且 非CF页面 时需要）
 const isProxyRequired = computed(() => {
-  return !isPluginMode && !isCfPage
+  return !isPluginMode && !isCfWorkers
 })
 
 const mpPlaceholder = computed(() => {
