@@ -44,6 +44,15 @@
     "simple-git-hooks": "^2.12.1",
     "typescript": "~5.9.3"
   },
+  "pnpm": {
+    "overrides": {
+      "core-js@<3": "^3.46.0",
+      "glob@<8": "^10.4.5",
+      "inflight": "npm:@hishprorg/voluptates-laborum@^2.0.0",
+      "source-map@0.8.0-beta.0": "0.7.4",
+      "workbox-build>source-map": "0.7.4"
+    }
+  },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },
