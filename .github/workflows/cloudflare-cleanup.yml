@@ -11,40 +11,35 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Install wrangler globally
-        run: pnpm add -g wrangler
-
       - name: Delete preview deployment
         id: delete
         continue-on-error: true
         run: |
-          echo "Attempting to delete md-pr-${{ github.event.pull_request.number }}"
-          wrangler delete md-pr-${{ github.event.pull_request.number }} --force
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          WORKER_NAME="md-pr-${{ github.event.pull_request.number }}"
+          echo "Attempting to delete $WORKER_NAME"
+          RESPONSE=$(curl -s -X DELETE \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/workers/scripts/$WORKER_NAME" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+
+          echo "API Response: $RESPONSE"
+
+          if echo "$RESPONSE" | grep -q '"success":true'; then
+            echo "Successfully deleted $WORKER_NAME"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to delete $WORKER_NAME or worker doesn't exist"
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
 
       - name: Comment on PR
-        if: steps.delete.outcome == 'success'
+        if: steps.delete.outputs.status == 'success'
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
             const prNumber = context.issue.number;
-            
+
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
