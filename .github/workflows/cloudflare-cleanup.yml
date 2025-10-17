@@ -24,7 +24,7 @@ jobs:
 
           echo "API Response: $RESPONSE"
 
-          if echo "$RESPONSE" | grep -q '"success":true'; then
+          if echo "$RESPONSE" | jq -e '.success == true' > /dev/null 2>&1; then
             echo "Successfully deleted $WORKER_NAME"
             echo "status=success" >> $GITHUB_OUTPUT
           else
