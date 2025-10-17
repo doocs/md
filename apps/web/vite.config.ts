@@ -13,14 +13,12 @@ import { VitePWA } from 'vite-plugin-pwa'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+const isNetlify = process.env.SERVER_ENV === `NETLIFY`
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
-const isCfWorkers = process.env.CF_PAGES === `1`
-const base
-  = process.env.SERVER_ENV === `NETLIFY` || isCfWorkers
-    ? `/`
-    : isUTools
-      ? `./`
-      : `/md/`
+const isCfWorkers = process.env.CF_WORKERS === `1`
+const isCfPages = process.env.CF_PAGES === `1`
+
+const base = isNetlify || isCfWorkers || isCfPages ? `/` : isUTools ? `./` : `/md/`
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
