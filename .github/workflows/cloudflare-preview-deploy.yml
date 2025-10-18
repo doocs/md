@@ -55,7 +55,7 @@ jobs:
 
       - name: Deploy to Cloudflare Workers (preview)
         run: |
-          wrangler deploy --name=md-pr-${{ steps.pr.outputs.id }} --env preview --assets ./dist
+          wrangler deploy --name=md-pr-${{ steps.pr.outputs.id }} --env preview --assets dist
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
