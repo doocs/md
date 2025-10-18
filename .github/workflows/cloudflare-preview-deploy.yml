@@ -8,14 +8,15 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cloudflare-preview-${{ github.event.workflow_run.event.pull_request.number }}
+  group: cloudflare-preview-${{ github.event.workflow_run.pull_requests[0].number }}
   cancel-in-progress: true
 
 jobs:
   deploy-preview:
     runs-on: ubuntu-latest
-    if: github.repository == 'doocs/md'
+    if: github.repository == 'doocs/md' && github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     permissions:
+      actions: read
       contents: read
       deployments: write
       pull-requests: write
@@ -26,12 +27,18 @@ jobs:
         with:
           name: cloudflare-dist
           path: apps/web/dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Download PR number
         uses: actions/download-artifact@v4
         with:
           name: cloudflare-pr
           path: .
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
 
       - name: Read PR number
         id: read-pr
