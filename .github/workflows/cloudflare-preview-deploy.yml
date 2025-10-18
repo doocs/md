@@ -22,14 +22,8 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Download build artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: cloudflare-dist
-          path: apps/web/dist
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          repository: ${{ github.repository }}
-          run-id: ${{ github.event.workflow_run.id }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Download PR number
         uses: actions/download-artifact@v4
@@ -44,17 +38,28 @@ jobs:
         id: read-pr
         run: echo "pr_number=$(cat pr-id.txt)" >> $GITHUB_OUTPUT
 
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-dist
+          path: apps/web/dist
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          run-id: ${{ github.event.workflow_run.id }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
       - name: Deploy to Cloudflare Workers
         id: deploy
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }}
+          command: deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }} --assets dist
           workingDirectory: apps/web
-        env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Get deployment URL
         id: deployment-url

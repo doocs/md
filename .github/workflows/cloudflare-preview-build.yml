@@ -32,11 +32,11 @@ jobs:
         env:
           CF_WORKERS: 1
 
-      - name: Upload deployment package
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: cloudflare-dist
-          path: apps/web/dist/**
+          path: apps/web/dist
           retention-days: 5
 
       - name: Save PR number
