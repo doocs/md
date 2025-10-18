@@ -79,6 +79,7 @@ jobs:
         uses: dawidd6/action-download-artifact@v11
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
           name: pr
 
       - name: Save PR id
@@ -102,5 +103,4 @@ jobs:
 
             <!-- Surge Preview Comment -->
           body-include: '<!-- Surge Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
           number: ${{ steps.pr.outputs.id }}
