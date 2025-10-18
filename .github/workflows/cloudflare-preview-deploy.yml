@@ -42,21 +42,7 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           workflow_conclusion: success
           name: cloudflare-dist
-
-      - name: Set up node
-        uses: actions/setup-node@v6
-        with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10
-
-      - name: Install dependencies
-        run: |
-          cd apps/web
-          pnpm install --prod
+          path: apps/web/dist
 
       - name: Deploy to Cloudflare Workers
         id: deploy
