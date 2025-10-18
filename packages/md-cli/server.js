@@ -88,17 +88,10 @@ export function createServer(port = 8800) {
     }
   })
 
-  app.get('/', (_, res) => {
-    res.redirect('/md/')
-  })
-
   console.log('代理到: https://md.doocs.org/')
-  app.use('/md/', createProxyMiddleware({
+  app.use(createProxyMiddleware({
     target: 'https://md.doocs.org/',
     changeOrigin: true,
-    pathRewrite: {
-      '^/md/': '',
-    },
     on: {
       error: (err, req, res) => {
         console.error(`代理错误 ${req.path}:`, err)

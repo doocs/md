@@ -143,13 +143,13 @@ npm i -g @doocs/md-cli
 md-cli
 
 # 访问
-open http://127.0.0.1:8800/md/
+open http://127.0.0.1:8800
 
 # 启动并指定端口
 md-cli port=8899
 
 # 访问
-open http://127.0.0.1:8899/md/
+open http://127.0.0.1:8899
 ```
 
 md-cli 支持以下命令行参数：
