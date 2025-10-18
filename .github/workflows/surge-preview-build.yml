@@ -1,4 +1,4 @@
-name: Preview Build
+name: Surge Preview Build
 
 on:
   pull_request:
