@@ -13,5 +13,6 @@ export default antfu({
     'no-console': `off`,
     'no-debugger': `off`,
     'ts/no-namespace': `off`,
+    'style/max-statements-per-line': `off`,
   },
 })

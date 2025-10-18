@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM node:20-alpine3.19 AS builder
+FROM --platform=$BUILDPLATFORM node:22-alpine AS builder
 ENV LANG="en_US.UTF-8"
 ENV LANGUAGE="en_US.UTF-8"
 ENV LC_ALL="en_US.UTF-8"

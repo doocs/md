@@ -52,3 +52,7 @@ web-ext.config.ts
 
 # vite-plugin-pwa dev output
 dev-dist
+
+# uTools build artifacts
+apps/utools/dist
+apps/utools/release

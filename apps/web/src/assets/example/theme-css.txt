@@ -78,6 +78,19 @@ inline_katex {
 /* 公式块样式 */
 block_katex {
 }
+/* 表格样式 */
+table {
+}
+/* 表格头样式 */
+thead{
+}
+/* 表格标题格样式 */
+th {
+}
+/* 表格内容格样式 */
+td {
+}
+
 /* GFM note 样式 */
 blockquote_note {
 }

@@ -1,0 +1,48 @@
+name: Cleanup Cloudflare Preview
+
+on:
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup-preview:
+    runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Delete preview deployment
+        id: delete
+        continue-on-error: true
+        run: |
+          WORKER_NAME="md-pr-${{ github.event.pull_request.number }}"
+          echo "Attempting to delete $WORKER_NAME"
+          RESPONSE=$(curl -s -X DELETE \
+            "https://api.cloudflare.com/client/v4/accounts/${{ secrets.CLOUDFLARE_ACCOUNT_ID }}/workers/scripts/$WORKER_NAME" \
+            -H "Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}" \
+            -H "Content-Type: application/json")
+
+          echo "API Response: $RESPONSE"
+
+          if echo "$RESPONSE" | jq -e '.success == true' > /dev/null 2>&1; then
+            echo "Successfully deleted $WORKER_NAME"
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Failed to delete $WORKER_NAME or worker doesn't exist"
+            echo "status=failed" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR
+        if: steps.delete.outputs.status == 'success'
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = context.issue.number;
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              body: '🗑️ Cloudflare Workers preview deployment has been cleaned up.'
+            });

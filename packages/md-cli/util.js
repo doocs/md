@@ -1,9 +1,7 @@
 import FormData from 'form-data'
-import process from 'process'
-import os from 'os'
-import net from 'net'
-import util from 'util'
-import crypto from 'crypto'
+import process from 'node:process'
+import util from 'node:util'
+import crypto from 'node:crypto'
 
 const fetch = (...args) => import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
 

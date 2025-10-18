@@ -1,0 +1,27 @@
+{
+  "pluginName": "微信 Markdown 编辑器",
+  "description": "Markdown 文档自动排版为微信图文,随时在 uTools 中打开使用",
+  "version": "2.1.0",
+  "author": "doocs",
+  "homepage": "https://github.com/doocs/md",
+  "pluginType": "tool",
+  "platform": [
+    "win32",
+    "darwin",
+    "linux"
+  ],
+  "logo": "logo.png",
+  "main": "dist/index.html",
+  "preload": "preload.js",
+  "features": [
+    {
+      "code": "wechat-md",
+      "explain": "打开微信 Markdown 编辑器",
+      "cmds": [
+        "微信排版",
+        "Markdown 编辑器",
+        "doocs md"
+      ]
+    }
+  ]
+}

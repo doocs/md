@@ -1,9 +1,9 @@
 import express from 'express'
 import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
-import { fileURLToPath } from 'url'
-import { dirname } from 'path'
+import path from 'node:path'
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import { dirname } from 'node:path'
 import { createProxyMiddleware } from 'http-proxy-middleware'
 import {
   dcloud,
@@ -88,17 +88,15 @@ export function createServer(port = 8800) {
     }
   })
 
-  app.get('/', (_, res) => {
-    res.redirect('/md/')
-  })
-
-  console.log('代理到: https://doocs-md.pages.dev')
+  console.log('代理到: https://md.doocs.org/')
   app.use(createProxyMiddleware({
-    target: 'https://doocs-md.pages.dev',
+    target: 'https://md.doocs.org/',
     changeOrigin: true,
-    onError: (err, req, res) => {
-      console.error(`代理错误 ${req.path}:`, err.message)
-      res.status(502).send('代理服务暂不可用，请检查网络连接')
+    on: {
+      error: (err, req, res) => {
+        console.error(`代理错误 ${req.path}:`, err)
+        res.status(502).send(`代理服务暂不可用，请检查网络连接 ${err.message}`)
+      },
     },
   }))
 
