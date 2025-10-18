@@ -1,124 +1,100 @@
-name: Cloudflare Preview Deploy
+name: Cloudflare Workers Preview
 
 on:
   workflow_run:
     workflows: ["Cloudflare Preview Build"]
     types:
       - completed
+  workflow_dispatch:
 
-permissions:
-  contents: read
-  deployments: write
-  pull-requests: write
+concurrency:
+  group: cloudflare-preview-${{ github.event.workflow_run.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
-  deploy:
+  deploy-preview:
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.repository == 'doocs/md'
+    if: github.repository == 'doocs/md'
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+
     steps:
-      - name: Checkout
-        uses: actions/checkout@v5
-
-      - name: Set up node
-        uses: actions/setup-node@v6
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
         with:
-          node-version: 22
-
-      - name: Install Wrangler
-        run: npm install -g wrangler@latest
-
-      - name: Download PR artifact
-        uses: dawidd6/action-download-artifact@v11
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          run_id: ${{ github.event.workflow_run.id }}
-          name: cloudflare-pr
-
-      - name: Save PR id
-        id: pr
-        run: |
-          pr_id=$(<pr-id.txt)
-          if ! [[ "$pr_id" =~ ^[0-9]+$ ]]; then
-            echo "Error: pr-id.txt does not contain a valid numeric PR id. Please check."
-            exit 1
-          fi
-          echo "id=$pr_id" >> $GITHUB_OUTPUT
-
-      - name: Download dist artifact
-        uses: dawidd6/action-download-artifact@v11
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          run_id: ${{ github.event.workflow_run.id }}
-          workflow_conclusion: success
           name: cloudflare-dist
-          path: dist
+          path: apps/web/dist
 
-      - name: Deploy to Cloudflare Workers (preview)
-        run: |
-          wrangler deploy --name=md-pr-${{ steps.pr.outputs.id }} --env preview --assets dist
+      - name: Download PR number
+        uses: actions/download-artifact@v4
+        with:
+          name: cloudflare-pr
+          path: .
+
+      - name: Read PR number
+        id: read-pr
+        run: echo "pr_number=$(cat pr-id.txt)" >> $GITHUB_OUTPUT
+
+      - name: Deploy to Cloudflare Workers
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }}
+          workingDirectory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
-      - name: Comment PR with preview link
-        uses: actions-cool/maintain-one-comment@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            🚀 Cloudflare Workers Preview has been successfully deployed!
-
-            **Preview URL:** https://md-pr-${{ steps.pr.outputs.id }}.doocs.workers.dev
-
-            <sub>Built with commit ${{ github.event.workflow_run.head_sha }}</sub>
-
-            <!-- Cloudflare Workers Preview Comment -->
-          body-include: '<!-- Cloudflare Workers Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
-
-      - name: Deploy failed
-        if: ${{ failure() }}
-        uses: actions-cool/maintain-one-comment@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            😭 Cloudflare Workers Preview deployment failed.
-
-            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
-
-            <!-- Cloudflare Workers Preview Comment -->
-          body-include: '<!-- Cloudflare Workers Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
-
-  failed:
-    runs-on: ubuntu-latest
-    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure' && github.repository == 'doocs/md'
-    steps:
-      - name: Download PR artifact
-        uses: dawidd6/action-download-artifact@v11
-        with:
-          workflow: ${{ github.event.workflow_run.workflow_id }}
-          run_id: ${{ github.event.workflow_run.id }}
-          name: cloudflare-pr
-
-      - name: Save PR id
-        id: pr
+      - name: Get deployment URL
+        id: deployment-url
         run: |
-          pr_id=$(<pr-id.txt)
-          if ! [[ "$pr_id" =~ ^[0-9]+$ ]]; then
-            echo "Error: pr-id.txt does not contain a valid numeric PR id. Please check."
-            exit 1
-          fi
-          echo "id=$pr_id" >> $GITHUB_OUTPUT
+          PREVIEW_URL="https://md-pr-${{ steps.read-pr.outputs.pr_number }}.doocs.workers.dev"
+          echo "url=$PREVIEW_URL" >> $GITHUB_OUTPUT
+          echo "Preview URL: $PREVIEW_URL"
 
-      - name: Comment PR with build failure
-        uses: actions-cool/maintain-one-comment@v3
+      - name: Comment PR with preview link
+        uses: actions/github-script@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            😭 Cloudflare Workers Preview build failed.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const previewUrl = '${{ steps.deployment-url.outputs.url }}';
+            const prNumber = Number('${{ steps.read-pr.outputs.pr_number }}');
 
-            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
+            const comments = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
 
-            <!-- Cloudflare Workers Preview Comment -->
-          body-include: '<!-- Cloudflare Workers Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
+            const botComment = comments.data.find(comment =>
+              comment.user.type === 'Bot' &&
+              comment.body.includes('Cloudflare Workers Preview')
+            );
+
+            const commentBody = `## 🚀 Cloudflare Workers Preview
+
+            Your preview is ready!
+
+            **Preview URL:** ${previewUrl}
+
+            <sub>Built with commit ${context.workflow_run.head_sha}</sub>`;
+
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body: commentBody
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body: commentBody
+              });
+            }
