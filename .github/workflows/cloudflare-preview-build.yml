@@ -32,28 +32,11 @@ jobs:
         env:
           CF_WORKERS: 1
 
-      - name: Prepare deployment files
-        run: |
-          # Copy wrangler config and worker code
-          mkdir -p deploy-package
-          cp -r apps/web/dist deploy-package/
-          cp apps/web/wrangler.jsonc deploy-package/wrangler.jsonc
-          cp -r apps/web/worker deploy-package/
-          
-          # Create a minimal package.json without workspace protocol
-          cat > deploy-package/package.json << 'EOF'
-          {
-            "name": "md-preview",
-            "version": "1.0.0",
-            "private": true
-          }
-          EOF
-
       - name: Upload deployment package
         uses: actions/upload-artifact@v4
         with:
           name: cloudflare-dist
-          path: deploy-package
+          path: dist
           retention-days: 5
 
       - name: Save PR number

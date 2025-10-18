@@ -6,17 +6,26 @@ on:
     types:
       - completed
 
+permissions:
+  contents: read
+  deployments: write
+  pull-requests: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.repository == 'doocs/md'
-    permissions:
-      contents: read
-      deployments: write
-      pull-requests: write
     steps:
       - name: Checkout
         uses: actions/checkout@v5
+
+      - name: Set up node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Install Wrangler
+        run: npm install -g wrangler@latest
 
       - name: Download PR artifact
         uses: dawidd6/action-download-artifact@v11
@@ -42,23 +51,11 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           workflow_conclusion: success
           name: cloudflare-dist
-          path: deploy-package
+          path: dist
 
-      - name: Update wrangler config
+      - name: Deploy to Cloudflare Workers (preview)
         run: |
-          cd deploy-package
-          # Update the assets directory path in wrangler.jsonc
-          sed -i 's|"directory": "./public/"|"directory": "./dist/"|g' wrangler.jsonc
-
-      - name: Deploy to Cloudflare Workers
-        id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --name md-pr-${{ steps.pr.outputs.id }}
-          workingDirectory: deploy-package
-          packageManager: npm
+          wrangler deploy --name=md-pr-${{ steps.pr.outputs.id }} --env preview --assets ./dist
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
