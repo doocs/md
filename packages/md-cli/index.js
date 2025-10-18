@@ -29,7 +29,7 @@ async function startServer() {
 
     app.listen(port, '127.0.0.1', () => {
       console.log(`服务已启动:`)
-      console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}/md/`)} 即刻使用吧~`)
+      console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}`)} 即刻使用吧~`)
       console.log(``)
 
       const { spaceId, clientSecret } = arg
