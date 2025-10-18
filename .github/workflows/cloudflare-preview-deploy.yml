@@ -55,9 +55,32 @@ jobs:
       - name: Install Wrangler
         run: npm install -g wrangler@latest
 
+      - name: Prepare wrangler config
+        working-directory: apps/web
+        run: |
+          # Create a temporary wrangler config for preview deployment
+          cat > wrangler-preview.json << 'EOF'
+          {
+            "name": "md-pr-temp",
+            "compatibility_date": "2025-09-06",
+            "main": "worker/index.ts",
+            "assets": {
+              "not_found_handling": "single-page-application",
+              "directory": "./dist"
+            },
+            "observability": {
+              "enabled": true
+            },
+            "compatibility_flags": [
+              "nodejs_compat",
+              "nodejs_compat_populate_process_env"
+            ]
+          }
+          EOF
+
       - name: Deploy to Cloudflare Workers
         id: deploy
-        run: npx wrangler deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }} --assets dist
+        run: npx wrangler deploy --config wrangler-preview.json --name md-pr-${{ steps.read-pr.outputs.pr_number }}
         working-directory: apps/web
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
