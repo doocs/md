@@ -52,14 +52,16 @@ jobs:
         with:
           node-version: 22
 
+      - name: Install Wrangler
+        run: npm install -g wrangler@latest
+
       - name: Deploy to Cloudflare Workers
         id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }} --assets dist
-          workingDirectory: apps/web
+        run: npx wrangler deploy --name md-pr-${{ steps.read-pr.outputs.pr_number }} --assets dist
+        working-directory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Get deployment URL
         id: deployment-url
