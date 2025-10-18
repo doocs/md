@@ -1,13 +1,13 @@
-name: Preview Deploy
+name: Surge Preview Deploy
 
 on:
   workflow_run:
-    workflows: ["Preview Build"]
+    workflows: ["Surge Preview Build"]
     types:
       - completed
 
 jobs:
-  success:
+  deploy:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.repository == 'doocs/md'
     steps:
@@ -42,31 +42,33 @@ jobs:
           export DEPLOY_DOMAIN=https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh
           npx surge --project ./ --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
 
-      - name: Upload status comment
+      - name: Comment PR with preview link
         uses: actions-cool/maintain-one-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            🎊 PR Preview has been successfully built and deployed to https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh
+            🚀 Surge Preview has been successfully deployed!
 
-            <img width="300" src="https://user-images.githubusercontent.com/507615/90250366-88233900-de6e-11ea-95a5-84f0762ffd39.png">
+            **Preview URL:** https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh
 
-            <!-- Sticky Pull Request Comment -->
-          body-include: '<!-- Sticky Pull Request Comment -->'
+            <sub>Built with commit ${{ github.event.workflow_run.head_sha }}</sub>
+
+            <!-- Surge Preview Comment -->
+          body-include: '<!-- Surge Preview Comment -->'
           number: ${{ steps.pr.outputs.id }}
 
-      - name: The job failed
+      - name: Deploy failed
         if: ${{ failure() }}
         uses: actions-cool/maintain-one-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            😭 Deploy PR Preview failed.
+            😭 Surge Preview deployment failed.
 
-            <img width="300" src="https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png">
+            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
 
-            <!-- Sticky Pull Request Comment -->
-          body-include: '<!-- Sticky Pull Request Comment -->'
+            <!-- Surge Preview Comment -->
+          body-include: '<!-- Surge Preview Comment -->'
           number: ${{ steps.pr.outputs.id }}
 
   failed:
@@ -77,21 +79,28 @@ jobs:
         uses: dawidd6/action-download-artifact@v11
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
           name: pr
 
       - name: Save PR id
         id: pr
-        run: echo "id=$(<pr-id.txt)" >> "$GITHUB_OUTPUT"
+        run: |
+          pr_id=$(<pr-id.txt)
+          if ! [[ "$pr_id" =~ ^[0-9]+$ ]]; then
+            echo "Error: pr-id.txt does not contain a valid numeric PR id. Please check."
+            exit 1
+          fi
+          echo "id=$pr_id" >> $GITHUB_OUTPUT
 
-      - name: The job failed
+      - name: Comment PR with build failure
         uses: actions-cool/maintain-one-comment@v3
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           body: |
-            😭 Deploy PR Preview failed.
+            😭 Surge Preview build failed.
 
-            <img width="300" src="https://user-images.githubusercontent.com/507615/90250824-4e066700-de6f-11ea-8230-600ecc3d6a6b.png">
+            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
 
-            <!-- Sticky Pull Request Comment -->
-          body-include: '<!-- Sticky Pull Request Comment -->'
+            <!-- Surge Preview Comment -->
+          body-include: '<!-- Surge Preview Comment -->'
           number: ${{ steps.pr.outputs.id }}

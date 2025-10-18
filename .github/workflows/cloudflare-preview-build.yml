@@ -1,4 +1,4 @@
-name: Preview Build
+name: Cloudflare Preview Build
 
 on:
   pull_request:
@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
-      - uses: actions/checkout@v5
+      - name: Checkout
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -23,15 +24,18 @@ jobs:
         with:
           version: 10
 
-      - name: Build
-        run: |
-          pnpm install
-          pnpm web build:h5-netlify
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build for Cloudflare Workers
+        run: pnpm web build:h5-netlify
+        env:
+          CF_WORKERS: 1
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist
+          name: cloudflare-dist
           path: apps/web/dist
           retention-days: 5
 
@@ -43,5 +47,5 @@ jobs:
         if: ${{ always() }}
         uses: actions/upload-artifact@v4
         with:
-          name: pr
+          name: cloudflare-pr
           path: ./pr-id.txt
