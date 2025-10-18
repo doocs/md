@@ -113,13 +113,13 @@ pnpm web build:h5-netlify
 
 # Chrome 插件启动及调试
 pnpm web ext:dev
-# 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 .output/chrome-mv3-dev 目录
+# 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 apps/web/.output/chrome-mv3-dev 目录
 
 # Chrome 插件打包
 pnpm web ext:zip
 
 # Firefox 扩展打包(how to build Firefox addon)
-pnpm web firefox:zip # output zip file at in .output/md-{version}-firefox.zip
+pnpm web firefox:zip # output zip file at in apps/web/.output/md-{version}-firefox.zip
 
 # uTools 插件打包
 pnpm utools:package # output zip file at apps/utools/release/md-utools-v{version}.zip
