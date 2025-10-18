@@ -66,7 +66,7 @@ jobs:
             "main": "worker/index.ts",
             "assets": {
               "not_found_handling": "single-page-application",
-              "directory": "./dist"
+              "directory": "./public/"
             },
             "observability": {
               "enabled": true
