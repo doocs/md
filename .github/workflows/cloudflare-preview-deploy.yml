@@ -1,0 +1,134 @@
+name: Cloudflare Preview Deploy
+
+on:
+  workflow_run:
+    workflows: ["Cloudflare Preview Build"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.repository == 'doocs/md'
+    permissions:
+      contents: read
+      deployments: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+
+      - name: Download PR artifact
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: cloudflare-pr
+
+      - name: Save PR id
+        id: pr
+        run: |
+          pr_id=$(<pr-id.txt)
+          if ! [[ "$pr_id" =~ ^[0-9]+$ ]]; then
+            echo "Error: pr-id.txt does not contain a valid numeric PR id. Please check."
+            exit 1
+          fi
+          echo "id=$pr_id" >> $GITHUB_OUTPUT
+
+      - name: Download dist artifact
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          workflow_conclusion: success
+          name: cloudflare-dist
+
+      - name: Set up node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: |
+          cd apps/web
+          pnpm install --prod
+
+      - name: Deploy to Cloudflare Workers
+        id: deploy
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy --name md-pr-${{ steps.pr.outputs.id }}
+          workingDirectory: apps/web
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Comment PR with preview link
+        uses: actions-cool/maintain-one-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            🚀 Cloudflare Workers Preview has been successfully deployed!
+
+            **Preview URL:** https://md-pr-${{ steps.pr.outputs.id }}.doocs.workers.dev
+
+            <sub>Built with commit ${{ github.event.workflow_run.head_sha }}</sub>
+
+            <!-- Cloudflare Workers Preview Comment -->
+          body-include: '<!-- Cloudflare Workers Preview Comment -->'
+          number: ${{ steps.pr.outputs.id }}
+
+      - name: Deploy failed
+        if: ${{ failure() }}
+        uses: actions-cool/maintain-one-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            😭 Cloudflare Workers Preview deployment failed.
+
+            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
+
+            <!-- Cloudflare Workers Preview Comment -->
+          body-include: '<!-- Cloudflare Workers Preview Comment -->'
+          number: ${{ steps.pr.outputs.id }}
+
+  failed:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure' && github.repository == 'doocs/md'
+    steps:
+      - name: Download PR artifact
+        uses: dawidd6/action-download-artifact@v11
+        with:
+          workflow: ${{ github.event.workflow_run.workflow_id }}
+          run_id: ${{ github.event.workflow_run.id }}
+          name: cloudflare-pr
+
+      - name: Save PR id
+        id: pr
+        run: |
+          pr_id=$(<pr-id.txt)
+          if ! [[ "$pr_id" =~ ^[0-9]+$ ]]; then
+            echo "Error: pr-id.txt does not contain a valid numeric PR id. Please check."
+            exit 1
+          fi
+          echo "id=$pr_id" >> $GITHUB_OUTPUT
+
+      - name: Comment PR with build failure
+        uses: actions-cool/maintain-one-comment@v3
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
+            😭 Cloudflare Workers Preview build failed.
+
+            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
+
+            <!-- Cloudflare Workers Preview Comment -->
+          body-include: '<!-- Cloudflare Workers Preview Comment -->'
+          number: ${{ steps.pr.outputs.id }}
