@@ -42,7 +42,13 @@ jobs:
           run_id: ${{ github.event.workflow_run.id }}
           workflow_conclusion: success
           name: cloudflare-dist
-          path: apps/web/dist
+          path: deploy-package
+
+      - name: Update wrangler config
+        run: |
+          cd deploy-package
+          # Update the assets directory path in wrangler.jsonc
+          sed -i 's|"directory": "./public/"|"directory": "./dist/"|g' wrangler.jsonc
 
       - name: Deploy to Cloudflare Workers
         id: deploy
@@ -51,7 +57,8 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy --name md-pr-${{ steps.pr.outputs.id }}
-          workingDirectory: apps/web
+          workingDirectory: deploy-package
+          packageManager: npm
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
