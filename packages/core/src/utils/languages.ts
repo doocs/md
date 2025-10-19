@@ -86,7 +86,7 @@ const loadingLanguages = new Map<string, Promise<void>>()
  * 生成语言包的 CDN URL
  */
 function grammarUrlFor(language: string): string {
-  return `${HLJS_CDN_BASE}/languages/${language}.min.js`
+  return `${HLJS_CDN_BASE}/es/languages/${language}.min.js`
 }
 
 /**
