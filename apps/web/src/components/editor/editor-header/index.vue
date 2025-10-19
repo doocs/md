@@ -266,6 +266,7 @@ async function copy() {
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
 
+      <!-- 编辑器设置按钮 -->
       <Popover>
         <PopoverTrigger as-child>
           <Button variant="outline" size="icon" class="mr-1">
@@ -277,7 +278,7 @@ async function copy() {
         </PopoverContent>
       </Popover>
 
-      <!-- 设置按钮 -->
+      <!-- 样式面板 -->
       <Button
         variant="outline"
         size="icon"
