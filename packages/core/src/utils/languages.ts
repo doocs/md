@@ -77,7 +77,7 @@ export const COMMON_LANGUAGES: Record<string, LanguageFn> = {
 
 // highlight.js CDN 配置
 const HLJS_VERSION = `11.11.1`
-const HLJS_CDN_BASE = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HLJS_VERSION}`
+const HLJS_CDN_BASE = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/highlightjs/${HLJS_VERSION}`
 
 // 缓存正在加载的语言
 const loadingLanguages = new Map<string, Promise<void>>()
@@ -86,7 +86,7 @@ const loadingLanguages = new Map<string, Promise<void>>()
  * 生成语言包的 CDN URL
  */
 function grammarUrlFor(language: string): string {
-  return `${HLJS_CDN_BASE}/es/languages/${language}.min.js`
+  return `${HLJS_CDN_BASE}/languages/${language}.min.js`
 }
 
 /**
