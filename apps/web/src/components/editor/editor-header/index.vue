@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
+import { ChevronDownIcon, Menu, Paintbrush, Settings } from 'lucide-vue-next'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { useDisplayStore, useStore } from '@/stores'
 import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
@@ -264,6 +265,17 @@ async function copy() {
 
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
+
+      <Popover>
+        <PopoverTrigger as-child>
+          <Button variant="outline" size="icon" class="mr-1">
+            <Paintbrush class="size-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="end">
+          <ThemeCustomizer />
+        </PopoverContent>
+      </Popover>
 
       <!-- 设置按钮 -->
       <Button
