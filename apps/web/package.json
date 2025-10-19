@@ -99,7 +99,6 @@
     "unplugin-vue-components": "^29.1.0",
     "vite": "^7.1.10",
     "vite-plugin-node-polyfills": "^0.24.0",
-    "vite-plugin-pwa": "^1.1.0",
     "vite-plugin-radar": "^0.10.0",
     "vite-plugin-vue-devtools": "^8.0.2",
     "vue-tsc": "^3.1.0",
