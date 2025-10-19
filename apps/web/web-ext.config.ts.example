@@ -1,0 +1,10 @@
+import { defineWebExtConfig } from 'wxt'
+
+export default defineWebExtConfig({
+  // binaries: {
+  //   chrome: 'D:/Applications/Scoop/shims/chrome.exe', // Use Chrome Beta instead of regular Chrome
+  //   firefox: 'D:/Applications/Scoop/shims/firefox.exe', // Use Firefox Developer Edition instead of regular Firefox
+  //   edge: '/path/to/edge', // Open MS Edge when running "wxt -b edge"
+  // },
+  disabled: true
+})

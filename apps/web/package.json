@@ -21,9 +21,9 @@
     "wrangler:deploy": "cross-env CF_WORKERS=1 pnpm run build:h5-netlify && wrangler deploy",
     "release:cli": "node ./scripts/release.js",
     "ext:dev": "wxt",
-    "ext:zip": "wxt zip",
+    "ext:zip": "cross-env NODE_OPTIONS=--max-old-space-size=4096 wxt zip",
     "firefox:dev": "wxt -b firefox",
-    "firefox:zip": "wxt zip -b firefox",
+    "firefox:zip": "cross-env NODE_OPTIONS=--max-old-space-size=4096 wxt zip -b firefox",
     "type-check": "vue-tsc --build --force",
     "postinstall": "wxt prepare",
     "package:extension": "pnpm --prefix ./src/extension run package"
