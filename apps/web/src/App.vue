@@ -1,8 +1,18 @@
 <script setup lang="ts">
+import { onMounted, ref } from 'vue'
 import { Toaster } from '@/components/ui/sonner'
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 
 const store = useStore()
+const isUtools = ref(false)
+
+onMounted(() => {
+  // 检测是否为 Utools 环境
+  isUtools.value = !!(window as any).__MD_UTOOLS__
+  if (isUtools.value) {
+    document.documentElement.classList.add(`is-utools`)
+  }
+})
 </script>
 
 <template>
@@ -44,6 +54,23 @@ body {
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
   background-color: rgba(144, 146, 152, 0.5);
+}
+
+// Utools 模式下隐藏所有滚动条
+.is-utools {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Firefox
+  * {
+    scrollbar-width: none;
+  }
+
+  // IE and Edge
+  * {
+    -ms-overflow-style: none;
+  }
 }
 
 /* CSS-hints */
