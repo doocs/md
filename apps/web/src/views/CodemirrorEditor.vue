@@ -3,6 +3,7 @@ import type { ComponentPublicInstance } from 'vue'
 
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
+import { highlightPendingBlocks, hljs } from '@md/core'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
@@ -23,6 +24,15 @@ const { isDark, output, editor } = storeToRefs(store)
 const { editorRefresh } = store
 
 const { toggleShowUploadImgDialog } = displayStore
+
+watch(output, () => {
+  nextTick(() => {
+    const outputElement = document.getElementById(`output`)
+    if (outputElement) {
+      highlightPendingBlocks(hljs, outputElement)
+    }
+  })
+})
 
 const backLight = ref(false)
 const isCoping = ref(false)

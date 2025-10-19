@@ -15,6 +15,8 @@ Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
   hljs.registerLanguage(name, lang)
 })
 
+export { hljs }
+
 marked.setOptions({
   breaks: true,
 })
@@ -271,7 +273,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
         return `<pre class="mermaid">${text}</pre>`
       }
       const langText = lang.split(` `)[0]
-      const language = hljs.getLanguage(langText) ? langText : `plaintext`
+      const isLanguageRegistered = hljs.getLanguage(langText)
+      const language = isLanguageRegistered ? langText : `plaintext`
 
       let highlighted = ``
 
@@ -308,7 +311,10 @@ export function initRenderer(opts: IOpts): RendererAPI {
       }
 
       const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
-      const code = `<code class="language-${lang}" ${styles(`code`)}>${highlighted}</code>`
+      // 如果语言未注册，添加 data-language-pending 属性用于后续动态加载
+      const pendingAttr = !isLanguageRegistered && langText !== `plaintext` ? ` data-language-pending="${langText}"` : ``
+      const code = `<code class="language-${lang}"${pendingAttr} ${styles(`code`)}>${highlighted}</code>`
+
       return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
     },
 

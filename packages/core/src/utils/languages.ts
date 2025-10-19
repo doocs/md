@@ -74,3 +74,85 @@ export const COMMON_LANGUAGES: Record<string, LanguageFn> = {
   xml,
   yaml,
 }
+
+// highlight.js CDN 配置
+const HLJS_VERSION = `11.11.1`
+const HLJS_CDN_BASE = `https://cdnjs.cloudflare.com/ajax/libs/highlight.js/${HLJS_VERSION}`
+
+// 缓存正在加载的语言
+const loadingLanguages = new Map<string, Promise<void>>()
+
+/**
+ * 生成语言包的 CDN URL
+ */
+function grammarUrlFor(language: string): string {
+  return `${HLJS_CDN_BASE}/es/languages/${language}.min.js`
+}
+
+/**
+ * 动态加载并注册语言
+ * @param language 语言名称
+ * @param hljs highlight.js 实例
+ */
+export async function loadAndRegisterLanguage(language: string, hljs: any): Promise<void> {
+  // 如果已经注册，直接返回
+  if (hljs.getLanguage(language)) {
+    return
+  }
+
+  // 如果正在加载，等待加载完成
+  if (loadingLanguages.has(language)) {
+    await loadingLanguages.get(language)
+    return
+  }
+
+  // 开始加载
+  const loadPromise = (async () => {
+    try {
+      const module = await import(/* @vite-ignore */ grammarUrlFor(language))
+      hljs.registerLanguage(language, module.default)
+    }
+    catch (error) {
+      console.warn(`Failed to load language: ${language}`, error)
+      throw error
+    }
+    finally {
+      loadingLanguages.delete(language)
+    }
+  })()
+
+  loadingLanguages.set(language, loadPromise)
+  await loadPromise
+}
+
+/**
+ * 高亮 DOM 中待处理的代码块
+ * 查找带有 data-language-pending 属性的代码块，动态加载语言后重新高亮
+ * @param hljs highlight.js 实例
+ * @param container 容器元素（可选，默认为 document）
+ */
+export function highlightPendingBlocks(hljs: any, container: Document | Element = document): void {
+  const pendingBlocks = container.querySelectorAll(`code[data-language-pending]`)
+
+  pendingBlocks.forEach((codeBlock) => {
+    const language = codeBlock.getAttribute(`data-language-pending`)
+    if (!language)
+      return
+
+    if (hljs.getLanguage(language)) {
+      // 语言已加载，直接高亮
+      codeBlock.removeAttribute(`data-language-pending`)
+      hljs.highlightElement(codeBlock)
+    }
+    else {
+      // 动态加载语言后重新高亮
+      loadAndRegisterLanguage(language, hljs).then(() => {
+        codeBlock.removeAttribute(`data-language-pending`)
+        hljs.highlightElement(codeBlock)
+      }).catch(() => {
+        // 加载失败，移除标记
+        codeBlock.removeAttribute(`data-language-pending`)
+      })
+    }
+  })
+}
