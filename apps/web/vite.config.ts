@@ -68,7 +68,6 @@ export default defineConfig(({ mode }) => {
             if (id.includes(`node_modules`)) {
               if (id.includes(`katex`))
                 return `katex`
-              // mermaid 已改为外部 CDN 依赖
               if (id.includes(`highlight.js`))
                 return `hljs`
               if (id.includes(`codemirror`))
