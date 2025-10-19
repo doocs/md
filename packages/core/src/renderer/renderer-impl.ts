@@ -9,11 +9,13 @@ import { marked } from 'marked'
 import readingTime from 'reading-time'
 import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
 import { getStyleString } from '../utils'
-import { COMMON_LANGUAGES } from '../utils/languages'
+import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
 Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
   hljs.registerLanguage(name, lang)
 })
+
+export { hljs }
 
 marked.setOptions({
   breaks: true,
@@ -271,44 +273,20 @@ export function initRenderer(opts: IOpts): RendererAPI {
         return `<pre class="mermaid">${text}</pre>`
       }
       const langText = lang.split(` `)[0]
-      const language = hljs.getLanguage(langText) ? langText : `plaintext`
+      const isLanguageRegistered = hljs.getLanguage(langText)
+      const language = isLanguageRegistered ? langText : `plaintext`
 
-      let highlighted = ``
-
-      if (opts.isShowLineNumber) {
-        const rawLines = text.replace(/\r\n/g, `\n`).split(`\n`)
-
-        const highlightedLines = rawLines.map((lineRaw) => {
-          let lineHtml = hljs.highlight(lineRaw, { language }).value
-          lineHtml = lineHtml.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-          lineHtml = lineHtml.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-          lineHtml = lineHtml.replace(/\t/g, `    `)
-          lineHtml = lineHtml.replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
-          return lineHtml === `` ? `&nbsp;` : lineHtml
-        })
-
-        const lineNumbersHtml = highlightedLines.map((_, idx) => `<section style="padding:0 10px 0 0;line-height:1.75">${idx + 1}</section>`).join(``)
-        const codeInnerHtml = highlightedLines.join(`<br/>`)
-        const codeLinesHtml = `<div style="white-space:pre;min-width:max-content;line-height:1.75">${codeInnerHtml}</div>`
-        const lineNumberColumnStyles = `text-align:right;padding:8px 0;border-right:1px solid rgba(0,0,0,0.04);user-select:none;background:var(--code-bg,transparent);`
-
-        highlighted = `
-          <section style="display:flex;align-items:flex-start;overflow-x:hidden;overflow-y:auto;width:100%;max-width:100%;padding:0;box-sizing:border-box">
-            <section class="line-numbers" style="${lineNumberColumnStyles}">${lineNumbersHtml}</section>
-            <section class="code-scroll" style="flex:1 1 auto;overflow-x:auto;overflow-y:visible;padding:8px;min-width:0;box-sizing:border-box">${codeLinesHtml}</section>
-          </section>
-        `
-      }
-      else {
-        highlighted = hljs.highlight(text, { language }).value
-        highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_, span1, spaces, span2) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-        highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_, spaces, span) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-        highlighted = highlighted.replace(/\t/g, `    `)
-        highlighted = highlighted.replace(/\r\n/g, `<br/>`).replace(/\n/g, `<br/>`).replace(/(>[^<]+)|(^[^<]+)/g, str => str.replace(/\s/g, `&nbsp;`))
-      }
+      const highlighted = highlightAndFormatCode(text, language, hljs, !!opts.isShowLineNumber)
 
       const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
-      const code = `<code class="language-${lang}" ${styles(`code`)}>${highlighted}</code>`
+      // 如果语言未注册，添加 data-language-pending 属性和原始代码文本用于后续动态加载
+      let pendingAttr = ``
+      if (!isLanguageRegistered && langText !== `plaintext`) {
+        const escapedText = text.replace(/"/g, `&quot;`)
+        pendingAttr = ` data-language-pending="${langText}" data-raw-code="${escapedText}" data-show-line-number="${opts.isShowLineNumber}"`
+      }
+      const code = `<code class="language-${lang}"${pendingAttr} ${styles(`code`)}>${highlighted}</code>`
+
       return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
     },
 
