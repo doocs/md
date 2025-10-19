@@ -16,11 +16,14 @@ const iconSource = path.join(rootDir, `public`, `mpmd`, `icon-256.png`)
 const iconTarget = path.join(utoolsDir, `logo.png`)
 const manifestPath = path.join(utoolsDir, `plugin.json`)
 
-const command = process.platform === `win32` ? `pnpm.cmd` : `pnpm`
-
 function run(command, args, options = {}) {
   return new Promise((resolve, reject) => {
-    const child = spawn(command, args, { stdio: `inherit`, ...options })
+    const spawnOptions = {
+      stdio: `inherit`,
+      shell: true,
+      ...options,
+    }
+    const child = spawn(command, args, spawnOptions)
     child.on(`close`, (code) => {
       if (code === 0)
         resolve(code)
@@ -45,7 +48,7 @@ async function main() {
   const version = pkg.version
 
   console.log(`> 构建 uTools 前端资源（version: ${version}）`)
-  await run(command, [`--filter`, `@md/web`, `run`, `build:utools`], { cwd: rootDir })
+  await run(`pnpm`, [`--filter`, `@md/web`, `run`, `build:utools`], { cwd: rootDir })
 
   await ensureFileExists(distDir, `apps/utools/dist`)
   await ensureFileExists(manifestPath, `apps/utools/plugin.json`)
