@@ -311,8 +311,12 @@ export function initRenderer(opts: IOpts): RendererAPI {
       }
 
       const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
-      // 如果语言未注册，添加 data-language-pending 属性用于后续动态加载
-      const pendingAttr = !isLanguageRegistered && langText !== `plaintext` ? ` data-language-pending="${langText}"` : ``
+      // 如果语言未注册，添加 data-language-pending 属性和原始代码文本用于后续动态加载
+      let pendingAttr = ``
+      if (!isLanguageRegistered && langText !== `plaintext`) {
+        const escapedText = text.replace(/"/g, `&quot;`)
+        pendingAttr = ` data-language-pending="${langText}" data-raw-code="${escapedText}" data-show-line-number="${opts.isShowLineNumber}"`
+      }
       const code = `<code class="language-${lang}"${pendingAttr} ${styles(`code`)}>${highlighted}</code>`
 
       return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
