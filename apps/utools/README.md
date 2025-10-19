@@ -27,5 +27,6 @@ pnpm utools:package
 
 - `plugin.json`：uTools 插件的清单文件。
 - `preload.js`：在 uTools 渲染进程和 Web 前端之间建立通信的脚本，用于处理插件唤起事件。
+- `package.json`：将此目录标记为 CommonJS 模块以兼容 uTools。
 - `dist/`：由 Vite 构建输出的静态资源目录。
 - `release/`：运行打包命令后生成的插件安装包。
