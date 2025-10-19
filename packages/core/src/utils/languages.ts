@@ -126,31 +126,46 @@ export async function loadAndRegisterLanguage(language: string, hljs: any): Prom
 }
 
 /**
- * 重新高亮代码块
- * FIX: 丢失格式
+ * 格式化高亮后的代码，处理空格和制表符
  */
-function rehighlightCodeBlock(codeBlock: Element, language: string, hljs: any): void {
-  const rawCode = codeBlock.getAttribute(`data-raw-code`)
-  const showLineNumber = codeBlock.getAttribute(`data-show-line-number`) === `true`
+function formatHighlightedCode(html: string, preserveNewlines = false): string {
+  let formatted = html
+  // 将 span 之间的空格移到 span 内部
+  formatted = formatted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_: string, span1: string, spaces: string, span2: string) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+  formatted = formatted.replace(/(\s+)(<span[^>]*>)/g, (_: string, spaces: string, span: string) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
+  // 替换制表符为4个空格
+  formatted = formatted.replace(/\t/g, `    `)
 
-  if (!rawCode)
-    return
+  if (preserveNewlines) {
+    // 替换换行符为 <br/>，并将空格转换为 &nbsp;
+    formatted = formatted.replace(/\r\n/g, `<br/>`).replace(/\n/g, `<br/>`).replace(/(>[^<]+)|(^[^<]+)/g, (str: string) => str.replace(/\s/g, `&nbsp;`))
+  }
+  else {
+    // 只将空格转换为 &nbsp;
+    formatted = formatted.replace(/(>[^<]+)|(^[^<]+)/g, (str: string) => str.replace(/\s/g, `&nbsp;`))
+  }
 
-  // 解码 HTML 实体
-  const text = rawCode.replace(/&quot;/g, `"`)
+  return formatted
+}
 
+/**
+ * 高亮代码并格式化（支持行号）
+ * @param text 原始代码文本
+ * @param language 语言名称
+ * @param hljs highlight.js 实例
+ * @param showLineNumber 是否显示行号
+ * @returns 格式化后的 HTML
+ */
+export function highlightAndFormatCode(text: string, language: string, hljs: any, showLineNumber: boolean): string {
   let highlighted = ``
 
   if (showLineNumber) {
     const rawLines = text.replace(/\r\n/g, `\n`).split(`\n`)
 
     const highlightedLines = rawLines.map((lineRaw) => {
-      let lineHtml = hljs.highlight(lineRaw, { language }).value
-      lineHtml = lineHtml.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_: string, span1: string, spaces: string, span2: string) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-      lineHtml = lineHtml.replace(/(\s+)(<span[^>]*>)/g, (_: string, spaces: string, span: string) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-      lineHtml = lineHtml.replace(/\t/g, `    `)
-      lineHtml = lineHtml.replace(/(>[^<]+)|(^[^<]+)/g, (str: string) => str.replace(/\s/g, `&nbsp;`))
-      return lineHtml === `` ? `&nbsp;` : lineHtml
+      const lineHtml = hljs.highlight(lineRaw, { language }).value
+      const formatted = formatHighlightedCode(lineHtml, false)
+      return formatted === `` ? `&nbsp;` : formatted
     })
 
     const lineNumbersHtml = highlightedLines.map((_, idx) => `<section style="padding:0 10px 0 0;line-height:1.75">${idx + 1}</section>`).join(``)
@@ -166,12 +181,23 @@ function rehighlightCodeBlock(codeBlock: Element, language: string, hljs: any): 
     `
   }
   else {
-    highlighted = hljs.highlight(text, { language }).value
-    highlighted = highlighted.replace(/(<span[^>]*>[^<]*<\/span>)(\s+)(<span[^>]*>[^<]*<\/span>)/g, (_: string, span1: string, spaces: string, span2: string) => span1 + span2.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-    highlighted = highlighted.replace(/(\s+)(<span[^>]*>)/g, (_: string, spaces: string, span: string) => span.replace(/^(<span[^>]*>)/, `$1${spaces}`))
-    highlighted = highlighted.replace(/\t/g, `    `)
-    highlighted = highlighted.replace(/\r\n/g, `<br/>`).replace(/\n/g, `<br/>`).replace(/(>[^<]+)|(^[^<]+)/g, (str: string) => str.replace(/\s/g, `&nbsp;`))
+    const rawHighlighted = hljs.highlight(text, { language }).value
+    highlighted = formatHighlightedCode(rawHighlighted, true)
   }
+
+  return highlighted
+}
+
+export function highlightCodeBlock(codeBlock: Element, language: string, hljs: any): void {
+  const rawCode = codeBlock.getAttribute(`data-raw-code`)
+  const showLineNumber = codeBlock.getAttribute(`data-show-line-number`) === `true`
+
+  if (!rawCode)
+    return
+
+  const text = rawCode.replace(/&quot;/g, `"`)
+
+  const highlighted = highlightAndFormatCode(text, language, hljs, showLineNumber)
 
   codeBlock.innerHTML = highlighted
   codeBlock.removeAttribute(`data-language-pending`)
@@ -195,12 +221,12 @@ export function highlightPendingBlocks(hljs: any, container: Document | Element 
 
     if (hljs.getLanguage(language)) {
       // 语言已加载，直接高亮
-      rehighlightCodeBlock(codeBlock, language, hljs)
+      highlightCodeBlock(codeBlock, language, hljs)
     }
     else {
       // 动态加载语言后重新高亮
       loadAndRegisterLanguage(language, hljs).then(() => {
-        rehighlightCodeBlock(codeBlock, language, hljs)
+        highlightCodeBlock(codeBlock, language, hljs)
       }).catch(() => {
         // 加载失败，移除标记
         codeBlock.removeAttribute(`data-language-pending`)
