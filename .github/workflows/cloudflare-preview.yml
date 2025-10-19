@@ -74,18 +74,3 @@ jobs:
             <!-- Cloudflare Preview Comment -->
           body-include: '<!-- Cloudflare Preview Comment -->'
           number: ${{ github.event.pull_request.number }}
-
-      - name: Deploy failed
-        if: ${{ failure() }}
-        uses: actions-cool/maintain-one-comment@v3
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            😭 Cloudflare Workers Preview deployment failed.
-
-            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
-
-            <!-- Cloudflare Preview Comment -->
-          body-include: '<!-- Cloudflare Preview Comment -->'
-          number: ${{ github.event.pull_request.number }}
-
