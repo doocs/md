@@ -70,7 +70,7 @@ async function main() {
 
   await cp(distDir, path.join(packageRoot, `dist`), { recursive: true })
 
-  for (const file of [`plugin.json`, `preload.js`, `logo.png`, `README.md`]) {
+  for (const file of [`plugin.json`, `preload.js`, `logo.png`, `README.md`, `package.json`]) {
     const source = path.join(utoolsDir, file)
     await ensureFileExists(source, `apps/utools/${file}`)
     await cp(source, path.join(packageRoot, file), { recursive: true })
