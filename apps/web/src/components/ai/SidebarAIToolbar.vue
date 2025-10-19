@@ -128,7 +128,7 @@ onMounted(() => {
     <!-- 默认状态：贴边栏 -->
     <div
       v-if="!isExpanded"
-      class="w-5 h-16 bg-gradient-to-b from-blue-500/90 to-purple-500/90 hover:from-blue-600/95 hover:to-purple-600/95 dark:from-blue-400/90 dark:to-purple-400/90 dark:hover:from-blue-500/95 dark:hover:to-purple-500/95 backdrop-blur-lg border-l border-y border-blue-300/50 dark:border-blue-600/50 cursor-pointer transition-all duration-200 flex items-center justify-center rounded-l-lg shadow-lg group"
+      class="w-5 h-16 bg-gradient-to-b from-blue-500/90 to-purple-500/90 hover:from-blue-600/95 hover:to-purple-600/95 dark:from-blue-400/90 dark:to-purple-400/90 dark:hover:from-blue-500/95 dark:hover:to-purple-500/95 backdrop-blur-lg border-l border-y border-blue-300/50 dark:border-blue-600/50 cursor-pointer transition-all duration-200 flex items-center justify-center rounded-l-lg shadow-lg group utools-sidebar-edge"
       title="展开AI工具栏"
       @click="toggleExpanded"
     >
@@ -146,7 +146,7 @@ onMounted(() => {
         <!-- AI助手按钮 -->
         <div class="flex flex-col items-center gap-1 px-1">
           <button
-            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             title="AI助手"
             @click="openAIChat"
           >
@@ -167,7 +167,7 @@ onMounted(() => {
         <!-- AI文生图按钮 -->
         <div class="flex flex-col items-center gap-1 px-1">
           <button
-            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             title="AI文生图"
             @click="openAIImageGenerator"
           >
@@ -188,7 +188,7 @@ onMounted(() => {
         <!-- AI工具箱按钮 (只有选中文本且展开时才显示) -->
         <div v-if="hasSelectedText && isExpanded" class="flex flex-col items-center gap-1 px-1">
           <button
-            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center"
+            class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             title="AI工具箱"
             @click="openAIToolBox"
           >
@@ -305,5 +305,54 @@ onMounted(() => {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+/* uTools 插件模式下使用黑白风格 */
+.is-utools .utools-sidebar-edge {
+  background: rgb(0 0 0 / 0.9) !important;
+  border-color: rgb(0 0 0 / 0.5) !important;
+}
+
+.is-utools .utools-sidebar-edge:hover {
+  background: rgb(0 0 0 / 0.95) !important;
+}
+
+.is-utools.dark .utools-sidebar-edge {
+  background: rgb(255 255 255 / 0.9) !important;
+  border-color: rgb(255 255 255 / 0.5) !important;
+}
+
+.is-utools.dark .utools-sidebar-edge:hover {
+  background: rgb(255 255 255 / 0.95) !important;
+}
+
+.is-utools.dark .utools-sidebar-edge .lucide {
+  color: rgb(0 0 0) !important;
+}
+
+/* uTools 模式下 AI 按钮使用黑白风格 */
+.is-utools .utools-ai-button {
+  background: rgb(0 0 0 / 0.85) !important;
+  background-image: none !important;
+}
+
+.is-utools .utools-ai-button:hover {
+  background: rgb(0 0 0 / 0.95) !important;
+  background-image: none !important;
+}
+
+.is-utools.dark .utools-ai-button {
+  background: rgb(255 255 255 / 0.85) !important;
+  background-image: none !important;
+  color: rgb(0 0 0) !important;
+}
+
+.is-utools.dark .utools-ai-button:hover {
+  background: rgb(255 255 255 / 0.95) !important;
+  background-image: none !important;
+}
+
+.is-utools.dark .utools-ai-button .lucide {
+  color: rgb(0 0 0) !important;
 }
 </style>
