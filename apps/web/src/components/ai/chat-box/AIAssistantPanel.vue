@@ -17,6 +17,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -425,9 +426,9 @@ async function sendMessage() {
             <Trash2 class="h-4 w-4" />
           </Button>
         </div>
-        <p class="text-muted-foreground text-sm">
+        <DialogDescription class="text-muted-foreground text-sm">
           使用 AI 助手帮助您编写和优化内容
-        </p>
+        </DialogDescription>
       </DialogHeader>
 
       <!-- ============ 快捷指令 ============ -->

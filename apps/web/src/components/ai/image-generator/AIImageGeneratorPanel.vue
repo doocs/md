@@ -15,6 +15,7 @@ import { Button } from '@/components/ui/button'
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -617,7 +618,6 @@ function getTimeRemainingClass(index: number): string {
   <Dialog v-model:open="dialogVisible">
     <DialogContent
       class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-4xl overflow-y-auto"
-      :style="{ height: 'auto' }"
     >
       <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
@@ -655,9 +655,9 @@ function getTimeRemainingClass(index: number): string {
             <Trash2 class="h-4 w-4" />
           </Button>
         </div>
-        <p class="text-muted-foreground text-sm">
+        <DialogDescription class="text-muted-foreground text-sm">
           使用 AI 根据文字描述生成图像
-        </p>
+        </DialogDescription>
       </DialogHeader>
 
       <!-- ============ 参数配置面板 ============ -->
