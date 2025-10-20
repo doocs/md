@@ -47,6 +47,9 @@ async function main() {
   const pkg = JSON.parse(await readFile(path.join(rootDir, `package.json`), `utf8`))
   const version = pkg.version
 
+  console.log(`> 下载 uTools 插件所需的本地资源`)
+  await run(`node`, [path.join(__dirname, `download-utools-libs.mjs`)], { cwd: rootDir })
+
   console.log(`> 构建 uTools 前端资源（version: ${version}）`)
   await run(`pnpm`, [`--filter`, `@md/web`, `run`, `build:utools`], { cwd: rootDir })
 
