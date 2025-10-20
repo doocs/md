@@ -12,6 +12,8 @@ import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
+import { utoolsLocalAssetsPlugin } from './plugins/vite-plugin-utools-local-assets'
+
 const isNetlify = process.env.SERVER_ENV === `NETLIFY`
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
 const isCfWorkers = process.env.CF_WORKERS === `1`
@@ -51,6 +53,7 @@ export default defineConfig(({ mode }) => {
       Components({
         resolvers: [],
       }),
+      isUTools && utoolsLocalAssetsPlugin(),
     ],
     resolve: {
       alias: { '@': path.resolve(__dirname, `./src`) },
