@@ -51,7 +51,7 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
-    "isomorphic-dompurify": "^2.29.0",
+    "isomorphic-dompurify": "^2.30.0",
     "juice": "^11.0.3",
     "lucide-vue-next": "^0.546.0",
     "marked": "^16.4.1",
@@ -60,7 +60,7 @@
     "qiniu-js": "^3.4.2",
     "radix-vue": "^1.9.12",
     "reading-time": "^1.5.0",
-    "reka-ui": "^2.5.1",
+    "reka-ui": "^2.6.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "tailwind-merge": "^3.3.1",
@@ -77,7 +77,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.13.13",
+    "@cloudflare/vite-plugin": "^1.13.14",
     "@cloudflare/workers-types": "^4.20251014.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.15",
@@ -102,7 +102,7 @@
     "vite-plugin-radar": "^0.10.0",
     "vite-plugin-vue-devtools": "^8.0.3",
     "vue-tsc": "^3.1.0",
-    "wrangler": "^4.43.0",
+    "wrangler": "^4.44.0",
     "wxt": "^0.20.11"
   }
 }
