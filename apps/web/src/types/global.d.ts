@@ -1,4 +1,5 @@
 interface Window {
+  storex: any
   __MP_Editor_JSAPI__: {
     invoke: (params: {
       apiName: string

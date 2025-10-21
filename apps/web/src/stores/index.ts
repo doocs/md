@@ -11,8 +11,8 @@ import { cssSetup, theme as editorTheme } from '@md/shared/editor'
 import { toPng } from 'html-to-image'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+
 import {
   addPrefix,
   css2json,
@@ -30,6 +30,7 @@ import {
   sanitizeTitle,
 } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { data } from './defaultData'
 
 /**********************************
  * Post 结构接口
@@ -117,18 +118,7 @@ export const useStore = defineStore(`store`, () => {
   /*******************************
    * 内容列表 posts：默认就带 id
    ******************************/
-  const posts = useStorage<Post[]>(addPrefix(`posts`), [
-    {
-      id: uuid(),
-      title: `内容1`,
-      content: DEFAULT_CONTENT,
-      history: [
-        { datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT },
-      ],
-      createDatetime: new Date(),
-      updateDatetime: new Date(),
-    },
-  ])
+  const posts = useStorage<Post[]>(addPrefix(`posts`), data.posts)
 
   // currentPostId 先存空串
   const currentPostId = useStorage(addPrefix(`current_post_id`), ``)
@@ -185,7 +175,7 @@ export const useStore = defineStore(`store`, () => {
   /********************************
    * CRUD
    ********************************/
-  const addPost = (title: string, parentId: string | null = null) => {
+  const addPost = async (title: string, parentId: string | null = null): Promise<void> => {
     const newPost: Post = {
       id: uuid(),
       title,
@@ -197,8 +187,12 @@ export const useStore = defineStore(`store`, () => {
       updateDatetime: new Date(),
       parentId,
     }
-    posts.value.push(newPost)
-    currentPostId.value = newPost.id
+    const res = await window.storex.post(`posts`, newPost)
+    posts.value.push(res)
+    currentPostId.value = res.id
+  }
+  const putPost = async (id: string, data: any): Promise<void> => {
+    window.storex.put(`posts/${id}`, { ...data, history: undefined }).catch(() => {})
   }
 
   const renamePost = (id: string, title: string) => {
@@ -207,11 +201,12 @@ export const useStore = defineStore(`store`, () => {
       post.title = title
   }
 
-  const delPost = (id: string) => {
+  const delPost = async (id: string): Promise<void> => {
     const idx = findIndexById(id)
     if (idx === -1)
       return
     posts.value.splice(idx, 1)
+    window.storex.delete(`posts/${id}`).catch(() => {})
     currentPostId.value = posts.value[Math.min(idx, posts.value.length - 1)]?.id ?? ``
   }
 
@@ -803,6 +798,7 @@ export const useStore = defineStore(`store`, () => {
     currentPostIndex,
     getPostById,
     addPost,
+    putPost,
     renamePost,
     delPost,
     isOpenPostSlider,

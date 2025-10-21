@@ -52,6 +52,7 @@
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
     "isomorphic-dompurify": "^2.29.0",
+    "js-lite-rest": "^0.0.5",
     "juice": "^11.0.3",
     "lucide-vue-next": "^0.545.0",
     "marked": "^16.4.0",

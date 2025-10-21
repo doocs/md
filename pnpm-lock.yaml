@@ -168,6 +168,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^2.29.0
         version: 2.29.0(postcss@8.5.6)
+      js-lite-rest:
+        specifier: ^0.0.5
+        version: 0.0.5
       juice:
         specifier: ^11.0.3
         version: 11.0.3
@@ -6322,6 +6325,9 @@ packages:
   jiti@2.6.1:
     resolution: {integrity: sha512-ekilCSN1jwRvIbgeg/57YFh8qQDNbwDb9xT/qu2DAHbFFZUicIl4ygVaAvzveMhMVr3LnpSKTNnwt8PoOfmKhQ==}
     hasBin: true
+
+  js-lite-rest@0.0.5:
+    resolution: {integrity: sha512-kEwr8iaYM/CTYit+NglC5DK4RkZ0U0F2TAt7ufiI71I1Qd3HA1wPV2YhP+ov/nbYuwGAXYonRCYuiRI0rT628Q==}
 
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
@@ -16779,6 +16785,8 @@ snapshots:
   jiti@2.5.1: {}
 
   jiti@2.6.1: {}
+
+  js-lite-rest@0.0.5: {}
 
   js-tokens@4.0.0: {}
 
