@@ -161,8 +161,6 @@ onMounted(() => {
     }
   }
 
-  console.log(`📊 数据加载完成，图片数量:`, generatedImages.value.length, `提示词数量:`, imagePrompts.value.length, `时间戳数量:`, imageTimestamps.value.length)
-
   // 启动定时器，每30秒检查一次过期图片并更新时间显示
   timeUpdateInterval.value = setInterval(() => {
     // 检查并清理过期图片
