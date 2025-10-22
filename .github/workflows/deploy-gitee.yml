@@ -47,7 +47,7 @@ jobs:
           commit_message: 'Deploy: ${{ github.sha }}'
 
       - name: Sync to Gitee
-        uses: Yikun/hub-mirror-action@v1.5
+        uses: Yikun/hub-mirror-action@master
         with:
           src: github/doocs
           dst: gitee/doocs
