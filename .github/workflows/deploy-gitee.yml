@@ -1,0 +1,100 @@
+name: Build and Deploy to Gitee Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-gitee-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0  # 获取完整历史，便于推送到新分支
+
+      - name: Set up node
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build project
+        run: pnpm web build
+
+      - name: Prepare dist branch
+        run: |
+          # 配置 Git 用户信息
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+          # 创建临时目录保存构建产物
+          cp -r apps/web/dist /tmp/dist
+
+          # 切换到 dist 分支（如果不存在则创建）
+          git checkout --orphan dist || git checkout dist
+
+          # 清空当前分支内容
+          git rm -rf . || true
+
+          # 复制构建产物
+          cp -r /tmp/dist/* .
+
+          # 添加 .nojekyll 文件（避免 GitHub Pages 忽略下划线开头的文件）
+          touch .nojekyll
+
+          # 添加 README（可选）
+          echo "# Build Artifacts" > README.md
+          echo "This branch contains the build artifacts for Gitee Pages deployment." >> README.md
+          echo "Built on: $(date)" >> README.md
+
+          # 提交更改
+          git add .
+          git commit -m "Deploy: $(date +'%Y-%m-%d %H:%M:%S')" || echo "No changes to commit"
+
+      - name: Push to dist branch
+        run: |
+          git push origin dist --force
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Sync to Gitee
+        uses: Yikun/hub-mirror-action@v1.4
+        with:
+          src: github/doocs
+          dst: gitee/doocs
+          dst_key: ${{ secrets.GITEE_RSA_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          static_list: "md"
+          force_update: true
+          debug: true
+
+      - name: Deploy Gitee Pages
+        uses: yanglbme/gitee-pages-action@main
+        with:
+          gitee-username: ${{ secrets.GITEE_USERNAME }}
+          gitee-password: ${{ secrets.GITEE_PASSWORD }}
+          gitee-repo: doocs/md
+          branch: dist
+
+      - name: Deployment Summary
+        run: |
+          echo "✅ Build completed successfully!"
+          echo "📦 Artifacts pushed to dist branch"
+          echo "🔄 Synced to Gitee repository"
+          echo "🚀 Gitee Pages deployed"
+          echo ""
+          echo "Gitee Pages: https://doocs.gitee.io/md/"
