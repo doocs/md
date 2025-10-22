@@ -16,7 +16,7 @@ const libsDir = path.join(rootDir, `apps`, `web`, `public`, `static`, `libs`)
 const resources = [
   {
     name: `MathJax`,
-    url: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`,
+    url: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@4.0.0/tex-svg.js`,
     output: path.join(libsDir, `mathjax`, `tex-svg.js`),
   },
   {
