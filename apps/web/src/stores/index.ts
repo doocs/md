@@ -79,6 +79,9 @@ export const useStore = defineStore(`store`, () => {
   const isCountStatus = useStorage(`isCountStatus`, defaultStyleConfig.isCountStatus)
   const toggleCountStatus = useToggle(isCountStatus)
 
+  // 是否已经显示过AI工具箱选中文本提示
+  const hasShownAIToolboxHint = useStorage(`hasShownAIToolboxHint`, false)
+
   // 是否开启段落首行缩进
   const isUseIndent = useStorage(addPrefix(`use_indent`), false)
   const toggleUseIndent = useToggle(isUseIndent)
@@ -747,6 +750,8 @@ export const useStore = defineStore(`store`, () => {
 
     isCountStatus,
     countStatusChanged,
+
+    hasShownAIToolboxHint,
 
     output,
     editor,
