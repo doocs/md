@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useAIImageConfigStore from '@/stores/AIImageConfig'
+import useAIImageConfigStore from '@/stores/aiImageConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
 

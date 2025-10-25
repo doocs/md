@@ -1,12 +1,44 @@
 <script setup lang="ts">
 import { widthOptions } from '@md/shared/configs'
 import { Moon, Sun } from 'lucide-vue-next'
-import { useDisplayStore, useStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 
-const store = useStore()
+const themeStore = useThemeStore()
+const { previewWidth } = storeToRefs(themeStore)
+
+const uiStore = useUIStore()
+const { isDark, isEditOnLeft } = storeToRefs(uiStore)
+const { toggleDark, toggleEditOnLeft } = uiStore
+
 const displayStore = useDisplayStore()
 
-const { isDark } = storeToRefs(store)
+const editorStore = useEditorStore()
+const renderStore = useRenderStore()
+
+function previewWidthChanged(newWidth: string) {
+  themeStore.previewWidth = newWidth
+  // Trigger editor refresh after preview width changed
+  editorRefresh()
+}
+
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
 
 function customStyle() {
   displayStore.toggleShowCssEditor()
@@ -22,15 +54,15 @@ function customStyle() {
       <div class="grid grid-cols-2 justify-items-center gap-2">
         <Button
           class="w-full" variant="outline" :class="{
-            'border-black dark:border-white border-2': store.isEditOnLeft,
-          }" @click="!store.isEditOnLeft && store.toggleEditOnLeft()"
+            'border-black dark:border-white border-2': isEditOnLeft,
+          }" @click="!isEditOnLeft && toggleEditOnLeft()"
         >
           左侧
         </Button>
         <Button
           class="w-full" variant="outline" :class="{
-            'border-black dark:border-white border-2': !store.isEditOnLeft,
-          }" @click="store.isEditOnLeft && store.toggleEditOnLeft()"
+            'border-black dark:border-white border-2': !isEditOnLeft,
+          }" @click="isEditOnLeft && toggleEditOnLeft()"
         >
           右侧
         </Button>
@@ -43,8 +75,8 @@ function customStyle() {
       <div class="grid grid-cols-2 justify-items-center gap-2">
         <Button
           v-for="{ label, value } in widthOptions" :key="value" class="w-full" variant="outline" :class="{
-            'border-black dark:border-white border-2': store.previewWidth === value,
-          }" @click="store.previewWidthChanged(value)"
+            'border-black dark:border-white border-2': previewWidth === value,
+          }" @click="previewWidthChanged(value)"
         >
           {{ label }}
         </Button>
@@ -79,14 +111,14 @@ function customStyle() {
         <Button
           class="w-full" variant="outline" :class="{
             'border-black dark:border-white border-2': !isDark,
-          }" @click="store.toggleDark(false)"
+          }" @click="toggleDark(false)"
         >
           <Sun class="h-4 w-4" />
         </Button>
         <Button
           class="w-full" variant="outline" :class="{
             'border-black dark:border-white border-2': isDark,
-          }" @click="store.toggleDark(true)"
+          }" @click="toggleDark(true)"
         >
           <Moon class="h-4 w-4" />
         </Button>

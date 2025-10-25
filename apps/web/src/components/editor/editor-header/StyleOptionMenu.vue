@@ -5,7 +5,7 @@ const props = defineProps<{
   title: string
   options: IConfigOption[]
   current: string
-  change: <T>(val: T) => void
+  change: (val: any) => void
 }>()
 
 function setStyle(title: string, value: string) {

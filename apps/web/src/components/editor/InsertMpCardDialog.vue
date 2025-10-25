@@ -2,10 +2,11 @@
 import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
+import { useEditorStore } from '@/stores/editor'
 import { addPrefix } from '@/utils'
 
 /** 编辑器实例和全局弹窗状态 */
-const store = useStore()
+const editorStore = useEditorStore()
 const displayStore = useDisplayStore()
 const { toggleShowInsertMpCardDialog } = displayStore
 
@@ -68,7 +69,7 @@ function buildMpHtml(config: Config) {
 function submit(formValues: any) {
   config.value = formValues as Config
   const html = buildMpHtml(formValues as Config)
-  const editor = toRaw(store.editor!)
+  const editor = toRaw(editorStore.editor!)
   const selection = editor.state.selection.main
   editor.dispatch({
     changes: { from: selection.from, to: selection.to, insert: `\n${html}\n` },

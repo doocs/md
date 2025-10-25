@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Bot } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
 
 defineProps<{
   isMobile: boolean

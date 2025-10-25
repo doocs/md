@@ -1,7 +1,8 @@
 <script setup lang='ts'>
 import { List } from 'lucide-vue-next'
+import { useRenderStore } from '@/stores/render'
 
-const store = useStore()
+const renderStore = useRenderStore()
 
 const isOpenHeadingSlider = ref(false)
 </script>
@@ -21,7 +22,7 @@ const isOpenHeadingSlider = ref(false)
       }"
     >
       <li
-        v-for="(item, index) in store.titleList"
+        v-for="(item, index) in renderStore.titleList"
         :key="index"
         class="line-clamp-1 py-1 leading-6 hover:bg-gray-300 dark:hover:bg-gray-600"
         :style="{ paddingLeft: `${item.level - 0.5}em` }"

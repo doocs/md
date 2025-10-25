@@ -4,6 +4,7 @@ import type { ComponentPublicInstance } from 'vue'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { highlightPendingBlocks, hljs } from '@md/core'
+import { themeMap } from '@md/shared/configs'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
@@ -14,16 +15,63 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { SearchTab } from '@/components/ui/search-tab'
+import { useCssEditorStore } from '@/stores/cssEditor'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 import { checkImage, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
 
-const store = useStore()
+const editorStore = useEditorStore()
+const postStore = usePostStore()
+const renderStore = useRenderStore()
+const themeStore = useThemeStore()
+const uiStore = useUIStore()
+const cssEditorStore = useCssEditorStore()
 const displayStore = useDisplayStore()
 
-const { isDark, output, editor } = storeToRefs(store)
-const { editorRefresh } = store
+const { editor } = storeToRefs(editorStore)
+const { output } = storeToRefs(renderStore)
+const { isDark } = storeToRefs(uiStore)
+const { posts, currentPostIndex } = storeToRefs(postStore)
+const { previewWidth } = storeToRefs(themeStore)
+const {
+  isMobile,
+  isEditOnLeft,
+  isOpenPostSlider,
+  isOpenRightSlider,
+  isOpenConfirmDialog,
+} = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = displayStore
+
+// Editor refresh function
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
+
+// Reset style function
+function resetStyle() {
+  themeStore.resetStyle()
+  cssEditorStore.resetCssConfig()
+  renderStore.updateCss(cssEditorStore.getCurrentTabContent())
+  editorRefresh()
+  toast.success(`样式已重置`)
+}
 
 watch(output, () => {
   nextTick(() => {
@@ -410,7 +458,7 @@ const progressValue = ref(0)
 function createFormTextArea(dom: HTMLDivElement) {
   // 创建编辑器状态
   const state = EditorState.create({
-    doc: store.posts[store.currentPostIndex].content,
+    doc: posts.value[currentPostIndex.value].content,
     extensions: [
       markdownSetup({
         onSearch: openSearchWithSelection,
@@ -423,7 +471,7 @@ function createFormTextArea(dom: HTMLDivElement) {
           changeTimer.value = setTimeout(() => {
             editorRefresh()
 
-            const currentPost = store.posts[store.currentPostIndex]
+            const currentPost = posts.value[currentPostIndex.value]
             if (value === currentPost.content) {
               return
             }
@@ -489,6 +537,22 @@ onMounted(() => {
     return
   }
 
+  // 初始化渲染器
+  const cssContent = cssEditorStore.getCurrentTabContent()
+  renderStore.initRendererInstance(
+    cssContent,
+    themeMap[themeStore.theme],
+    themeStore.fontFamily,
+    themeStore.fontSize,
+    {
+      primaryColor: themeStore.primaryColor,
+      isUseIndent: themeStore.isUseIndent,
+      isUseJustify: themeStore.isUseJustify,
+      isMacCodeBlock: themeStore.isMacCodeBlock,
+      isShowLineNumber: themeStore.isShowLineNumber,
+    },
+  )
+
   nextTick(() => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
@@ -508,12 +572,38 @@ watch(isDark, () => {
   }
 })
 
+// 监听当前文章切换，更新编辑器内容
+watch(currentPostIndex, () => {
+  if (!codeMirrorView.value)
+    return
+
+  const currentPost = posts.value[currentPostIndex.value]
+  if (!currentPost)
+    return
+
+  const currentContent = codeMirrorView.value.state.doc.toString()
+
+  // 只有当内容不同时才更新，避免不必要的更新
+  if (currentContent !== currentPost.content) {
+    codeMirrorView.value.dispatch({
+      changes: {
+        from: 0,
+        to: codeMirrorView.value.state.doc.length,
+        insert: currentPost.content,
+      },
+    })
+
+    // 更新编辑器后刷新渲染
+    editorRefresh()
+  }
+})
+
 // 历史记录的定时器
 const historyTimer = ref<NodeJS.Timeout>()
 onMounted(() => {
   // 定时，30 秒记录一次文章的历史记录
   historyTimer.value = setInterval(() => {
-    const currentPost = store.posts[store.currentPostIndex]
+    const currentPost = posts.value[currentPostIndex.value]
 
     // 与最后一篇记录对比
     const pre = (currentPost.history || [])[0]?.content
@@ -558,25 +648,25 @@ onUnmounted(() => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             :default-size="15"
-            :max-size="store.isOpenPostSlider ? 30 : 0"
-            :min-size="store.isOpenPostSlider ? 10 : 0"
+            :max-size="isOpenPostSlider ? 30 : 0"
+            :min-size="isOpenPostSlider ? 10 : 0"
           >
             <PostSlider />
           </ResizablePanel>
           <ResizableHandle class="hidden md:block" />
           <ResizablePanel class="flex">
             <div
-              v-show="!store.isMobile || (store.isMobile && showEditor)"
+              v-show="!isMobile || (isMobile && showEditor)"
               ref="codeMirrorWrapper"
               class="codeMirror-wrapper relative flex-1"
               :class="{
-                'order-1 border-l': !store.isEditOnLeft,
-                'border-r': store.isEditOnLeft,
+                'order-1 border-l': !isEditOnLeft,
+                'border-r': isEditOnLeft,
               }"
             >
               <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
               <SidebarAIToolbar
-                :is-mobile="store.isMobile"
+                :is-mobile="isMobile"
                 :show-editor="showEditor"
               />
 
@@ -589,9 +679,9 @@ onUnmounted(() => {
               </EditorContextMenu>
             </div>
             <div
-              v-show="!store.isMobile || (store.isMobile && !showEditor)"
+              v-show="!isMobile || (isMobile && !showEditor)"
               class="relative flex-1 overflow-x-hidden transition-width"
-              :class="[store.isOpenRightSlider ? 'w-0' : 'w-100']"
+              :class="[isOpenRightSlider ? 'w-0' : 'w-100']"
             >
               <div
                 id="preview"
@@ -605,7 +695,7 @@ onUnmounted(() => {
                 >
                   <div
                     class="preview border-x shadow-xl"
-                    :class="[store.isMobile ? 'w-[100%]' : store.previewWidth]"
+                    :class="[isMobile ? 'w-[100%]' : previewWidth]"
                   >
                     <section id="output" class="w-full" v-html="output" />
                     <div v-if="isCoping" class="loading-mask">
@@ -618,8 +708,8 @@ onUnmounted(() => {
                 </div>
                 <BackTop
                   target="preview"
-                  :right="store.isMobile ? 24 : 20"
-                  :bottom="store.isMobile ? 90 : 20"
+                  :right="isMobile ? 24 : 20"
+                  :bottom="isMobile ? 90 : 20"
                 />
               </div>
 
@@ -632,7 +722,7 @@ onUnmounted(() => {
       </div>
 
       <!-- 移动端浮动按钮组 -->
-      <div v-if="store.isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
+      <div v-if="isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
         <!-- 切换编辑/预览按钮 -->
         <button
           class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
@@ -651,7 +741,7 @@ onUnmounted(() => {
 
       <InsertMpCardDialog />
 
-      <AlertDialog v-model:open="store.isOpenConfirmDialog">
+      <AlertDialog v-model:open="isOpenConfirmDialog">
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>提示</AlertDialogTitle>
@@ -661,7 +751,7 @@ onUnmounted(() => {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction @click="store.resetStyle()">
+            <AlertDialogAction @click="resetStyle">
               确认
             </AlertDialogAction>
           </AlertDialogFooter>

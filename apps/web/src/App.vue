@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import { Toaster } from '@/components/ui/sonner'
+import { useUIStore } from '@/stores/ui'
 import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 
-const store = useStore()
+const uiStore = useUIStore()
+const { isDark } = storeToRefs(uiStore)
+
 const isUtools = ref(false)
 
 onMounted(() => {
@@ -21,7 +24,7 @@ onMounted(() => {
   <Toaster
     rich-colors
     position="top-center"
-    :theme="store.isDark ? 'dark' : 'light'"
+    :theme="isDark ? 'dark' : 'light'"
   />
 </template>
 

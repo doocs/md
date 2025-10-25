@@ -1,5 +1,7 @@
+import { useEditorStore } from '@/stores/editor'
+
 export function useImportMarkdownContent() {
-  const store = useStore()
+  const editorStore = useEditorStore()
   const { open, reset, onChange } = useFileDialog({
     accept: `.md`,
   })
@@ -14,13 +16,13 @@ export function useImportMarkdownContent() {
     reader.readAsText(file)
     reader.onload = (event) => {
       // 清空编辑器
-      store.editor!.dispatch({
-        changes: { from: 0, to: store.editor!.state.doc.length, insert: `` },
+      editorStore.editor!.dispatch({
+        changes: { from: 0, to: editorStore.editor!.state.doc.length, insert: `` },
       })
 
       requestAnimationFrame(() => {
-        store.editor!.dispatch({
-          changes: { from: 0, to: store.editor!.state.doc.length, insert: event.target!.result as string },
+        editorStore.editor!.dispatch({
+          changes: { from: 0, to: editorStore.editor!.state.doc.length, insert: event.target!.result as string },
         })
       })
       toast.success(`文档导入成功`)

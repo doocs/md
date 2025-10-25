@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Image as ImageIcon } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
 import AIImageGeneratorPanel from './AIImageGeneratorPanel.vue'
 
 defineProps<{
