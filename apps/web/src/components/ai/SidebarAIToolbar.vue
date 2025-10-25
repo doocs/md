@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Bot, Image as ImageIcon, Settings2, Wand2 } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { useUIStore } from '@/stores/ui'
 import AIAssistantPanel from './chat-box/AIAssistantPanel.vue'
 import AIImageGeneratorPanel from './image-generator/AIImageGeneratorPanel.vue'
 import { AIPolishPopover } from './tool-box'
@@ -14,8 +16,11 @@ const displayStore = useDisplayStore()
 const { aiDialogVisible, aiImageDialogVisible } = storeToRefs(displayStore)
 const { toggleAIDialog, toggleAIImageDialog } = displayStore
 
-const store = useStore()
-const { editor, hasShownAIToolboxHint } = storeToRefs(store)
+const editorStore = useEditorStore()
+const { editor } = storeToRefs(editorStore)
+
+const uiStore = useUIStore()
+const { hasShownAIToolboxHint } = storeToRefs(uiStore)
 
 // 工具栏状态：false=默认(只显示贴边栏), true=展开(显示AI图标)
 const isExpanded = ref(false) // 默认收起状态

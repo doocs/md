@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { ClipboardPasteIcon, Contact2Icon, CopyIcon, Redo2Icon, TableIcon, Undo2Icon, UploadCloudIcon } from 'lucide-vue-next'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { copyPlain } from '@/utils/clipboard'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -9,9 +12,35 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = useDisplayStore()
+const editorStore = useEditorStore()
+const displayStore = useDisplayStore()
 
-const { copyToClipboard, pasteFromClipboard, undo, redo } = useStore()
+const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = displayStore
+
+// Clipboard operations
+async function copyToClipboard() {
+  const selectedText = editorStore.getSelection()
+  copyPlain(selectedText)
+}
+
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText()
+    editorStore.replaceSelection(text)
+  }
+  catch (error) {
+    console.log(`粘贴失败`, error)
+  }
+}
+
+// Undo/Redo (handled by keyboard shortcuts)
+function undo() {
+  console.log(`Undo should be handled by keyboard shortcuts`)
+}
+
+function redo() {
+  console.log(`Redo should be handled by keyboard shortcuts`)
+}
 </script>
 
 <template>

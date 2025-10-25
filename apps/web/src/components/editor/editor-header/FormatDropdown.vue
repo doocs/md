@@ -11,7 +11,10 @@ import {
   formatStrikethrough,
   formatUnorderedList,
 } from '@md/shared/editor'
-import { useStore } from '@/stores'
+import { useEditorStore } from '@/stores/editor'
+import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -21,19 +24,52 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 
-const store = useStore()
+const editorStore = useEditorStore()
+const themeStore = useThemeStore()
+const renderStore = useRenderStore()
+const postStore = usePostStore()
 
+const { editor } = storeToRefs(editorStore)
 const {
   isCiteStatus,
   isCountStatus,
-  editor,
-} = storeToRefs(store)
+} = storeToRefs(themeStore)
 
-const {
-  citeStatusChanged,
-  countStatusChanged,
-  formatContent,
-} = store
+// Editor refresh function
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
+
+// Format content function
+async function formatContent() {
+  const doc = await editorStore.formatContent()
+  if (doc && postStore.currentPost) {
+    postStore.updatePostContent(postStore.currentPostId, doc)
+  }
+}
+
+// Cite status changed
+function citeStatusChanged() {
+  themeStore.toggleCiteStatus()
+  editorRefresh()
+}
+
+// Count status changed
+function countStatusChanged() {
+  themeStore.toggleCountStatus()
+  editorRefresh()
+}
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {

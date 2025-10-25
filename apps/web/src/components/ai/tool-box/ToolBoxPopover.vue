@@ -15,7 +15,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useAIConfigStore from '@/stores/AIConfig'
+import useAIConfigStore from '@/stores/aiConfig'
+import { useEditorStore } from '@/stores/editor'
 
 /* -------------------- props / emits -------------------- */
 const props = defineProps<{
@@ -40,7 +41,7 @@ const currentText = ref(``)
 const error = ref(``)
 
 /* -------------------- store & refs -------------------- */
-const store = useStore()
+const editorStore = useEditorStore()
 const resultContainer = ref<HTMLElement | null>(null)
 
 /* -------------------- dialog state sync -------------------- */
@@ -251,7 +252,7 @@ function stopAI() {
 
 /* -------------------- actions -------------------- */
 function replaceText() {
-  const editorView = toRaw(store.editor!)!
+  const editorView = toRaw(editorStore.editor!)!
   const selection = editorView.state.selection.main
   editorView.dispatch(editorView.state.replaceSelection(message.value))
 

@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { useDisplayStore, useStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
 import { createTable } from '@/utils'
 
-const store = useStore()
+const editorStore = useEditorStore()
 const displayStore = useDisplayStore()
 
 const { toggleShowInsertFormDialog } = displayStore
@@ -24,7 +25,7 @@ function insertTable() {
     cols: colNum.value,
     data: tableData.value,
   })
-  const editor = toRaw(store.editor!)
+  const editor = toRaw(editorStore.editor!)
   const selection = editor.state.selection.main
   editor.dispatch({
     changes: { from: selection.from, to: selection.to, insert: `\n${table}\n` },

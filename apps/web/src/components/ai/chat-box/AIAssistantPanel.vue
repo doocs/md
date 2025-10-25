@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { QuickCommandRuntime } from '@/stores/useQuickCommands'
+import type { QuickCommandRuntime } from '@/stores/quickCommands'
 import {
   Check,
   Copy,
@@ -22,16 +22,18 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import useAIConfigStore from '@/stores/AIConfig'
-import { useQuickCommands } from '@/stores/useQuickCommands'
+import useAIConfigStore from '@/stores/aiConfig'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { useQuickCommands } from '@/stores/quickCommands'
 import { copyPlain } from '@/utils/clipboard'
 
 /* ---------- 组件属性 ---------- */
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
-const store = useStore()
-const { editor } = storeToRefs(store)
+const editorStore = useEditorStore()
+const { editor } = storeToRefs(editorStore)
 const displayStore = useDisplayStore()
 const { toggleAIImageDialog } = displayStore
 
