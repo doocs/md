@@ -29,7 +29,7 @@ jobs:
           pnpm web build:h5-netlify
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: apps/web/dist
@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload PR number
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pr
           path: ./pr-id.txt
