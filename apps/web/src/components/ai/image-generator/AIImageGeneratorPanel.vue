@@ -9,7 +9,6 @@ import {
   Settings,
   Trash2,
 } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
@@ -20,8 +19,9 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
-import { useDisplayStore, useStore } from '@/stores'
-import useAIImageConfigStore from '@/stores/AIImageConfig'
+import useAIImageConfigStore from '@/stores/aiImageConfig'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
 import { copyPlain } from '@/utils/clipboard'
 import AIImageConfig from './AIImageConfig.vue'
 
@@ -30,8 +30,8 @@ const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
 /* ---------- 编辑器引用 ---------- */
-const store = useStore()
-const { editor } = storeToRefs(store)
+const editorStore = useEditorStore()
+const { editor } = storeToRefs(editorStore)
 const displayStore = useDisplayStore()
 const { toggleAIDialog } = displayStore
 

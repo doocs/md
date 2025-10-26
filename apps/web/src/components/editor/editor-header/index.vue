@@ -1,18 +1,44 @@
 <script setup lang="ts">
 import { ChevronDownIcon, Menu, Palette, SlidersHorizontal } from 'lucide-vue-next'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
-import { useDisplayStore, useStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { useExportStore } from '@/stores/export'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
-const store = useStore()
+const editorStore = useEditorStore()
+const themeStore = useThemeStore()
+const renderStore = useRenderStore()
+const uiStore = useUIStore()
+const exportStore = useExportStore()
 const displayStore = useDisplayStore()
 
-const { output, primaryColor, editor } = storeToRefs(store)
+const { editor } = storeToRefs(editorStore)
+const { output } = storeToRefs(renderStore)
+const { primaryColor } = storeToRefs(themeStore)
+const { isOpenRightSlider } = storeToRefs(uiStore)
 
-const { editorRefresh } = store
+// Editor refresh function
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
 
 // 对话框状态
 const aboutDialogVisible = ref(false)
@@ -167,7 +193,7 @@ async function copy() {
         await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
       }
       else if (copyMode.value === `html-and-style`) {
-        await copyContent(store.editorContent2HTML())
+        await copyContent(exportStore.editorContent2HTML())
       }
 
       // 输出提示
@@ -282,7 +308,7 @@ async function copy() {
       <Button
         variant="outline"
         size="icon"
-        @click="store.isOpenRightSlider = !store.isOpenRightSlider"
+        @click="isOpenRightSlider = !isOpenRightSlider"
       >
         <Palette class="size-4" />
       </Button>

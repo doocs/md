@@ -2,14 +2,22 @@
 import type { Post, PostAccount } from '@md/shared/types'
 import { Check, Info } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
-import { useStore } from '@/stores'
+import { useEditorStore } from '@/stores/editor'
+import { useRenderStore } from '@/stores/render'
+import { useUIStore } from '@/stores/ui'
 
 defineOptions({
   inheritAttrs: false,
 })
 
-const store = useStore()
-const { output, editor } = storeToRefs(store)
+const editorStore = useEditorStore()
+const { editor } = storeToRefs(editorStore)
+
+const renderStore = useRenderStore()
+const { output } = storeToRefs(renderStore)
+
+const uiStore = useUIStore()
+const { isMobile } = storeToRefs(uiStore)
 
 const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
@@ -124,7 +132,7 @@ onBeforeMount(() => {
   <div v-bind="$attrs">
     <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
       <DialogTrigger>
-        <Button v-if="!store.isMobile" variant="outline" @click="prePost">
+        <Button v-if="!isMobile" variant="outline" @click="prePost">
           发布
         </Button>
       </DialogTrigger>

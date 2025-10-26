@@ -2,6 +2,7 @@
 import { Compartment } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { javascriptSetup, theme } from '@md/shared'
+import { useUIStore } from '@/stores/ui'
 import { removeLeft } from '@/utils'
 
 const code = useLocalStorage(`formCustomConfig`, removeLeft(`
@@ -19,8 +20,8 @@ const code = useLocalStorage(`formCustomConfig`, removeLeft(`
 
 const formCustomTextarea = useTemplateRef<HTMLDivElement>(`formCustomTextarea`)
 
-const store = useStore()
-const { isDark } = storeToRefs(store)
+const uiStore = useUIStore()
+const { isDark } = storeToRefs(uiStore)
 
 const editor = ref<EditorView | null>(null)
 

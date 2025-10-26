@@ -1,18 +1,17 @@
 <script setup lang='ts'>
 import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
-import { useDisplayStore, useStore } from '@/stores'
+import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { useDisplayStore } from '@/stores/display'
+import { useEditorStore } from '@/stores/editor'
+import { useExportStore } from '@/stores/export'
+import { usePostStore } from '@/stores/post'
+import { useUIStore } from '@/stores/ui'
+import { copyPlain } from '@/utils/clipboard'
 
-const {
-  exportEditorContent2HTML,
-  exportEditorContent2MD,
-  formatContent,
-  importDefaultContent,
-  copyToClipboard,
-  pasteFromClipboard,
-  resetStyleConfirm,
-  downloadAsCardImage,
-  clearContent,
-} = useStore()
+const editorStore = useEditorStore()
+const postStore = usePostStore()
+const exportStore = useExportStore()
+const uiStore = useUIStore()
 
 const {
   toggleShowInsertFormDialog,
@@ -21,6 +20,60 @@ const {
 } = useDisplayStore()
 
 const importMarkdownContent = useImportMarkdownContent()
+
+// 格式化文档
+async function formatContent() {
+  const doc = await editorStore.formatContent()
+  if (doc && postStore.currentPost) {
+    postStore.updatePostContent(postStore.currentPostId, doc)
+  }
+}
+
+// 导入默认内容
+function importDefaultContent() {
+  editorStore.importContent(DEFAULT_CONTENT)
+  toast.success(`文档已重置`)
+}
+
+// 清空内容
+function clearContent() {
+  editorStore.clearContent()
+}
+
+// 复制到剪贴板
+async function copyToClipboard() {
+  const selectedText = editorStore.getSelection()
+  copyPlain(selectedText)
+}
+
+// 从剪贴板粘贴
+async function pasteFromClipboard() {
+  try {
+    const text = await navigator.clipboard.readText()
+    editorStore.replaceSelection(text)
+  }
+  catch (error) {
+    console.log(`粘贴失败`, error)
+  }
+}
+
+// 重置样式确认
+function resetStyleConfirm() {
+  uiStore.isOpenConfirmDialog = true
+}
+
+// 导出函数
+function exportEditorContent2HTML() {
+  exportStore.exportEditorContent2HTML()
+}
+
+function exportEditorContent2MD() {
+  exportStore.exportEditorContent2MD(editorStore.getContent())
+}
+
+function downloadAsCardImage() {
+  exportStore.downloadAsCardImage()
+}
 </script>
 
 <template>

@@ -2,7 +2,6 @@
 import type { AlertDialogCancelProps } from 'radix-vue'
 import type { HTMLAttributes } from 'vue'
 import { AlertDialogCancel } from 'radix-vue'
-import { computed } from 'vue'
 import { buttonVariants } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 

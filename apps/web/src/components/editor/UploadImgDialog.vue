@@ -3,7 +3,7 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
-import { useDisplayStore } from '@/stores'
+import { useDisplayStore } from '@/stores/display'
 import { checkImage } from '@/utils'
 
 const emit = defineEmits([`uploadImage`])
