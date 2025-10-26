@@ -2,7 +2,6 @@
 import type { AlertDialogTitleProps } from 'radix-vue'
 import type { HTMLAttributes } from 'vue'
 import { AlertDialogTitle } from 'radix-vue'
-import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<AlertDialogTitleProps & { class?: HTMLAttributes[`class`] }>()

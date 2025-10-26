@@ -10,7 +10,6 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from 'radix-vue'
-import { computed } from 'vue'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<DialogContentProps & { class?: HTMLAttributes[`class`] }>()

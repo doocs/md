@@ -9,7 +9,6 @@ import {
   Settings,
   Trash2,
 } from 'lucide-vue-next'
-import { storeToRefs } from 'pinia'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
