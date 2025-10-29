@@ -91,12 +91,6 @@ export default defineConfig({
         if (typeof plugin === `object` && plugin != null && `name` in plugin && plugin?.name === `vite-plugin-Radar`) {
           return false
         }
-        if (Array.isArray(plugin)) {
-          const first = plugin[0]
-          if (typeof first === `object` && first != null && `name` in first && first.name === `vite-plugin-pwa`) {
-            return false
-          }
-        }
         return true
       }),
       define: undefined,
