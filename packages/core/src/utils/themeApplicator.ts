@@ -11,7 +11,7 @@ import { getThemeInjector } from './themeInjector'
 
 export interface ThemeConfig {
   themeName: string // 主题名称
-  customCSS: string // 用户自定义 CSS
+  customCSS?: string // 用户自定义 CSS
   variables: CSSVariableConfig
 }
 

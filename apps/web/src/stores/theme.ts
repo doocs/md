@@ -116,6 +116,8 @@ export const useThemeStore = defineStore(`theme`, () => {
           primaryColor: primaryColor.value,
           fontFamily: fontFamily.value,
           fontSize: fontSize.value,
+          isUseIndent: isUseIndent.value,
+          isUseJustify: isUseJustify.value,
         },
       })
 
