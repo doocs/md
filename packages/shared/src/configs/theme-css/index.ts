@@ -3,13 +3,9 @@
  * 将 CSS 文件作为字符串导出供 JavaScript 使用
  */
 
-// @ts-expect-error shared 包没有声明，导出后 vite 可以正确处理
 import baseCSS from './base.css?raw'
-// @ts-expect-error shared 包没有声明，导出后 vite 可以正确处理
 import defaultCSS from './default.css?raw'
-// @ts-expect-error shared 包没有声明，导出后 vite 可以正确处理
 import graceCSS from './grace.css?raw'
-// @ts-expect-error shared 包没有声明，导出后 vite 可以正确处理
 import simpleCSS from './simple.css?raw'
 
 /**

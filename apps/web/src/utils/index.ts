@@ -156,7 +156,7 @@ export async function generatePureHTML(raw: string): Promise<string> {
   const markedInstance = new Marked()
   markedInstance.use(markedAlert({ withoutStyle: true }))
   markedInstance.use(
-    MDKatex({ nonStandard: true }, ``, ``, false),
+    MDKatex({ nonStandard: true }, false),
   )
   const pureHtml = await markedInstance.parse(raw)
   return pureHtml
