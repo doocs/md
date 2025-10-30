@@ -224,7 +224,7 @@ function exportCurrentTheme() {
             class="flex-1"
           >
             {{ item.title }}
-            <template v-if="!themeOptions.some(option => option.name === item.name)">
+            <template v-if="!themeOptions.some(option => option.value === item.name)">
               <Edit3
                 v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
                 @click="rename(item.name)"
