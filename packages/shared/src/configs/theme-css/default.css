@@ -1,0 +1,315 @@
+/**
+ * Markdown Pretty 默认主题（经典主题）
+ * 按 Alt/Option + Shift + F 可格式化
+ * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
+ */
+
+/* ==================== 一级标题 ==================== */
+h1 {
+  display: table;
+  padding: 0 1em;
+  border-bottom: 2px solid var(--md-primary-color);
+  margin: 2em auto 1em;
+  color: hsl(var(--foreground));
+  font-size: var(--md-h1-size);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ==================== 二级标题 ==================== */
+h2 {
+  display: table;
+  padding: 0 0.2em;
+  margin: 4em auto 2em;
+  color: #fff;
+  background: var(--md-primary-color);
+  font-size: var(--md-h2-size);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* ==================== 三级标题 ==================== */
+h3 {
+  padding-left: 8px;
+  border-left: 3px solid var(--md-primary-color);
+  margin: 2em 8px 0.75em 0;
+  color: hsl(var(--foreground));
+  font-size: var(--md-h3-size);
+  font-weight: bold;
+  line-height: 1.2;
+}
+
+/* ==================== 四级标题 ==================== */
+h4 {
+  margin: 2em 8px 0.5em;
+  color: var(--md-primary-color);
+  font-size: var(--md-h4-size);
+  font-weight: bold;
+}
+
+/* ==================== 五级标题 ==================== */
+h5 {
+  margin: 1.5em 8px 0.5em;
+  color: var(--md-primary-color);
+  font-size: var(--md-h5-size);
+  font-weight: bold;
+}
+
+/* ==================== 六级标题 ==================== */
+h6 {
+  margin: 1.5em 8px 0.5em;
+  font-size: var(--md-h6-size);
+  color: var(--md-primary-color);
+}
+
+/* ==================== 段落 ==================== */
+p {
+  margin: 1.5em 8px;
+  letter-spacing: 0.1em;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 引用块 ==================== */
+blockquote {
+  font-style: normal;
+  padding: 1em;
+  border-left: 4px solid var(--md-primary-color);
+  border-radius: 6px;
+  color: hsl(var(--foreground));
+  background: var(--blockquote-background);
+  margin-bottom: 1em;
+}
+
+blockquote > p,
+blockquote_p {
+  display: block;
+  font-size: 1em;
+  letter-spacing: 0.1em;
+  color: hsl(var(--foreground));
+  margin: 0;
+}
+
+/* ==================== GFM 警告块 ==================== */
+.blockquote_title,
+blockquote_title {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.blockquote_title_note,
+blockquote_title_note {
+  color: #478be6;
+}
+
+.blockquote_title_tip,
+blockquote_title_tip {
+  color: #57ab5a;
+}
+
+.blockquote_title_info,
+blockquote_title_info {
+  color: #93c5fd;
+}
+
+.blockquote_title_important,
+blockquote_title_important {
+  color: #986ee2;
+}
+
+.blockquote_title_warning,
+blockquote_title_warning {
+  color: #c69026;
+}
+
+.blockquote_title_caution,
+blockquote_title_caution {
+  color: #e5534b;
+}
+
+/* ==================== 代码块 ==================== */
+pre.code__pre,
+code_pre {
+  font-size: 90%;
+  overflow-x: auto;
+  border-radius: 8px;
+  padding: 1em;
+  line-height: 1.5;
+  margin: 10px 8px;
+}
+
+pre.code__pre > code {
+  margin: 0;
+  white-space: nowrap;
+  font-size: 90%;
+  font-family:
+    Menlo,
+    Operator Mono,
+    Consolas,
+    Monaco,
+    monospace;
+}
+
+/* ==================== 图片 ==================== */
+img,
+image {
+  display: block;
+  max-width: 100%;
+  margin: 0.1em auto 0.5em;
+  border-radius: 4px;
+}
+
+/* ==================== 列表 ==================== */
+ol {
+  padding-left: 1em;
+  margin-left: 0;
+  color: hsl(var(--foreground));
+}
+
+ul {
+  list-style: circle;
+  padding-left: 1em;
+  margin-left: 0;
+  color: hsl(var(--foreground));
+}
+
+li,
+listitem {
+  display: block;
+  margin: 0.2em 8px;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 脚注 ==================== */
+footnotes {
+  margin: 0.5em 8px;
+  font-size: 80%;
+  color: hsl(var(--foreground));
+}
+
+footnote {
+  font-size: 12px;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 图表 ==================== */
+figure {
+  margin: 1.5em 8px;
+  color: hsl(var(--foreground));
+}
+
+figcaption {
+  text-align: center;
+  color: #888;
+  font-size: 0.8em;
+}
+
+/* ==================== 分隔线 ==================== */
+hr {
+  border-style: solid;
+  border-width: 2px 0 0;
+  border-color: rgba(0, 0, 0, 0.1);
+  -webkit-transform-origin: 0 0;
+  -webkit-transform: scale(1, 0.5);
+  transform-origin: 0 0;
+  transform: scale(1, 0.5);
+  height: 0.4em;
+  margin: 1.5em 0;
+}
+
+/* ==================== 行内代码 ==================== */
+code,
+codespan {
+  font-size: 90%;
+  color: #d14;
+  background: rgba(27, 31, 35, 0.05);
+  padding: 3px 5px;
+  border-radius: 4px;
+}
+
+/* ==================== 强调 ==================== */
+em {
+  font-style: italic;
+  font-size: inherit;
+}
+
+/* ==================== 链接 ==================== */
+link {
+  color: #576b95;
+}
+
+wx-link {
+  color: #576b95;
+  text-decoration: none;
+}
+
+/* ==================== 粗体 ==================== */
+strong {
+  color: var(--md-primary-color);
+  font-weight: bold;
+  font-size: inherit;
+}
+
+/* ==================== 表格 ==================== */
+table {
+  color: hsl(var(--foreground));
+}
+
+thead {
+  font-weight: bold;
+  color: hsl(var(--foreground));
+}
+
+th {
+  border: 1px solid #dfdfdf;
+  padding: 0.25em 0.5em;
+  color: hsl(var(--foreground));
+  word-break: keep-all;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+td {
+  border: 1px solid #dfdfdf;
+  padding: 0.25em 0.5em;
+  color: hsl(var(--foreground));
+  word-break: keep-all;
+}
+
+/* ==================== KaTeX 公式 ==================== */
+.inline_katex,
+inline_katex {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.block_katex,
+block_katex {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5em 0;
+  text-align: center;
+}
+
+/* ==================== 标记高亮 ==================== */
+.markup_highlight,
+markup_highlight {
+  background-color: var(--md-primary-color);
+  padding: 2px 4px;
+  border-radius: 2px;
+  color: #fff;
+}
+
+.markup_underline,
+markup_underline {
+  text-decoration: underline;
+  text-decoration-color: var(--md-primary-color);
+}
+
+.markup_wavyline,
+markup_wavyline {
+  text-decoration: underline wavy;
+  text-decoration-color: var(--md-primary-color);
+  text-decoration-thickness: 2px;
+}
