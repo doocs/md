@@ -3,16 +3,6 @@
  * 包含所有元素的基础样式和 CSS 变量定义
  */
 
-/* ==================== CSS 变量定义 ==================== */
-:root {
-  /* 动态配置变量 - 由 JS 动态注入，这里只是默认值 */
-  --md-primary-color: #0f4c81;
-  --md-font-family:
-    -apple-system-font, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB, Microsoft YaHei UI,
-    Microsoft YaHei, Arial, sans-serif;
-  --md-font-size: 16px;
-}
-
 /* ==================== 容器样式 ==================== */
 section,
 container {

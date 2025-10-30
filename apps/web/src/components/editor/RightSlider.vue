@@ -111,11 +111,15 @@ function citeStatusChanged() {
 
 function useIndentChanged() {
   themeStore.isUseIndent = !themeStore.isUseIndent
+  // 使用新主题系统
+  themeStore.applyCurrentTheme()
   editorRefresh()
 }
 
 function useJustifyChanged() {
   themeStore.isUseJustify = !themeStore.isUseJustify
+  // 使用新主题系统
+  themeStore.applyCurrentTheme()
   editorRefresh()
 }
 

@@ -7,6 +7,8 @@ export interface CSSVariableConfig {
   primaryColor: string
   fontFamily: string
   fontSize: string
+  isUseIndent?: boolean
+  isUseJustify?: boolean
 }
 
 /**
@@ -31,6 +33,12 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   --md-h4-size: ${fontSizeNum}px;
   --md-h5-size: ${fontSizeNum}px;
   --md-h6-size: ${fontSizeNum}px;
+}
+
+/* 段落缩进和对齐 */
+#output p {
+  ${config.isUseIndent ? 'text-indent: 2em;' : ''}
+  ${config.isUseJustify ? 'text-align: justify;' : ''}
 }
   `.trim()
 }
