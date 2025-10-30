@@ -1,4 +1,5 @@
 import type { themeMap } from '@md/shared/configs'
+import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { addPrefix, store } from '@/utils'
 
@@ -93,6 +94,38 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
   }
 
+  /**
+   * 应用当前主题配置（新主题系统）
+   * 使用 CSS 注入而非内联样式
+   */
+  const applyCurrentTheme = async () => {
+    try {
+      // 动态导入避免循环依赖
+      const { useCssEditorStore } = await import(`@/stores/cssEditor`)
+      const cssEditorStore = useCssEditorStore()
+
+      const customCSS = cssEditorStore.getCurrentTabContent()
+
+      console.log(`[applyCurrentTheme] 主题:`, theme.value)
+      console.log(`[applyCurrentTheme] customCSS 长度:`, customCSS?.length)
+
+      applyTheme({
+        themeName: theme.value,
+        customCSS,
+        variables: {
+          primaryColor: primaryColor.value,
+          fontFamily: fontFamily.value,
+          fontSize: fontSize.value,
+        },
+      })
+
+      console.log(`[applyCurrentTheme] 主题应用完成`)
+    }
+    catch (error) {
+      console.error(`[applyCurrentTheme] 主题应用失败:`, error)
+    }
+  }
+
   return {
     // State
     theme,
@@ -119,5 +152,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     toggleUseJustify,
     resetStyle,
     updateCodeTheme,
+    applyCurrentTheme,
   }
 })

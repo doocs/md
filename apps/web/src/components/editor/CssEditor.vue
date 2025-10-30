@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { exportMergedTheme } from '@md/core'
-import { themeMap, themeOptions } from '@md/shared'
+import { themeMapCSS, themeOptions } from '@md/shared'
 import { Download, Edit3, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -132,9 +132,9 @@ function tabChanged(tabName: string | number) {
 // 初始化 CSS 编辑器
 onMounted(() => {
   // CSS 内容更新回调
-  const handleCssUpdate = (content: string) => {
-    // 1. 更新 CSS 主题
-    renderStore.updateCss(content)
+  const handleCssUpdate = () => {
+    // 1. 使用新主题系统应用 CSS
+    themeStore.applyCurrentTheme()
 
     // 2. 触发编辑器刷新，重新渲染内容
     themeStore.updateCodeTheme()
@@ -166,14 +166,21 @@ function exportCurrentTheme() {
   }
 
   const currentThemeName = currentTab.title || currentTab.name
-  const fontSizeNumber = Number(themeStore.fontSize.replace(`px`, ``))
+
+  // 使用新的导出函数（包含 default 基础）
+  const baseTheme = themeStore.theme === `default`
+    ? themeMapCSS.default
+    : `${themeMapCSS.default}\n\n${themeMapCSS[themeStore.theme]}`
 
   exportMergedTheme(
     currentTab.content,
-    themeMap[themeStore.theme],
-    themeStore.primaryColor,
-    fontSizeNumber,
-    `${currentThemeName}-merged-theme`,
+    baseTheme,
+    {
+      primaryColor: themeStore.primaryColor,
+      fontFamily: themeStore.fontFamily,
+      fontSize: themeStore.fontSize,
+    },
+    `${currentThemeName}-merged`,
   )
 
   toast.success(`主题导出成功`)

@@ -1,6 +1,6 @@
 import type { AlertOptions, AlertVariantItem } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString, ucfirst } from '../utils'
+import { ucfirst } from '../utils'
 
 /**
  * https://github.com/bent10/marked-extensions/tree/main/packages/alert
@@ -40,15 +40,12 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   function renderAlert(token: any) {
     const { meta, tokens = [] } = token
     // @ts-expect-error marked renderer context has parser property
-    let text = this.parser.parse(tokens)
-    text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
-    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
-    tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
+    const text = this.parser.parse(tokens)
+    // 新主题系统：使用 CSS 选择器而非内联样式
+    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant} blockquote_${meta.variant}">\n`
+    tmpl += `<p class="${meta.titleClassName} blockquote_title blockquote_title_${meta.variant}">`
     if (!withoutStyle) {
-      tmpl += meta.icon.replace(
-        `<svg`,
-        `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
-      )
+      tmpl += meta.icon
     }
     tmpl += meta.title
     tmpl += `</p>\n`

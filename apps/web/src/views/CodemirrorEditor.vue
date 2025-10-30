@@ -66,7 +66,8 @@ function editorRefresh() {
 function resetStyle() {
   themeStore.resetStyle()
   cssEditorStore.resetCssConfig()
-  renderStore.updateCss(cssEditorStore.getCurrentTabContent())
+  // 使用新主题系统
+  themeStore.applyCurrentTheme()
   editorRefresh()
   toast.success(`样式已重置`)
 }
@@ -557,6 +558,32 @@ onMounted(() => {
       isShowLineNumber: themeStore.isShowLineNumber,
     },
   )
+
+  // 🧪 测试新主题系统：应用 CSS 主题
+  console.log(`[新主题系统测试] 开始应用主题...`)
+
+  // 等待异步应用完成后检查
+  themeStore.applyCurrentTheme().then(() => {
+    setTimeout(() => {
+      const styleEl = document.querySelector(`#md-theme`)
+      if (styleEl) {
+        console.log(`✅ [新主题系统测试] 主题样式已成功注入！`)
+        console.log(`📝 [新主题系统测试] CSS 内容长度:`, styleEl.textContent?.length, `字符`)
+        console.log(`🎨 [新主题系统测试] 当前主题:`, themeStore.theme)
+        console.log(`🎨 [新主题系统测试] 主色调:`, themeStore.primaryColor)
+        console.log(`📏 [新主题系统测试] 字体大小:`, themeStore.fontSize)
+
+        // 打印 CSS 内容的前 500 字符作为预览
+        const preview = styleEl.textContent?.substring(0, 500)
+        console.log(`📄 [新主题系统测试] CSS 预览:\n`, preview)
+      }
+      else {
+        console.error(`❌ [新主题系统测试] 主题样式注入失败！未找到 #md-theme 标签`)
+      }
+    }, 50)
+  }).catch((error) => {
+    console.error(`❌ [新主题系统测试] 应用主题时出错:`, error)
+  })
 
   nextTick(() => {
     const editorView = createFormTextArea(editorDom)

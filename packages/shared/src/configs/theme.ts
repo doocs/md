@@ -629,6 +629,9 @@ export const themeMap = {
   simple: simpleTheme,
 }
 
+// 导出 CSS 主题
+export { baseCSSContent, themeMapCSS, type ThemeNameCSS } from './theme-css'
+
 export const themeOptionsMap = {
   default: {
     label: `经典`,

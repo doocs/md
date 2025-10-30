@@ -117,8 +117,12 @@ export const useRenderStore = defineStore(`render`, () => {
     return output.value
   }
 
-  // 更新主题
+  /**
+   * 更新主题（已废弃）
+   * @deprecated 使用 useThemeStore().applyCurrentTheme() 替代
+   */
   const updateTheme = (cssContent: string, theme: any, fonts: string, size: string, color: string) => {
+    console.warn(`[useRenderStore] updateTheme 已废弃，请使用 useThemeStore().applyCurrentTheme()`)
     if (!renderer)
       return
 
@@ -130,8 +134,12 @@ export const useRenderStore = defineStore(`render`, () => {
     })
   }
 
-  // 更新 CSS（兼容旧接口）
+  /**
+   * 更新 CSS（已废弃）
+   * @deprecated 使用 useThemeStore().applyCurrentTheme() 替代
+   */
   const updateCss = (cssContent: string) => {
+    console.warn(`[useRenderStore] updateCss 已废弃，请使用 useThemeStore().applyCurrentTheme()`)
     if (!renderer)
       return
 

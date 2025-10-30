@@ -13,7 +13,7 @@ const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
 const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 
-function createRenderer(display: boolean, inlineStyle: string, blockStyle: string, withStyle: boolean = true) {
+function createRenderer(display: boolean, withStyle: boolean = true) {
   return (token: any) => {
     // @ts-expect-error MathJax is a global variable
     window.MathJax.texReset()
@@ -35,10 +35,11 @@ function createRenderer(display: boolean, inlineStyle: string, blockStyle: strin
     }
 
     if (!display) {
-      return `<span ${inlineStyle}>${svg.outerHTML}</span>`
+      // 新主题系统：使用 class 而非内联样式
+      return `<span class="inline_katex">${svg.outerHTML}</span>`
     }
 
-    return `<section ${blockStyle}>${svg.outerHTML}</section>`
+    return `<section class="block_katex">${svg.outerHTML}</section>`
   }
 }
 
@@ -149,13 +150,13 @@ function blockLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any
   }
 }
 
-export function MDKatex(options: MarkedKatexOptions | undefined, inlineStyle: string, blockStyle: string, withStyle: boolean = true): MarkedExtension {
+export function MDKatex(options: MarkedKatexOptions | undefined, withStyle: boolean = true): MarkedExtension {
   return {
     extensions: [
-      inlineKatex(options, createRenderer(false, inlineStyle, blockStyle, withStyle)),
-      blockKatex(options, createRenderer(true, inlineStyle, blockStyle, withStyle)),
-      inlineLatexKatex(options, createRenderer(false, inlineStyle, blockStyle, withStyle)),
-      blockLatexKatex(options, createRenderer(true, inlineStyle, blockStyle, withStyle)),
+      inlineKatex(options, createRenderer(false, withStyle)),
+      blockKatex(options, createRenderer(true, withStyle)),
+      inlineLatexKatex(options, createRenderer(false, withStyle)),
+      blockLatexKatex(options, createRenderer(true, withStyle)),
     ],
   }
 }

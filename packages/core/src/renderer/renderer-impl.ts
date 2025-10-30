@@ -170,8 +170,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
 
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-
-    return `<${tag} ${/^h\d$/.test(tag) ? `data-heading="true"` : ``} ${styles(styleLabel)}>${content}</${tag}>`
+    // 新主题系统：不再输出内联样式，让 CSS 选择器生效
+    return `<${tag} ${/^h\d$/.test(tag) ? `data-heading="true"` : ``}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
@@ -198,12 +198,10 @@ export function initRenderer(opts: IOpts): RendererAPI {
     styleMapping = buildTheme(opts)
     const newStyle = JSON.stringify(styleMapping)
     if (oldStyle !== newStyle) {
-      marked.use(markedAlert({ styles: styleMapping }))
-      marked.use(
-        MDKatex({ nonStandard: true }, styles(`inline_katex`, `;line-height: 1;`), styles(`block_katex`, `;text-align: center;`),
-        ),
-      )
-      marked.use(markedMarkup({ styles: styleMapping }))
+      // 新主题系统：扩展不再需要 styles 参数
+      marked.use(markedAlert({}))
+      marked.use(MDKatex({ nonStandard: true }, true))
+      marked.use(markedMarkup())
     }
   }
 
@@ -250,8 +248,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
     },
 
     blockquote({ tokens }: Tokens.Blockquote): string {
-      let text = this.parser.parse(tokens)
-      text = text.replace(/<p .*?>/g, `<p ${styles(`blockquote_p`)}>`)
+      const text = this.parser.parse(tokens)
+      // 新主题系统：blockquote 内的 p 标签由 CSS 选择器 `blockquote p` 控制
       return styledContent(`blockquote`, text)
     },
 
@@ -285,9 +283,9 @@ export function initRenderer(opts: IOpts): RendererAPI {
         const escapedText = text.replace(/"/g, `&quot;`)
         pendingAttr = ` data-language-pending="${langText}" data-raw-code="${escapedText}" data-show-line-number="${opts.isShowLineNumber}"`
       }
-      const code = `<code class="language-${lang}"${pendingAttr} ${styles(`code`)}>${highlighted}</code>`
+      const code = `<code class="language-${lang}"${pendingAttr}>${highlighted}</code>`
 
-      return `<pre class="hljs code__pre" ${styles(`code_pre`)}>${span}${code}</pre>`
+      return `<pre class="hljs code__pre">${span}${code}</pre>`
     },
 
     codespan({ text }: Tokens.Codespan): string {
@@ -344,22 +342,20 @@ export function initRenderer(opts: IOpts): RendererAPI {
 
     image({ href, title, text }: Tokens.Image): string {
       const subText = styledContent(`figcaption`, transform(opts.legend!, text, title))
-      const figureStyles = styles(`figure`)
-      const imgStyles = styles(`image`)
-      return `<figure ${figureStyles}><img ${imgStyles} src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
+      return `<figure><img src="${href}" title="${title}" alt="${text}"/>${subText}</figure>`
     },
 
     link({ href, title, text, tokens }: Tokens.Link): string {
       const parsedText = this.parser.parseInline(tokens)
       if (/^https?:\/\/mp\.weixin\.qq\.com/.test(href)) {
-        return `<a href="${href}" title="${title || text}" ${styles(`wx_link`)}>${parsedText}</a>`
+        return `<a href="${href}" title="${title || text}">${parsedText}</a>`
       }
       if (href === text) {
         return parsedText
       }
       if (opts.citeStatus) {
         const ref = addFootnote(title || text, href)
-        return `<span ${styles(`link`)}>${parsedText}<sup>[${ref}]</sup></span>`
+        return `<span>${parsedText}<sup>[${ref}]</sup></span>`
       }
       return styledContent(`link`, parsedText, `span`)
     },
@@ -389,8 +385,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
         .join(``)
       return `
         <section style="max-width: 100%; overflow: auto">
-          <table class="preview-table" ${styles(`table`)}>
-            <thead ${styles(`thead`)}>${headerRow}</thead>
+          <table class="preview-table">
+            <thead>${headerRow}</thead>
             <tbody>${body}</tbody>
           </table>
         </section>
@@ -408,14 +404,12 @@ export function initRenderer(opts: IOpts): RendererAPI {
   }
 
   marked.use({ renderer })
-  marked.use(markedMarkup({ styles: styleMapping }))
+  // 新主题系统：扩展不再需要 styles 参数
+  marked.use(markedMarkup())
   marked.use(markedToc())
-  marked.use(markedSlider({ styles: styleMapping }))
-  marked.use(markedAlert({ styles: styleMapping }))
-  marked.use(
-    MDKatex({ nonStandard: true }, styles(`inline_katex`, `;line-height: 1;`), styles(`block_katex`, `;text-align: center;`),
-    ),
-  )
+  marked.use(markedSlider())
+  marked.use(markedAlert({}))
+  marked.use(MDKatex({ nonStandard: true }, true))
   marked.use(markedFootnotes())
   marked.use(markedPlantUML({
     inlineSvg: true, // 启用SVG内嵌，适用于微信公众号

@@ -156,14 +156,15 @@ export function generateThemeCSS(theme: Theme): string {
 }
 
 /**
- * 导出合并后的主题CSS
+ * 导出合并后的主题CSS（旧版本，已废弃）
  * @param customCSS - 用户自定义的CSS内容
  * @param baseTheme - 基础主题
  * @param primaryColor - 主色调
  * @param fontSize - 字体大小
  * @param fileName - 导出文件名
+ * @deprecated 使用新的 exportMergedTheme from './themeExporter' 替代
  */
-export function exportMergedTheme(
+export function exportMergedThemeLegacy(
   customCSS: string,
   baseTheme: Theme,
   primaryColor: string,
