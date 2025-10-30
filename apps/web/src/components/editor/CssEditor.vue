@@ -241,22 +241,12 @@ function exportCurrentTheme() {
         </TabsList>
       </Tabs>
       <!-- CSS编辑器内容区域 -->
-      <div class="relative flex-1 min-h-0">
+      <div class="flex-1 min-h-0">
         <textarea
           id="cssEditor"
           type="textarea"
           placeholder="Your custom css here."
         />
-
-        <!-- 悬浮导出按钮 -->
-        <Button
-          class="absolute bottom-4 right-4 z-10 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border"
-          size="sm"
-          @click="exportCurrentTheme"
-        >
-          <Download class="h-4 w-4 mr-2" />
-          导出主题
-        </Button>
       </div>
 
       <!-- 新增弹窗 -->
@@ -319,6 +309,18 @@ function exportCurrentTheme() {
       </AlertDialog>
     </div>
   </transition>
+
+  <Button
+    v-show="displayStore.isShowCssEditor"
+    class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
+      isMobile ? 'bottom-4 right-4' : 'bottom-10 right-4',
+    ]"
+    size="sm"
+    @click="exportCurrentTheme"
+  >
+    <Download class="h-4 w-4 mr-2" />
+    导出主题
+  </Button>
 </template>
 
 <style lang="less" scoped>
