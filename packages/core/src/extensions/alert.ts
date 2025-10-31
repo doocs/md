@@ -42,8 +42,8 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
     // @ts-expect-error marked renderer context has parser property
     const text = this.parser.parse(tokens)
     // 新主题系统：使用 CSS 选择器而非内联样式
-    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant} blockquote_${meta.variant}">\n`
-    tmpl += `<p class="${meta.titleClassName} blockquote_title blockquote_title_${meta.variant}">`
+    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}">\n`
+    tmpl += `<p class="${meta.titleClassName} blockquote-title-${meta.variant}">`
     if (!withoutStyle) {
       // 给 SVG 添加 class，通过 CSS 控制颜色
       tmpl += meta.icon.replace(

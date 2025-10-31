@@ -54,12 +54,13 @@ blockquote {
   border-right: 0.2px solid rgba(0, 0, 0, 0.04);
 }
 
-.blockquote_note,
-.blockquote_tip,
-.blockquote_info,
-.blockquote_important,
-.blockquote_warning,
-.blockquote_caution {
+/* GFM Alert 样式覆盖 */
+.markdown-alert-note,
+.markdown-alert-tip,
+.markdown-alert-info,
+.markdown-alert-important,
+.markdown-alert-warning,
+.markdown-alert-caution {
   font-style: italic;
 }
 
