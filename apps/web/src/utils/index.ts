@@ -280,6 +280,26 @@ async function getHljsStyles(): Promise<string> {
   }
 }
 
+function getThemeStyles(): string {
+  const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
+
+  if (!themeStyle || !themeStyle.textContent) {
+    console.warn('[getThemeStyles] 未找到主题样式')
+    return ``
+  }
+
+  // 移除 #output 作用域前缀，因为复制后的 HTML 不在 #output 容器中
+  let cssContent = themeStyle.textContent
+  // 将 "#output h1" 替换为 "h1"，"#output .class" 替换为 ".class" 等
+  // 同时处理换行和多个空格的情况
+  cssContent = cssContent.replace(/#output\s+/g, '')
+  // 处理选择器开头的 #output（如果没有后续内容）
+  cssContent = cssContent.replace(/^#output\s*/gm, '')
+
+  const styleContent = `<style>${cssContent}</style>`
+  return styleContent
+}
+
 function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
@@ -311,10 +331,15 @@ function createEmptyNode(): HTMLElement {
 export async function processClipboardContent(primaryColor: string) {
   const clipboardDiv = document.getElementById(`output`)!
 
-  // 获取highlight.js样式并添加到HTML中
+  // 获取主题样式
+  const themeStyles = getThemeStyles()
+  // 获取highlight.js样式
   const hljsStyles = await getHljsStyles()
-  if (hljsStyles) {
-    clipboardDiv.innerHTML = hljsStyles + clipboardDiv.innerHTML
+
+  const stylesToAdd = [themeStyles, hljsStyles].filter(Boolean).join(``)
+
+  if (stylesToAdd) {
+    clipboardDiv.innerHTML = stylesToAdd + clipboardDiv.innerHTML
   }
 
   // 先合并 CSS 和修改 HTML 结构
