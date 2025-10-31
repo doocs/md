@@ -1,0 +1,169 @@
+/**
+ * 自定义主题模板
+ * 按 Alt/Option + Shift + F 可格式化
+ * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
+ * 如：color: var(--md-primary-color);
+ *
+ * 召集令：如果你有好看的主题样式，欢迎分享，让更多人能够使用到你的主题。
+ * 提交区：https://github.com/doocs/md/discussions/426
+ */
+
+/* 标题样式 */
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+h4 {
+}
+
+h5 {
+}
+
+h6 {
+}
+
+/* 段落样式 */
+p {
+}
+
+/* 引用块样式 */
+blockquote {
+}
+
+/* 引用块内的段落 */
+blockquote > p {
+}
+
+/* 代码样式 */
+/* 行内代码 */
+code {
+}
+
+/* 代码块 */
+pre.code__pre,
+.hljs.code__pre {
+}
+
+/* 代码块内的 code 标签 */
+pre.code__pre > code,
+.hljs.code__pre > code {
+}
+
+/* 有序列表 */
+ol {
+}
+
+/* 无序列表 */
+ul {
+}
+
+/* 列表项 */
+li {
+}
+
+/* 表格样式 */
+table {
+}
+
+thead {
+}
+
+th {
+}
+
+td {
+}
+
+/* 图片 */
+img {
+}
+
+/* 分隔线 */
+hr {
+}
+
+/* 粗体 */
+strong {
+}
+
+/* 斜体 */
+em {
+}
+
+/* 图表容器 */
+figure {
+}
+
+/* 图表标题 */
+figcaption {
+}
+
+/* GFM Alert 警告块 */
+/* Note 标题 */
+.blockquote-title-note {
+}
+
+/* Tip 标题 */
+.blockquote-title-tip {
+}
+
+/* Info 标题 */
+.blockquote-title-info {
+}
+
+/* Important 标题 */
+.blockquote-title-important {
+}
+
+/* Warning 标题 */
+.blockquote-title-warning {
+}
+
+/* Caution 标题 */
+.blockquote-title-caution {
+}
+
+/* ==================== 扩展功能 ==================== */
+/* KaTeX 行内公式 */
+.inline-katex {
+}
+
+/* KaTeX 公式块 */
+.block-katex {
+}
+
+/* Markup 高亮标记 ==文本== */
+.markup-highlight {
+}
+
+/* Markup 下划线 ++文本++ */
+.markup-underline {
+}
+
+/* Markup 波浪线 ~文本~ */
+.markup-wavyline {
+}
+
+/* Alert 图标颜色 */
+.alert-icon-note {
+}
+
+.alert-icon-tip {
+}
+
+.alert-icon-info {
+}
+
+.alert-icon-important {
+}
+
+.alert-icon-warning {
+}
+
+.alert-icon-caution {
+}
