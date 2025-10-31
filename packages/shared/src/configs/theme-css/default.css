@@ -89,39 +89,39 @@ blockquote > p {
 }
 
 /* ==================== GFM 警告块 ==================== */
-.blockquote-title-note,
-.blockquote-title-tip,
-.blockquote-title-info,
-.blockquote-title-important,
-.blockquote-title-warning,
-.blockquote-title-caution {
+.alert-title-note,
+.alert-title-tip,
+.alert-title-info,
+.alert-title-important,
+.alert-title-warning,
+.alert-title-caution {
   display: flex;
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
 }
 
-.blockquote-title-note {
+.alert-title-note {
   color: #478be6;
 }
 
-.blockquote-title-tip {
+.alert-title-tip {
   color: #57ab5a;
 }
 
-.blockquote-title-info {
+.alert-title-info {
   color: #93c5fd;
 }
 
-.blockquote-title-important {
+.alert-title-important {
   color: #986ee2;
 }
 
-.blockquote-title-warning {
+.alert-title-warning {
   color: #c69026;
 }
 
-.blockquote-title-caution {
+.alert-title-caution {
   color: #e5534b;
 }
 
@@ -293,12 +293,12 @@ td {
 }
 
 /* ==================== KaTeX 公式 ==================== */
-.inline-katex {
+.katex-inline {
   max-width: 100%;
   overflow-x: auto;
 }
 
-.block-katex {
+.katex-block {
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
