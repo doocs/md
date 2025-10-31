@@ -43,12 +43,12 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
     const text = this.parser.parse(tokens)
     // 新主题系统：使用 CSS 选择器而非内联样式
     let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}">\n`
-    tmpl += `<p class="${meta.titleClassName} blockquote-title-${meta.variant}">`
+    tmpl += `<p class="${meta.titleClassName} alert-title-${meta.variant}">`
     if (!withoutStyle) {
       // 给 SVG 添加 class，通过 CSS 控制颜色
       tmpl += meta.icon.replace(
         `<svg`,
-        `<svg class="alert-icon alert-icon-${meta.variant}"`,
+        `<svg class="alert-icon-${meta.variant}"`,
       )
     }
     tmpl += meta.title
