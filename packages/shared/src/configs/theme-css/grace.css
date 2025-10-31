@@ -1,5 +1,5 @@
 /**
- * Markdown Pretty 优雅主题 (@brzhang)
+ * MD 优雅主题 (@brzhang)
  * 在默认主题基础上添加优雅的视觉效果
  */
 
@@ -53,11 +53,13 @@ blockquote {
 }
 
 /* ==================== 代码块 ==================== */
-code_pre {
+pre.code__pre,
+.hljs.code__pre {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
 }
 
-code {
+pre.code__pre > code,
+.hljs.code__pre > code {
   font-family:
     'Fira Code',
     Menlo,
@@ -68,7 +70,7 @@ code {
 }
 
 /* ==================== 图片 ==================== */
-image {
+img {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
@@ -83,7 +85,7 @@ ul {
   padding-left: 1.5em;
 }
 
-listitem {
+li {
   margin: 0.5em 8px;
 }
 
@@ -112,8 +114,4 @@ thead {
 
 td {
   padding: 0.5em 1em;
-}
-
-footnote {
-  color: rgba(0, 0, 0, 0.5);
 }

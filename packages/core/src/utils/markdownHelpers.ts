@@ -49,16 +49,6 @@ export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, rend
   `
   html += `
     <style>
-      .code__pre {
-        padding: 0 !important;
-      }
-
-      .hljs.code__pre code {
-        display: -webkit-box;
-        padding: 0.5em 1em 1em;
-        overflow-x: auto;
-        text-indent: 0;
-      }
       h2 strong {
         color: inherit !important;
       }
