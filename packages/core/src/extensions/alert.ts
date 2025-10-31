@@ -45,7 +45,11 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
     let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant} blockquote_${meta.variant}">\n`
     tmpl += `<p class="${meta.titleClassName} blockquote_title blockquote_title_${meta.variant}">`
     if (!withoutStyle) {
-      tmpl += meta.icon
+      // 给 SVG 添加 class，通过 CSS 控制颜色
+      tmpl += meta.icon.replace(
+        `<svg`,
+        `<svg class="alert-icon alert-icon-${meta.variant}"`,
+      )
     }
     tmpl += meta.title
     tmpl += `</p>\n`

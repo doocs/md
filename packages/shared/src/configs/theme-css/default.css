@@ -1,5 +1,5 @@
 /**
- * Markdown Pretty 默认主题（经典主题）
+ * MD 默认主题（经典主题）
  * 按 Alt/Option + Shift + F 可格式化
  * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
  */
@@ -80,8 +80,7 @@ blockquote {
   margin-bottom: 1em;
 }
 
-blockquote > p,
-blockquote_p {
+blockquote > p {
   display: block;
   font-size: 1em;
   letter-spacing: 0.1em;
@@ -90,70 +89,75 @@ blockquote_p {
 }
 
 /* ==================== GFM 警告块 ==================== */
-.blockquote_title,
-blockquote_title {
+.blockquote_title {
   display: flex;
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
 }
 
-.blockquote_title_note,
-blockquote_title_note {
+.blockquote_title_note {
   color: #478be6;
 }
 
-.blockquote_title_tip,
-blockquote_title_tip {
+.blockquote_title_tip {
   color: #57ab5a;
 }
 
-.blockquote_title_info,
-blockquote_title_info {
+.blockquote_title_info {
   color: #93c5fd;
 }
 
-.blockquote_title_important,
-blockquote_title_important {
+.blockquote_title_important {
   color: #986ee2;
 }
 
-.blockquote_title_warning,
-blockquote_title_warning {
+.blockquote_title_warning {
   color: #c69026;
 }
 
-.blockquote_title_caution,
-blockquote_title_caution {
+.blockquote_title_caution {
   color: #e5534b;
+}
+
+/* GFM Alert SVG 图标颜色 */
+.alert-icon-note {
+  fill: #478be6;
+}
+
+.alert-icon-tip {
+  fill: #57ab5a;
+}
+
+.alert-icon-info {
+  fill: #93c5fd;
+}
+
+.alert-icon-important {
+  fill: #986ee2;
+}
+
+.alert-icon-warning {
+  fill: #c69026;
+}
+
+.alert-icon-caution {
+  fill: #e5534b;
 }
 
 /* ==================== 代码块 ==================== */
 pre.code__pre,
-code_pre {
+.hljs.code__pre {
   font-size: 90%;
   overflow-x: auto;
   border-radius: 8px;
-  padding: 1em;
+  padding: 0 !important;
   line-height: 1.5;
   margin: 10px 8px;
 }
 
-pre.code__pre > code {
-  margin: 0;
-  white-space: nowrap;
-  font-size: 90%;
-  font-family:
-    Menlo,
-    Operator Mono,
-    Consolas,
-    Monaco,
-    monospace;
-}
-
 /* ==================== 图片 ==================== */
-img,
-image {
+img {
   display: block;
   max-width: 100%;
   margin: 0.1em auto 0.5em;
@@ -174,22 +178,17 @@ ul {
   color: hsl(var(--foreground));
 }
 
-li,
-listitem {
+li {
   display: block;
   margin: 0.2em 8px;
   color: hsl(var(--foreground));
 }
 
 /* ==================== 脚注 ==================== */
-footnotes {
+/* footnotes 在 buildFootnotes() 中渲染为 <p> 标签 */
+p.footnotes {
   margin: 0.5em 8px;
   font-size: 80%;
-  color: hsl(var(--foreground));
-}
-
-footnote {
-  font-size: 12px;
   color: hsl(var(--foreground));
 }
 
@@ -219,13 +218,25 @@ hr {
 }
 
 /* ==================== 行内代码 ==================== */
-code,
-codespan {
+code {
   font-size: 90%;
   color: #d14;
   background: rgba(27, 31, 35, 0.05);
   padding: 3px 5px;
   border-radius: 4px;
+}
+
+/* 代码块内的 code 标签需要特殊处理（覆盖行内 code 样式） */
+pre.code__pre > code,
+.hljs.code__pre > code {
+  display: -webkit-box;
+  padding: 0.5em 1em 1em;
+  overflow-x: auto;
+  text-indent: 0;
+  color: inherit;
+  background: none;
+  white-space: pre;
+  margin: 0;
 }
 
 /* ==================== 强调 ==================== */
@@ -277,14 +288,12 @@ td {
 }
 
 /* ==================== KaTeX 公式 ==================== */
-.inline_katex,
-inline_katex {
+.inline_katex {
   max-width: 100%;
   overflow-x: auto;
 }
 
-.block_katex,
-block_katex {
+.block_katex {
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -293,22 +302,19 @@ block_katex {
 }
 
 /* ==================== 标记高亮 ==================== */
-.markup_highlight,
-markup_highlight {
+.markup_highlight {
   background-color: var(--md-primary-color);
   padding: 2px 4px;
   border-radius: 2px;
   color: #fff;
 }
 
-.markup_underline,
-markup_underline {
+.markup_underline {
   text-decoration: underline;
   text-decoration-color: var(--md-primary-color);
 }
 
-.markup_wavyline,
-markup_wavyline {
+.markup_wavyline {
   text-decoration: underline wavy;
   text-decoration-color: var(--md-primary-color);
   text-decoration-thickness: 2px;

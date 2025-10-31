@@ -1,5 +1,5 @@
 /**
- * Markdown Pretty 简洁主题 (@okooo5km)
+ * MD 简洁主题 (@okooo5km)
  * 简洁现代的设计风格
  */
 
@@ -54,21 +54,23 @@ blockquote {
   border-right: 0.2px solid rgba(0, 0, 0, 0.04);
 }
 
-blockquote_note,
-blockquote_tip,
-blockquote_info,
-blockquote_important,
-blockquote_warning,
-blockquote_caution {
+.blockquote_note,
+.blockquote_tip,
+.blockquote_info,
+.blockquote_important,
+.blockquote_warning,
+.blockquote_caution {
   font-style: italic;
 }
 
 /* ==================== 代码块 ==================== */
-code_pre {
+pre.code__pre,
+.hljs.code__pre {
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
-code {
+pre.code__pre > code,
+.hljs.code__pre > code {
   font-family:
     'Fira Code',
     Menlo,
@@ -79,7 +81,7 @@ code {
 }
 
 /* ==================== 图片 ==================== */
-image {
+img {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
@@ -94,7 +96,7 @@ ul {
   padding-left: 1.5em;
 }
 
-listitem {
+li {
   margin: 0.5em 8px;
 }
 
