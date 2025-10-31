@@ -27,7 +27,7 @@ export function exportMergedTheme(
   // 2. 拼接完整 CSS
   const mergedCSS = [
     `/**`,
-    ` * Markdown Pretty 主题导出`,
+    ` * MD 主题导出`,
     ` * 导出时间: ${new Date().toLocaleString()}`,
     ` * 说明: 该文件包含完整的主题样式，可直接使用`,
     ` */`,
@@ -68,7 +68,7 @@ export function exportThemeWithVariables(
 
   const mergedCSS = [
     `/**`,
-    ` * Markdown Pretty 主题导出（包含 CSS 变量）`,
+    ` * MD 主题导出（包含 CSS 变量）`,
     ` * 导出时间: ${new Date().toLocaleString()}`,
     ` * 说明: 该文件使用 CSS 变量，可通过修改 :root 中的变量值来调整主题`,
     ` */`,
