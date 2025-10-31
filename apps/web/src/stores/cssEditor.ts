@@ -1,9 +1,10 @@
 import type { EditorView } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
-import { cssSetup, theme as editorTheme } from '@md/shared/editor'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
 import { addPrefix, store } from '@/utils'
+
+const DEFAULT_CSS_CONTENT = DEFAULT_CUSTOM_THEME
 
 /**
  * CSS 编辑器配置接口
