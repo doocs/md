@@ -1,6 +1,4 @@
-import type { MarkupOptions } from '@md/shared'
 import type { MarkedExtension } from 'marked'
-import { getStyleString } from '../utils'
 
 /**
  * 扩展标记语法：
@@ -8,9 +6,7 @@ import { getStyleString } from '../utils'
  * - 下划线: ++文本++
  * - 波浪线: ~文本~
  */
-export function markedMarkup(options: MarkupOptions = {}): MarkedExtension {
-  const { styles } = options
-
+export function markedMarkup(): MarkedExtension {
   return {
     extensions: [
       // 高亮语法 ==文本==
@@ -32,8 +28,8 @@ export function markedMarkup(options: MarkupOptions = {}): MarkedExtension {
           }
         },
         renderer(token: any) {
-          const style = getStyleString(styles?.markup_highlight ?? {})
-          return `<span class="markup-highlight" style="${style}">${token.text}</span>`
+          // 新主题系统：使用 class 而非内联样式
+          return `<span class="markup-highlight">${token.text}</span>`
         },
       },
 
@@ -56,8 +52,8 @@ export function markedMarkup(options: MarkupOptions = {}): MarkedExtension {
           }
         },
         renderer(token: any) {
-          const style = getStyleString(styles?.markup_underline ?? {})
-          return `<span class="markup-underline" style="${style}">${token.text}</span>`
+          // 新主题系统：使用 class 而非内联样式
+          return `<span class="markup-underline">${token.text}</span>`
         },
       },
 
@@ -82,8 +78,8 @@ export function markedMarkup(options: MarkupOptions = {}): MarkedExtension {
           }
         },
         renderer(token: any) {
-          const style = getStyleString(styles?.markup_wavyline ?? {})
-          return `<span class="markup-wavyline" style="${style}">${token.text}</span>`
+          // 新主题系统：使用 class 而非内联样式
+          return `<span class="markup-wavyline">${token.text}</span>`
         },
       },
     ],

@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { Edit3, Plus, X } from 'lucide-vue-next'
+import { exportMergedTheme } from '@md/core'
+import { themeMapCSS, themeOptions } from '@md/shared'
+import { Download, Edit3, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
@@ -114,7 +116,7 @@ function delTab() {
 }
 
 function addHandler() {
-  addInputVal.value = `方案${cssContentConfig.value.tabs.length + 1}`
+  addInputVal.value = `方案${cssContentConfig.value.tabs.length - themeOptions.length + 1}`
   isOpenAddDialog.value = true
 }
 
@@ -132,9 +134,9 @@ function tabChanged(tabName: string | number) {
 // 初始化 CSS 编辑器
 onMounted(() => {
   // CSS 内容更新回调
-  const handleCssUpdate = (content: string) => {
-    // 1. 更新 CSS 主题
-    renderStore.updateCss(content)
+  const handleCssUpdate = () => {
+    // 1. 使用新主题系统应用 CSS
+    themeStore.applyCurrentTheme()
 
     // 2. 触发编辑器刷新，重新渲染内容
     themeStore.updateCodeTheme()
@@ -156,6 +158,35 @@ onMounted(() => {
   // 初始化 CSS 编辑器
   cssEditorStore.initCssEditor(handleCssUpdate)
 })
+
+// 导出合并后的主题
+function exportCurrentTheme() {
+  const currentTab = cssContentConfig.value.tabs.find(tab => tab.name === cssContentConfig.value.active)
+  if (!currentTab) {
+    toast.error(`未找到当前方案`)
+    return
+  }
+
+  const currentThemeName = currentTab.title || currentTab.name
+
+  // 使用新的导出函数（包含 default 基础）
+  const baseTheme = themeStore.theme === `default`
+    ? themeMapCSS.default
+    : `${themeMapCSS.default}\n\n${themeMapCSS[themeStore.theme]}`
+
+  exportMergedTheme(
+    currentTab.content,
+    baseTheme,
+    {
+      primaryColor: themeStore.primaryColor,
+      fontFamily: themeStore.fontFamily,
+      fontSize: themeStore.fontSize,
+    },
+    `${currentThemeName}-merged`,
+  )
+
+  toast.success(`主题导出成功`)
+}
 </script>
 
 <template>
@@ -175,7 +206,7 @@ onMounted(() => {
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': isMobile,
         'animate': isMobile && enableAnimation,
         // 桌面端样式
-        'border-l-2 flex-1 order-2 border-gray/50': !isMobile,
+        'border-l-2 flex-1 order-2 border-gray/50 min-w-0': !isMobile,
       }"
       :style="{
         transform: isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
@@ -194,7 +225,7 @@ onMounted(() => {
         v-model="cssContentConfig.active"
         @update:model-value="tabChanged"
       >
-        <TabsList class="w-full overflow-x-auto">
+        <TabsList class="w-full overflow-x-auto justify-start">
           <TabsTrigger
             v-for="item in cssContentConfig.tabs"
             :key="item.name"
@@ -202,25 +233,30 @@ onMounted(() => {
             class="flex-1"
           >
             {{ item.title }}
-            <Edit3
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click="rename(item.name)"
-            />
-            <X
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click.self="removeHandler(item.name)"
-            />
+            <template v-if="!themeOptions.some(option => option.value === item.name)">
+              <Edit3
+                v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click="rename(item.name)"
+              />
+              <X
+                v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click.self="removeHandler(item.name)"
+              />
+            </template>
           </TabsTrigger>
           <TabsTrigger value="add">
             <Plus class="h-5 w-5" />
           </TabsTrigger>
         </TabsList>
       </Tabs>
-      <textarea
-        id="cssEditor"
-        type="textarea"
-        placeholder="Your custom css here."
-      />
+      <!-- CSS编辑器内容区域 -->
+      <div class="flex-1 min-h-0">
+        <textarea
+          id="cssEditor"
+          type="textarea"
+          placeholder="Your custom css here."
+        />
+      </div>
 
       <!-- 新增弹窗 -->
       <Dialog v-model:open="isOpenAddDialog">
@@ -282,6 +318,18 @@ onMounted(() => {
       </AlertDialog>
     </div>
   </transition>
+
+  <Button
+    v-show="displayStore.isShowCssEditor"
+    class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
+      isMobile ? 'bottom-4 right-4' : 'bottom-10 right-4',
+    ]"
+    size="sm"
+    @click="exportCurrentTheme"
+  >
+    <Download class="h-4 w-4 mr-2" />
+    导出主题
+  </Button>
 </template>
 
 <style lang="less" scoped>
