@@ -29,7 +29,7 @@ export function markedMarkup(): MarkedExtension {
         },
         renderer(token: any) {
           // 新主题系统：使用 class 而非内联样式
-          return `<span class="markup-highlight markup_highlight">${token.text}</span>`
+          return `<span class="markup-highlight">${token.text}</span>`
         },
       },
 
@@ -53,7 +53,7 @@ export function markedMarkup(): MarkedExtension {
         },
         renderer(token: any) {
           // 新主题系统：使用 class 而非内联样式
-          return `<span class="markup-underline markup_underline">${token.text}</span>`
+          return `<span class="markup-underline">${token.text}</span>`
         },
       },
 
@@ -79,7 +79,7 @@ export function markedMarkup(): MarkedExtension {
         },
         renderer(token: any) {
           // 新主题系统：使用 class 而非内联样式
-          return `<span class="markup-wavyline markup_wavyline">${token.text}</span>`
+          return `<span class="markup-wavyline">${token.text}</span>`
         },
       },
     ],

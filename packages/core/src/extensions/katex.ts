@@ -36,10 +36,10 @@ function createRenderer(display: boolean, withStyle: boolean = true) {
 
     if (!display) {
       // 新主题系统：使用 class 而非内联样式
-      return `<span class="inline_katex">${svg.outerHTML}</span>`
+      return `<span class="inline-katex">${svg.outerHTML}</span>`
     }
 
-    return `<section class="block_katex">${svg.outerHTML}</section>`
+    return `<section class="block-katex">${svg.outerHTML}</section>`
   }
 }
 

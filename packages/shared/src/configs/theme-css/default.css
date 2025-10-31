@@ -89,34 +89,39 @@ blockquote > p {
 }
 
 /* ==================== GFM 警告块 ==================== */
-.blockquote_title {
+.blockquote-title-note,
+.blockquote-title-tip,
+.blockquote-title-info,
+.blockquote-title-important,
+.blockquote-title-warning,
+.blockquote-title-caution {
   display: flex;
   align-items: center;
   gap: 0.5em;
   margin-bottom: 0.5em;
 }
 
-.blockquote_title_note {
+.blockquote-title-note {
   color: #478be6;
 }
 
-.blockquote_title_tip {
+.blockquote-title-tip {
   color: #57ab5a;
 }
 
-.blockquote_title_info {
+.blockquote-title-info {
   color: #93c5fd;
 }
 
-.blockquote_title_important {
+.blockquote-title-important {
   color: #986ee2;
 }
 
-.blockquote_title_warning {
+.blockquote-title-warning {
   color: #c69026;
 }
 
-.blockquote_title_caution {
+.blockquote-title-caution {
   color: #e5534b;
 }
 
@@ -288,12 +293,12 @@ td {
 }
 
 /* ==================== KaTeX 公式 ==================== */
-.inline_katex {
+.inline-katex {
   max-width: 100%;
   overflow-x: auto;
 }
 
-.block_katex {
+.block-katex {
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
@@ -302,19 +307,19 @@ td {
 }
 
 /* ==================== 标记高亮 ==================== */
-.markup_highlight {
+.markup-highlight {
   background-color: var(--md-primary-color);
   padding: 2px 4px;
   border-radius: 2px;
   color: #fff;
 }
 
-.markup_underline {
+.markup-underline {
   text-decoration: underline;
   text-decoration-color: var(--md-primary-color);
 }
 
-.markup_wavyline {
+.markup-wavyline {
   text-decoration: underline wavy;
   text-decoration-color: var(--md-primary-color);
   text-decoration-thickness: 2px;
