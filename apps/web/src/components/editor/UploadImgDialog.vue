@@ -3,12 +3,12 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
-import { useDisplayStore } from '@/stores/display'
+import { useUIStore } from '@/stores/ui'
 import { checkImage } from '@/utils'
 
 const emit = defineEmits([`uploadImage`])
 
-const displayStore = useDisplayStore()
+const uiStore = useUIStore()
 
 // github
 const githubSchema = toTypedSchema(yup.object({
@@ -436,7 +436,7 @@ function emitUploads(file: File) {
 </script>
 
 <template>
-  <Dialog v-model:open="displayStore.isShowUploadImgDialog">
+  <Dialog v-model:open="uiStore.isShowUploadImgDialog">
     <DialogContent class="md:max-w-max max-h-[90vh] overflow-y-auto" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>

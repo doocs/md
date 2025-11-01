@@ -23,9 +23,9 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIConfigStore from '@/stores/aiConfig'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useQuickCommands } from '@/stores/quickCommands'
+import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 
 /* ---------- 组件属性 ---------- */
@@ -34,8 +34,8 @@ const emit = defineEmits([`update:open`])
 
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
-const displayStore = useDisplayStore()
-const { toggleAIImageDialog } = displayStore
+const uiStore = useUIStore()
+const { toggleAIImageDialog } = uiStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)

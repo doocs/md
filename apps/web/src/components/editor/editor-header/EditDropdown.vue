@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ClipboardPasteIcon, Contact2Icon, CopyIcon, Redo2Icon, TableIcon, Undo2Icon, UploadCloudIcon } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
+import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 
 const props = withDefaults(defineProps<{
@@ -13,9 +13,9 @@ const props = withDefaults(defineProps<{
 const { asSub } = toRefs(props)
 
 const editorStore = useEditorStore()
-const displayStore = useDisplayStore()
+const uiStore = useUIStore()
 
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = displayStore
+const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = uiStore
 
 // Clipboard operations
 async function copyToClipboard() {

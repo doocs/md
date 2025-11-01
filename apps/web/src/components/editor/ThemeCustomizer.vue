@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { widthOptions } from '@md/shared/configs'
 import { Moon, Sun } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -13,8 +12,6 @@ const { previewWidth } = storeToRefs(themeStore)
 const uiStore = useUIStore()
 const { isDark, isEditOnLeft } = storeToRefs(uiStore)
 const { toggleDark, toggleEditOnLeft } = uiStore
-
-const displayStore = useDisplayStore()
 
 const editorStore = useEditorStore()
 const renderStore = useRenderStore()
@@ -41,7 +38,7 @@ function editorRefresh() {
 }
 
 function customStyle() {
-  displayStore.toggleShowCssEditor()
+  uiStore.toggleShowCssEditor()
 }
 </script>
 
@@ -89,15 +86,15 @@ function customStyle() {
       <div class="grid grid-cols-2 justify-items-center gap-2">
         <Button
           class="w-full" variant="outline" :class="{
-            'border-black dark:border-white border-2': displayStore.isShowCssEditor,
-          }" @click="!displayStore.isShowCssEditor && customStyle()"
+            'border-black dark:border-white border-2': uiStore.isShowCssEditor,
+          }" @click="!uiStore.isShowCssEditor && customStyle()"
         >
           开启
         </Button>
         <Button
           class="w-full" variant="outline" :class="{
-            'border-black dark:border-white border-2': !displayStore.isShowCssEditor,
-          }" @click="displayStore.isShowCssEditor && customStyle()"
+            'border-black dark:border-white border-2': !uiStore.isShowCssEditor,
+          }" @click="uiStore.isShowCssEditor && customStyle()"
         >
           关闭
         </Button>

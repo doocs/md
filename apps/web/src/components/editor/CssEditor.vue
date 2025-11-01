@@ -1,14 +1,12 @@
 <script setup lang="ts">
 import { Edit3, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const cssEditorStore = useCssEditorStore()
-const displayStore = useDisplayStore()
 const uiStore = useUIStore()
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
@@ -21,7 +19,7 @@ const { cssContentConfig } = storeToRefs(cssEditorStore)
 const enableAnimation = ref(false)
 
 // 监听 CssEditor 开关状态变化
-watch(() => displayStore.isShowCssEditor, () => {
+watch(() => uiStore.isShowCssEditor, () => {
   if (isMobile.value) {
     // 在移动端,用户操作时启用动画
     enableAnimation.value = true
@@ -161,14 +159,14 @@ onMounted(() => {
 <template>
   <!-- 移动端遮罩层 -->
   <div
-    v-if="isMobile && displayStore.isShowCssEditor"
+    v-if="isMobile && uiStore.isShowCssEditor"
     class="fixed inset-0 bg-black/50 z-40"
-    @click="displayStore.isShowCssEditor = false"
+    @click="uiStore.isShowCssEditor = false"
   />
 
   <transition enter-active-class="bounceInRight">
     <div
-      v-show="displayStore.isShowCssEditor"
+      v-show="uiStore.isShowCssEditor"
       class="cssEditor-wrapper h-full flex flex-col mobile-css-editor overflow-y-auto"
       :class="{
         // 移动端样式
@@ -178,7 +176,7 @@ onMounted(() => {
         'border-l-2 flex-1 order-2 border-gray/50': !isMobile,
       }"
       :style="{
-        transform: isMobile ? (displayStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
+        transform: isMobile ? (uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
       }"
     >
       <!-- 移动端标题栏 -->
@@ -186,7 +184,7 @@ onMounted(() => {
         <h2 class="text-lg font-semibold">
           自定义 CSS
         </h2>
-        <Button variant="ghost" size="sm" @click="displayStore.isShowCssEditor = false">
+        <Button variant="ghost" size="sm" @click="uiStore.isShowCssEditor = false">
           <X class="h-4 w-4" />
         </Button>
       </div>

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
+import { useUIStore } from '@/stores/ui'
 import { createTable } from '@/utils'
 
 const editorStore = useEditorStore()
-const displayStore = useDisplayStore()
+const uiStore = useUIStore()
 
-const { toggleShowInsertFormDialog } = displayStore
+const { toggleShowInsertFormDialog } = uiStore
 
 const rowNum = ref(3)
 const colNum = ref(3)
@@ -42,7 +42,7 @@ function onUpdate(val: boolean) {
 </script>
 
 <template>
-  <Dialog :open="displayStore.isShowInsertFormDialog" @update:open="onUpdate">
+  <Dialog :open="uiStore.isShowInsertFormDialog" @update:open="onUpdate">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>插入表格</DialogTitle>

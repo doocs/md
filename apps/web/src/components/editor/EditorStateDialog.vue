@@ -2,7 +2,6 @@
 import { storeLabels } from '@md/shared/configs'
 import { Expand, UploadCloud } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useDisplayStore } from '@/stores/display'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -22,7 +21,6 @@ const uiStore = useUIStore()
 const postStore = usePostStore()
 const cssEditorStore = useCssEditorStore()
 const renderStore = useRenderStore()
-const displayStore = useDisplayStore()
 
 watch(
   () => props.visible,
@@ -96,12 +94,12 @@ function getAllStoreStates() {
     readingTime: renderStore.readingTime,
 
     // Display store 的状态
-    isShowCssEditor: displayStore.isShowCssEditor,
-    isShowInsertFormDialog: displayStore.isShowInsertFormDialog,
-    isShowUploadImgDialog: displayStore.isShowUploadImgDialog,
-    isShowInsertMpCardDialog: displayStore.isShowInsertMpCardDialog,
-    aiDialogVisible: displayStore.aiDialogVisible,
-    aiImageDialogVisible: displayStore.aiImageDialogVisible,
+    isShowCssEditor: uiStore.isShowCssEditor,
+    isShowInsertFormDialog: uiStore.isShowInsertFormDialog,
+    isShowUploadImgDialog: uiStore.isShowUploadImgDialog,
+    isShowInsertMpCardDialog: uiStore.isShowInsertMpCardDialog,
+    aiDialogVisible: uiStore.aiDialogVisible,
+    aiImageDialogVisible: uiStore.aiImageDialogVisible,
   }
 }
 
@@ -309,17 +307,17 @@ function applyImportedConfig() {
 
       // Display store 的状态
       else if (key === `isShowCssEditor`)
-        displayStore.isShowCssEditor = value
+        uiStore.isShowCssEditor = value
       else if (key === `isShowInsertFormDialog`)
-        displayStore.isShowInsertFormDialog = value
+        uiStore.isShowInsertFormDialog = value
       else if (key === `isShowUploadImgDialog`)
-        displayStore.isShowUploadImgDialog = value
+        uiStore.isShowUploadImgDialog = value
       else if (key === `isShowInsertMpCardDialog`)
-        displayStore.isShowInsertMpCardDialog = value
+        uiStore.isShowInsertMpCardDialog = value
       else if (key === `aiDialogVisible`)
-        displayStore.aiDialogVisible = value
+        uiStore.aiDialogVisible = value
       else if (key === `aiImageDialogVisible`)
-        displayStore.aiImageDialogVisible = value
+        uiStore.aiImageDialogVisible = value
     }
   })
 

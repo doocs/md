@@ -2,9 +2,10 @@ import { addPrefix } from '@/utils'
 
 /**
  * UI 状态 Store
- * 负责管理全局 UI 状态，如深色模式、侧边栏状态等
+ * 负责管理全局 UI 状态，包括深色模式、侧边栏、对话框等
  */
 export const useUIStore = defineStore(`ui`, () => {
+  // ==================== 全局 UI 状态 ====================
   // 是否开启深色模式
   const isDark = useDark()
   const toggleDark = useToggle(isDark)
@@ -29,9 +30,39 @@ export const useUIStore = defineStore(`ui`, () => {
   // 是否为移动端
   const isMobile = useStorage(`isMobile`, false)
 
-  // 是否打开重置样式对话框
+  // ==================== 对话框状态 ====================
+  // 是否展示 CSS 编辑器
+  const isShowCssEditor = useStorage(`isShowCssEditor`, false)
+  const toggleShowCssEditor = useToggle(isShowCssEditor)
+
+  // 是否展示插入表格对话框
+  const isShowInsertFormDialog = ref(false)
+  const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
+
+  // 是否展示插入公众号名片对话框
+  const isShowInsertMpCardDialog = ref(false)
+  const toggleShowInsertMpCardDialog = useToggle(isShowInsertMpCardDialog)
+
+  // 是否展示上传图片对话框
+  const isShowUploadImgDialog = ref(false)
+  const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
+
+  // 是否打开重置样式确认对话框
   const isOpenConfirmDialog = ref(false)
 
+  // AI 对话框
+  const aiDialogVisible = ref(false)
+  const aiImageDialogVisible = ref(false)
+
+  function toggleAIDialog(value?: boolean) {
+    aiDialogVisible.value = value ?? !aiDialogVisible.value
+  }
+
+  function toggleAIImageDialog(value?: boolean) {
+    aiImageDialogVisible.value = value ?? !aiImageDialogVisible.value
+  }
+
+  // ==================== 工具函数 ====================
   // 处理窗口大小变化
   function handleResize() {
     isMobile.value = window.innerWidth <= 768
@@ -47,7 +78,7 @@ export const useUIStore = defineStore(`ui`, () => {
   })
 
   return {
-    // State
+    // ==================== 全局 UI 状态 ====================
     isDark,
     isEditOnLeft,
     showAIToolbox,
@@ -55,9 +86,23 @@ export const useUIStore = defineStore(`ui`, () => {
     isOpenRightSlider,
     isOpenPostSlider,
     isMobile,
-    isOpenConfirmDialog,
 
-    // Actions
+    // ==================== 对话框状态 ====================
+    isShowCssEditor,
+    toggleShowCssEditor,
+    isShowInsertFormDialog,
+    toggleShowInsertFormDialog,
+    isShowInsertMpCardDialog,
+    toggleShowInsertMpCardDialog,
+    isShowUploadImgDialog,
+    toggleShowUploadImgDialog,
+    isOpenConfirmDialog,
+    aiDialogVisible,
+    toggleAIDialog,
+    aiImageDialogVisible,
+    toggleAIImageDialog,
+
+    // ==================== Actions ====================
     toggleDark,
     toggleEditOnLeft,
     toggleAIToolbox,

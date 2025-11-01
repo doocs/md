@@ -1,7 +1,6 @@
 <script setup lang='ts'>
 import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { usePostStore } from '@/stores/post'
@@ -17,7 +16,7 @@ const {
   toggleShowInsertFormDialog,
   toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
-} = useDisplayStore()
+} = uiStore
 
 const importMarkdownContent = useImportMarkdownContent()
 
