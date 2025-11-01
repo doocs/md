@@ -16,7 +16,6 @@ import {
 } from '@/components/ui/resizable'
 import { SearchTab } from '@/components/ui/search-tab'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
@@ -31,7 +30,6 @@ const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const cssEditorStore = useCssEditorStore()
-const displayStore = useDisplayStore()
 
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
@@ -46,7 +44,7 @@ const {
   isOpenConfirmDialog,
 } = storeToRefs(uiStore)
 
-const { toggleShowUploadImgDialog } = displayStore
+const { toggleShowUploadImgDialog } = uiStore
 
 // Editor refresh function
 function editorRefresh() {

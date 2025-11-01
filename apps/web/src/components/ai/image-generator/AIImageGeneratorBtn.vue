@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Image as ImageIcon } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores/display'
+import { useUIStore } from '@/stores/ui'
 import AIImageGeneratorPanel from './AIImageGeneratorPanel.vue'
 
 defineProps<{
@@ -8,9 +8,9 @@ defineProps<{
   showEditor: boolean
 }>()
 
-const displayStore = useDisplayStore()
-const { aiImageDialogVisible } = storeToRefs(displayStore)
-const { toggleAIImageDialog } = displayStore
+const uiStore = useUIStore()
+const { aiImageDialogVisible } = storeToRefs(uiStore)
+const { toggleAIImageDialog } = uiStore
 </script>
 
 <template>

@@ -7,8 +7,8 @@ import { addPrefix } from '@/utils'
 
 /** 编辑器实例和全局弹窗状态 */
 const editorStore = useEditorStore()
-const displayStore = useDisplayStore()
-const { toggleShowInsertMpCardDialog } = displayStore
+const uiStore = useUIStore()
+const { toggleShowInsertMpCardDialog } = uiStore
 
 interface Config {
   id: string
@@ -80,7 +80,7 @@ function submit(formValues: any) {
 </script>
 
 <template>
-  <Dialog v-model:open="displayStore.isShowInsertMpCardDialog">
+  <Dialog v-model:open="uiStore.isShowInsertMpCardDialog">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>插入公众号名片</DialogTitle>

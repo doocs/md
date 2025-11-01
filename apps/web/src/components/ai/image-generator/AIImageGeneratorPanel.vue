@@ -20,8 +20,8 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
+import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 import AIImageConfig from './AIImageConfig.vue'
 
@@ -32,8 +32,8 @@ const emit = defineEmits([`update:open`])
 /* ---------- 编辑器引用 ---------- */
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
-const displayStore = useDisplayStore()
-const { toggleAIDialog } = displayStore
+const uiStore = useUIStore()
+const { toggleAIDialog } = uiStore
 
 /* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)

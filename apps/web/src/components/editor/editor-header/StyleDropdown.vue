@@ -11,7 +11,6 @@ import {
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -26,13 +25,12 @@ const props = withDefaults(defineProps<{
 const { asSub } = toRefs(props)
 
 const themeStore = useThemeStore()
-const displayStore = useDisplayStore()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 const renderStore = useRenderStore()
 const cssEditorStore = useCssEditorStore()
 
-const { toggleShowCssEditor } = displayStore
+const { toggleShowCssEditor } = uiStore
 
 const {
   theme,

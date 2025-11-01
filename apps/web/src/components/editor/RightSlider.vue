@@ -12,7 +12,6 @@ import {
 import { X } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useDisplayStore } from '@/stores/display'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -36,7 +35,6 @@ const {
 const uiStore = useUIStore()
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
 
-const displayStore = useDisplayStore()
 const editorStore = useEditorStore()
 const renderStore = useRenderStore()
 const cssEditorStore = useCssEditorStore()
@@ -142,7 +140,7 @@ function useJustifyChanged() {
 }
 
 function resetStyleConfirm() {
-  displayStore.showResetConfirm = true
+  uiStore.isOpenConfirmDialog = true
 }
 
 // 控制是否启用动画
