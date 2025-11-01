@@ -15,14 +15,13 @@ import {
 import juice from 'juice'
 import { Marked } from 'marked'
 
+// 导出新的统一存储 API
 export {
-  customCssWithTemplate,
-  customizeTheme,
-  getStyleString,
-  modifyHtmlContent,
-  postProcessHtml,
-  renderMarkdown,
-} from '@md/core/utils'
+  LocalEngine,
+  RestfulEngine,
+  type StorageEngine,
+  store,
+} from './storage'
 
 // 重新导出供外部使用
 export {
@@ -35,6 +34,15 @@ export {
   sanitizeTitle,
   toBase64,
 }
+
+export {
+  customCssWithTemplate,
+  customizeTheme,
+  getStyleString,
+  modifyHtmlContent,
+  postProcessHtml,
+  renderMarkdown,
+} from '@md/core/utils'
 
 export function addPrefix(str: string) {
   return `${prefix}__${str}`

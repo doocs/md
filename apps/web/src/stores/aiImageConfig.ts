@@ -3,6 +3,7 @@ import {
   DEFAULT_SERVICE_KEY,
   DEFAULT_SERVICE_TYPE,
 } from '@md/shared/constants'
+import { store } from '@/utils'
 
 /**
  * AI 图片生成配置 Store
@@ -12,88 +13,111 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // ==================== 全局配置 ====================
 
   // 服务类型
-  const type = useStorage<string>(`openai_image_type`, DEFAULT_SERVICE_TYPE)
+  const type = store.reactive<string>(`openai_image_type`, DEFAULT_SERVICE_TYPE)
 
   // 图片尺寸
-  const size = useStorage<string>(`openai_image_size`, `1024x1024`)
+  const size = store.reactive<string>(`openai_image_size`, `1024x1024`)
 
   // 图片质量
-  const quality = useStorage<string>(`openai_image_quality`, `standard`)
+  const quality = store.reactive<string>(`openai_image_quality`, `standard`)
 
   // 图片风格
-  const style = useStorage<string>(`openai_image_style`, `natural`)
+  const style = store.reactive<string>(`openai_image_style`, `natural`)
 
   // ==================== 服务相关字段 ====================
 
   // 服务端点（支持自定义服务）
-  const endpoint = customRef<string>((track, trigger) => ({
-    get() {
-      track()
+  const endpoint = customRef<string>((track, trigger) => {
+    let cachedEndpoint = ``
+
+    // 异步加载初始值
+    const loadEndpoint = async () => {
       if (type.value === `custom`) {
-        // 自定义服务：从 localStorage 读取
-        return localStorage.getItem(`openai_image_endpoint_${type.value}`) || ``
+        cachedEndpoint = await store.get(`openai_image_endpoint_${type.value}`) || ``
       }
-      // 预设服务：从配置中获取
-      const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
-      return svc.endpoint
-    },
-    set(val: string) {
-      if (type.value === `custom`) {
-        localStorage.setItem(`openai_image_endpoint_${type.value}`, val)
+      else {
+        const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
+        cachedEndpoint = svc.endpoint
       }
-      trigger()
-    },
-  }))
+    }
+    loadEndpoint()
+
+    return {
+      get() {
+        track()
+        return cachedEndpoint
+      },
+      set(val: string) {
+        cachedEndpoint = val
+        trigger()
+
+        if (type.value === `custom`) {
+          store.set(`openai_image_endpoint_${type.value}`, val)
+        }
+      },
+    }
+  })
 
   // 模型名称（由 watch(type) 自动初始化）
   const model = ref<string>(``)
 
   // ==================== API Key 管理 ====================
 
-  // API Key（按服务类型分别持久化到 localStorage）
-  const apiKey = customRef<string>((track, trigger) => ({
-    get() {
-      track()
-      return localStorage.getItem(`openai_image_key_${type.value}`) || DEFAULT_SERVICE_KEY
-    },
-    set(val: string) {
-      if (type.value !== DEFAULT_SERVICE_TYPE) {
-        localStorage.setItem(`openai_image_key_${type.value}`, val)
-      }
-      trigger()
-    },
-  }))
+  // API Key（按服务类型分别持久化）
+  const apiKey = customRef<string>((track, trigger) => {
+    let cachedKey = ``
+
+    // 异步加载初始值
+    store.get(`openai_image_key_${type.value}`).then((value) => {
+      cachedKey = value || DEFAULT_SERVICE_KEY
+    })
+
+    return {
+      get() {
+        track()
+        return cachedKey
+      },
+      set(val: string) {
+        cachedKey = val
+        trigger()
+
+        if (type.value !== DEFAULT_SERVICE_TYPE) {
+          store.set(`openai_image_key_${type.value}`, val)
+        }
+      },
+    }
+  })
 
   // ==================== 响应式逻辑 ====================
 
   // 监听服务类型变化，自动同步模型
   watch(
     type,
-    (newType) => {
+    async (newType) => {
       const svc = imageServiceOptions.find(s => s.value === newType) ?? imageServiceOptions[0]
 
       if (newType === `custom`) {
-        // 自定义服务：从 localStorage 读取模型
-        const savedModel = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        // 自定义服务：从存储读取模型
+        const savedModel = await store.get(`openai_image_model_${newType}`) || ``
         model.value = savedModel
       }
       else {
         // 预设服务：读取已保存的模型，如果不存在或不在列表中，则使用默认模型
-        const saved = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        const saved = await store.get(`openai_image_model_${newType}`) || ``
         model.value = svc.models.includes(saved) ? saved : svc.models[0]
 
-        // 如果需要回退到默认模型，则保存到 localStorage
+        // 如果需要回退到默认模型，则保存
         if (!svc.models.includes(saved) && svc.models[0]) {
-          localStorage.setItem(`openai_image_model_${newType}`, svc.models[0])
+          await store.set(`openai_image_model_${newType}`, svc.models[0])
         }
       }
     },
     { immediate: true }, // 首次加载时也执行
   )
 
-  // 监听模型变化，持久化到 localStorage
-  watch(model, (val) => {
-    localStorage.setItem(`openai_image_model_${type.value}`, val)
+  // 监听模型变化，持久化存储
+  watch(model, async (val) => {
+    await store.set(`openai_image_model_${type.value}`, val)
   })
 
   // ==================== Actions ====================
@@ -101,18 +125,20 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   /**
    * 重置所有配置到默认值
    */
-  const reset = () => {
+  const reset = async () => {
     type.value = DEFAULT_SERVICE_TYPE
     size.value = `1024x1024`
     quality.value = `standard`
     style.value = `natural`
 
     // 清理所有服务相关的持久化数据
-    imageServiceOptions.forEach(({ value }) => {
-      localStorage.removeItem(`openai_image_key_${value}`)
-      localStorage.removeItem(`openai_image_model_${value}`)
-      localStorage.removeItem(`openai_image_endpoint_${value}`)
-    })
+    await Promise.all(
+      imageServiceOptions.map(async ({ value }) => {
+        await store.remove(`openai_image_key_${value}`)
+        await store.remove(`openai_image_model_${value}`)
+        await store.remove(`openai_image_endpoint_${value}`)
+      }),
+    )
   }
 
   return {

@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import { store } from '@/utils'
 
 export interface QuickCommandPersisted {
   id: string
@@ -34,29 +35,29 @@ export const useQuickCommands = defineStore(`quickCommands`, () => {
   const commands = ref<QuickCommandRuntime[]>([])
 
   // ---------- helpers ----------
-  function save() {
+  async function save() {
     const toSave: QuickCommandPersisted[] = commands.value.map(
       ({ id, label, template }) => ({ id, label, template }),
     )
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
+    await store.setJSON(STORAGE_KEY, toSave)
   }
 
-  function load() {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (raw) {
+  async function load() {
+    const parsed = await store.getJSON<QuickCommandPersisted[]>(STORAGE_KEY)
+
+    if (parsed && Array.isArray(parsed)) {
       try {
-        const parsed: QuickCommandPersisted[] = JSON.parse(raw)
         commands.value = parsed.map(hydrate)
       }
       catch (e) {
         console.warn(`解析快捷指令失败，已恢复默认值`, e)
         commands.value = DEFAULT_COMMANDS.map(hydrate)
-        save()
+        await save()
       }
     }
     else {
       commands.value = DEFAULT_COMMANDS.map(hydrate)
-      save()
+      await save()
     }
   }
 

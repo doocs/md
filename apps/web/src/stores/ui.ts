@@ -1,4 +1,4 @@
-import { addPrefix } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 /**
  * UI 状态 Store
@@ -11,28 +11,28 @@ export const useUIStore = defineStore(`ui`, () => {
   const toggleDark = useToggle(isDark)
 
   // 是否在左侧编辑
-  const isEditOnLeft = useStorage(`isEditOnLeft`, true)
+  const isEditOnLeft = store.reactive(`isEditOnLeft`, true)
   const toggleEditOnLeft = useToggle(isEditOnLeft)
 
   // 是否开启 AI 工具箱
-  const showAIToolbox = useStorage(`showAIToolbox`, true)
+  const showAIToolbox = store.reactive(`showAIToolbox`, true)
   const toggleAIToolbox = useToggle(showAIToolbox)
 
   // 是否已经显示过 AI 工具箱选中文本提示
-  const hasShownAIToolboxHint = useStorage(`hasShownAIToolboxHint`, false)
+  const hasShownAIToolboxHint = store.reactive(`hasShownAIToolboxHint`, false)
 
   // 是否打开右侧滑块
-  const isOpenRightSlider = useStorage(addPrefix(`is_open_right_slider`), false)
+  const isOpenRightSlider = store.reactive(addPrefix(`is_open_right_slider`), false)
 
   // 是否打开文章列表滑块
-  const isOpenPostSlider = useStorage(addPrefix(`is_open_post_slider`), false)
+  const isOpenPostSlider = store.reactive(addPrefix(`is_open_post_slider`), false)
 
   // 是否为移动端
-  const isMobile = useStorage(`isMobile`, false)
+  const isMobile = store.reactive(`isMobile`, false)
 
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
-  const isShowCssEditor = useStorage(`isShowCssEditor`, false)
+  const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
   const toggleShowCssEditor = useToggle(isShowCssEditor)
 
   // 是否展示插入表格对话框

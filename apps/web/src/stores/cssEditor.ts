@@ -3,7 +3,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, theme as editorTheme } from '@md/shared/editor'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { addPrefix } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 /**
  * CSS 编辑器配置接口
@@ -32,10 +32,10 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
    * 自定义 CSS 内容
    * @deprecated 在后续版本中将会移除
    */
-  const cssContent = useStorage(`__css_content`, DEFAULT_CSS_CONTENT)
+  const cssContent = store.reactive(`__css_content`, DEFAULT_CSS_CONTENT)
 
   // CSS 内容配置
-  const cssContentConfig = useStorage<CssContentConfig>(addPrefix(`css_content_config`), {
+  const cssContentConfig = store.reactive<CssContentConfig>(addPrefix(`css_content_config`), {
     active: `方案1`,
     tabs: [
       {

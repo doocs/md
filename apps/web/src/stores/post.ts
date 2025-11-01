@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { addPrefix } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 /**
  * Post 结构接口
@@ -27,7 +27,7 @@ export interface Post {
  */
 export const usePostStore = defineStore(`post`, () => {
   // 内容列表
-  const posts = useStorage<Post[]>(addPrefix(`posts`), [
+  const posts = store.reactive<Post[]>(addPrefix(`posts`), [
     {
       id: uuid(),
       title: `内容1`,
@@ -41,10 +41,10 @@ export const usePostStore = defineStore(`post`, () => {
   ])
 
   // 当前文章 ID
-  const currentPostId = useStorage(addPrefix(`current_post_id`), ``)
+  const currentPostId = store.reactive(addPrefix(`current_post_id`), ``)
 
   // 预备弃用的旧字段（用于迁移）
-  const editorContent = useStorage(`__editor_content`, DEFAULT_CONTENT)
+  const editorContent = store.reactive(`__editor_content`, DEFAULT_CONTENT)
 
   // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
   onBeforeMount(() => {
