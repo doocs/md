@@ -21,7 +21,7 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, toBase64 } from '@/utils'
+import { checkImage, getStorageItem, setStorageItem, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
 
 const editorStore = useEditorStore()
@@ -259,10 +259,10 @@ function beforeUpload(file: File) {
   }
 
   // check image host
-  const imgHost = localStorage.getItem(`imgHost`) || `default`
-  localStorage.setItem(`imgHost`, imgHost)
+  const imgHost = getStorageItem(`imgHost`) || `default`
+  setStorageItem(`imgHost`, imgHost)
 
-  const config = localStorage.getItem(`${imgHost}Config`)
+  const config = getStorageItem(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
     toast.error(`请先配置 ${imgHost} 图床参数`)
@@ -308,7 +308,7 @@ async function uploadImage(
   try {
     isImgLoading.value = true
     // compress image if useCompression is true
-    const useCompression = localStorage.getItem(`useCompression`) === `true`
+    const useCompression = getStorageItem(`useCompression`) === `true`
     if (useCompression) {
       file = await compressImage(file)
     }

@@ -4,7 +4,7 @@ import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useUIStore } from '@/stores/ui'
-import { checkImage } from '@/utils'
+import { checkImage, getStorageItem, getStorageJSON, setStorageItem, setStorageJSON } from '@/utils'
 
 const emit = defineEmits([`uploadImage`])
 
@@ -17,12 +17,10 @@ const githubSchema = toTypedSchema(yup.object({
   accessToken: yup.string().required(`GitHub Token 不能为空`),
 }))
 
-const githubConfig = ref(localStorage.getItem(`githubConfig`)
-  ? JSON.parse(localStorage.getItem(`githubConfig`)!)
-  : { repo: ``, branch: ``, accessToken: `` })
+const githubConfig = ref(getStorageJSON(`githubConfig`, { repo: ``, branch: ``, accessToken: `` }))
 
 function githubSubmit(formValues: any) {
-  localStorage.setItem(`githubConfig`, JSON.stringify(formValues))
+  setStorageJSON(`githubConfig`, formValues)
   githubConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -38,20 +36,18 @@ const aliOSSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const aliOSSConfig = ref(localStorage.getItem(`aliOSSConfig`)
-  ? JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
-  : {
-      accessKeyId: ``,
-      accessKeySecret: ``,
-      bucket: ``,
-      region: ``,
-      useSSL: true,
-      cdnHost: ``,
-      path: ``,
-    })
+const aliOSSConfig = ref(getStorageJSON(`aliOSSConfig`, {
+  accessKeyId: ``,
+  accessKeySecret: ``,
+  bucket: ``,
+  region: ``,
+  useSSL: true,
+  cdnHost: ``,
+  path: ``,
+}))
 
 function aliOSSSubmit(formValues: any) {
-  localStorage.setItem(`aliOSSConfig`, JSON.stringify(formValues))
+  setStorageJSON(`aliOSSConfig`, formValues)
   aliOSSConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -66,19 +62,17 @@ const txCOSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const txCOSConfig = ref(localStorage.getItem(`txCOSConfig`)
-  ? JSON.parse(localStorage.getItem(`txCOSConfig`)!)
-  : {
-      secretId: ``,
-      secretKey: ``,
-      bucket: ``,
-      region: ``,
-      cdnHost: ``,
-      path: ``,
-    })
+const txCOSConfig = ref(getStorageJSON(`txCOSConfig`, {
+  secretId: ``,
+  secretKey: ``,
+  bucket: ``,
+  region: ``,
+  cdnHost: ``,
+  path: ``,
+}))
 
 function txCOSSubmit(formValues: any) {
-  localStorage.setItem(`txCOSConfig`, JSON.stringify(formValues))
+  setStorageJSON(`txCOSConfig`, formValues)
   txCOSConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -93,19 +87,17 @@ const qiniuSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const qiniuConfig = ref(localStorage.getItem(`qiniuConfig`)
-  ? JSON.parse(localStorage.getItem(`qiniuConfig`)!)
-  : {
-      accessKey: ``,
-      secretKey: ``,
-      bucket: ``,
-      domain: ``,
-      region: ``,
-      path: ``,
-    })
+const qiniuConfig = ref(getStorageJSON(`qiniuConfig`, {
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  region: ``,
+  path: ``,
+}))
 
 function qiniuSubmit(formValues: any) {
-  localStorage.setItem(`qiniuConfig`, JSON.stringify(formValues))
+  setStorageJSON(`qiniuConfig`, formValues)
   qiniuConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -120,19 +112,17 @@ const minioOSSSchema = toTypedSchema(yup.object({
   secretKey: yup.string().required(`SecretKey 不能为空`),
 }))
 
-const minioOSSConfig = ref(localStorage.getItem(`minioConfig`)
-  ? JSON.parse(localStorage.getItem(`minioConfig`)!)
-  : {
-      endpoint: ``,
-      port: ``,
-      useSSL: true,
-      bucket: ``,
-      accessKey: ``,
-      secretKey: ``,
-    })
+const minioOSSConfig = ref(getStorageJSON(`minioConfig`, {
+  endpoint: ``,
+  port: ``,
+  useSSL: true,
+  bucket: ``,
+  accessKey: ``,
+  secretKey: ``,
+}))
 
 function minioOSSSubmit(formValues: any) {
-  localStorage.setItem(`minioConfig`, JSON.stringify(formValues))
+  setStorageJSON(`minioConfig`, formValues)
   minioOSSConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -145,12 +135,12 @@ const telegramSchema = toTypedSchema(
   }),
 )
 const telegramConfig = ref(
-  localStorage.getItem(`telegramConfig`)
-    ? JSON.parse(localStorage.getItem(`telegramConfig`)!)
+  getStorageItem(`telegramConfig`)
+    ? JSON.parse(getStorageItem(`telegramConfig`)!)
     : { token: ``, chatId: `` },
 )
 function telegramSubmit(values: any) {
-  localStorage.setItem(`telegramConfig`, JSON.stringify(values))
+  setStorageJSON(`telegramConfig`, values)
   telegramConfig.value = values
   toast.success(`保存成功`)
 }
@@ -186,16 +176,14 @@ const mpSchema = computed(() =>
   })),
 )
 
-const mpConfig = ref(localStorage.getItem(`mpConfig`)
-  ? JSON.parse(localStorage.getItem(`mpConfig`)!)
-  : {
-      proxyOrigin: ``,
-      appID: ``,
-      appsecret: ``,
-    })
+const mpConfig = ref(getStorageJSON(`mpConfig`, {
+  proxyOrigin: ``,
+  appID: ``,
+  appsecret: ``,
+}))
 
 function mpSubmit(formValues: any) {
-  localStorage.setItem(`mpConfig`, JSON.stringify(formValues))
+  setStorageJSON(`mpConfig`, formValues)
   mpConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -210,19 +198,17 @@ const r2Schema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const r2Config = ref(localStorage.getItem(`r2Config`)
-  ? JSON.parse(localStorage.getItem(`r2Config`)!)
-  : {
-      accountId: ``,
-      accessKey: ``,
-      secretKey: ``,
-      bucket: ``,
-      domain: ``,
-      path: ``,
-    })
+const r2Config = ref(getStorageJSON(`r2Config`, {
+  accountId: ``,
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  path: ``,
+}))
 
 function r2Submit(formValues: any) {
-  localStorage.setItem(`r2Config`, JSON.stringify(formValues))
+  setStorageJSON(`r2Config`, formValues)
   r2Config.value = formValues
   toast.success(`保存成功`)
 }
@@ -238,18 +224,16 @@ const upyunSchema = computed(() => toTypedSchema(
   }),
 ))
 
-const upyunConfig = ref(localStorage.getItem(`upyunConfig`)
-  ? JSON.parse(localStorage.getItem(`upyunConfig`)!)
-  : {
-      bucket: ``,
-      operator: ``,
-      password: ``,
-      domain: ``,
-      path: ``,
-    })
+const upyunConfig = ref(getStorageJSON(`upyunConfig`, {
+  bucket: ``,
+  operator: ``,
+  password: ``,
+  domain: ``,
+  path: ``,
+}))
 
 function upyunSubmit(formValues: any) {
-  localStorage.setItem(`upyunConfig`, JSON.stringify(formValues))
+  setStorageJSON(`upyunConfig`, formValues)
   upyunConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -271,8 +255,8 @@ const cloudinarySchema = toTypedSchema(
 )
 
 const cloudinaryConfig = ref(
-  localStorage.getItem(`cloudinaryConfig`)
-    ? JSON.parse(localStorage.getItem(`cloudinaryConfig`)!)
+  getStorageItem(`cloudinaryConfig`)
+    ? JSON.parse(getStorageItem(`cloudinaryConfig`)!)
     : {
         cloudName: ``,
         apiKey: ``,
@@ -284,7 +268,7 @@ const cloudinaryConfig = ref(
 )
 
 function cloudinarySubmit(formValues: any) {
-  localStorage.setItem(`cloudinaryConfig`, JSON.stringify(formValues))
+  setStorageJSON(`cloudinaryConfig`, formValues)
   cloudinaryConfig.value = formValues
   toast.success(`保存成功`)
 }
@@ -343,21 +327,21 @@ const useCompression = ref(false)
 const activeName = ref(`upload`)
 
 onBeforeMount(() => {
-  if (localStorage.getItem(`imgHost`)) {
-    imgHost.value = localStorage.getItem(`imgHost`)!
+  if (getStorageItem(`imgHost`)) {
+    imgHost.value = getStorageItem(`imgHost`)!
   }
-  const storedCompression = localStorage.getItem(`useCompression`)
+  const storedCompression = getStorageItem(`useCompression`)
   if (storedCompression !== null) {
     useCompression.value = storedCompression === `true`
   }
 })
 
 function changeImgHost() {
-  localStorage.setItem(`imgHost`, imgHost.value)
+  setStorageItem(`imgHost`, imgHost.value)
   toast.success(`图床已切换`)
 }
 function changeCompression() {
-  localStorage.setItem(`useCompression`, useCompression.value.toString())
+  setStorageItem(`useCompression`, useCompression.value.toString())
 }
 function beforeImageUpload(file: File) {
   // check image
@@ -367,11 +351,11 @@ function beforeImageUpload(file: File) {
     return false
   }
   // check image host
-  let imgHost = localStorage.getItem(`imgHost`)
+  let imgHost = getStorageItem(`imgHost`)
   imgHost = imgHost || `default`
-  localStorage.setItem(`imgHost`, imgHost)
+  setStorageItem(`imgHost`, imgHost)
 
-  const config = localStorage.getItem(`${imgHost}Config`)
+  const config = getStorageItem(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
     toast.error(`请先配置 ${imgHost} 图床参数`)

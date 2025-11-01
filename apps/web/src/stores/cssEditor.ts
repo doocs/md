@@ -3,7 +3,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, theme as editorTheme } from '@md/shared/editor'
 import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
-import { addPrefix } from '@/utils'
+import { addPrefix, useStorage } from '@/utils'
 
 /**
  * CSS 编辑器配置接口

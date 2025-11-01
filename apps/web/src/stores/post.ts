@@ -1,6 +1,6 @@
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { addPrefix } from '@/utils'
+import { addPrefix, useStorage } from '@/utils'
 
 /**
  * Post 结构接口

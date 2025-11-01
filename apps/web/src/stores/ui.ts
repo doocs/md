@@ -1,4 +1,4 @@
-import { addPrefix } from '@/utils'
+import { addPrefix, useStorage } from '@/utils'
 
 /**
  * UI 状态 Store

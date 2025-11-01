@@ -1,4 +1,5 @@
 import { ref, watch } from 'vue'
+import { getStorageItem, setStorageJSON } from '@/utils'
 
 export interface QuickCommandPersisted {
   id: string
@@ -38,11 +39,11 @@ export const useQuickCommands = defineStore(`quickCommands`, () => {
     const toSave: QuickCommandPersisted[] = commands.value.map(
       ({ id, label, template }) => ({ id, label, template }),
     )
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(toSave))
+    setStorageJSON(STORAGE_KEY, toSave)
   }
 
   function load() {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    const raw = getStorageItem(STORAGE_KEY)
     if (raw) {
       try {
         const parsed: QuickCommandPersisted[] = JSON.parse(raw)

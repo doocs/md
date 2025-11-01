@@ -26,6 +26,7 @@ import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useQuickCommands } from '@/stores/quickCommands'
 import { useUIStore } from '@/stores/ui'
+import { getStorageItem, setStorageJSON } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
 
 /* ---------- 组件属性 ---------- */
@@ -107,7 +108,7 @@ function applyQuickCommand(cmd: QuickCommandRuntime) {
 
 /* ---------- 初始数据 ---------- */
 onMounted(async () => {
-  const saved = localStorage.getItem(memoryKey)
+  const saved = getStorageItem(memoryKey)
   messages.value = saved ? JSON.parse(saved) : getDefaultMessages()
   await scrollToBottom(true)
 })
@@ -192,7 +193,7 @@ function resetMessages() {
     fetchController.value = null
   }
   messages.value = getDefaultMessages()
-  localStorage.setItem(memoryKey, JSON.stringify(messages.value))
+  setStorageJSON(memoryKey, messages.value)
   scrollToBottom(true)
 }
 
@@ -380,7 +381,7 @@ async function sendMessage() {
     await scrollToBottom(true)
   }
   finally {
-    localStorage.setItem(memoryKey, JSON.stringify(messages.value))
+    setStorageJSON(memoryKey, messages.value)
     loading.value = false
     fetchController.value = null
   }

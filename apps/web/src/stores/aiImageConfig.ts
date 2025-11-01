@@ -3,6 +3,7 @@ import {
   DEFAULT_SERVICE_KEY,
   DEFAULT_SERVICE_TYPE,
 } from '@md/shared/constants'
+import { getStorageItem, removeStorageItem, setStorageItem, useStorage } from '@/utils'
 
 /**
  * AI 图片生成配置 Store
@@ -30,8 +31,8 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
     get() {
       track()
       if (type.value === `custom`) {
-        // 自定义服务：从 localStorage 读取
-        return localStorage.getItem(`openai_image_endpoint_${type.value}`) || ``
+        // 自定义服务：从存储读取
+        return getStorageItem(`openai_image_endpoint_${type.value}`) || ``
       }
       // 预设服务：从配置中获取
       const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
@@ -39,7 +40,7 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
     },
     set(val: string) {
       if (type.value === `custom`) {
-        localStorage.setItem(`openai_image_endpoint_${type.value}`, val)
+        setStorageItem(`openai_image_endpoint_${type.value}`, val)
       }
       trigger()
     },
@@ -50,15 +51,15 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
 
   // ==================== API Key 管理 ====================
 
-  // API Key（按服务类型分别持久化到 localStorage）
+  // API Key（按服务类型分别持久化）
   const apiKey = customRef<string>((track, trigger) => ({
     get() {
       track()
-      return localStorage.getItem(`openai_image_key_${type.value}`) || DEFAULT_SERVICE_KEY
+      return getStorageItem(`openai_image_key_${type.value}`) || DEFAULT_SERVICE_KEY
     },
     set(val: string) {
       if (type.value !== DEFAULT_SERVICE_TYPE) {
-        localStorage.setItem(`openai_image_key_${type.value}`, val)
+        setStorageItem(`openai_image_key_${type.value}`, val)
       }
       trigger()
     },
@@ -73,27 +74,27 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
       const svc = imageServiceOptions.find(s => s.value === newType) ?? imageServiceOptions[0]
 
       if (newType === `custom`) {
-        // 自定义服务：从 localStorage 读取模型
-        const savedModel = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        // 自定义服务：从存储读取模型
+        const savedModel = getStorageItem(`openai_image_model_${newType}`) || ``
         model.value = savedModel
       }
       else {
         // 预设服务：读取已保存的模型，如果不存在或不在列表中，则使用默认模型
-        const saved = localStorage.getItem(`openai_image_model_${newType}`) || ``
+        const saved = getStorageItem(`openai_image_model_${newType}`) || ``
         model.value = svc.models.includes(saved) ? saved : svc.models[0]
 
-        // 如果需要回退到默认模型，则保存到 localStorage
+        // 如果需要回退到默认模型，则保存
         if (!svc.models.includes(saved) && svc.models[0]) {
-          localStorage.setItem(`openai_image_model_${newType}`, svc.models[0])
+          setStorageItem(`openai_image_model_${newType}`, svc.models[0])
         }
       }
     },
     { immediate: true }, // 首次加载时也执行
   )
 
-  // 监听模型变化，持久化到 localStorage
+  // 监听模型变化，持久化存储
   watch(model, (val) => {
-    localStorage.setItem(`openai_image_model_${type.value}`, val)
+    setStorageItem(`openai_image_model_${type.value}`, val)
   })
 
   // ==================== Actions ====================
@@ -109,9 +110,9 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
 
     // 清理所有服务相关的持久化数据
     imageServiceOptions.forEach(({ value }) => {
-      localStorage.removeItem(`openai_image_key_${value}`)
-      localStorage.removeItem(`openai_image_model_${value}`)
-      localStorage.removeItem(`openai_image_endpoint_${value}`)
+      removeStorageItem(`openai_image_key_${value}`)
+      removeStorageItem(`openai_image_model_${value}`)
+      removeStorageItem(`openai_image_endpoint_${value}`)
     })
   }
 

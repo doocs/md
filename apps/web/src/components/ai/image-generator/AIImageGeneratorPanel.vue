@@ -22,6 +22,7 @@ import { Textarea } from '@/components/ui/textarea'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
+import { getStorageItem, getStorageJSON, removeStorageItem, setStorageJSON } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
 import AIImageConfig from './AIImageConfig.vue'
 
@@ -70,17 +71,16 @@ function isImageExpired(timestamp: number): boolean {
 }
 
 function cleanExpiredImages() {
-  const savedImages = localStorage.getItem(`ai_generated_images`)
-  const savedPrompts = localStorage.getItem(`ai_image_prompts`)
-  const savedTimestamps = localStorage.getItem(`ai_image_timestamps`)
+  const savedImages = getStorageItem(`ai_generated_images`)
+  const savedTimestamps = getStorageItem(`ai_image_timestamps`)
 
   if (!savedImages) {
     return
   }
 
-  const images = JSON.parse(savedImages)
-  const prompts = savedPrompts ? JSON.parse(savedPrompts) : []
-  const timestamps = savedTimestamps ? JSON.parse(savedTimestamps) : []
+  const images = getStorageJSON(`ai_generated_images`, [])
+  const prompts = getStorageJSON(`ai_image_prompts`, [])
+  const timestamps = getStorageJSON(`ai_image_timestamps`, [])
 
   // 如果没有时间戳数据，说明是旧版本，默认清除所有数据
   if (!savedTimestamps || timestamps.length === 0) {
@@ -88,9 +88,9 @@ function cleanExpiredImages() {
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
-    localStorage.removeItem(`ai_generated_images`)
-    localStorage.removeItem(`ai_image_prompts`)
-    localStorage.removeItem(`ai_image_timestamps`)
+    removeStorageItem(`ai_generated_images`)
+    removeStorageItem(`ai_image_prompts`)
+    removeStorageItem(`ai_image_timestamps`)
     return
   }
 
@@ -111,18 +111,18 @@ function cleanExpiredImages() {
   imagePrompts.value = validPrompts
   imageTimestamps.value = validTimestamps
 
-  // 如果有数据被清除，更新localStorage
+  // 如果有数据被清除，更新存储
   if (validImages.length < images.length) {
     console.log(`🧹 清除了 ${images.length - validImages.length} 张过期图片`)
     if (validImages.length > 0) {
-      localStorage.setItem(`ai_generated_images`, JSON.stringify(validImages))
-      localStorage.setItem(`ai_image_prompts`, JSON.stringify(validPrompts))
-      localStorage.setItem(`ai_image_timestamps`, JSON.stringify(validTimestamps))
+      setStorageJSON(`ai_generated_images`, validImages)
+      setStorageJSON(`ai_image_prompts`, validPrompts)
+      setStorageJSON(`ai_image_timestamps`, validTimestamps)
     }
     else {
-      localStorage.removeItem(`ai_generated_images`)
-      localStorage.removeItem(`ai_image_prompts`)
-      localStorage.removeItem(`ai_image_timestamps`)
+      removeStorageItem(`ai_generated_images`)
+      removeStorageItem(`ai_image_prompts`)
+      removeStorageItem(`ai_image_timestamps`)
     }
   }
 
@@ -147,9 +147,9 @@ onMounted(() => {
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
-    localStorage.removeItem(`ai_generated_images`)
-    localStorage.removeItem(`ai_image_prompts`)
-    localStorage.removeItem(`ai_image_timestamps`)
+    removeStorageItem(`ai_generated_images`)
+    removeStorageItem(`ai_image_prompts`)
+    removeStorageItem(`ai_image_timestamps`)
   }
   else {
     // 补齐较短的数组
@@ -274,9 +274,9 @@ async function generateImage() {
           imageTimestamps.value = imageTimestamps.value.slice(0, 20)
         }
 
-        localStorage.setItem(`ai_generated_images`, JSON.stringify(generatedImages.value))
-        localStorage.setItem(`ai_image_prompts`, JSON.stringify(imagePrompts.value))
-        localStorage.setItem(`ai_image_timestamps`, JSON.stringify(imageTimestamps.value))
+        setStorageJSON(`ai_generated_images`, generatedImages.value)
+        setStorageJSON(`ai_image_prompts`, imagePrompts.value)
+        setStorageJSON(`ai_image_timestamps`, imageTimestamps.value)
 
         // 清空输入框
         prompt.value = ``
@@ -316,9 +316,9 @@ function clearImages() {
   imagePrompts.value = []
   imageTimestamps.value = []
   currentImageIndex.value = 0
-  localStorage.removeItem(`ai_generated_images`)
-  localStorage.removeItem(`ai_image_prompts`)
-  localStorage.removeItem(`ai_image_timestamps`)
+  removeStorageItem(`ai_generated_images`)
+  removeStorageItem(`ai_image_prompts`)
+  removeStorageItem(`ai_image_timestamps`)
 }
 
 /* ---------- 下载图像 ---------- */
@@ -446,9 +446,9 @@ async function regenerateWithPrompt(promptText: string) {
           imageTimestamps.value = imageTimestamps.value.slice(0, 20)
         }
 
-        localStorage.setItem(`ai_generated_images`, JSON.stringify(generatedImages.value))
-        localStorage.setItem(`ai_image_prompts`, JSON.stringify(imagePrompts.value))
-        localStorage.setItem(`ai_image_timestamps`, JSON.stringify(imageTimestamps.value))
+        setStorageJSON(`ai_generated_images`, generatedImages.value)
+        setStorageJSON(`ai_image_prompts`, imagePrompts.value)
+        setStorageJSON(`ai_image_timestamps`, imageTimestamps.value)
       }
     }
     else {

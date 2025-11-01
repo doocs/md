@@ -5,6 +5,7 @@ import {
   DEFAULT_SERVICE_TEMPERATURE,
   DEFAULT_SERVICE_TYPE,
 } from '@md/shared/constants'
+import { getStorageItem, removeStorageItem, setStorageItem, useStorage } from '@/utils'
 
 /**
  * AI 配置 Store
@@ -32,15 +33,15 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
 
   // ==================== API Key 管理 ====================
 
-  // API Key（按服务类型分别持久化到 localStorage）
+  // API Key（按服务类型分别持久化）
   const apiKey = customRef<string>((track, trigger) => ({
     get() {
       track()
-      return localStorage.getItem(`openai_key_${type.value}`) || DEFAULT_SERVICE_KEY
+      return getStorageItem(`openai_key_${type.value}`) || DEFAULT_SERVICE_KEY
     },
     set(val: string) {
       if (type.value !== DEFAULT_SERVICE_TYPE) {
-        localStorage.setItem(`openai_key_${type.value}`, val)
+        setStorageItem(`openai_key_${type.value}`, val)
       }
       trigger()
     },
@@ -58,18 +59,18 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
       endpoint.value = svc.endpoint
 
       // 读取已保存的模型，如果不存在或不在列表中，则使用默认模型
-      const saved = localStorage.getItem(`openai_model_${newType}`) || ``
+      const saved = getStorageItem(`openai_model_${newType}`) || ``
       model.value = svc.models.includes(saved) ? saved : svc.models[0]
 
-      // 保存当前模型到 localStorage
-      localStorage.setItem(`openai_model_${newType}`, model.value)
+      // 保存当前模型
+      setStorageItem(`openai_model_${newType}`, model.value)
     },
     { immediate: true }, // 首次加载时也执行
   )
 
-  // 监听模型变化，持久化到 localStorage
+  // 监听模型变化，持久化存储
   watch(model, (val) => {
-    localStorage.setItem(`openai_model_${type.value}`, val)
+    setStorageItem(`openai_model_${type.value}`, val)
   })
 
   // ==================== Actions ====================
@@ -84,8 +85,8 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
 
     // 清理所有服务相关的持久化数据
     serviceOptions.forEach(({ value }) => {
-      localStorage.removeItem(`openai_key_${value}`)
-      localStorage.removeItem(`openai_model_${value}`)
+      removeStorageItem(`openai_key_${value}`)
+      removeStorageItem(`openai_model_${value}`)
     })
   }
 

@@ -3,11 +3,11 @@ import { Compartment } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { javascriptSetup, theme } from '@md/shared'
 import { useUIStore } from '@/stores/ui'
-import { removeLeft } from '@/utils'
+import { removeLeft, useStorage } from '@/utils'
 
-const code = useLocalStorage(`formCustomConfig`, removeLeft(`
+const code = useStorage(`formCustomConfig`, removeLeft(`
   const { file, util, okCb, errCb } = CUSTOM_ARG
-  const param = new FormData()
+  param = new FormData()
   param.append('file', file)
   util.axios.post('${window.location.origin}/upload', param, {
     headers: { 'Content-Type': 'multipart/form-data' }
@@ -51,7 +51,6 @@ onUnmounted(() => {
 
 function formCustomSave() {
   const str = editor.value!.state.doc.toString()
-  localStorage.setItem(`formCustomConfig`, str)
   code.value = str
   toast.success(`保存成功`)
 }

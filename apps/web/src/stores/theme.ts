@@ -1,6 +1,6 @@
 import type { themeMap } from '@md/shared/configs'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
-import { addPrefix } from '@/utils'
+import { addPrefix, useStorage } from '@/utils'
 
 /**
  * 主题和样式配置 Store
