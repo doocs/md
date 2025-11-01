@@ -4,7 +4,7 @@ import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, getStorageItem, getStorageJSON, setStorageItem, setStorageJSON } from '@/utils'
+import { checkImage, store } from '@/utils'
 
 const emit = defineEmits([`uploadImage`])
 
@@ -17,11 +17,10 @@ const githubSchema = toTypedSchema(yup.object({
   accessToken: yup.string().required(`GitHub Token 不能为空`),
 }))
 
-const githubConfig = ref(getStorageJSON(`githubConfig`, { repo: ``, branch: ``, accessToken: `` }))
+const githubConfig = store.reactive(`githubConfig`, { repo: ``, branch: ``, accessToken: `` })
 
-function githubSubmit(formValues: any) {
-  setStorageJSON(`githubConfig`, formValues)
-  githubConfig.value = formValues
+async function githubSubmit(formValues: any) {
+  Object.assign(githubConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -36,7 +35,7 @@ const aliOSSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const aliOSSConfig = ref(getStorageJSON(`aliOSSConfig`, {
+const aliOSSConfig = store.reactive(`aliOSSConfig`, {
   accessKeyId: ``,
   accessKeySecret: ``,
   bucket: ``,
@@ -44,11 +43,10 @@ const aliOSSConfig = ref(getStorageJSON(`aliOSSConfig`, {
   useSSL: true,
   cdnHost: ``,
   path: ``,
-}))
+})
 
-function aliOSSSubmit(formValues: any) {
-  setStorageJSON(`aliOSSConfig`, formValues)
-  aliOSSConfig.value = formValues
+async function aliOSSSubmit(formValues: any) {
+  Object.assign(aliOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -62,18 +60,17 @@ const txCOSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const txCOSConfig = ref(getStorageJSON(`txCOSConfig`, {
+const txCOSConfig = store.reactive(`txCOSConfig`, {
   secretId: ``,
   secretKey: ``,
   bucket: ``,
   region: ``,
   cdnHost: ``,
   path: ``,
-}))
+})
 
-function txCOSSubmit(formValues: any) {
-  setStorageJSON(`txCOSConfig`, formValues)
-  txCOSConfig.value = formValues
+async function txCOSSubmit(formValues: any) {
+  Object.assign(txCOSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -87,18 +84,17 @@ const qiniuSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const qiniuConfig = ref(getStorageJSON(`qiniuConfig`, {
+const qiniuConfig = store.reactive(`qiniuConfig`, {
   accessKey: ``,
   secretKey: ``,
   bucket: ``,
   domain: ``,
   region: ``,
   path: ``,
-}))
+})
 
-function qiniuSubmit(formValues: any) {
-  setStorageJSON(`qiniuConfig`, formValues)
-  qiniuConfig.value = formValues
+async function qiniuSubmit(formValues: any) {
+  Object.assign(qiniuConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -112,18 +108,17 @@ const minioOSSSchema = toTypedSchema(yup.object({
   secretKey: yup.string().required(`SecretKey 不能为空`),
 }))
 
-const minioOSSConfig = ref(getStorageJSON(`minioConfig`, {
+const minioOSSConfig = store.reactive(`minioConfig`, {
   endpoint: ``,
   port: ``,
   useSSL: true,
   bucket: ``,
   accessKey: ``,
   secretKey: ``,
-}))
+})
 
-function minioOSSSubmit(formValues: any) {
-  setStorageJSON(`minioConfig`, formValues)
-  minioOSSConfig.value = formValues
+async function minioOSSSubmit(formValues: any) {
+  Object.assign(minioOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -134,14 +129,11 @@ const telegramSchema = toTypedSchema(
     chatId: yup.string().required(`Chat ID 不能为空`),
   }),
 )
-const telegramConfig = ref(
-  getStorageItem(`telegramConfig`)
-    ? JSON.parse(getStorageItem(`telegramConfig`)!)
-    : { token: ``, chatId: `` },
-)
-function telegramSubmit(values: any) {
-  setStorageJSON(`telegramConfig`, values)
-  telegramConfig.value = values
+
+const telegramConfig = store.reactive(`telegramConfig`, { token: ``, chatId: `` })
+
+async function telegramSubmit(values: any) {
+  Object.assign(telegramConfig.value, values)
   toast.success(`保存成功`)
 }
 
@@ -176,15 +168,14 @@ const mpSchema = computed(() =>
   })),
 )
 
-const mpConfig = ref(getStorageJSON(`mpConfig`, {
+const mpConfig = store.reactive(`mpConfig`, {
   proxyOrigin: ``,
   appID: ``,
   appsecret: ``,
-}))
+})
 
-function mpSubmit(formValues: any) {
-  setStorageJSON(`mpConfig`, formValues)
-  mpConfig.value = formValues
+async function mpSubmit(formValues: any) {
+  Object.assign(mpConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -198,18 +189,17 @@ const r2Schema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const r2Config = ref(getStorageJSON(`r2Config`, {
+const r2Config = store.reactive(`r2Config`, {
   accountId: ``,
   accessKey: ``,
   secretKey: ``,
   bucket: ``,
   domain: ``,
   path: ``,
-}))
+})
 
-function r2Submit(formValues: any) {
-  setStorageJSON(`r2Config`, formValues)
-  r2Config.value = formValues
+async function r2Submit(formValues: any) {
+  Object.assign(r2Config.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -224,17 +214,16 @@ const upyunSchema = computed(() => toTypedSchema(
   }),
 ))
 
-const upyunConfig = ref(getStorageJSON(`upyunConfig`, {
+const upyunConfig = store.reactive(`upyunConfig`, {
   bucket: ``,
   operator: ``,
   password: ``,
   domain: ``,
   path: ``,
-}))
+})
 
-function upyunSubmit(formValues: any) {
-  setStorageJSON(`upyunConfig`, formValues)
-  upyunConfig.value = formValues
+async function upyunSubmit(formValues: any) {
+  Object.assign(upyunConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -254,22 +243,17 @@ const cloudinarySchema = toTypedSchema(
   }),
 )
 
-const cloudinaryConfig = ref(
-  getStorageItem(`cloudinaryConfig`)
-    ? JSON.parse(getStorageItem(`cloudinaryConfig`)!)
-    : {
-        cloudName: ``,
-        apiKey: ``,
-        apiSecret: ``,
-        uploadPreset: ``,
-        folder: ``,
-        domain: ``,
-      },
-)
+const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
+  cloudName: ``,
+  apiKey: ``,
+  apiSecret: ``,
+  uploadPreset: ``,
+  folder: ``,
+  domain: ``,
+})
 
-function cloudinarySubmit(formValues: any) {
-  setStorageJSON(`cloudinaryConfig`, formValues)
-  cloudinaryConfig.value = formValues
+async function cloudinarySubmit(formValues: any) {
+  Object.assign(cloudinaryConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -322,28 +306,19 @@ const options = [
   },
 ]
 
-const imgHost = ref(`default`)
-const useCompression = ref(false)
+const imgHost = store.reactive(`imgHost`, `default`)
+const useCompression = store.reactive(`useCompression`, false)
 const activeName = ref(`upload`)
 
-onBeforeMount(() => {
-  if (getStorageItem(`imgHost`)) {
-    imgHost.value = getStorageItem(`imgHost`)!
-  }
-  const storedCompression = getStorageItem(`useCompression`)
-  if (storedCompression !== null) {
-    useCompression.value = storedCompression === `true`
-  }
-})
-
-function changeImgHost() {
-  setStorageItem(`imgHost`, imgHost.value)
+async function changeImgHost() {
   toast.success(`图床已切换`)
 }
-function changeCompression() {
-  setStorageItem(`useCompression`, useCompression.value.toString())
+
+async function changeCompression() {
+  // reactive 会自动保存，不需要手动操作
 }
-function beforeImageUpload(file: File) {
+
+async function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
@@ -351,14 +326,12 @@ function beforeImageUpload(file: File) {
     return false
   }
   // check image host
-  let imgHost = getStorageItem(`imgHost`)
-  imgHost = imgHost || `default`
-  setStorageItem(`imgHost`, imgHost)
+  const imgHostValue = imgHost.value || `default`
 
-  const config = getStorageItem(`${imgHost}Config`)
-  const isValidHost = imgHost === `default` || config
+  const config = await store.get(`${imgHostValue}Config`)
+  const isValidHost = imgHostValue === `default` || config
   if (!isValidHost) {
-    toast.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(`请先配置 ${imgHostValue} 图床参数`)
     return false
   }
   return true
@@ -370,22 +343,26 @@ const { open, reset, onChange } = useFileDialog({
   accept: `image/*`,
 })
 
-onChange((files) => {
+onChange(async (files) => {
   if (files == null) {
     return
   }
 
   const file = files[0]
 
-  beforeImageUpload(file) && emitUploads(file)
+  if (await beforeImageUpload(file)) {
+    emitUploads(file)
+  }
   reset()
 })
 
-function onDrop(e: DragEvent) {
+async function onDrop(e: DragEvent) {
   dragover.value = false
   e.stopPropagation()
   const file = Array.from(e.dataTransfer!.files)[0]
-  beforeImageUpload(file) && emitUploads(file)
+  if (await beforeImageUpload(file)) {
+    emitUploads(file)
+  }
 }
 const progressValue = ref(0)
 const imageUrl = ref(``)

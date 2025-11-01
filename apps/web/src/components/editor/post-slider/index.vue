@@ -3,7 +3,7 @@ import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, useStorage } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
@@ -138,7 +138,7 @@ function recoverHistory() {
 }
 
 /* ============ 排序 ============ */
-const sortMode = useStorage(addPrefix(`sort_mode`), `create-old-new`)
+const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
   return [...posts.value].sort((a, b) => {
     switch (sortMode.value) {

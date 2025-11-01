@@ -6,7 +6,7 @@ import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, generatePureHTML, processClipboardContent, useStorage } from '@/utils'
+import { addPrefix, generatePureHTML, processClipboardContent, store } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
@@ -56,7 +56,7 @@ function handleOpenEditorState() {
   editorStateDialogVisible.value = true
 }
 
-const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
+const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,

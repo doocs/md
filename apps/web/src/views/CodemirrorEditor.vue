@@ -21,7 +21,7 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, getStorageItem, setStorageItem, toBase64 } from '@/utils'
+import { checkImage, store, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
 
 const editorStore = useEditorStore()
@@ -250,8 +250,7 @@ onMounted(() => {
   document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 })
 
-function beforeUpload(file: File) {
-  // validate image
+async function beforeImageUpload(file: File) {
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
     toast.error(checkResult.msg)
@@ -259,10 +258,10 @@ function beforeUpload(file: File) {
   }
 
   // check image host
-  const imgHost = getStorageItem(`imgHost`) || `default`
-  setStorageItem(`imgHost`, imgHost)
+  const imgHost = (await store.get(`imgHost`)) || `default`
+  await store.set(`imgHost`, imgHost)
 
-  const config = getStorageItem(`${imgHost}Config`)
+  const config = await store.get(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
     toast.error(`请先配置 ${imgHost} 图床参数`)
@@ -308,7 +307,7 @@ async function uploadImage(
   try {
     isImgLoading.value = true
     // compress image if useCompression is true
-    const useCompression = getStorageItem(`useCompression`) === `true`
+    const useCompression = (await store.get(`useCompression`)) === `true`
     if (useCompression) {
       file = await compressImage(file)
     }
@@ -441,7 +440,9 @@ function mdLocalToRemote() {
           else {
             const file = await handle.getFile()
             console.log(`file`, file)
-            beforeUpload(file) && uploadImage(file)
+            if (await beforeImageUpload(file)) {
+              uploadImage(file)
+            }
           }
         })
     }
@@ -495,9 +496,15 @@ function createFormTextArea(dom: HTMLDivElement) {
     if (!(event.clipboardData?.items) || isImgLoading.value) {
       return
     }
-    const items = [...event.clipboardData.items].map(item => item.getAsFile()).filter(item => item != null && beforeUpload(item)) as File[]
+    const items = await Promise.all(
+      [...event.clipboardData.items]
+        .map(item => item.getAsFile())
+        .filter(item => item != null)
+        .map(async item => (await beforeImageUpload(item!)) ? item : null),
+    )
+    const validItems = items.filter(item => item != null) as File[]
     // 即使return了，粘贴的文本内容也会被插入
-    if (items.length === 0) {
+    if (validItems.length === 0) {
       return
     }
     // start progress
@@ -508,7 +515,7 @@ function createFormTextArea(dom: HTMLDivElement) {
       }
       progressValue.value = newProgress
     }, 100)
-    for (const item of items) {
+    for (const item of validItems) {
       event.preventDefault()
       await uploadImage(item)
     }

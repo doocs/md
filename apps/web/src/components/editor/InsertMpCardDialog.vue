@@ -3,7 +3,7 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useEditorStore } from '@/stores/editor'
-import { addPrefix, useStorage } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 /** 编辑器实例和全局弹窗状态 */
 const editorStore = useEditorStore()
@@ -29,7 +29,7 @@ interface Config {
 }
 
 /** 表单字段 */
-const config = useStorage<Config>(addPrefix(`mp-profile`), {
+const config = store.reactive<Config>(addPrefix(`mp-profile`), {
   id: ``,
   name: ``,
   logo: ``,

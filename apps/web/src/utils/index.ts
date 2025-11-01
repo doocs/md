@@ -15,18 +15,12 @@ import {
 import juice from 'juice'
 import { Marked } from 'marked'
 
-// 导出统一存储 API
+// 导出新的统一存储 API
 export {
-  getStorageAdapter,
-  getStorageItem,
-  getStorageJSON,
-  removeStorageItem,
-  setStorageAdapter,
-  setStorageItem,
-  setStorageJSON,
-  type StorageAdapter,
-  useStorage,
-  useStorageJSON,
+  LocalEngine,
+  RestfulEngine,
+  type StorageEngine,
+  store,
 } from './storage'
 
 // 重新导出供外部使用

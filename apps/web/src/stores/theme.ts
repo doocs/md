@@ -1,6 +1,6 @@
 import type { themeMap } from '@md/shared/configs'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
-import { addPrefix, useStorage } from '@/utils'
+import { addPrefix, store } from '@/utils'
 
 /**
  * 主题和样式配置 Store
@@ -8,43 +8,43 @@ import { addPrefix, useStorage } from '@/utils'
  */
 export const useThemeStore = defineStore(`theme`, () => {
   // 文本主题
-  const theme = useStorage<keyof typeof themeMap>(addPrefix(`theme`), defaultStyleConfig.theme)
+  const theme = store.reactive<keyof typeof themeMap>(addPrefix(`theme`), defaultStyleConfig.theme)
 
   // 文本字体
-  const fontFamily = useStorage(`fonts`, defaultStyleConfig.fontFamily)
+  const fontFamily = store.reactive(`fonts`, defaultStyleConfig.fontFamily)
 
   // 文本大小
-  const fontSize = useStorage(`size`, defaultStyleConfig.fontSize)
+  const fontSize = store.reactive(`size`, defaultStyleConfig.fontSize)
 
   // 主色
-  const primaryColor = useStorage(`color`, defaultStyleConfig.primaryColor)
+  const primaryColor = store.reactive(`color`, defaultStyleConfig.primaryColor)
 
   // 代码块主题
-  const codeBlockTheme = useStorage(`codeBlockTheme`, defaultStyleConfig.codeBlockTheme)
+  const codeBlockTheme = store.reactive(`codeBlockTheme`, defaultStyleConfig.codeBlockTheme)
 
   // 图注格式
-  const legend = useStorage(`legend`, defaultStyleConfig.legend)
+  const legend = store.reactive(`legend`, defaultStyleConfig.legend)
 
   // 是否开启 Mac 代码块
-  const isMacCodeBlock = useStorage(`isMacCodeBlock`, defaultStyleConfig.isMacCodeBlock)
+  const isMacCodeBlock = store.reactive(`isMacCodeBlock`, defaultStyleConfig.isMacCodeBlock)
 
   // 是否开启代码块行号显示
-  const isShowLineNumber = useStorage(`isShowLineNumber`, defaultStyleConfig.isShowLineNumber)
+  const isShowLineNumber = store.reactive(`isShowLineNumber`, defaultStyleConfig.isShowLineNumber)
 
   // 是否开启微信外链接底部引用
-  const isCiteStatus = useStorage(`isCiteStatus`, defaultStyleConfig.isCiteStatus)
+  const isCiteStatus = store.reactive(`isCiteStatus`, defaultStyleConfig.isCiteStatus)
 
   // 是否统计字数和阅读时间
-  const isCountStatus = useStorage(`isCountStatus`, defaultStyleConfig.isCountStatus)
+  const isCountStatus = store.reactive(`isCountStatus`, defaultStyleConfig.isCountStatus)
 
   // 是否开启段落首行缩进
-  const isUseIndent = useStorage(addPrefix(`use_indent`), false)
+  const isUseIndent = store.reactive(addPrefix(`use_indent`), false)
 
   // 是否开启两端对齐
-  const isUseJustify = useStorage(addPrefix(`use_justify`), false)
+  const isUseJustify = store.reactive(addPrefix(`use_justify`), false)
 
   // 预览宽度
-  const previewWidth = useStorage(`previewWidth`, widthOptions[0].value)
+  const previewWidth = store.reactive(`previewWidth`, widthOptions[0].value)
 
   // 计算属性
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))

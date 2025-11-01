@@ -3,9 +3,9 @@ import { Compartment } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { javascriptSetup, theme } from '@md/shared'
 import { useUIStore } from '@/stores/ui'
-import { removeLeft, useStorage } from '@/utils'
+import { removeLeft, store } from '@/utils'
 
-const code = useStorage(`formCustomConfig`, removeLeft(`
+const code = store.reactive(`formCustomConfig`, removeLeft(`
   const { file, util, okCb, errCb } = CUSTOM_ARG
   param = new FormData()
   param.append('file', file)
