@@ -318,7 +318,7 @@ function exportCurrentTheme() {
   </transition>
 
   <Button
-    v-show="displayStore.isShowCssEditor"
+    v-show="uiStore.isShowCssEditor"
     class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
       isMobile ? 'bottom-4 right-4' : 'bottom-10 right-4',
     ]"
