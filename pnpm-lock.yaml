@@ -428,6 +428,9 @@ importers:
       '@fsegurai/codemirror-theme-vscode-light':
         specifier: ^6.2.2
         version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.1)
+      '@replit/codemirror-indentation-markers':
+        specifier: ^6.5.3
+        version: 6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))
       axios:
         specifier: ^1.12.2
         version: 1.12.2
@@ -2534,6 +2537,13 @@ packages:
 
   '@remix-run/node-fetch-server@0.8.1':
     resolution: {integrity: sha512-J1dev372wtJqmqn9U/qbpbZxbJSQrogNN2+Qv1lKlpATpe/WQ9aCZfl/xSb9d2Rgh1IyLSvNxZAXPZxruO6Xig==}
+
+  '@replit/codemirror-indentation-markers@6.5.3':
+    resolution: {integrity: sha512-hL5Sfvw3C1vgg7GolLe/uxX5T3tmgOA3ZzqlMv47zjU1ON51pzNWiVbS22oh6crYhtVhv8b3gdXwoYp++2ilHw==}
+    peerDependencies:
+      '@codemirror/language': ^6.0.0
+      '@codemirror/state': ^6.0.0
+      '@codemirror/view': ^6.0.0
 
   '@rolldown/pluginutils@1.0.0-beta.29':
     resolution: {integrity: sha512-NIJgOsMjbxAXvoGq/X0gD7VPMQ8j9g0BiDaNjVNVjvl+iKXxL3Jre0v31RmBYeLEmkbj2s02v8vFTbUXi5XS2Q==}
@@ -12419,6 +12429,12 @@ snapshots:
     optional: true
 
   '@remix-run/node-fetch-server@0.8.1': {}
+
+  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))':
+    dependencies:
+      '@codemirror/language': 6.11.3
+      '@codemirror/state': 6.5.2
+      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
 
   '@rolldown/pluginutils@1.0.0-beta.29': {}
 

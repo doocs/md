@@ -5,6 +5,7 @@ import { languages } from '@codemirror/language-data'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
+import { indentationMarkers } from '@replit/codemirror-indentation-markers'
 import { formatDoc } from '../utils/fileHelpers'
 import { applyHeading, formatBold, formatCode, formatItalic, formatLink, formatOrderedList, formatStrikethrough, formatUnorderedList, redoAction, undoAction } from './format'
 
@@ -85,6 +86,9 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
     history(),
     highlightSelectionMatches(),
     closeBrackets(),
+
+    // 缩进标记
+    indentationMarkers(),
 
     // 语言支持
     markdown({

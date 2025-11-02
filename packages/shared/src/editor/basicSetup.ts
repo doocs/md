@@ -6,6 +6,7 @@ import { lintKeymap } from '@codemirror/lint'
 import { highlightSelectionMatches, searchKeymap } from '@codemirror/search'
 import { EditorState } from '@codemirror/state'
 import { crosshairCursor, drawSelection, dropCursor, highlightActiveLine, highlightActiveLineGutter, highlightSpecialChars, keymap, rectangularSelection } from '@codemirror/view'
+import { indentationMarkers } from '@replit/codemirror-indentation-markers'
 
 // (The superfluous function calls around the list of extensions work
 // around current limitations in tree-shaking software.)
@@ -63,6 +64,7 @@ export const basicSetup: Extension = (() => [
   crosshairCursor(),
   highlightActiveLine(),
   highlightSelectionMatches(),
+  indentationMarkers(), // 添加缩进标记
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,
