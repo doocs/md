@@ -3,7 +3,7 @@ import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { languages } from '@codemirror/language-data'
 import { highlightSelectionMatches } from '@codemirror/search'
-import { EditorState, Prec } from '@codemirror/state'
+import { EditorSelection, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { indentationMarkers } from '@replit/codemirror-indentation-markers'
 import { formatDoc } from '../utils/fileHelpers'
@@ -20,6 +20,19 @@ async function formatMarkdown(view: EditorView) {
   })
 }
 
+/**
+ * 在光标位置插入缩进（空格）
+ */
+function insertTabAtCursor(view: EditorView): boolean {
+  const spaces = `  ` // 2 个空格作为缩进
+  const changes = view.state.changeByRange(range => ({
+    changes: { from: range.from, to: range.to, insert: spaces },
+    range: EditorSelection.range(range.from + spaces.length, range.from + spaces.length),
+  }))
+  view.dispatch(changes)
+  return true
+}
+
 interface MarkdownKeymapOptions {
   onSearch?: (view: EditorView) => void
 }
@@ -34,6 +47,9 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
   const { onSearch } = options || {}
 
   return keymap.of([
+    // Tab 键在光标位置插入缩进
+    { key: `Tab`, run: insertTabAtCursor },
+
     // 撤销/重做
     { key: `Mod-z`, run: undoAction },
     { key: `Mod-y`, run: redoAction },
