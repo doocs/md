@@ -102,6 +102,27 @@ function customStyle() {
     </div>
     <div class="space-y-2">
       <h2 class="text-sm font-medium">
+        浮动目录
+      </h2>
+      <div class="grid grid-cols-2 justify-items-center gap-2">
+        <Button
+          class="w-full" variant="outline" :class="{
+            'border-black dark:border-white border-2': uiStore.isPinFloatingToc,
+          }" @click="!uiStore.isPinFloatingToc && uiStore.togglePinFloatingToc()"
+        >
+          常驻显示
+        </Button>
+        <Button
+          class="w-full" variant="outline" :class="{
+            'border-black dark:border-white border-2': !uiStore.isPinFloatingToc,
+          }" @click="uiStore.isPinFloatingToc && uiStore.togglePinFloatingToc()"
+        >
+          移入触发
+        </Button>
+      </div>
+    </div>
+    <div class="space-y-2">
+      <h2 class="text-sm font-medium">
         模式
       </h2>
       <div class="grid grid-cols-2 justify-items-center gap-2">
