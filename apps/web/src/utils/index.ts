@@ -140,6 +140,13 @@ export async function exportPDF(title: string = `untitled`) {
       <title>${safeTitle}</title>
       ${stylesToAdd}
       <style>
+        /* 强制打印背景颜色和图片 */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+
         /* 打印页面设置 */
         @page {
           @top-center {
