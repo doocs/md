@@ -48,6 +48,12 @@ const props = defineProps<{
   handleDragEnd: () => void
   // 以添加子文章的方式打开对话框
   openAddPostDialog: (parentId: string) => void
+  // 打开多选导出对话框
+  isOpenMultipleMode: boolean
+  // 选中的文章 ID 集合
+  selectedPosts: Set<string>
+  // 切换文章选中状态
+  togglePostSelection: (postId: string) => void
 }>()
 
 const store = useStore()
@@ -84,11 +90,13 @@ function isHasChild(postId: string) {
 </script>
 
 <template>
-  <div v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)" :key="post.id">
+  <div
+    v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)"
+    :key="post.id"
+  >
     <!-- 根文章外层容器 -->
     <a
-      class="w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors"
-      :class="[
+      class="w-full inline-flex cursor-pointer items-center gap-1 rounded p-2 text-sm transition-colors" :class="[
         // eslint-disable-next-line vue/prefer-separate-static-class
         'hover:text-primary-foreground hover:bg-primary',
         {
@@ -97,39 +105,31 @@ function isHasChild(postId: string) {
           'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
             props.dropTargetId === post.id,
         },
-      ]"
-      draggable="true"
-      @dragstart="handleDragStart(post.id, $event)"
-      @dragend="props.handleDragEnd"
-      @drop.prevent="props.handleDrop(post.id)"
-      @dragover.stop.prevent="props.setDropTargetId(post.id)"
-      @dragleave.prevent="props.setDropTargetId(null)"
-      @click="store.currentPostId = post.id"
+      ]" draggable="true" @dragstart="handleDragStart(post.id, $event)" @dragend="props.handleDragEnd"
+      @drop.prevent="props.handleDrop(post.id)" @dragover.stop.prevent="props.setDropTargetId(post.id)"
+      @dragleave.prevent="props.setDropTargetId(null)" @click="store.currentPostId = post.id"
     >
       <!-- 折叠展开图标 -->
       <Button
-        size="xs"
-        variant="ghost"
-        class="h-max p-0.5"
-        :class="isHasChild(post.id) ? 'opacity-100' : 'opacity-0'"
+        size="xs" variant="ghost" class="h-max p-0.5" :class="isHasChild(post.id) ? 'opacity-100' : 'opacity-0'"
         @click.stop="isHasChild(post.id) && togglePostExpanded(post.id)"
       >
-        <ChevronRight
-          class="size-4 transition-transform"
-          :class="{ 'rotate-90': !post.collapsed }"
-        />
+        <ChevronRight class="size-4 transition-transform" :class="{ 'rotate-90': !post.collapsed }" />
       </Button>
+      <CheckBox
+        v-if="props.isOpenMultipleMode" :checked="props.selectedPosts.has(post.id)"
+        @update:checked="props.togglePostSelection(post.id)"
+      >
+        <span class="line-clamp-1">{{ post.title }}</span>
+      </CheckBox>
 
-      <span class="line-clamp-1">{{ post.title }}</span>
+      <!-- 如果没有开启多选模式，直接显示标题 -->
+      <span v-if="!props.isOpenMultipleMode" class="line-clamp-1">{{ post.title }}</span>
 
       <!-- 每条文章操作 -->
       <DropdownMenu>
         <DropdownMenuTrigger as-child>
-          <Button
-            size="xs"
-            variant="ghost"
-            class="ml-auto h-max p-0.5"
-          >
+          <Button size="xs" variant="ghost" class="ml-auto h-max p-0.5">
             <Ellipsis class="size-4" />
           </Button>
         </DropdownMenuTrigger>
@@ -143,10 +143,7 @@ function isHasChild(postId: string) {
           <DropdownMenuItem @click.stop="props.openHistoryDialog(post.id)">
             <History class="mr-2 size-4" /> 历史记录
           </DropdownMenuItem>
-          <DropdownMenuItem
-            v-if="store.posts.length > 1"
-            @click.stop="props.startDelPost(post.id)"
-          >
+          <DropdownMenuItem v-if="store.posts.length > 1" @click.stop="props.startDelPost(post.id)">
             <Trash2 class="mr-2 size-4" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>
@@ -158,18 +155,13 @@ function isHasChild(postId: string) {
       class="space-y-1 ml-4 mt-1 border-l-2 border-gray-300 pl-1 dark:border-gray-700"
     >
       <PostItem
-        :parent-id="post.id"
-        :sorted-posts="props.sortedPosts"
-        :start-rename-post="props.startRenamePost"
-        :open-history-dialog="props.openHistoryDialog"
-        :start-del-post="props.startDelPost"
-        :drag-source-id="props.dragSourceId"
-        :set-drag-source-id="props.setDragSourceId"
-        :drop-target-id="props.dropTargetId"
-        :set-drop-target-id="props.setDropTargetId"
-        :handle-drag-end="props.handleDragEnd"
-        :handle-drop="props.handleDrop"
-        :open-add-post-dialog="props.openAddPostDialog"
+        :parent-id="post.id" :sorted-posts="props.sortedPosts" :start-rename-post="props.startRenamePost"
+        :open-history-dialog="props.openHistoryDialog" :start-del-post="props.startDelPost"
+        :drag-source-id="props.dragSourceId" :set-drag-source-id="props.setDragSourceId"
+        :drop-target-id="props.dropTargetId" :set-drop-target-id="props.setDropTargetId"
+        :handle-drag-end="props.handleDragEnd" :handle-drop="props.handleDrop"
+        :open-add-post-dialog="props.openAddPostDialog" :is-open-multiple-mode="props.isOpenMultipleMode"
+        :selected-posts="props.selectedPosts" :toggle-post-selection="props.togglePostSelection"
       />
     </div>
   </div>

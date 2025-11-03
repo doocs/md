@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from 'lucide-vue-next'
+import JSZip from 'jszip'
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, FolderDown, Layers, PlusSquare, X } from 'lucide-vue-next'
 import { useStore } from '@/stores'
-import { addPrefix } from '@/utils'
+import { addPrefix, sanitizeTitle } from '@/utils'
 
 const store = useStore()
 
@@ -195,6 +196,99 @@ function handleDragEnd() {
   dropTargetId.value = null
   dragover.value = false
 }
+/* ============ 多选模式 ============ */
+const isOpenMultipleMode = ref(false)
+/** 打开多选框 */
+function toggleIsOpenMultipleMode() {
+  isOpenMultipleMode.value = !isOpenMultipleMode.value
+}
+watch(isOpenMultipleMode, (o) => {
+  if (!o) {
+    clearSelection()
+  }
+})
+
+/** 选中的文章 ID 集合 */
+const selectedPosts = ref<Set<string>>(new Set())
+function togglePostSelection(postId: string) {
+  if (selectedPosts.value.has(postId)) {
+    selectedPosts.value.delete(postId)
+  }
+  else {
+    selectedPosts.value.add(postId)
+  }
+}
+
+function selectAllPosts() {
+  if (!isOpenMultipleMode.value) {
+    return
+  }
+  selectedPosts.value.clear()
+  store.posts.forEach((post) => {
+    selectedPosts.value.add(post.id)
+  })
+}
+function clearSelection() {
+  selectedPosts.value.clear()
+}
+/** 批量导出为.md */
+async function handleExportAsMD() {
+  if (selectedPosts.value.size === 0) {
+    toast.error(`请选择要导出的文章`)
+    return
+  }
+
+  try {
+    const zip = new JSZip()
+    let exportedCount = 0
+
+    // 遍历选中的文章ID，添加到ZIP
+    for (const postId of selectedPosts.value) {
+      const post = store.getPostById(postId)
+      if (post && post.content) {
+        // 清理文件名中的非法字符
+        const safeTitle = sanitizeTitle(post.title)
+        // 添加到ZIP，避免文件名冲突
+        zip.file(`${safeTitle}.md`, post.content)
+        exportedCount++
+      }
+    }
+
+    if (exportedCount === 0) {
+      toast.error(`没有可导出的文章内容`)
+      return
+    }
+
+    // 生成ZIP文件
+    const blob = await zip.generateAsync({
+      type: `blob`,
+      compression: `DEFLATE`,
+      compressionOptions: { level: 6 },
+    })
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement(`a`)
+    a.href = url
+    a.download = `批量导出-${new Date().toLocaleDateString(`zh-CN`).replace(/\//g, `-`)}.zip`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    // 释放内存
+    URL.revokeObjectURL(url)
+
+    toast.success(`成功导出 ${exportedCount} 篇文章`)
+
+    // 导出完成后关闭多选模式并清空选择
+    isOpenMultipleMode.value = false
+    selectedPosts.value.clear()
+  }
+  catch (error) {
+    console.error(`批量导出失败:`, error)
+    toast.error(`批量导出失败: ${error instanceof Error ? error.message : `未知错误`}`)
+  }
+}
 </script>
 
 <template>
@@ -289,7 +383,12 @@ function handleDragEnd() {
               </Tooltip>
             </TooltipProvider>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent
+            :on-select="(value: string) => {
+              // 阻止默认关闭（返回 false 可阻止关闭）
+              return false
+            }"
+          >
             <DropdownMenuRadioGroup v-model="sortMode">
               <DropdownMenuRadioItem value="A-Z">
                 文件名（A-Z）
@@ -340,6 +439,56 @@ function handleDragEnd() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <TooltipProvider :delay-duration="200">
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button variant="ghost" size="xs" class="h-max p-1">
+                    <Layers class="size-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  多选模式
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+              @select.prevent
+              @click.stop.prevent="toggleIsOpenMultipleMode"
+            >
+              打开/关闭多选模式
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              @select.prevent
+              @click.stop.prevent="selectAllPosts"
+            >
+              全选
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              @select.prevent
+              @click.stop.prevent="clearSelection"
+            >
+              取消全选
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <TooltipProvider v-if="isOpenMultipleMode" :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="handleExportAsMD">
+                <FolderDown class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              批量导出为.md
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <!-- 列表 -->
@@ -358,6 +507,9 @@ function handleDragEnd() {
           :handle-drop="handleDrop"
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
+          :is-open-multiple-mode="isOpenMultipleMode"
+          :selected-posts="selectedPosts"
+          :toggle-post-selection="togglePostSelection"
         />
       </div>
     </nav>
