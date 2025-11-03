@@ -7,6 +7,14 @@
  * 提交区：https://github.com/doocs/md/discussions/426
  */
 
+/* 全局变量定义 */
+:root {
+}
+
+/* 根容器 */
+.md-container {
+}
+
 /* 标题样式 */
 h1 {
 }
