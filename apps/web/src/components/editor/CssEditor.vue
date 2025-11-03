@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { exportMergedTheme } from '@md/core'
-import { themeMapCSS, themeOptions } from '@md/shared'
-import { Download, Edit3, Plus, X } from 'lucide-vue-next'
+import { themeMapCSS, themeOptionsMap } from '@md/shared'
+import { Download, Edit3, Eye, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
+import { copyPlain } from '@/utils/clipboard'
 
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
@@ -60,6 +61,8 @@ function editTabName() {
 const isOpenAddDialog = ref(false)
 
 const addInputVal = ref(``)
+// 新建方案时选择的基础主题
+const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
 
 function addTab() {
   if (!(addInputVal.value).trim()) {
@@ -72,12 +75,27 @@ function addTab() {
     return
   }
 
-  cssEditorStore.addCssContentTab(addInputVal.value)
-  isOpenAddDialog.value = false
+  // 根据选择的基础主题来初始化内容
+  let initialContent = ''
+  if (baseThemeForNew.value === 'blank') {
+    initialContent = '' // 空白方案
+  }
+  else {
+    // 基于内置主题
+    initialContent = themeMapCSS[baseThemeForNew.value]
+  }
 
-  cssContentConfig.value.active = addInputVal.value
+  // addCssContentTab 会自动设置 active 并触发回调
+  cssEditorStore.addCssContentTab(addInputVal.value, initialContent)
+
+  // 更新 tabHistory
   tabHistory.value = [tabHistory.value[1], addInputVal.value]
+
+  isOpenAddDialog.value = false
   toast.success(`新建成功`)
+
+  // 重置为空白
+  baseThemeForNew.value = 'blank'
 }
 
 const isOpenDelTabConfirmDialog = ref(false)
@@ -114,14 +132,45 @@ function delTab() {
 }
 
 function addHandler() {
-  addInputVal.value = `方案${cssContentConfig.value.tabs.length - themeOptions.length + 1}`
+  addInputVal.value = `方案${cssContentConfig.value.tabs.length + 1}`
+  baseThemeForNew.value = 'blank' // 重置选择
+  isOpenAddDialog.value = true
+}
+
+// 查看内置主题功能
+const isOpenViewThemeDialog = ref(false)
+const selectedViewTheme = ref<'default' | 'grace' | 'simple'>('default')
+
+// 打开查看内置主题对话框
+function openViewThemeDialog() {
+  selectedViewTheme.value = 'default'
+  isOpenViewThemeDialog.value = true
+}
+
+// 复制主题 CSS
+async function copyThemeCSS() {
+  const css = themeMapCSS[selectedViewTheme.value]
+  await copyPlain(css)
+  toast.success('已复制到剪贴板')
+}
+
+// 基于当前查看的主题新建方案
+function createFromViewTheme() {
+  isOpenViewThemeDialog.value = false
+  // 设置基础主题并打开新建对话框
+  baseThemeForNew.value = selectedViewTheme.value
+  addInputVal.value = `基于${themeOptionsMap[selectedViewTheme.value].label}主题`
   isOpenAddDialog.value = true
 }
 
 function tabChanged(tabName: string | number) {
   if (tabName === `add`) {
-    cssContentConfig.value.active = tabHistory.value[1]
+    // 不要跳回之前的 tab，直接打开新建对话框
     addHandler()
+    // 恢复到之前的 active tab（防止 UI 上显示 "add" tab 被选中）
+    nextTick(() => {
+      cssContentConfig.value.active = tabHistory.value[1]
+    })
     return
   }
 
@@ -232,16 +281,16 @@ function exportCurrentTheme() {
           >
             {{ item.title }}
             <Edit3
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+              v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
               @click="rename(item.name)"
             />
             <X
-              v-show="cssContentConfig.active === item.name" class="inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+              v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
               @click.self="removeHandler(item.name)"
             />
           </TabsTrigger>
           <TabsTrigger value="add">
-            <Plus class="h-5 w-5" />
+            <Plus class="h-5 w-5 cursor-pointer" />
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -260,16 +309,46 @@ function exportCurrentTheme() {
           <DialogHeader>
             <DialogTitle>新建自定义 CSS</DialogTitle>
             <DialogDescription>
-              请输入方案名称
+              请输入方案名称，并选择初始模板
             </DialogDescription>
           </DialogHeader>
-          <Input v-model="addInputVal" />
+          <div class="space-y-4">
+            <div class="space-y-2">
+              <label class="text-sm font-medium">方案名称</label>
+              <Input v-model="addInputVal" placeholder="输入方案名称" />
+            </div>
+            <div class="space-y-2">
+              <label class="text-sm font-medium">初始模板</label>
+              <Select v-model="baseThemeForNew">
+                <SelectTrigger>
+                  <SelectValue placeholder="选择初始模板" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="blank">
+                    空白方案
+                  </SelectItem>
+                  <SelectItem value="default">
+                    基于经典主题
+                  </SelectItem>
+                  <SelectItem value="grace">
+                    基于优雅主题
+                  </SelectItem>
+                  <SelectItem value="simple">
+                    基于简洁主题
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+              <p class="text-xs text-muted-foreground">
+                选择一个内置主题作为起点，可以在其基础上进行修改
+              </p>
+            </div>
+          </div>
           <DialogFooter>
             <Button variant="outline" @click="isOpenAddDialog = false">
               取消
             </Button>
             <Button @click="addTab()">
-              保存
+              创建
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -318,6 +397,19 @@ function exportCurrentTheme() {
   <Button
     v-show="uiStore.isShowCssEditor"
     class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
+      isMobile ? 'bottom-16 right-4' : 'bottom-22 right-4',
+    ]"
+    size="sm"
+    variant="outline"
+    @click="openViewThemeDialog"
+  >
+    <Eye class="h-4 w-4 mr-2" />
+    内置主题
+  </Button>
+
+  <Button
+    v-show="uiStore.isShowCssEditor"
+    class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
       isMobile ? 'bottom-4 right-4' : 'bottom-10 right-4',
     ]"
     size="sm"
@@ -326,6 +418,58 @@ function exportCurrentTheme() {
     <Download class="h-4 w-4 mr-2" />
     导出主题
   </Button>
+
+  <!-- 查看内置主题对话框 -->
+  <Dialog v-model:open="isOpenViewThemeDialog">
+    <DialogContent class="sm:max-w-4xl max-h-[90vh] flex flex-col" @open-auto-focus.prevent>
+      <DialogHeader>
+        <DialogTitle>查看内置主题样式</DialogTitle>
+        <DialogDescription>
+          查看并复制内置主题的 CSS 代码，或基于它们创建新方案
+        </DialogDescription>
+      </DialogHeader>
+
+      <div class="space-y-4 flex-1 min-h-0 flex flex-col">
+        <!-- 主题选择器 -->
+        <div class="space-y-2">
+          <label class="text-sm font-medium">选择主题</label>
+          <Select v-model="selectedViewTheme">
+            <SelectTrigger class="w-full mt-2 sm:w-[200px] focus-visible:ring-0 focus-visible:ring-offset-0">
+              <SelectValue placeholder="选择主题" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="default">
+                {{ themeOptionsMap.default.label }}
+              </SelectItem>
+              <SelectItem value="grace">
+                {{ themeOptionsMap.grace.label }}
+              </SelectItem>
+              <SelectItem value="simple">
+                {{ themeOptionsMap.simple.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <!-- CSS 代码查看器 -->
+        <div class="flex-1 min-h-0 border rounded-lg overflow-auto">
+          <pre class="h-full overflow-auto p-4 bg-muted text-sm"><code>{{ themeMapCSS[selectedViewTheme] }}</code></pre>
+        </div>
+      </div>
+
+      <DialogFooter class="flex-col sm:flex-row gap-2">
+        <Button variant="outline" @click="isOpenViewThemeDialog = false">
+          关闭
+        </Button>
+        <Button variant="outline" @click="copyThemeCSS">
+          复制全部
+        </Button>
+        <Button variant="outline" @click="createFromViewTheme">
+          基于此主题新建
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 </template>
 
 <style lang="less" scoped>

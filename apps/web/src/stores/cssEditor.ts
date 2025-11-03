@@ -99,18 +99,19 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   }
 
   // 添加 CSS 方案
-  const addCssContentTab = (name: string) => {
+  const addCssContentTab = (name: string, initialContent?: string) => {
+    const content = initialContent || DEFAULT_CSS_CONTENT
     cssContentConfig.value.tabs.push({
       name,
       title: name,
-      content: DEFAULT_CSS_CONTENT,
+      content,
     })
     cssContentConfig.value.active = name
-    setCssEditorValue(DEFAULT_CSS_CONTENT)
+    setCssEditorValue(content)
 
-    // 触发回调以刷新渲染（使用新方案的默认 CSS）
+    // 触发回调以刷新渲染（使用新方案的 CSS）
     if (onTabChangedCallback) {
-      onTabChangedCallback(DEFAULT_CSS_CONTENT)
+      onTabChangedCallback(content)
     }
   }
 
