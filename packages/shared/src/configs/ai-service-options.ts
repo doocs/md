@@ -408,6 +408,12 @@ export const imageServiceOptions: ImageServiceOption[] = [
       `cogview-4`,
     ],
   },
+  {
+    value: `custom`,
+    label: `自定义兼容 OpenAI API 的服务`,
+    endpoint: ``,
+    models: [],
+  },
 ]
 
 export const DEFAULT_IMAGE_MODEL = imageServiceOptions[0].models[0]

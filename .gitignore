@@ -56,3 +56,8 @@ dev-dist
 # uTools build artifacts
 apps/utools/dist
 apps/utools/release
+
+# uTools local libs (只在打包时需要，不提交到仓库)
+apps/web/public/static/libs/mathjax
+apps/web/public/static/libs/mermaid
+apps/web/public/static/libs/article-syncjs

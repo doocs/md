@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { useStore } from '@/stores'
+import { useRenderStore } from '@/stores/render'
 
-const store = useStore()
-const { readingTime } = storeToRefs(store)
+const renderStore = useRenderStore()
+const { readingTime } = storeToRefs(renderStore)
 </script>
 
 <template>

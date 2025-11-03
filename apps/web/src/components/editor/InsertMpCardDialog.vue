@@ -2,12 +2,13 @@
 import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
-import { addPrefix } from '@/utils'
+import { useEditorStore } from '@/stores/editor'
+import { addPrefix, store } from '@/utils'
 
 /** 编辑器实例和全局弹窗状态 */
-const store = useStore()
-const displayStore = useDisplayStore()
-const { toggleShowInsertMpCardDialog } = displayStore
+const editorStore = useEditorStore()
+const uiStore = useUIStore()
+const { toggleShowInsertMpCardDialog } = uiStore
 
 interface Config {
   id: string
@@ -28,7 +29,7 @@ interface Config {
 }
 
 /** 表单字段 */
-const config = useStorage<Config>(addPrefix(`mp-profile`), {
+const config = store.reactive<Config>(addPrefix(`mp-profile`), {
   id: ``,
   name: ``,
   logo: ``,
@@ -68,14 +69,18 @@ function buildMpHtml(config: Config) {
 function submit(formValues: any) {
   config.value = formValues as Config
   const html = buildMpHtml(formValues as Config)
-  toRaw(store.editor!).replaceSelection(`\n${html}\n`, `end`)
+  const editor = toRaw(editorStore.editor!)
+  const selection = editor.state.selection.main
+  editor.dispatch({
+    changes: { from: selection.from, to: selection.to, insert: `\n${html}\n` },
+  })
   toast.success(`公众号名片插入成功`)
   toggleShowInsertMpCardDialog(false)
 }
 </script>
 
 <template>
-  <Dialog v-model:open="displayStore.isShowInsertMpCardDialog">
+  <Dialog v-model:open="uiStore.isShowInsertMpCardDialog">
     <DialogContent>
       <DialogHeader>
         <DialogTitle>插入公众号名片</DialogTitle>

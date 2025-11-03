@@ -1,17 +1,42 @@
 <script setup lang="ts">
-import { ChevronDownIcon, Menu, Settings } from 'lucide-vue-next'
-import { useDisplayStore, useStore } from '@/stores'
-import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
+import { ChevronDownIcon, Menu, Palette, SlidersHorizontal } from 'lucide-vue-next'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { useEditorStore } from '@/stores/editor'
+import { useExportStore } from '@/stores/export'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
+import { addPrefix, generatePureHTML, processClipboardContent, store } from '@/utils'
 import FormatDropdown from './FormatDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
-const store = useStore()
-const displayStore = useDisplayStore()
+const editorStore = useEditorStore()
+const themeStore = useThemeStore()
+const renderStore = useRenderStore()
+const uiStore = useUIStore()
+const exportStore = useExportStore()
 
-const { output, primaryColor, editor } = storeToRefs(store)
+const { editor } = storeToRefs(editorStore)
+const { output } = storeToRefs(renderStore)
+const { primaryColor } = storeToRefs(themeStore)
+const { isOpenRightSlider } = storeToRefs(uiStore)
 
-const { editorRefresh } = store
+// Editor refresh function
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
 
 // 对话框状态
 const aboutDialogVisible = ref(false)
@@ -31,7 +56,7 @@ function handleOpenEditorState() {
   editorStateDialogVisible.value = true
 }
 
-const copyMode = useStorage(addPrefix(`copyMode`), `txt`)
+const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,
@@ -104,7 +129,7 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
 async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
-    const mdContent = editor.value?.getValue() || ``
+    const mdContent = editor.value?.state.doc.toString() || ``
     await copyContent(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
     return
@@ -163,10 +188,10 @@ async function copy() {
         await copyContent(temp)
       }
       else if (copyMode.value === `html-without-style`) {
-        await copyContent(await generatePureHTML(editor.value!.getValue()))
+        await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
       }
       else if (copyMode.value === `html-and-style`) {
-        await copyContent(store.editorContent2HTML())
+        await copyContent(exportStore.editorContent2HTML())
       }
 
       // 输出提示
@@ -265,13 +290,25 @@ async function copy() {
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
 
-      <!-- 设置按钮 -->
+      <!-- 编辑器设置按钮 -->
+      <Popover>
+        <PopoverTrigger as-child>
+          <Button variant="outline" size="icon" class="mr-1">
+            <SlidersHorizontal class="size-4" />
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent align="end">
+          <ThemeCustomizer />
+        </PopoverContent>
+      </Popover>
+
+      <!-- 样式面板 -->
       <Button
         variant="outline"
         size="icon"
-        @click="store.isOpenRightSlider = !store.isOpenRightSlider"
+        @click="isOpenRightSlider = !isOpenRightSlider"
       >
-        <Settings class="size-4" />
+        <Palette class="size-4" />
       </Button>
     </div>
   </header>
@@ -280,7 +317,7 @@ async function copy() {
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
-  <AIImageGeneratorPanel v-model:open="displayStore.aiImageDialogVisible" />
+  <AIImageGeneratorPanel v-model:open="uiStore.aiImageDialogVisible" />
 </template>
 
 <style lang="less" scoped>

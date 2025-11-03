@@ -1,6 +1,20 @@
 <script setup lang="ts">
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@/configs/shortcut-key'
-import { useStore } from '@/stores'
+import type { EditorView } from '@codemirror/view'
+import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
+import {
+  applyHeading,
+  formatBold,
+  formatCode,
+  formatItalic,
+  formatLink,
+  formatOrderedList,
+  formatStrikethrough,
+  formatUnorderedList,
+} from '@md/shared/editor'
+import { useEditorStore } from '@/stores/editor'
+import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -10,23 +24,104 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 
-const store = useStore()
+const editorStore = useEditorStore()
+const themeStore = useThemeStore()
+const renderStore = useRenderStore()
+const postStore = usePostStore()
 
+const { editor } = storeToRefs(editorStore)
 const {
   isCiteStatus,
   isCountStatus,
-  editor,
-} = storeToRefs(store)
+} = storeToRefs(themeStore)
 
-const {
-  citeStatusChanged,
-  countStatusChanged,
-  formatContent,
-} = store
+// Editor refresh function
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
+
+// Format content function
+async function formatContent() {
+  const doc = await editorStore.formatContent()
+  if (doc && postStore.currentPost) {
+    postStore.updatePostContent(postStore.currentPostId, doc)
+  }
+}
+
+// Cite status changed
+function citeStatusChanged() {
+  themeStore.toggleCiteStatus()
+  editorRefresh()
+}
+
+// Count status changed
+function countStatusChanged() {
+  themeStore.toggleCountStatus()
+  editorRefresh()
+}
 
 // 工具函数，添加格式
 function addFormat(cmd: string) {
-  (editor.value as any).options.extraKeys[cmd](editor.value)
+  const editorView = editor.value as EditorView
+  if (!editor.value)
+    return
+
+  // 直接使用 EditorView
+  switch (cmd) {
+    case `${ctrlKey}-B`:
+      formatBold(editorView)
+      break
+    case `${ctrlKey}-I`:
+      formatItalic(editorView)
+      break
+    case `${ctrlKey}-D`:
+      formatStrikethrough(editorView)
+      break
+    case `${ctrlKey}-K`:
+      formatLink(editorView)
+      break
+    case `${ctrlKey}-E`:
+      formatCode(editorView)
+      break
+    case `${ctrlKey}-H`:
+      applyHeading(editorView, 1)
+      break
+    case `${ctrlKey}-U`:
+      formatUnorderedList(editorView)
+      break
+    case `${ctrlKey}-O`:
+      formatOrderedList(editorView)
+      break
+    case `${ctrlKey}-1`:
+      applyHeading(editorView, 1)
+      break
+    case `${ctrlKey}-2`:
+      applyHeading(editorView, 2)
+      break
+    case `${ctrlKey}-3`:
+      applyHeading(editorView, 3)
+      break
+    case `${ctrlKey}-4`:
+      applyHeading(editorView, 4)
+      break
+    case `${ctrlKey}-5`:
+      applyHeading(editorView, 5)
+      break
+    case `${ctrlKey}-6`:
+      applyHeading(editorView, 6)
+      break
+  }
 }
 
 const formatItems = [

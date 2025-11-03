@@ -5,6 +5,10 @@ on:
     tags:
       - 'cli-v*'
 
+permissions:
+  id-token: write  # Required for OIDC trusted publishing
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - uses: actions/setup-node@v5
+      - uses: actions/setup-node@v6
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org/
@@ -22,10 +26,10 @@ jobs:
         with:
           version: 10
 
+      - name: Update npm
+        run: npm install -g npm@latest
+
       - run: pnpm install --frozen-lockfile
       - run: pnpm run build:cli
-      - run: echo "registry=https://registry.npmjs.org/" > packages/md-cli/.npmrc
 
       - run: cd packages/md-cli && npm publish --registry=https://registry.npmjs.org/
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_AUTH_TOKEN }}

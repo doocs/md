@@ -1,23 +1,16 @@
 <script setup lang="ts">
 import type { ProgressRootProps } from 'radix-vue'
-import { ProgressIndicator, ProgressRoot, useForwardPropsEmits } from 'radix-vue'
+import { ProgressIndicator, ProgressRoot } from 'radix-vue'
 
 const props = defineProps<ProgressRootProps>()
-const emits = defineEmits<{
-  (e: `update:modelValue`, payload: string | number): void
-}>()
 
-const modelValue = useVModel(props, `modelValue`, emits, {
-  passive: true,
-  defaultValue: 0,
-})
-const forwarded = useForwardPropsEmits(props, emits)
+const modelValue = computed(() => props.modelValue ?? 0)
 </script>
 
 <template>
   <ProgressRoot
-    v-bind="forwarded"
-    v-model="modelValue"
+    v-bind="props"
+    :model-value="modelValue"
     class="relative overflow-hidden bg-blackA9 rounded-full w-full h-4 sm:h-5"
     style="transform: translateZ(0)"
   >

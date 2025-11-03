@@ -1,4 +1,4 @@
-name: Preview Build
+name: Surge Preview Build
 
 on:
   pull_request:
@@ -14,7 +14,7 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
@@ -29,7 +29,7 @@ jobs:
           pnpm web build:h5-netlify
 
       - name: Upload dist artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: dist
           path: apps/web/dist
@@ -41,7 +41,7 @@ jobs:
 
       - name: Upload PR number
         if: ${{ always() }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: pr
           path: ./pr-id.txt

@@ -6,10 +6,15 @@ import {
   fontFamilyOptions,
   fontSizeOptions,
   legendOptions,
+  themeMap,
   themeOptions,
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
-import { useDisplayStore, useStore } from '@/stores'
+import { useCssEditorStore } from '@/stores/cssEditor'
+import { useEditorStore } from '@/stores/editor'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -19,8 +24,13 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 
-const store = useStore()
-const { toggleShowCssEditor } = useDisplayStore()
+const themeStore = useThemeStore()
+const uiStore = useUIStore()
+const editorStore = useEditorStore()
+const renderStore = useRenderStore()
+const cssEditorStore = useCssEditorStore()
+
+const { toggleShowCssEditor } = uiStore
 
 const {
   theme,
@@ -30,19 +40,93 @@ const {
   codeBlockTheme,
   legend,
   isMacCodeBlock,
-  cssEditor,
-} = storeToRefs(store)
+} = storeToRefs(themeStore)
 
-const {
-  resetStyleConfirm,
-  themeChanged,
-  fontChanged,
-  sizeChanged,
-  colorChanged,
-  codeBlockThemeChanged,
-  legendChanged,
-  macCodeBlockChanged,
-} = store
+const { isDark } = storeToRefs(uiStore)
+
+// Editor refresh function - triggers re-render with current theme settings
+function editorRefresh() {
+  themeStore.updateCodeTheme()
+
+  const raw = editorStore.getContent()
+  renderStore.render(raw, {
+    isCiteStatus: themeStore.isCiteStatus,
+    legend: themeStore.legend,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+    isCountStatus: themeStore.isCountStatus,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+}
+
+// Theme change handlers
+function themeChanged(newTheme: keyof typeof themeMap) {
+  themeStore.theme = newTheme
+  renderStore.updateTheme(
+    cssEditorStore.getCurrentTabContent(),
+    themeMap[newTheme],
+    themeStore.fontFamily,
+    themeStore.fontSize,
+    themeStore.primaryColor,
+  )
+  editorRefresh()
+}
+
+function fontChanged(fonts: string) {
+  themeStore.fontFamily = fonts
+  renderStore.updateTheme(
+    cssEditorStore.getCurrentTabContent(),
+    themeMap[themeStore.theme],
+    fonts,
+    themeStore.fontSize,
+    themeStore.primaryColor,
+  )
+  editorRefresh()
+}
+
+function sizeChanged(size: string) {
+  themeStore.fontSize = size
+  renderStore.updateTheme(
+    cssEditorStore.getCurrentTabContent(),
+    themeMap[themeStore.theme],
+    themeStore.fontFamily,
+    size,
+    themeStore.primaryColor,
+  )
+  editorRefresh()
+}
+
+function colorChanged(newColor: string) {
+  themeStore.primaryColor = newColor
+  renderStore.updateTheme(
+    cssEditorStore.getCurrentTabContent(),
+    themeMap[themeStore.theme],
+    themeStore.fontFamily,
+    themeStore.fontSize,
+    newColor,
+  )
+  editorRefresh()
+}
+
+function codeBlockThemeChanged(newTheme: string) {
+  themeStore.codeBlockTheme = newTheme
+  editorRefresh()
+}
+
+function legendChanged(newVal: string) {
+  themeStore.legend = newVal
+  editorRefresh()
+}
+
+function macCodeBlockChanged() {
+  themeStore.isMacCodeBlock = !themeStore.isMacCodeBlock
+  editorRefresh()
+}
+
+function resetStyleConfirm() {
+  uiStore.isOpenConfirmDialog = true
+}
 
 const colorPicker = ref<HTMLElement & { show: () => void } | null>(null)
 
@@ -53,9 +137,6 @@ function showPicker() {
 // 自定义CSS样式
 function customStyle() {
   toggleShowCssEditor()
-  setTimeout(() => {
-    cssEditor.value!.refresh()
-  }, 50)
 }
 
 const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
@@ -119,9 +200,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                 v-model:value="primaryColor"
                 show-alpha
                 :format="format" :format-options="formatOptions"
-                :theme="store.isDark ? 'dark' : 'light'"
+                :theme="isDark ? 'dark' : 'light'"
                 :popup-container="pickColorsContainer!"
-                @change="store.colorChanged"
+                @change="colorChanged"
               />
             </div>
           </HoverCardContent>
@@ -194,9 +275,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                 v-model:value="primaryColor"
                 show-alpha
                 :format="format" :format-options="formatOptions"
-                :theme="store.isDark ? 'dark' : 'light'"
+                :theme="isDark ? 'dark' : 'light'"
                 :popup-container="pickColorsContainer!"
-                @change="store.colorChanged"
+                @change="colorChanged"
               />
             </div>
           </HoverCardContent>

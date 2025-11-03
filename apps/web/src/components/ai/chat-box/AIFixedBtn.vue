@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { Bot } from 'lucide-vue-next'
-import { useDisplayStore } from '@/stores'
+import { useUIStore } from '@/stores/ui'
 
 defineProps<{
   isMobile: boolean
   showEditor: boolean
 }>()
 
-const displayStore = useDisplayStore()
-const { aiDialogVisible } = storeToRefs(displayStore)
-const { toggleAIDialog } = displayStore
+const uiStore = useUIStore()
+const { aiDialogVisible } = storeToRefs(uiStore)
+const { toggleAIDialog } = uiStore
 </script>
 
 <template>

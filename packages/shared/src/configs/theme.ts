@@ -270,10 +270,7 @@ const defaultTheme: Theme = {
     },
 
     table: {
-      'border-collapse': `collapse`,
-      'text-align': `center`,
-      'margin': `1em 8px`,
-      'color': `hsl(var(--foreground))`,
+      color: `hsl(var(--foreground))`,
     },
 
     thead: {

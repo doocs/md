@@ -7,7 +7,7 @@ import {
   PlusSquare,
   Trash2,
 } from 'lucide-vue-next'
-import { useStore } from '@/stores'
+import { usePostStore } from '@/stores/post'
 
 interface Post {
   id: string
@@ -56,7 +56,8 @@ const props = defineProps<{
   togglePostSelection: (postId: string) => void
 }>()
 
-const store = useStore()
+const postStore = usePostStore()
+const { posts, currentPostId } = storeToRefs(postStore)
 
 /* ============ 新增内容 ============ */
 const isOpenAddDialog = ref(false)
@@ -75,7 +76,7 @@ function handleDragStart(id: string, e: DragEvent) {
 
 /* ============ 折叠展开 ============ */
 function togglePostExpanded(postId: string) {
-  const targetPost = store.posts.find(p => p.id === postId)
+  const targetPost = posts.value.find(p => p.id === postId)
   if (targetPost) {
     targetPost.collapsed = !targetPost.collapsed
   }
@@ -100,14 +101,19 @@ function isHasChild(postId: string) {
         // eslint-disable-next-line vue/prefer-separate-static-class
         'hover:text-primary-foreground hover:bg-primary',
         {
-          'bg-primary text-primary-foreground shadow-sm': store.currentPostId === post.id,
+          'bg-primary text-primary-foreground shadow-sm': currentPostId === post.id,
           'opacity-50': props.dragSourceId === post.id,
           'outline-2 outline-dashed outline-primary  border-gray-200 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50':
             props.dropTargetId === post.id,
         },
-      ]" draggable="true" @dragstart="handleDragStart(post.id, $event)" @dragend="props.handleDragEnd"
-      @drop.prevent="props.handleDrop(post.id)" @dragover.stop.prevent="props.setDropTargetId(post.id)"
-      @dragleave.prevent="props.setDropTargetId(null)" @click="store.currentPostId = post.id"
+      ]"
+      draggable="true"
+      @dragstart="handleDragStart(post.id, $event)"
+      @dragend="props.handleDragEnd"
+      @drop.prevent="props.handleDrop(post.id)"
+      @dragover.stop.prevent="props.setDropTargetId(post.id)"
+      @dragleave.prevent="props.setDropTargetId(null)"
+      @click="currentPostId = post.id"
     >
       <!-- 折叠展开图标 -->
       <Button
@@ -143,7 +149,10 @@ function isHasChild(postId: string) {
           <DropdownMenuItem @click.stop="props.openHistoryDialog(post.id)">
             <History class="mr-2 size-4" /> 历史记录
           </DropdownMenuItem>
-          <DropdownMenuItem v-if="store.posts.length > 1" @click.stop="props.startDelPost(post.id)">
+          <DropdownMenuItem
+            v-if="posts.length > 1"
+            @click.stop="props.startDelPost(post.id)"
+          >
             <Trash2 class="mr-2 size-4" /> 删除
           </DropdownMenuItem>
         </DropdownMenuContent>

@@ -1,7 +1,7 @@
 {
   "name": "md",
   "type": "module",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "private": false,
   "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "homepage": "https://github.com/doocs/md",
@@ -19,6 +19,7 @@
     "start": "pnpm web dev",
     "web": "pnpm --filter @md/web",
     "vscode": "pnpm --prefix ./apps/vscode",
+    "cli": "pnpm --filter @doocs/md-cli",
     "build:cli": "pnpm web build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r apps/web/dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "release:cli": "node ./scripts/release.js",
     "lint": "eslint . --fix",
@@ -27,18 +28,31 @@
     "inspector": "pnpx node-modules-inspector",
     "utools:package": "node ./scripts/package-utools.mjs"
   },
+  "dependencies": {
+    "@codemirror/state": "^6.5.2",
+    "@codemirror/view": "^6.38.6"
+  },
   "devDependencies": {
-    "@antfu/eslint-config": "5.4.1",
-    "@types/node": "^24.6.0",
+    "@antfu/eslint-config": "6.1.0",
+    "@types/node": "^24.9.2",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
-    "eslint": "^9.36.0",
+    "eslint": "^9.38.0",
     "eslint-plugin-format": "^1.0.2",
     "npm-run-all": "^4.1.5",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.12.1",
     "typescript": "~5.9.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "core-js@<3": "^3.46.0",
+      "glob@<8": "^10.4.5",
+      "inflight": "npm:@hishprorg/voluptates-laborum@^2.0.0",
+      "source-map@0.8.0-beta.0": "0.7.4",
+      "workbox-build>source-map": "0.7.4"
+    }
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"

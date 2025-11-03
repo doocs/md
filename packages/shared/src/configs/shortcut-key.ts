@@ -1,6 +1,6 @@
 const isMac = /Mac/i.test(navigator.userAgent)
 
-export const ctrlKey = isMac ? `Cmd` : `Ctrl`
+export const ctrlKey = `Mod`
 export const altKey = `Alt`
 export const shiftKey = `Shift`
 

@@ -1,11 +1,12 @@
 {
   "name": "@doocs/md-cli",
-  "version": "0.1.4",
+  "version": "2.1.3",
   "type": "module",
   "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon index.js"
   },
   "bin": {
     "md-cli": "index.js"
@@ -18,14 +19,24 @@
     "util.js"
   ],
   "keywords": [],
-  "author": "wll8",
+  "author": "yanglbme",
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doocs/md"
+  },
+  "bugs": {
+    "url": "https://github.com/doocs/md/issues"
+  },
   "dependencies": {
     "express": "^5.1.0",
-    "multer": "^2.0.2",
-    "http-proxy-middleware": "^3.0.5",
     "form-data": "4.0.4",
     "get-port": "7.1.0",
+    "http-proxy-middleware": "^3.0.5",
+    "multer": "^2.0.2",
     "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
   }
 }

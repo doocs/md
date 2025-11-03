@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import useAIImageConfigStore from '@/stores/AIImageConfig'
+import useAIImageConfigStore from '@/stores/aiImageConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
 
@@ -39,6 +39,11 @@ watch(type, () => {
 
 // 监听模型变化，清空测试结果
 watch(model, () => {
+  testResult.value = ``
+})
+
+// 监听端点变化，清空测试结果
+watch(endpoint, () => {
   testResult.value = ``
 })
 
@@ -172,7 +177,7 @@ const styleOptions = [
         type="url"
         class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
         placeholder="https://api.openai.com/v1"
-        readonly
+        :readonly="type !== 'custom'"
       >
     </div>
 
@@ -189,7 +194,7 @@ const styleOptions = [
     <!-- 模型选择 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">模型</Label>
-      <Select v-model="model">
+      <Select v-if="type !== 'custom' && currentService.models.length > 0" v-model="model">
         <SelectTrigger class="w-full">
           <SelectValue>
             {{ model || '请选择模型' }}
@@ -205,6 +210,13 @@ const styleOptions = [
           </SelectItem>
         </SelectContent>
       </Select>
+      <input
+        v-else
+        v-model="model"
+        type="text"
+        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+        placeholder="输入模型名称，如：dall-e-3"
+      >
     </div>
 
     <!-- 图像尺寸 -->
@@ -278,6 +290,20 @@ const styleOptions = [
           默认图像服务
         </p>
         <p>免费使用，无需配置 API Key，支持 Kwai-Kolors/Kolors 模型。</p>
+      </div>
+    </div>
+
+    <!-- 自定义服务说明 -->
+    <div v-else-if="type === 'custom'" class="flex items-start gap-2 p-3 bg-orange-50 dark:bg-orange-950/30 rounded-md text-sm">
+      <Info class="h-4 w-4 text-orange-500 mt-0.5 flex-shrink-0" />
+      <div class="text-orange-700 dark:text-orange-300">
+        <p class="font-medium">
+          自定义服务
+        </p>
+        <p>可配置任何兼容 OpenAI 图像生成 API 的服务，如自建的 API 代理或其他第三方服务。</p>
+        <p class="mt-1 text-xs">
+          端点格式示例：https://your-api.com/v1
+        </p>
       </div>
     </div>
 

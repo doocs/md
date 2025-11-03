@@ -103,24 +103,23 @@ pnpm i
 
 # 启动开发模式
 pnpm web dev
+# 访问 http://localhost:5173/md/
 
 # 部署在 /md 目录
 pnpm web build
-# 访问 http://127.0.0.1:9000/md
 
 # 部署在根目录
 pnpm web build:h5-netlify
-# 访问 http://127.0.0.1:9000/
 
 # Chrome 插件启动及调试
 pnpm web ext:dev
-# 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 .output/chrome-mv3-dev 目录
+# 访问 chrome://extensions/ 打开开发者模式，加载已解压的扩展程序，选择 apps/web/.output/chrome-mv3-dev 目录
 
 # Chrome 插件打包
 pnpm web ext:zip
 
 # Firefox 扩展打包(how to build Firefox addon)
-pnpm web firefox:zip # output zip file at in .output/md-{version}-firefox.zip
+pnpm web firefox:zip # output zip file at in apps/web/.output/md-{version}-firefox.zip
 
 # uTools 插件打包
 pnpm utools:package # output zip file at apps/utools/release/md-utools-v{version}.zip
@@ -144,13 +143,13 @@ npm i -g @doocs/md-cli
 md-cli
 
 # 访问
-open http://127.0.0.1:8800/md/
+open http://127.0.0.1:8800
 
 # 启动并指定端口
 md-cli port=8899
 
 # 访问
-open http://127.0.0.1:8899/md/
+open http://127.0.0.1:8899
 ```
 
 md-cli 支持以下命令行参数：

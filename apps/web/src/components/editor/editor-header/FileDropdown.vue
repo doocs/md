@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Download, FileCode, FileCog, FileText, Upload } from 'lucide-vue-next'
-import { useStore } from '@/stores'
+import { useEditorStore } from '@/stores/editor'
+import { useExportStore } from '@/stores/export'
+import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -12,22 +14,37 @@ const emit = defineEmits([`openEditorState`])
 
 const { asSub } = toRefs(props)
 
-const store = useStore()
+const editorStore = useEditorStore()
+const exportStore = useExportStore()
+const uiStore = useUIStore()
 
-const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(store)
-
-const {
-  exportEditorContent2HTML,
-  exportEditorContent2PureHTML,
-  exportEditorContent2MD,
-  downloadAsCardImage,
-  exportEditorContent2PDF,
-} = store
+const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(uiStore)
 
 const importMarkdownContent = useImportMarkdownContent()
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
+}
+
+// Export functions
+function exportEditorContent2HTML() {
+  exportStore.exportEditorContent2HTML()
+}
+
+function exportEditorContent2PureHTML() {
+  exportStore.exportEditorContent2PureHTML(editorStore.getContent())
+}
+
+function exportEditorContent2MD() {
+  exportStore.exportEditorContent2MD(editorStore.getContent())
+}
+
+function downloadAsCardImage() {
+  exportStore.downloadAsCardImage()
+}
+
+function exportEditorContent2PDF() {
+  exportStore.exportEditorContent2PDF()
 }
 </script>
 

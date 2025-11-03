@@ -1,7 +1,11 @@
 <script setup lang="ts">
 import { storeLabels } from '@md/shared/configs'
 import { Expand, UploadCloud } from 'lucide-vue-next'
-import { getAllStoreStates, useDisplayStore, useStore } from '@/stores'
+import { useCssEditorStore } from '@/stores/cssEditor'
+import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 import { downloadFile } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
 
@@ -11,8 +15,12 @@ const props = defineProps({
     default: false,
   },
 })
-
 const emit = defineEmits([`close`])
+const themeStore = useThemeStore()
+const uiStore = useUIStore()
+const postStore = usePostStore()
+const cssEditorStore = useCssEditorStore()
+const renderStore = useRenderStore()
 
 watch(
   () => props.visible,
@@ -50,6 +58,51 @@ const storeStates = ref<{
 })
 
 // 获取状态并初始化选中状态
+function getAllStoreStates() {
+  return {
+    // UI store 的状态
+    isDark: uiStore.isDark,
+    isEditOnLeft: uiStore.isEditOnLeft,
+    isOpenRightSlider: uiStore.isOpenRightSlider,
+    isOpenPostSlider: uiStore.isOpenPostSlider,
+    showAIToolbox: uiStore.showAIToolbox,
+
+    // Theme store 的状态
+    theme: themeStore.theme,
+    fontFamily: themeStore.fontFamily,
+    fontSize: themeStore.fontSize,
+    primaryColor: themeStore.primaryColor,
+    codeBlockTheme: themeStore.codeBlockTheme,
+    legend: themeStore.legend,
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+    isCiteStatus: themeStore.isCiteStatus,
+    isCountStatus: themeStore.isCountStatus,
+    isUseIndent: themeStore.isUseIndent,
+    isUseJustify: themeStore.isUseJustify,
+
+    // Post store 的状态
+    currentPostId: postStore.currentPostId,
+    currentPostIndex: postStore.currentPostIndex,
+    posts: postStore.posts,
+
+    // CSS Editor store 的状态
+    cssContentConfig: cssEditorStore.cssContentConfig,
+
+    // Render store 的状态
+    titleList: renderStore.titleList,
+    readingTime: renderStore.readingTime,
+
+    // Display store 的状态
+    isShowCssEditor: uiStore.isShowCssEditor,
+    isShowInsertFormDialog: uiStore.isShowInsertFormDialog,
+    isShowUploadImgDialog: uiStore.isShowUploadImgDialog,
+    isShowInsertMpCardDialog: uiStore.isShowInsertMpCardDialog,
+    aiDialogVisible: uiStore.aiDialogVisible,
+    aiImageDialogVisible: uiStore.aiImageDialogVisible,
+  }
+}
+
 async function fetchStoreStates() {
   try {
     const states = getAllStoreStates()
@@ -187,10 +240,6 @@ function handleFileImport(event: Event) {
   input.value = `` // 重置input，允许重复选择同一文件
 }
 
-const store = useStore()
-const displayStore = useDisplayStore()
-// const { editorRefresh } = store
-
 // 应用导入的配置
 function applyImportedConfig() {
   if (!filteredImportJSON.value)
@@ -198,18 +247,79 @@ function applyImportedConfig() {
 
   Object.keys(importStates.value.selected).forEach((key) => {
     if (importStates.value.selected[key] && importStates.value.data?.[key] !== undefined) {
-      // 主store的状态
-      if (key in store) {
-        ;(store as any)[key] = importStates.value.data[key]
-      }
-      // displayStore的状态
-      else if (key in displayStore) {
-        ;(displayStore as any)[key] = importStates.value.data[key]
-      }
+      const value = importStates.value.data[key]
+
+      // UI store 的状态
+      if (key === `isDark`)
+        uiStore.isDark = value
+      else if (key === `isEditOnLeft`)
+        uiStore.isEditOnLeft = value
+      else if (key === `isOpenRightSlider`)
+        uiStore.isOpenRightSlider = value
+      else if (key === `isOpenPostSlider`)
+        uiStore.isOpenPostSlider = value
+      else if (key === `showAIToolbox`)
+        uiStore.showAIToolbox = value
+
+      // Theme store 的状态
+      else if (key === `theme`)
+        themeStore.theme = value
+      else if (key === `fontFamily`)
+        themeStore.fontFamily = value
+      else if (key === `fontSize`)
+        themeStore.fontSize = value
+      else if (key === `primaryColor`)
+        themeStore.primaryColor = value
+      else if (key === `codeBlockTheme`)
+        themeStore.codeBlockTheme = value
+      else if (key === `legend`)
+        themeStore.legend = value
+      else if (key === `isMacCodeBlock`)
+        themeStore.isMacCodeBlock = value
+      else if (key === `isShowLineNumber`)
+        themeStore.isShowLineNumber = value
+      else if (key === `isCiteStatus`)
+        themeStore.isCiteStatus = value
+      else if (key === `isCountStatus`)
+        themeStore.isCountStatus = value
+      else if (key === `isUseIndent`)
+        themeStore.isUseIndent = value
+      else if (key === `isUseJustify`)
+        themeStore.isUseJustify = value
+
+      // Post store 的状态
+      else if (key === `currentPostId`)
+        postStore.currentPostId = value
+      else if (key === `currentPostIndex`)
+        postStore.currentPostIndex = value
+      else if (key === `posts`)
+        postStore.posts = value
+
+      // CSS Editor store 的状态
+      else if (key === `cssContentConfig`)
+        cssEditorStore.cssContentConfig = value
+
+      // Render store 的状态
+      else if (key === `titleList`)
+        renderStore.titleList = value
+      else if (key === `readingTime`)
+        renderStore.readingTime = value
+
+      // Display store 的状态
+      else if (key === `isShowCssEditor`)
+        uiStore.isShowCssEditor = value
+      else if (key === `isShowInsertFormDialog`)
+        uiStore.isShowInsertFormDialog = value
+      else if (key === `isShowUploadImgDialog`)
+        uiStore.isShowUploadImgDialog = value
+      else if (key === `isShowInsertMpCardDialog`)
+        uiStore.isShowInsertMpCardDialog = value
+      else if (key === `aiDialogVisible`)
+        uiStore.aiDialogVisible = value
+      else if (key === `aiImageDialogVisible`)
+        uiStore.aiImageDialogVisible = value
     }
   })
-
-  // editorRefresh()
 
   toast.success(`配置应用成功，请刷新页面查看效果`)
   emit(`close`)

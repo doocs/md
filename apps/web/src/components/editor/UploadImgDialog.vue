@@ -3,12 +3,12 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
-import { useDisplayStore } from '@/stores'
-import { checkImage } from '@/utils'
+import { useUIStore } from '@/stores/ui'
+import { checkImage, store } from '@/utils'
 
 const emit = defineEmits([`uploadImage`])
 
-const displayStore = useDisplayStore()
+const uiStore = useUIStore()
 
 // github
 const githubSchema = toTypedSchema(yup.object({
@@ -17,13 +17,10 @@ const githubSchema = toTypedSchema(yup.object({
   accessToken: yup.string().required(`GitHub Token 不能为空`),
 }))
 
-const githubConfig = ref(localStorage.getItem(`githubConfig`)
-  ? JSON.parse(localStorage.getItem(`githubConfig`)!)
-  : { repo: ``, branch: ``, accessToken: `` })
+const githubConfig = store.reactive(`githubConfig`, { repo: ``, branch: ``, accessToken: `` })
 
-function githubSubmit(formValues: any) {
-  localStorage.setItem(`githubConfig`, JSON.stringify(formValues))
-  githubConfig.value = formValues
+async function githubSubmit(formValues: any) {
+  Object.assign(githubConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -38,21 +35,18 @@ const aliOSSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const aliOSSConfig = ref(localStorage.getItem(`aliOSSConfig`)
-  ? JSON.parse(localStorage.getItem(`aliOSSConfig`)!)
-  : {
-      accessKeyId: ``,
-      accessKeySecret: ``,
-      bucket: ``,
-      region: ``,
-      useSSL: true,
-      cdnHost: ``,
-      path: ``,
-    })
+const aliOSSConfig = store.reactive(`aliOSSConfig`, {
+  accessKeyId: ``,
+  accessKeySecret: ``,
+  bucket: ``,
+  region: ``,
+  useSSL: true,
+  cdnHost: ``,
+  path: ``,
+})
 
-function aliOSSSubmit(formValues: any) {
-  localStorage.setItem(`aliOSSConfig`, JSON.stringify(formValues))
-  aliOSSConfig.value = formValues
+async function aliOSSSubmit(formValues: any) {
+  Object.assign(aliOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -66,20 +60,17 @@ const txCOSSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const txCOSConfig = ref(localStorage.getItem(`txCOSConfig`)
-  ? JSON.parse(localStorage.getItem(`txCOSConfig`)!)
-  : {
-      secretId: ``,
-      secretKey: ``,
-      bucket: ``,
-      region: ``,
-      cdnHost: ``,
-      path: ``,
-    })
+const txCOSConfig = store.reactive(`txCOSConfig`, {
+  secretId: ``,
+  secretKey: ``,
+  bucket: ``,
+  region: ``,
+  cdnHost: ``,
+  path: ``,
+})
 
-function txCOSSubmit(formValues: any) {
-  localStorage.setItem(`txCOSConfig`, JSON.stringify(formValues))
-  txCOSConfig.value = formValues
+async function txCOSSubmit(formValues: any) {
+  Object.assign(txCOSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -93,20 +84,17 @@ const qiniuSchema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const qiniuConfig = ref(localStorage.getItem(`qiniuConfig`)
-  ? JSON.parse(localStorage.getItem(`qiniuConfig`)!)
-  : {
-      accessKey: ``,
-      secretKey: ``,
-      bucket: ``,
-      domain: ``,
-      region: ``,
-      path: ``,
-    })
+const qiniuConfig = store.reactive(`qiniuConfig`, {
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  region: ``,
+  path: ``,
+})
 
-function qiniuSubmit(formValues: any) {
-  localStorage.setItem(`qiniuConfig`, JSON.stringify(formValues))
-  qiniuConfig.value = formValues
+async function qiniuSubmit(formValues: any) {
+  Object.assign(qiniuConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -120,20 +108,17 @@ const minioOSSSchema = toTypedSchema(yup.object({
   secretKey: yup.string().required(`SecretKey 不能为空`),
 }))
 
-const minioOSSConfig = ref(localStorage.getItem(`minioConfig`)
-  ? JSON.parse(localStorage.getItem(`minioConfig`)!)
-  : {
-      endpoint: ``,
-      port: ``,
-      useSSL: true,
-      bucket: ``,
-      accessKey: ``,
-      secretKey: ``,
-    })
+const minioOSSConfig = store.reactive(`minioConfig`, {
+  endpoint: ``,
+  port: ``,
+  useSSL: true,
+  bucket: ``,
+  accessKey: ``,
+  secretKey: ``,
+})
 
-function minioOSSSubmit(formValues: any) {
-  localStorage.setItem(`minioConfig`, JSON.stringify(formValues))
-  minioOSSConfig.value = formValues
+async function minioOSSSubmit(formValues: any) {
+  Object.assign(minioOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -144,14 +129,11 @@ const telegramSchema = toTypedSchema(
     chatId: yup.string().required(`Chat ID 不能为空`),
   }),
 )
-const telegramConfig = ref(
-  localStorage.getItem(`telegramConfig`)
-    ? JSON.parse(localStorage.getItem(`telegramConfig`)!)
-    : { token: ``, chatId: `` },
-)
-function telegramSubmit(values: any) {
-  localStorage.setItem(`telegramConfig`, JSON.stringify(values))
-  telegramConfig.value = values
+
+const telegramConfig = store.reactive(`telegramConfig`, { token: ``, chatId: `` })
+
+async function telegramSubmit(values: any) {
+  Object.assign(telegramConfig.value, values)
   toast.success(`保存成功`)
 }
 
@@ -159,15 +141,15 @@ function telegramSubmit(values: any) {
 // 当前是否为网页（http/https 协议）
 const isWebsite = window.location.protocol.startsWith(`http`)
 
-// Cloudflare Pages 环境
-const isCfPage = import.meta.env.CF_PAGES === `1`
+// Cloudflare Workers 环境
+const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 
 // 插件模式运行（如 chrome-extension://）
 const isPluginMode = !isWebsite
 
 // 是否需要填写 proxyOrigin（只在 非插件 且 非CF页面 时需要）
 const isProxyRequired = computed(() => {
-  return !isPluginMode && !isCfPage
+  return !isPluginMode && !isCfWorkers
 })
 
 const mpPlaceholder = computed(() => {
@@ -186,17 +168,14 @@ const mpSchema = computed(() =>
   })),
 )
 
-const mpConfig = ref(localStorage.getItem(`mpConfig`)
-  ? JSON.parse(localStorage.getItem(`mpConfig`)!)
-  : {
-      proxyOrigin: ``,
-      appID: ``,
-      appsecret: ``,
-    })
+const mpConfig = store.reactive(`mpConfig`, {
+  proxyOrigin: ``,
+  appID: ``,
+  appsecret: ``,
+})
 
-function mpSubmit(formValues: any) {
-  localStorage.setItem(`mpConfig`, JSON.stringify(formValues))
-  mpConfig.value = formValues
+async function mpSubmit(formValues: any) {
+  Object.assign(mpConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -210,20 +189,17 @@ const r2Schema = toTypedSchema(yup.object({
   path: yup.string().optional(),
 }))
 
-const r2Config = ref(localStorage.getItem(`r2Config`)
-  ? JSON.parse(localStorage.getItem(`r2Config`)!)
-  : {
-      accountId: ``,
-      accessKey: ``,
-      secretKey: ``,
-      bucket: ``,
-      domain: ``,
-      path: ``,
-    })
+const r2Config = store.reactive(`r2Config`, {
+  accountId: ``,
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  path: ``,
+})
 
-function r2Submit(formValues: any) {
-  localStorage.setItem(`r2Config`, JSON.stringify(formValues))
-  r2Config.value = formValues
+async function r2Submit(formValues: any) {
+  Object.assign(r2Config.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -238,19 +214,16 @@ const upyunSchema = computed(() => toTypedSchema(
   }),
 ))
 
-const upyunConfig = ref(localStorage.getItem(`upyunConfig`)
-  ? JSON.parse(localStorage.getItem(`upyunConfig`)!)
-  : {
-      bucket: ``,
-      operator: ``,
-      password: ``,
-      domain: ``,
-      path: ``,
-    })
+const upyunConfig = store.reactive(`upyunConfig`, {
+  bucket: ``,
+  operator: ``,
+  password: ``,
+  domain: ``,
+  path: ``,
+})
 
-function upyunSubmit(formValues: any) {
-  localStorage.setItem(`upyunConfig`, JSON.stringify(formValues))
-  upyunConfig.value = formValues
+async function upyunSubmit(formValues: any) {
+  Object.assign(upyunConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -270,22 +243,17 @@ const cloudinarySchema = toTypedSchema(
   }),
 )
 
-const cloudinaryConfig = ref(
-  localStorage.getItem(`cloudinaryConfig`)
-    ? JSON.parse(localStorage.getItem(`cloudinaryConfig`)!)
-    : {
-        cloudName: ``,
-        apiKey: ``,
-        apiSecret: ``,
-        uploadPreset: ``,
-        folder: ``,
-        domain: ``,
-      },
-)
+const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
+  cloudName: ``,
+  apiKey: ``,
+  apiSecret: ``,
+  uploadPreset: ``,
+  folder: ``,
+  domain: ``,
+})
 
-function cloudinarySubmit(formValues: any) {
-  localStorage.setItem(`cloudinaryConfig`, JSON.stringify(formValues))
-  cloudinaryConfig.value = formValues
+async function cloudinarySubmit(formValues: any) {
+  Object.assign(cloudinaryConfig.value, formValues)
   toast.success(`保存成功`)
 }
 
@@ -338,28 +306,19 @@ const options = [
   },
 ]
 
-const imgHost = ref(`default`)
-const useCompression = ref(false)
+const imgHost = store.reactive(`imgHost`, `default`)
+const useCompression = store.reactive(`useCompression`, false)
 const activeName = ref(`upload`)
 
-onBeforeMount(() => {
-  if (localStorage.getItem(`imgHost`)) {
-    imgHost.value = localStorage.getItem(`imgHost`)!
-  }
-  const storedCompression = localStorage.getItem(`useCompression`)
-  if (storedCompression !== null) {
-    useCompression.value = storedCompression === `true`
-  }
-})
-
-function changeImgHost() {
-  localStorage.setItem(`imgHost`, imgHost.value)
+async function changeImgHost() {
   toast.success(`图床已切换`)
 }
-function changeCompression() {
-  localStorage.setItem(`useCompression`, useCompression.value.toString())
+
+async function changeCompression() {
+  // reactive 会自动保存，不需要手动操作
 }
-function beforeImageUpload(file: File) {
+
+async function beforeImageUpload(file: File) {
   // check image
   const checkResult = checkImage(file)
   if (!checkResult.ok) {
@@ -367,14 +326,12 @@ function beforeImageUpload(file: File) {
     return false
   }
   // check image host
-  let imgHost = localStorage.getItem(`imgHost`)
-  imgHost = imgHost || `default`
-  localStorage.setItem(`imgHost`, imgHost)
+  const imgHostValue = imgHost.value || `default`
 
-  const config = localStorage.getItem(`${imgHost}Config`)
-  const isValidHost = imgHost === `default` || config
+  const config = await store.get(`${imgHostValue}Config`)
+  const isValidHost = imgHostValue === `default` || config
   if (!isValidHost) {
-    toast.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(`请先配置 ${imgHostValue} 图床参数`)
     return false
   }
   return true
@@ -386,22 +343,26 @@ const { open, reset, onChange } = useFileDialog({
   accept: `image/*`,
 })
 
-onChange((files) => {
+onChange(async (files) => {
   if (files == null) {
     return
   }
 
   const file = files[0]
 
-  beforeImageUpload(file) && emitUploads(file)
+  if (await beforeImageUpload(file)) {
+    emitUploads(file)
+  }
   reset()
 })
 
-function onDrop(e: DragEvent) {
+async function onDrop(e: DragEvent) {
   dragover.value = false
   e.stopPropagation()
   const file = Array.from(e.dataTransfer!.files)[0]
-  beforeImageUpload(file) && emitUploads(file)
+  if (await beforeImageUpload(file)) {
+    emitUploads(file)
+  }
 }
 const progressValue = ref(0)
 const imageUrl = ref(``)
@@ -436,7 +397,7 @@ function emitUploads(file: File) {
 </script>
 
 <template>
-  <Dialog v-model:open="displayStore.isShowUploadImgDialog">
+  <Dialog v-model:open="uiStore.isShowUploadImgDialog">
     <DialogContent class="md:max-w-max max-h-[90vh] overflow-y-auto" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
