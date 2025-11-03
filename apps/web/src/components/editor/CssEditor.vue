@@ -88,9 +88,6 @@ function addTab() {
   // addCssContentTab 会自动设置 active 并触发回调
   cssEditorStore.addCssContentTab(addInputVal.value, initialContent)
 
-  // 更新 tabHistory
-  tabHistory.value = [tabHistory.value[1], addInputVal.value]
-
   isOpenAddDialog.value = false
   toast.success(`新建成功`)
 
@@ -167,10 +164,6 @@ function tabChanged(tabName: string | number) {
   if (tabName === `add`) {
     // 不要跳回之前的 tab，直接打开新建对话框
     addHandler()
-    // 恢复到之前的 active tab（防止 UI 上显示 "add" tab 被选中）
-    nextTick(() => {
-      cssContentConfig.value.active = tabHistory.value[1]
-    })
     return
   }
 
