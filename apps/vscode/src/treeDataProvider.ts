@@ -1,4 +1,4 @@
-import type { themeMap } from '@md/shared/configs'
+import type { ThemeName } from '@md/shared/configs'
 import * as vscode from 'vscode'
 import { colorOptions, fontFamilyOptions, fontSizeOptions, themeOptions } from './styleChoices'
 
@@ -6,7 +6,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
   private _onDidChangeTreeData: vscode.EventEmitter<vscode.TreeItem | undefined> = new vscode.EventEmitter<vscode.TreeItem | undefined>()
   readonly onDidChangeTreeData: vscode.Event<vscode.TreeItem | undefined> = this._onDidChangeTreeData.event
   private currentFontSize: string
-  private currentTheme: keyof typeof themeMap
+  private currentTheme: ThemeName
   private currentPrimaryColor: string
   private currentFontFamily: string
   private countStatus: boolean
@@ -157,7 +157,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this._onDidChangeTreeData.fire(undefined)
   }
 
-  updateTheme(theme: keyof typeof themeMap) {
+  updateTheme(theme: ThemeName) {
     this.currentTheme = theme
     this.context.workspaceState.update(`markdownPreview.theme`, theme)
     this._onDidChangeTreeData.fire(undefined)
@@ -183,7 +183,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     return Number(this.currentFontSize.replace(`px`, ``))
   }
 
-  getCurrentTheme(): keyof typeof themeMap {
+  getCurrentTheme(): ThemeName {
     return this.currentTheme
   }
 
