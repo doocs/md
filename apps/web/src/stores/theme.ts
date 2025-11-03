@@ -1,4 +1,4 @@
-import type { themeMap } from '@md/shared/configs'
+import type { ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { addPrefix, store } from '@/utils'
@@ -9,7 +9,7 @@ import { addPrefix, store } from '@/utils'
  */
 export const useThemeStore = defineStore(`theme`, () => {
   // 文本主题
-  const theme = store.reactive<keyof typeof themeMap>(addPrefix(`theme`), defaultStyleConfig.theme)
+  const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)
 
   // 文本字体
   const fontFamily = store.reactive(`fonts`, defaultStyleConfig.fontFamily)

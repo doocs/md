@@ -16,10 +16,10 @@ export const baseCSSContent = baseCSS
 /**
  * CSS 主题映射表
  */
-export const themeMapCSS = {
+export const themeMap = {
   default: defaultCSS,
   grace: graceCSS,
   simple: simpleCSS,
 } as const
 
-export type ThemeNameCSS = keyof typeof themeMapCSS
+export type ThemeName = keyof typeof themeMap

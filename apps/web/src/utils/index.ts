@@ -4,7 +4,6 @@ import { prefix } from '@md/shared/configs'
 import {
   checkImage,
   createTable,
-  css2json,
   downloadFile,
   formatDoc,
   removeLeft,
@@ -27,7 +26,6 @@ export {
 export {
   checkImage,
   createTable,
-  css2json,
   downloadFile,
   formatDoc,
   removeLeft,
@@ -35,10 +33,8 @@ export {
   toBase64,
 }
 
+// 导出新主题系统需要的函数
 export {
-  customCssWithTemplate,
-  customizeTheme,
-  getStyleString,
   modifyHtmlContent,
   postProcessHtml,
   renderMarkdown,

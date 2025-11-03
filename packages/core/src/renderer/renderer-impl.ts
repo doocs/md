@@ -1,14 +1,11 @@
-import type { ExtendedProperties, IOpts, RendererAPI, ThemeStyles } from '@md/shared/types'
-import type { PropertiesHyphen } from 'csstype'
+import type { IOpts, RendererAPI } from '@md/shared/types'
 import type { RendererObject, Tokens } from 'marked'
 import type { ReadTimeResults } from 'reading-time'
-import { cloneDeep, toMerged } from 'es-toolkit'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
 import readingTime from 'reading-time'
 import { markedAlert, markedFootnotes, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
-import { getStyleString } from '../utils'
 import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
 Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
@@ -21,37 +18,6 @@ marked.setOptions({
   breaks: true,
 })
 marked.use(markedSlider())
-
-function buildTheme({ theme: _theme, fonts, size, isUseIndent, isUseJustify }: IOpts): ThemeStyles {
-  const theme = cloneDeep(_theme)
-  const base = toMerged(theme.base, {
-    'font-family': fonts,
-    'font-size': size,
-  })
-
-  if (isUseIndent) {
-    theme.block.p = {
-      'text-indent': `2em`,
-      ...theme.block.p,
-    }
-  }
-
-  if (isUseJustify) {
-    theme.block.p = {
-      'text-align': `justify`,
-      ...theme.block.p,
-    }
-  }
-
-  const mergeStyles = (styles: Record<string, PropertiesHyphen>): Record<string, ExtendedProperties> =>
-    Object.fromEntries(
-      Object.entries(styles).map(([ele, style]) => [ele, toMerged(base, style)]),
-    )
-  return {
-    ...mergeStyles(theme.inline),
-    ...mergeStyles(theme.block),
-  } as ThemeStyles
-}
 
 function escapeHtml(text: string): string {
   return text
@@ -80,15 +46,6 @@ function buildAddition(): string {
       }
     </style>
   `
-}
-
-function getStyles(styleMapping: ThemeStyles, tokenName: string, addition: string = ``): string {
-  const dict = styleMapping[tokenName as keyof ThemeStyles]
-  if (!dict) {
-    return ``
-  }
-  const styles = getStyleString(dict)
-  return `style="${styles}${addition}"`
 }
 
 function buildFootnoteArray(footnotes: [number, string, string][]): string {
@@ -152,10 +109,9 @@ function parseFrontMatterAndContent(markdownText: string): ParseResult {
   }
 }
 
-export function initRenderer(opts: IOpts): RendererAPI {
+export function initRenderer(opts: IOpts = {}): RendererAPI {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
-  let styleMapping: ThemeStyles = buildTheme(opts)
   let codeIndex: number = 0
   const listOrderedStack: boolean[] = []
   const listCounters: number[] = []
@@ -164,14 +120,17 @@ export function initRenderer(opts: IOpts): RendererAPI {
     return opts
   }
 
-  function styles(tag: string, addition: string = ``): string {
-    return getStyles(styleMapping, tag, addition)
-  }
-
+  /**
+   * 生成带 CSS 类的内容（新主题系统）
+   * @param styleLabel CSS 类名标识
+   * @param content 内容
+   * @param tagName HTML 标签名（可选）
+   */
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    // 新主题系统：不再输出内联样式，让 CSS 选择器生效
-    return `<${tag} ${/^h\d$/.test(tag) ? `data-heading="true"` : ``}>${content}</${tag}>`
+    const className = `md-${styleLabel.replace(/_/g, `-`)}`
+    const headingAttr = /^h\d$/.test(tag) ? ` data-heading="true"` : ``
+    return `<${tag} class="${className}"${headingAttr}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
@@ -194,15 +153,10 @@ export function initRenderer(opts: IOpts): RendererAPI {
 
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
-    const oldStyle = JSON.stringify(styleMapping)
-    styleMapping = buildTheme(opts)
-    const newStyle = JSON.stringify(styleMapping)
-    if (oldStyle !== newStyle) {
-      // 新主题系统：扩展不再需要 styles 参数
-      marked.use(markedAlert({}))
-      marked.use(MDKatex({ nonStandard: true }, true))
-      marked.use(markedMarkup())
-    }
+    // 新主题系统：扩展不再需要 styles 参数
+    marked.use(markedAlert())
+    marked.use(MDKatex({ nonStandard: true }, true))
+    marked.use(markedMarkup())
   }
 
   function buildReadingTime(readingTime: ReadTimeResults): string {
@@ -213,8 +167,8 @@ export function initRenderer(opts: IOpts): RendererAPI {
       return ``
     }
     return `
-      <blockquote ${styles(`blockquote`)}>
-        <p ${styles(`blockquote_p`)}>字数 ${readingTime?.words}，阅读大约需 ${Math.ceil(readingTime?.minutes)} 分钟</p>
+      <blockquote class="md-blockquote">
+        <p class="md-blockquote-p">字数 ${readingTime?.words}，阅读大约需 ${Math.ceil(readingTime?.minutes)} 分钟</p>
       </blockquote>
     `
   }

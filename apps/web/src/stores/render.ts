@@ -1,7 +1,5 @@
 import { initRenderer } from '@md/core'
-import { themeMap } from '@md/shared/configs'
-import { css2json, customCssWithTemplate, customizeTheme, postProcessHtml, renderMarkdown } from '@/utils'
-import { useThemeStore } from './theme'
+import { postProcessHtml, renderMarkdown } from '@/utils'
 
 /**
  * 渲染 Store
@@ -28,40 +26,20 @@ export const useRenderStore = defineStore(`render`, () => {
   // 渲染器实例（延迟初始化）
   let renderer: ReturnType<typeof initRenderer> | null = null
 
-  // 初始化渲染器
-  const initRendererInstance = (cssContent: string, theme: any, fonts: string, size: string, options: any) => {
-    const fontSize = Number(size.replace(`px`, ``))
-    const themeConfig = customCssWithTemplate(
-      css2json(cssContent),
-      options.primaryColor,
-      customizeTheme(theme, { fontSize, color: options.primaryColor }),
-    )
-
-    renderer = initRenderer({
-      theme: themeConfig,
-      fonts,
-      size,
-      isUseIndent: options.isUseIndent,
-      isUseJustify: options.isUseJustify,
-      isMacCodeBlock: options.isMacCodeBlock,
-      isShowLineNumber: options.isShowLineNumber,
-    })
-
+  /**
+   * 初始化渲染器（新主题系统）
+   * 主题样式通过 useThemeStore().applyCurrentTheme() 注入到 <style> 标签
+   */
+  const initRendererInstance = (options?: {
+    isMacCodeBlock?: boolean
+    isShowLineNumber?: boolean
+  }) => {
+    renderer = initRenderer(options || {})
     return renderer
   }
 
   // 获取渲染器
   const getRenderer = () => renderer
-
-  // 获取主题配置
-  const getTheme = (cssContent: string, theme: any, size: string, color: string) => {
-    const fontSize = Number(size.replace(`px`, ``))
-    return customCssWithTemplate(
-      css2json(cssContent),
-      color,
-      customizeTheme(theme, { fontSize, color }),
-    )
-  }
 
   // 提取标题
   const extractTitles = () => {
@@ -90,11 +68,10 @@ export const useRenderStore = defineStore(`render`, () => {
     }
 
     // 重置渲染器配置
+    // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
     renderer.reset({
       citeStatus: options.isCiteStatus,
       legend: options.legend,
-      isUseIndent: options.isUseIndent,
-      isUseJustify: options.isUseJustify,
       countStatus: options.isCountStatus,
       isMacCodeBlock: options.isMacCodeBlock,
       isShowLineNumber: options.isShowLineNumber,
@@ -117,45 +94,6 @@ export const useRenderStore = defineStore(`render`, () => {
     return output.value
   }
 
-  /**
-   * 更新主题（已废弃）
-   * @deprecated 使用 useThemeStore().applyCurrentTheme() 替代
-   */
-  const updateTheme = (cssContent: string, theme: any, fonts: string, size: string, color: string) => {
-    console.warn(`[useRenderStore] updateTheme 已废弃，请使用 useThemeStore().applyCurrentTheme()`)
-    if (!renderer)
-      return
-
-    const newTheme = getTheme(cssContent, theme, size, color)
-    renderer.setOptions({
-      theme: newTheme,
-      fonts,
-      size,
-    })
-  }
-
-  /**
-   * 更新 CSS（已废弃）
-   * @deprecated 使用 useThemeStore().applyCurrentTheme() 替代
-   */
-  const updateCss = (cssContent: string) => {
-    console.warn(`[useRenderStore] updateCss 已废弃，请使用 useThemeStore().applyCurrentTheme()`)
-    if (!renderer)
-      return
-
-    const themeStore = useThemeStore()
-    const themeKey = themeStore.theme as keyof typeof themeMap
-    const newTheme = getTheme(
-      cssContent,
-      themeMap[themeKey], // 使用 themeMap 将字符串转换为主题对象
-      themeStore.fontSize,
-      themeStore.primaryColor,
-    )
-    renderer.setOptions({
-      theme: newTheme,
-    })
-  }
-
   return {
     // State
     output,
@@ -166,8 +104,6 @@ export const useRenderStore = defineStore(`render`, () => {
     initRendererInstance,
     getRenderer,
     render,
-    updateTheme,
-    updateCss,
-    getTheme,
+    extractTitles,
   }
 })

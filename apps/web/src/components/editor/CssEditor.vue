@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { exportMergedTheme } from '@md/core'
-import { themeMapCSS, themeOptionsMap } from '@md/shared'
+import { themeMap, themeOptionsMap } from '@md/shared'
 import { Download, Edit3, Eye, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -82,7 +82,7 @@ function addTab() {
   }
   else {
     // 基于内置主题
-    initialContent = themeMapCSS[baseThemeForNew.value]
+    initialContent = themeMap[baseThemeForNew.value]
   }
 
   // addCssContentTab 会自动设置 active 并触发回调
@@ -149,7 +149,7 @@ function openViewThemeDialog() {
 
 // 复制主题 CSS
 async function copyThemeCSS() {
-  const css = themeMapCSS[selectedViewTheme.value]
+  const css = themeMap[selectedViewTheme.value]
   await copyPlain(css)
   toast.success('已复制到剪贴板')
 }
@@ -218,8 +218,8 @@ function exportCurrentTheme() {
 
   // 使用新的导出函数（包含 default 基础）
   const baseTheme = themeStore.theme === `default`
-    ? themeMapCSS.default
-    : `${themeMapCSS.default}\n\n${themeMapCSS[themeStore.theme]}`
+    ? themeMap.default
+    : `${themeMap.default}\n\n${themeMap[themeStore.theme]}`
 
   exportMergedTheme(
     currentTab.content,
@@ -453,7 +453,7 @@ function exportCurrentTheme() {
 
         <!-- CSS 代码查看器 -->
         <div class="flex-1 min-h-0 border rounded-lg overflow-auto">
-          <pre class="h-full overflow-auto p-4 bg-muted text-sm"><code>{{ themeMapCSS[selectedViewTheme] }}</code></pre>
+          <pre class="h-full overflow-auto p-4 bg-muted text-sm"><code>{{ themeMap[selectedViewTheme] }}</code></pre>
         </div>
       </div>
 

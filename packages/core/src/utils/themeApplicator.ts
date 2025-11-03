@@ -3,8 +3,9 @@
  * 负责将主题样式应用到页面
  */
 
+import type { ThemeName } from '@md/shared/configs'
 import type { CSSVariableConfig } from './cssVariables'
-import { baseCSSContent, themeMapCSS } from '@md/shared/configs'
+import { baseCSSContent, themeMap } from '@md/shared/configs'
 import { wrapCSSWithScope } from './cssScopeWrapper'
 import { generateCSSVariables } from './cssVariables'
 import { getThemeInjector } from './themeInjector'
@@ -24,11 +25,11 @@ export function applyTheme(config: ThemeConfig): void {
   const variablesCSS = generateCSSVariables(config.variables)
 
   // 2. 构建主题 CSS（模拟旧系统的合并行为）
-  let themeCSS = themeMapCSS.default // 默认主题作为基础
+  let themeCSS = themeMap.default // 默认主题作为基础
 
   // 3. 如果不是 default 主题，叠加主题特定样式
   if (config.themeName !== `default`) {
-    const specificThemeCSS = themeMapCSS[config.themeName as keyof typeof themeMapCSS]
+    const specificThemeCSS = themeMap[config.themeName as ThemeName]
     if (specificThemeCSS) {
       themeCSS = `${themeCSS}\n\n${specificThemeCSS}`
     }
