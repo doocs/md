@@ -106,9 +106,6 @@ export const useThemeStore = defineStore(`theme`, () => {
 
       const customCSS = cssEditorStore.getCurrentTabContent()
 
-      console.log(`[applyCurrentTheme] 主题:`, theme.value)
-      console.log(`[applyCurrentTheme] customCSS 长度:`, customCSS?.length)
-
       applyTheme({
         themeName: theme.value,
         customCSS,
@@ -120,8 +117,6 @@ export const useThemeStore = defineStore(`theme`, () => {
           isUseJustify: isUseJustify.value,
         },
       })
-
-      console.log(`[applyCurrentTheme] 主题应用完成`)
     }
     catch (error) {
       console.error(`[applyCurrentTheme] 主题应用失败:`, error)

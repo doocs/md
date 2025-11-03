@@ -50,17 +50,7 @@ export function applyTheme(config: ThemeConfig): void {
     scopedThemeCSS, // 主题样式（限制在 #output）
   ].filter(Boolean).join(`\n\n`)
 
-  // 调试日志
-  console.log(`[applyTheme] CSS 组成:`, {
-    variables: `${variablesCSS.length} 字符`,
-    base: `${baseCSSContent.length} 字符`,
-    scopedTheme: `${scopedThemeCSS.length} 字符 (已添加 #output 作用域)`,
-    total: `${mergedCSS.length} 字符`,
-  })
-
   // 7. 注入到页面
   const injector = getThemeInjector()
   injector.inject(mergedCSS)
-
-  console.log(`[applyTheme] ✅ 主题已注入，作用域限制在 #output 区域`)
 }
