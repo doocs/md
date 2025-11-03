@@ -13,7 +13,6 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
 
   // 提取公共的元数据构建逻辑
   function buildMeta(variantType: string, matchedVariant: AlertVariantItem, fromContainer = false) {
-    const { styles } = options
     return {
       className,
       variant: variantType,
@@ -21,18 +20,6 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
       title: matchedVariant.title ?? ucfirst(variantType),
       titleClassName: `${className}-title`,
       fromContainer,
-      wrapperStyle: {
-        ...styles?.blockquote,
-        ...styles?.[`blockquote_${variantType}` as keyof typeof styles],
-      },
-      titleStyle: {
-        ...styles?.blockquote_title,
-        ...styles?.[`blockquote_title_${variantType}` as keyof typeof styles],
-      },
-      contentStyle: {
-        ...styles?.blockquote_p,
-        ...styles?.[`blockquote_p_${variantType}` as keyof typeof styles],
-      },
     }
   }
 
