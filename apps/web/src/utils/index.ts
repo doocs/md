@@ -247,12 +247,20 @@ export function solveWeChatImage() {
   const images = clipboardDiv.getElementsByTagName(`img`)
 
   Array.from(images).forEach((image) => {
-    const width = image.getAttribute(`width`)!
-    const height = image.getAttribute(`height`)!
-    image.removeAttribute(`width`)
-    image.removeAttribute(`height`)
-    image.style.width = width
-    image.style.height = height
+    const width = image.getAttribute(`width`)
+    const height = image.getAttribute(`height`)
+
+    if (width) {
+      image.removeAttribute(`width`)
+      // 如果是纯数字，添加 px 单位；否则保持原值
+      image.style.width = /^\d+$/.test(width) ? `${width}px` : width
+    }
+
+    if (height) {
+      image.removeAttribute(`height`)
+      // 如果是纯数字，添加 px 单位；否则保持原值
+      image.style.height = /^\d+$/.test(height) ? `${height}px` : height
+    }
   })
 }
 
