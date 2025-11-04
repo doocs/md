@@ -309,9 +309,9 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       }
       if (opts.citeStatus) {
         const ref = addFootnote(title || text, href)
-        return `<span>${parsedText}<sup>[${ref}]</sup></span>`
+        return `<a href="${href}" title="${title || text}">${parsedText}<sup>[${ref}]</sup></a>`
       }
-      return styledContent(`link`, parsedText, `span`)
+      return `<a href="${href}" title="${title || text}">${parsedText}</a>`
     },
 
     strong({ tokens }: Tokens.Strong): string {

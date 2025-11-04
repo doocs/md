@@ -121,3 +121,9 @@ em {
   font-style: italic;
   font-size: inherit;
 }
+
+/* ==================== 链接 ==================== */
+a {
+  color: #576b95;
+  text-decoration: none;
+}

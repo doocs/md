@@ -251,11 +251,7 @@ em {
 }
 
 /* ==================== 链接 ==================== */
-link {
-  color: #576b95;
-}
-
-wx-link {
+a {
   color: #576b95;
   text-decoration: none;
 }
