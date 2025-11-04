@@ -87,6 +87,13 @@ img {
   border: 1px solid rgba(0, 0, 0, 0.04);
 }
 
+figcaption,
+.md-figcaption {
+  text-align: center;
+  color: #888;
+  font-size: 0.8em;
+}
+
 /* ==================== 列表 ==================== */
 ol {
   padding-left: 1.5em;

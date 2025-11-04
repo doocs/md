@@ -203,7 +203,8 @@ figure {
   color: hsl(var(--foreground));
 }
 
-figcaption {
+figcaption,
+.md-figcaption {
   text-align: center;
   color: #888;
   font-size: 0.8em;
