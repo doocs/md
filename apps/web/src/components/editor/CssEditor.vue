@@ -36,7 +36,16 @@ watch(() => isMobile.value, () => {
 
 const isOpenEditDialog = ref(false)
 const editInputVal = ref(``)
-const tabHistory = ref([``, cssContentConfig.value.active])
+
+// 滚动到活跃的 tab
+async function scrollToActiveTab() {
+  await nextTick()
+  // 使用 data-state="active" 查找活跃的 tab
+  const activeTab = document.querySelector('[role="tab"][data-state="active"]')
+  if (activeTab) {
+    activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
+  }
+}
 
 function rename(name: string) {
   editInputVal.value = name
@@ -64,7 +73,7 @@ const addInputVal = ref(``)
 // 新建方案时选择的基础主题
 const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
 
-function addTab() {
+async function addTab() {
   if (!(addInputVal.value).trim()) {
     toast.error(`新建失败，方案名不可为空`)
     return
@@ -85,14 +94,19 @@ function addTab() {
     initialContent = themeMap[baseThemeForNew.value]
   }
 
+  const newTabName = addInputVal.value
+
   // addCssContentTab 会自动设置 active 并触发回调
-  cssEditorStore.addCssContentTab(addInputVal.value, initialContent)
+  cssEditorStore.addCssContentTab(newTabName, initialContent)
 
   isOpenAddDialog.value = false
   toast.success(`新建成功`)
 
   // 重置为空白
   baseThemeForNew.value = 'blank'
+
+  // 滚动到新创建的 tab
+  scrollToActiveTab()
 }
 
 const isOpenDelTabConfirmDialog = ref(false)
@@ -161,14 +175,10 @@ function createFromViewTheme() {
 }
 
 function tabChanged(tabName: string | number) {
-  if (tabName === `add`) {
-    // 不要跳回之前的 tab，直接打开新建对话框
-    addHandler()
-    return
-  }
-
-  tabHistory.value = [tabHistory.value[1], tabName as string]
+  console.log(`tabChanged`, tabName)
   cssEditorStore.tabChanged(tabName as string)
+  // 切换后滚动到活跃的 tab
+  scrollToActiveTab()
 }
 
 // 初始化 CSS 编辑器
@@ -197,6 +207,9 @@ onMounted(() => {
 
   // 初始化 CSS 编辑器
   cssEditorStore.initCssEditor(handleCssUpdate)
+
+  // 初始化时滚动到活跃的 tab
+  scrollToActiveTab()
 })
 
 // 导出合并后的主题
@@ -265,27 +278,34 @@ function exportCurrentTheme() {
         v-model="cssContentConfig.active"
         @update:model-value="tabChanged"
       >
-        <TabsList class="w-full overflow-x-auto justify-start">
-          <TabsTrigger
-            v-for="item in cssContentConfig.tabs"
-            :key="item.name"
-            :value="item.name"
-            class="flex-1"
+        <div class="flex items-center border-b bg-muted">
+          <TabsList class="flex-1 overflow-x-auto justify-start border-0 bg-transparent h-auto p-0 custom-scrollbar">
+            <TabsTrigger
+              v-for="item in cssContentConfig.tabs"
+              :key="item.name"
+              :value="item.name"
+              class="flex-1"
+            >
+              {{ item.title }}
+              <Edit3
+                v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click="rename(item.name)"
+              />
+              <X
+                v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
+                @click.self="removeHandler(item.name)"
+              />
+            </TabsTrigger>
+          </TabsList>
+          <Button
+            variant="ghost"
+            size="icon"
+            class="h-9 w-9 shrink-0 hover:bg-accent"
+            @click="addHandler"
           >
-            {{ item.title }}
-            <Edit3
-              v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click="rename(item.name)"
-            />
-            <X
-              v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-              @click.self="removeHandler(item.name)"
-            />
-          </TabsTrigger>
-          <TabsTrigger value="add">
-            <Plus class="h-5 w-5 cursor-pointer" />
-          </TabsTrigger>
-        </TabsList>
+            <Plus class="h-5 w-5" />
+          </Button>
+        </div>
       </Tabs>
       <!-- CSS编辑器内容区域 -->
       <div class="flex-1 min-h-0">
@@ -466,6 +486,17 @@ function exportCurrentTheme() {
 </template>
 
 <style lang="less" scoped>
+/* 隐藏滚动条但保持滚动功能 */
+.custom-scrollbar {
+  /* Firefox */
+  scrollbar-width: none;
+
+  /* Chrome, Edge, Safari */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
 /* 移动端CSS编辑器动画 - 只有添加了 animate 类才启用 */
 .mobile-css-editor.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);

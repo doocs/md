@@ -78,6 +78,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
   // 切换 Tab
   const tabChanged = (name: string) => {
+    console.log(`tabChanged`, name)
     cssContentConfig.value.active = name
     const content = cssContentConfig.value.tabs.find((tab) => {
       return tab.name === name
@@ -107,6 +108,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       content,
     })
     cssContentConfig.value.active = name
+    console.log(`addCssContentTab`, name)
     setCssEditorValue(content)
 
     // 触发回调以刷新渲染（使用新方案的 CSS）
