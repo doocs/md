@@ -396,7 +396,7 @@ async function handleExportAsMD() {
             </TooltipProvider>
           </DropdownMenuTrigger>
           <DropdownMenuContent
-            :on-select="(value: string) => {
+            :on-select="() => {
               // 阻止默认关闭（返回 false 可阻止关闭）
               return false
             }"
