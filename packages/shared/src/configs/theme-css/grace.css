@@ -115,3 +115,9 @@ thead {
 td {
   padding: 0.5em 1em;
 }
+
+/* ==================== 强调 ==================== */
+em {
+  font-style: italic;
+  font-size: inherit;
+}

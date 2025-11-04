@@ -319,7 +319,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
 
     em({ tokens }: Tokens.Em): string {
-      return styledContent(`em`, this.parser.parseInline(tokens), `span`)
+      return styledContent(`em`, this.parser.parseInline(tokens))
     },
 
     table({ header, rows }: Tokens.Table): string {

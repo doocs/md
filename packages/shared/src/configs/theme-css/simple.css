@@ -108,3 +108,9 @@ hr {
   margin: 2em 0;
   background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
 }
+
+/* ==================== 强调 ==================== */
+em {
+  font-style: italic;
+  font-size: inherit;
+}
