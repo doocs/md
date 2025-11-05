@@ -1,4 +1,5 @@
 export * from './basicHelpers'
+export * from './cssProcessor'
 export * from './cssScopeWrapper'
 export * from './cssVariableResolver'
 export * from './cssVariables'

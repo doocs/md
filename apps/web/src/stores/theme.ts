@@ -106,7 +106,7 @@ export const useThemeStore = defineStore(`theme`, () => {
 
       const customCSS = cssEditorStore.getCurrentTabContent()
 
-      applyTheme({
+      await applyTheme({
         themeName: theme.value,
         customCSS,
         variables: {

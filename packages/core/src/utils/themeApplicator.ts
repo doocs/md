@@ -6,6 +6,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import type { CSSVariableConfig } from './cssVariables'
 import { baseCSSContent, themeMap } from '@md/shared/configs'
+import { processCSS } from './cssProcessor'
 import { wrapCSSWithScope } from './cssScopeWrapper'
 import { generateCSSVariables } from './cssVariables'
 import { getThemeInjector } from './themeInjector'
@@ -20,7 +21,7 @@ export interface ThemeConfig {
  * 应用主题
  * @param config - 主题配置
  */
-export function applyTheme(config: ThemeConfig): void {
+export async function applyTheme(config: ThemeConfig): Promise<void> {
   // 1. 生成 CSS 变量
   const variablesCSS = generateCSSVariables(config.variables)
 
@@ -44,13 +45,18 @@ export function applyTheme(config: ThemeConfig): void {
   const scopedThemeCSS = wrapCSSWithScope(themeCSS, `#output`)
 
   // 6. 拼接完整 CSS
-  const mergedCSS = [
+  let mergedCSS = [
     variablesCSS, // CSS 变量（全局）
     baseCSSContent, // 基础样式（全局）
     scopedThemeCSS, // 主题样式（限制在 #output）
   ].filter(Boolean).join(`\n\n`)
 
-  // 7. 注入到页面
+  // 7. 使用 PostCSS 处理 CSS（简化 calc() 表达式等）
+  mergedCSS = await processCSS(mergedCSS)
+
+  console.log(mergedCSS, 'mergedCSS')
+
+  // 8. 注入到页面
   const injector = getThemeInjector()
   injector.inject(mergedCSS)
 }
