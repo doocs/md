@@ -11,7 +11,7 @@ h1 {
   border-bottom: 2px solid var(--md-primary-color);
   margin: 2em auto 1em;
   color: hsl(var(--foreground));
-  font-size: var(--md-h1-size);
+  font-size: calc(var(--md-font-size) * 1.2);
   font-weight: bold;
   text-align: center;
 }
@@ -23,7 +23,7 @@ h2 {
   margin: 4em auto 2em;
   color: #fff;
   background: var(--md-primary-color);
-  font-size: var(--md-h2-size);
+  font-size: calc(var(--md-font-size) * 1.2);
   font-weight: bold;
   text-align: center;
 }
@@ -34,7 +34,7 @@ h3 {
   border-left: 3px solid var(--md-primary-color);
   margin: 2em 8px 0.75em 0;
   color: hsl(var(--foreground));
-  font-size: var(--md-h3-size);
+  font-size: calc(var(--md-font-size) * 1.1);
   font-weight: bold;
   line-height: 1.2;
 }
@@ -43,7 +43,7 @@ h3 {
 h4 {
   margin: 2em 8px 0.5em;
   color: var(--md-primary-color);
-  font-size: var(--md-h4-size);
+  font-size: calc(var(--md-font-size) * 1);
   font-weight: bold;
 }
 
@@ -51,14 +51,14 @@ h4 {
 h5 {
   margin: 1.5em 8px 0.5em;
   color: var(--md-primary-color);
-  font-size: var(--md-h5-size);
+  font-size: calc(var(--md-font-size) * 1);
   font-weight: bold;
 }
 
 /* ==================== 六级标题 ==================== */
 h6 {
   margin: 1.5em 8px 0.5em;
-  font-size: var(--md-h6-size);
+  font-size: calc(var(--md-font-size) * 1);
   color: var(--md-primary-color);
 }
 

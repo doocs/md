@@ -1,6 +1,5 @@
 export * from './cssProcessor'
 export * from './cssScopeWrapper'
-export * from './cssVariableResolver'
 export * from './cssVariables'
 export * from './selectorMapping'
 export * from './themeApplicator'
