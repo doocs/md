@@ -1,12 +1,10 @@
-import type { ThemeStyles } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString } from '../utils'
 
 /**
  * A marked extension to support horizontal sliding images.
  * Syntax: <![alt1](url1),![alt2](url2),![alt3](url3)>
  */
-export function markedSlider(options: { styles?: ThemeStyles } = {}): MarkedExtension {
+export function markedSlider(): MarkedExtension {
   return {
     extensions: [
       {
@@ -41,10 +39,8 @@ export function markedSlider(options: { styles?: ThemeStyles } = {}): MarkedExte
             const alt = altMatch[1] || ``
             const src = srcMatch[1] || ``
 
-            const { styles } = options
-            const imgStyles = styles ? getStyleString(styles.image) : ``
-
-            return { src, alt, imgStyles }
+            // 新主题系统：不再需要内联样式
+            return { src, alt }
           })
 
           // 使用微信公众号兼容的滑动容器布局
@@ -58,8 +54,8 @@ export function markedSlider(options: { styles?: ThemeStyles } = {}): MarkedExte
                     <section style="display: inline-block; width: 100%;">
                       <!-- 微信公众号支持的滑动图片容器 -->
                       <section style="overflow-x: scroll; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%; text-align: center;">
-                        ${images.map((img: { src: string, alt: string, imgStyles: string }, _index: number) => `<section style="display: inline-block; width: 100%; margin-right: 0; vertical-align: top;">
-                          <img src="${img.src}" alt="${img.alt}" title="${img.alt}" style="${img.imgStyles}; width: 100%; height: auto; border-radius: 4px; vertical-align: top;"/>
+                        ${images.map((img: { src: string, alt: string }, _index: number) => `<section style="display: inline-block; width: 100%; margin-right: 0; vertical-align: top;">
+                          <img src="${img.src}" alt="${img.alt}" title="${img.alt}" style="width: 100%; height: auto; border-radius: 4px; vertical-align: top;"/>
                           <p style="margin-top: 5px; font-size: 14px; color: #666; text-align: center; white-space: normal;">${img.alt}</p>
                         </section>`).join(``)}
                       </section>

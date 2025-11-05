@@ -4,7 +4,6 @@ import { prefix } from '@md/shared/configs'
 import {
   checkImage,
   createTable,
-  css2json,
   downloadFile,
   formatDoc,
   removeLeft,
@@ -27,7 +26,6 @@ export {
 export {
   checkImage,
   createTable,
-  css2json,
   downloadFile,
   formatDoc,
   removeLeft,
@@ -35,10 +33,8 @@ export {
   toBase64,
 }
 
+// 导出新主题系统需要的函数
 export {
-  customCssWithTemplate,
-  customizeTheme,
-  getStyleString,
   modifyHtmlContent,
   postProcessHtml,
   renderMarkdown,
@@ -59,90 +55,34 @@ export function downloadMD(doc: string, title: string = `untitled`) {
 }
 
 /**
- * 设置元素样式，确保导出时的样式正确
- * @param {Element} element - 要设置样式的元素
+ * 获取 HTML 内容
+ * @returns {string} HTML 字符串
  */
-function setStyles(element: Element) {
-  /**
-   * 获取一个 DOM 元素的所有样式，
-   * @param {DOM 元素} element DOM 元素
-   * @param {排除的属性} excludes 如果某些属性对结果有不良影响，可以使用这个参数来排除
-   * @returns 行内样式拼接结果
-   */
-  function getElementStyles(element: Element, excludes = [`width`, `height`, `inlineSize`, `webkitLogicalWidth`, `webkitLogicalHeight`]) {
-    const styles = getComputedStyle(element, null)
-    return Object.entries(styles)
-      .filter(
-        ([key]) => {
-          // 将驼峰转换为短横线格式
-          const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-          return styles.getPropertyValue(kebabKey) && !excludes.includes(key)
-        },
-      )
-      .map(([key, value]) => {
-        // 将驼峰转换为短横线格式
-        const kebabKey = key.replace(/[A-Z]/g, match => `-${match.toLowerCase()}`)
-        return `${kebabKey}:${value};`
-      })
-      .join(``)
-  }
-
-  switch (true) {
-    case isPre(element):
-    case isCode(element):
-    case isSpan(element):
-      element.setAttribute(`style`, getElementStyles(element))
-  }
-  if (element.children.length) {
-    Array.from(element.children).forEach(child => setStyles(child))
-  }
-
-  // 判断是否是包裹代码块的 pre 元素
-  function isPre(element: Element) {
-    return (
-      element.tagName === `PRE`
-      && Array.from(element.classList).includes(`code__pre`)
-    )
-  }
-
-  // 判断是否是包裹代码块的 code 元素
-  function isCode(element: Element | null) {
-    if (element == null) {
-      return false
-    }
-    return element.tagName === `CODE`
-  }
-
-  // 判断是否是包裹代码字符的 span 元素
-  function isSpan(element: Element) {
-    return (
-      element.tagName === `SPAN`
-      && (isCode(element.parentElement)
-        || isCode((element.parentElement!).parentElement))
-    )
-  }
-}
-
-/**
- * 处理HTML内容，应用样式和颜色变量
- * @param {string} primaryColor - 主色调
- * @returns {string} 处理后的HTML字符串
- */
-export function processHtmlContent(primaryColor: string): string {
+export function getHtmlContent(): string {
   const element = document.querySelector(`#output`)!
-  setStyles(element)
-
   return element.innerHTML
-    .replace(/var\(--md-primary-color\)/g, primaryColor)
-    .replace(/--md-primary-color:.+?;/g, ``)
 }
 
 /**
  * 导出 HTML 生成内容
  */
-export function exportHTML(primaryColor: string, title: string = `untitled`) {
-  const htmlStr = processHtmlContent(primaryColor)
-  const fullHtml = `<html><head><meta charset="utf-8" /></head><body><div style="width: 750px; margin: auto;">${htmlStr}</div></body></html>`
+export async function exportHTML(title: string = `untitled`) {
+  const htmlStr = getHtmlContent()
+  const stylesToAdd = await getStylesToAdd()
+
+  const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>${sanitizeTitle(title)}</title>
+  ${stylesToAdd}
+</head>
+<body>
+  <div style="width: 750px; margin: auto; padding: 20px;">
+    ${htmlStr}
+  </div>
+</body>
+</html>`
 
   downloadFile(fullHtml, `${sanitizeTitle(title)}.html`, `text/html`)
 }
@@ -156,7 +96,7 @@ export async function generatePureHTML(raw: string): Promise<string> {
   const markedInstance = new Marked()
   markedInstance.use(markedAlert({ withoutStyle: true }))
   markedInstance.use(
-    MDKatex({ nonStandard: true }, ``, ``, false),
+    MDKatex({ nonStandard: true }, false),
   )
   const pureHtml = await markedInstance.parse(raw)
   return pureHtml
@@ -176,12 +116,12 @@ export async function exportPureHTML(raw: string, title: string = `untitled`) {
 }
 
 /**
- * 导出 PDF 文档
- * @param {string} primaryColor - 主色调
+ * 导出 PDF 文档（新主题系统）
  * @param {string} title - 文档标题
  */
-export function exportPDF(primaryColor: string, title: string = `untitled`) {
-  const htmlStr = processHtmlContent(primaryColor)
+export async function exportPDF(title: string = `untitled`) {
+  const htmlStr = getHtmlContent()
+  const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
 
   // 创建新窗口用于打印
@@ -191,14 +131,23 @@ export function exportPDF(primaryColor: string, title: string = `untitled`) {
     return
   }
 
-  // 写入HTML内容，包含自定义页眉页脚
+  // 写入HTML内容，包含主题样式和自定义页眉页脚
   printWindow.document.write(`
     <!DOCTYPE html>
     <html>
     <head>
       <meta charset="utf-8">
       <title>${safeTitle}</title>
+      ${stylesToAdd}
       <style>
+        /* 强制打印背景颜色和图片 */
+        * {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          color-adjust: exact !important;
+        }
+
+        /* 打印页面设置 */
         @page {
           @top-center {
             content: "${safeTitle}";
@@ -280,6 +229,26 @@ async function getHljsStyles(): Promise<string> {
   }
 }
 
+function getThemeStyles(): string {
+  const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
+
+  if (!themeStyle || !themeStyle.textContent) {
+    console.warn('[getThemeStyles] 未找到主题样式')
+    return ``
+  }
+
+  // 移除 #output 作用域前缀，因为复制后的 HTML 不在 #output 容器中
+  let cssContent = themeStyle.textContent
+  // 将 "#output h1" 替换为 "h1"，"#output .class" 替换为 ".class" 等
+  // 同时处理换行和多个空格的情况
+  cssContent = cssContent.replace(/#output\s+/g, '')
+  // 处理选择器开头的 #output（如果没有后续内容）
+  cssContent = cssContent.replace(/^#output\s*/gm, '')
+
+  const styleContent = `<style>${cssContent}</style>`
+  return styleContent
+}
+
 function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
@@ -308,13 +277,23 @@ function createEmptyNode(): HTMLElement {
   return node
 }
 
+/**
+ * 获取需要添加的样式
+ * @returns {Promise<string>} 样式字符串
+ */
+async function getStylesToAdd(): Promise<string> {
+  const themeStyles = getThemeStyles()
+  const hljsStyles = await getHljsStyles()
+  return [themeStyles, hljsStyles].filter(Boolean).join(``)
+}
+
 export async function processClipboardContent(primaryColor: string) {
   const clipboardDiv = document.getElementById(`output`)!
 
-  // 获取highlight.js样式并添加到HTML中
-  const hljsStyles = await getHljsStyles()
-  if (hljsStyles) {
-    clipboardDiv.innerHTML = hljsStyles + clipboardDiv.innerHTML
+  const stylesToAdd = await getStylesToAdd()
+
+  if (stylesToAdd) {
+    clipboardDiv.innerHTML = stylesToAdd + clipboardDiv.innerHTML
   }
 
   // 先合并 CSS 和修改 HTML 结构

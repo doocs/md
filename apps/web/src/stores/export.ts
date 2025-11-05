@@ -5,12 +5,11 @@ import {
   exportHTML,
   exportPDF,
   exportPureHTML,
-  processHtmlContent,
+  getHtmlContent,
   sanitizeTitle,
 } from '@/utils'
 import { usePostStore } from './post'
 import { useRenderStore } from './render'
-import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
 
 /**
@@ -20,23 +19,22 @@ import { useUIStore } from './ui'
 export const useExportStore = defineStore(`export`, () => {
   const postStore = usePostStore()
   const renderStore = useRenderStore()
-  const themeStore = useThemeStore()
   const uiStore = useUIStore()
 
   // 将编辑器内容转换为 HTML
   const editorContent2HTML = () => {
-    const temp = processHtmlContent(themeStore.primaryColor)
+    const temp = getHtmlContent()
     document.querySelector(`#output`)!.innerHTML = renderStore.output
     return temp
   }
 
   // 导出编辑器内容为 HTML，并且下载到本地
-  const exportEditorContent2HTML = () => {
+  const exportEditorContent2HTML = async () => {
     const currentPost = postStore.currentPost
     if (!currentPost)
       return
 
-    exportHTML(themeStore.primaryColor, currentPost.title)
+    await exportHTML(currentPost.title)
     document.querySelector(`#output`)!.innerHTML = renderStore.output
   }
 
@@ -72,12 +70,12 @@ export const useExportStore = defineStore(`export`, () => {
   }
 
   // 导出编辑器内容为 PDF
-  const exportEditorContent2PDF = () => {
+  const exportEditorContent2PDF = async () => {
     const currentPost = postStore.currentPost
     if (!currentPost)
       return
 
-    exportPDF(themeStore.primaryColor, currentPost.title)
+    await exportPDF(currentPost.title)
     document.querySelector(`#output`)!.innerHTML = renderStore.output
   }
 

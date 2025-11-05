@@ -1,0 +1,163 @@
+/**
+ * 按 Alt/Option + Shift + F 可格式化
+ * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
+ * 如：color: var(--md-primary-color);
+ * 新主题系统已全面支持 CSS 写法，你可以 F12 打开控制台查看具体的类名及标签
+ *
+ * 召集令：如果你有好看的主题样式，欢迎分享，让更多人能够使用到你的主题。
+ * 提交区：https://github.com/doocs/md/discussions/426
+ */
+
+/* 全局变量定义 */
+:root {
+}
+
+/* 根容器 */
+.md-container {
+}
+
+/* 标题样式 */
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+h4 {
+}
+
+h5 {
+}
+
+h6 {
+}
+
+/* 段落和文本 */
+p {
+}
+
+strong {
+}
+
+em {
+}
+
+/* 引用块 */
+blockquote {
+}
+
+blockquote > p {
+}
+
+/* 代码 */
+/* 行内代码 */
+code {
+}
+
+/* 代码块容器 */
+pre.code__pre,
+.hljs.code__pre {
+}
+
+/* 代码块内的 code */
+pre.code__pre > code,
+.hljs.code__pre > code {
+}
+
+/* 列表 */
+ol {
+}
+
+ul {
+}
+
+li {
+}
+
+/* 表格 */
+table {
+}
+
+thead {
+}
+
+th {
+}
+
+td {
+}
+
+/* 其他元素 */
+img {
+}
+
+hr {
+}
+
+figure {
+}
+
+figcaption {
+}
+
+/* KaTeX 公式 */
+.katex-inline {
+}
+
+.katex-block {
+}
+
+/* Markup 标记 */
+/* 高亮 ==文本== */
+.markup-highlight {
+}
+
+/* 下划线 ++文本++ */
+.markup-underline {
+}
+
+/* 波浪线 ~文本~ */
+.markup-wavyline {
+}
+
+/* GFM Alert 警告块 */
+/* Alert 标题 */
+.alert-title-note {
+}
+
+.alert-title-tip {
+}
+
+.alert-title-info {
+}
+
+.alert-title-important {
+}
+
+.alert-title-warning {
+}
+
+.alert-title-caution {
+}
+
+/* Alert SVG 图标 */
+.alert-icon-note {
+}
+
+.alert-icon-tip {
+}
+
+.alert-icon-info {
+}
+
+.alert-icon-important {
+}
+
+.alert-icon-warning {
+}
+
+.alert-icon-caution {
+}

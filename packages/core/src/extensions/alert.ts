@@ -1,6 +1,6 @@
 import type { AlertOptions, AlertVariantItem } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
-import { getStyleString, ucfirst } from '../utils'
+import { ucfirst } from '../utils'
 
 /**
  * https://github.com/bent10/marked-extensions/tree/main/packages/alert
@@ -13,7 +13,6 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
 
   // 提取公共的元数据构建逻辑
   function buildMeta(variantType: string, matchedVariant: AlertVariantItem, fromContainer = false) {
-    const { styles } = options
     return {
       className,
       variant: variantType,
@@ -21,18 +20,6 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
       title: matchedVariant.title ?? ucfirst(variantType),
       titleClassName: `${className}-title`,
       fromContainer,
-      wrapperStyle: {
-        ...styles?.blockquote,
-        ...styles?.[`blockquote_${variantType}` as keyof typeof styles],
-      },
-      titleStyle: {
-        ...styles?.blockquote_title,
-        ...styles?.[`blockquote_title_${variantType}` as keyof typeof styles],
-      },
-      contentStyle: {
-        ...styles?.blockquote_p,
-        ...styles?.[`blockquote_p_${variantType}` as keyof typeof styles],
-      },
     }
   }
 
@@ -40,14 +27,15 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   function renderAlert(token: any) {
     const { meta, tokens = [] } = token
     // @ts-expect-error marked renderer context has parser property
-    let text = this.parser.parse(tokens)
-    text = text.replace(/<p .*?>/g, `<p style="${getStyleString(meta.contentStyle)}">`)
-    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}" style="${getStyleString(meta.wrapperStyle)}">\n`
-    tmpl += `<p class="${meta.titleClassName}" style="${getStyleString(meta.titleStyle)}">`
+    const text = this.parser.parse(tokens)
+    // 新主题系统：使用 CSS 选择器而非内联样式
+    let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}">\n`
+    tmpl += `<p class="${meta.titleClassName} alert-title-${meta.variant}">`
     if (!withoutStyle) {
+      // 给 SVG 添加 class，通过 CSS 控制颜色
       tmpl += meta.icon.replace(
         `<svg`,
-        `<svg style="fill: ${meta.titleStyle?.color ?? `inherit`}"`,
+        `<svg class="alert-icon-${meta.variant}"`,
       )
     }
     tmpl += meta.title

@@ -1,41 +1,17 @@
-import type { PropertiesHyphen } from 'csstype'
-
 import type { Token } from 'marked'
 
-type GFMBlock = `blockquote_note` | `blockquote_tip` | `blockquote_info` | `blockquote_important` | `blockquote_warning` | `blockquote_caution`
-  | `blockquote_title` | `blockquote_title_note` | `blockquote_title_tip` | `blockquote_title_info` | `blockquote_title_important` | `blockquote_title_warning` | `blockquote_title_caution`
-  | `blockquote_p` | `blockquote_p_note` | `blockquote_p_tip` | `blockquote_p_info` | `blockquote_p_important` | `blockquote_p_warning` | `blockquote_p_caution`
-
-export type Block = `container` | `h1` | `h2` | `h3` | `h4` | `h5` | `h6` | `p` | `blockquote` | `blockquote_p` | `code_pre` | `code` | `image` | `ol` | `ul` | `footnotes` | `figure` | `hr` | `block_katex` | GFMBlock
-export type Inline = `listitem` | `codespan` | `link` | `wx_link` | `strong` | `table` | `thead` | `th` | `td` | `footnote` | `figcaption` | `em` | `inline_katex` | MarkupStyleKeys
-
-interface CustomCSSProperties {
-  [`--md-primary-color`]?: string
-  [key: `--${string}`]: string | undefined
-}
-
-export type ExtendedProperties = PropertiesHyphen & CustomCSSProperties
-
-export interface Theme {
-  base: ExtendedProperties
-  block: Record<Block, ExtendedProperties>
-  inline: Record<Inline, ExtendedProperties>
-}
-
+/**
+ * 渲染器选项（新主题系统）
+ * 主题样式通过 CSS 注入，不再通过 JS 对象传递
+ * 注意：isUseIndent 和 isUseJustify 现在通过 CSS 变量系统处理，不需要传递给渲染器
+ */
 export interface IOpts {
-  theme: Theme
-  fonts: string
-  size: string
-  isUseIndent: boolean
-  isUseJustify: boolean
   legend?: string
   citeStatus?: boolean
   countStatus?: boolean
   isMacCodeBlock?: boolean
   isShowLineNumber?: boolean
 }
-
-export type ThemeStyles = Record<Block | Inline, ExtendedProperties>
 
 export interface IConfigOption<VT = string> {
   label: string
@@ -49,7 +25,6 @@ export interface IConfigOption<VT = string> {
 export interface AlertOptions {
   className?: string
   variants?: AlertVariantItem[]
-  styles?: ThemeStyles
   withoutStyle?: boolean
 }
 
@@ -78,12 +53,6 @@ export interface Alert {
   raw: string
   text: string
   tokens: Token[]
-}
-
-export type MarkupStyleKeys = `markup_highlight` | `markup_underline` | `markup_wavyline`
-
-export interface MarkupOptions {
-  styles?: Partial<Record<MarkupStyleKeys, ExtendedProperties>>
 }
 
 export interface PostAccount {

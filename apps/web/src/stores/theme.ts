@@ -1,4 +1,5 @@
-import type { themeMap } from '@md/shared/configs'
+import type { ThemeName } from '@md/shared/configs'
+import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { addPrefix, store } from '@/utils'
 
@@ -8,7 +9,7 @@ import { addPrefix, store } from '@/utils'
  */
 export const useThemeStore = defineStore(`theme`, () => {
   // 文本主题
-  const theme = store.reactive<keyof typeof themeMap>(addPrefix(`theme`), defaultStyleConfig.theme)
+  const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)
 
   // 文本字体
   const fontFamily = store.reactive(`fonts`, defaultStyleConfig.fontFamily)
@@ -93,6 +94,35 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
   }
 
+  /**
+   * 应用当前主题配置（新主题系统）
+   * 使用 CSS 注入而非内联样式
+   */
+  const applyCurrentTheme = async () => {
+    try {
+      // 动态导入避免循环依赖
+      const { useCssEditorStore } = await import(`@/stores/cssEditor`)
+      const cssEditorStore = useCssEditorStore()
+
+      const customCSS = cssEditorStore.getCurrentTabContent()
+
+      await applyTheme({
+        themeName: theme.value,
+        customCSS,
+        variables: {
+          primaryColor: primaryColor.value,
+          fontFamily: fontFamily.value,
+          fontSize: fontSize.value,
+          isUseIndent: isUseIndent.value,
+          isUseJustify: isUseJustify.value,
+        },
+      })
+    }
+    catch (error) {
+      console.error(`[applyCurrentTheme] 主题应用失败:`, error)
+    }
+  }
+
   return {
     // State
     theme,
@@ -119,5 +149,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     toggleUseJustify,
     resetStyle,
     updateCodeTheme,
+    applyCurrentTheme,
   }
 })

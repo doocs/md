@@ -1,6 +1,7 @@
+import type { ThemeName } from '@md/shared'
 import { initRenderer } from '@md/core/renderer'
-import { customCssWithTemplate, customizeTheme, modifyHtmlContent } from '@md/core/utils'
-import { css2json, themeMap } from '@md/shared'
+import { generateCSSVariables, modifyHtmlContent } from '@md/core/utils'
+import { baseCSSContent, themeMap } from '@md/shared'
 import * as vscode from 'vscode'
 import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
@@ -17,7 +18,7 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
     }),
-    vscode.commands.registerCommand(`markdown.setTheme`, (theme: keyof typeof themeMap) => {
+    vscode.commands.registerCommand(`markdown.setTheme`, (theme: ThemeName) => {
       treeDataProvider.updateTheme(theme)
     }),
     vscode.commands.registerCommand(`markdown.setPrimaryColor`, (color: string) => {
@@ -67,27 +68,30 @@ export function activate(context: vscode.ExtensionContext) {
     function updateWebview() {
       if (!editor)
         return
+
+      // 使用新主题系统
       const renderer = initRenderer({
-        theme: customCssWithTemplate(
-          // TODO
-          css2json(``),
-          treeDataProvider.getCurrentPrimaryColor(),
-          customizeTheme(themeMap[treeDataProvider.getCurrentTheme()], {
-            fontSize: treeDataProvider.getCurrentFontSizeNumber(),
-            color: treeDataProvider.getCurrentPrimaryColor(),
-          }),
-        ),
-        fonts: treeDataProvider.getCurrentFontFamily(),
-        size: treeDataProvider.getCurrentFontSize(),
-        isUseIndent: false,
-        isUseJustify: false,
         countStatus: treeDataProvider.getCurrentCountStatus(),
         isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
         legend: `none`,
       })
+
       const markdownContent = editor.document.getText()
       const html = modifyHtmlContent(markdownContent, renderer)
-      panel.webview.html = wrapHtmlTag(html, css)
+
+      // 生成主题 CSS
+      const variables = generateCSSVariables({
+        primaryColor: treeDataProvider.getCurrentPrimaryColor(),
+        fontFamily: treeDataProvider.getCurrentFontFamily(),
+        fontSize: treeDataProvider.getCurrentFontSize(),
+        isUseIndent: false,
+        isUseJustify: false,
+      })
+
+      const themeCSS = themeMap[treeDataProvider.getCurrentTheme() as ThemeName]
+      const completeCss = `${variables}\n\n${baseCSSContent}\n\n${themeCSS}\n\n${css}`
+
+      panel.webview.html = wrapHtmlTag(html, completeCss)
     }
 
     // render first webview

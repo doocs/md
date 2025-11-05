@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
   <Primitive
     :as="as"
     :as-child="asChild"
-    :class="cn(buttonVariants({ variant, size }), props.class)"
+    :class="cn(buttonVariants({ variant, size }), props.class, 'cursor-pointer')"
   >
     <slot />
   </Primitive>

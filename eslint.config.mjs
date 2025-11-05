@@ -8,7 +8,6 @@ export default antfu({
 }, {
   rules: {
     'semi': [`error`, `never`],
-    'quotes': [`error`, `backtick`],
     'no-unused-vars': `off`,
     'no-console': `off`,
     'no-debugger': `off`,
