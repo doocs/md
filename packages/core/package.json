@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./renderer": "./src/renderer/index.ts",
     "./extensions": "./src/extensions/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./theme": "./src/theme/index.ts"
   },
   "dependencies": {
     "@md/shared": "workspace:*",
