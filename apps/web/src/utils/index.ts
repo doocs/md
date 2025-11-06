@@ -253,6 +253,9 @@ function mergeCss(html: string): string {
   return juice(html, {
     inlinePseudoElements: true,
     preserveImportant: true,
+    // 禁用 CSS 变量解析，避免 juice 处理时的错误
+    // 新主题系统已通过 postcss 处理 CSS 变量
+    resolveCSSVariables: false,
   })
 }
 
