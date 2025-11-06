@@ -140,7 +140,16 @@ async function copy() {
 
   setTimeout(() => {
     nextTick(async () => {
-      await processClipboardContent(primaryColor.value)
+      try {
+        await processClipboardContent(primaryColor.value)
+      }
+      catch (error) {
+        toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
+        editorRefresh()
+        emit(`endCopy`)
+        return
+      }
+
       const clipboardDiv = document.getElementById(`output`)
 
       if (!clipboardDiv) {
