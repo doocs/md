@@ -54,8 +54,6 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
   // 7. 使用 PostCSS 处理 CSS（简化 calc() 表达式等）
   mergedCSS = await processCSS(mergedCSS)
 
-  console.log(mergedCSS, 'mergedCSS')
-
   // 8. 注入到页面
   const injector = getThemeInjector()
   injector.inject(mergedCSS)
