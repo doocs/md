@@ -46,8 +46,5 @@ export const SELECTOR_MAPPING: Record<string, string> = {
   markup_underline: `markup-underline`,
   markup_wavyline: `markup-wavyline`,
 
-  // 其他
-  listitem: `list-item`,
-  figcaption: `figure-caption`,
-  wx_link: `weixin-link`,
+  listitem: `listitem`,
 }

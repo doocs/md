@@ -128,7 +128,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
    */
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    const className = `md-${styleLabel.replace(/_/g, `-`)}`
+    const className = `${styleLabel.replace(/_/g, `-`)}`
     const headingAttr = /^h\d$/.test(tag) ? ` data-heading="true"` : ``
     return `<${tag} class="${className}"${headingAttr}>${content}</${tag}>`
   }

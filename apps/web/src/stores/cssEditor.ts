@@ -152,6 +152,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     // 创建 CSS 编辑器的容器
     const cssContainer = document.createElement(`div`)
+    cssContainer.className = 'w-full h-full'
     cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
 
     // 创建主题 Compartment 用于动态切换
