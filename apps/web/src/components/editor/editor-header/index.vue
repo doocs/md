@@ -42,6 +42,7 @@ function editorRefresh() {
 const aboutDialogVisible = ref(false)
 const fundDialogVisible = ref(false)
 const editorStateDialogVisible = ref(false)
+const documentStorageDialogVisible = ref(false)
 
 // 处理帮助菜单事件
 function handleOpenAbout() {
@@ -54,6 +55,10 @@ function handleOpenFund() {
 
 function handleOpenEditorState() {
   editorStateDialogVisible.value = true
+}
+
+function handleOpenDocumentStorage() {
+  documentStorageDialogVisible.value = true
 }
 
 const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
@@ -230,7 +235,10 @@ async function copy() {
     <!-- 桌面端左侧菜单 -->
     <div class="space-x-2 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown @open-editor-state="handleOpenEditorState" />
+        <FileDropdown 
+          @open-editor-state="handleOpenEditorState" 
+          @open-document-storage="handleOpenDocumentStorage"
+        />
         <FormatDropdown />
         <EditDropdown />
         <StyleDropdown />
@@ -248,7 +256,11 @@ async function copy() {
             </Button>
           </MenubarTrigger>
           <MenubarContent align="start">
-            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
+            <FileDropdown 
+              :as-sub="true" 
+              @open-editor-state="handleOpenEditorState" 
+              @open-document-storage="handleOpenDocumentStorage"
+            />
             <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
@@ -326,6 +338,7 @@ async function copy() {
   <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
+  <DocumentStorageDialog v-model:open="documentStorageDialogVisible" />
   <AIImageGeneratorPanel v-model:open="uiStore.aiImageDialogVisible" />
 </template>
 
