@@ -4,7 +4,6 @@ import type { ComponentPublicInstance } from 'vue'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { highlightPendingBlocks, hljs } from '@md/core'
-import { themeMap } from '@md/shared/configs'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
@@ -66,7 +65,8 @@ function editorRefresh() {
 function resetStyle() {
   themeStore.resetStyle()
   cssEditorStore.resetCssConfig()
-  renderStore.updateCss(cssEditorStore.getCurrentTabContent())
+  // 使用新主题系统
+  themeStore.applyCurrentTheme()
   editorRefresh()
   toast.success(`样式已重置`)
 }
@@ -542,21 +542,14 @@ onMounted(() => {
     return
   }
 
-  // 初始化渲染器
-  const cssContent = cssEditorStore.getCurrentTabContent()
-  renderStore.initRendererInstance(
-    cssContent,
-    themeMap[themeStore.theme],
-    themeStore.fontFamily,
-    themeStore.fontSize,
-    {
-      primaryColor: themeStore.primaryColor,
-      isUseIndent: themeStore.isUseIndent,
-      isUseJustify: themeStore.isUseJustify,
-      isMacCodeBlock: themeStore.isMacCodeBlock,
-      isShowLineNumber: themeStore.isShowLineNumber,
-    },
-  )
+  // 初始化渲染器（新主题系统）
+  renderStore.initRendererInstance({
+    isMacCodeBlock: themeStore.isMacCodeBlock,
+    isShowLineNumber: themeStore.isShowLineNumber,
+  })
+
+  // 应用主题样式（新主题系统）
+  themeStore.applyCurrentTheme()
 
   nextTick(() => {
     const editorView = createFormTextArea(editorDom)
@@ -653,7 +646,7 @@ onUnmounted(() => {
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
             :default-size="15"
-            :max-size="isOpenPostSlider ? 30 : 0"
+            :max-size="isOpenPostSlider ? 20 : 0"
             :min-size="isOpenPostSlider ? 10 : 0"
           >
             <PostSlider />
@@ -691,16 +684,19 @@ onUnmounted(() => {
               <div
                 id="preview"
                 ref="previewRef"
-                class="preview-wrapper w-full p-5"
+                class="preview-wrapper w-full p-5 flex justify-center"
               >
                 <div
                   id="output-wrapper"
-                  class="w-full"
+                  class="w-full max-w-full"
                   :class="{ output_night: !backLight }"
                 >
                   <div
-                    class="preview border-x shadow-xl"
-                    :class="[isMobile ? 'w-[100%]' : previewWidth]"
+                    class="preview border-x shadow-xl mx-auto"
+                    :class="[
+                      isMobile ? 'w-full' : previewWidth,
+                      themeStore.previewWidth === 'w-[375px]' ? 'max-w-full' : '',
+                    ]"
                   >
                     <section id="output" class="w-full" v-html="output" />
                     <div v-if="isCoping" class="loading-mask">

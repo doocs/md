@@ -7,11 +7,11 @@
     ".": "./src/index.ts",
     "./renderer": "./src/renderer/index.ts",
     "./extensions": "./src/extensions/index.ts",
-    "./utils": "./src/utils/index.ts"
+    "./utils": "./src/utils/index.ts",
+    "./theme": "./src/theme/index.ts"
   },
   "dependencies": {
     "@md/shared": "workspace:*",
-    "csstype": "^3.1.3",
     "es-toolkit": "^1.41.0",
     "fflate": "^0.8.2",
     "front-matter": "^4.0.2",
@@ -20,6 +20,8 @@
     "marked": "^16.4.1",
     "mermaid": "^11.12.1",
     "postcss": "^8.5.1",
+    "postcss-calc": "^10.1.1",
+    "postcss-custom-properties": "^14.0.6",
     "reading-time": "^1.5.0"
   },
   "devDependencies": {

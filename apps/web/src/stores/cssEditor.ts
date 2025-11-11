@@ -1,9 +1,10 @@
 import type { EditorView } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
-import { cssSetup, theme as editorTheme } from '@md/shared/editor'
-import DEFAULT_CSS_CONTENT from '@/assets/example/theme-css.txt?raw'
+import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
 import { addPrefix, store } from '@/utils'
+
+const DEFAULT_CSS_CONTENT = DEFAULT_CUSTOM_THEME
 
 /**
  * CSS 编辑器配置接口
@@ -77,6 +78,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
   // 切换 Tab
   const tabChanged = (name: string) => {
+    console.log(`tabChanged`, name)
     cssContentConfig.value.active = name
     const content = cssContentConfig.value.tabs.find((tab) => {
       return tab.name === name
@@ -98,18 +100,20 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   }
 
   // 添加 CSS 方案
-  const addCssContentTab = (name: string) => {
+  const addCssContentTab = (name: string, initialContent?: string) => {
+    const content = initialContent || DEFAULT_CSS_CONTENT
     cssContentConfig.value.tabs.push({
       name,
       title: name,
-      content: DEFAULT_CSS_CONTENT,
+      content,
     })
     cssContentConfig.value.active = name
-    setCssEditorValue(DEFAULT_CSS_CONTENT)
+    console.log(`addCssContentTab`, name)
+    setCssEditorValue(content)
 
-    // 触发回调以刷新渲染（使用新方案的默认 CSS）
+    // 触发回调以刷新渲染（使用新方案的 CSS）
     if (onTabChangedCallback) {
-      onTabChangedCallback(DEFAULT_CSS_CONTENT)
+      onTabChangedCallback(content)
     }
   }
 
@@ -148,6 +152,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     // 创建 CSS 编辑器的容器
     const cssContainer = document.createElement(`div`)
+    cssContainer.className = 'w-full h-full'
     cssEditorDom.parentNode?.replaceChild(cssContainer, cssEditorDom)
 
     // 创建主题 Compartment 用于动态切换

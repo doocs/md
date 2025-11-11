@@ -1,6 +1,3 @@
-import type { PropertiesHyphen } from 'csstype'
-import type { Block, Inline } from '../types'
-
 /**
  * 清理文件标题，移除非法字符
  * @param title - 原始标题
@@ -65,54 +62,4 @@ export function checkImage(file: File) {
   }
 
   return { ok: true, msg: `` }
-}
-
-/**
- * 将 CSS 字符串转换为 JSON 对象
- *
- * @param {string} css - CSS 字符串
- * @returns {object} - JSON 格式的 CSS
- */
-export function css2json(css: string): Partial<Record<Block | Inline, PropertiesHyphen>> {
-  // 去除所有 CSS 注释
-  css = css.replace(/\/\*[\s\S]*?\*\//g, ``)
-
-  const json: Partial<Record<Block | Inline, PropertiesHyphen>> = {}
-
-  // 辅助函数：将声明数组转换为对象
-  const toObject = (array: any[]) =>
-    array.reduce<{ [k: string]: string }>((obj, item) => {
-      const [property, ...value] = item.split(`:`).map((part: string) => part.trim())
-      if (property)
-        obj[property] = value.join(`:`)
-      return obj
-    }, {})
-
-  while (css.includes(`{`) && css.includes(`}`)) {
-    const lbracket = css.indexOf(`{`)
-    const rbracket = css.indexOf(`}`)
-
-    // 获取声明块并转换为对象
-    const declarations = css.substring(lbracket + 1, rbracket)
-      .split(`;`)
-      .map(e => e.trim())
-      .filter(Boolean)
-
-    // 获取选择器并去除空格
-    const selectors = css.substring(0, lbracket)
-      .split(`,`)
-      .map(selector => selector.trim()) as (Block | Inline)[]
-
-    const declarationObj = toObject(declarations)
-
-    // 将声明对象关联到相应的选择器
-    selectors.forEach((selector) => {
-      json[selector] = { ...(json[selector] || {}), ...declarationObj }
-    })
-
-    // 处理下一个声明块
-    css = css.slice(rbracket + 1).trim()
-  }
-
-  return json
 }
