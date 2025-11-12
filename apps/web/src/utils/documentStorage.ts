@@ -41,22 +41,22 @@ export interface ProjectConfig {
   cloudinaryConfig?: any
   imgHost?: string
   useCompression?: boolean
-  
+
   // ========== 文档存储配置 ==========
   webdavDocConfig?: any
   cosDocConfig?: any
   docStorageType?: string
-  
+
   // ========== 自定义表单配置 ==========
   formCustomConfig?: any
-  
+
   // ========== UI Store 状态 ==========
   isDark?: boolean
   isEditOnLeft?: boolean
   isOpenRightSlider?: boolean
   isOpenPostSlider?: boolean
   showAIToolbox?: boolean
-  
+
   // ========== Theme Store 状态 ==========
   theme?: string
   fontFamily?: string
@@ -70,17 +70,17 @@ export interface ProjectConfig {
   isCountStatus?: boolean
   isUseIndent?: boolean
   isUseJustify?: boolean
-  
+
   // ========== CSS Editor Store 状态 ==========
   cssContentConfig?: any
-  
+
   // ========== Post Store 状态 ==========
   currentPostIndex?: number
-  
+
   // ========== 其他配置 ==========
   copyMode?: string
   sortMode?: string
-  
+
   // 支持其他未知配置
   [key: string]: any
 }
@@ -155,12 +155,12 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
       const { useThemeStore } = await import('@/stores/theme')
       const { useCssEditorStore } = await import('@/stores/cssEditor')
       const { usePostStore } = await import('@/stores/post')
-      
+
       const uiStore = useUIStore()
       const themeStore = useThemeStore()
       const cssEditorStore = useCssEditorStore()
       const postStore = usePostStore()
-      
+
       const config: ProjectConfig = {
         // ========== 图床配置 ==========
         githubConfig: await store.getJSON(`githubConfig`, null),
@@ -173,24 +173,24 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
         r2Config: await store.getJSON(`r2Config`, null),
         upyunConfig: await store.getJSON(`upyunConfig`, null),
         cloudinaryConfig: await store.getJSON(`cloudinaryConfig`, null),
-        imgHost: await store.get(`imgHost`),
-        useCompression: await store.getJSON(`useCompression`, null),
-        
+        imgHost: await store.get(`imgHost`) || undefined,
+        useCompression: (await store.getJSON(`useCompression`, null)) ?? undefined,
+
         // ========== 文档存储配置 ==========
         webdavDocConfig: await store.getJSON(`webdavDocConfig`, null),
         cosDocConfig: await store.getJSON(`cosDocConfig`, null),
-        docStorageType: await store.get(`docStorageType`),
-        
+        docStorageType: (await store.get(`docStorageType`)) || undefined,
+
         // ========== 自定义表单配置 ==========
         formCustomConfig: await store.getJSON(`formCustomConfig`, null),
-        
+
         // ========== UI Store 状态（运行时值）==========
         isDark: uiStore.isDark,
         isEditOnLeft: uiStore.isEditOnLeft,
         isOpenRightSlider: uiStore.isOpenRightSlider,
         isOpenPostSlider: uiStore.isOpenPostSlider,
         showAIToolbox: uiStore.showAIToolbox,
-        
+
         // ========== Theme Store 状态（运行时值）==========
         theme: themeStore.theme,
         fontFamily: themeStore.fontFamily,
@@ -204,18 +204,18 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
         isCountStatus: themeStore.isCountStatus,
         isUseIndent: themeStore.isUseIndent,
         isUseJustify: themeStore.isUseJustify,
-        
+
         // ========== CSS Editor Store 状态（运行时值）==========
         cssContentConfig: cssEditorStore.cssContentConfig,
-        
+
         // ========== Post Store 状态 ==========
         currentPostIndex: postStore.currentPostIndex,
-        
+
         // ========== 其他配置 ==========
-        copyMode: await store.getJSON(`MD__copyMode`, null),
-        sortMode: await store.getJSON(`MD__sort_mode`, null),
+        copyMode: (await store.getJSON(`MD__copyMode`, null)) ?? undefined,
+        sortMode: (await store.getJSON(`MD__sort_mode`, null)) ?? undefined,
       }
-      
+
       // 过滤掉 null 值
       const filteredConfig: ProjectConfig = {}
       for (const [key, value] of Object.entries(config)) {
@@ -223,7 +223,7 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
           filteredConfig[key] = value
         }
       }
-      
+
       console.log('LocalStorage getProjectConfig:', filteredConfig)
       return Object.keys(filteredConfig).length > 0 ? filteredConfig : null
     }
@@ -235,23 +235,39 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
 
   async saveProjectConfig(config: ProjectConfig): Promise<void> {
     console.log('LocalStorage saveProjectConfig:', config)
-    
+
     try {
       // 先保存图床配置和其他非 Store 配置到 localStorage
       const configsToSave: Record<string, any> = {}
       const storeConfigs: Record<string, any> = {}
-      
+
       for (const [key, value] of Object.entries(config)) {
-        if (value === undefined || value === null) continue
-        
+        if (value === undefined || value === null)
+          continue
+
         // 分类：Store 配置 vs localStorage 配置
         const isStoreConfig = [
-          'isDark', 'isEditOnLeft', 'isOpenRightSlider', 'isOpenPostSlider', 'showAIToolbox',
-          'theme', 'fontFamily', 'fontSize', 'primaryColor', 'codeBlockTheme', 'legend',
-          'isMacCodeBlock', 'isShowLineNumber', 'isCiteStatus', 'isCountStatus',
-          'isUseIndent', 'isUseJustify', 'cssContentConfig', 'currentPostIndex'
+          'isDark',
+          'isEditOnLeft',
+          'isOpenRightSlider',
+          'isOpenPostSlider',
+          'showAIToolbox',
+          'theme',
+          'fontFamily',
+          'fontSize',
+          'primaryColor',
+          'codeBlockTheme',
+          'legend',
+          'isMacCodeBlock',
+          'isShowLineNumber',
+          'isCiteStatus',
+          'isCountStatus',
+          'isUseIndent',
+          'isUseJustify',
+          'cssContentConfig',
+          'currentPostIndex',
         ].includes(key)
-        
+
         if (isStoreConfig) {
           storeConfigs[key] = value
         }
@@ -259,7 +275,7 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
           configsToSave[key] = value
         }
       }
-      
+
       // 1. 先保存图床配置等到 localStorage
       for (const [key, value] of Object.entries(configsToSave)) {
         if (typeof value === 'string') {
@@ -270,53 +286,89 @@ export class LocalStorageDocumentEngine implements DocumentStorageEngine {
         }
       }
       console.log('图床配置已保存:', Object.keys(configsToSave))
-      
+
       // 2. 再更新 Store（这会触发 store.reactive 自动保存）
       if (Object.keys(storeConfigs).length > 0) {
         const { useUIStore } = await import('@/stores/ui')
         const { useThemeStore } = await import('@/stores/theme')
         const { useCssEditorStore } = await import('@/stores/cssEditor')
         const { usePostStore } = await import('@/stores/post')
-        
+
         const uiStore = useUIStore()
         const themeStore = useThemeStore()
         const cssEditorStore = useCssEditorStore()
         const postStore = usePostStore()
-        
+
         for (const [key, value] of Object.entries(storeConfigs)) {
           // UI Store 状态
-          if (key === 'isDark') uiStore.isDark = value
-          else if (key === 'isEditOnLeft') uiStore.isEditOnLeft = value
-          else if (key === 'isOpenRightSlider') uiStore.isOpenRightSlider = value
-          else if (key === 'isOpenPostSlider') uiStore.isOpenPostSlider = value
-          else if (key === 'showAIToolbox') uiStore.showAIToolbox = value
-          
+          if (key === 'isDark') {
+            uiStore.isDark = value
+          }
+          else if (key === 'isEditOnLeft') {
+            uiStore.isEditOnLeft = value
+          }
+          else if (key === 'isOpenRightSlider') {
+            uiStore.isOpenRightSlider = value
+          }
+          else if (key === 'isOpenPostSlider') {
+            uiStore.isOpenPostSlider = value
+          }
+          else if (key === 'showAIToolbox') {
+            uiStore.showAIToolbox = value
+          }
+
           // Theme Store 状态
-          else if (key === 'theme') themeStore.theme = value
-          else if (key === 'fontFamily') themeStore.fontFamily = value
-          else if (key === 'fontSize') themeStore.fontSize = value
-          else if (key === 'primaryColor') themeStore.primaryColor = value
-          else if (key === 'codeBlockTheme') themeStore.codeBlockTheme = value
-          else if (key === 'legend') themeStore.legend = value
-          else if (key === 'isMacCodeBlock') themeStore.isMacCodeBlock = value
-          else if (key === 'isShowLineNumber') themeStore.isShowLineNumber = value
-          else if (key === 'isCiteStatus') themeStore.isCiteStatus = value
-          else if (key === 'isCountStatus') themeStore.isCountStatus = value
-          else if (key === 'isUseIndent') themeStore.isUseIndent = value
-          else if (key === 'isUseJustify') themeStore.isUseJustify = value
-          
+          else if (key === 'theme') {
+            themeStore.theme = value
+          }
+          else if (key === 'fontFamily') {
+            themeStore.fontFamily = value
+          }
+          else if (key === 'fontSize') {
+            themeStore.fontSize = value
+          }
+          else if (key === 'primaryColor') {
+            themeStore.primaryColor = value
+          }
+          else if (key === 'codeBlockTheme') {
+            themeStore.codeBlockTheme = value
+          }
+          else if (key === 'legend') {
+            themeStore.legend = value
+          }
+          else if (key === 'isMacCodeBlock') {
+            themeStore.isMacCodeBlock = value
+          }
+          else if (key === 'isShowLineNumber') {
+            themeStore.isShowLineNumber = value
+          }
+          else if (key === 'isCiteStatus') {
+            themeStore.isCiteStatus = value
+          }
+          else if (key === 'isCountStatus') {
+            themeStore.isCountStatus = value
+          }
+          else if (key === 'isUseIndent') {
+            themeStore.isUseIndent = value
+          }
+          else if (key === 'isUseJustify') {
+            themeStore.isUseJustify = value
+          }
+
           // CSS Editor Store 状态
           else if (key === 'cssContentConfig') {
             console.log('正在更新 cssContentConfig:', value)
             cssEditorStore.cssContentConfig = value
           }
-          
+
           // Post Store 状态
-          else if (key === 'currentPostIndex') postStore.currentPostIndex = value
+          else if (key === 'currentPostIndex') {
+            postStore.currentPostIndex = value
+          }
         }
         console.log('Store 配置已更新:', Object.keys(storeConfigs))
       }
-      
+
       console.log('✅ 所有配置保存完成')
     }
     catch (error) {
@@ -358,15 +410,15 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async getDocuments(): Promise<DocumentData[]> {
     await this.ensureConfig()
-    
+
     try {
       const url = `${this.config.url}${this.config.path}/documents.json`
       console.log('WebDAV GET:', url)
-      
+
       const response = await fetch(url, {
         method: `GET`,
         headers: {
-          'Authorization': `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
+          Authorization: `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
         },
       })
 
@@ -387,11 +439,11 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async saveDocuments(documents: DocumentData[]): Promise<void> {
     await this.ensureConfig()
-    
+
     const content = JSON.stringify(documents, null, 2)
     const url = `${this.config.url}${this.config.path}/documents.json`
     console.log('WebDAV PUT:', url)
-    
+
     const response = await fetch(url, {
       method: `PUT`,
       headers: {
@@ -408,13 +460,13 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async getCurrentDocumentId(): Promise<string | null> {
     await this.ensureConfig()
-    
+
     try {
       const url = `${this.config.url}${this.config.path}/current.txt`
       const response = await fetch(url, {
         method: `GET`,
         headers: {
-          'Authorization': `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
+          Authorization: `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
         },
       })
 
@@ -431,7 +483,7 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async saveCurrentDocumentId(id: string): Promise<void> {
     await this.ensureConfig()
-    
+
     const url = `${this.config.url}${this.config.path}/current.txt`
     await fetch(url, {
       method: `PUT`,
@@ -445,15 +497,15 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async getProjectConfig(): Promise<ProjectConfig | null> {
     await this.ensureConfig()
-    
+
     try {
       const url = `${this.config.url}${this.config.path}/config.json`
       console.log('WebDAV GET config:', url)
-      
+
       const response = await fetch(url, {
         method: `GET`,
         headers: {
-          'Authorization': `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
+          Authorization: `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
         },
       })
 
@@ -477,11 +529,11 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async saveProjectConfig(config: ProjectConfig): Promise<void> {
     await this.ensureConfig()
-    
+
     const content = JSON.stringify(config, null, 2)
     const url = `${this.config.url}${this.config.path}/config.json`
     console.log('WebDAV PUT config:', url, config)
-    
+
     const response = await fetch(url, {
       method: `PUT`,
       headers: {
@@ -498,12 +550,12 @@ export class WebDAVDocumentEngine implements DocumentStorageEngine {
 
   async checkConnection(): Promise<boolean> {
     await this.ensureConfig()
-    
+
     try {
       const response = await fetch(this.config.url, {
         method: `OPTIONS`,
         headers: {
-          'Authorization': `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
+          Authorization: `Basic ${btoa(`${this.config.username}:${this.config.password}`)}`,
         },
       })
       return response.ok
@@ -554,7 +606,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async getDocuments(): Promise<DocumentData[]> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       throw new Error(`COS not initialized`)
     }
@@ -591,7 +643,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async saveDocuments(documents: DocumentData[]): Promise<void> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       throw new Error(`COS not initialized`)
     }
@@ -621,7 +673,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async getCurrentDocumentId(): Promise<string | null> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       return null
     }
@@ -647,7 +699,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async saveCurrentDocumentId(id: string): Promise<void> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       throw new Error(`COS not initialized`)
     }
@@ -675,7 +727,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async getProjectConfig(): Promise<ProjectConfig | null> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       return null
     }
@@ -716,7 +768,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async saveProjectConfig(config: ProjectConfig): Promise<void> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       throw new Error(`COS not initialized`)
     }
@@ -746,7 +798,7 @@ export class COSDocumentEngine implements DocumentStorageEngine {
 
   async checkConnection(): Promise<boolean> {
     await this.ensureConfig()
-    
+
     if (!this.cos) {
       return false
     }
@@ -872,10 +924,10 @@ class DocumentStorageManager {
    */
   async syncToNewStorage(newType: string, documents: DocumentData[], currentId: string): Promise<void> {
     const oldType = this.currentType
-    
+
     // 先从当前存储获取配置
     const config = await this.getProjectConfig()
-    
+
     // 切换到新存储
     await this.setStorageType(newType)
 
@@ -883,7 +935,7 @@ class DocumentStorageManager {
       // 保存文档数据
       await this.saveDocuments(documents)
       await this.saveCurrentDocumentId(currentId)
-      
+
       // 保存配置数据
       if (config) {
         await this.saveProjectConfig(config)
@@ -907,7 +959,7 @@ class DocumentStorageManager {
     const documents = await this.getDocuments()
     const currentId = await this.getCurrentDocumentId()
     const config = await this.getProjectConfig()
-    
+
     return { documents, currentId, config }
   }
 
@@ -917,7 +969,7 @@ class DocumentStorageManager {
   async uploadToRemote(documents: DocumentData[], currentId: string, config?: ProjectConfig): Promise<void> {
     await this.saveDocuments(documents)
     await this.saveCurrentDocumentId(currentId)
-    
+
     if (config) {
       await this.saveProjectConfig(config)
     }

@@ -2,11 +2,10 @@
 import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
-import { documentStorage } from '@/utils/documentStorage'
-import { store } from '@/utils'
 import { usePostStore } from '@/stores/post'
+import { store } from '@/utils'
+import { documentStorage } from '@/utils/documentStorage'
 
-const emit = defineEmits([`close`])
 const isOpen = defineModel<boolean>(`open`, { default: false })
 
 const postStore = usePostStore()
@@ -95,14 +94,8 @@ async function changeDocStorage() {
   }
 
   // 确认切换
-  const confirmed = await new Promise((resolve) => {
-    if (window.confirm(`切换存储平台将同步当前数据到新平台，是否继续？`)) {
-      resolve(true)
-    }
-    else {
-      resolve(false)
-    }
-  })
+  // eslint-disable-next-line no-alert
+  const confirmed = window.confirm(`切换存储平台将同步当前数据到新平台，是否继续？`)
 
   if (!confirmed) {
     // 回滚选择
@@ -170,7 +163,7 @@ async function manualSync() {
     // 同步文档和配置
     await documentStorage.saveDocuments(currentDocuments)
     await documentStorage.saveCurrentDocumentId(currentId)
-    
+
     if (config) {
       await documentStorage.saveProjectConfig(config)
       toast.success(`文档和配置已同步到云端`)
@@ -194,14 +187,8 @@ async function loadFromCloud() {
     return
   }
 
-  const confirmed = await new Promise((resolve) => {
-    if (window.confirm(`从云端加载将覆盖本地所有数据（包括文档和配置），是否继续？`)) {
-      resolve(true)
-    }
-    else {
-      resolve(false)
-    }
-  })
+  // eslint-disable-next-line no-alert
+  const confirmed = window.confirm(`从云端加载将覆盖本地所有数据（包括文档和配置），是否继续？`)
 
   if (!confirmed) {
     return
@@ -226,7 +213,7 @@ async function loadFromCloud() {
         const localEngine = new (await import('@/utils/documentStorage')).LocalStorageDocumentEngine()
         await localEngine.saveProjectConfig(result.config)
         console.log('配置已保存到 localStorage')
-        
+
         toast.success(`文档和配置已从云端加载，刷新页面以应用配置`)
       }
       else {
@@ -323,7 +310,7 @@ onMounted(async () => {
             </Alert>
 
             <div v-if="docStorageType !== 'localStorage'" class="flex gap-2">
-              <Button @click="testConnection" :disabled="isSyncing">
+              <Button :disabled="isSyncing" @click="testConnection">
                 测试连接
               </Button>
               <Badge v-if="connectionStatus === true" variant="success">
@@ -484,7 +471,7 @@ onMounted(async () => {
             </div>
 
             <div class="flex flex-col gap-2">
-              <Button @click="manualSync" :disabled="isSyncing || docStorageType === 'localStorage'">
+              <Button :disabled="isSyncing || docStorageType === 'localStorage'" @click="manualSync">
                 <template v-if="isSyncing">
                   同步中...
                 </template>
@@ -493,7 +480,7 @@ onMounted(async () => {
                 </template>
               </Button>
 
-              <Button variant="outline" @click="loadFromCloud" :disabled="isSyncing || docStorageType === 'localStorage'">
+              <Button variant="outline" :disabled="isSyncing || docStorageType === 'localStorage'" @click="loadFromCloud">
                 从云端加载
               </Button>
             </div>
@@ -504,7 +491,7 @@ onMounted(async () => {
               </AlertDescription>
             </Alert>
 
-            <Alert variant="warning">
+            <Alert>
               <AlertDescription>
                 <strong>注意：</strong>从云端加载会覆盖本地所有文档数据，请谨慎操作！
               </AlertDescription>

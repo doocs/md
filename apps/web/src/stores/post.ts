@@ -1,8 +1,8 @@
+import type { DocumentData } from '@/utils/documentStorage'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { addPrefix, store } from '@/utils'
+import { store } from '@/utils'
 import { documentStorage } from '@/utils/documentStorage'
-import type { DocumentData } from '@/utils/documentStorage'
 
 /**
  * Post 结构接口
@@ -52,6 +52,22 @@ export const usePostStore = defineStore(`post`, () => {
   // 预备弃用的旧字段（用于迁移）
   const editorContent = store.reactive(`__editor_content`, DEFAULT_CONTENT)
 
+  // 保存到存储
+  const saveToStorage = async () => {
+    // 只有在数据加载完成后才保存，避免覆盖云端数据
+    if (!isLoaded.value) {
+      return
+    }
+
+    try {
+      await documentStorage.saveDocuments(posts.value as DocumentData[])
+      await documentStorage.saveCurrentDocumentId(currentPostId.value)
+    }
+    catch (error) {
+      console.error(`Failed to save to storage:`, error)
+    }
+  }
+
   // 从存储加载数据
   const loadFromStorage = async () => {
     // 避免重复加载
@@ -63,7 +79,7 @@ export const usePostStore = defineStore(`post`, () => {
 
     try {
       await documentStorage.init()
-      
+
       const storedDocuments = await documentStorage.getDocuments()
       const storedCurrentId = await documentStorage.getCurrentDocumentId()
 
@@ -101,22 +117,6 @@ export const usePostStore = defineStore(`post`, () => {
     }
     finally {
       isLoading.value = false
-    }
-  }
-
-  // 保存到存储
-  const saveToStorage = async () => {
-    // 只有在数据加载完成后才保存，避免覆盖云端数据
-    if (!isLoaded.value) {
-      return
-    }
-
-    try {
-      await documentStorage.saveDocuments(posts.value as DocumentData[])
-      await documentStorage.saveCurrentDocumentId(currentPostId.value)
-    }
-    catch (error) {
-      console.error(`Failed to save to storage:`, error)
     }
   }
 
