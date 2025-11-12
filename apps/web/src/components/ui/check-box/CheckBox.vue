@@ -24,7 +24,7 @@ const emits = defineEmits([`update:checked`])
           />
         </CheckboxIndicator>
       </CheckboxRoot>
-      <span class="select-none text-white">
+      <span class="select-none">
         <slot />
       </span>
     </label>

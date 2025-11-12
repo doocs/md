@@ -54,6 +54,10 @@ const props = defineProps<{
   selectedPosts: Set<string>
   // 切换文章选中状态
   togglePostSelection: (postId: string) => void
+  // 如果多选模式未开启，则开启它
+  openMultipleModeIfClosed: () => void
+  // 如果没有选中任何文章，则关闭多选模式
+  closeMultipleModeIfNoSelection: () => void
 }>()
 
 const postStore = usePostStore()
@@ -113,6 +117,8 @@ function isHasChild(postId: string) {
       @drop.prevent="props.handleDrop(post.id)"
       @dragover.stop.prevent="props.setDropTargetId(post.id)"
       @dragleave.prevent="props.setDropTargetId(null)"
+      @mouseenter="props.openMultipleModeIfClosed"
+      @mouseleave="props.closeMultipleModeIfNoSelection"
       @click="currentPostId = post.id"
     >
       <!-- 折叠展开图标 -->
@@ -171,6 +177,8 @@ function isHasChild(postId: string) {
         :handle-drag-end="props.handleDragEnd" :handle-drop="props.handleDrop"
         :open-add-post-dialog="props.openAddPostDialog" :is-open-multiple-mode="props.isOpenMultipleMode"
         :selected-posts="props.selectedPosts" :toggle-post-selection="props.togglePostSelection"
+        :open-multiple-mode-if-closed="props.openMultipleModeIfClosed"
+        :close-multiple-mode-if-no-selection="props.closeMultipleModeIfNoSelection"
       />
     </div>
   </div>

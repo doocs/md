@@ -210,9 +210,19 @@ function handleDragEnd() {
 }
 /* ============ 多选模式 ============ */
 const isOpenMultipleMode = ref(false)
-/** 打开多选框 */
-function toggleIsOpenMultipleMode() {
-  isOpenMultipleMode.value = !isOpenMultipleMode.value
+/** 选中的文章 ID 集合 */
+const selectedPosts = ref<Set<string>>(new Set())
+/** 开启多选模式（如果未开启） */
+function openMultipleModeIfClosed() {
+  if (!isOpenMultipleMode.value) {
+    isOpenMultipleMode.value = true
+  }
+}
+/** 如果没有选中任何文章，则关闭多选模式 */
+function closeMultipleModeIfNoSelection() {
+  if (selectedPosts.value.size === 0) {
+    isOpenMultipleMode.value = false
+  }
 }
 watch(isOpenMultipleMode, (o) => {
   if (!o) {
@@ -220,8 +230,6 @@ watch(isOpenMultipleMode, (o) => {
   }
 })
 
-/** 选中的文章 ID 集合 */
-const selectedPosts = ref<Set<string>>(new Set())
 function togglePostSelection(postId: string) {
   if (selectedPosts.value.has(postId)) {
     selectedPosts.value.delete(postId)
@@ -242,6 +250,17 @@ function selectAllPosts() {
 }
 function clearSelection() {
   selectedPosts.value.clear()
+}
+function toggleSelectAllPosts() {
+  if (!isOpenMultipleMode.value) {
+    isOpenMultipleMode.value = true
+  }
+  if (selectedPosts.value.size === posts.value.length) {
+    clearSelection()
+  }
+  else {
+    selectAllPosts()
+  }
 }
 /** 批量导出为.md */
 async function handleExportAsMD() {
@@ -457,36 +476,16 @@ async function handleExportAsMD() {
             <TooltipProvider :delay-duration="200">
               <Tooltip>
                 <TooltipTrigger as-child>
-                  <Button variant="ghost" size="xs" class="h-max p-1">
+                  <Button variant="ghost" size="xs" class="h-max p-1" @click="toggleSelectAllPosts">
                     <Layers class="size-5" />
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom">
-                  多选模式
+                  全选/取消全选
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
-            <DropdownMenuItem
-              @select.prevent
-              @click.stop.prevent="toggleIsOpenMultipleMode"
-            >
-              打开/关闭多选模式
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              @select.prevent
-              @click.stop.prevent="selectAllPosts"
-            >
-              全选
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              @select.prevent
-              @click.stop.prevent="clearSelection"
-            >
-              取消全选
-            </DropdownMenuItem>
-          </DropdownMenuContent>
         </DropdownMenu>
 
         <TooltipProvider v-if="isOpenMultipleMode" :delay-duration="200">
@@ -522,6 +521,8 @@ async function handleExportAsMD() {
           :is-open-multiple-mode="isOpenMultipleMode"
           :selected-posts="selectedPosts"
           :toggle-post-selection="togglePostSelection"
+          :open-multiple-mode-if-closed="openMultipleModeIfClosed"
+          :close-multiple-mode-if-no-selection="closeMultipleModeIfNoSelection"
         />
       </div>
     </nav>
