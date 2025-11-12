@@ -269,39 +269,113 @@ async function handleExportAsMD() {
     return
   }
 
-  try {
+  const exportPromise = async () => {
     const zip = new JSZip()
+    const filePathMap = new Map<string, number>() // 用于处理文件名冲突
     let exportedCount = 0
+    let skippedCount = 0
+
+    // 构建父级路径映射（用于保持文件夹结构）
+    const buildPath = (postId: string, pathMap: Map<string, string>): string => {
+      if (pathMap.has(postId)) {
+        return pathMap.get(postId)!
+      }
+
+      const post = postStore.getPostById(postId)
+      if (!post) {
+        return ``
+      }
+
+      const safeTitle = sanitizeTitle(post.title)
+      if (!post.parentId || !selectedPosts.value.has(post.parentId)) {
+        // 如果没有父级或父级未被选中，直接返回文件名
+        pathMap.set(postId, safeTitle)
+        return safeTitle
+      }
+
+      // 递归构建父级路径
+      const parentPath = buildPath(post.parentId, pathMap)
+      const fullPath = parentPath ? `${parentPath}/${safeTitle}` : safeTitle
+      pathMap.set(postId, fullPath)
+      return fullPath
+    }
+
+    const pathMap = new Map<string, string>()
+
+    // 先处理所有父级文章，确保文件夹结构正确
+    const sortedPostIds = Array.from(selectedPosts.value).sort((a, b) => {
+      const postA = postStore.getPostById(a)
+      const postB = postStore.getPostById(b)
+      // 有父级的排在后面
+      if (postA?.parentId && !postB?.parentId)
+        return 1
+      if (!postA?.parentId && postB?.parentId)
+        return -1
+      return 0
+    })
 
     // 遍历选中的文章ID，添加到ZIP
-    for (const postId of selectedPosts.value) {
+    for (const postId of sortedPostIds) {
       const post = postStore.getPostById(postId)
-      if (post && post.content) {
-        // 清理文件名中的非法字符
-        const safeTitle = sanitizeTitle(post.title)
-        // 添加到ZIP，避免文件名冲突
-        zip.file(`${safeTitle}.md`, post.content)
+      if (!post) {
+        skippedCount++
+        continue
+      }
+
+      if (!post.content || post.content.trim() === ``) {
+        skippedCount++
+        continue
+      }
+
+      // 构建文件路径（保持文件夹结构）
+      const basePath = buildPath(postId, pathMap)
+      let filePath = `${basePath}.md`
+
+      // 处理文件名冲突
+      if (filePathMap.has(filePath)) {
+        const count = filePathMap.get(filePath)! + 1
+        filePathMap.set(filePath, count)
+        const pathParts = basePath.split(`/`)
+        const fileName = pathParts.pop() || basePath
+        const dirPath = pathParts.join(`/`)
+        filePath = dirPath ? `${dirPath}/${fileName} (${count}).md` : `${fileName} (${count}).md`
+      }
+      else {
+        filePathMap.set(filePath, 0)
+      }
+
+      try {
+        zip.file(filePath, post.content)
         exportedCount++
+      }
+      catch (error) {
+        console.warn(`添加文件失败: ${filePath}`, error)
+        skippedCount++
       }
     }
 
     if (exportedCount === 0) {
-      toast.error(`没有可导出的文章内容`)
-      return
+      throw new Error(`没有可导出的文章内容`)
     }
 
-    // 生成ZIP文件
+    // 生成ZIP文件（使用更高效的压缩选项）
     const blob = await zip.generateAsync({
       type: `blob`,
       compression: `DEFLATE`,
       compressionOptions: { level: 6 },
+      streamFiles: true, // 流式处理，提高大文件性能
     })
 
     // 创建下载链接
     const url = URL.createObjectURL(blob)
     const a = document.createElement(`a`)
     a.href = url
-    a.download = `批量导出-${new Date().toLocaleDateString(`zh-CN`).replace(/\//g, `-`)}.zip`
+    const timestamp = new Date().toLocaleDateString(`zh-CN`, {
+      year: `numeric`,
+      month: `2-digit`,
+      day: `2-digit`,
+    }).replace(/\//g, `-`)
+    a.download = `批量导出-${timestamp}.zip`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
@@ -309,16 +383,24 @@ async function handleExportAsMD() {
     // 释放内存
     URL.revokeObjectURL(url)
 
-    toast.success(`成功导出 ${exportedCount} 篇文章`)
+    // 返回成功消息（包含详细信息）
+    const message = skippedCount > 0
+      ? `成功导出 ${exportedCount} 篇文章，跳过 ${skippedCount} 篇空文章`
+      : `成功导出 ${exportedCount} 篇文章`
 
     // 导出完成后关闭多选模式并清空选择
     isOpenMultipleMode.value = false
     selectedPosts.value.clear()
+
+    return message
   }
-  catch (error) {
-    console.error(`批量导出失败:`, error)
-    toast.error(`批量导出失败: ${error instanceof Error ? error.message : `未知错误`}`)
-  }
+
+  // 使用 toast.promise 显示加载、成功和失败状态
+  toast.promise(exportPromise(), {
+    loading: `正在导出 ${selectedPosts.value.size} 篇文章...`,
+    success: (message: string) => message,
+    error: (error: Error) => `批量导出失败: ${error.message || `未知错误`}`,
+  })
 }
 </script>
 
