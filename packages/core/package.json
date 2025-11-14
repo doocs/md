@@ -17,7 +17,7 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^2.31.0",
-    "marked": "^16.4.1",
+    "marked": "^17.0.0",
     "mermaid": "^11.12.1",
     "postcss": "^8.5.1",
     "postcss-calc": "^10.1.1",
