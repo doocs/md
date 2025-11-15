@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, Upload } from 'lucide-vue-next'
+import { Cloud, Download, FileCode, FileCog, FileText, Upload } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openEditorState`])
+const emit = defineEmits([`openEditorState`, `openDocumentStorage`])
 
 const { asSub } = toRefs(props)
 
@@ -24,6 +24,10 @@ const importMarkdownContent = useImportMarkdownContent()
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
+}
+
+function openDocumentStorageDialog() {
+  emit(`openDocumentStorage`)
 }
 
 // Export functions
@@ -85,6 +89,11 @@ function exportEditorContent2PDF() {
         导入/导出项目配置
       </MenubarItem>
       <MenubarSeparator />
+      <MenubarItem @click="openDocumentStorageDialog()">
+        <Cloud class="mr-2 size-4" />
+        文档存储配置
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isDark">
         深色模式
       </MenubarCheckboxItem>
@@ -133,6 +142,11 @@ function exportEditorContent2PDF() {
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         导入/导出项目配置
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem @click="openDocumentStorageDialog()">
+        <Cloud class="mr-2 size-4" />
+        文档存储配置
       </MenubarItem>
       <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isDark">
