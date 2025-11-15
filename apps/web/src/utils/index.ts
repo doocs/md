@@ -309,6 +309,8 @@ export async function processClipboardContent(primaryColor: string) {
     .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
     .replace(/var\(--md-primary-color\)/g, primaryColor)
     .replace(/--md-primary-color:.+?;/g, ``)
+    .replace(/--md-font-family:.+?;/g, ``)
+    .replace(/--md-font-size:.+?;/g, ``)
     .replace(
       /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
       `<span class="nodeLabel"$1>$2</span>`,
