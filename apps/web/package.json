@@ -53,7 +53,7 @@
     "isomorphic-dompurify": "^2.31.0",
     "juice": "^11.0.3",
     "lucide-vue-next": "^0.553.0",
-    "marked": "^16.4.1",
+    "marked": "^17.0.0",
     "node-fetch": "^3.3.2",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.2",
