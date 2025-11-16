@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, Upload } from 'lucide-vue-next'
+import { Download, FileCode, FileCog, FileText, Package, Upload } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
@@ -19,11 +19,16 @@ const exportStore = useExportStore()
 const uiStore = useUIStore()
 
 const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(uiStore)
+const { toggleShowTemplateDialog } = uiStore
 
 const importMarkdownContent = useImportMarkdownContent()
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
+}
+
+function openTemplateDialog() {
+  toggleShowTemplateDialog(true)
 }
 
 // Export functions
@@ -80,6 +85,11 @@ function exportEditorContent2PDF() {
         导出 .png
       </MenubarItem>
       <MenubarSeparator />
+      <MenubarItem @click="openTemplateDialog()">
+        <Package class="mr-2 size-4" />
+        模板管理
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         导入/导出项目配置
@@ -128,6 +138,11 @@ function exportEditorContent2PDF() {
       <MenubarItem @click="downloadAsCardImage()">
         <Download class="mr-2 size-4" />
         导出 .png
+      </MenubarItem>
+      <MenubarSeparator />
+      <MenubarItem @click="openTemplateDialog()">
+        <Package class="mr-2 size-4" />
+        模板管理
       </MenubarItem>
       <MenubarSeparator />
       <MenubarItem @click="openEditorStateDialog()">
