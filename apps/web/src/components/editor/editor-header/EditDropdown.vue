@@ -50,6 +50,7 @@ function redo() {
       编辑
     </MenubarSubTrigger>
     <MenubarSubContent>
+      <!-- 历史操作 -->
       <MenubarItem @click="undo()">
         <Undo2Icon class="mr-2 h-4 w-4" />
         撤销
@@ -58,20 +59,34 @@ function redo() {
         <Redo2Icon class="mr-2 h-4 w-4" />
         重做
       </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarItem @click="toggleShowUploadImgDialog()">
-        <UploadCloudIcon class="mr-2 h-4 w-4" />
-        上传图片
-      </MenubarItem>
-      <MenubarItem @click="toggleShowInsertFormDialog()">
-        <TableIcon class="mr-2 h-4 w-4" />
-        插入表格
-      </MenubarItem>
-      <MenubarItem @click="toggleShowInsertMpCardDialog()">
-        <Contact2Icon class="mr-2 h-4 w-4" />
-        插入公众号名片
-      </MenubarItem>
+
+      <!-- 插入操作子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <TableIcon class="mr-2 h-4 w-4" />
+          插入
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="toggleShowUploadImgDialog()">
+            <UploadCloudIcon class="mr-2 h-4 w-4" />
+            插入图片
+          </MenubarItem>
+          <MenubarItem @click="toggleShowInsertFormDialog()">
+            <TableIcon class="mr-2 h-4 w-4" />
+            插入表格
+          </MenubarItem>
+          <MenubarItem @click="toggleShowInsertMpCardDialog()">
+            <Contact2Icon class="mr-2 h-4 w-4" />
+            插入公众号名片
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
       <MenubarSeparator />
+
+      <!-- 剪贴板操作 -->
       <MenubarItem @click="copyToClipboard()">
         <CopyIcon class="mr-2 h-4 w-4" />
         复制
@@ -89,6 +104,7 @@ function redo() {
       编辑
     </MenubarTrigger>
     <MenubarContent align="start">
+      <!-- 历史操作 -->
       <MenubarItem @click="undo()">
         <Undo2Icon class="mr-2 h-4 w-4" />
         撤销
@@ -97,20 +113,34 @@ function redo() {
         <Redo2Icon class="mr-2 h-4 w-4" />
         重做
       </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarItem @click="toggleShowUploadImgDialog()">
-        <UploadCloudIcon class="mr-2 h-4 w-4" />
-        上传图片
-      </MenubarItem>
-      <MenubarItem @click="toggleShowInsertFormDialog()">
-        <TableIcon class="mr-2 h-4 w-4" />
-        插入表格
-      </MenubarItem>
-      <MenubarItem @click="toggleShowInsertMpCardDialog()">
-        <Contact2Icon class="mr-2 h-4 w-4" />
-        插入公众号名片
-      </MenubarItem>
+
+      <!-- 插入操作子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <TableIcon class="mr-2 h-4 w-4" />
+          插入
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="toggleShowUploadImgDialog()">
+            <UploadCloudIcon class="mr-2 h-4 w-4" />
+            插入图片
+          </MenubarItem>
+          <MenubarItem @click="toggleShowInsertFormDialog()">
+            <TableIcon class="mr-2 h-4 w-4" />
+            插入表格
+          </MenubarItem>
+          <MenubarItem @click="toggleShowInsertMpCardDialog()">
+            <Contact2Icon class="mr-2 h-4 w-4" />
+            插入公众号名片
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
       <MenubarSeparator />
+
+      <!-- 剪贴板操作 -->
       <MenubarItem @click="copyToClipboard()">
         <CopyIcon class="mr-2 h-4 w-4" />
         复制
