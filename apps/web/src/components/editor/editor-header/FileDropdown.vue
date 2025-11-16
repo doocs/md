@@ -60,49 +60,73 @@ function exportEditorContent2PDF() {
       文件
     </MenubarSubTrigger>
     <MenubarSubContent>
-      <MenubarItem @click="importMarkdownContent()">
-        <Upload class="mr-2 size-4" />
-        导入 .md
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2MD()">
-        <Download class="mr-2 size-4" />
-        导出 .md
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2HTML()">
-        <FileCode class="mr-2 size-4" />
-        导出 .html
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2PureHTML()">
-        <FileCode class="mr-2 size-4" />
-        导出 .html（无样式）
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2PDF()">
-        <FileText class="mr-2 size-4" />
-        导出 .pdf
-      </MenubarItem>
-      <MenubarItem @click="downloadAsCardImage()">
-        <Download class="mr-2 size-4" />
-        导出 .png
-      </MenubarItem>
+      <!-- 导入子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Upload class="mr-2 size-4" />
+          导入
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="importMarkdownContent()">
+            <FileText class="mr-2 size-4" />
+            导入 Markdown 文档
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
+      <!-- 导出子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Download class="mr-2 size-4" />
+          导出
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="exportEditorContent2MD()">
+            <FileText class="mr-2 size-4" />
+            导出为 Markdown
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2HTML()">
+            <FileCode class="mr-2 size-4" />
+            导出为 HTML
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2PureHTML()">
+            <FileCode class="mr-2 size-4" />
+            导出为 HTML（无样式）
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2PDF()">
+            <FileText class="mr-2 size-4" />
+            导出为 PDF
+          </MenubarItem>
+          <MenubarItem @click="downloadAsCardImage()">
+            <Download class="mr-2 size-4" />
+            导出为图片
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
       <MenubarSeparator />
+
+      <!-- 模板管理 -->
       <MenubarItem @click="openTemplateDialog()">
         <Package class="mr-2 size-4" />
         模板管理
       </MenubarItem>
-      <MenubarSeparator />
+
+      <!-- 项目配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
-        导入/导出项目配置
+        项目配置
       </MenubarItem>
+
       <MenubarSeparator />
+
+      <!-- 视图设置 -->
       <MenubarCheckboxItem v-model:checked="isDark">
         深色模式
       </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isEditOnLeft">
         左侧编辑
       </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
         内容管理
       </MenubarCheckboxItem>
@@ -115,49 +139,73 @@ function exportEditorContent2PDF() {
       文件
     </MenubarTrigger>
     <MenubarContent align="start">
-      <MenubarItem @click="importMarkdownContent()">
-        <Upload class="mr-2 size-4" />
-        导入 .md
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2MD()">
-        <Download class="mr-2 size-4" />
-        导出 .md
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2HTML()">
-        <FileCode class="mr-2 size-4" />
-        导出 .html
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2PureHTML()">
-        <FileCode class="mr-2 size-4" />
-        导出 .html（无样式）
-      </MenubarItem>
-      <MenubarItem @click="exportEditorContent2PDF()">
-        <FileText class="mr-2 size-4" />
-        导出 .pdf
-      </MenubarItem>
-      <MenubarItem @click="downloadAsCardImage()">
-        <Download class="mr-2 size-4" />
-        导出 .png
-      </MenubarItem>
+      <!-- 导入子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Upload class="mr-2 size-4" />
+          导入
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="importMarkdownContent()">
+            <FileText class="mr-2 size-4" />
+            导入 Markdown 文档
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
+      <!-- 导出子菜单 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Download class="mr-2 size-4" />
+          导出
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="exportEditorContent2MD()">
+            <FileText class="mr-2 size-4" />
+            导出为 Markdown
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2HTML()">
+            <FileCode class="mr-2 size-4" />
+            导出为 HTML
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2PureHTML()">
+            <FileCode class="mr-2 size-4" />
+            导出为 HTML（无样式）
+          </MenubarItem>
+          <MenubarItem @click="exportEditorContent2PDF()">
+            <FileText class="mr-2 size-4" />
+            导出为 PDF
+          </MenubarItem>
+          <MenubarItem @click="downloadAsCardImage()">
+            <Download class="mr-2 size-4" />
+            导出为图片
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+
       <MenubarSeparator />
+
+      <!-- 模板管理 -->
       <MenubarItem @click="openTemplateDialog()">
         <Package class="mr-2 size-4" />
         模板管理
       </MenubarItem>
-      <MenubarSeparator />
+
+      <!-- 项目配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
-        导入/导出项目配置
+        项目配置
       </MenubarItem>
+
       <MenubarSeparator />
+
+      <!-- 视图设置 -->
       <MenubarCheckboxItem v-model:checked="isDark">
         深色模式
       </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isEditOnLeft">
         左侧编辑
       </MenubarCheckboxItem>
-      <MenubarSeparator />
       <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
         内容管理
       </MenubarCheckboxItem>
