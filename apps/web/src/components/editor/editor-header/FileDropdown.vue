@@ -69,7 +69,7 @@ function exportEditorContent2PDF() {
         <MenubarSubContent>
           <MenubarItem @click="importMarkdownContent()">
             <FileText class="mr-2 size-4" />
-            导入 Markdown 文档
+            导入 .md
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -83,23 +83,23 @@ function exportEditorContent2PDF() {
         <MenubarSubContent>
           <MenubarItem @click="exportEditorContent2MD()">
             <FileText class="mr-2 size-4" />
-            导出为 Markdown
+            导出 .md
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2HTML()">
             <FileCode class="mr-2 size-4" />
-            导出为 HTML
+            导出 .html
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PureHTML()">
             <FileCode class="mr-2 size-4" />
-            导出为 HTML（无样式）
+            导出 .html（无样式）
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PDF()">
             <FileText class="mr-2 size-4" />
-            导出为 PDF
+            导出 .pdf
           </MenubarItem>
           <MenubarItem @click="downloadAsCardImage()">
             <Download class="mr-2 size-4" />
-            导出为图片
+            导出 .png
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -148,7 +148,7 @@ function exportEditorContent2PDF() {
         <MenubarSubContent>
           <MenubarItem @click="importMarkdownContent()">
             <FileText class="mr-2 size-4" />
-            导入 Markdown 文档
+            导入 .md
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -162,23 +162,23 @@ function exportEditorContent2PDF() {
         <MenubarSubContent>
           <MenubarItem @click="exportEditorContent2MD()">
             <FileText class="mr-2 size-4" />
-            导出为 Markdown
+            导出 .md
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2HTML()">
             <FileCode class="mr-2 size-4" />
-            导出为 HTML
+            导出 .html
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PureHTML()">
             <FileCode class="mr-2 size-4" />
-            导出为 HTML（无样式）
+            导出 .html（无样式）
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PDF()">
             <FileText class="mr-2 size-4" />
-            导出为 PDF
+            导出 .pdf
           </MenubarItem>
           <MenubarItem @click="downloadAsCardImage()">
             <Download class="mr-2 size-4" />
-            导出为图片
+            导出 .png
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
