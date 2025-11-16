@@ -1,1 +1,24 @@
-doocs-md-cli-*
+# Build outputs
+build/
+*.exe
+*.app
+*.dmg
+
+# Dependencies
+node_modules/
+
+# Distribution files
+dist/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+.DS_Store
+*.tmp
+*.temp
+
+# IDE
+.vscode/
+.idea/

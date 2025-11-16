@@ -6,10 +6,24 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "build:exe": "pkg . --compress Brotli --options max-old-space-size=4096",
+    "build:exe:win": "pkg . --targets node18-win-x64 --compress Brotli --options max-old-space-size=4096",
+    "build:exe:all": "pkg . --targets node18-win-x64,node18-macos-x64,node18-linux-x64 --compress Brotli --options max-old-space-size=4096"
   },
   "bin": {
     "md-cli": "index.js"
+  },
+  "pkg": {
+    "assets": [
+      "dist/**/*",
+      "public/**/*"
+    ],
+    "targets": [
+      "node18-win-x64"
+    ],
+    "outputPath": "build",
+    "compress": "Brotli"
   },
   "files": [
     "dist",
@@ -18,7 +32,13 @@
     "server.js",
     "util.js"
   ],
-  "keywords": [],
+  "keywords": [
+    "markdown",
+    "editor",
+    "wechat",
+    "windows",
+    "cli"
+  ],
   "author": "yanglbme",
   "license": "ISC",
   "repository": {
@@ -37,6 +57,7 @@
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
-    "nodemon": "^3.1.10"
+    "nodemon": "^3.1.10",
+    "pkg": "^5.8.1"
   }
 }

@@ -21,6 +21,7 @@
     "vscode": "pnpm --prefix ./apps/vscode",
     "cli": "pnpm --filter @doocs/md-cli",
     "build:cli": "pnpm web build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r apps/web/dist packages/md-cli/ && cd packages/md-cli && npm pack",
+    "build:windows": "node ./scripts/build-windows-exe.mjs",
     "release:cli": "node ./scripts/release.js",
     "lint": "eslint . --fix",
     "type-check": "vue-tsc --build --force",
