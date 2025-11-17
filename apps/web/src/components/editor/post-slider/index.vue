@@ -3,7 +3,8 @@ import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, store } from '@/utils'
+import { addPrefix } from '@/utils'
+import { store } from '@/utils/storage'
 
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)

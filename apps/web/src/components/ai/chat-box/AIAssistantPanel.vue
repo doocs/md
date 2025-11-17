@@ -32,8 +32,8 @@ import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useQuickCommands } from '@/stores/quickCommands'
 import { useUIStore } from '@/stores/ui'
-import { store } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { store } from '@/utils/storage'
 
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])

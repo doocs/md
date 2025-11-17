@@ -20,8 +20,9 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, store, toBase64 } from '@/utils'
+import { checkImage, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
+import { store } from '@/utils/storage'
 
 const editorStore = useEditorStore()
 const postStore = usePostStore()

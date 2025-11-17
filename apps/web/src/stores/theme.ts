@@ -1,7 +1,8 @@
 import type { ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
-import { addPrefix, store } from '@/utils'
+import { addPrefix } from '@/utils'
+import { store } from '@/utils/storage'
 
 /**
  * 主题和样式配置 Store

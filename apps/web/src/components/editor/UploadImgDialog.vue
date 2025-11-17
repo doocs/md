@@ -4,7 +4,8 @@ import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, store } from '@/utils'
+import { checkImage } from '@/utils'
+import { store } from '@/utils/storage'
 
 const emit = defineEmits([`uploadImage`])
 

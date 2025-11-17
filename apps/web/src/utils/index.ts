@@ -14,12 +14,10 @@ import {
 import juice from 'juice'
 import { Marked } from 'marked'
 
-// 导出新的统一存储 API
 export {
-  LocalEngine,
-  RestfulEngine,
+  LocalStorageEngine as LocalEngine,
+  RestfulStorageEngine as RestfulEngine,
   type StorageEngine,
-  store,
 } from './storage'
 
 // 重新导出供外部使用
