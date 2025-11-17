@@ -3,7 +3,8 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useEditorStore } from '@/stores/editor'
-import { addPrefix, store } from '@/utils'
+import { addPrefix } from '@/utils'
+import { store } from '@/utils/storage'
 
 /** 编辑器实例和全局弹窗状态 */
 const editorStore = useEditorStore()

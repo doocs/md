@@ -1,6 +1,7 @@
 import type { ThemeName } from '@md/shared'
 import { initRenderer } from '@md/core/renderer'
-import { generateCSSVariables, modifyHtmlContent } from '@md/core/utils'
+import { generateCSSVariables } from '@md/core/theme'
+import { modifyHtmlContent } from '@md/core/utils'
 import { baseCSSContent, themeMap } from '@md/shared'
 import * as vscode from 'vscode'
 import { css } from './css'

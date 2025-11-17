@@ -1,6 +1,7 @@
 import type { CreateTemplateParams, Template, UpdateTemplateParams } from '@md/shared'
 import { v4 as uuidv4 } from 'uuid'
-import { addPrefix, store } from '@/utils'
+import { addPrefix } from '@/utils'
+import { store } from '@/utils/storage'
 
 /**
  * 模板管理 Store

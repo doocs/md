@@ -22,8 +22,8 @@ import { Textarea } from '@/components/ui/textarea'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
-import { store } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { store } from '@/utils/storage'
 import AIImageConfig from './AIImageConfig.vue'
 
 /* ---------- 组件属性 ---------- */

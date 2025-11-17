@@ -43,6 +43,10 @@ export default function config() {
             },
           ],
         },
+        {
+          test: /\.(css|txt)$/,
+          type: 'asset/source',
+        },
       ],
     },
     devtool: `nosources-source-map`,
