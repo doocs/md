@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from 'lucide-vue-next'
+import JSZip from 'jszip'
+import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, FolderDown, Layers, PlusSquare, X } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, store } from '@/utils'
+import { addPrefix, sanitizeTitle, store } from '@/utils'
 
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
@@ -207,6 +208,200 @@ function handleDragEnd() {
   dropTargetId.value = null
   dragover.value = false
 }
+/* ============ 多选模式 ============ */
+const isOpenMultipleMode = ref(false)
+/** 选中的文章 ID 集合 */
+const selectedPosts = ref<Set<string>>(new Set())
+/** 开启多选模式（如果未开启） */
+function openMultipleModeIfClosed() {
+  if (!isOpenMultipleMode.value) {
+    isOpenMultipleMode.value = true
+  }
+}
+/** 如果没有选中任何文章，则关闭多选模式 */
+function closeMultipleModeIfNoSelection() {
+  if (selectedPosts.value.size === 0) {
+    isOpenMultipleMode.value = false
+  }
+}
+watch(isOpenMultipleMode, (o) => {
+  if (!o) {
+    clearSelection()
+  }
+})
+
+function togglePostSelection(postId: string) {
+  if (selectedPosts.value.has(postId)) {
+    selectedPosts.value.delete(postId)
+  }
+  else {
+    selectedPosts.value.add(postId)
+  }
+}
+
+function selectAllPosts() {
+  if (!isOpenMultipleMode.value) {
+    return
+  }
+  selectedPosts.value.clear()
+  posts.value.forEach((post) => {
+    selectedPosts.value.add(post.id)
+  })
+}
+function clearSelection() {
+  selectedPosts.value.clear()
+}
+function toggleSelectAllPosts() {
+  if (!isOpenMultipleMode.value) {
+    isOpenMultipleMode.value = true
+  }
+  if (selectedPosts.value.size === posts.value.length) {
+    clearSelection()
+  }
+  else {
+    selectAllPosts()
+  }
+}
+/** 批量导出为.md */
+async function handleExportAsMD() {
+  if (selectedPosts.value.size === 0) {
+    toast.error(`请选择要导出的文章`)
+    return
+  }
+
+  const exportPromise = async () => {
+    const zip = new JSZip()
+    const filePathMap = new Map<string, number>() // 用于处理文件名冲突
+    let exportedCount = 0
+    let skippedCount = 0
+
+    // 构建父级路径映射（用于保持文件夹结构）
+    const buildPath = (postId: string, pathMap: Map<string, string>): string => {
+      if (pathMap.has(postId)) {
+        return pathMap.get(postId)!
+      }
+
+      const post = postStore.getPostById(postId)
+      if (!post) {
+        return ``
+      }
+
+      const safeTitle = sanitizeTitle(post.title)
+      if (!post.parentId || !selectedPosts.value.has(post.parentId)) {
+        // 如果没有父级或父级未被选中，直接返回文件名
+        pathMap.set(postId, safeTitle)
+        return safeTitle
+      }
+
+      // 递归构建父级路径
+      const parentPath = buildPath(post.parentId, pathMap)
+      const fullPath = parentPath ? `${parentPath}/${safeTitle}` : safeTitle
+      pathMap.set(postId, fullPath)
+      return fullPath
+    }
+
+    const pathMap = new Map<string, string>()
+
+    // 先处理所有父级文章，确保文件夹结构正确
+    const sortedPostIds = Array.from(selectedPosts.value).sort((a, b) => {
+      const postA = postStore.getPostById(a)
+      const postB = postStore.getPostById(b)
+      // 有父级的排在后面
+      if (postA?.parentId && !postB?.parentId)
+        return 1
+      if (!postA?.parentId && postB?.parentId)
+        return -1
+      return 0
+    })
+
+    // 遍历选中的文章ID，添加到ZIP
+    for (const postId of sortedPostIds) {
+      const post = postStore.getPostById(postId)
+      if (!post) {
+        skippedCount++
+        continue
+      }
+
+      if (!post.content || post.content.trim() === ``) {
+        skippedCount++
+        continue
+      }
+
+      // 构建文件路径（保持文件夹结构）
+      const basePath = buildPath(postId, pathMap)
+      let filePath = `${basePath}.md`
+
+      // 处理文件名冲突
+      if (filePathMap.has(filePath)) {
+        const count = filePathMap.get(filePath)! + 1
+        filePathMap.set(filePath, count)
+        const pathParts = basePath.split(`/`)
+        const fileName = pathParts.pop() || basePath
+        const dirPath = pathParts.join(`/`)
+        filePath = dirPath ? `${dirPath}/${fileName} (${count}).md` : `${fileName} (${count}).md`
+      }
+      else {
+        filePathMap.set(filePath, 0)
+      }
+
+      try {
+        zip.file(filePath, post.content)
+        exportedCount++
+      }
+      catch (error) {
+        console.warn(`添加文件失败: ${filePath}`, error)
+        skippedCount++
+      }
+    }
+
+    if (exportedCount === 0) {
+      throw new Error(`没有可导出的文章内容`)
+    }
+
+    // 生成ZIP文件（使用更高效的压缩选项）
+    const blob = await zip.generateAsync({
+      type: `blob`,
+      compression: `DEFLATE`,
+      compressionOptions: { level: 6 },
+      streamFiles: true, // 流式处理，提高大文件性能
+    })
+
+    // 创建下载链接
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement(`a`)
+    a.href = url
+    const timestamp = new Date().toLocaleDateString(`zh-CN`, {
+      year: `numeric`,
+      month: `2-digit`,
+      day: `2-digit`,
+    }).replace(/\//g, `-`)
+    a.download = `批量导出-${timestamp}.zip`
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+
+    // 释放内存
+    URL.revokeObjectURL(url)
+
+    // 返回成功消息（包含详细信息）
+    const message = skippedCount > 0
+      ? `成功导出 ${exportedCount} 篇文章，跳过 ${skippedCount} 篇空文章`
+      : `成功导出 ${exportedCount} 篇文章`
+
+    // 导出完成后关闭多选模式并清空选择
+    isOpenMultipleMode.value = false
+    selectedPosts.value.clear()
+
+    return message
+  }
+
+  // 使用 toast.promise 显示加载、成功和失败状态
+  toast.promise(exportPromise(), {
+    loading: `正在导出 ${selectedPosts.value.size} 篇文章...`,
+    success: (message: string) => message,
+    error: (error: Error) => `批量导出失败: ${error.message || `未知错误`}`,
+  })
+}
 </script>
 
 <template>
@@ -301,7 +496,12 @@ function handleDragEnd() {
               </Tooltip>
             </TooltipProvider>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent
+            :on-select="() => {
+              // 阻止默认关闭（返回 false 可阻止关闭）
+              return false
+            }"
+          >
             <DropdownMenuRadioGroup v-model="sortMode">
               <DropdownMenuRadioItem value="A-Z">
                 文件名（A-Z）
@@ -352,6 +552,36 @@ function handleDragEnd() {
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
+
+        <DropdownMenu>
+          <DropdownMenuTrigger>
+            <TooltipProvider :delay-duration="200">
+              <Tooltip>
+                <TooltipTrigger as-child>
+                  <Button variant="ghost" size="xs" class="h-max p-1" @click="toggleSelectAllPosts">
+                    <Layers class="size-5" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  全选/取消全选
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </DropdownMenuTrigger>
+        </DropdownMenu>
+
+        <TooltipProvider v-if="isOpenMultipleMode" :delay-duration="200">
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <Button variant="ghost" size="xs" class="h-max p-1" @click="handleExportAsMD">
+                <FolderDown class="size-5" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">
+              批量导出为.md
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
       </div>
 
       <!-- 列表 -->
@@ -370,6 +600,11 @@ function handleDragEnd() {
           :handle-drop="handleDrop"
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
+          :is-open-multiple-mode="isOpenMultipleMode"
+          :selected-posts="selectedPosts"
+          :toggle-post-selection="togglePostSelection"
+          :open-multiple-mode-if-closed="openMultipleModeIfClosed"
+          :close-multiple-mode-if-no-selection="closeMultipleModeIfNoSelection"
         />
       </div>
     </nav>

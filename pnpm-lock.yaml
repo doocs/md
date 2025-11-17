@@ -165,6 +165,9 @@ importers:
       isomorphic-dompurify:
         specifier: ^2.31.0
         version: 2.31.0
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       juice:
         specifier: ^11.0.3
         version: 11.0.3
@@ -256,6 +259,9 @@ importers:
       '@types/crypto-js':
         specifier: ^4.2.2
         version: 4.2.2
+      '@types/jszip':
+        specifier: ^3.4.1
+        version: 3.4.1
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
@@ -3467,6 +3473,10 @@ packages:
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
+
+  '@types/jszip@3.4.1':
+    resolution: {integrity: sha512-TezXjmf3lj+zQ651r6hPqvSScqBLvyPI9FxdXBqpEwBijNGQ2NXpaFW/7joGzveYkKQUil7iiDHLo6LV71Pc0A==}
+    deprecated: This is a stub types definition. jszip provides its own type definitions, so you do not need this installed.
 
   '@types/mdast@4.0.4':
     resolution: {integrity: sha512-kGaNbPh1k7AFzgpud/gMdvIm5xuECykRR+JnWKQno9TAXVa6WIVCGTPvYGekIDL4uwCZQSYbUxNBSb1aUo79oA==}
@@ -13611,6 +13621,10 @@ snapshots:
       '@types/node': 24.10.0
 
   '@types/json-schema@7.0.15': {}
+
+  '@types/jszip@3.4.1':
+    dependencies:
+      jszip: 3.10.1
 
   '@types/mdast@4.0.4':
     dependencies:
