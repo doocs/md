@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "lib": ["ES2022"],
-    "module": "es2015",
+    "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
       "@/*": ["../*"]
@@ -12,6 +12,9 @@
     "sourceMap": true,
     "esModuleInterop": true
   },
-  "include": ["src/**/*"],
+  "include": [
+    "src/**/*",
+    "../../packages/shared/src/global.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }
