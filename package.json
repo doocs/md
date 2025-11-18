@@ -47,6 +47,7 @@
   },
   "pnpm": {
     "overrides": {
+      "@codemirror/view": "6.38.6",
       "core-js@<3": "^3.46.0",
       "glob@<8": "^10.4.5",
       "inflight": "npm:@hishprorg/voluptates-laborum@^2.0.0",
