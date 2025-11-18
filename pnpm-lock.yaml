@@ -24,8 +24,8 @@ importers:
         specifier: ^6.5.2
         version: 6.5.2
       '@codemirror/view':
-        specifier: 6.38.6
-        version: 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+        specifier: 6.38.8
+        version: 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 6.2.0
@@ -88,8 +88,8 @@ importers:
         version: 4.2.0
     devDependencies:
       '@types/vscode':
-        specifier: ^1.106.0
-        version: 1.106.0
+        specifier: ^1.106.1
+        version: 1.106.1
       '@vscode/vsce':
         specifier: ^3.7.0
         version: 3.7.0
@@ -100,11 +100,11 @@ importers:
   apps/web:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.932.0
-        version: 3.932.0
+        specifier: ^3.933.0
+        version: 3.933.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.932.0
-        version: 3.932.0
+        specifier: ^3.933.0
+        version: 3.933.0
       '@exercism/highlightjs-gdscript':
         specifier: ^0.0.1
         version: 0.0.1
@@ -237,10 +237,10 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.14.2
-        version: 1.14.2(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251109.0)(wrangler@4.48.0(@cloudflare/workers-types@4.20251117.0))
+        version: 1.14.2(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251109.0)(wrangler@4.48.0(@cloudflare/workers-types@4.20251118.0))
       '@cloudflare/workers-types':
-        specifier: ^4.20251117.0
-        version: 4.20251117.0
+        specifier: ^4.20251118.0
+        version: 4.20251118.0
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -305,14 +305,14 @@ importers:
         specifier: ^0.10.1
         version: 0.10.1(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))
       vite-plugin-vue-devtools:
-        specifier: ^8.0.3
-        version: 8.0.3(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))
+        specifier: ^8.0.5
+        version: 8.0.5(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))
       vue-tsc:
         specifier: ^3.1.4
         version: 3.1.4(typescript@5.9.3)
       wrangler:
         specifier: ^4.48.0
-        version: 4.48.0(@cloudflare/workers-types@4.20251117.0)
+        version: 4.48.0(@cloudflare/workers-types@4.20251118.0)
       wxt:
         specifier: ^0.20.11
         version: 0.20.11(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(rollup@4.53.2)(terser@5.44.1)(yaml@2.8.1)
@@ -366,7 +366,7 @@ importers:
     devDependencies:
       wrangler:
         specifier: ^4.47.0
-        version: 4.48.0(@cloudflare/workers-types@4.20251117.0)
+        version: 4.48.0(@cloudflare/workers-types@4.20251118.0)
 
   packages/md-cli:
     dependencies:
@@ -424,13 +424,13 @@ importers:
         version: 6.5.11
       '@fsegurai/codemirror-theme-vscode-dark':
         specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)
+        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)
       '@fsegurai/codemirror-theme-vscode-light':
         specifier: ^6.2.2
-        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)
+        version: 6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)
       '@replit/codemirror-indentation-markers':
         specifier: ^6.5.3
-        version: 6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))
+        version: 6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))
       axios:
         specifier: ^1.13.2
         version: 1.13.2
@@ -581,12 +581,12 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-s3@3.932.0':
-    resolution: {integrity: sha512-qrlbJ3W5QR3Gzz2S+yaItH8ZhX7vaeA4j4fDAi8+0FmsVhXOfBbomWr+JO1wk/YojZMdyLfmfYRHrJvAQsLFVw==}
+  '@aws-sdk/client-s3@3.933.0':
+    resolution: {integrity: sha512-KxwZvdxdCeWK6o8mpnb+kk7Kgb8V+8AjTwSXUWH1UAD85B0tjdo1cSfE5zoR5fWGol4Ml5RLez12a6LPhsoTqA==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/client-sso@3.932.0':
-    resolution: {integrity: sha512-XHqHa5iv2OQsKoM2tUQXs7EAyryploC00Wg0XSFra/KAKqyGizUb5XxXsGlyqhebB29Wqur+zwiRwNmejmN0+Q==}
+  '@aws-sdk/client-sso@3.933.0':
+    resolution: {integrity: sha512-zwGLSiK48z3PzKpQiDMKP85+fpIrPMF1qQOQW9OW7BGj5AuBZIisT2O4VzIgYJeh+t47MLU7VgBQL7muc+MJDg==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/core@3.932.0':
@@ -601,24 +601,24 @@ packages:
     resolution: {integrity: sha512-b6N9Nnlg8JInQwzBkUq5spNaXssM3h3zLxGzpPrnw0nHSIWPJPTbZzA5Ca285fcDUFuKP+qf3qkuqlAjGOdWhg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-ini@3.932.0':
-    resolution: {integrity: sha512-ZBjSAXVGy7danZRHCRMJQ7sBkG1Dz39thYlvTiUaf9BKZ+8ymeiFhuTeV1OkWUBBnY0ki2dVZJvboTqfINhNxA==}
+  '@aws-sdk/credential-provider-ini@3.933.0':
+    resolution: {integrity: sha512-HygGyKuMG5AaGXsmM0d81miWDon55xwalRHB3UmDg3QBhtunbNIoIaWUbNTKuBZXcIN6emeeEZw/YgSMqLc0YA==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-node@3.932.0':
-    resolution: {integrity: sha512-SEG9t2taBT86qe3gTunfrK8BxT710GVLGepvHr+X5Pw+qW225iNRaGN0zJH+ZE/j91tcW9wOaIoWnURkhR5wIg==}
+  '@aws-sdk/credential-provider-node@3.933.0':
+    resolution: {integrity: sha512-L2dE0Y7iMLammQewPKNeEh1z/fdJyYEU+/QsLBD9VEh+SXcN/FIyTi21Isw8wPZN6lMB9PDVtISzBnF8HuSFrw==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/credential-provider-process@3.932.0':
     resolution: {integrity: sha512-BodZYKvT4p/Dkm28Ql/FhDdS1+p51bcZeMMu2TRtU8PoMDHnVDhHz27zASEKSZwmhvquxHrZHB0IGuVqjZUtSQ==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-sso@3.932.0':
-    resolution: {integrity: sha512-XYmkv+ltBjjmPZ6AmR1ZQZkQfD0uzG61M18/Lif3HAGxyg3dmod0aWx9aL6lj9SvxAGqzscrx5j4PkgLqjZruw==}
+  '@aws-sdk/credential-provider-sso@3.933.0':
+    resolution: {integrity: sha512-/R1DBR7xNcuZIhS2RirU+P2o8E8/fOk+iLAhbqeSTq+g09fP/F6W7ouFpS5eVE2NIfWG7YBFoVddOhvuqpn51g==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/credential-provider-web-identity@3.932.0':
-    resolution: {integrity: sha512-Yw/hYNnC1KHuVIQF9PkLXbuKN7ljx70OSbJYDRufllQvej3kRwNcqQSnzI1M4KaObccqKaE6srg22DqpPy9p8w==}
+  '@aws-sdk/credential-provider-web-identity@3.933.0':
+    resolution: {integrity: sha512-c7Eccw2lhFx2/+qJn3g+uIDWRuWi2A6Sz3PVvckFUEzPsP0dPUo19hlvtarwP5GzrsXn0yEPRVhpewsIaSCGaQ==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/middleware-bucket-endpoint@3.930.0':
@@ -645,8 +645,8 @@ packages:
     resolution: {integrity: sha512-vh4JBWzMCBW8wREvAwoSqB2geKsZwSHTa0nSt0OMOLp2PdTYIZDi0ZiVMmpfnjcx9XbS6aSluLv9sKx4RrG46A==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/middleware-recursion-detection@3.930.0':
-    resolution: {integrity: sha512-gv0sekNpa2MBsIhm2cjP3nmYSfI4nscx/+K9u9ybrWZBWUIC4kL2sV++bFjjUz4QxUIlvKByow3/a9ARQyCu7Q==}
+  '@aws-sdk/middleware-recursion-detection@3.933.0':
+    resolution: {integrity: sha512-qgrMlkVKzTCAdNw2A05DC2sPBo0KRQ7wk+lbYSRJnWVzcrceJhnmhoZVV5PFv7JtchK7sHVcfm9lcpiyd+XaCA==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/middleware-sdk-s3@3.932.0':
@@ -661,24 +661,24 @@ packages:
     resolution: {integrity: sha512-9BGTbJyA/4PTdwQWE9hAFIJGpsYkyEW20WON3i15aDqo5oRZwZmqaVageOD57YYqG8JDJjvcwKyDdR4cc38dvg==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/nested-clients@3.932.0':
-    resolution: {integrity: sha512-E2ucBfiXSpxZflHTf3UFbVwao4+7v7ctAeg8SWuglc1UMqMlpwMFFgWiSONtsf0SR3+ZDoWGATyCXOfDWerJuw==}
+  '@aws-sdk/nested-clients@3.933.0':
+    resolution: {integrity: sha512-o1GX0+IPlFi/D8ei9y/jj3yucJWNfPnbB5appVBWevAyUdZA5KzQ2nK/hDxiu9olTZlFEFpf1m1Rn3FaGxHqsw==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/region-config-resolver@3.930.0':
     resolution: {integrity: sha512-KL2JZqH6aYeQssu1g1KuWsReupdfOoxD6f1as2VC+rdwYFUu4LfzMsFfXnBvvQWWqQ7rZHWOw1T+o5gJmg7Dzw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.932.0':
-    resolution: {integrity: sha512-1cKnsenYzcRBA05GHho/+YnLLEmlyoGw+KAI5S5yfiul9HQDZU6KQ1+vblynyAS4LXwIgrutOUM3NxgSw3jFBQ==}
+  '@aws-sdk/s3-request-presigner@3.933.0':
+    resolution: {integrity: sha512-yHdBFIrbl+oVG0DSznOLCywNtVLFmxufaNc95zQ41/4WyefJz8iNGU8nv4PI7RIO0MMrYRfvoK3rLH4YVE543g==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.932.0':
     resolution: {integrity: sha512-NCIRJvoRc9246RZHIusY1+n/neeG2yGhBGdKhghmrNdM+mLLN6Ii7CKFZjx3DhxtpHMpl1HWLTMhdVrGwP2upw==}
     engines: {node: '>=18.0.0'}
 
-  '@aws-sdk/token-providers@3.932.0':
-    resolution: {integrity: sha512-43u82ulVuHK4zWhcSPyuPS18l0LNHi3QJQ1YtP2MfP8bPf5a6hMYp5e3lUr9oTDEWcpwBYtOW0m1DVmoU/3veA==}
+  '@aws-sdk/token-providers@3.933.0':
+    resolution: {integrity: sha512-Qzq7zj9yXUgAAJEbbmqRhm0jmUndl8nHG0AbxFEfCfQRVZWL96Qzx0mf8lYwT9hIMrXncLwy31HOthmbXwFRwQ==}
     engines: {node: '>=18.0.0'}
 
   '@aws-sdk/types@3.930.0':
@@ -717,8 +717,8 @@ packages:
     resolution: {integrity: sha512-YIfkD17GocxdmlUVc3ia52QhcWuRIUJonbF8A2CYfcWNV3HzvAqpcPeC0bYUhkK+8e8YO1ARnLKZQE0TlwzorA==}
     engines: {node: '>=18.0.0'}
 
-  '@aws/lambda-invoke-store@0.1.1':
-    resolution: {integrity: sha512-RcLam17LdlbSOSp9VxmUu1eI6Mwxp+OwhD2QhiSNmNCzoDb0EeUXTD2n/WbcnrAYMGlmf05th6QYq23VqvJqpA==}
+  '@aws/lambda-invoke-store@0.2.0':
+    resolution: {integrity: sha512-D1jAmAZQYMoPiacfgNf7AWhg3DFN3Wq/vQv3WINt9znwjzHp2x+WzdJFxxj7xZL7V1U79As6G8f7PorMYWBKsQ==}
     engines: {node: '>=18.0.0'}
 
   '@azu/format-text@1.0.2':
@@ -996,8 +996,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20251117.0':
-    resolution: {integrity: sha512-4U6phQE/qbmWuJX/0cTk3iOx9KyhWmo34okKb2BSS09UMRWLCwML+P3dnHxCHnSQij8c0orvdzMr9hyqgJGNgw==}
+  '@cloudflare/workers-types@4.20251118.0':
+    resolution: {integrity: sha512-O1BlPjaQlM5rsxf8rc8NwNrXduzXMCWZDsSelI1SEyt0zYuBYMzn0kNrrD2bXAtXeYCk6LrX98037AlVdGXBUw==}
 
   '@codemirror/autocomplete@6.19.1':
     resolution: {integrity: sha512-q6NenYkEy2fn9+JyjIxMWcNjzTL/IhwqfzOut1/G3PrIFkrbl4AL7Wkse5tLrQUUyqGoAKU5+Pi5jnnXxH5HGw==}
@@ -1086,8 +1086,8 @@ packages:
   '@codemirror/state@6.5.2':
     resolution: {integrity: sha512-FVqsPqtPWKVVL3dPSxy8wEF/ymIEuVzF1PK3VbUgrxXpJUSHQWWZz4JMToquRxnkw+36LTamCZG2iua2Ptq0fA==}
 
-  '@codemirror/view@6.38.6':
-    resolution: {integrity: sha512-qiS0z1bKs5WOvHIAC0Cybmv4AJSkAXgX5aD6Mqd2epSLlVJsQl8NG23jCVouIgkh4All/mrbdsf2UOLFnJw0tw==}
+  '@codemirror/view@6.38.8':
+    resolution: {integrity: sha512-XcE9fcnkHCbWkjeKyi0lllwXmBLtyYb5dt89dJyx23I9+LSh5vZDIuk7OLG4VM1lgrXZQcY6cxyZyk5WVPRv/A==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -2582,8 +2582,8 @@ packages:
   '@types/unist@3.0.3':
     resolution: {integrity: sha512-ko/gIFJRv177XgZsZcBwnqJN5x/Gien8qNOn0D5bQU/zAzVf9Zt3BlcUiLqhV9y4ARk0GbT3tnUiPNgnTXzc/Q==}
 
-  '@types/vscode@1.106.0':
-    resolution: {integrity: sha512-88oUcEl9Wmlyt64pbvjLzyyFuFuPotdjwy+P+5ggg3DyTJSMWJD3ShX2ppya5mqrAYTKEhcaJBerdc5JTeb32w==}
+  '@types/vscode@1.106.1':
+    resolution: {integrity: sha512-R/HV8u2h8CAddSbX8cjpdd7B8/GnE4UjgjpuGuHcbp1xV6yh4OeqU4L1pKjlwujCrSFS0MOpwJAIs/NexMB1fQ==}
 
   '@types/web-bluetooth@0.0.20':
     resolution: {integrity: sha512-g9gZnnXVq7gM7v3tJCWV/qw7w+KeOlSHAhgF9RytFyifW6AF61hdT2ucrYhPq9hLs5JIryeupHV3qGk95dH9ow==}
@@ -2775,22 +2775,22 @@ packages:
   '@vue/devtools-api@7.7.8':
     resolution: {integrity: sha512-BtFcAmDbtXGwurWUFf8ogIbgZyR+rcVES1TSNEI8Em80fD8Anu+qTRN1Fc3J6vdRHlVM3fzPV1qIo+B4AiqGzw==}
 
-  '@vue/devtools-core@8.0.3':
-    resolution: {integrity: sha512-gCEQN7aMmeaigEWJQ2Z2o3g7/CMqGTPvNS1U3n/kzpLoAZ1hkAHNgi4ml/POn/9uqGILBk65GGOUdrraHXRj5Q==}
+  '@vue/devtools-core@8.0.5':
+    resolution: {integrity: sha512-dpCw8nl0GDBuiL9SaY0mtDxoGIEmU38w+TQiYEPOLhW03VDC0lfNMYXS/qhl4I0YlysGp04NLY4UNn6xgD0VIQ==}
     peerDependencies:
       vue: ^3.0.0
 
-  '@vue/devtools-kit@7.7.8':
-    resolution: {integrity: sha512-4Y8op+AoxOJhB9fpcEF6d5vcJXWKgHxC3B0ytUB8zz15KbP9g9WgVzral05xluxi2fOeAy6t140rdQ943GcLRQ==}
+  '@vue/devtools-kit@7.7.9':
+    resolution: {integrity: sha512-PyQ6odHSgiDVd4hnTP+aDk2X4gl2HmLDfiyEnn3/oV+ckFDuswRs4IbBT7vacMuGdwY/XemxBoh302ctbsptuA==}
 
-  '@vue/devtools-kit@8.0.3':
-    resolution: {integrity: sha512-UF4YUOVGdfzXLCv5pMg2DxocB8dvXz278fpgEE+nJ/DRALQGAva7sj9ton0VWZ9hmXw+SV8yKMrxP2MpMhq9Wg==}
+  '@vue/devtools-kit@8.0.5':
+    resolution: {integrity: sha512-q2VV6x1U3KJMTQPUlRMyWEKVbcHuxhqJdSr6Jtjz5uAThAIrfJ6WVZdGZm5cuO63ZnSUz0RCsVwiUUb0mDV0Yg==}
 
-  '@vue/devtools-shared@7.7.8':
-    resolution: {integrity: sha512-XHpO3jC5nOgYr40M9p8Z4mmKfTvUxKyRcUnpBAYg11pE78eaRFBKb0kG5yKLroMuJeeNH9LWmKp2zMU5LUc7CA==}
+  '@vue/devtools-shared@7.7.9':
+    resolution: {integrity: sha512-iWAb0v2WYf0QWmxCGy0seZNDPdO3Sp5+u78ORnyeonS6MT4PC7VPrryX2BpMJrwlDeaZ6BD4vP4XKjK0SZqaeA==}
 
-  '@vue/devtools-shared@8.0.3':
-    resolution: {integrity: sha512-s/QNll7TlpbADFZrPVsaUNPCOF8NvQgtgmmB7Tip6pLf/HcOvBTly0lfLQ0Eylu9FQ4OqBhFpLyBgwykiSf8zw==}
+  '@vue/devtools-shared@8.0.5':
+    resolution: {integrity: sha512-bRLn6/spxpmgLk+iwOrR29KrYnJjG9DGpHGkDFG82UM21ZpJ39ztUT9OXX3g+usW7/b2z+h46I9ZiYyB07XMXg==}
 
   '@vue/language-core@3.1.4':
     resolution: {integrity: sha512-n/58wm8SkmoxMWkUNUH/PwoovWe4hmdyPJU2ouldr3EPi1MLoS7iDN46je8CsP95SnVBs2axInzRglPNKvqMcg==}
@@ -7468,8 +7468,8 @@ packages:
     peerDependencies:
       vite: ^2.0.0 || ^3.0.0 || ^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0
 
-  vite-plugin-vue-devtools@8.0.3:
-    resolution: {integrity: sha512-yIi3u31xUi28HcLlTpV0BvSLQHgZ2dA8Zqa59kWfIeMdHqbsunt6TCjq4wCNfOcGSju+E7qyHyI09EjRRFMbuQ==}
+  vite-plugin-vue-devtools@8.0.5:
+    resolution: {integrity: sha512-p619BlKFOqQXJ6uDWS1vUPQzuJOD6xJTfftj57JXBGoBD/yeQCowR7pnWcr/FEX4/HVkFbreI6w2uuGBmQOh6A==}
     engines: {node: '>=v14.21.3'}
     peerDependencies:
       vite: ^6.0.0 || ^7.0.0-0
@@ -8014,20 +8014,20 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-s3@3.932.0':
+  '@aws-sdk/client-s3@3.933.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.932.0
-      '@aws-sdk/credential-provider-node': 3.932.0
+      '@aws-sdk/credential-provider-node': 3.933.0
       '@aws-sdk/middleware-bucket-endpoint': 3.930.0
       '@aws-sdk/middleware-expect-continue': 3.930.0
       '@aws-sdk/middleware-flexible-checksums': 3.932.0
       '@aws-sdk/middleware-host-header': 3.930.0
       '@aws-sdk/middleware-location-constraint': 3.930.0
       '@aws-sdk/middleware-logger': 3.930.0
-      '@aws-sdk/middleware-recursion-detection': 3.930.0
+      '@aws-sdk/middleware-recursion-detection': 3.933.0
       '@aws-sdk/middleware-sdk-s3': 3.932.0
       '@aws-sdk/middleware-ssec': 3.930.0
       '@aws-sdk/middleware-user-agent': 3.932.0
@@ -8074,14 +8074,14 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/client-sso@3.932.0':
+  '@aws-sdk/client-sso@3.933.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.932.0
       '@aws-sdk/middleware-host-header': 3.930.0
       '@aws-sdk/middleware-logger': 3.930.0
-      '@aws-sdk/middleware-recursion-detection': 3.930.0
+      '@aws-sdk/middleware-recursion-detection': 3.933.0
       '@aws-sdk/middleware-user-agent': 3.932.0
       '@aws-sdk/region-config-resolver': 3.930.0
       '@aws-sdk/types': 3.930.0
@@ -8154,15 +8154,15 @@ snapshots:
       '@smithy/util-stream': 4.5.6
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-ini@3.932.0':
+  '@aws-sdk/credential-provider-ini@3.933.0':
     dependencies:
       '@aws-sdk/core': 3.932.0
       '@aws-sdk/credential-provider-env': 3.932.0
       '@aws-sdk/credential-provider-http': 3.932.0
       '@aws-sdk/credential-provider-process': 3.932.0
-      '@aws-sdk/credential-provider-sso': 3.932.0
-      '@aws-sdk/credential-provider-web-identity': 3.932.0
-      '@aws-sdk/nested-clients': 3.932.0
+      '@aws-sdk/credential-provider-sso': 3.933.0
+      '@aws-sdk/credential-provider-web-identity': 3.933.0
+      '@aws-sdk/nested-clients': 3.933.0
       '@aws-sdk/types': 3.930.0
       '@smithy/credential-provider-imds': 4.2.5
       '@smithy/property-provider': 4.2.5
@@ -8172,14 +8172,14 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-node@3.932.0':
+  '@aws-sdk/credential-provider-node@3.933.0':
     dependencies:
       '@aws-sdk/credential-provider-env': 3.932.0
       '@aws-sdk/credential-provider-http': 3.932.0
-      '@aws-sdk/credential-provider-ini': 3.932.0
+      '@aws-sdk/credential-provider-ini': 3.933.0
       '@aws-sdk/credential-provider-process': 3.932.0
-      '@aws-sdk/credential-provider-sso': 3.932.0
-      '@aws-sdk/credential-provider-web-identity': 3.932.0
+      '@aws-sdk/credential-provider-sso': 3.933.0
+      '@aws-sdk/credential-provider-web-identity': 3.933.0
       '@aws-sdk/types': 3.930.0
       '@smithy/credential-provider-imds': 4.2.5
       '@smithy/property-provider': 4.2.5
@@ -8198,11 +8198,11 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-sso@3.932.0':
+  '@aws-sdk/credential-provider-sso@3.933.0':
     dependencies:
-      '@aws-sdk/client-sso': 3.932.0
+      '@aws-sdk/client-sso': 3.933.0
       '@aws-sdk/core': 3.932.0
-      '@aws-sdk/token-providers': 3.932.0
+      '@aws-sdk/token-providers': 3.933.0
       '@aws-sdk/types': 3.930.0
       '@smithy/property-provider': 4.2.5
       '@smithy/shared-ini-file-loader': 4.4.0
@@ -8211,10 +8211,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-web-identity@3.932.0':
+  '@aws-sdk/credential-provider-web-identity@3.933.0':
     dependencies:
       '@aws-sdk/core': 3.932.0
-      '@aws-sdk/nested-clients': 3.932.0
+      '@aws-sdk/nested-clients': 3.933.0
       '@aws-sdk/types': 3.930.0
       '@smithy/property-provider': 4.2.5
       '@smithy/shared-ini-file-loader': 4.4.0
@@ -8275,10 +8275,10 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/middleware-recursion-detection@3.930.0':
+  '@aws-sdk/middleware-recursion-detection@3.933.0':
     dependencies:
       '@aws-sdk/types': 3.930.0
-      '@aws/lambda-invoke-store': 0.1.1
+      '@aws/lambda-invoke-store': 0.2.0
       '@smithy/protocol-http': 5.3.5
       '@smithy/types': 4.9.0
       tslib: 2.8.1
@@ -8316,14 +8316,14 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/nested-clients@3.932.0':
+  '@aws-sdk/nested-clients@3.933.0':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.932.0
       '@aws-sdk/middleware-host-header': 3.930.0
       '@aws-sdk/middleware-logger': 3.930.0
-      '@aws-sdk/middleware-recursion-detection': 3.930.0
+      '@aws-sdk/middleware-recursion-detection': 3.933.0
       '@aws-sdk/middleware-user-agent': 3.932.0
       '@aws-sdk/region-config-resolver': 3.930.0
       '@aws-sdk/types': 3.930.0
@@ -8367,7 +8367,7 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.932.0':
+  '@aws-sdk/s3-request-presigner@3.933.0':
     dependencies:
       '@aws-sdk/signature-v4-multi-region': 3.932.0
       '@aws-sdk/types': 3.930.0
@@ -8387,10 +8387,10 @@ snapshots:
       '@smithy/types': 4.9.0
       tslib: 2.8.1
 
-  '@aws-sdk/token-providers@3.932.0':
+  '@aws-sdk/token-providers@3.933.0':
     dependencies:
       '@aws-sdk/core': 3.932.0
-      '@aws-sdk/nested-clients': 3.932.0
+      '@aws-sdk/nested-clients': 3.933.0
       '@aws-sdk/types': 3.930.0
       '@smithy/property-provider': 4.2.5
       '@smithy/shared-ini-file-loader': 4.4.0
@@ -8448,7 +8448,7 @@ snapshots:
       fast-xml-parser: 5.2.5
       tslib: 2.8.1
 
-  '@aws/lambda-invoke-store@0.1.1': {}
+  '@aws/lambda-invoke-store@0.2.0': {}
 
   '@azu/format-text@1.0.2': {}
 
@@ -8778,7 +8778,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20251109.0
 
-  '@cloudflare/vite-plugin@1.14.2(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251109.0)(wrangler@4.48.0(@cloudflare/workers-types@4.20251117.0))':
+  '@cloudflare/vite-plugin@1.14.2(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251109.0)(wrangler@4.48.0(@cloudflare/workers-types@4.20251118.0))':
     dependencies:
       '@cloudflare/unenv-preset': 2.7.10(unenv@2.0.0-rc.24)(workerd@1.20251109.0)
       '@remix-run/node-fetch-server': 0.8.1
@@ -8788,7 +8788,7 @@ snapshots:
       tinyglobby: 0.2.15
       unenv: 2.0.0-rc.24
       vite: 7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
-      wrangler: 4.48.0(@cloudflare/workers-types@4.20251117.0)
+      wrangler: 4.48.0(@cloudflare/workers-types@4.20251118.0)
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -8810,20 +8810,20 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20251109.0':
     optional: true
 
-  '@cloudflare/workers-types@4.20251117.0': {}
+  '@cloudflare/workers-types@4.20251118.0': {}
 
   '@codemirror/autocomplete@6.19.1':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
 
   '@codemirror/commands@6.10.0':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
 
   '@codemirror/lang-angular@0.1.4':
@@ -8863,7 +8863,7 @@ snapshots:
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/css': 1.3.0
       '@lezer/html': 1.3.12
@@ -8879,7 +8879,7 @@ snapshots:
       '@codemirror/language': 6.11.3
       '@codemirror/lint': 6.9.2
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/javascript': 1.5.4
 
@@ -8910,7 +8910,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.11
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.3
@@ -8921,7 +8921,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.11
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/markdown': 1.6.0
 
@@ -8984,7 +8984,7 @@ snapshots:
       '@codemirror/autocomplete': 6.19.1
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/xml': 1.0.6
 
@@ -9027,7 +9027,7 @@ snapshots:
   '@codemirror/language@6.11.3':
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/common': 1.3.0
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.3
@@ -9040,20 +9040,20 @@ snapshots:
   '@codemirror/lint@6.9.2':
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       crelt: 1.0.6
 
   '@codemirror/search@6.5.11':
     dependencies:
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       crelt: 1.0.6
 
   '@codemirror/state@6.5.2':
     dependencies:
       '@marijn/find-cluster-break': 1.0.2
 
-  '@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)':
+  '@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)':
     dependencies:
       '@codemirror/state': 6.5.2
       crelt: 1.0.6
@@ -9391,18 +9391,18 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@fsegurai/codemirror-theme-vscode-dark@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)':
+  '@fsegurai/codemirror-theme-vscode-dark@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/highlight': 1.2.3
 
-  '@fsegurai/codemirror-theme-vscode-light@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)':
+  '@fsegurai/codemirror-theme-vscode-light@6.2.2(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))(@lezer/highlight@1.2.3)':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
       '@lezer/highlight': 1.2.3
 
   '@humanfs/core@0.19.1': {}
@@ -9706,11 +9706,11 @@ snapshots:
 
   '@remix-run/node-fetch-server@0.8.1': {}
 
-  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))':
+  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364))':
     dependencies:
       '@codemirror/language': 6.11.3
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
 
   '@rolldown/pluginutils@1.0.0-beta.29': {}
 
@@ -10529,7 +10529,7 @@ snapshots:
 
   '@types/unist@3.0.3': {}
 
-  '@types/vscode@1.106.0': {}
+  '@types/vscode@1.106.1': {}
 
   '@types/web-bluetooth@0.0.20': {}
 
@@ -10819,12 +10819,12 @@ snapshots:
 
   '@vue/devtools-api@7.7.8':
     dependencies:
-      '@vue/devtools-kit': 7.7.8
+      '@vue/devtools-kit': 7.7.9
 
-  '@vue/devtools-core@8.0.3(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))':
+  '@vue/devtools-core@8.0.5(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))':
     dependencies:
-      '@vue/devtools-kit': 8.0.3
-      '@vue/devtools-shared': 8.0.3
+      '@vue/devtools-kit': 8.0.5
+      '@vue/devtools-shared': 8.0.5
       mitt: 3.0.1
       nanoid: 5.1.6
       pathe: 2.0.3
@@ -10833,9 +10833,9 @@ snapshots:
     transitivePeerDependencies:
       - vite
 
-  '@vue/devtools-kit@7.7.8':
+  '@vue/devtools-kit@7.7.9':
     dependencies:
-      '@vue/devtools-shared': 7.7.8
+      '@vue/devtools-shared': 7.7.9
       birpc: 2.8.0
       hookable: 5.5.3
       mitt: 3.0.1
@@ -10843,9 +10843,9 @@ snapshots:
       speakingurl: 14.0.1
       superjson: 2.2.5
 
-  '@vue/devtools-kit@8.0.3':
+  '@vue/devtools-kit@8.0.5':
     dependencies:
-      '@vue/devtools-shared': 8.0.3
+      '@vue/devtools-shared': 8.0.5
       birpc: 2.8.0
       hookable: 5.5.3
       mitt: 3.0.1
@@ -10853,11 +10853,11 @@ snapshots:
       speakingurl: 14.0.1
       superjson: 2.2.5
 
-  '@vue/devtools-shared@7.7.8':
+  '@vue/devtools-shared@7.7.9':
     dependencies:
       rfdc: 1.4.1
 
-  '@vue/devtools-shared@8.0.3':
+  '@vue/devtools-shared@8.0.5':
     dependencies:
       rfdc: 1.4.1
 
@@ -11631,7 +11631,7 @@ snapshots:
       '@codemirror/lint': 6.9.2
       '@codemirror/search': 6.5.11
       '@codemirror/state': 6.5.2
-      '@codemirror/view': 6.38.6(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
+      '@codemirror/view': 6.38.8(patch_hash=10a27bce72005fc363ac7d248fad1a4807b4174ef909258776cd237c079ce364)
 
   color-convert@1.9.3:
     dependencies:
@@ -16355,11 +16355,11 @@ snapshots:
     dependencies:
       vite: 7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
 
-  vite-plugin-vue-devtools@8.0.3(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3)):
+  vite-plugin-vue-devtools@8.0.5(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3)):
     dependencies:
-      '@vue/devtools-core': 8.0.3(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))
-      '@vue/devtools-kit': 8.0.3
-      '@vue/devtools-shared': 8.0.3
+      '@vue/devtools-core': 8.0.5(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(vue@3.5.24(typescript@5.9.3))
+      '@vue/devtools-kit': 8.0.5
+      '@vue/devtools-shared': 8.0.5
       sirv: 3.0.2
       vite: 7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
       vite-plugin-inspect: 11.3.3(vite@7.2.2(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))
@@ -16657,7 +16657,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20251109.0
       '@cloudflare/workerd-windows-64': 1.20251109.0
 
-  wrangler@4.48.0(@cloudflare/workers-types@4.20251117.0):
+  wrangler@4.48.0(@cloudflare/workers-types@4.20251118.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.0
       '@cloudflare/unenv-preset': 2.7.10(unenv@2.0.0-rc.24)(workerd@1.20251109.0)
@@ -16668,7 +16668,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20251109.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20251117.0
+      '@cloudflare/workers-types': 4.20251118.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
