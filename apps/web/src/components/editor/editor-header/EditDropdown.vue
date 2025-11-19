@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { EditorView } from '@codemirror/view'
 import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import { redoAction, undoAction } from '@md/shared/editor'
 import {
@@ -59,7 +60,7 @@ function undo() {
     return
 
   try {
-    const editorView = toRaw(editor.value)
+    const editorView = toRaw(editor.value) as EditorView
     undoAction(editorView)
     editorView.focus()
   }
@@ -73,7 +74,7 @@ function redo() {
     return
 
   try {
-    const editorView = toRaw(editor.value)
+    const editorView = toRaw(editor.value) as EditorView
     redoAction(editorView)
     editorView.focus()
   }
