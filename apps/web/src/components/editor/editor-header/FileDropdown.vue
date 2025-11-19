@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, Package, Upload } from 'lucide-vue-next'
+import { Download, FileCode, FileCog, FileText, FolderKanban, Package, Upload } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
@@ -18,7 +18,7 @@ const editorStore = useEditorStore()
 const exportStore = useExportStore()
 const uiStore = useUIStore()
 
-const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(uiStore)
+const { isOpenPostSlider } = storeToRefs(uiStore)
 const { toggleShowTemplateDialog } = uiStore
 
 const importMarkdownContent = useImportMarkdownContent()
@@ -112,24 +112,19 @@ function exportEditorContent2PDF() {
         模板管理
       </MenubarItem>
 
+      <!-- 内容管理 -->
+      <MenubarItem @click="isOpenPostSlider = !isOpenPostSlider">
+        <FolderKanban class="mr-2 size-4" />
+        内容管理
+      </MenubarItem>
+
+      <MenubarSeparator />
+
       <!-- 项目配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         项目配置
       </MenubarItem>
-
-      <MenubarSeparator />
-
-      <!-- 视图设置 -->
-      <MenubarCheckboxItem v-model:checked="isDark">
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
-        左侧编辑
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
-        内容管理
-      </MenubarCheckboxItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -191,24 +186,19 @@ function exportEditorContent2PDF() {
         模板管理
       </MenubarItem>
 
+      <!-- 内容管理 -->
+      <MenubarItem @click="isOpenPostSlider = !isOpenPostSlider">
+        <FolderKanban class="mr-2 size-4" />
+        内容管理
+      </MenubarItem>
+
+      <MenubarSeparator />
+
       <!-- 项目配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         项目配置
       </MenubarItem>
-
-      <MenubarSeparator />
-
-      <!-- 视图设置 -->
-      <MenubarCheckboxItem v-model:checked="isDark">
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
-        左侧编辑
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
-        内容管理
-      </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
 </template>

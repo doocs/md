@@ -8,7 +8,13 @@ import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
 import { store } from '@/utils/storage'
+import EditDropdown from './EditDropdown.vue'
+import FileDropdown from './FileDropdown.vue'
 import FormatDropdown from './FormatDropdown.vue'
+import HelpDropdown from './HelpDropdown.vue'
+import InsertDropdown from './InsertDropdown.vue'
+import StyleDropdown from './StyleDropdown.vue'
+import ViewDropdown from './ViewDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
@@ -229,12 +235,14 @@ async function copy() {
     class="header-container h-15 flex flex-wrap items-center justify-between px-5 relative"
   >
     <!-- 桌面端左侧菜单 -->
-    <div class="space-x-2 hidden md:flex">
+    <div class="space-x-1 hidden md:flex">
       <Menubar class="menubar border-0">
         <FileDropdown @open-editor-state="handleOpenEditorState" />
-        <FormatDropdown />
         <EditDropdown />
+        <FormatDropdown />
+        <InsertDropdown />
         <StyleDropdown />
+        <ViewDropdown />
         <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
       </Menubar>
     </div>
@@ -250,9 +258,11 @@ async function copy() {
           </MenubarTrigger>
           <MenubarContent align="start">
             <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
-            <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
+            <FormatDropdown :as-sub="true" />
+            <InsertDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
+            <ViewDropdown :as-sub="true" />
             <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
           </MenubarContent>
         </MenubarMenu>
@@ -331,17 +341,48 @@ async function copy() {
 </template>
 
 <style lang="less" scoped>
+.header-container {
+  background: hsl(var(--background));
+  border-bottom: 1px solid hsl(var(--border));
+  backdrop-filter: blur(8px);
+  transition: all 0.2s ease;
+}
+
 .menubar {
   user-select: none;
+
+  :deep([data-radix-menubar-trigger]) {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: hsl(var(--accent));
+      color: hsl(var(--accent-foreground));
+    }
+
+    &[data-state='open'] {
+      background: hsl(var(--accent));
+      color: hsl(var(--accent-foreground));
+    }
+  }
 }
 
 kbd {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #a8a8a8;
-  padding: 1px 4px;
-  border-radius: 2px;
+  border: 1px solid hsl(var(--border));
+  background: hsl(var(--muted));
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1;
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  box-shadow: 0 1px 0 hsl(var(--border));
+  transition: all 0.15s ease;
 }
 
 @media (max-width: 768px) {
