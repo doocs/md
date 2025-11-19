@@ -22,25 +22,25 @@ const { isDark, isEditOnLeft, isShowCssEditor, isOpenRightSlider } = storeToRefs
       视图
     </MenubarSubTrigger>
     <MenubarSubContent>
-      <MenubarCheckboxItem v-model:checked="isDark">
-        <component :is="isDark ? Moon : Sun" class="mr-2 h-4 w-4" />
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
+      <MenubarItem @click="isDark = !isDark">
+        <component :is="isDark ? Sun : Moon" class="mr-2 h-4 w-4" />
+        {{ isDark ? '浅色模式' : '深色模式' }}
+      </MenubarItem>
+      <MenubarItem @click="isEditOnLeft = !isEditOnLeft">
         <PanelLeft class="mr-2 h-4 w-4" />
-        左侧编辑
-      </MenubarCheckboxItem>
+        {{ isEditOnLeft ? '右侧编辑' : '左侧编辑' }}
+      </MenubarItem>
 
       <MenubarSeparator />
 
-      <MenubarCheckboxItem v-model:checked="isOpenRightSlider">
+      <MenubarItem @click="isOpenRightSlider = !isOpenRightSlider">
         <Palette class="mr-2 h-4 w-4" />
         样式面板
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isShowCssEditor">
+      </MenubarItem>
+      <MenubarItem @click="isShowCssEditor = !isShowCssEditor">
         <FileCode class="mr-2 h-4 w-4" />
         CSS 编辑器
-      </MenubarCheckboxItem>
+      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -50,25 +50,25 @@ const { isDark, isEditOnLeft, isShowCssEditor, isOpenRightSlider } = storeToRefs
       视图
     </MenubarTrigger>
     <MenubarContent align="start">
-      <MenubarCheckboxItem v-model:checked="isDark">
-        <component :is="isDark ? Moon : Sun" class="mr-2 h-4 w-4" />
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
+      <MenubarItem @click="isDark = !isDark">
+        <component :is="isDark ? Sun : Moon" class="mr-2 h-4 w-4" />
+        {{ isDark ? '浅色模式' : '深色模式' }}
+      </MenubarItem>
+      <MenubarItem @click="isEditOnLeft = !isEditOnLeft">
         <PanelLeft class="mr-2 h-4 w-4" />
-        左侧编辑
-      </MenubarCheckboxItem>
+        {{ isEditOnLeft ? '右侧编辑' : '左侧编辑' }}
+      </MenubarItem>
 
       <MenubarSeparator />
 
-      <MenubarCheckboxItem v-model:checked="isOpenRightSlider">
+      <MenubarItem @click="isOpenRightSlider = !isOpenRightSlider">
         <Palette class="mr-2 h-4 w-4" />
         样式面板
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isShowCssEditor">
+      </MenubarItem>
+      <MenubarItem @click="isShowCssEditor = !isShowCssEditor">
         <FileCode class="mr-2 h-4 w-4" />
         CSS 编辑器
-      </MenubarCheckboxItem>
+      </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
 </template>
