@@ -11,6 +11,7 @@ import {
   legendOptions,
   themeOptions,
 } from '@md/shared/configs'
+
 import PickColors from 'vue-pick-colors'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -204,7 +205,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
-    <MenubarTrigger> 样式 </MenubarTrigger>
+    <MenubarTrigger>
+      样式
+    </MenubarTrigger>
     <MenubarContent class="w-56" align="start">
       <StyleOptionMenu
         title="主题"

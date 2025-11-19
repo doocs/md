@@ -271,6 +271,23 @@ function setSearchWord(word: string) {
   }
 }
 
+/**
+ * 打开搜索面板并展开替换功能
+ */
+function setSearchWithReplace(word: string) {
+  searchWord.value = word
+  showReplace.value = true
+  if (!showSearchTab.value) {
+    showSearchTab.value = true
+  }
+  else {
+    nextTick(() => {
+      searchInputRef.value?.focus()
+      searchInputRef.value?.select()
+    })
+  }
+}
+
 onUnmounted(() => {
   // 清理搜索高亮
   clearAllMarks()
@@ -289,6 +306,8 @@ defineExpose({
   showSearchTab,
   searchWord,
   setSearchWord,
+  setSearchWithReplace,
+  showReplace,
 })
 </script>
 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { Heart, HelpCircle, MessageSquare, Tag } from 'lucide-vue-next'
+
 const props = withDefaults(defineProps<{
   asSub?: boolean
 }>(), {
@@ -16,6 +18,14 @@ function openAboutDialog() {
 function openFundDialog() {
   emit(`openFund`)
 }
+
+function openFeedback() {
+  window.open('https://github.com/doocs/md/issues', '_blank')
+}
+
+function openReleases() {
+  window.open('https://github.com/doocs/md/releases', '_blank')
+}
 </script>
 
 <template>
@@ -25,12 +35,22 @@ function openFundDialog() {
       帮助
     </MenubarSubTrigger>
     <MenubarSubContent align="start">
-      <MenubarCheckboxItem @click="openAboutDialog()">
+      <MenubarItem @click="openFeedback()">
+        <MessageSquare class="mr-2 h-4 w-4" />
+        反馈
+      </MenubarItem>
+      <MenubarItem @click="openReleases()">
+        <Tag class="mr-2 h-4 w-4" />
+        版本历史
+      </MenubarItem>
+      <MenubarItem @click="openAboutDialog()">
+        <HelpCircle class="mr-2 h-4 w-4" />
         关于
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem @click="openFundDialog()">
+      </MenubarItem>
+      <MenubarItem @click="openFundDialog()">
+        <Heart class="mr-2 h-4 w-4" />
         赞赏
-      </MenubarCheckboxItem>
+      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -38,12 +58,22 @@ function openFundDialog() {
   <MenubarMenu v-else>
     <MenubarTrigger>帮助</MenubarTrigger>
     <MenubarContent align="start">
-      <MenubarCheckboxItem @click="openAboutDialog()">
-        <span>关于</span>
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem @click="openFundDialog()">
-        <span>赞赏</span>
-      </MenubarCheckboxItem>
+      <MenubarItem @click="openFeedback()">
+        <MessageSquare class="mr-2 h-4 w-4" />
+        反馈
+      </MenubarItem>
+      <MenubarItem @click="openReleases()">
+        <Tag class="mr-2 h-4 w-4" />
+        版本历史
+      </MenubarItem>
+      <MenubarItem @click="openAboutDialog()">
+        <HelpCircle class="mr-2 h-4 w-4" />
+        关于
+      </MenubarItem>
+      <MenubarItem @click="openFundDialog()">
+        <Heart class="mr-2 h-4 w-4" />
+        赞赏
+      </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
 </template>

@@ -71,6 +71,17 @@ export const useUIStore = defineStore(`ui`, () => {
     aiImageDialogVisible.value = value ?? !aiImageDialogVisible.value
   }
 
+  // 搜索面板状态
+  const searchTabRequest = ref<{ word: string, showReplace: boolean } | null>(null)
+
+  function openSearchTab(searchWord: string = '', showReplace: boolean = false) {
+    searchTabRequest.value = { word: searchWord, showReplace }
+  }
+
+  function clearSearchTabRequest() {
+    searchTabRequest.value = null
+  }
+
   // ==================== 工具函数 ====================
   // 处理窗口大小变化
   function handleResize() {
@@ -113,6 +124,11 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleAIDialog,
     aiImageDialogVisible,
     toggleAIImageDialog,
+
+    // ==================== 搜索面板 ====================
+    searchTabRequest,
+    openSearchTab,
+    clearSearchTabRequest,
 
     // ==================== Actions ====================
     toggleDark,

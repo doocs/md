@@ -18,7 +18,6 @@ const editorStore = useEditorStore()
 const exportStore = useExportStore()
 const uiStore = useUIStore()
 
-const { isDark, isEditOnLeft, isOpenPostSlider } = storeToRefs(uiStore)
 const { toggleShowTemplateDialog } = uiStore
 
 const importMarkdownContent = useImportMarkdownContent()
@@ -117,19 +116,6 @@ function exportEditorContent2PDF() {
         <FileCog class="mr-2 size-4" />
         项目配置
       </MenubarItem>
-
-      <MenubarSeparator />
-
-      <!-- 视图设置 -->
-      <MenubarCheckboxItem v-model:checked="isDark">
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
-        左侧编辑
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
-        内容管理
-      </MenubarCheckboxItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -196,19 +182,6 @@ function exportEditorContent2PDF() {
         <FileCog class="mr-2 size-4" />
         项目配置
       </MenubarItem>
-
-      <MenubarSeparator />
-
-      <!-- 视图设置 -->
-      <MenubarCheckboxItem v-model:checked="isDark">
-        深色模式
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isEditOnLeft">
-        左侧编辑
-      </MenubarCheckboxItem>
-      <MenubarCheckboxItem v-model:checked="isOpenPostSlider">
-        内容管理
-      </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>
 </template>
