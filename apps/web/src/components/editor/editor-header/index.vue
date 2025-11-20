@@ -329,10 +329,16 @@ async function copy() {
 
 <style lang="less" scoped>
 .header-container {
-  background: hsl(var(--background));
+  background: hsl(var(--background) / 0.95);
   border-bottom: 1px solid hsl(var(--border));
-  backdrop-filter: blur(8px);
-  transition: all 0.2s ease;
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+
+  @media (max-width: 768px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
 }
 
 .menubar {
@@ -341,17 +347,47 @@ async function copy() {
   :deep([data-radix-menubar-trigger]) {
     font-size: 0.875rem;
     font-weight: 500;
-    padding: 0.5rem 0.75rem;
-    transition: all 0.15s ease;
+    padding: 0.5rem 0.875rem;
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
 
     &:hover {
-      background: hsl(var(--accent));
+      background: hsl(var(--accent) / 0.8);
       color: hsl(var(--accent-foreground));
+      transform: translateY(-1px);
     }
 
     &[data-state='open'] {
       background: hsl(var(--accent));
       color: hsl(var(--accent-foreground));
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  :deep([data-radix-menubar-content]) {
+    animation: slideDownAndFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :deep([data-radix-menubar-item]) {
+    border-radius: 4px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: hsl(var(--accent) / 0.8);
+    }
+  }
+
+  :deep([data-radix-menubar-sub-trigger]) {
+    border-radius: 4px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: hsl(var(--accent) / 0.8);
     }
   }
 }
@@ -360,16 +396,33 @@ kbd {
   display: inline-flex;
   justify-content: center;
   align-items: center;
+  min-width: 1.5rem;
+  height: 1.375rem;
   border: 1px solid hsl(var(--border));
-  background: hsl(var(--muted));
-  padding: 2px 6px;
+  background: linear-gradient(to bottom, hsl(var(--muted)), hsl(var(--muted) / 0.9));
+  padding: 0 0.375rem;
   border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
+  font-size: 0.6875rem;
+  font-weight: 600;
   line-height: 1;
-  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
-  box-shadow: 0 1px 0 hsl(var(--border));
-  transition: all 0.15s ease;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  box-shadow:
+    0 1px 0 hsl(var(--border)),
+    inset 0 0.5px 0 hsl(var(--background));
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

@@ -59,17 +59,17 @@ function exportEditorContent2PDF() {
     <MenubarSubTrigger>
       文件
     </MenubarSubTrigger>
-    <MenubarSubContent>
+    <MenubarSubContent class="w-56">
       <!-- 导入子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Upload class="mr-2 size-4" />
           导入
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-56">
           <MenubarItem @click="importMarkdownContent()">
             <FileText class="mr-2 size-4" />
-            导入 .md
+            导入 Markdown
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -80,26 +80,28 @@ function exportEditorContent2PDF() {
           <Download class="mr-2 size-4" />
           导出
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-56">
           <MenubarItem @click="exportEditorContent2MD()">
             <FileText class="mr-2 size-4" />
-            导出 .md
+            Markdown 文件
           </MenubarItem>
+          <MenubarSeparator />
           <MenubarItem @click="exportEditorContent2HTML()">
             <FileCode class="mr-2 size-4" />
-            导出 .html
+            HTML 文件
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PureHTML()">
             <FileCode class="mr-2 size-4" />
-            导出 .html（无样式）
+            HTML（无样式）
           </MenubarItem>
+          <MenubarSeparator />
           <MenubarItem @click="exportEditorContent2PDF()">
             <FileText class="mr-2 size-4" />
-            导出 .pdf
+            PDF 文档
           </MenubarItem>
           <MenubarItem @click="downloadAsCardImage()">
             <Download class="mr-2 size-4" />
-            导出 .png
+            PNG 图片
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -133,17 +135,17 @@ function exportEditorContent2PDF() {
     <MenubarTrigger>
       文件
     </MenubarTrigger>
-    <MenubarContent align="start">
+    <MenubarContent class="w-56" align="start">
       <!-- 导入子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Upload class="mr-2 size-4" />
           导入
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-56">
           <MenubarItem @click="importMarkdownContent()">
             <FileText class="mr-2 size-4" />
-            导入 .md
+            导入 Markdown
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -154,26 +156,28 @@ function exportEditorContent2PDF() {
           <Download class="mr-2 size-4" />
           导出
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-56">
           <MenubarItem @click="exportEditorContent2MD()">
             <FileText class="mr-2 size-4" />
-            导出 .md
+            Markdown 文件
           </MenubarItem>
+          <MenubarSeparator />
           <MenubarItem @click="exportEditorContent2HTML()">
             <FileCode class="mr-2 size-4" />
-            导出 .html
+            HTML 文件
           </MenubarItem>
           <MenubarItem @click="exportEditorContent2PureHTML()">
             <FileCode class="mr-2 size-4" />
-            导出 .html（无样式）
+            HTML（无样式）
           </MenubarItem>
+          <MenubarSeparator />
           <MenubarItem @click="exportEditorContent2PDF()">
             <FileText class="mr-2 size-4" />
-            导出 .pdf
+            PDF 文档
           </MenubarItem>
           <MenubarItem @click="downloadAsCardImage()">
             <Download class="mr-2 size-4" />
-            导出 .png
+            PNG 图片
           </MenubarItem>
         </MenubarSubContent>
       </MenubarSub>

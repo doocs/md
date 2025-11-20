@@ -20,14 +20,14 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
     <MenubarSubTrigger>
       插入
     </MenubarSubTrigger>
-    <MenubarSubContent>
+    <MenubarSubContent class="w-52">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        图片
+        插入图片
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        表格
+        插入表格
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertMpCardDialog()">
         <Contact class="mr-2 h-4 w-4" />
@@ -41,14 +41,14 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
     <MenubarTrigger>
       插入
     </MenubarTrigger>
-    <MenubarContent align="start">
+    <MenubarContent class="w-52" align="start">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        图片
+        插入图片
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        表格
+        插入表格
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertMpCardDialog()">
         <Contact class="mr-2 h-4 w-4" />
