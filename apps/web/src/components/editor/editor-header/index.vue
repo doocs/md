@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ChevronDownIcon, Menu, Palette, SlidersHorizontal } from 'lucide-vue-next'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ChevronDownIcon, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
@@ -309,18 +308,6 @@ async function copy() {
 
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
-
-      <!-- 编辑器设置按钮 -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="outline" size="icon" class="mr-1">
-            <SlidersHorizontal class="size-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align="end">
-          <ThemeCustomizer />
-        </PopoverContent>
-      </Popover>
 
       <!-- 样式面板 -->
       <Button
