@@ -35,6 +35,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const isPinFloatingToc = store.reactive(addPrefix(`isPinFloatingToc`), false)
   const togglePinFloatingToc = useToggle(isPinFloatingToc)
 
+  // 是否显示浮动目录
+  const isShowFloatingToc = store.reactive(addPrefix(`isShowFloatingToc`), true)
+  const toggleShowFloatingToc = useToggle(isShowFloatingToc)
+
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
@@ -107,6 +111,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isOpenPostSlider,
     isMobile,
     isPinFloatingToc,
+    isShowFloatingToc,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,
@@ -135,5 +140,6 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleEditOnLeft,
     toggleAIToolbox,
     togglePinFloatingToc,
+    toggleShowFloatingToc,
   }
 })

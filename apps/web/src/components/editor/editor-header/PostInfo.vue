@@ -139,6 +139,9 @@ onBeforeMount(() => {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>发布</DialogTitle>
+          <DialogDescription>
+            将文章发布到多个平台
+          </DialogDescription>
         </DialogHeader>
         <Alert>
           <Info class="h-4 w-4" />
