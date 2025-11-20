@@ -127,7 +127,7 @@ function addFormat(cmd: string) {
     <MenubarSubTrigger>
       格式
     </MenubarSubTrigger>
-    <MenubarSubContent class="w-60">
+    <MenubarSubContent class="w-64">
       <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />
@@ -264,7 +264,7 @@ function addFormat(cmd: string) {
     <MenubarTrigger>
       格式
     </MenubarTrigger>
-    <MenubarContent class="w-60" align="start">
+    <MenubarContent class="w-64" align="start">
       <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />

@@ -113,7 +113,7 @@ function openReplace() {
     <MenubarSubTrigger>
       编辑
     </MenubarSubTrigger>
-    <MenubarSubContent class="w-60">
+    <MenubarSubContent class="w-64">
       <!-- 历史操作 -->
       <MenubarItem @click="undo()">
         <Undo2 class="mr-2 h-4 w-4" />
@@ -192,7 +192,7 @@ function openReplace() {
     <MenubarTrigger>
       编辑
     </MenubarTrigger>
-    <MenubarContent class="w-60" align="start">
+    <MenubarContent class="w-64" align="start">
       <!-- 历史操作 -->
       <MenubarItem @click="undo()">
         <Undo2 class="mr-2 h-4 w-4" />
