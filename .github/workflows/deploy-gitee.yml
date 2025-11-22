@@ -15,7 +15,7 @@ jobs:
     if: github.repository == 'doocs/md'
     steps:
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0  # 获取完整历史，便于推送到新分支
 
