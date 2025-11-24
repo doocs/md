@@ -1,8 +1,8 @@
 import type { DocumentData } from '@/utils/documentStorage'
 import { v4 as uuid } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { store } from '@/utils'
 import { documentStorage } from '@/utils/documentStorage'
+import { store } from '@/utils/storage'
 
 /**
  * Post 结构接口

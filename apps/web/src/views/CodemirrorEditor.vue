@@ -20,8 +20,9 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, store, toBase64 } from '@/utils'
+import { checkImage, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
+import { store } from '@/utils/storage'
 
 const editorStore = useEditorStore()
 const postStore = usePostStore()
@@ -220,6 +221,20 @@ function openSearchWithSelection(view: EditorView) {
   }
 }
 
+function openReplaceWithSelection(view: EditorView) {
+  const selection = view.state.selection.main
+  const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
+
+  if (searchTabRef.value) {
+    // SearchTab 已准备好，直接使用
+    searchTabRef.value.setSearchWithReplace(selected)
+  }
+  else {
+    // SearchTab 还没准备好，通过 UI Store 触发
+    uiStore.openSearchTab(selected, true)
+  }
+}
+
 // 监听 searchTabRef 的变化，处理待处理的请求
 watch(searchTabRef, (newRef) => {
   if (newRef && pendingSearchRequest.value) {
@@ -231,6 +246,30 @@ watch(searchTabRef, (newRef) => {
       newRef.showSearchTab = true
     }
     pendingSearchRequest.value = null
+  }
+})
+
+// 监听 UI Store 中的搜索请求
+const { searchTabRequest } = storeToRefs(uiStore)
+watch(searchTabRequest, (request) => {
+  if (request && searchTabRef.value) {
+    const { word, showReplace } = request
+
+    // 根据是否需要替换功能，调用不同的方法
+    if (showReplace) {
+      searchTabRef.value.setSearchWithReplace(word)
+    }
+    else {
+      if (word) {
+        searchTabRef.value.setSearchWord(word)
+      }
+      else {
+        searchTabRef.value.showSearchTab = true
+      }
+    }
+
+    // 清除请求
+    uiStore.clearSearchTabRequest()
   }
 })
 
@@ -468,6 +507,7 @@ function createFormTextArea(dom: HTMLDivElement) {
     extensions: [
       markdownSetup({
         onSearch: openSearchWithSelection,
+        onReplace: openReplaceWithSelection,
       }),
       themeCompartment.of(theme(isDark.value)),
       EditorView.updateListener.of((update) => {
@@ -753,6 +793,8 @@ onUnmounted(() => {
       <InsertFormDialog />
 
       <InsertMpCardDialog />
+
+      <TemplateDialog />
 
       <AlertDialog v-model:open="isOpenConfirmDialog">
         <AlertDialogContent>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
+import { ctrlKey, ctrlSign } from '@md/shared/configs'
 import {
   applyHeading,
   formatBold,
@@ -11,8 +11,24 @@ import {
   formatStrikethrough,
   formatUnorderedList,
 } from '@md/shared/editor'
+import {
+  Bold,
+  Clock,
+  Code,
+  Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
+  Italic,
+  Link,
+  Link2,
+  List,
+  ListOrdered,
+  Strikethrough,
+} from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
-import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 
@@ -27,13 +43,7 @@ const { asSub } = toRefs(props)
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
 const renderStore = useRenderStore()
-const postStore = usePostStore()
-
 const { editor } = storeToRefs(editorStore)
-const {
-  isCiteStatus,
-  isCountStatus,
-} = storeToRefs(themeStore)
 
 // Editor refresh function
 function editorRefresh() {
@@ -51,21 +61,11 @@ function editorRefresh() {
   })
 }
 
-// Format content function
-async function formatContent() {
-  const doc = await editorStore.formatContent()
-  if (doc && postStore.currentPost) {
-    postStore.updatePostContent(postStore.currentPostId, doc)
-  }
-}
-
-// Cite status changed
 function citeStatusChanged() {
   themeStore.toggleCiteStatus()
   editorRefresh()
 }
 
-// Count status changed
 function countStatusChanged() {
   themeStore.toggleCountStatus()
   editorRefresh()
@@ -77,7 +77,6 @@ function addFormat(cmd: string) {
   if (!editor.value)
     return
 
-  // 直接使用 EditorView
   switch (cmd) {
     case `${ctrlKey}-B`:
       formatBold(editorView)
@@ -93,15 +92,6 @@ function addFormat(cmd: string) {
       break
     case `${ctrlKey}-E`:
       formatCode(editorView)
-      break
-    case `${ctrlKey}-H`:
-      applyHeading(editorView, 1)
-      break
-    case `${ctrlKey}-U`:
-      formatUnorderedList(editorView)
-      break
-    case `${ctrlKey}-O`:
-      formatOrderedList(editorView)
       break
     case `${ctrlKey}-1`:
       applyHeading(editorView, 1)
@@ -121,56 +111,14 @@ function addFormat(cmd: string) {
     case `${ctrlKey}-6`:
       applyHeading(editorView, 6)
       break
+    case `${ctrlKey}-U`:
+      formatUnorderedList(editorView)
+      break
+    case `${ctrlKey}-O`:
+      formatOrderedList(editorView)
+      break
   }
 }
-
-const formatItems = [
-  {
-    label: `加粗`,
-    kbd: [ctrlSign, `B`],
-    cmd: `${ctrlKey}-B`,
-  },
-  {
-    label: `斜体`,
-    kbd: [ctrlSign, `I`],
-    cmd: `${ctrlKey}-I`,
-  },
-  {
-    label: `删除线`,
-    kbd: [ctrlSign, `D`],
-    cmd: `${ctrlKey}-D`,
-  },
-  {
-    label: `超链接`,
-    kbd: [ctrlSign, `K`],
-    cmd: `${ctrlKey}-K`,
-  },
-  {
-    label: `行内代码`,
-    kbd: [ctrlSign, `E`],
-    cmd: `${ctrlKey}-E`,
-  },
-  {
-    label: `标题`,
-    kbd: [ctrlSign, `H`],
-    cmd: `${ctrlKey}-H`,
-  },
-  {
-    label: `无序列表`,
-    kbd: [ctrlSign, `U`],
-    cmd: `${ctrlKey}-U`,
-  },
-  {
-    label: `有序列表`,
-    kbd: [ctrlSign, `O`],
-    cmd: `${ctrlKey}-O`,
-  },
-  {
-    label: `格式化`,
-    kbd: [altSign, shiftSign, `F`],
-    cmd: `formatContent`,
-  },
-] as const
 </script>
 
 <template>
@@ -179,78 +127,272 @@ const formatItems = [
     <MenubarSubTrigger>
       格式
     </MenubarSubTrigger>
-    <MenubarSubContent class="w-60">
-      <MenubarCheckboxItem
-        v-for="{ label, kbd, cmd } in formatItems"
-        :key="label"
-        @click="
-          cmd === 'formatContent' ? formatContent() : addFormat(cmd)
-        "
-      >
-        {{ label }}
+    <MenubarSubContent class="w-64">
+      <!-- 文本格式化 -->
+      <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
+        <Bold class="mr-2 h-4 w-4" />
+        加粗
         <MenubarShortcut>
-          <kbd
-            v-for="item in kbd"
-            :key="item"
-            class="mx-1 bg-gray-2 dark:bg-stone-9"
-          >
-            {{ item }}
-          </kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">B</kbd>
         </MenubarShortcut>
-      </MenubarCheckboxItem>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-I`)">
+        <Italic class="mr-2 h-4 w-4" />
+        斜体
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">I</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-D`)">
+        <Strikethrough class="mr-2 h-4 w-4" />
+        删除线
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-K`)">
+        <Link class="mr-2 h-4 w-4" />
+        超链接
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">K</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-E`)">
+        <Code class="mr-2 h-4 w-4" />
+        行内代码
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarCheckboxItem
-        :checked="isCiteStatus"
-        @click="citeStatusChanged()"
-      >
-        微信外链转底部引用
-      </MenubarCheckboxItem>
+
+      <!-- 标题和列表 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Heading1 class="mr-2 h-4 w-4" />
+          标题
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
+            <Heading1 class="mr-2 h-4 w-4" />
+            标题 1
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-2`)">
+            <Heading2 class="mr-2 h-4 w-4" />
+            标题 2
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-3`)">
+            <Heading3 class="mr-2 h-4 w-4" />
+            标题 3
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-4`)">
+            <Heading4 class="mr-2 h-4 w-4" />
+            标题 4
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-5`)">
+            <Heading5 class="mr-2 h-4 w-4" />
+            标题 5
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-6`)">
+            <Heading6 class="mr-2 h-4 w-4" />
+            标题 6
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+      <MenubarItem @click="addFormat(`${ctrlKey}-U`)">
+        <List class="mr-2 h-4 w-4" />
+        无序列表
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">U</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-O`)">
+        <ListOrdered class="mr-2 h-4 w-4" />
+        有序列表
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">O</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarCheckboxItem
-        :checked="isCountStatus"
-        @click="countStatusChanged()"
-      >
-        统计字数和阅读时间
-      </MenubarCheckboxItem>
+
+      <MenubarItem @click="citeStatusChanged()">
+        <Link2 class="mr-2 h-4 w-4" />
+        微信外链转引用
+      </MenubarItem>
+      <MenubarItem @click="countStatusChanged()">
+        <Clock class="mr-2 h-4 w-4" />
+        统计字数时间
+      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
-    <MenubarTrigger> 格式</MenubarTrigger>
-    <MenubarContent class="w-60" align="start">
-      <MenubarCheckboxItem
-        v-for="{ label, kbd, cmd } in formatItems"
-        :key="label"
-        @click="
-          cmd === 'formatContent' ? formatContent() : addFormat(cmd)
-        "
-      >
-        {{ label }}
+    <MenubarTrigger>
+      格式
+    </MenubarTrigger>
+    <MenubarContent class="w-64" align="start">
+      <!-- 文本格式化 -->
+      <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
+        <Bold class="mr-2 h-4 w-4" />
+        加粗
         <MenubarShortcut>
-          <kbd
-            v-for="item in kbd"
-            :key="item"
-            class="mx-1 bg-gray-2 dark:bg-stone-9"
-          >
-            {{ item }}
-          </kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">B</kbd>
         </MenubarShortcut>
-      </MenubarCheckboxItem>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-I`)">
+        <Italic class="mr-2 h-4 w-4" />
+        斜体
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">I</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-D`)">
+        <Strikethrough class="mr-2 h-4 w-4" />
+        删除线
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-K`)">
+        <Link class="mr-2 h-4 w-4" />
+        超链接
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">K</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-E`)">
+        <Code class="mr-2 h-4 w-4" />
+        行内代码
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarCheckboxItem
-        :checked="isCiteStatus"
-        @click="citeStatusChanged()"
-      >
-        微信外链转底部引用
-      </MenubarCheckboxItem>
+
+      <!-- 标题和列表 -->
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Heading1 class="mr-2 h-4 w-4" />
+          标题
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
+            <Heading1 class="mr-2 h-4 w-4" />
+            标题 1
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-2`)">
+            <Heading2 class="mr-2 h-4 w-4" />
+            标题 2
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-3`)">
+            <Heading3 class="mr-2 h-4 w-4" />
+            标题 3
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-4`)">
+            <Heading4 class="mr-2 h-4 w-4" />
+            标题 4
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-5`)">
+            <Heading5 class="mr-2 h-4 w-4" />
+            标题 5
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+          <MenubarItem @click="addFormat(`${ctrlKey}-6`)">
+            <Heading6 class="mr-2 h-4 w-4" />
+            标题 6
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
+      <MenubarItem @click="addFormat(`${ctrlKey}-U`)">
+        <List class="mr-2 h-4 w-4" />
+        无序列表
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">U</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="addFormat(`${ctrlKey}-O`)">
+        <ListOrdered class="mr-2 h-4 w-4" />
+        有序列表
+        <MenubarShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">O</kbd>
+        </MenubarShortcut>
+      </MenubarItem>
+
       <MenubarSeparator />
-      <MenubarCheckboxItem
-        :checked="isCountStatus"
-        @click="countStatusChanged()"
-      >
-        统计字数和阅读时间
-      </MenubarCheckboxItem>
+
+      <MenubarItem @click="citeStatusChanged()">
+        <Link2 class="mr-2 h-4 w-4" />
+        微信外链转引用
+      </MenubarItem>
+      <MenubarItem @click="countStatusChanged()">
+        <Clock class="mr-2 h-4 w-4" />
+        统计字数时间
+      </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
 </template>

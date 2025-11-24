@@ -360,8 +360,3 @@ class StorageManager {
  * 全局存储实例 - 统一通过 store.xxx 调用
  */
 export const store = new StorageManager()
-
-/**
- * 导出引擎类，便于自定义实现
- */
-export { LocalStorageEngine as LocalEngine, RestfulStorageEngine as RestfulEngine }

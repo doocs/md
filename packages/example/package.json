@@ -4,6 +4,6 @@
     "deploy": "wrangler deploy --minify"
   },
   "devDependencies": {
-    "wrangler": "^4.45.3"
+    "wrangler": "^4.49.0"
   }
 }

@@ -284,10 +284,10 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
 <template>
   <Dialog v-model:open="dialogVisible">
     <DialogContent
-      class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-2xl overflow-y-auto"
+      class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-2xl overflow-hidden p-0"
     >
       <!-- ============ 头部 ============ -->
-      <DialogHeader class="space-y-1 flex flex-col items-start">
+      <DialogHeader class="space-y-1 flex flex-col items-start px-6 pt-6 pb-4">
         <div class="space-x-1 flex items-center">
           <DialogTitle>AI 工具箱</DialogTitle>
 
@@ -308,15 +308,15 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
       <!-- config panel -->
       <AIConfig
         v-if="configVisible"
-        class="border-border mb-4 w-full border rounded-md p-4"
+        class="border-border mx-6 mb-4 w-auto border rounded-md p-4"
         @saved="() => (configVisible = false)"
       />
 
       <!-- main content -->
-      <div v-else class="custom-scroll space-y-4 flex-1 overflow-y-auto px-4 pb-4 pt-3 sm:px-6">
+      <div v-else class="custom-scroll space-y-3 flex-1 overflow-y-auto px-6 pb-3">
         <!-- action selector -->
         <div>
-          <div class="mb-1 text-sm font-semibold">
+          <div class="mb-1.5 text-sm font-medium">
             选择操作
           </div>
           <Select v-model="selectedAction">
@@ -339,7 +339,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
 
         <!-- original text -->
         <div>
-          <div class="mb-1 text-sm font-semibold">
+          <div class="mb-1.5 text-sm font-medium">
             原文
           </div>
           <div
@@ -351,7 +351,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
 
         <!-- custom prompts -->
         <div v-if="selectedAction === 'custom'">
-          <div class="mb-1 text-sm font-semibold">
+          <div class="mb-1.5 text-sm font-medium">
             自定义提示词（可选）
           </div>
           <div
@@ -379,13 +379,13 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         </div>
 
         <!-- error -->
-        <div v-if="error" class="min-h-[24px] flex items-center text-[12px] text-red-500">
+        <div v-if="error" class="min-h-[20px] flex items-center text-xs text-red-500">
           {{ error }}
         </div>
 
         <!-- result -->
         <div v-if="message">
-          <div class="mb-1 text-sm font-semibold">
+          <div class="mb-1.5 text-sm font-medium">
             处理结果
           </div>
           <div
@@ -398,7 +398,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
       </div>
 
       <!-- ============ 底部按钮 ============ -->
-      <div v-if="!configVisible" class="border-border flex justify-end gap-2 border-t px-4 py-3 sm:px-6">
+      <div v-if="!configVisible" class="flex justify-end gap-2 px-6 py-3.5 mt-auto">
         <Button v-if="loading" variant="secondary" @click="stopAI">
           <Pause class="mr-1 h-4 w-4" /> 终止
         </Button>

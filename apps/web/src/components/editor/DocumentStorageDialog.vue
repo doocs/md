@@ -3,8 +3,8 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { usePostStore } from '@/stores/post'
-import { store } from '@/utils'
 import { documentStorage } from '@/utils/documentStorage'
+import { store } from '@/utils/storage'
 
 const isOpen = defineModel<boolean>(`open`, { default: false })
 

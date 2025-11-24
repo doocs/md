@@ -30,11 +30,11 @@
   },
   "dependencies": {
     "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "^6.38.6"
+    "@codemirror/view": "6.38.8"
   },
   "devDependencies": {
     "@antfu/eslint-config": "6.2.0",
-    "@types/node": "^24.10.0",
+    "@types/node": "^24.10.1",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.1",
@@ -42,16 +42,20 @@
     "npm-run-all": "^4.1.5",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
-    "simple-git-hooks": "^2.12.1",
+    "simple-git-hooks": "^2.13.1",
     "typescript": "~5.9.3"
   },
   "pnpm": {
     "overrides": {
+      "@codemirror/view": "6.38.8",
       "core-js@<3": "^3.46.0",
       "glob@<8": "^10.4.5",
       "inflight": "npm:@hishprorg/voluptates-laborum@^2.0.0",
       "source-map@0.8.0-beta.0": "0.7.4",
       "workbox-build>source-map": "0.7.4"
+    },
+    "patchedDependencies": {
+      "@codemirror/view@6.38.8": "patches/@codemirror__view@6.38.8.patch"
     }
   },
   "simple-git-hooks": {

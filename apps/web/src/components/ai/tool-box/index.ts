@@ -1,5 +1,4 @@
 import type { EditorView } from '@codemirror/view'
-import AIPolishButton from './ToolBoxButton.vue'
 import AIPolishPopover from './ToolBoxPopover.vue'
 
 /* ---------- 简化的组合式函数 ---------- */
@@ -29,4 +28,4 @@ function useAIPolish() {
   }
 }
 
-export { AIPolishButton, AIPolishPopover, useAIPolish }
+export { AIPolishPopover, useAIPolish }

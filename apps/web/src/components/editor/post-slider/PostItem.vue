@@ -3,11 +3,15 @@ import {
   ChevronRight,
   Edit3,
   Ellipsis,
+  FileInput,
   History,
+  Package,
   PlusSquare,
   Trash2,
 } from 'lucide-vue-next'
 import { usePostStore } from '@/stores/post'
+import { useTemplateStore } from '@/stores/template'
+import { useUIStore } from '@/stores/ui'
 
 interface Post {
   id: string
@@ -51,7 +55,10 @@ const props = defineProps<{
 }>()
 
 const postStore = usePostStore()
+const templateStore = useTemplateStore()
+const uiStore = useUIStore()
 const { posts, currentPostId } = storeToRefs(postStore)
+const { toggleShowTemplateDialog } = uiStore
 
 /* ============ 新增内容 ============ */
 const isOpenAddDialog = ref(false)
@@ -81,6 +88,29 @@ function togglePostExpanded(postId: string) {
  */
 function isHasChild(postId: string) {
   return props.sortedPosts.some(p => p.parentId === postId)
+}
+
+/*
+ * 保存为模板
+ */
+function saveAsTemplate(postId: string) {
+  const post = posts.value.find(p => p.id === postId)
+  if (!post)
+    return
+
+  templateStore.createTemplate({
+    name: post.title,
+    content: post.content,
+    description: `从「${post.title}」创建于 ${new Date().toLocaleString('zh-CN')}`,
+  })
+}
+
+/*
+ * 应用模板
+ */
+function applyTemplate(postId: string) {
+  currentPostId.value = postId
+  toggleShowTemplateDialog(true)
 }
 </script>
 
@@ -144,6 +174,14 @@ function isHasChild(postId: string) {
           <DropdownMenuItem @click.stop="props.openHistoryDialog(post.id)">
             <History class="mr-2 size-4" /> 历史记录
           </DropdownMenuItem>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem @click.stop="saveAsTemplate(post.id)">
+            <Package class="mr-2 size-4" /> 存储为模板
+          </DropdownMenuItem>
+          <DropdownMenuItem @click.stop="applyTemplate(post.id)">
+            <FileInput class="mr-2 size-4" /> 应用模板
+          </DropdownMenuItem>
+          <DropdownMenuSeparator />
           <DropdownMenuItem
             v-if="posts.length > 1"
             @click.stop="props.startDelPost(post.id)"

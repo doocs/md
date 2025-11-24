@@ -1,5 +1,5 @@
 import { ref, watch } from 'vue'
-import { store } from '@/utils'
+import { store } from '@/utils/storage'
 
 export interface QuickCommandPersisted {
   id: string

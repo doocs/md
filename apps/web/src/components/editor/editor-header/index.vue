@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ChevronDownIcon, Menu, Palette, SlidersHorizontal } from 'lucide-vue-next'
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import { ChevronDownIcon, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, generatePureHTML, processClipboardContent, store } from '@/utils'
+import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
+import { store } from '@/utils/storage'
+import EditDropdown from './EditDropdown.vue'
+import FileDropdown from './FileDropdown.vue'
 import FormatDropdown from './FormatDropdown.vue'
+import HelpDropdown from './HelpDropdown.vue'
+import InsertDropdown from './InsertDropdown.vue'
+import StyleDropdown from './StyleDropdown.vue'
+import ViewDropdown from './ViewDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
@@ -233,15 +239,17 @@ async function copy() {
     class="header-container h-15 flex flex-wrap items-center justify-between px-5 relative"
   >
     <!-- 桌面端左侧菜单 -->
-    <div class="space-x-2 hidden md:flex">
+    <div class="space-x-1 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown 
-          @open-editor-state="handleOpenEditorState" 
+        <FileDropdown
+          @open-editor-state="handleOpenEditorState"
           @open-document-storage="handleOpenDocumentStorage"
         />
-        <FormatDropdown />
         <EditDropdown />
+        <FormatDropdown />
+        <InsertDropdown />
         <StyleDropdown />
+        <ViewDropdown />
         <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
       </Menubar>
     </div>
@@ -256,14 +264,16 @@ async function copy() {
             </Button>
           </MenubarTrigger>
           <MenubarContent align="start">
-            <FileDropdown 
-              :as-sub="true" 
-              @open-editor-state="handleOpenEditorState" 
+            <FileDropdown
+              :as-sub="true"
+              @open-editor-state="handleOpenEditorState"
               @open-document-storage="handleOpenDocumentStorage"
             />
-            <FormatDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" />
+            <FormatDropdown :as-sub="true" />
+            <InsertDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
+            <ViewDropdown :as-sub="true" />
             <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" />
           </MenubarContent>
         </MenubarMenu>
@@ -311,18 +321,6 @@ async function copy() {
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
 
-      <!-- 编辑器设置按钮 -->
-      <Popover>
-        <PopoverTrigger as-child>
-          <Button variant="outline" size="icon" class="mr-1">
-            <SlidersHorizontal class="size-4" />
-          </Button>
-        </PopoverTrigger>
-        <PopoverContent align="end">
-          <ThemeCustomizer />
-        </PopoverContent>
-      </Popover>
-
       <!-- 样式面板 -->
       <Button
         variant="outline"
@@ -343,17 +341,101 @@ async function copy() {
 </template>
 
 <style lang="less" scoped>
+.header-container {
+  background: hsl(var(--background) / 0.95);
+  border-bottom: 1px solid hsl(var(--border));
+  backdrop-filter: blur(12px);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+
+  @media (max-width: 768px) {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
 .menubar {
   user-select: none;
+
+  :deep([data-radix-menubar-trigger]) {
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 0.5rem 0.875rem;
+    border-radius: 6px;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+
+    &:hover {
+      background: hsl(var(--accent) / 0.8);
+      color: hsl(var(--accent-foreground));
+      transform: translateY(-1px);
+    }
+
+    &[data-state='open'] {
+      background: hsl(var(--accent));
+      color: hsl(var(--accent-foreground));
+      box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  :deep([data-radix-menubar-content]) {
+    animation: slideDownAndFade 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  :deep([data-radix-menubar-item]) {
+    border-radius: 4px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: hsl(var(--accent) / 0.8);
+    }
+  }
+
+  :deep([data-radix-menubar-sub-trigger]) {
+    border-radius: 4px;
+    transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      background: hsl(var(--accent) / 0.8);
+    }
+  }
 }
 
 kbd {
   display: inline-flex;
   justify-content: center;
   align-items: center;
-  border: 1px solid #a8a8a8;
-  padding: 1px 4px;
-  border-radius: 2px;
+  min-width: 1.5rem;
+  height: 1.375rem;
+  border: 1px solid hsl(var(--border));
+  background: linear-gradient(to bottom, hsl(var(--muted)), hsl(var(--muted) / 0.9));
+  padding: 0 0.375rem;
+  border-radius: 4px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  line-height: 1;
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Consolas, 'Liberation Mono', Menlo, monospace;
+  box-shadow:
+    0 1px 0 hsl(var(--border)),
+    inset 0 0.5px 0 hsl(var(--background));
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+@keyframes slideDownAndFade {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 768px) {

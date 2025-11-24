@@ -1,0 +1,27 @@
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index a939e0835a7615d6af30432751a947f121d9cff6..fdc524606e3bcaea0cf9335550799a23ff92f557 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -482,7 +482,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+         new (view: EditorView, arg: Arg): V;
+     }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
+ }
+-interface MeasureRequest<T> {
++export interface MeasureRequest<T> {
+     /**
+     Called in a DOM read phase to gather information that requires
+     DOM layout. Should _not_ mutate the document.
+diff --git a/dist/index.js b/dist/index.js
+index dd4b601fcac40ff82fdd9eaa8b0f1feaf2e0df9a..3be5d8385e1f81dd7ec38da9d4afd57e1c1bca8e 100644
+--- a/dist/index.js
++++ b/dist/index.js
+@@ -8879,7 +8879,8 @@ function runHandlers(map, event, view, scope) {
+             // Ctrl-Alt may be used for AltGr on Windows
+             !(browser.windows && event.ctrlKey && event.altKey) &&
+             // Alt-combinations on macOS tend to be typed characters
+-            !(browser.mac && event.altKey && !(event.ctrlKey || event.metaKey)) &&
++            // 但 Alt+Shift 组合应该被视为快捷键而不是特殊字符输入
++            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey)) &&
+             (baseName = base[event.keyCode]) && baseName != name) {
+             if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
+                 handled = true;
