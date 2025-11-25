@@ -17,7 +17,7 @@
     "./editor/*": "./src/editor/*.ts"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.19.1",
+    "@codemirror/autocomplete": "^6.20.0",
     "@codemirror/commands": "^6.10.0",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-javascript": "^6.2.4",
@@ -31,7 +31,7 @@
     "@replit/codemirror-indentation-markers": "^6.5.3",
     "axios": "^1.13.2",
     "es-toolkit": "^1.42.0",
-    "marked": "^17.0.0",
+    "marked": "^17.0.1",
     "reading-time": "^1.5.0",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
