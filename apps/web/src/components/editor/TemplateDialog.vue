@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Template } from '@md/shared'
-import { Calendar, Clock, FileText, Package, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next'
+import { Calendar, Clock, FileDown, FileInput, FileText, Package, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useTemplateStore } from '@/stores/template'
@@ -116,6 +116,19 @@ function applyTemplate(template: Template) {
     editorStore.importContent(template.content)
     toast.success(`已应用模板「${template.name}」`)
   }
+  toggleShowTemplateDialog(false)
+}
+
+// 在光标位置插入模板
+function insertTemplate(template: Template) {
+  editorStore.insertAtCursor(template.content)
+
+  const currentPost = postStore.currentPost
+  if (currentPost) {
+    postStore.updatePostContent(currentPost.id, editorStore.getContent())
+  }
+
+  toast.success(`已插入模板「${template.name}」`)
   toggleShowTemplateDialog(false)
 }
 
@@ -294,57 +307,42 @@ function onUpdate(val: boolean) {
 
               <!-- 操作按钮 -->
               <div class="flex gap-1 flex-shrink-0">
-                <TooltipProvider :delay-duration="200">
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        class="size-8"
-                        @click="applyTemplate(template)"
-                      >
-                        <FileText class="size-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      应用模板
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider :delay-duration="200">
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        class="size-8"
-                        @click="openEditForm(template)"
-                      >
-                        <Pencil class="size-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      编辑模板
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <TooltipProvider :delay-duration="200">
-                  <Tooltip>
-                    <TooltipTrigger as-child>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        class="size-8 text-destructive hover:text-destructive"
-                        @click="openDeleteConfirm(template)"
-                      >
-                        <Trash2 class="size-4" />
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      删除模板
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  title="应用模板（替换全部内容）"
+                  @click="applyTemplate(template)"
+                >
+                  <FileInput class="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  title="插入模板（在光标处插入）"
+                  @click="insertTemplate(template)"
+                >
+                  <FileDown class="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  title="编辑模板"
+                  @click="openEditForm(template)"
+                >
+                  <Pencil class="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8 text-destructive hover:text-destructive"
+                  title="删除模板"
+                  @click="openDeleteConfirm(template)"
+                >
+                  <Trash2 class="size-4" />
+                </Button>
               </div>
             </div>
           </div>
