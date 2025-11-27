@@ -64,6 +64,19 @@ export const useEditorStore = defineStore(`editor`, () => {
     editor.value.dispatch(editor.value.state.replaceSelection(text))
   }
 
+  // 在光标位置插入文本
+  const insertAtCursor = (text: string) => {
+    if (!editor.value)
+      return
+
+    const selection = editor.value.state.selection.main
+    editor.value.dispatch({
+      changes: { from: selection.from, to: selection.to, insert: text },
+      selection: { anchor: selection.from + text.length },
+    })
+    editor.value.focus()
+  }
+
   return {
     editor,
     formatContent,
@@ -72,5 +85,6 @@ export const useEditorStore = defineStore(`editor`, () => {
     getContent,
     getSelection,
     replaceSelection,
+    insertAtCursor,
   }
 })
