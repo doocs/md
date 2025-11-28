@@ -237,6 +237,10 @@ function getThemeStyles(): string {
 
   // 移除 #output 作用域前缀，因为复制后的 HTML 不在 #output 容器中
   let cssContent = themeStyle.textContent
+
+  // 处理 #output {} 为 body {}，避免出现 {} 无效样式
+  cssContent = cssContent.replace(/#output\s*\{/g, 'body {')
+
   // 将 "#output h1" 替换为 "h1"，"#output .class" 替换为 ".class" 等
   // 同时处理换行和多个空格的情况
   cssContent = cssContent.replace(/#output\s+/g, '')
