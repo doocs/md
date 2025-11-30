@@ -494,9 +494,16 @@ const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const progressValue = ref(0)
 
 function createFormTextArea(dom: HTMLDivElement) {
+  // 确保有文档数据
+  const currentPost = posts.value[currentPostIndex.value]
+  if (!currentPost) {
+    console.warn('No post available, waiting for data to load')
+    return null
+  }
+
   // 创建编辑器状态
   const state = EditorState.create({
-    doc: posts.value[currentPostIndex.value].content,
+    doc: currentPost.content,
     extensions: [
       markdownSetup({
         onSearch: openSearchWithSelection,
@@ -575,12 +582,15 @@ function createFormTextArea(dom: HTMLDivElement) {
 }
 
 // 初始化编辑器
-onMounted(() => {
+onMounted(async () => {
   const editorDom = editorRef.value
 
   if (editorDom == null) {
     return
   }
+
+  // 等待文档数据加载完成
+  await postStore.loadFromStorage()
 
   // 初始化渲染器（新主题系统）
   renderStore.initRendererInstance({
@@ -593,11 +603,13 @@ onMounted(() => {
 
   nextTick(() => {
     const editorView = createFormTextArea(editorDom)
-    editor.value = editorView
+    if (editorView) {
+      editor.value = editorView
 
-    // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
-    editorRefresh()
-    mdLocalToRemote()
+      // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
+      editorRefresh()
+      mdLocalToRemote()
+    }
   })
 })
 

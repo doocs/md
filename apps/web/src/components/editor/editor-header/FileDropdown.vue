@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, FolderKanban, Package, Upload } from 'lucide-vue-next'
+import { Cloud, Download, FileCode, FileCog, FileText, FolderKanban, Package, Upload } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
@@ -10,7 +10,7 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openEditorState`])
+const emit = defineEmits([`openEditorState`, `openDocumentStorage`])
 
 const { asSub } = toRefs(props)
 
@@ -25,6 +25,10 @@ const importMarkdownContent = useImportMarkdownContent()
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
+}
+
+function openDocumentStorageDialog() {
+  emit(`openDocumentStorage`)
 }
 
 function openTemplateDialog() {
@@ -127,6 +131,14 @@ function exportEditorContent2PDF() {
         <FileCog class="mr-2 size-4" />
         项目配置
       </MenubarItem>
+
+      <MenubarSeparator />
+
+      <!-- 文档存储配置 -->
+      <MenubarItem @click="openDocumentStorageDialog()">
+        <Cloud class="mr-2 size-4" />
+        文档存储配置
+      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -202,6 +214,14 @@ function exportEditorContent2PDF() {
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         项目配置
+      </MenubarItem>
+
+      <MenubarSeparator />
+
+      <!-- 文档存储配置 -->
+      <MenubarItem @click="openDocumentStorageDialog()">
+        <Cloud class="mr-2 size-4" />
+        文档存储配置
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
