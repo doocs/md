@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Post, PostAccount } from '@md/shared/types'
-import { Check, Info } from 'lucide-vue-next'
+import { Check, Info, Send } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -132,7 +132,8 @@ onBeforeMount(() => {
   <div v-bind="$attrs">
     <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
       <DialogTrigger>
-        <Button v-if="!isMobile" variant="outline" @click="prePost">
+        <Button v-if="!isMobile" variant="outline" class="h-9 shadow-sm" @click="prePost">
+          <Send class="mr-2 h-4 w-4" />
           发布
         </Button>
       </DialogTrigger>

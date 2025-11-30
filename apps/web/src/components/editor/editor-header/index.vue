@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronDownIcon, Menu, Palette } from 'lucide-vue-next'
+import { Copy, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
@@ -227,6 +227,16 @@ async function copy() {
     })
   }, 350)
 }
+
+function handleCopy(mode: string) {
+  copyMode.value = mode
+  copy()
+}
+
+function copyToWeChat() {
+  copyMode.value = 'txt'
+  copy()
+}
 </script>
 
 <template>
@@ -237,7 +247,7 @@ async function copy() {
     <div class="space-x-1 hidden md:flex">
       <Menubar class="menubar border-0">
         <FileDropdown @open-editor-state="handleOpenEditorState" />
-        <EditDropdown />
+        <EditDropdown @copy="handleCopy" />
         <FormatDropdown />
         <InsertDropdown />
         <StyleDropdown />
@@ -257,7 +267,7 @@ async function copy() {
           </MenubarTrigger>
           <MenubarContent align="start">
             <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
-            <EditDropdown :as-sub="true" />
+            <EditDropdown :as-sub="true" @copy="handleCopy" />
             <FormatDropdown :as-sub="true" />
             <InsertDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
@@ -269,42 +279,16 @@ async function copy() {
     </div>
 
     <!-- 右侧操作区 -->
-    <div class="space-x-2 flex flex-wrap items-center">
-      <!-- 复制按钮组 -->
-      <div
-        class="bg-background space-x-1 text-background-foreground flex items-center border rounded-md"
+    <div class="flex flex-wrap items-center gap-2">
+      <!-- 复制按钮 -->
+      <Button
+        variant="outline"
+        class="h-9 shadow-sm"
+        @click="copyToWeChat"
       >
-        <Button variant="ghost" class="shadow-none text-sm px-2 md:px-4" @click="copy">
-          复制
-        </Button>
-        <Separator orientation="vertical" class="h-5" />
-        <DropdownMenu v-model="copyMode">
-          <DropdownMenuTrigger as-child>
-            <Button variant="ghost" class="px-2 shadow-none">
-              <ChevronDownIcon class="text-secondary-foreground h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" :align-offset="-5" class="w-[220px]">
-            <DropdownMenuRadioGroup v-model="copyMode">
-              <DropdownMenuRadioItem value="txt">
-                公众号格式
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="html">
-                HTML 格式
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="html-without-style">
-                <span class="whitespace-nowrap">HTML 格式（无样式）</span>
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="html-and-style">
-                <span class="whitespace-nowrap">HTML 格式（兼容样式）</span>
-              </DropdownMenuRadioItem>
-              <DropdownMenuRadioItem value="md">
-                MD 格式
-              </DropdownMenuRadioItem>
-            </DropdownMenuRadioGroup>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      </div>
+        <Copy class="mr-2 h-4 w-4" />
+        <span>复制</span>
+      </Button>
 
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
@@ -312,10 +296,12 @@ async function copy() {
       <!-- 样式面板 -->
       <Button
         variant="outline"
-        size="icon"
+        class="h-9 shadow-sm"
+        :class="{ 'bg-accent text-accent-foreground': isOpenRightSlider }"
         @click="isOpenRightSlider = !isOpenRightSlider"
       >
-        <Palette class="size-4" />
+        <Palette class="mr-2 h-4 w-4" />
+        <span>样式</span>
       </Button>
     </div>
   </header>
