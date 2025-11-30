@@ -22,6 +22,8 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
+const emit = defineEmits(['copy'])
+
 const { asSub } = toRefs(props)
 
 const editorStore = useEditorStore()
@@ -135,14 +137,37 @@ function openReplace() {
       <MenubarSeparator />
 
       <!-- 剪贴板操作 -->
-      <MenubarItem @click="copyToClipboard()">
-        <Copy class="mr-2 h-4 w-4" />
-        复制
-        <MenubarShortcut>
-          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">C</kbd>
-        </MenubarShortcut>
-      </MenubarItem>
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Copy class="mr-2 h-4 w-4" />
+          复制
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="emit('copy', 'txt')">
+            公众号格式
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html')">
+            HTML 格式
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html-without-style')">
+            HTML 格式（无样式）
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html-and-style')">
+            HTML 格式（兼容样式）
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'md')">
+            MD 格式
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem @click="copyToClipboard()">
+            复制选中内容
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">C</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
       <MenubarItem @click="pasteFromClipboard()">
         <ClipboardPaste class="mr-2 h-4 w-4" />
         粘贴
@@ -214,14 +239,37 @@ function openReplace() {
       <MenubarSeparator />
 
       <!-- 剪贴板操作 -->
-      <MenubarItem @click="copyToClipboard()">
-        <Copy class="mr-2 h-4 w-4" />
-        复制
-        <MenubarShortcut>
-          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">C</kbd>
-        </MenubarShortcut>
-      </MenubarItem>
+      <MenubarSub>
+        <MenubarSubTrigger>
+          <Copy class="mr-2 h-4 w-4" />
+          复制
+        </MenubarSubTrigger>
+        <MenubarSubContent>
+          <MenubarItem @click="emit('copy', 'txt')">
+            公众号格式
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html')">
+            HTML 格式
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html-without-style')">
+            HTML 格式（无样式）
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'html-and-style')">
+            HTML 格式（兼容样式）
+          </MenubarItem>
+          <MenubarItem @click="emit('copy', 'md')">
+            MD 格式
+          </MenubarItem>
+          <MenubarSeparator />
+          <MenubarItem @click="copyToClipboard()">
+            复制选中内容
+            <MenubarShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">C</kbd>
+            </MenubarShortcut>
+          </MenubarItem>
+        </MenubarSubContent>
+      </MenubarSub>
       <MenubarItem @click="pasteFromClipboard()">
         <ClipboardPaste class="mr-2 h-4 w-4" />
         粘贴
