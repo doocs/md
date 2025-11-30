@@ -2,7 +2,7 @@
 import type { DecorationSet } from '@codemirror/view'
 import { StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
-import { ChevronDown, ChevronRight, ChevronUp, Replace, ReplaceAll, X } from 'lucide-vue-next'
+import { ChevronDown, ChevronRight, ChevronUp, Regex, Replace, ReplaceAll, X } from 'lucide-vue-next'
 
 const props = defineProps<{
   editorView: EditorView
@@ -12,6 +12,7 @@ const showSearchTab = ref(false)
 const searchInputRef = ref<{ focus: () => void, select: () => void } | null>(null)
 
 const searchWord = ref(``)
+const isRegex = ref(false)
 const indexOfMatch = ref(0)
 const showReplace = ref(false)
 const replaceWord = ref(``)
@@ -57,7 +58,7 @@ onMounted(() => {
   }
 })
 
-watch(searchWord, () => {
+watch([searchWord, isRegex], () => {
   const debouncedSearch = useDebounceFn(() => {
     matchPositions.value = []
 
@@ -147,20 +148,48 @@ function findAllMatches() {
   const _matchPositions: Array<Array<{ line: number, ch: number }>> = []
 
   if (searchTerm) {
-    const lines = content.split(`\n`)
-    lines.forEach((line, lineIndex) => {
-      let startIndex = 0
-      let index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+    if (isRegex.value) {
+      try {
+        const regex = new RegExp(searchTerm, `gm`)
+        let match
+        // eslint-disable-next-line no-cond-assign
+        while ((match = regex.exec(content)) !== null) {
+          if (match[0].length === 0) {
+            regex.lastIndex++
+            continue
+          }
+          const startPos = match.index
+          const endPos = match.index + match[0].length
 
-      while (index !== -1) {
-        _matchPositions.push([
-          { line: lineIndex, ch: index },
-          { line: lineIndex, ch: index + searchTerm.length },
-        ])
-        startIndex = index + 1
-        index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+          const startLineObj = props.editorView.state.doc.lineAt(startPos)
+          const endLineObj = props.editorView.state.doc.lineAt(endPos)
+
+          _matchPositions.push([
+            { line: startLineObj.number - 1, ch: startPos - startLineObj.from },
+            { line: endLineObj.number - 1, ch: endPos - endLineObj.from },
+          ])
+        }
       }
-    })
+      catch (e) {
+        console.warn(`Invalid Regex`, e)
+      }
+    }
+    else {
+      const lines = content.split(`\n`)
+      lines.forEach((line, lineIndex) => {
+        let startIndex = 0
+        let index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+
+        while (index !== -1) {
+          _matchPositions.push([
+            { line: lineIndex, ch: index },
+            { line: lineIndex, ch: index + searchTerm.length },
+          ])
+          startIndex = index + 1
+          index = line.toLowerCase().indexOf(searchTerm.toLowerCase(), startIndex)
+        }
+      })
+    }
   }
 
   matchPositions.value = _matchPositions
@@ -182,6 +211,10 @@ function prevMatch() {
 
 function toggleShowReplace() {
   showReplace.value = !showReplace.value
+}
+
+function toggleRegex() {
+  isRegex.value = !isRegex.value
 }
 
 function closeSearchTab() {
@@ -217,9 +250,20 @@ function handleReplace() {
   const fromPos = fromLine.from + from.ch
   const toPos = toLine.from + to.ch
 
+  let insertText = replaceWord.value
+  if (isRegex.value) {
+    try {
+      const matchedText = props.editorView.state.sliceDoc(fromPos, toPos)
+      insertText = matchedText.replace(new RegExp(searchWord.value, `gm`), replaceWord.value)
+    }
+    catch (e) {
+      console.warn(`Invalid Regex Replacement`, e)
+    }
+  }
+
   props.editorView.dispatch({
-    changes: { from: fromPos, to: toPos, insert: replaceWord.value },
-    selection: { anchor: fromPos + replaceWord.value.length },
+    changes: { from: fromPos, to: toPos, insert: insertText },
+    selection: { anchor: fromPos + insertText.length },
   })
   findAllMatches()
 }
@@ -246,7 +290,18 @@ function handleReplaceAll() {
     const fromPos = fromLine.from + from.ch
     const toPos = toLine.from + to.ch
 
-    return { from: fromPos, to: toPos, insert: replaceWord.value }
+    let insertText = replaceWord.value
+    if (isRegex.value) {
+      try {
+        const matchedText = props.editorView.state.sliceDoc(fromPos, toPos)
+        insertText = matchedText.replace(new RegExp(searchWord.value, `gm`), replaceWord.value)
+      }
+      catch (e) {
+        console.warn(`Invalid Regex Replacement`, e)
+      }
+    }
+
+    return { from: fromPos, to: toPos, insert: insertText }
   })
 
   props.editorView.dispatch({ changes })
@@ -340,6 +395,17 @@ defineExpose({
             class="h-7 w-40 text-sm"
             @keydown="handleSearchInputKeyDown"
           />
+          <Button
+            variant="ghost"
+            size="xs"
+            title="正则"
+            aria-label="正则"
+            class="h-6 w-6 p-0"
+            :class="{ 'bg-accent': isRegex }"
+            @click="toggleRegex"
+          >
+            <Regex class="h-3 w-3" />
+          </Button>
           <span class="w-10 select-none text-center text-xs">
             {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
           </span>
