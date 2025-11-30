@@ -132,7 +132,7 @@ onBeforeMount(() => {
   <div v-bind="$attrs">
     <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
       <DialogTrigger>
-        <Button v-if="!isMobile" variant="outline" class="h-9 shadow-sm" @click="prePost">
+        <Button v-if="!isMobile" variant="outline" class="h-9" @click="prePost">
           <Send class="mr-2 h-4 w-4" />
           发布
         </Button>

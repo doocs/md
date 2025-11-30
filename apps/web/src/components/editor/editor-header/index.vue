@@ -283,7 +283,7 @@ function copyToWeChat() {
       <!-- 复制按钮 -->
       <Button
         variant="outline"
-        class="h-9 shadow-sm"
+        class="h-9"
         @click="copyToWeChat"
       >
         <Copy class="mr-2 h-4 w-4" />
@@ -296,7 +296,7 @@ function copyToWeChat() {
       <!-- 样式面板 -->
       <Button
         variant="outline"
-        class="h-9 shadow-sm"
+        class="h-9"
         :class="{ 'bg-accent text-accent-foreground': isOpenRightSlider }"
         @click="isOpenRightSlider = !isOpenRightSlider"
       >
