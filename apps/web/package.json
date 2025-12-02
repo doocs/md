@@ -59,7 +59,7 @@
     "qiniu-js": "^3.4.3",
     "radix-vue": "^1.9.17",
     "reading-time": "^1.5.0",
-    "reka-ui": "^2.6.0",
+    "reka-ui": "^2.6.1",
     "remark-parse": "^11.0.0",
     "remark-stringify": "^11.0.0",
     "tailwind-merge": "^3.4.0",
@@ -77,7 +77,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.15.3",
-    "@cloudflare/workers-types": "^4.20251128.0",
+    "@cloudflare/workers-types": "^4.20251202.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",

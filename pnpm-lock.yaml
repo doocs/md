@@ -191,8 +191,8 @@ importers:
         specifier: ^1.5.0
         version: 1.5.0
       reka-ui:
-        specifier: ^2.6.0
-        version: 2.6.0(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
+        specifier: ^2.6.1
+        version: 2.6.1(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
       remark-parse:
         specifier: ^11.0.0
         version: 11.0.0
@@ -238,10 +238,10 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.15.3
-        version: 1.15.3(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251125.0)(wrangler@4.51.0(@cloudflare/workers-types@4.20251128.0))
+        version: 1.15.3(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251125.0)(wrangler@4.51.0(@cloudflare/workers-types@4.20251202.0))
       '@cloudflare/workers-types':
-        specifier: ^4.20251128.0
-        version: 4.20251128.0
+        specifier: ^4.20251202.0
+        version: 4.20251202.0
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -313,7 +313,7 @@ importers:
         version: 3.1.5(typescript@5.9.3)
       wrangler:
         specifier: ^4.51.0
-        version: 4.51.0(@cloudflare/workers-types@4.20251128.0)
+        version: 4.51.0(@cloudflare/workers-types@4.20251202.0)
       wxt:
         specifier: ^0.20.11
         version: 0.20.11(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.44.1)(yaml@2.8.1)
@@ -367,13 +367,13 @@ importers:
     devDependencies:
       wrangler:
         specifier: ^4.51.0
-        version: 4.51.0(@cloudflare/workers-types@4.20251128.0)
+        version: 4.51.0(@cloudflare/workers-types@4.20251202.0)
 
   packages/md-cli:
     dependencies:
       express:
-        specifier: ^5.1.0
-        version: 5.1.0
+        specifier: ^5.2.1
+        version: 5.2.1
       form-data:
         specifier: 4.0.5
         version: 4.0.5
@@ -998,8 +998,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20251128.0':
-    resolution: {integrity: sha512-gQxQvxLRsFb+mDlaBKGoJwEHWt+ox9telZZEuRMbNUAD6v78XYqZepTI4yPDdKhkRTlqYcDqDhIdAI3HrsGk7w==}
+  '@cloudflare/workers-types@4.20251202.0':
+    resolution: {integrity: sha512-Q7m1Ivu2fbKalOPm00KLpu6GfRaq4TlrPknqugvZgp/gDH96OYKINO4x7jvCIBvCz/aK9vVoOj8tlbSQBervVA==}
 
   '@codemirror/autocomplete@6.20.0':
     resolution: {integrity: sha512-bOwvTOIJcG5FVo5gUUupiwYh8MioPLQ4UcqbcRf7UQ98X90tCa9E1kZ3Z7tqwpZxYyOvh1YTYbmZE9RTfTp5hg==}
@@ -4393,8 +4393,8 @@ packages:
     resolution: {integrity: sha512-XYfuKMvj4O35f/pOXLObndIRvyQ+/+6AhODh+OKWj9S9498pHHn/IMszH+gt0fBCRWMNfk1ZSp5x3AifmnI2vg==}
     engines: {node: '>=6'}
 
-  express@5.1.0:
-    resolution: {integrity: sha512-DT9ck5YIRU+8GYzzU5kT3eHGA5iL+1Zd0EutOmTE9Dtk+Tvuzd23VBU+ec7HPNSTxXYO55gPV/hq4pSBJDjFpA==}
+  express@5.2.1:
+    resolution: {integrity: sha512-hIS4idWWai69NezIdRt2xFVofaF4j+6INOpJlVOLDO8zXGpUVEVzIYk12UUi2JzjEzWL3IOAxcTubgz9Po0yXw==}
     engines: {node: '>= 18'}
 
   exsolve@1.0.8:
@@ -4478,9 +4478,9 @@ packages:
     resolution: {integrity: sha512-YsGpe3WHLK8ZYi4tWDg2Jy3ebRz2rXowDxnld4bkQB00cc/1Zw9AWnC0i9ztDJitivtQvaI9KaLyKrc+hBW0yg==}
     engines: {node: '>=8'}
 
-  finalhandler@2.1.0:
-    resolution: {integrity: sha512-/t88Ty3d5JWQbWYgaOGCCYfXRwV1+be02WqYYlL6h0lEiUAMPM8o8qKGO01YIkOHzka2up08wvgYD0mDiI+q3Q==}
-    engines: {node: '>= 0.8'}
+  finalhandler@2.1.1:
+    resolution: {integrity: sha512-S8KoZgRZN+a5rNwqTxlZZePjT/4cnm0ROV70LedRHZ0p8u9fRID0hJUZQpkKLzro8LfmC8sx23bY6tVNxv8pQA==}
+    engines: {node: '>= 18.0.0'}
 
   find-up-simple@1.0.1:
     resolution: {integrity: sha512-afd4O7zpqHeRyg4PfDQsXmlDe2PfdHtJt6Akt8jOWaApLOZk5JXs6VMR29lz03pRe9mpykrRCYIYxaJYcfpncQ==}
@@ -6493,8 +6493,8 @@ packages:
     resolution: {integrity: sha512-NZQZdC5wOE/H3UT28fVGL+ikOZcEzfMGk/c3iN9UGxzWHMa1op7274oyiUVrAG4B2EuFhus8SvkaYnhvW92p9Q==}
     hasBin: true
 
-  reka-ui@2.6.0:
-    resolution: {integrity: sha512-NrGMKrABD97l890mFS3TNUzB0BLUfbL3hh0NjcJRIUSUljb288bx3Mzo31nOyUcdiiW0HqFGXJwyCBh9cWgb0w==}
+  reka-ui@2.6.1:
+    resolution: {integrity: sha512-XK7cJDQoNuGXfCNzBBo/81Yg/OgjPwvbabnlzXG2VsdSgNsT6iIkuPBPr+C0Shs+3bb0x0lbPvgQAhMSCKm5Ww==}
     peerDependencies:
       vue: '>= 3.2.0'
 
@@ -8784,7 +8784,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20251125.0
 
-  '@cloudflare/vite-plugin@1.15.3(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251125.0)(wrangler@4.51.0(@cloudflare/workers-types@4.20251128.0))':
+  '@cloudflare/vite-plugin@1.15.3(vite@7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1))(workerd@1.20251125.0)(wrangler@4.51.0(@cloudflare/workers-types@4.20251202.0))':
     dependencies:
       '@cloudflare/unenv-preset': 2.7.11(unenv@2.0.0-rc.24)(workerd@1.20251125.0)
       '@remix-run/node-fetch-server': 0.8.1
@@ -8794,7 +8794,7 @@ snapshots:
       tinyglobby: 0.2.15
       unenv: 2.0.0-rc.24
       vite: 7.2.4(@types/node@24.10.1)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.1)
-      wrangler: 4.51.0(@cloudflare/workers-types@4.20251128.0)
+      wrangler: 4.51.0(@cloudflare/workers-types@4.20251202.0)
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -8816,7 +8816,7 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20251125.0':
     optional: true
 
-  '@cloudflare/workers-types@4.20251128.0': {}
+  '@cloudflare/workers-types@4.20251202.0': {}
 
   '@codemirror/autocomplete@6.20.0':
     dependencies:
@@ -12789,7 +12789,7 @@ snapshots:
   expand-template@2.0.3:
     optional: true
 
-  express@5.1.0:
+  express@5.2.1:
     dependencies:
       accepts: 2.0.0
       body-parser: 2.2.1
@@ -12798,10 +12798,11 @@ snapshots:
       cookie: 0.7.2
       cookie-signature: 1.2.2
       debug: 4.4.3(supports-color@5.5.0)
+      depd: 2.0.0
       encodeurl: 2.0.0
       escape-html: 1.0.3
       etag: 1.8.1
-      finalhandler: 2.1.0
+      finalhandler: 2.1.1
       fresh: 2.0.0
       http-errors: 2.0.1
       merge-descriptors: 2.0.0
@@ -12890,7 +12891,7 @@ snapshots:
     dependencies:
       to-regex-range: 5.0.1
 
-  finalhandler@2.1.0:
+  finalhandler@2.1.1:
     dependencies:
       debug: 4.4.3(supports-color@5.5.0)
       encodeurl: 2.0.0
@@ -15201,7 +15202,7 @@ snapshots:
     dependencies:
       jsesc: 3.1.0
 
-  reka-ui@2.6.0(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3)):
+  reka-ui@2.6.1(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3)):
     dependencies:
       '@floating-ui/dom': 1.7.4
       '@floating-ui/vue': 1.1.9(vue@3.5.25(typescript@5.9.3))
@@ -16644,7 +16645,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20251125.0
       '@cloudflare/workerd-windows-64': 1.20251125.0
 
-  wrangler@4.51.0(@cloudflare/workers-types@4.20251128.0):
+  wrangler@4.51.0(@cloudflare/workers-types@4.20251202.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.1
       '@cloudflare/unenv-preset': 2.7.11(unenv@2.0.0-rc.24)(workerd@1.20251125.0)
@@ -16655,7 +16656,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20251125.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20251128.0
+      '@cloudflare/workers-types': 4.20251202.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
