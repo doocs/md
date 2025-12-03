@@ -78,6 +78,47 @@
 | 11  | [Cloudinary](https://cloudinary.com/)                  | 配置 `Cloud Name`、`API Key`、`API Secret` 参数                            | [如何使用 Cloudinary？](https://cloudinary.com/documentation/upload_images)                                            |
 | 12  | 自定义上传                                             | 是                                                                         | [如何自定义上传？](/docs/custom-upload.md)                                                                             |
 
+## 🔑 配置 AI API Key（环境变量）
+
+支持通过环境变量预设各服务类型的 API Key，有以下几种方式：
+
+**方式 1：本地部署**
+
+在 `apps/web/.env.local` 文件中配置（该文件会被 git 忽略，不会提交到仓库）：
+
+```bash
+# .env.local
+VITE_OPENAI_KEY_openai=sk-your-openai-key
+VITE_OPENAI_KEY_deepseek=sk-your-deepseek-key
+VITE_OPENAI_KEY_qwen=sk-your-qwen-key
+```
+
+**方式 2：Docker 部署**
+
+通过构建参数传递环境变量：
+
+```sh
+# 配置单个服务的 API Key
+docker build --build-arg VITE_OPENAI_KEY_openai=sk-your-openai-key -t md:latest .
+
+# 同时配置多个服务的 API Key
+docker build \
+  --build-arg VITE_OPENAI_KEY_openai=sk-openai-key \
+  --build-arg VITE_OPENAI_KEY_deepseek=sk-deepseek-key \
+  --build-arg VITE_OPENAI_KEY_qwen=sk-qwen-key \
+  -t md:latest .
+```
+
+**支持的服务类型：** `openai`, `deepseek`, `qwen`, `moonshot`, `ernie`, `hunyuan`, `doubao`, `baichuan`, `bigmodel`, `siliconflow`, `302ai`, `lingyiwanwu`, `custom`
+
+**环境变量格式：** `VITE_OPENAI_KEY_<服务类型>`，例如 `VITE_OPENAI_KEY_openai`、`VITE_OPENAI_KEY_deepseek`
+
+**注意：**
+
+- 环境变量中的 API Key 会作为默认值使用
+- 如果用户在界面中手动配置了 API Key，会优先使用用户配置的值（保存到浏览器 localStorage）
+- `.env.local` 文件需要放在 `apps/web/` 目录下，且变量名必须以 `VITE_` 开头
+
 ## 🎬 产品演示
 
 <div align="center">

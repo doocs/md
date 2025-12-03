@@ -7,6 +7,40 @@ RUN curl -L "https://github.com/doocs/md/archive/refs/heads/main.zip" -o "main.z
 WORKDIR /app
 RUN npm install -g pnpm
 ENV NODE_OPTIONS="--openssl-legacy-provider"
+
+# 支持构建时传递各服务类型的 API Key 环境变量
+# 格式：--build-arg VITE_OPENAI_KEY_<服务类型>=your-key
+# 支持的服务类型：openai, deepseek, qwen, moonshot, ernie, hunyuan, doubao, baichuan, bigmodel, siliconflow, 302ai, lingyiwanwu, custom
+# 示例：docker build --build-arg VITE_OPENAI_KEY_openai=sk-xxx -t md:latest .
+ARG VITE_OPENAI_KEY_openai=""
+ARG VITE_OPENAI_KEY_deepseek=""
+ARG VITE_OPENAI_KEY_qwen=""
+ARG VITE_OPENAI_KEY_moonshot=""
+ARG VITE_OPENAI_KEY_ernie=""
+ARG VITE_OPENAI_KEY_hunyuan=""
+ARG VITE_OPENAI_KEY_doubao=""
+ARG VITE_OPENAI_KEY_baichuan=""
+ARG VITE_OPENAI_KEY_bigmodel=""
+ARG VITE_OPENAI_KEY_siliconflow=""
+ARG VITE_OPENAI_KEY_302ai=""
+ARG VITE_OPENAI_KEY_lingyiwanwu=""
+ARG VITE_OPENAI_KEY_custom=""
+
+# 设置环境变量供构建时使用
+ENV VITE_OPENAI_KEY_openai=${VITE_OPENAI_KEY_openai}
+ENV VITE_OPENAI_KEY_deepseek=${VITE_OPENAI_KEY_deepseek}
+ENV VITE_OPENAI_KEY_qwen=${VITE_OPENAI_KEY_qwen}
+ENV VITE_OPENAI_KEY_moonshot=${VITE_OPENAI_KEY_moonshot}
+ENV VITE_OPENAI_KEY_ernie=${VITE_OPENAI_KEY_ernie}
+ENV VITE_OPENAI_KEY_hunyuan=${VITE_OPENAI_KEY_hunyuan}
+ENV VITE_OPENAI_KEY_doubao=${VITE_OPENAI_KEY_doubao}
+ENV VITE_OPENAI_KEY_baichuan=${VITE_OPENAI_KEY_baichuan}
+ENV VITE_OPENAI_KEY_bigmodel=${VITE_OPENAI_KEY_bigmodel}
+ENV VITE_OPENAI_KEY_siliconflow=${VITE_OPENAI_KEY_siliconflow}
+ENV VITE_OPENAI_KEY_302ai=${VITE_OPENAI_KEY_302ai}
+ENV VITE_OPENAI_KEY_lingyiwanwu=${VITE_OPENAI_KEY_lingyiwanwu}
+ENV VITE_OPENAI_KEY_custom=${VITE_OPENAI_KEY_custom}
+
 RUN pnpm install && pnpm web build:h5-netlify
 
 FROM scratch

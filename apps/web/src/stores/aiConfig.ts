@@ -33,14 +33,35 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
 
   // ==================== API Key 管理 ====================
 
+  // 从环境变量获取默认 API Key
+  // 支持多种方式：
+  // 1. 本地开发：在 .env.local 或 .env 文件中配置 VITE_OPENAI_KEY_<服务类型>
+  // 2. Docker 构建：通过 --build-arg 传递环境变量
+  // 3. 运行时环境变量：在运行环境中设置
+  const getDefaultApiKey = (serviceType: string): string => {
+    // 使用服务特定的环境变量，例如 VITE_OPENAI_KEY_openai
+    const serviceSpecificKey = import.meta.env[`VITE_OPENAI_KEY_${serviceType}`]
+    if (serviceSpecificKey)
+      return serviceSpecificKey
+
+    // 如果没有设置环境变量，使用常量默认值
+    return DEFAULT_SERVICE_KEY
+  }
+
   // API Key（按服务类型分别持久化）
   const apiKey = customRef<string>((track, trigger) => {
     let cachedKey = ``
 
+    // 加载 API Key 的函数
+    const loadApiKey = async (serviceType: string) => {
+      const storedValue = await store.get(`openai_key_${serviceType}`)
+      // 如果 localStorage 中有值，使用它；否则使用环境变量中的默认值
+      cachedKey = storedValue || getDefaultApiKey(serviceType)
+      trigger()
+    }
+
     // 异步加载初始值
-    store.get(`openai_key_${type.value}`).then((value) => {
-      cachedKey = value || DEFAULT_SERVICE_KEY
-    })
+    loadApiKey(type.value)
 
     return {
       get() {
@@ -51,6 +72,8 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
         cachedKey = val
         trigger()
 
+        // 保存到 localStorage（用户手动设置或环境变量初始化都会保存）
+        // 这样用户可以在界面中看到环境变量提供的默认值，也可以手动修改
         if (type.value !== DEFAULT_SERVICE_TYPE) {
           store.set(`openai_key_${type.value}`, val)
         }
@@ -75,6 +98,23 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
 
       // 保存当前模型
       await store.set(`openai_model_${newType}`, model.value)
+
+      // 重新加载当前服务类型的 API Key
+      const storedKey = await store.get(`openai_key_${newType}`)
+      if (storedKey) {
+        // localStorage 中有值，使用它
+        apiKey.value = storedKey
+      }
+      else {
+        // localStorage 中没有值，使用环境变量中的默认值
+        const envKey = getDefaultApiKey(newType)
+        if (envKey) {
+          apiKey.value = envKey
+        }
+        else {
+          apiKey.value = DEFAULT_SERVICE_KEY
+        }
+      }
     },
     { immediate: true }, // 首次加载时也执行
   )
