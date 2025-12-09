@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.940.0",
-    "@aws-sdk/s3-request-presigner": "^3.940.0",
+    "@aws-sdk/client-s3": "^3.947.0",
+    "@aws-sdk/s3-request-presigner": "^3.947.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -50,9 +50,9 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
-    "isomorphic-dompurify": "^2.33.0",
+    "isomorphic-dompurify": "^2.34.0",
     "juice": "^11.0.3",
-    "lucide-vue-next": "^0.555.0",
+    "lucide-vue-next": "^0.556.0",
     "marked": "^17.0.1",
     "node-fetch": "^3.3.2",
     "pinia": "^3.0.4",
@@ -76,8 +76,8 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.15.3",
-    "@cloudflare/workers-types": "^4.20251202.0",
+    "@cloudflare/vite-plugin": "^1.17.0",
+    "@cloudflare/workers-types": "^4.20251209.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.17",
     "@tailwindcss/vite": "^4.1.17",
@@ -100,8 +100,8 @@
     "vite-plugin-node-polyfills": "^0.24.0",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.0.5",
-    "vue-tsc": "^3.1.5",
-    "wrangler": "^4.51.0",
+    "vue-tsc": "^3.1.8",
+    "wrangler": "^4.53.0",
     "wxt": "^0.20.11"
   }
 }
