@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@codemirror/state": "^6.5.2",
-    "@codemirror/view": "6.38.8"
+    "@codemirror/view": "6.39.3"
   },
   "devDependencies": {
     "@antfu/eslint-config": "6.6.1",
