@@ -75,16 +75,21 @@ async function prePost() {
 declare global {
   interface Window {
     syncPost: (data: { thumb: string, title: string, desc: string, content: string }) => void
-    $syncer: any
+    $cose: any
   }
 }
 
 async function getAccounts(): Promise<void> {
   return new Promise((resolve) => {
-    window.$syncer?.getAccounts((resp: PostAccount[]) => {
-      allAccounts.value = resp.map(a => ({ ...a, checked: true }))
+    if (window.$cose !== undefined) {
+      window.$cose.getAccounts((resp: PostAccount[]) => {
+        allAccounts.value = resp.map(a => ({ ...a, checked: false }))
+        resolve()
+      })
+    }
+    else {
       resolve()
-    })
+    }
   })
 }
 
@@ -100,8 +105,17 @@ function onUpdate(val: boolean) {
   }
 }
 
+function getPlatformUrl(type: string): string {
+  const urls: Record<string, string> = {
+    csdn: 'https://blog.csdn.net',
+    juejin: 'https://juejin.cn',
+    wechat: 'https://mp.weixin.qq.com',
+  }
+  return urls[type] || '#'
+}
+
 function checkExtension() {
-  if (window.$syncer !== undefined) {
+  if (window.$cose !== undefined) {
     extensionInstalled.value = true
     return
   }
@@ -109,7 +123,7 @@ function checkExtension() {
   // 如果插件还没加载，5秒内每 500ms 检查一次
   let count = 0
   const timer = setInterval(async () => {
-    if (window.$syncer !== undefined) {
+    if (window.$cose !== undefined) {
       extensionInstalled.value = true
       await getAccounts()
       clearInterval(timer)
@@ -117,7 +131,7 @@ function checkExtension() {
     }
 
     count++
-    if (count > 10) { // 5秒后还是没有检测到，就停止检查
+    if (count > 10) {
       clearInterval(timer)
     }
   }, 500)
@@ -156,14 +170,7 @@ onBeforeMount(() => {
           <Info class="h-4 w-4" />
           <AlertTitle>未检测到插件</AlertTitle>
           <AlertDescription>
-            请安装
-            <Primitive
-              as="a" class="text-blue-500" href="https://www.wechatsync.com/?utm_source=syncicon#install"
-              target="_blank"
-            >
-              文章同步助手
-            </Primitive>
-            插件
+            请安装 <a href="https://chromewebstore.google.com/detail/ilhikcdphhpjofhlnbojifbihhfmmhfk" target="_blank" class="underline text-primary">cose 文章同步助手</a> 浏览器扩展
           </AlertDescription>
         </Alert>
 
@@ -188,28 +195,51 @@ onBeforeMount(() => {
 
         <div class="w-full flex items-start gap-4">
           <Label class="w-10 text-end">
-            账号
+            平台
           </Label>
-          <div class="flex flex-1 flex-col gap-2">
-            <div v-for="account in form.accounts" :key="account.uid + account.displayName" class="flex items-center gap-2">
-              <label class="flex flex-row items-center gap-4">
-                <CheckboxRoot
-                  v-model:checked="account.checked"
-                  class="bg-background hover:bg-muted h-[25px] w-[25px] flex appearance-none items-center justify-center border border-gray-200 rounded-[4px] outline-hidden"
+          <div class="flex-1 grid grid-cols-1 gap-y-2">
+            <div
+              v-for="account in form.accounts"
+              :key="account.uid"
+              class="flex items-center gap-2"
+            >
+              <CheckboxRoot
+                v-model:checked="account.checked"
+                :disabled="!account.loggedIn"
+                class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <CheckboxIndicator>
+                  <Check v-if="account.checked" class="h-3 w-3" />
+                </CheckboxIndicator>
+              </CheckboxRoot>
+              <img
+                :src="account.icon"
+                alt=""
+                class="inline-block h-[16px] w-[16px] shrink-0"
+              >
+              <span class="text-sm font-medium">{{ account.title }}</span>
+              <!-- 已登录：显示头像和用户名 -->
+              <template v-if="account.loggedIn">
+                <img
+                  v-if="account.avatar"
+                  :src="account.avatar"
+                  alt=""
+                  class="ml-1 h-4 w-4 rounded-full object-cover"
+                  referrerpolicy="no-referrer"
+                  @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
                 >
-                  <CheckboxIndicator>
-                    <Check v-if="account.checked" class="h-4 w-4" />
-                  </CheckboxIndicator>
-                </CheckboxRoot>
-                <span class="flex items-center gap-2 text-sm">
-                  <img
-                    :src="account.icon"
-                    alt=""
-                    class="inline-block h-[20px] w-[20px]"
-                  >
-                  {{ account.title }} - {{ account.displayName ?? account.home }}
-                </span>
-              </label>
+                <span class="text-sm text-muted-foreground">@{{ account.displayName }}</span>
+              </template>
+              <!-- 未登录：显示登录链接 -->
+              <Primitive
+                v-else
+                as="a"
+                :href="getPlatformUrl(account.type)"
+                target="_blank"
+                class="ml-1 text-sm text-muted-foreground hover:underline"
+              >
+                登录
+              </Primitive>
             </div>
           </div>
         </div>

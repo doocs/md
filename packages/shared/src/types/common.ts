@@ -56,15 +56,16 @@ export interface Alert {
 }
 
 export interface PostAccount {
-  avatar: string
+  avatar?: string
   displayName: string
   home: string
   icon: string
-  supportTypes: string[]
+  supportTypes?: string[]
   title: string
   type: string
   uid: string
   checked: boolean
+  loggedIn?: boolean
   status?: string
   error?: string
 }
