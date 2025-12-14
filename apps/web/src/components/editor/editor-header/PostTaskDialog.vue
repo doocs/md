@@ -2,6 +2,12 @@
 import type { Post } from '@md/shared/types'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
+declare global {
+  interface Window {
+    $cose: any
+  }
+}
+
 const props = defineProps<{
   post: Post
   open: boolean
@@ -21,25 +27,27 @@ async function startPost() {
   if (!props.post)
     return
 
+  const taskData = {
+    post: {
+      title: props.post.title,
+      content: props.post.content,
+      markdown: props.post.markdown,
+      thumb: props.post.thumb,
+      desc: props.post.desc,
+    },
+    accounts: props.post.accounts.filter(a => a.checked),
+  }
+
+  const onProgress = (newStatus: any) => {
+    taskStatus.value = newStatus
+  }
+
+  const onComplete = () => {
+    submitting.value = false
+  }
+
   try {
-    window.$syncer?.addTask(
-      {
-        post: {
-          title: props.post.title,
-          content: props.post.content,
-          markdown: props.post.markdown,
-          thumb: props.post.thumb,
-          desc: props.post.desc,
-        },
-        accounts: props.post.accounts.filter(a => a.checked),
-      },
-      (newStatus: any) => {
-        taskStatus.value = newStatus
-      },
-      () => {
-        submitting.value = false
-      },
-    )
+    window.$cose?.addTask(taskData, onProgress, onComplete)
   }
   catch (error) {
     console.error(`发布失败:`, error)
