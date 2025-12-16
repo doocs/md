@@ -110,6 +110,7 @@ function getPlatformUrl(type: string): string {
     csdn: 'https://blog.csdn.net',
     juejin: 'https://juejin.cn',
     wechat: 'https://mp.weixin.qq.com',
+    zhihu: 'https://www.zhihu.com/signin',
   }
   return urls[type] || '#'
 }
