@@ -30,7 +30,7 @@
     "@fsegurai/codemirror-theme-vscode-light": "^6.2.3",
     "@replit/codemirror-indentation-markers": "^6.5.3",
     "axios": "^1.13.2",
-    "es-toolkit": "^1.42.0",
+    "es-toolkit": "^1.43.0",
     "marked": "^17.0.1",
     "reading-time": "^1.5.0",
     "remark-parse": "^11.0.0",
