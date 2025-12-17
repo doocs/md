@@ -111,6 +111,7 @@ function getPlatformUrl(type: string): string {
     juejin: 'https://juejin.cn',
     wechat: 'https://mp.weixin.qq.com',
     zhihu: 'https://www.zhihu.com/signin',
+    toutiao: 'https://mp.toutiao.com',
   }
   return urls[type] || '#'
 }
@@ -152,7 +153,7 @@ onBeforeMount(() => {
           发布
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent class="max-w-lg max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>发布</DialogTitle>
           <DialogDescription>
@@ -161,9 +162,8 @@ onBeforeMount(() => {
         </DialogHeader>
         <Alert>
           <Info class="h-4 w-4" />
-          <AlertTitle>提示</AlertTitle>
           <AlertDescription>
-            此功能由第三方浏览器插件支持，本平台不保证安全性及同步准确度。
+            此功能由 <a href="https://github.com/doocs/cose" target="_blank" class="underline">Github开源插件 COSE</a> 支持，完全本地运行，不收集、不存储任何用户信息。<br>如需添加更多平台或改善同步准确度，欢迎提 <a href="https://github.com/doocs/cose/issues" target="_blank" class="underline">issue</a> 或 PR。
           </AlertDescription>
         </Alert>
 
