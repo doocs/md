@@ -163,7 +163,7 @@ onBeforeMount(() => {
         <Alert>
           <Info class="h-4 w-4" />
           <AlertDescription>
-            此功能由 <a href="https://github.com/doocs/cose" target="_blank" class="underline">Github开源插件 COSE</a> 支持，完全本地运行，不收集、不存储任何用户信息。<br>如需添加更多平台或改善同步准确度，欢迎提 <a href="https://github.com/doocs/cose/issues" target="_blank" class="underline">issue</a> 或 PR。
+            此功能由 <a href="https://github.com/doocs/cose" target="_blank" class="underline"> GitHub 开源插件 COSE</a> 支持，完全本地运行，不收集、不存储任何用户信息。<br>如需添加更多平台或改善同步准确度，欢迎提 <a href="https://github.com/doocs/cose/issues" target="_blank" class="underline">Issue</a> 或 PR。
           </AlertDescription>
         </Alert>
 
