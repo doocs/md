@@ -31,11 +31,6 @@ async function startServer() {
       console.log(`服务已启动:`)
       console.log(`打开链接 ${colors.green(`http://127.0.0.1:${port}`)} 即刻使用吧~`)
       console.log(``)
-
-      const { spaceId, clientSecret } = arg
-      if (spaceId && clientSecret) {
-        console.log(`${colors.green('✅ 云存储已配置，可通过自定义代码上传图片')}`)
-      }
     })
 
     process.once('SIGINT', () => {

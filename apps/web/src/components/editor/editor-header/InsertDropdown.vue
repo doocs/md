@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Contact, Image, Table } from 'lucide-vue-next'
+import { Contact, Table } from 'lucide-vue-next'
 import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<{
 const { asSub } = toRefs(props)
 const uiStore = useUIStore()
 
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = uiStore
+const { toggleShowInsertFormDialog, toggleShowInsertMpCardDialog } = uiStore
 </script>
 
 <template>
@@ -21,10 +21,6 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
       插入
     </MenubarSubTrigger>
     <MenubarSubContent class="w-52">
-      <MenubarItem @click="toggleShowUploadImgDialog()">
-        <Image class="mr-2 h-4 w-4" />
-        插入图片
-      </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
         插入表格
@@ -42,10 +38,6 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
       插入
     </MenubarTrigger>
     <MenubarContent class="w-52" align="start">
-      <MenubarItem @click="toggleShowUploadImgDialog()">
-        <Image class="mr-2 h-4 w-4" />
-        插入图片
-      </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
         插入表格

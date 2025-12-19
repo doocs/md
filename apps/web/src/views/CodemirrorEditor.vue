@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import type { ComponentPublicInstance } from 'vue'
-
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { highlightPendingBlocks, hljs } from '@md/core'
 import { markdownSetup, theme } from '@md/shared/editor'
-import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import {
@@ -20,9 +17,6 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, toBase64 } from '@/utils'
-import { fileUpload } from '@/utils/file'
-import { store } from '@/utils/storage'
 
 const editorStore = useEditorStore()
 const postStore = usePostStore()
@@ -43,8 +37,6 @@ const {
   isOpenRightSlider,
   isOpenConfirmDialog,
 } = storeToRefs(uiStore)
-
-const { toggleShowUploadImgDialog } = uiStore
 
 // Editor refresh function
 function editorRefresh() {
@@ -289,209 +281,9 @@ onMounted(() => {
   document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 })
 
-async function beforeImageUpload(file: File) {
-  const checkResult = checkImage(file)
-  if (!checkResult.ok) {
-    toast.error(checkResult.msg)
-    return false
-  }
-
-  // check image host
-  const imgHost = (await store.get(`imgHost`)) || `default`
-  await store.set(`imgHost`, imgHost)
-
-  const config = await store.get(`${imgHost}Config`)
-  const isValidHost = imgHost === `default` || config
-  if (!isValidHost) {
-    toast.error(`请先配置 ${imgHost} 图床参数`)
-    return false
-  }
-
-  return true
-}
-
-// 图片上传结束
-function uploaded(imageUrl: string) {
-  if (!imageUrl) {
-    toast.error(`上传图片未知异常`)
-    return
-  }
-  setTimeout(() => {
-    toggleShowUploadImgDialog(false)
-  }, 1000)
-  // 上传成功，插入图片
-  const markdownImage = `![](${imageUrl})`
-  // 将 Markdown 形式的 URL 插入编辑框光标所在位置
-  if (codeMirrorView.value) {
-    codeMirrorView.value.dispatch(codeMirrorView.value.state.replaceSelection(`\n${markdownImage}\n`))
-  }
-  toast.success(`图片上传成功`)
-}
-
-const isImgLoading = ref(false)
-async function compressImage(file: File) {
-  const options = {
-    maxSizeMB: 1,
-    maxWidthOrHeight: 1920,
-    useWebWorker: true,
-  }
-  const compressedFile = await imageCompression(file, options)
-  return compressedFile
-}
-async function uploadImage(
-  file: File,
-  cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
-  applyUrl?: boolean,
-) {
-  try {
-    isImgLoading.value = true
-    // compress image if useCompression is true
-    const useCompression = (await store.get(`useCompression`)) === `true`
-    if (useCompression) {
-      file = await compressImage(file)
-    }
-    const base64Content = await toBase64(file)
-    const url = await fileUpload(base64Content, file)
-    if (cb) {
-      cb(url, base64Content)
-    }
-    else {
-      uploaded(url)
-    }
-    if (applyUrl) {
-      return uploaded(url)
-    }
-  }
-  catch (err) {
-    toast.error((err as any).message)
-  }
-  finally {
-    isImgLoading.value = false
-  }
-}
-
-// 从文件列表中查找一个 md 文件并解析
-async function getMd({ list }: { list: { path: string, file: File }[] }) {
-  return new Promise<{ str: string, file: File, path: string }>((resolve) => {
-    const { path, file } = list.find(item => item.path.match(/\.md$/))!
-    const reader = new FileReader()
-    reader.readAsText(file!, `UTF-8`)
-    reader.onload = (evt) => {
-      resolve({
-        str: evt.target!.result as string,
-        file,
-        path,
-      })
-    }
-  })
-}
-
-// 转换文件系统句柄中的文件为文件列表
-async function showFileStructure(root: any) {
-  const result = []
-  let cwd = ``
-  try {
-    const dirs = [root]
-    for (const dir of dirs) {
-      cwd += `${dir.name}/`
-      for await (const [, handle] of dir) {
-        if (handle.kind === `file`) {
-          result.push({
-            path: cwd + handle.name,
-            file: await handle.getFile(),
-          })
-        }
-        else {
-          result.push({
-            path: `${cwd + handle.name}/`,
-          })
-          dirs.push(handle)
-        }
-      }
-    }
-  }
-  catch (err) {
-    console.error(err)
-  }
-  return result
-}
-
-// 上传 md 中的图片
-async function uploadMdImg({
-  md,
-  list,
-}: {
-  md: { str: string, path: string, file: File }
-  list: { path: string, file: File }[]
-}) {
-  // 获取所有相对地址的图片
-  const mdImgList = [...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || [])].filter(item => item)
-  const root = md.path.match(/.+?\//)![0]
-  const resList = await Promise.all<{ matchStr: string, url: string }>(
-    mdImgList.map((item) => {
-      return new Promise((resolve) => {
-        let [, , matchStr] = item
-        matchStr = matchStr.replace(/^.\//, ``) // 处理 ./img/ 为 img/ 统一相对路径风格
-        const { file }
-          = list.find(f => f.path === `${root}${matchStr}`) || {}
-        uploadImage(file!, url => resolve({ matchStr, url }))
-      })
-    }),
-  )
-  resList.forEach((item) => {
-    md.str = md.str
-      .replace(`](./${item.matchStr})`, `](${item.url})`)
-      .replace(`](${item.matchStr})`, `](${item.url})`)
-  })
-  if (codeMirrorView.value) {
-    codeMirrorView.value.dispatch({
-      changes: { from: 0, to: codeMirrorView.value.state.doc.length, insert: md.str },
-    })
-  }
-}
-
-const codeMirrorWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`codeMirrorWrapper`)
-
-// 转换 markdown 中的本地图片为线上图片
-// todo 处理事件覆盖
-function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value!
-
-  dom.ondragover = evt => evt.preventDefault()
-  dom.ondrop = async (evt) => {
-    evt.preventDefault()
-    if (evt.dataTransfer == null || !Array.isArray(evt.dataTransfer.items)) {
-      return
-    }
-
-    for (const item of evt.dataTransfer.items.filter(item => item.kind === `file`)) {
-      item
-        .getAsFileSystemHandle()
-        .then(async (handle: { kind: string, getFile: () => any }) => {
-          if (handle.kind === `directory`) {
-            const list = (await showFileStructure(handle)) as {
-              path: string
-              file: File
-            }[]
-            const md = await getMd({ list })
-            uploadMdImg({ md, list })
-          }
-          else {
-            const file = await handle.getFile()
-            console.log(`file`, file)
-            if (await beforeImageUpload(file)) {
-              uploadImage(file)
-            }
-          }
-        })
-    }
-  }
-}
-
 const changeTimer = ref<NodeJS.Timeout>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
-const progressValue = ref(0)
 
 function createFormTextArea(dom: HTMLDivElement) {
   // 创建编辑器状态
@@ -531,45 +323,6 @@ function createFormTextArea(dom: HTMLDivElement) {
 
   codeMirrorView.value = view
 
-  // 添加粘贴事件监听
-  view.dom.addEventListener(`paste`, async (event: ClipboardEvent) => {
-    if (!(event.clipboardData?.items) || isImgLoading.value) {
-      return
-    }
-    const items = await Promise.all(
-      [...event.clipboardData.items]
-        .map(item => item.getAsFile())
-        .filter(item => item != null)
-        .map(async item => (await beforeImageUpload(item!)) ? item : null),
-    )
-    const validItems = items.filter(item => item != null) as File[]
-    // 即使return了，粘贴的文本内容也会被插入
-    if (validItems.length === 0) {
-      return
-    }
-    // start progress
-    const intervalId = setInterval(() => {
-      const newProgress = progressValue.value + 1
-      if (newProgress >= 100) {
-        return
-      }
-      progressValue.value = newProgress
-    }, 100)
-    for (const item of validItems) {
-      event.preventDefault()
-      await uploadImage(item)
-    }
-    const cleanup = () => {
-      clearInterval(intervalId)
-      progressValue.value = 100 // 设置完成状态
-      // 可选：延迟一段时间后重置进度
-      setTimeout(() => {
-        progressValue.value = 0
-      }, 1000)
-    }
-    cleanup()
-  })
-
   // 返回编辑器 view
   return view
 }
@@ -597,7 +350,6 @@ onMounted(() => {
 
     // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
-    mdLocalToRemote()
   })
 })
 
@@ -673,7 +425,6 @@ onUnmounted(() => {
 
 <template>
   <div class="container flex flex-col">
-    <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="height: 2px;" />
     <EditorHeader
       @start-copy="startCopy"
       @end-copy="endCopy"
@@ -692,10 +443,9 @@ onUnmounted(() => {
             <PostSlider />
           </ResizablePanel>
           <ResizableHandle class="hidden md:block" />
-          <ResizablePanel class="flex">
+              <ResizablePanel class="flex">
             <div
               v-show="!isMobile || (isMobile && showEditor)"
-              ref="codeMirrorWrapper"
               class="codeMirror-wrapper relative flex-1"
               :class="{
                 'order-1 border-l': !isEditOnLeft,
@@ -775,8 +525,6 @@ onUnmounted(() => {
       </div>
 
       <!-- AI工具箱已移到侧边栏，这里不再显示 -->
-
-      <UploadImgDialog @upload-image="uploadImage" />
 
       <InsertFormDialog />
 

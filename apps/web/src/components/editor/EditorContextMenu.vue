@@ -15,7 +15,6 @@ const uiStore = useUIStore()
 const {
   toggleShowInsertFormDialog,
   toggleShowInsertMpCardDialog,
-  toggleShowUploadImgDialog,
 } = uiStore
 
 const importMarkdownContent = useImportMarkdownContent()
@@ -81,9 +80,6 @@ function downloadAsCardImage() {
       <slot />
     </ContextMenuTrigger>
     <ContextMenuContent class="w-64">
-      <ContextMenuItem inset @click="toggleShowUploadImgDialog()">
-        上传图片
-      </ContextMenuItem>
       <ContextMenuItem inset @click="toggleShowInsertFormDialog()">
         插入表格
       </ContextMenuItem>
