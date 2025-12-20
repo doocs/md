@@ -60,7 +60,9 @@ jobs:
           debug: true
 
       - name: Deploy Gitee Pages
+        id: gitee-deploy
         if: steps.gitee-sync.outcome == 'success'
+        continue-on-error: true
         uses: yanglbme/gitee-pages-action@main
         with:
           gitee-username: ${{ secrets.GITEE_USERNAME }}
@@ -74,9 +76,13 @@ jobs:
           echo "📦 Artifacts pushed to dist branch"
           if [ "${{ steps.gitee-sync.outcome }}" == "success" ]; then
             echo "🔄 Synced to Gitee repository"
-            echo "🚀 Gitee Pages deployed"
-            echo ""
-            echo "Gitee Pages: https://doocs.gitee.io/md/"
+            if [ "${{ steps.gitee-deploy.outcome }}" == "success" ]; then
+              echo "🚀 Gitee Pages deployed"
+              echo ""
+              echo "Gitee Pages: https://doocs.gitee.io/md/"
+            else
+              echo "⚠️ Gitee Pages deployment failed or skipped"
+            fi
           else
-            echo "⚠️ Gitee sync skipped or failed"
+            echo "⚠️ Gitee sync failed or skipped"
           fi
