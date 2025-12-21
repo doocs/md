@@ -143,6 +143,60 @@ figcaption {
 .alert-title-caution {
 }
 
+.alert-title-abstract {
+}
+
+.alert-title-summary {
+}
+
+.alert-title-tldr {
+}
+
+.alert-title-todo {
+}
+
+.alert-title-success {
+}
+
+.alert-title-done {
+}
+
+.alert-title-question {
+}
+
+.alert-title-help {
+}
+
+.alert-title-faq {
+}
+
+.alert-title-failure {
+}
+
+.alert-title-fail {
+}
+
+.alert-title-missing {
+}
+
+.alert-title-danger {
+}
+
+.alert-title-error {
+}
+
+.alert-title-bug {
+}
+
+.alert-title-example {
+}
+
+.alert-title-quote {
+}
+
+.alert-title-cite {
+}
+
 /* Alert SVG 图标 */
 .alert-icon-note {
 }
@@ -160,4 +214,59 @@ figcaption {
 }
 
 .alert-icon-caution {
+}
+
+/* Obsidian-style Callout SVG 图标 */
+.alert-icon-abstract {
+}
+
+.alert-icon-summary {
+}
+
+.alert-icon-tldr {
+}
+
+.alert-icon-todo {
+}
+
+.alert-icon-success {
+}
+
+.alert-icon-done {
+}
+
+.alert-icon-question {
+}
+
+.alert-icon-help {
+}
+
+.alert-icon-faq {
+}
+
+.alert-icon-failure {
+}
+
+.alert-icon-fail {
+}
+
+.alert-icon-missing {
+}
+
+.alert-icon-danger {
+}
+
+.alert-icon-error {
+}
+
+.alert-icon-bug {
+}
+
+.alert-icon-example {
+}
+
+.alert-icon-quote {
+}
+
+.alert-icon-cite {
 }
