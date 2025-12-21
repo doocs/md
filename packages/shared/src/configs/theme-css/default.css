@@ -94,7 +94,25 @@ blockquote > p {
 .alert-title-info,
 .alert-title-important,
 .alert-title-warning,
-.alert-title-caution {
+.alert-title-caution,
+.alert-title-abstract,
+.alert-title-summary,
+.alert-title-tldr,
+.alert-title-todo,
+.alert-title-success,
+.alert-title-done,
+.alert-title-question,
+.alert-title-help,
+.alert-title-faq,
+.alert-title-failure,
+.alert-title-fail,
+.alert-title-missing,
+.alert-title-danger,
+.alert-title-error,
+.alert-title-bug,
+.alert-title-example,
+.alert-title-quote,
+.alert-title-cite {
   display: flex;
   align-items: center;
   gap: 0.5em;
@@ -125,6 +143,52 @@ blockquote > p {
   color: #e5534b;
 }
 
+/* Obsidian-style callout colors */
+.alert-title-abstract,
+.alert-title-summary,
+.alert-title-tldr {
+  color: #00bfff;
+}
+
+.alert-title-todo {
+  color: #478be6;
+}
+
+.alert-title-success,
+.alert-title-done {
+  color: #57ab5a;
+}
+
+.alert-title-question,
+.alert-title-help,
+.alert-title-faq {
+  color: #c69026;
+}
+
+.alert-title-failure,
+.alert-title-fail,
+.alert-title-missing {
+  color: #e5534b;
+}
+
+.alert-title-danger,
+.alert-title-error {
+  color: #e5534b;
+}
+
+.alert-title-bug {
+  color: #e5534b;
+}
+
+.alert-title-example {
+  color: #986ee2;
+}
+
+.alert-title-quote,
+.alert-title-cite {
+  color: #9ca3af;
+}
+
 /* GFM Alert SVG 图标颜色 */
 .alert-icon-note {
   fill: #478be6;
@@ -148,6 +212,52 @@ blockquote > p {
 
 .alert-icon-caution {
   fill: #e5534b;
+}
+
+/* Obsidian-style callout icon colors */
+.alert-icon-abstract,
+.alert-icon-summary,
+.alert-icon-tldr {
+  fill: #00bfff;
+}
+
+.alert-icon-todo {
+  fill: #478be6;
+}
+
+.alert-icon-success,
+.alert-icon-done {
+  fill: #57ab5a;
+}
+
+.alert-icon-question,
+.alert-icon-help,
+.alert-icon-faq {
+  fill: #c69026;
+}
+
+.alert-icon-failure,
+.alert-icon-fail,
+.alert-icon-missing {
+  fill: #e5534b;
+}
+
+.alert-icon-danger,
+.alert-icon-error {
+  fill: #e5534b;
+}
+
+.alert-icon-bug {
+  fill: #e5534b;
+}
+
+.alert-icon-example {
+  fill: #986ee2;
+}
+
+.alert-icon-quote,
+.alert-icon-cite {
+  fill: #9ca3af;
 }
 
 /* ==================== 代码块 ==================== */
