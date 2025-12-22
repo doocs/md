@@ -35,6 +35,11 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+        env:
+          # Ensure Cloudflare's platform-specific optional binaries (e.g. @cloudflare/workerd-linux-64)
+          # can be downloaded reliably in CI.
+          NPM_CONFIG_REGISTRY: https://registry.npmjs.org/
+          NPM_CONFIG_OPTIONAL: 'true'
 
       - name: Build for Cloudflare Workers
         run: pnpm web build:h5-netlify
