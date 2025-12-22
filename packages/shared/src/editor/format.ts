@@ -132,6 +132,33 @@ export function formatCode(view: EditorView) {
   })
 }
 
+/**
+ * 设置文字颜色
+ */
+export function formatColor(view: EditorView, color: string) {
+  const selection = view.state.selection.main
+  const selected = view.state.doc.sliceString(selection.from, selection.to)
+
+  const spanRegex = /^\s*<span\s+style="color:\s*([^"\s][^"]*)"\s*>([\s\S]*)<\/span>\s*$/i
+  const match = selected.match(spanRegex)
+
+  if (match) {
+    const content = match[2]
+    const insert = `<span style="color: ${color}">${content}</span>`
+    view.dispatch({
+      changes: { from: selection.from, to: selection.to, insert },
+      selection: { anchor: selection.from, head: selection.from + insert.length },
+    })
+  }
+  else {
+    const insert = `<span style="color: ${color}">${selected}</span>`
+    view.dispatch({
+      changes: { from: selection.from, to: selection.to, insert },
+      selection: { anchor: selection.from, head: selection.from + insert.length },
+    })
+  }
+}
+
 export function formatUnorderedList(view: EditorView) {
   const selection = view.state.selection.main
   const selected = view.state.doc.sliceString(selection.from, selection.to)

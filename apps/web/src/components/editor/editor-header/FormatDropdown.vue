@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
+import type { Format } from 'vue-pick-colors'
 import { ctrlKey, ctrlSign } from '@md/shared/configs'
 import {
   applyHeading,
   formatBold,
   formatCode,
+  formatColor,
   formatItalic,
   formatLink,
   formatOrderedList,
@@ -26,11 +28,14 @@ import {
   Link2,
   List,
   ListOrdered,
+  Palette,
   Strikethrough,
 } from 'lucide-vue-next'
+import PickColors from 'vue-pick-colors'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
+import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -43,6 +48,7 @@ const { asSub } = toRefs(props)
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
 const renderStore = useRenderStore()
+const uiStore = useUIStore()
 const { editor } = storeToRefs(editorStore)
 
 // Editor refresh function
@@ -62,13 +68,28 @@ function editorRefresh() {
 }
 
 function citeStatusChanged() {
-  themeStore.toggleCiteStatus()
+  themeStore.isCiteStatus = !themeStore.isCiteStatus
   editorRefresh()
 }
 
 function countStatusChanged() {
-  themeStore.toggleCountStatus()
+  themeStore.isCountStatus = !themeStore.isCountStatus
   editorRefresh()
+}
+
+const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
+const colorState = reactive({
+  format: `rgb` as Format,
+  formatOptions: [`rgb`] as Format[],
+  textColor: `rgba(0, 0, 0, 1)`,
+})
+
+function textColorChanged(color: string) {
+  colorState.textColor = color
+  const editorView = editor.value as EditorView
+  if (!editor.value)
+    return
+  formatColor(editorView, color)
 }
 
 // 工具函数，添加格式
@@ -169,6 +190,27 @@ function addFormat(cmd: string) {
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
         </MenubarShortcut>
       </MenubarItem>
+
+      <HoverCard :open-delay="100">
+        <HoverCardTrigger as-child>
+          <MenubarItem @click.prevent>
+            <Palette class="mr-2 h-4 w-4" />
+            文字颜色
+          </MenubarItem>
+        </HoverCardTrigger>
+        <HoverCardContent side="right" class="w-min">
+          <div ref="pickColorsContainer">
+            <PickColors
+              :value="colorState.textColor"
+              show-alpha
+              :format="colorState.format" :format-options="colorState.formatOptions"
+              :theme="uiStore.isDark ? 'dark' : 'light'"
+              :popup-container="pickColorsContainer!"
+              @change="textColorChanged"
+            />
+          </div>
+        </HoverCardContent>
+      </HoverCard>
 
       <MenubarSeparator />
 
@@ -306,6 +348,27 @@ function addFormat(cmd: string) {
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
         </MenubarShortcut>
       </MenubarItem>
+
+      <HoverCard :open-delay="100">
+        <HoverCardTrigger as-child>
+          <MenubarItem @click.prevent>
+            <Palette class="mr-2 h-4 w-4" />
+            文字颜色
+          </MenubarItem>
+        </HoverCardTrigger>
+        <HoverCardContent side="right" class="w-min">
+          <div ref="pickColorsContainer">
+            <PickColors
+              v-model:value="colorState.textColor"
+              show-alpha
+              :format="colorState.format" :format-options="colorState.formatOptions"
+              :theme="uiStore.isDark ? 'dark' : 'light'"
+              :popup-container="pickColorsContainer!"
+              @change="textColorChanged"
+            />
+          </div>
+        </HoverCardContent>
+      </HoverCard>
 
       <MenubarSeparator />
 
