@@ -43,12 +43,8 @@ jobs:
 
       - name: Deploy to Cloudflare Workers
         id: deploy
-        uses: cloudflare/wrangler-action@v3
-        with:
-          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy --name md-pr-${{ github.event.pull_request.number }}
-          workingDirectory: apps/web
+        working-directory: apps/web
+        run: pnpm exec wrangler deploy --name md-pr-${{ github.event.pull_request.number }} --account-id "$CLOUDFLARE_ACCOUNT_ID"
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
