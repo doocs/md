@@ -20,7 +20,7 @@ const isCfPages = process.env.CF_PAGES === `1`
 
 const base = isNetlify || isCfWorkers || isCfPages ? `/` : isUTools ? `./` : `/md/`
 
-export default defineConfig(async ({ mode }) => {
+export default defineConfig(async ({ mode, command }) => {
   const env = loadEnv(mode, process.cwd())
 
   const plugins = [
@@ -50,7 +50,10 @@ export default defineConfig(async ({ mode }) => {
     isUTools && utoolsLocalAssetsPlugin(),
   ]
 
-  if (isCfWorkers) {
+  // Cloudflare's Vite plugin pulls in `workerd` which relies on platform-specific
+  // optionalDependencies. We only need this plugin for local Workers dev/preview
+  // (`vite` serve). For production builds, `vite build` should not require it.
+  if (isCfWorkers && command === 'serve') {
     const { cloudflare } = await import('@cloudflare/vite-plugin')
     plugins.splice(1, 0, cloudflare())
   }
