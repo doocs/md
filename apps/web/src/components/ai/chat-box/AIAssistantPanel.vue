@@ -595,7 +595,7 @@ async function sendMessage() {
         </template>
         <Button
           variant="ghost"
-          size="icon"
+          size="sm"
           title="管理指令"
           @click="cmdMgrOpen = true"
         >
