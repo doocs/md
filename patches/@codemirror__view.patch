@@ -1,0 +1,27 @@
+diff --git a/dist/index.cjs b/dist/index.cjs
+index 71bcc74d5f6ac58be815af2f52f3d20267055e8d..af5572e80a08d56f5d2fe962e67f6402d4346df2 100644
+--- a/dist/index.cjs
++++ b/dist/index.cjs
+@@ -8915,7 +8915,8 @@ function runHandlers(map, event, view, scope) {
+             // Ctrl-Alt may be used for AltGr on Windows
+             !(browser.windows && event.ctrlKey && event.altKey) &&
+             // Alt-combinations on macOS tend to be typed characters
+-            !(browser.mac && event.altKey && !(event.ctrlKey || event.metaKey)) &&
++            // 但 Alt+Shift 组合应该被视为快捷键而不是特殊字符输入
++            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey)) &&
+             (baseName = w3cKeyname.base[event.keyCode]) && baseName != name) {
+             if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
+                 handled = true;
+diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 5cd2cadf4baeb46bf3d385bb201d0bb6f2743715..07a67a16909bb756527ae74fce8994086847b622 100644
+--- a/dist/index.d.ts
++++ b/dist/index.d.ts
+@@ -515,7 +515,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+         new (view: EditorView, arg: Arg): V;
+     }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
+ }
+-interface MeasureRequest<T> {
++export interface MeasureRequest<T> {
+     /**
+     Called in a DOM read phase to gather information that requires
+     DOM layout. Should _not_ mutate the document.

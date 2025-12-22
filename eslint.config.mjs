@@ -4,7 +4,7 @@ export default antfu({
   vue: true,
   typescript: true,
   formatters: true,
-  ignores: [`.github`, `scripts`, `docker`, `packages/md-cli`, `src/assets`, `example`],
+  ignores: [`.github`, `scripts`, `docker`, `packages/md-cli`, `src/assets`, `example`, `apps/web/src/assets/example`],
 }, {
   rules: {
     'semi': [`error`, `never`],

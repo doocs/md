@@ -82,12 +82,12 @@ export default defineConfig({
   analysis: {
     open: true,
   },
-  vite: ({ mode }) => {
-    const config = ViteConfig({ mode } as ConfigEnv)
+  vite: async ({ mode }) => {
+    const config = await ViteConfig({ mode } as ConfigEnv)
 
     return {
       ...config,
-      plugins: config.plugins!.filter((plugin) => {
+      plugins: (config.plugins ?? []).filter((plugin) => {
         if (typeof plugin === `object` && plugin != null && `name` in plugin && plugin?.name === `vite-plugin-Radar`) {
           return false
         }

@@ -1,16 +1,122 @@
 catalogMode: prefer
-shellEmulator: true
-trustPolicy: no-downgrade
 
+shellEmulator: true
+
+trustPolicy: no-downgrade
 packages:
   - apps/*
   - packages/*
 overrides:
-  '@codemirror/view': 6.38.8
+  '@codemirror/view': 6.39.5
   core-js@<3: ^3.46.0
   glob@<8: ^10.4.5
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
   source-map@0.8.0-beta.0: 0.7.4
   workbox-build>source-map: 0.7.4
+
 patchedDependencies:
-  '@codemirror/view@6.38.8': patches/@codemirror__view@6.38.8.patch
+  '@codemirror/view': patches/@codemirror__view.patch
+
+catalog:
+  '@antfu/eslint-config': 6.7.3
+  '@aws-sdk/client-s3': ^3.956.0
+  '@aws-sdk/s3-request-presigner': ^3.956.0
+  '@cloudflare/vite-plugin': ^1.19.0
+  '@cloudflare/workers-types': ^4.20251221.0
+  '@codemirror/autocomplete': ^6.20.0
+  '@codemirror/commands': ^6.10.1
+  '@codemirror/lang-css': ^6.3.1
+  '@codemirror/lang-javascript': ^6.2.4
+  '@codemirror/lang-markdown': ^6.5.0
+  '@codemirror/language': ^6.12.0
+  '@codemirror/language-data': ^6.5.2
+  '@codemirror/lint': ^6.9.2
+  '@codemirror/search': ^6.5.11
+  '@codemirror/state': ^6.5.2
+  '@codemirror/view': 6.39.5
+  '@exercism/highlightjs-gdscript': ^0.0.1
+  '@fsegurai/codemirror-theme-vscode-dark': ^6.2.3
+  '@fsegurai/codemirror-theme-vscode-light': ^6.2.3
+  '@replit/codemirror-indentation-markers': ^6.5.3
+  '@ssttevee/multipart-parser': ^0.1.9
+  '@tailwindcss/postcss': ^4.1.18
+  '@tailwindcss/vite': ^4.1.18
+  '@types/buffer-from': ^1.1.3
+  '@types/crypto-js': ^4.2.2
+  '@types/mdast': ^4.0.4
+  '@types/node': ^25.0.3
+  '@types/unist': ^3.0.3
+  '@types/webpack': ^5.28.5
+  '@vee-validate/yup': ^4.15.1
+  '@vitejs/plugin-vue': ^6.0.3
+  '@vscode/vsce': ^3.7.1
+  '@vueuse/core': ^14.1.0
+  archiver: ^7.0.1
+  axios: ^1.13.2
+  browser-image-compression: ^2.0.2
+  buffer-from: ^1.1.2
+  class-variance-authority: ^0.7.1
+  clsx: ^2.1.1
+  codemirror: ^6.0.2
+  core-js: ^3.47.0
+  cos-js-sdk-v5: ^1.10.1
+  cross-env: ^10.1.0
+  crypto-js: ^4.2.0
+  es-toolkit: ^1.43.0
+  eslint: ^9.39.2
+  eslint-plugin-format: ^1.1.0
+  fflate: ^0.8.2
+  front-matter: ^4.0.2
+  highlight.js: ^11.11.1
+  html-to-image: ^1.11.13
+  isomorphic-dompurify: ^2.34.0
+  juice: ^11.0.3
+  less: ^4.5.1
+  linkedom: ^0.18.12
+  lucide-vue-next: ^0.562.0
+  marked: ^17.0.1
+  mermaid: ^11.12.2
+  node-fetch: ^3.3.2
+  npm-run-all: ^4.1.5
+  ohash: ^2.0.11
+  pinia: ^3.0.4
+  postcss: ^8.5.6
+  postcss-calc: ^10.1.1
+  postcss-custom-properties: ^14.0.6
+  prettier: 2.8.8
+  qiniu-js: ^3.4.3
+  radix-vue: ^1.9.17
+  reading-time: ^1.5.0
+  reka-ui: ^2.6.1
+  remark-parse: ^11.0.0
+  remark-stringify: ^11.0.0
+  rollup: ^4.54.0
+  rollup-plugin-visualizer: ^6.0.5
+  shx: ^0.4.0
+  simple-git-hooks: ^2.13.1
+  tailwind-merge: ^3.4.0
+  tailwindcss: ^4.1.18
+  tailwindcss-animate: ^1.0.7
+  tiny-oss: ^0.5.1
+  ts-loader: ^9.5.4
+  tsconfig-paths-webpack-plugin: ^4.2.0
+  tw-animate-css: ^1.4.0
+  typescript: ~5.9.3
+  unified: ^11.0.5
+  unist-util-visit: ^5.0.0
+  unplugin-auto-import: ^20.3.0
+  unplugin-vue-components: ^30.0.0
+  uuid: ^13.0.0
+  vee-validate: ^4.15.1
+  vite: ^7.3.0
+  vite-plugin-node-polyfills: ^0.24.0
+  vite-plugin-radar: ^0.10.1
+  vite-plugin-vue-devtools: ^8.0.5
+  vue: ^3.5.26
+  vue-pick-colors: ^1.8.0
+  vue-sonner: ^2.0.9
+  vue-tsc: ^3.2.1
+  webpack-cli: ^6.0.1
+  wrangler: ^4.56.0
+  wxt: 0.20.11
+  yup: ^1.7.1
