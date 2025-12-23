@@ -29,7 +29,7 @@
     "utools:package": "node ./scripts/package-utools.mjs"
   },
   "dependencies": {
-    "@codemirror/state": "^6.5.2",
+    "@codemirror/state": "^6.5.3",
     "@codemirror/view": "6.39.5"
   },
   "devDependencies": {
