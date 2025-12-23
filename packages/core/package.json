@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "@md/shared": "workspace:*",
-    "es-toolkit": "^1.42.0",
+    "es-toolkit": "^1.43.0",
     "fflate": "^0.8.2",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
