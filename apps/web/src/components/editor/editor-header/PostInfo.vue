@@ -112,6 +112,7 @@ function getPlatformUrl(type: string): string {
     wechat: 'https://mp.weixin.qq.com',
     zhihu: 'https://www.zhihu.com/signin',
     toutiao: 'https://mp.toutiao.com',
+    segmentfault: 'https://segmentfault.com/user/login',
   }
   return urls[type] || '#'
 }
