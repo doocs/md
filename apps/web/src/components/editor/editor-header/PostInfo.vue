@@ -113,6 +113,7 @@ function getPlatformUrl(type: string): string {
     zhihu: 'https://www.zhihu.com/signin',
     toutiao: 'https://mp.toutiao.com',
     segmentfault: 'https://segmentfault.com/user/login',
+    cnblogs: 'https://account.cnblogs.com/signin',
   }
   return urls[type] || '#'
 }
