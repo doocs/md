@@ -114,6 +114,7 @@ function getPlatformUrl(type: string): string {
     toutiao: 'https://mp.toutiao.com',
     segmentfault: 'https://segmentfault.com/user/login',
     cnblogs: 'https://account.cnblogs.com/signin',
+    oschina: 'https://www.oschina.net/home/login',
   }
   return urls[type] || '#'
 }
