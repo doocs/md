@@ -188,7 +188,7 @@ async function testConnection() {
             <TooltipTrigger as-child>
               <Info class="text-gray-500" :size="16" />
             </TooltipTrigger>
-            <TooltipContent side="top" class="z-[9999]">
+            <TooltipContent side="top" class="z-[250]">
               <div>控制输出的随机性：较小值使输出更确定，较大值使其更随机。</div>
             </TooltipContent>
           </Tooltip>
