@@ -115,6 +115,7 @@ function getPlatformUrl(type: string): string {
     segmentfault: 'https://segmentfault.com/user/login',
     cnblogs: 'https://account.cnblogs.com/signin',
     oschina: 'https://www.oschina.net/home/login',
+    cto51: 'https://home.51cto.com/index',
   }
   return urls[type] || '#'
 }
