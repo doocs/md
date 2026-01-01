@@ -117,6 +117,7 @@ function getPlatformUrl(type: string): string {
     oschina: 'https://www.oschina.net/home/login',
     cto51: 'https://home.51cto.com/index',
     infoq: 'https://account.geekbang.org/infoq/login/sms',
+    jianshu: 'https://www.jianshu.com/sign_in',
   }
   return urls[type] || '#'
 }
