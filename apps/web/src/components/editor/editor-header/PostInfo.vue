@@ -119,6 +119,7 @@ function getPlatformUrl(type: string): string {
     infoq: 'https://account.geekbang.org/infoq/login/sms',
     jianshu: 'https://www.jianshu.com/sign_in',
     baijiahao: 'https://baijiahao.baidu.com',
+    wangyihao: 'https://mp.163.com/login.html',
   }
   return urls[type] || '#'
 }
