@@ -118,6 +118,7 @@ function getPlatformUrl(type: string): string {
     cto51: 'https://home.51cto.com/index',
     infoq: 'https://account.geekbang.org/infoq/login/sms',
     jianshu: 'https://www.jianshu.com/sign_in',
+    baijiahao: 'https://baijiahao.baidu.com',
   }
   return urls[type] || '#'
 }
