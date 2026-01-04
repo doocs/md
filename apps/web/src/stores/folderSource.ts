@@ -202,13 +202,13 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
               name: entry.name,
               path: entryPath,
               type: `file`,
-              handle: entry,
+              handle: entry as FileSystemFileHandle,
             })
           }
         }
         else if (entry.kind === `directory`) {
           // 递归处理子目录
-          const childNode = await buildFileTree(entry, entryPath)
+          const childNode = await buildFileTree(entry as FileSystemDirectoryHandle, entryPath)
           node.children!.push(childNode)
         }
       }
