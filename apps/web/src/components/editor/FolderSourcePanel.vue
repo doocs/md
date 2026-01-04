@@ -8,12 +8,14 @@ import {
   RefreshCw,
   X,
 } from 'lucide-vue-next'
+import { useFolderFileSync } from '@/composables/useFolderFileSync'
 import { useFolderSourceStore } from '@/stores/folderSource'
 import { usePostStore } from '@/stores/post'
 import FolderTree from './FolderTree.vue'
 
 const folderSourceStore = useFolderSourceStore()
 const postStore = usePostStore()
+const { setCurrentFilePath } = useFolderFileSync()
 
 const {
   currentFolderHandle,
@@ -56,6 +58,7 @@ async function handleRefreshFolder() {
 function handleCloseFolder() {
   folderSourceStore.closeFolder()
   expandedPaths.value.clear()
+  setCurrentFilePath(null)
 }
 
 async function handleOpenFile(node: any) {
@@ -67,6 +70,9 @@ async function handleOpenFile(node: any) {
     // 创建新文章并设置内容
     postStore.addPost(title)
     postStore.updatePostContent(postStore.currentPostId, content)
+
+    // 记录当前文件路径以便自动同步
+    setCurrentFilePath(node.path)
 
     toast.success(`已加载文件: ${node.name}`)
   }

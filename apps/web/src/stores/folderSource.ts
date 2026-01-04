@@ -291,11 +291,9 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       const writable = await fileHandle.createWritable()
       await writable.write(content)
       await writable.close()
-
-      toast.success(`文件已保存`)
     }
     catch (error: any) {
-      toast.error(`保存文件失败: ${error.message}`)
+      console.error(`保存文件失败: ${error.message}`)
       throw error
     }
   }
