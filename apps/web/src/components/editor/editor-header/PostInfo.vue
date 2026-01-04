@@ -120,6 +120,7 @@ function getPlatformUrl(type: string): string {
     jianshu: 'https://www.jianshu.com/sign_in',
     baijiahao: 'https://baijiahao.baidu.com',
     wangyihao: 'https://mp.163.com/login.html',
+    tencentcloud: 'https://cloud.tencent.com/developer',
   }
   return urls[type] || '#'
 }
