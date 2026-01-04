@@ -28,6 +28,9 @@ export const useUIStore = defineStore(`ui`, () => {
   // 是否打开文章列表滑块
   const isOpenPostSlider = store.reactive(addPrefix(`is_open_post_slider`), false)
 
+  // 是否打开本地文件夹面板
+  const isOpenFolderPanel = store.reactive(addPrefix(`is_open_folder_panel`), false)
+
   // 是否为移动端
   const isMobile = store.reactive(`isMobile`, false)
 
@@ -112,6 +115,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isMobile,
     isPinFloatingToc,
     isShowFloatingToc,
+    isOpenFolderPanel,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,

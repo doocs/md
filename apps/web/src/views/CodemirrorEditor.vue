@@ -8,6 +8,7 @@ import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
+import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -40,6 +41,7 @@ const {
   isMobile,
   isEditOnLeft,
   isOpenPostSlider,
+  isOpenFolderPanel,
   isOpenRightSlider,
   isOpenConfirmDialog,
 } = storeToRefs(uiStore)
@@ -692,6 +694,14 @@ onUnmounted(() => {
             <PostSlider />
           </ResizablePanel>
           <ResizableHandle class="hidden md:block" />
+          <ResizablePanel
+            :default-size="isOpenFolderPanel ? 15 : 0"
+            :max-size="isOpenFolderPanel ? 25 : 0"
+            :min-size="isOpenFolderPanel ? 10 : 0"
+          >
+            <FolderSourcePanel />
+          </ResizablePanel>
+          <ResizableHandle v-if="isOpenFolderPanel" class="hidden md:block" />
           <ResizablePanel class="flex">
             <div
               v-show="!isMobile || (isMobile && showEditor)"
