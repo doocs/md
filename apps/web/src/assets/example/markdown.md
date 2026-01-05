@@ -226,7 +226,37 @@ Foo -> Foo7: To queue
 
 > 更多用法，参见：[PlantUML 主页](https://plantuml.com/zh/)。
 
-### 4. Ruby 注音：注音标注
+### 4. Infographic 信息图：可视化数据
+
+新一代信息图可视化引擎，让文字信息栩栩如生！
+
+```infographic
+infographic list-row-horizontal-icon-arrow
+data
+  title 客户增长引擎
+  desc 多渠道触达与复购提升
+  items
+    - label 线索获取
+      value 18.6
+      desc 渠道投放与内容获客
+      icon rocket-launch
+    - label 转化提效
+      value 12.4
+      desc 线索评分与自动跟进
+      icon progress-check
+    - label 复购提升
+      value 9.8
+      desc 会员体系与权益运营
+      icon account-sync
+    - label 口碑传播
+      value 6.2
+      desc 社群激励与推荐裂变
+      icon account-group
+```
+
+> 更多用法，参见：[AntV Infographic Gallery](https://infographic.antv.vision/gallery)。
+
+### 5. Ruby 注音：注音标注
 
 支持两种格式：
 
