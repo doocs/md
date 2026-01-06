@@ -35,6 +35,38 @@ const form = ref<Post>({
 
 const allowPost = computed(() => extensionInstalled.value && form.value.accounts.some(a => a.checked))
 
+// 平台优先级排序（按用户规模从大到小）
+const platformPriority: Record<string, number> = {
+  // 第一梯队
+  wechat: 1, // 微信公众号
+  toutiao: 2, // 今日头条
+  baijiahao: 3, // 百家号
+  // 第二梯队
+  zhihu: 4, // 知乎
+  wangyihao: 5, // 网易号
+  tencentcloud: 6, // 腾讯云
+  // 第三梯队
+  csdn: 7, // CSDN
+  segmentfault: 8, // 思否
+  cnblogs: 9, // 博客园
+  juejin: 10, // 掘金
+  cto51: 11, // 51CTO
+  oschina: 12, // 开源中国
+  // 第四梯队
+  infoq: 13, // InfoQ
+  jianshu: 14, // 简书
+  sspai: 15, // 少数派
+  medium: 16, // Medium
+}
+
+const sortedAccounts = computed(() => {
+  return [...form.value.accounts].sort((a, b) => {
+    const priorityA = platformPriority[a.type] ?? 99
+    const priorityB = platformPriority[b.type] ?? 99
+    return priorityA - priorityB
+  })
+})
+
 async function prePost() {
   if (extensionInstalled.value && allAccounts.value.length === 0) {
     await getAccounts()
@@ -121,6 +153,8 @@ function getPlatformUrl(type: string): string {
     baijiahao: 'https://baijiahao.baidu.com',
     wangyihao: 'https://mp.163.com/login.html',
     tencentcloud: 'https://cloud.tencent.com/developer',
+    medium: 'https://medium.com/m/signin',
+    sspai: 'https://sspai.com/login',
   }
   return urls[type] || '#'
 }
@@ -162,7 +196,7 @@ onBeforeMount(() => {
           发布
         </Button>
       </DialogTrigger>
-      <DialogContent class="max-w-lg max-h-[85vh] overflow-y-auto">
+      <DialogContent class="!w-[750px] !max-w-[95vw] max-h-[85vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>发布</DialogTitle>
           <DialogDescription>
@@ -207,11 +241,11 @@ onBeforeMount(() => {
           <Label class="w-10 text-end">
             平台
           </Label>
-          <div class="flex-1 grid grid-cols-1 gap-y-2">
+          <div class="flex-1 grid grid-cols-2 gap-x-8 gap-y-2">
             <div
-              v-for="account in form.accounts"
+              v-for="account in sortedAccounts"
               :key="account.uid"
-              class="flex items-center gap-2"
+              class="flex items-center gap-2 whitespace-nowrap"
             >
               <CheckboxRoot
                 v-model:checked="account.checked"
