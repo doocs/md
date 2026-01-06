@@ -1,15 +1,11 @@
 import type { MarkedExtension } from 'marked'
 
-export interface InfographicOptions {
-  className?: string
-}
-
 async function renderInfographic(containerId: string, code: string) {
   if (typeof window === 'undefined')
     return
 
   try {
-    const { Infographic, setDefaultFont, setFontExtendFactor } = await import('@antv/infographic')
+    const { Infographic, setDefaultFont, setFontExtendFactor, exportToSVG } = await import('@antv/infographic')
 
     setFontExtendFactor(1.1)
     setDefaultFont('-apple-system-font, "system-ui", "Helvetica Neue", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", Arial, sans-serif')
@@ -17,7 +13,7 @@ async function renderInfographic(containerId: string, code: string) {
     const findContainer = (retries = 5, delay = 100) => {
       const container = document.getElementById(containerId)
       if (container) {
-        new Infographic({
+        const instance = new Infographic({
           container,
           svg: {
             style: {
@@ -25,7 +21,15 @@ async function renderInfographic(containerId: string, code: string) {
               height: '100%',
             },
           },
-        }).render(code)
+        })
+        instance.on('loaded', ({ node }) => {
+          exportToSVG(node, { removeIds: true }).then((svg) => {
+            container.replaceChildren(svg)
+          })
+        })
+
+        instance.render(code)
+
         return
       }
 
@@ -45,8 +49,8 @@ async function renderInfographic(containerId: string, code: string) {
   }
 }
 
-export function markedInfographic(options: InfographicOptions = {}): MarkedExtension {
-  const className = options.className || 'infographic-diagram'
+export function markedInfographic(): MarkedExtension {
+  const className = 'infographic-diagram'
 
   return {
     extensions: [
