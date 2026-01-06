@@ -323,8 +323,8 @@ importers:
   packages/core:
     dependencies:
       '@antv/infographic':
-        specifier: ^0.2.5
-        version: 0.2.5
+        specifier: ^0.2.6
+        version: 0.2.6
       '@md/shared':
         specifier: workspace:*
         version: link:../shared
@@ -553,8 +553,8 @@ packages:
   '@antv/hierarchy@0.7.1':
     resolution: {integrity: sha512-7r22r+HxfcRZp79ZjGmsn97zgC1Iajrv0Mm9DIgx3lPfk+Kme2MG/+EKdZj1iEBsN0rJRzjWVPGL5YrBdVHchw==}
 
-  '@antv/infographic@0.2.5':
-    resolution: {integrity: sha512-0+yRe84pUrtouLPQ99ZNMjpOKDu7hslhaBbB2Sn3tt+fvwjUeNkvJDs8fu6Ei8pADOyEj0eTFygGKk1K7r4poQ==}
+  '@antv/infographic@0.2.6':
+    resolution: {integrity: sha512-MlXYuK/7ZHvCVmrhYhMWAGFgsi2IkT28oz+UMazKqMUbJj8Nfg9x0sjTGvfbZv8WF2wdDgGY0teYugOGvxXTKw==}
 
   '@asamuzakjp/css-color@4.1.0':
     resolution: {integrity: sha512-9xiBAtLn4aNsa4mDnpovJvBn72tNEIACyvlqaNJ+ADemR+yeMJWnBudOi2qGDviJa7SwcDOU/TRh5dnET7qk0w==}
@@ -7985,7 +7985,7 @@ snapshots:
 
   '@antv/hierarchy@0.7.1': {}
 
-  '@antv/infographic@0.2.5':
+  '@antv/infographic@0.2.6':
     dependencies:
       '@antv/hierarchy': 0.7.1
       css: 3.0.0
