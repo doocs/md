@@ -71,8 +71,6 @@ export default defineConfig(({ mode }) => {
             if (id.includes(`node_modules`)) {
               if (id.includes(`katex`))
                 return `katex`
-              if (id.includes(`highlight.js`))
-                return `hljs`
               if (id.includes(`codemirror`))
                 return `codemirror`
               if (id.includes(`prettier`))
