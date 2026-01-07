@@ -354,4 +354,28 @@ export async function processClipboardContent(primaryColor: string) {
       /<tspan([^>]*)>/g,
       `<tspan$1 style="fill: #333333 !important; color: #333333 !important; stroke: none !important;">`,
     )
+
+  // fix: antv infographic 复制到微信公众平台时 <text></text> 被自动转为 <text><tspan></tspan></text> 导致在 Safari 浏览器中文字异常的问题
+  clipboardDiv.querySelectorAll('.infographic-diagram').forEach((diagram) => {
+    diagram.querySelectorAll('text').forEach((textElem) => {
+      // 如果有 dominant-baseline 属性，替换为 dy
+      const dominantBaseline = textElem.getAttribute('dominant-baseline')
+      const variantMap = {
+        'alphabetic': '',
+        'central': '0.35em',
+        'middle': '0.35em',
+        'hanging': '-0.55em',
+        'ideographic': '0.18em',
+        'text-before-edge': '-0.85em',
+        'text-after-edge': '0.15em',
+      }
+      if (dominantBaseline) {
+        textElem.removeAttribute('dominant-baseline')
+        const dy = variantMap[dominantBaseline as keyof typeof variantMap]
+        if (dy) {
+          textElem.setAttribute('dy', dy)
+        }
+      }
+    })
+  })
 }
