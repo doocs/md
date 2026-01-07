@@ -191,15 +191,7 @@ onMounted(() => {
     // 2. 触发编辑器刷新，重新渲染内容
     themeStore.updateCodeTheme()
     const raw = editorStore.getContent()
-    renderStore.render(raw, {
-      isCiteStatus: themeStore.isCiteStatus,
-      legend: themeStore.legend,
-      isUseIndent: themeStore.isUseIndent,
-      isUseJustify: themeStore.isUseJustify,
-      isCountStatus: themeStore.isCountStatus,
-      isMacCodeBlock: themeStore.isMacCodeBlock,
-      isShowLineNumber: themeStore.isShowLineNumber,
-    })
+    renderStore.render(raw)
   }
 
   // 设置切换方案时的回调（与编辑时使用相同的逻辑）

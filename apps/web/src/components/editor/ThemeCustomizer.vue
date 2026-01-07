@@ -26,15 +26,7 @@ function editorRefresh() {
   themeStore.updateCodeTheme()
 
   const raw = editorStore.getContent()
-  renderStore.render(raw, {
-    isCiteStatus: themeStore.isCiteStatus,
-    legend: themeStore.legend,
-    isUseIndent: themeStore.isUseIndent,
-    isUseJustify: themeStore.isUseJustify,
-    isCountStatus: themeStore.isCountStatus,
-    isMacCodeBlock: themeStore.isMacCodeBlock,
-    isShowLineNumber: themeStore.isShowLineNumber,
-  })
+  renderStore.render(raw)
 }
 
 function customStyle() {

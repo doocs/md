@@ -1,8 +1,10 @@
 import type { MarkedExtension } from 'marked'
-import type { ThemeState } from '../theme'
-import { getThemeState, subscribeTheme } from '../theme'
 
-async function renderInfographic(containerId: string, code: string) {
+interface InfographicOptions {
+  themeMode?: 'dark' | 'light'
+}
+
+async function renderInfographic(containerId: string, code: string, options?: InfographicOptions) {
   if (typeof window === 'undefined')
     return
 
@@ -15,39 +17,41 @@ async function renderInfographic(containerId: string, code: string) {
     const findContainer = (retries = 5, delay = 100) => {
       const container = document.getElementById(containerId)
       if (container) {
-        const globalTheme = getThemeState()
-        const buildOptions = (state: ThemeState) => {
-          return {
-            svg: {
-              style: {
-                width: '100%',
-                height: '100%',
-                background: state.isDark ? '#000' : 'transparent',
-              },
-              background: false,
-            },
-            theme: state.isDark ? 'dark' : 'default',
-            themeConfig: {
-              colorPrimary: state.primaryColor || undefined,
-              colorBg: state.backgroundColor || undefined,
-            },
-          }
+        const isDark = options?.themeMode === 'dark'
+
+        // 从 CSS 变量中读取主题颜色
+        const root = document.documentElement
+        const computedStyle = getComputedStyle(root)
+        const primaryColor = computedStyle.getPropertyValue('--md-primary-color').trim()
+        const backgroundColor = computedStyle.getPropertyValue('--background').trim()
+
+        // 转换 HSL 格式
+        const toHSLString = (variant: string) => {
+          const vars = variant.split(' ')
+          if (vars.length === 3)
+            return `hsl(${vars.join(', ')})`
+          if (vars.length === 4)
+            return `hsla(${vars.join(', ')})`
+          return ''
         }
 
         const instance = new Infographic({
           container,
-          ...buildOptions(globalTheme),
+          svg: {
+            style: {
+              width: '100%',
+              height: '100%',
+              background: isDark ? '#000' : 'transparent',
+            },
+            background: false,
+          },
+          theme: isDark ? 'dark' : 'default',
+          themeConfig: {
+            colorPrimary: primaryColor || undefined,
+            colorBg: toHSLString(backgroundColor) || undefined,
+          },
         })
 
-        let unsubscribe: (() => void) | null = null
-        unsubscribe = subscribeTheme((state) => {
-          if (!container.isConnected) {
-            unsubscribe?.()
-            return
-          }
-
-          instance.update(buildOptions(state))
-        }, { immediate: true })
         instance.on('loaded', ({ node }) => {
           exportToSVG(node, { removeIds: true }).then((svg) => {
             container.replaceChildren(svg)
@@ -75,7 +79,7 @@ async function renderInfographic(containerId: string, code: string) {
   }
 }
 
-export function markedInfographic(): MarkedExtension {
+export function markedInfographic(options?: InfographicOptions): MarkedExtension {
   const className = 'infographic-diagram'
 
   return {
@@ -100,7 +104,7 @@ export function markedInfographic(): MarkedExtension {
           const id = `infographic-${Math.random().toString(36).slice(2, 11)}`
           const code = token.text
 
-          renderInfographic(id, code)
+          renderInfographic(id, code, options)
 
           return `<div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div>`
         },

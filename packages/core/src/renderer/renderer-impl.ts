@@ -157,6 +157,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     marked.use(markedAlert())
     marked.use(MDKatex({ nonStandard: true }, true))
     marked.use(markedMarkup())
+    marked.use(markedInfographic(({ themeMode: opts.themeMode })))
   }
 
   function buildReadingTime(readingTime: ReadTimeResults): string {
