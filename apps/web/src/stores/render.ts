@@ -1,5 +1,7 @@
 import { initRenderer } from '@md/core'
 import { postProcessHtml, renderMarkdown } from '@/utils'
+import { useThemeStore } from './theme'
+import { useUIStore } from './ui'
 
 /**
  * 渲染 Store
@@ -62,19 +64,23 @@ export const useRenderStore = defineStore(`render`, () => {
   }
 
   // 渲染内容
-  const render = (content: string, options: any) => {
+  const render = (content: string) => {
     if (!renderer) {
       throw new Error(`Renderer not initialized. Call initRendererInstance first.`)
     }
 
+    const themeStore = useThemeStore()
+    const uiStore = useUIStore()
+
     // 重置渲染器配置
     // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
     renderer.reset({
-      citeStatus: options.isCiteStatus,
-      legend: options.legend,
-      countStatus: options.isCountStatus,
-      isMacCodeBlock: options.isMacCodeBlock,
-      isShowLineNumber: options.isShowLineNumber,
+      citeStatus: themeStore.isCiteStatus,
+      legend: themeStore.legend,
+      countStatus: themeStore.isCountStatus,
+      isMacCodeBlock: themeStore.isMacCodeBlock,
+      isShowLineNumber: themeStore.isShowLineNumber,
+      themeMode: uiStore.isDark ? 'dark' : 'light',
     })
 
     // 渲染 Markdown
