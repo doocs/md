@@ -1,4 +1,6 @@
 import type { MarkedExtension } from 'marked'
+import type { ThemeState } from '../theme'
+import { getThemeState, subscribeTheme } from '../theme'
 
 async function renderInfographic(containerId: string, code: string) {
   if (typeof window === 'undefined')
@@ -13,6 +15,16 @@ async function renderInfographic(containerId: string, code: string) {
     const findContainer = (retries = 5, delay = 100) => {
       const container = document.getElementById(containerId)
       if (container) {
+        const globalTheme = getThemeState()
+        const buildTheme = (state: ThemeState) => {
+          return {
+            theme: state.isDark ? 'dark' : 'default',
+            themeConfig: {
+              colorPrimary: state.primaryColor || undefined,
+            },
+          }
+        }
+
         const instance = new Infographic({
           container,
           svg: {
@@ -21,7 +33,18 @@ async function renderInfographic(containerId: string, code: string) {
               height: '100%',
             },
           },
+          ...buildTheme(globalTheme),
         })
+
+        let unsubscribe: (() => void) | null = null
+        unsubscribe = subscribeTheme((state) => {
+          if (!container.isConnected) {
+            unsubscribe?.()
+            return
+          }
+
+          instance.update(buildTheme(state))
+        }, { immediate: true })
         instance.on('loaded', ({ node }) => {
           exportToSVG(node, { removeIds: true }).then((svg) => {
             container.replaceChildren(svg)
