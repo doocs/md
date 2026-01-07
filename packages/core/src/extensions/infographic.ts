@@ -16,8 +16,16 @@ async function renderInfographic(containerId: string, code: string) {
       const container = document.getElementById(containerId)
       if (container) {
         const globalTheme = getThemeState()
-        const buildTheme = (state: ThemeState) => {
+        const buildOptions = (state: ThemeState) => {
           return {
+            svg: {
+              style: {
+                width: '100%',
+                height: '100%',
+                background: state.isDark ? '#000' : 'transparent',
+              },
+              background: false,
+            },
             theme: state.isDark ? 'dark' : 'default',
             themeConfig: {
               colorPrimary: state.primaryColor || undefined,
@@ -28,14 +36,7 @@ async function renderInfographic(containerId: string, code: string) {
 
         const instance = new Infographic({
           container,
-          svg: {
-            style: {
-              width: '100%',
-              height: '100%',
-            },
-            background: false,
-          },
-          ...buildTheme(globalTheme),
+          ...buildOptions(globalTheme),
         })
 
         let unsubscribe: (() => void) | null = null
@@ -45,7 +46,7 @@ async function renderInfographic(containerId: string, code: string) {
             return
           }
 
-          instance.update(buildTheme(state))
+          instance.update(buildOptions(state))
         }, { immediate: true })
         instance.on('loaded', ({ node }) => {
           exportToSVG(node, { removeIds: true }).then((svg) => {
