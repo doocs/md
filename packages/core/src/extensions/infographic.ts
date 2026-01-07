@@ -21,6 +21,7 @@ async function renderInfographic(containerId: string, code: string) {
             theme: state.isDark ? 'dark' : 'default',
             themeConfig: {
               colorPrimary: state.primaryColor || undefined,
+              colorBg: state.backgroundColor || undefined,
             },
           }
         }
@@ -32,6 +33,7 @@ async function renderInfographic(containerId: string, code: string) {
               width: '100%',
               height: '100%',
             },
+            background: false,
           },
           ...buildTheme(globalTheme),
         })

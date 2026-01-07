@@ -1,6 +1,7 @@
 export interface ThemeState {
   isDark: boolean
   primaryColor: string
+  backgroundColor: string
 }
 
 export type ThemeListener = (state: ThemeState) => void
@@ -12,18 +13,33 @@ let headObserver: MutationObserver | null = null
 let themeStyleObserver: MutationObserver | null = null
 let themeStyleTarget: Element | null = null
 
+function toHSLString(variant: string) {
+  const vars = variant.split(' ')
+  if (vars.length === 3)
+    return `hsl(${vars.join(', ')})`
+  if (vars.length === 4)
+    return `hsla(${vars.join(', ')})`
+  return ''
+}
+
 export function getThemeState(): ThemeState {
   if (typeof window === 'undefined' || typeof document === 'undefined') {
-    return { isDark: false, primaryColor: '' }
+    return { isDark: false, primaryColor: '', backgroundColor: '' }
   }
 
   const root = document.documentElement
-  const primaryColor = getComputedStyle(root)
-    .getPropertyValue('--md-primary-color')
-    .trim()
+
+  const getColorOf = (name: string, formatter = (value: string) => value) => {
+    return formatter(getComputedStyle(root)
+      .getPropertyValue(name)
+      .trim())
+  }
+
+  const primaryColor = getColorOf('--md-primary-color')
+  const backgroundColor = getColorOf('--background', toHSLString)
   const isDark = root.classList.contains('dark')
 
-  return { isDark, primaryColor }
+  return { isDark, primaryColor, backgroundColor }
 }
 
 function emitIfChanged() {
@@ -32,6 +48,7 @@ function emitIfChanged() {
     !lastState
     || next.isDark !== lastState.isDark
     || next.primaryColor !== lastState.primaryColor
+    || next.backgroundColor !== lastState.backgroundColor
   ) {
     lastState = next
     listeners.forEach(listener => listener(next))
