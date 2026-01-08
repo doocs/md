@@ -155,6 +155,7 @@ function getPlatformUrl(type: string): string {
     tencentcloud: 'https://cloud.tencent.com/developer',
     medium: 'https://medium.com/m/signin',
     sspai: 'https://sspai.com/login',
+    sohu: 'https://mp.sohu.com/mpfe/v4/login',
   }
   return urls[type] || '#'
 }
