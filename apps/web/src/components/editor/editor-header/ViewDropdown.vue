@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { widthOptions } from '@md/shared/configs'
-import { FileCode, FolderOpen, Monitor, Moon, Palette, PanelLeft, Smartphone, Sun } from 'lucide-vue-next'
+import { FileCode, Monitor, Moon, Palette, PanelLeft, Smartphone, Sun } from 'lucide-vue-next'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
@@ -15,7 +15,7 @@ const { asSub } = toRefs(props)
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
 
-const { isDark, isEditOnLeft, isShowCssEditor, isOpenRightSlider, isOpenFolderPanel } = storeToRefs(uiStore)
+const { isDark, isEditOnLeft, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
 const { previewWidth } = storeToRefs(themeStore)
 
 // Get mobile and desktop width values
@@ -121,10 +121,6 @@ function setPreviewMode(width: string) {
         <FileCode class="mr-2 h-4 w-4" />
         CSS 编辑器
       </MenubarItem>
-      <MenubarItem @click="isOpenFolderPanel = !isOpenFolderPanel">
-        <FolderOpen class="mr-2 h-4 w-4" />
-        本地文件夹
-      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -219,10 +215,6 @@ function setPreviewMode(width: string) {
       <MenubarItem @click="isShowCssEditor = !isShowCssEditor">
         <FileCode class="mr-2 h-4 w-4" />
         CSS 编辑器
-      </MenubarItem>
-      <MenubarItem @click="isOpenFolderPanel = !isOpenFolderPanel">
-        <FolderOpen class="mr-2 h-4 w-4" />
-        本地文件夹
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>
