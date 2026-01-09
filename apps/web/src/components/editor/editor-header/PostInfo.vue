@@ -156,6 +156,7 @@ function getPlatformUrl(type: string): string {
     medium: 'https://medium.com/m/signin',
     sspai: 'https://sspai.com/login',
     sohu: 'https://mp.sohu.com/mpfe/v4/login',
+    bilibili: 'https://passport.bilibili.com/login',
   }
   return urls[type] || '#'
 }
