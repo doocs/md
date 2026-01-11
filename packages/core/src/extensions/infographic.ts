@@ -1,10 +1,16 @@
 import type { MarkedExtension } from 'marked'
+import { simpleHash } from '../utils/basicHelpers'
 
 interface InfographicOptions {
   themeMode?: 'dark' | 'light'
 }
 
-async function renderInfographic(containerId: string, code: string, options?: InfographicOptions) {
+// key -> svg
+const svgCache = new Map<string, string>()
+// 上一次渲染的结果（用于在新渲染完成前显示旧图片）
+let lastRenderedSvg: string | null = null
+
+async function renderInfographic(containerId: string, code: string, cacheKey: string, options?: InfographicOptions) {
   if (typeof window === 'undefined')
     return
 
@@ -55,6 +61,8 @@ async function renderInfographic(containerId: string, code: string, options?: In
         instance.on('loaded', ({ node }) => {
           exportToSVG(node, { removeIds: true }).then((svg) => {
             container.replaceChildren(svg)
+            svgCache.set(cacheKey, container.innerHTML)
+            lastRenderedSvg = container.innerHTML
           })
         })
 
@@ -101,12 +109,25 @@ export function markedInfographic(options?: InfographicOptions): MarkedExtension
           }
         },
         renderer(token: any) {
-          const id = `infographic-${Math.random().toString(36).slice(2, 11)}`
           const code = token.text
+          const cacheKey = simpleHash(`${code}-${options?.themeMode || 'light'}`)
 
-          renderInfographic(id, code, options)
+          // 有缓存直接返回
+          const cached = svgCache.get(cacheKey)
+          if (cached) {
+            return `<!--infographic-start--><div class="${className}" style="width: 100%;">${cached}</div><!--infographic-end-->`
+          }
 
-          return `<div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div>`
+          // 没有缓存，触发渲染
+          const id = `infographic-${cacheKey}`
+          renderInfographic(id, code, cacheKey, options)
+
+          // 如果有上一次渲染的结果，显示旧图片；否则显示占位符
+          if (lastRenderedSvg) {
+            return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">${lastRenderedSvg}</div><!--infographic-end-->`
+          }
+
+          return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div><!--infographic-end-->`
         },
       },
     ],

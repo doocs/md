@@ -1,5 +1,11 @@
 import type { MarkedExtension, Tokens } from 'marked'
 import { deflateSync } from 'fflate'
+import { simpleHash } from '../utils/basicHelpers'
+
+// key -> svg
+const svgCache = new Map<string, string>()
+// 上一次渲染的结果（用于在新渲染完成前显示旧图片）
+let lastRenderedSvg: string | null = null
 
 export interface PlantUMLOptions {
   /**
@@ -148,7 +154,7 @@ function generatePlantUMLUrl(code: string, options: Required<PlantUMLOptions>): 
 /**
  * 渲染 PlantUML 图表
  */
-function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOptions>): string {
+function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOptions>, cacheKey: string): string {
   const { text: code } = token
 
   // 检查代码是否包含 PlantUML 标记
@@ -160,14 +166,16 @@ function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOpt
 
   // 如果启用了内嵌SVG且格式是SVG
   if (options.inlineSvg && options.format === `svg`) {
-    // 由于marked是同步的，我们需要返回一个占位符，然后异步替换
-    const placeholder = `plantuml-placeholder-${Math.random().toString(36).slice(2, 11)}`
+    const placeholder = `plantuml-${cacheKey}`
 
     // 异步获取SVG内容并替换
     fetchSvgContent(imageUrl).then((svgContent) => {
-      const placeholderElement = document.querySelector(`[data-placeholder="${placeholder}"]`)
+      const placeholderElement = document.querySelector(`[data-placeholder="${placeholder}"]`) as HTMLElement
       if (placeholderElement) {
-        placeholderElement.outerHTML = createPlantUMLHTML(imageUrl, options, svgContent)
+        const html = createPlantUMLHTML(imageUrl, options, svgContent)
+        placeholderElement.outerHTML = html
+        svgCache.set(cacheKey, html)
+        lastRenderedSvg = svgContent
       }
     })
 
@@ -176,6 +184,11 @@ function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOpt
           .map(([key, value]) => `${key.replace(/([A-Z])/g, `-$1`).toLowerCase()}: ${value}`)
           .join(`; `)
       : ``
+
+    // 如果有上一次渲染的结果，显示旧图片；否则显示占位符
+    if (lastRenderedSvg) {
+      return `<div class="${options.className}" style="${containerStyles}" data-placeholder="${placeholder}">${lastRenderedSvg}</div>`
+    }
 
     return `<div class="${options.className}" style="${containerStyles}" data-placeholder="${placeholder}">
       <div style="color: #666; font-style: italic;">正在加载PlantUML图表...</div>
@@ -275,7 +288,15 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
           }
         },
         renderer(token: any) {
-          return renderPlantUMLDiagram(token, resolvedOptions)
+          const cacheKey = simpleHash(token.text)
+
+          // 有缓存直接返回
+          const cached = svgCache.get(cacheKey)
+          if (cached) {
+            return cached
+          }
+
+          return renderPlantUMLDiagram(token, resolvedOptions, cacheKey)
         },
       },
     ],

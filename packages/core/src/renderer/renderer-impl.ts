@@ -5,7 +5,18 @@ import frontMatter from 'front-matter'
 import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
 import readingTime from 'reading-time'
-import { markedAlert, markedFootnotes, markedInfographic, markedMarkup, markedPlantUML, markedRuby, markedSlider, markedToc, MDKatex } from '../extensions'
+import {
+  markedAlert,
+  markedFootnotes,
+  markedInfographic,
+  markedMarkup,
+  markedMermaid,
+  markedPlantUML,
+  markedRuby,
+  markedSlider,
+  markedToc,
+  MDKatex,
+} from '../extensions'
 import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
 Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
@@ -112,7 +123,6 @@ function parseFrontMatterAndContent(markdownText: string): ParseResult {
 export function initRenderer(opts: IOpts = {}): RendererAPI {
   const footnotes: [number, string, string][] = []
   let footnoteIndex: number = 0
-  let codeIndex: number = 0
   const listOrderedStack: boolean[] = []
   const listCounters: number[] = []
 
@@ -153,11 +163,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
-    // 新主题系统：扩展不再需要 styles 参数
-    marked.use(markedAlert())
-    marked.use(MDKatex({ nonStandard: true }, true))
-    marked.use(markedMarkup())
-    marked.use(markedInfographic(({ themeMode: opts.themeMode })))
+    marked.use(markedInfographic({ themeMode: newOpts.themeMode }))
   }
 
   function buildReadingTime(readingTime: ReadTimeResults): string {
@@ -209,22 +215,6 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
 
     code({ text, lang = `` }: Tokens.Code): string {
-      if (lang.startsWith(`mermaid`)) {
-        clearTimeout(codeIndex)
-        codeIndex = setTimeout(async () => {
-          // 优先使用全局 CDN 的 mermaid
-          if (typeof window !== `undefined` && (window as any).mermaid) {
-            const mermaid = (window as any).mermaid
-            await mermaid.run()
-          }
-          else {
-            // 回退到动态导入（开发环境）
-            const mermaid = await import(`mermaid`)
-            await mermaid.default.run()
-          }
-        }, 0) as any as number
-        return `<pre class="mermaid">${text}</pre>`
-      }
       const langText = lang.split(` `)[0]
       const isLanguageRegistered = hljs.getLanguage(langText)
       const language = isLanguageRegistered ? langText : `plaintext`
@@ -368,10 +358,11 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   marked.use(markedAlert({}))
   marked.use(MDKatex({ nonStandard: true }, true))
   marked.use(markedFootnotes())
+  marked.use(markedMermaid())
   marked.use(markedPlantUML({
     inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
   }))
-  marked.use(markedInfographic())
+  marked.use(markedInfographic({ themeMode: opts.themeMode }))
   marked.use(markedRuby())
 
   return {
