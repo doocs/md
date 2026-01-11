@@ -110,7 +110,7 @@ export function markedInfographic(options?: InfographicOptions): MarkedExtension
         },
         renderer(token: any) {
           const code = token.text
-          const cacheKey = simpleHash(code)
+          const cacheKey = simpleHash(`${code}-${options?.themeMode || 'light'}`)
 
           // 有缓存直接返回
           const cached = svgCache.get(cacheKey)

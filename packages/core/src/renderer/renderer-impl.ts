@@ -163,6 +163,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
   function setOptions(newOpts: Partial<IOpts>): void {
     opts = { ...opts, ...newOpts }
+    marked.use(markedInfographic({ themeMode: newOpts.themeMode }))
   }
 
   function buildReadingTime(readingTime: ReadTimeResults): string {
@@ -361,7 +362,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   marked.use(markedPlantUML({
     inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
   }))
-  marked.use(markedInfographic())
+  marked.use(markedInfographic({ themeMode: opts.themeMode }))
   marked.use(markedRuby())
 
   return {
