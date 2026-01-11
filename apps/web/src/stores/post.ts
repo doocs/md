@@ -44,9 +44,6 @@ export const usePostStore = defineStore(`post`, () => {
   // 当前文章 ID
   const currentPostId = store.reactive(addPrefix(`current_post_id`), ``)
 
-  // 预备弃用的旧字段（用于迁移）
-  const editorContent = store.reactive(`__editor_content`, DEFAULT_CONTENT)
-
   // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
   onBeforeMount(() => {
     posts.value = posts.value.map((post, index) => {
@@ -151,17 +148,6 @@ export const usePostStore = defineStore(`post`, () => {
       post.collapsed = false
     })
   }
-
-  // 迁移阶段，兼容之前的方案
-  onMounted(() => {
-    if (editorContent.value !== DEFAULT_CONTENT) {
-      const post = getPostById(currentPostId.value)
-      if (post) {
-        post.content = editorContent.value
-      }
-      editorContent.value = DEFAULT_CONTENT
-    }
-  })
 
   return {
     // State
