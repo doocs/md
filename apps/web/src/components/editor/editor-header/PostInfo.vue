@@ -157,6 +157,7 @@ function getPlatformUrl(type: string): string {
     sspai: 'https://sspai.com/login',
     sohu: 'https://mp.sohu.com/mpfe/v4/login',
     bilibili: 'https://passport.bilibili.com/login',
+    weibo: 'https://passport.weibo.com/sso/signin',
   }
   return urls[type] || '#'
 }
