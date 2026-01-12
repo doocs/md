@@ -159,6 +159,7 @@ function getPlatformUrl(type: string): string {
     bilibili: 'https://passport.bilibili.com/login',
     weibo: 'https://passport.weibo.com/sso/signin',
     aliyun: 'https://account.aliyun.com/login/login.htm',
+    huaweicloud: 'https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fbbs.huaweicloud.com%2F&locale=zh-cn#/login',
   }
   return urls[type] || '#'
 }
