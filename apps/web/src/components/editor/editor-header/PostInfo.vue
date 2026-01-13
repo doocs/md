@@ -160,6 +160,7 @@ function getPlatformUrl(type: string): string {
     weibo: 'https://passport.weibo.com/sso/signin',
     aliyun: 'https://account.aliyun.com/login/login.htm',
     huaweicloud: 'https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fbbs.huaweicloud.com%2F&locale=zh-cn#/login',
+    huaweidev: 'https://developer.huawei.com/consumer/cn/blog/create',
   }
   return urls[type] || '#'
 }
