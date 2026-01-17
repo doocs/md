@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Post, PostAccount } from '@md/shared/types'
-import { Check, Info, Send } from 'lucide-vue-next'
+import { Check, ChevronDown, ChevronRight, Info, Minus, Send } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -35,37 +35,63 @@ const form = ref<Post>({
 
 const allowPost = computed(() => extensionInstalled.value && form.value.accounts.some(a => a.checked))
 
-// 平台优先级排序（按用户规模从大到小）
-const platformPriority: Record<string, number> = {
-  // 第一梯队
-  wechat: 1, // 微信公众号
-  toutiao: 2, // 今日头条
-  baijiahao: 3, // 百家号
-  // 第二梯队
-  zhihu: 4, // 知乎
-  wangyihao: 5, // 网易号
-  tencentcloud: 6, // 腾讯云
-  // 第三梯队
-  csdn: 7, // CSDN
-  segmentfault: 8, // 思否
-  cnblogs: 9, // 博客园
-  juejin: 10, // 掘金
-  cto51: 11, // 51CTO
-  oschina: 12, // 开源中国
-  // 第四梯队
-  infoq: 13, // InfoQ
-  jianshu: 14, // 简书
-  sspai: 15, // 少数派
-  medium: 16, // Medium
+// 平台分类配置
+const platformCategories = [
+  {
+    name: `媒体平台`,
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`],
+  },
+  {
+    name: `博客平台`,
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
+  },
+  {
+    name: `云平台及开发者社区`,
+    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`],
+  },
+]
+
+// 分类折叠状态（默认折叠云平台及开发者社区）
+const collapsedCategories = ref<Set<string>>(new Set([`云平台及开发者社区`]))
+
+function toggleCategory(categoryName: string) {
+  if (collapsedCategories.value.has(categoryName)) {
+    collapsedCategories.value.delete(categoryName)
+  }
+  else {
+    collapsedCategories.value.add(categoryName)
+  }
 }
 
-const sortedAccounts = computed(() => {
-  return [...form.value.accounts].sort((a, b) => {
-    const priorityA = platformPriority[a.type] ?? 99
-    const priorityB = platformPriority[b.type] ?? 99
-    return priorityA - priorityB
-  })
+// 按分类获取账号
+const accountsByCategory = computed(() => {
+  return platformCategories.map(category => ({
+    name: category.name,
+    accounts: category.platforms
+      .map(type => form.value.accounts.find(a => a.type === type))
+      .filter((a): a is PostAccount => a !== undefined),
+  }))
 })
+
+// 判断分类是否全选（只考虑已登录的账号）
+function isCategoryAllSelected(accounts: PostAccount[]) {
+  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  return loggedInAccounts.length > 0 && loggedInAccounts.every(a => a.checked)
+}
+
+// 判断分类是否部分选中
+function isCategoryIndeterminate(accounts: PostAccount[]) {
+  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  const checkedCount = loggedInAccounts.filter(a => a.checked).length
+  return checkedCount > 0 && checkedCount < loggedInAccounts.length
+}
+
+// 切换分类全选
+function toggleCategorySelectAll(accounts: PostAccount[]) {
+  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  const allSelected = loggedInAccounts.every(a => a.checked)
+  loggedInAccounts.forEach(a => a.checked = !allSelected)
+}
 
 async function prePost() {
   if (extensionInstalled.value && allAccounts.value.length === 0) {
@@ -162,6 +188,7 @@ function getPlatformUrl(type: string): string {
     huaweicloud: 'https://auth.huaweicloud.com/authui/login.html?service=https%3A%2F%2Fbbs.huaweicloud.com%2F&locale=zh-cn#/login',
     huaweidev: 'https://developer.huawei.com/consumer/cn/blog/create',
     twitter: 'https://x.com/i/flow/login',
+    qianfan: 'https://qianfan.cloud.baidu.com/qianfandev/topic/create',
   }
   return urls[type] || '#'
 }
@@ -248,49 +275,77 @@ onBeforeMount(() => {
           <Label class="w-10 text-end">
             平台
           </Label>
-          <div class="flex-1 grid grid-cols-2 gap-x-8 gap-y-2">
-            <div
-              v-for="account in sortedAccounts"
-              :key="account.uid"
-              class="flex items-center gap-2 whitespace-nowrap"
-            >
-              <CheckboxRoot
-                v-model:checked="account.checked"
-                :disabled="!account.loggedIn"
-                class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <CheckboxIndicator>
-                  <Check v-if="account.checked" class="h-3 w-3" />
-                </CheckboxIndicator>
-              </CheckboxRoot>
-              <img
-                :src="account.icon"
-                alt=""
-                class="inline-block h-[16px] w-[16px] shrink-0"
-              >
-              <span class="text-sm font-medium">{{ account.title }}</span>
-              <!-- 已登录：显示头像和用户名 -->
-              <template v-if="account.loggedIn">
-                <img
-                  v-if="account.avatar"
-                  :src="account.avatar"
-                  alt=""
-                  class="ml-1 h-4 w-4 rounded-full object-cover"
-                  referrerpolicy="no-referrer"
-                  @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
+          <div class="flex-1 space-y-3">
+            <div v-for="category in accountsByCategory" :key="category.name">
+              <div class="flex items-center gap-2 mb-2">
+                <div
+                  class="flex items-center gap-1 cursor-pointer select-none text-sm font-medium text-muted-foreground hover:text-foreground"
+                  @click="toggleCategory(category.name)"
                 >
-                <span class="text-sm text-muted-foreground">@{{ account.displayName }}</span>
-              </template>
-              <!-- 未登录：显示登录链接 -->
-              <Primitive
-                v-else
-                as="a"
-                :href="getPlatformUrl(account.type)"
-                target="_blank"
-                class="ml-1 text-sm text-muted-foreground hover:underline"
-              >
-                登录
-              </Primitive>
+                  <ChevronDown v-if="!collapsedCategories.has(category.name)" class="h-4 w-4" />
+                  <ChevronRight v-else class="h-4 w-4" />
+                  <span>{{ category.name }}</span>
+                  <span class="text-xs">({{ category.accounts.length }})</span>
+                </div>
+                <div class="flex items-center gap-1 ml-2">
+                  <CheckboxRoot
+                    :checked="isCategoryAllSelected(category.accounts) ? true : isCategoryIndeterminate(category.accounts) ? 'indeterminate' : false"
+                    class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden"
+                    @click.stop="toggleCategorySelectAll(category.accounts)"
+                  >
+                    <CheckboxIndicator>
+                      <Check v-if="isCategoryAllSelected(category.accounts)" class="h-3 w-3" />
+                      <Minus v-else-if="isCategoryIndeterminate(category.accounts)" class="h-3 w-3" />
+                    </CheckboxIndicator>
+                  </CheckboxRoot>
+                  <span class="text-xs text-muted-foreground">全选</span>
+                </div>
+              </div>
+              <div v-show="!collapsedCategories.has(category.name)" class="grid grid-cols-2 gap-x-8 gap-y-2 pl-5">
+                <div
+                  v-for="account in category.accounts"
+                  :key="account.uid"
+                  class="flex items-center gap-2 whitespace-nowrap"
+                >
+                  <CheckboxRoot
+                    v-model:checked="account.checked"
+                    :disabled="!account.loggedIn"
+                    class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <CheckboxIndicator>
+                      <Check v-if="account.checked" class="h-3 w-3" />
+                    </CheckboxIndicator>
+                  </CheckboxRoot>
+                  <img
+                    :src="account.icon"
+                    alt=""
+                    class="inline-block h-[16px] w-[16px] shrink-0"
+                  >
+                  <span class="text-sm font-medium">{{ account.title }}</span>
+                  <!-- 已登录：显示头像和用户名 -->
+                  <template v-if="account.loggedIn">
+                    <img
+                      v-if="account.avatar"
+                      :src="account.avatar"
+                      alt=""
+                      class="ml-1 h-4 w-4 rounded-full object-cover"
+                      referrerpolicy="no-referrer"
+                      @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
+                    >
+                    <span class="text-sm text-muted-foreground">@{{ account.displayName }}</span>
+                  </template>
+                  <!-- 未登录：显示登录链接 -->
+                  <Primitive
+                    v-else
+                    as="a"
+                    :href="getPlatformUrl(account.type)"
+                    target="_blank"
+                    class="ml-1 text-sm text-muted-foreground hover:underline"
+                  >
+                    登录
+                  </Primitive>
+                </div>
+              </div>
             </div>
           </div>
         </div>
