@@ -22,7 +22,7 @@ importers:
   .:
     dependencies:
       '@codemirror/state':
-        specifier: ^6.5.2
+        specifier: 6.5.2
         version: 6.5.2
       '@codemirror/view':
         specifier: 6.38.8
@@ -32,34 +32,34 @@ importers:
         specifier: 6.6.1
         version: 6.6.1(@vue/compiler-sfc@3.5.25)(eslint-plugin-format@1.1.0(eslint@9.39.1(jiti@2.6.1)))(eslint@9.39.1(jiti@2.6.1))(typescript@5.9.3)
       '@types/node':
-        specifier: ^25.0.0
+        specifier: 25.0.0
         version: 25.0.0
       archiver:
-        specifier: ^7.0.1
+        specifier: 7.0.1
         version: 7.0.1
       cross-env:
-        specifier: ^10.1.0
+        specifier: 10.1.0
         version: 10.1.0
       eslint:
-        specifier: ^9.39.1
+        specifier: 9.39.1
         version: 9.39.1(jiti@2.6.1)
       eslint-plugin-format:
-        specifier: ^1.1.0
+        specifier: 1.1.0
         version: 1.1.0(eslint@9.39.1(jiti@2.6.1))
       npm-run-all:
-        specifier: ^4.1.5
+        specifier: 4.1.5
         version: 4.1.5
       prettier:
         specifier: 2.8.8
         version: 2.8.8
       shx:
-        specifier: ^0.4.0
+        specifier: 0.4.0
         version: 0.4.0
       simple-git-hooks:
-        specifier: ^2.13.1
+        specifier: 2.13.1
         version: 2.13.1
       typescript:
-        specifier: ~5.9.3
+        specifier: 5.9.3
         version: 5.9.3
 
   apps/utools: {}
@@ -73,41 +73,41 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@types/webpack':
-        specifier: ^5.28.5
+        specifier: 5.28.5
         version: 5.28.5(webpack-cli@6.0.1)
       isomorphic-dompurify:
-        specifier: ^2.34.0
+        specifier: 2.34.0
         version: 2.34.0(postcss@8.5.6)
       postcss:
-        specifier: ^8.5.6
+        specifier: 8.5.6
         version: 8.5.6
       ts-loader:
-        specifier: ^9.5.4
+        specifier: 9.5.4
         version: 9.5.4(typescript@5.9.3)(webpack@5.103.0)
       tsconfig-paths-webpack-plugin:
-        specifier: ^4.2.0
+        specifier: 4.2.0
         version: 4.2.0
     devDependencies:
       '@types/vscode':
-        specifier: ^1.107.0
+        specifier: 1.107.0
         version: 1.107.0
       '@vscode/vsce':
-        specifier: ^3.7.1
+        specifier: 3.7.1
         version: 3.7.1
       webpack-cli:
-        specifier: ^6.0.1
+        specifier: 6.0.1
         version: 6.0.1(webpack@5.103.0)
 
   apps/web:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.948.0
+        specifier: 3.948.0
         version: 3.948.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.948.0
+        specifier: 3.948.0
         version: 3.948.0
       '@exercism/highlightjs-gdscript':
-        specifier: ^0.0.1
+        specifier: 0.0.1
         version: 0.0.1
       '@md/core':
         specifier: workspace:*
@@ -116,206 +116,212 @@ importers:
         specifier: workspace:*
         version: link:../../packages/shared
       '@ssttevee/multipart-parser':
-        specifier: ^0.1.9
+        specifier: 0.1.9
         version: 0.1.9
       '@vee-validate/yup':
-        specifier: ^4.15.1
+        specifier: 4.15.1
         version: 4.15.1(vue@3.5.25(typescript@5.9.3))(yup@1.7.1)
       '@vueuse/core':
-        specifier: ^14.1.0
+        specifier: 14.1.0
         version: 14.1.0(vue@3.5.25(typescript@5.9.3))
       axios:
-        specifier: ^1.13.2
+        specifier: 1.13.2
         version: 1.13.2
       browser-image-compression:
-        specifier: ^2.0.2
+        specifier: 2.0.2
         version: 2.0.2
       buffer-from:
-        specifier: ^1.1.2
+        specifier: 1.1.2
         version: 1.1.2
       class-variance-authority:
-        specifier: ^0.7.1
+        specifier: 0.7.1
         version: 0.7.1
       clsx:
-        specifier: ^2.1.1
+        specifier: 2.1.1
         version: 2.1.1
       codemirror:
-        specifier: ^6.0.2
+        specifier: 6.0.2
         version: 6.0.2
       core-js:
-        specifier: ^3.47.0
+        specifier: 3.47.0
         version: 3.47.0
       cos-js-sdk-v5:
-        specifier: ^1.10.1
+        specifier: 1.10.1
         version: 1.10.1
       crypto-js:
-        specifier: ^4.2.0
+        specifier: 4.2.0
         version: 4.2.0
       es-toolkit:
-        specifier: ^1.42.0
+        specifier: 1.42.0
         version: 1.42.0
       front-matter:
-        specifier: ^4.0.2
+        specifier: 4.0.2
         version: 4.0.2
       highlight.js:
-        specifier: ^11.11.1
+        specifier: 11.11.1
         version: 11.11.1
       html-to-image:
-        specifier: ^1.11.13
+        specifier: 1.11.13
         version: 1.11.13
       isomorphic-dompurify:
-        specifier: ^2.34.0
+        specifier: 2.34.0
         version: 2.34.0(postcss@8.5.6)
       juice:
-        specifier: ^11.0.3
+        specifier: 11.0.3
         version: 11.0.3
       lucide-vue-next:
-        specifier: ^0.560.0
+        specifier: 0.560.0
         version: 0.560.0(vue@3.5.25(typescript@5.9.3))
       marked:
-        specifier: ^17.0.1
+        specifier: 17.0.1
         version: 17.0.1
       node-fetch:
-        specifier: ^3.3.2
+        specifier: 3.3.2
         version: 3.3.2
       pinia:
-        specifier: ^3.0.4
+        specifier: 3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
       qiniu-js:
-        specifier: ^3.4.3
+        specifier: 3.4.3
         version: 3.4.3
       radix-vue:
-        specifier: ^1.9.17
+        specifier: 1.9.17
         version: 1.9.17(vue@3.5.25(typescript@5.9.3))
       reading-time:
-        specifier: ^1.5.0
+        specifier: 1.5.0
         version: 1.5.0
       reka-ui:
-        specifier: ^2.6.1
+        specifier: 2.6.1
         version: 2.6.1(typescript@5.9.3)(vue@3.5.25(typescript@5.9.3))
       remark-parse:
-        specifier: ^11.0.0
+        specifier: 11.0.0
         version: 11.0.0
       remark-stringify:
-        specifier: ^11.0.0
+        specifier: 11.0.0
         version: 11.0.0
+      spark-md5:
+        specifier: 3.0.2
+        version: 3.0.2
       tailwind-merge:
-        specifier: ^3.4.0
+        specifier: 3.4.0
         version: 3.4.0
       tailwindcss-animate:
-        specifier: ^1.0.7
+        specifier: 1.0.7
         version: 1.0.7(tailwindcss@4.1.18)
       tiny-oss:
-        specifier: ^0.5.1
+        specifier: 0.5.1
         version: 0.5.1
       tw-animate-css:
-        specifier: ^1.4.0
+        specifier: 1.4.0
         version: 1.4.0
       unified:
-        specifier: ^11.0.5
+        specifier: 11.0.5
         version: 11.0.5
       unist-util-visit:
-        specifier: ^5.0.0
+        specifier: 5.0.0
         version: 5.0.0
       uuid:
-        specifier: ^13.0.0
+        specifier: 13.0.0
         version: 13.0.0
       vee-validate:
-        specifier: ^4.15.1
+        specifier: 4.15.1
         version: 4.15.1(vue@3.5.25(typescript@5.9.3))
       vue:
-        specifier: ^3.5.25
+        specifier: 3.5.25
         version: 3.5.25(typescript@5.9.3)
       vue-pick-colors:
-        specifier: ^1.8.0
+        specifier: 1.8.0
         version: 1.8.0(@popperjs/core@2.11.8)(vue@3.5.25(typescript@5.9.3))
       vue-sonner:
-        specifier: ^2.0.9
+        specifier: 2.0.9
         version: 2.0.9
       yup:
-        specifier: ^1.7.1
+        specifier: 1.7.1
         version: 1.7.1
     devDependencies:
       '@cloudflare/vite-plugin':
-        specifier: ^1.17.1
+        specifier: 1.17.1
         version: 1.17.1(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))(workerd@1.20251210.0)(wrangler@4.54.0(@cloudflare/workers-types@4.20251211.0))
       '@cloudflare/workers-types':
-        specifier: ^4.20251211.0
+        specifier: 4.20251211.0
         version: 4.20251211.0
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
       '@tailwindcss/postcss':
-        specifier: ^4.1.18
+        specifier: 4.1.18
         version: 4.1.18
       '@tailwindcss/vite':
-        specifier: ^4.1.18
+        specifier: 4.1.18
         version: 4.1.18(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       '@types/buffer-from':
-        specifier: ^1.1.3
+        specifier: 1.1.3
         version: 1.1.3
       '@types/crypto-js':
-        specifier: ^4.2.2
+        specifier: 4.2.2
         version: 4.2.2
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 4.0.4
         version: 4.0.4
+      '@types/spark-md5':
+        specifier: 3.0.5
+        version: 3.0.5
       '@types/unist':
-        specifier: ^3.0.3
+        specifier: 3.0.3
         version: 3.0.3
       '@vitejs/plugin-vue':
-        specifier: ^6.0.2
+        specifier: 6.0.2
         version: 6.0.2(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       less:
-        specifier: ^4.4.2
+        specifier: 4.4.2
         version: 4.4.2
       linkedom:
-        specifier: ^0.18.12
+        specifier: 0.18.12
         version: 0.18.12
       ohash:
-        specifier: ^2.0.11
+        specifier: 2.0.11
         version: 2.0.11
       postcss:
-        specifier: ^8.5.6
+        specifier: 8.5.6
         version: 8.5.6
       rollup:
-        specifier: ^4.53.3
+        specifier: 4.53.3
         version: 4.53.3
       rollup-plugin-visualizer:
-        specifier: ^6.0.5
+        specifier: 6.0.5
         version: 6.0.5(rollup@4.53.3)
       shx:
-        specifier: ^0.4.0
+        specifier: 0.4.0
         version: 0.4.0
       tailwindcss:
-        specifier: ^4.1.18
+        specifier: 4.1.18
         version: 4.1.18
       unplugin-auto-import:
-        specifier: ^20.3.0
+        specifier: 20.3.0
         version: 20.3.0(@vueuse/core@14.1.0(vue@3.5.25(typescript@5.9.3)))
       unplugin-vue-components:
-        specifier: ^30.0.0
+        specifier: 30.0.0
         version: 30.0.0(@babel/parser@7.28.5)(vue@3.5.25(typescript@5.9.3))
       vite:
-        specifier: ^7.2.7
+        specifier: 7.2.7
         version: 7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2)
       vite-plugin-node-polyfills:
-        specifier: ^0.24.0
+        specifier: 0.24.0
         version: 0.24.0(rollup@4.53.3)(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       vite-plugin-radar:
-        specifier: ^0.10.1
+        specifier: 0.10.1
         version: 0.10.1(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))
       vite-plugin-vue-devtools:
-        specifier: ^8.0.5
+        specifier: 8.0.5
         version: 8.0.5(vite@7.2.7(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(terser@5.44.1)(yaml@2.8.2))(vue@3.5.25(typescript@5.9.3))
       vue-tsc:
-        specifier: ^3.1.8
+        specifier: 3.1.8
         version: 3.1.8(typescript@5.9.3)
       wrangler:
-        specifier: ^4.54.0
+        specifier: 4.54.0
         version: 4.54.0(@cloudflare/workers-types@4.20251211.0)
       wxt:
-        specifier: ^0.20.11
+        specifier: 0.20.11
         version: 0.20.11(@types/node@25.0.0)(jiti@2.6.1)(less@4.4.2)(lightningcss@1.30.2)(rollup@4.53.3)(terser@5.44.1)(yaml@2.8.2)
 
   packages/config: {}
@@ -323,43 +329,43 @@ importers:
   packages/core:
     dependencies:
       '@antv/infographic':
-        specifier: ^0.2.7
+        specifier: 0.2.7
         version: 0.2.7
       '@md/shared':
         specifier: workspace:*
         version: link:../shared
       es-toolkit:
-        specifier: ^1.42.0
+        specifier: 1.42.0
         version: 1.42.0
       fflate:
-        specifier: ^0.8.2
+        specifier: 0.8.2
         version: 0.8.2
       front-matter:
-        specifier: ^4.0.2
+        specifier: 4.0.2
         version: 4.0.2
       highlight.js:
-        specifier: ^11.11.1
+        specifier: 11.11.1
         version: 11.11.1
       isomorphic-dompurify:
-        specifier: ^2.34.0
+        specifier: 2.34.0
         version: 2.34.0(postcss@8.5.6)
       marked:
-        specifier: ^17.0.1
+        specifier: 17.0.1
         version: 17.0.1
       mermaid:
-        specifier: ^11.12.2
+        specifier: 11.12.2
         version: 11.12.2
       postcss:
-        specifier: ^8.5.6
+        specifier: 8.5.6
         version: 8.5.6
       postcss-calc:
-        specifier: ^10.1.1
+        specifier: 10.1.1
         version: 10.1.1(postcss@8.5.6)
       postcss-custom-properties:
-        specifier: ^14.0.6
+        specifier: 14.0.6
         version: 14.0.6(postcss@8.5.6)
       reading-time:
-        specifier: ^1.5.0
+        specifier: 1.5.0
         version: 1.5.0
     devDependencies:
       '@md/config':
@@ -369,7 +375,7 @@ importers:
   packages/example:
     devDependencies:
       wrangler:
-        specifier: ^4.54.0
+        specifier: 4.54.0
         version: 4.54.0(@cloudflare/workers-types@4.20251211.0)
 
   packages/md-cli:
@@ -400,74 +406,74 @@ importers:
   packages/shared:
     dependencies:
       '@codemirror/autocomplete':
-        specifier: ^6.20.0
+        specifier: 6.20.0
         version: 6.20.0
       '@codemirror/commands':
-        specifier: ^6.10.0
+        specifier: 6.10.0
         version: 6.10.0
       '@codemirror/lang-css':
-        specifier: ^6.3.1
+        specifier: 6.3.1
         version: 6.3.1
       '@codemirror/lang-javascript':
-        specifier: ^6.2.4
+        specifier: 6.2.4
         version: 6.2.4
       '@codemirror/lang-markdown':
-        specifier: ^6.5.0
+        specifier: 6.5.0
         version: 6.5.0
       '@codemirror/language':
-        specifier: ^6.11.3
+        specifier: 6.11.3
         version: 6.11.3
       '@codemirror/language-data':
-        specifier: ^6.5.2
+        specifier: 6.5.2
         version: 6.5.2
       '@codemirror/lint':
-        specifier: ^6.9.2
+        specifier: 6.9.2
         version: 6.9.2
       '@codemirror/search':
-        specifier: ^6.5.11
+        specifier: 6.5.11
         version: 6.5.11
       '@fsegurai/codemirror-theme-vscode-dark':
-        specifier: ^6.2.3
+        specifier: 6.2.3
         version: 6.2.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)
       '@fsegurai/codemirror-theme-vscode-light':
-        specifier: ^6.2.3
+        specifier: 6.2.3
         version: 6.2.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)
       '@replit/codemirror-indentation-markers':
-        specifier: ^6.5.3
+        specifier: 6.5.3
         version: 6.5.3(@codemirror/language@6.11.3)(@codemirror/state@6.5.2)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))
       axios:
-        specifier: ^1.13.2
+        specifier: 1.13.2
         version: 1.13.2
       es-toolkit:
-        specifier: ^1.42.0
+        specifier: 1.42.0
         version: 1.42.0
       marked:
-        specifier: ^17.0.1
+        specifier: 17.0.1
         version: 17.0.1
       reading-time:
-        specifier: ^1.5.0
+        specifier: 1.5.0
         version: 1.5.0
       remark-parse:
-        specifier: ^11.0.0
+        specifier: 11.0.0
         version: 11.0.0
       remark-stringify:
-        specifier: ^11.0.0
+        specifier: 11.0.0
         version: 11.0.0
       unified:
-        specifier: ^11.0.5
+        specifier: 11.0.5
         version: 11.0.5
       unist-util-visit:
-        specifier: ^5.0.0
+        specifier: 5.0.0
         version: 5.0.0
     devDependencies:
       '@md/config':
         specifier: workspace:*
         version: link:../config
       '@types/mdast':
-        specifier: ^4.0.4
+        specifier: 4.0.4
         version: 4.0.4
       '@types/unist':
-        specifier: ^3.0.3
+        specifier: 3.0.3
         version: 3.0.3
 
 packages:
@@ -2590,6 +2596,9 @@ packages:
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
+
+  '@types/spark-md5@3.0.5':
+    resolution: {integrity: sha512-lWf05dnD42DLVKQJZrDHtWFidcLrHuip01CtnC2/S6AMhX4t9ZlEUj4iuRlAnts0PQk7KESOqKxeGE/b6sIPGg==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -10585,6 +10594,8 @@ snapshots:
 
   '@types/sarif@2.1.7': {}
 
+  '@types/spark-md5@3.0.5': {}
+
   '@types/trusted-types@2.0.7':
     optional: true
 
@@ -14042,7 +14053,7 @@ snapshots:
 
   md5.js@1.3.5:
     dependencies:
-      hash-base: 3.0.5
+      hash-base: 3.1.2
       inherits: 2.0.4
       safe-buffer: 5.2.1
 
