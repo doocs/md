@@ -3,12 +3,16 @@
  * 根据配置动态生成 CSS 变量样式
  */
 
+import type { CustomHeadingCSS, HeadingLevel, HeadingStyles, HeadingStyleType } from '@md/shared/configs'
+
 export interface CSSVariableConfig {
   primaryColor: string
   fontFamily: string
   fontSize: string
   isUseIndent?: boolean
   isUseJustify?: boolean
+  headingStyles?: HeadingStyles
+  customHeadingCSS?: CustomHeadingCSS
 }
 
 /**
@@ -31,4 +35,156 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   ${config.isUseJustify ? 'text-align: justify;' : ''}
 }
   `.trim()
+}
+
+/**
+ * 生成标题样式 CSS（单独导出，用于在主题 CSS 之后应用）
+ */
+export function generateHeadingStyles(config: CSSVariableConfig): string {
+  return generateHeadingStylesCSS(config.headingStyles, config.customHeadingCSS)
+}
+
+/**
+ * 生成标题样式 CSS
+ */
+function generateHeadingStylesCSS(headingStyles?: HeadingStyles, customHeadingCSS?: CustomHeadingCSS): string {
+  if (!headingStyles)
+    return ``
+
+  const levels: HeadingLevel[] = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`]
+  const cssRules: string[] = []
+
+  for (const level of levels) {
+    const style = headingStyles[level]
+    if (style && style !== `default`) {
+      if (style === `custom`) {
+        const customCSS = customHeadingCSS?.[level]
+        if (customCSS) {
+          cssRules.push(generateCustomHeadingCSS(level, customCSS))
+        }
+      }
+      else {
+        cssRules.push(generateHeadingCSS(level, style))
+      }
+    }
+  }
+
+  return cssRules.join(`\n\n`)
+}
+
+/**
+ * 生成自定义标题 CSS
+ */
+function generateCustomHeadingCSS(level: HeadingLevel, customCSS: string): string {
+  return `#output ${level} {\n  ${customCSS.split(`\\n`).join(`\n  `)}\n}`
+}
+
+/**
+ * 生成单个标题级别的样式 CSS
+ */
+function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): string {
+  const baseStyles = `
+  display: block !important;
+  text-align: left !important;
+  background: transparent !important;
+  margin-left: 8px;
+  margin-right: 8px;`
+
+  switch (style) {
+    case `color-only`:
+      return `#output ${level} {
+  color: var(--md-primary-color) !important;
+  background: transparent !important;
+}`
+
+    case `border-bottom`:
+      return `#output ${level} {${baseStyles}
+  padding-bottom: 0.3em;
+  border-bottom: 2px solid var(--md-primary-color);
+  color: var(--md-primary-color);
+}`
+
+    case `border-left`:
+      return `#output ${level} {${baseStyles}
+  padding-left: 10px;
+  border-left: 4px solid var(--md-primary-color);
+  color: var(--md-primary-color);
+}`
+
+    case `tag-line`:
+      return `#output section ${level} {
+  display: table !important;
+  text-align: center !important;
+  background: var(--md-primary-color) !important;
+  color: #fff !important;
+  padding: 0 0.2em !important;
+  margin: 4em 8px 2em 8px !important;
+  position: static !important;
+}
+#output section:has(${level}) {
+  position: relative !important;
+}
+#output section ${level}::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 8px !important;
+  right: 8px !important;
+  margin-top: 0 !important;
+  height: 2px !important;
+  background: var(--md-primary-color) !important;
+}`
+
+    case `line-tag`:
+      return `#output section ${level} {
+  display: table !important;
+  text-align: center !important;
+  background: var(--md-primary-color) !important;
+  color: #fff !important;
+  padding: 0 0.2em !important;
+  margin: 4em auto 2em auto !important;
+  position: static !important;
+}
+#output section:has(${level}) {
+  position: relative !important;
+}
+#output section ${level}::before {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 8px !important;
+  right: 8px !important;
+  margin-bottom: 0 !important;
+  height: 2px !important;
+  background: var(--md-primary-color) !important;
+}`
+
+    case `double-line`:
+      return `#output section ${level} {
+  display: table !important;
+  text-align: left !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  padding: 0 !important;
+  margin: 4em 8px 0.8em 8px !important;
+  position: static !important;
+  border-bottom: 3px solid var(--md-primary-color) !important;
+}
+#output section:has(${level}) {
+  position: relative !important;
+}
+#output section ${level}::after {
+  content: '' !important;
+  display: block !important;
+  position: absolute !important;
+  left: 8px !important;
+  right: 8px !important;
+  margin-top: 1px !important;
+  height: 3px !important;
+  background: hsl(var(--foreground) / 0.5) !important;
+}`
+
+    default:
+      return ``
+  }
 }
