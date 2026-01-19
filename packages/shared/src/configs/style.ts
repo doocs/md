@@ -228,12 +228,7 @@ export type HeadingStyles = {
   [K in HeadingLevel]?: HeadingStyleType
 }
 
-export type CustomHeadingCSS = {
-  [K in HeadingLevel]?: string
-}
-
 export const defaultHeadingStyles: HeadingStyles = {}
-export const defaultCustomHeadingCSS: CustomHeadingCSS = {}
 
 export const legendOptions: IConfigOption[] = [
   {

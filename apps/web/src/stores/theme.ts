@@ -1,4 +1,4 @@
-import type { CustomHeadingCSS, HeadingLevel, HeadingStyles, HeadingStyleType, ThemeName } from '@md/shared/configs'
+import type { HeadingLevel, HeadingStyles, HeadingStyleType, ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { addPrefix } from '@/utils'
@@ -51,9 +51,6 @@ export const useThemeStore = defineStore(`theme`, () => {
   // 标题样式
   const headingStyles = store.reactive<HeadingStyles>(`headingStyles`, defaultStyleConfig.headingStyles)
 
-  // 自定义标题 CSS
-  const customHeadingCSS = store.reactive<CustomHeadingCSS>(`customHeadingCSS`, {})
-
   // 计算属性
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
@@ -79,7 +76,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     codeBlockTheme.value = defaultStyleConfig.codeBlockTheme
     legend.value = defaultStyleConfig.legend
     headingStyles.value = { ...defaultStyleConfig.headingStyles }
-    customHeadingCSS.value = {}
 
     isUseIndent.value = false
     isUseJustify.value = false
@@ -96,19 +92,6 @@ export const useThemeStore = defineStore(`theme`, () => {
   // 获取标题样式
   const getHeadingStyle = (level: HeadingLevel): HeadingStyleType => {
     return headingStyles.value[level] || `default`
-  }
-
-  // 设置自定义标题 CSS
-  const setCustomHeadingCSS = (level: HeadingLevel, css: string) => {
-    customHeadingCSS.value = {
-      ...customHeadingCSS.value,
-      [level]: css || undefined,
-    }
-  }
-
-  // 获取自定义标题 CSS
-  const getCustomHeadingCSS = (level: HeadingLevel): string => {
-    return customHeadingCSS.value[level] || ``
   }
 
   // 切换 highlight.js 代码主题
@@ -151,7 +134,6 @@ export const useThemeStore = defineStore(`theme`, () => {
           isUseIndent: isUseIndent.value,
           isUseJustify: isUseJustify.value,
           headingStyles: headingStyles.value,
-          customHeadingCSS: customHeadingCSS.value,
         },
       })
     }
@@ -177,7 +159,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     isUseJustify,
     previewWidth,
     headingStyles,
-    customHeadingCSS,
 
     // Actions
     toggleMacCodeBlock,
@@ -191,7 +172,5 @@ export const useThemeStore = defineStore(`theme`, () => {
     applyCurrentTheme,
     setHeadingStyle,
     getHeadingStyle,
-    setCustomHeadingCSS,
-    getCustomHeadingCSS,
   }
 })

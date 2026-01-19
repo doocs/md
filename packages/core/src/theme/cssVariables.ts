@@ -3,7 +3,7 @@
  * 根据配置动态生成 CSS 变量样式
  */
 
-import type { CustomHeadingCSS, HeadingLevel, HeadingStyles, HeadingStyleType } from '@md/shared/configs'
+import type { HeadingLevel, HeadingStyles, HeadingStyleType } from '@md/shared/configs'
 
 export interface CSSVariableConfig {
   primaryColor: string
@@ -12,7 +12,6 @@ export interface CSSVariableConfig {
   isUseIndent?: boolean
   isUseJustify?: boolean
   headingStyles?: HeadingStyles
-  customHeadingCSS?: CustomHeadingCSS
 }
 
 /**
@@ -41,13 +40,13 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
  * 生成标题样式 CSS（单独导出，用于在主题 CSS 之后应用）
  */
 export function generateHeadingStyles(config: CSSVariableConfig): string {
-  return generateHeadingStylesCSS(config.headingStyles, config.customHeadingCSS)
+  return generateHeadingStylesCSS(config.headingStyles)
 }
 
 /**
  * 生成标题样式 CSS
  */
-function generateHeadingStylesCSS(headingStyles?: HeadingStyles, customHeadingCSS?: CustomHeadingCSS): string {
+function generateHeadingStylesCSS(headingStyles?: HeadingStyles): string {
   if (!headingStyles)
     return ``
 
@@ -56,27 +55,13 @@ function generateHeadingStylesCSS(headingStyles?: HeadingStyles, customHeadingCS
 
   for (const level of levels) {
     const style = headingStyles[level]
-    if (style && style !== `default`) {
-      if (style === `custom`) {
-        const customCSS = customHeadingCSS?.[level]
-        if (customCSS) {
-          cssRules.push(generateCustomHeadingCSS(level, customCSS))
-        }
-      }
-      else {
-        cssRules.push(generateHeadingCSS(level, style))
-      }
+    // 自定义样式由用户在 CSS 编辑器中直接编辑，这里只处理预设样式
+    if (style && style !== `default` && style !== `custom`) {
+      cssRules.push(generateHeadingCSS(level, style))
     }
   }
 
   return cssRules.join(`\n\n`)
-}
-
-/**
- * 生成自定义标题 CSS
- */
-function generateCustomHeadingCSS(level: HeadingLevel, customCSS: string): string {
-  return `#output ${level} {\n  ${customCSS.split(`\\n`).join(`\n  `)}\n}`
 }
 
 /**
