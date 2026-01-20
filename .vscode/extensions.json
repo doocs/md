@@ -1,3 +1,6 @@
 {
-  "recommendations": ["Vue.volar"]
+  "recommendations": [
+    "Vue.volar",
+    "expo.vscode-expo-tools"
+  ]
 }

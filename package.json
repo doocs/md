@@ -19,6 +19,7 @@
     "start": "pnpm web dev",
     "web": "pnpm --filter @md/web",
     "vscode": "pnpm --prefix ./apps/vscode",
+    "mobile": "pnpm --filter @md/mobile",
     "cli": "pnpm --filter @doocs/md-cli",
     "build:cli": "pnpm web build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r apps/web/dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "release:cli": "node ./scripts/release.js",
@@ -49,6 +50,7 @@
     "pre-commit": "npx lint-staged"
   },
   "lint-staged": {
-    "*": "eslint --fix"
+    "apps/mobile/**/*": "eslint --config apps/mobile/eslint.config.mjs --fix",
+    "!(apps/mobile)/**/*": "eslint --fix"
   }
 }
