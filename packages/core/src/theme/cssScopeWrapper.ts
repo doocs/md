@@ -47,6 +47,12 @@ export function wrapCSSWithScope(css: string, scope: string = `#output`): string
             trimmed = trimmed.replace(baseSelector, `.${SELECTOR_MAPPING[baseSelector]}`)
           }
 
+          // 对 h1-h6 标题选择器添加 section 以匹配预设标题样式的选择器优先级
+          const headingMatch = trimmed.match(/^(h[1-6])(\s|$|::|[:[])/)
+          if (headingMatch) {
+            return `${scope} section ${trimmed}`
+          }
+
           // 添加作用域前缀
           return `${scope} ${trimmed}`
         })
