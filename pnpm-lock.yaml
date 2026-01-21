@@ -329,43 +329,43 @@ importers:
   packages/core:
     dependencies:
       '@antv/infographic':
-        specifier: 0.2.7
+        specifier: ^0.2.7
         version: 0.2.7
       '@md/shared':
         specifier: workspace:*
         version: link:../shared
       es-toolkit:
-        specifier: 1.42.0
+        specifier: ^1.42.0
         version: 1.42.0
       fflate:
-        specifier: 0.8.2
+        specifier: ^0.8.2
         version: 0.8.2
       front-matter:
-        specifier: 4.0.2
+        specifier: ^4.0.2
         version: 4.0.2
       highlight.js:
-        specifier: 11.11.1
+        specifier: ^11.11.1
         version: 11.11.1
       isomorphic-dompurify:
-        specifier: 2.34.0
+        specifier: ^2.34.0
         version: 2.34.0
       marked:
-        specifier: 17.0.1
+        specifier: ^17.0.1
         version: 17.0.1
       mermaid:
-        specifier: 11.12.2
+        specifier: ^11.12.2
         version: 11.12.2
       postcss:
-        specifier: 8.5.6
+        specifier: ^8.5.6
         version: 8.5.6
       postcss-calc:
-        specifier: 10.1.1
+        specifier: ^10.1.1
         version: 10.1.1(postcss@8.5.6)
       postcss-custom-properties:
-        specifier: 14.0.6
+        specifier: ^14.0.6
         version: 14.0.6(postcss@8.5.6)
       reading-time:
-        specifier: 1.5.0
+        specifier: ^1.5.0
         version: 1.5.0
     devDependencies:
       '@md/config':
