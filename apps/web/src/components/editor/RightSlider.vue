@@ -56,10 +56,9 @@ const selectedHeadingStyle = computed({
         }, 100)
       })
     }
-    else {
-      themeStore.applyCurrentTheme()
-      editorRefresh()
-    }
+    // 无论选择预设还是自定义，都立即应用主题，确保标题样式及时恢复/更新
+    themeStore.applyCurrentTheme()
+    editorRefresh()
   },
 })
 
