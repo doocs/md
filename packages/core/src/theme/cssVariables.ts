@@ -69,17 +69,17 @@ function generateHeadingStylesCSS(headingStyles?: HeadingStyles): string {
  */
 function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): string {
   const baseStyles = `
-  display: block !important;
-  text-align: left !important;
-  background: transparent !important;
+  display: block;
+  text-align: left;
+  background: transparent;
   margin-left: 8px;
   margin-right: 8px;`
 
   switch (style) {
     case `color-only`:
       return `#output ${level} {
-  color: var(--md-primary-color) !important;
-  background: transparent !important;
+  color: var(--md-primary-color);
+  background: transparent;
 }`
 
     case `border-bottom`:
@@ -98,75 +98,75 @@ function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): strin
 
     case `tag-line`:
       return `#output section ${level} {
-  display: table !important;
-  text-align: center !important;
-  background: var(--md-primary-color) !important;
-  color: #fff !important;
-  padding: 0 0.2em !important;
-  margin: 4em 8px 2em 8px !important;
-  position: static !important;
+  display: table;
+  text-align: center;
+  background: var(--md-primary-color);
+  color: #fff;
+  padding: 0 0.2em;
+  margin: 4em 8px 2em 8px;
+  position: static;
 }
 #output section:has(${level}) {
-  position: relative !important;
+  position: relative;
 }
 #output section ${level}::after {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  left: 8px !important;
-  right: 8px !important;
-  margin-top: 0 !important;
-  height: 2px !important;
-  background: var(--md-primary-color) !important;
+  content: '';
+  display: block;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  margin-top: 0;
+  height: 2px;
+  background: var(--md-primary-color);
 }`
 
     case `line-tag`:
       return `#output section ${level} {
-  display: table !important;
-  text-align: center !important;
-  background: var(--md-primary-color) !important;
-  color: #fff !important;
-  padding: 0 0.2em !important;
-  margin: 4em auto 2em auto !important;
-  position: static !important;
+  display: table;
+  text-align: center;
+  background: var(--md-primary-color);
+  color: #fff;
+  padding: 0 0.2em;
+  margin: 4em auto 2em auto;
+  position: static;
 }
 #output section:has(${level}) {
-  position: relative !important;
+  position: relative;
 }
 #output section ${level}::before {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  left: 8px !important;
-  right: 8px !important;
-  margin-bottom: 0 !important;
-  height: 2px !important;
-  background: var(--md-primary-color) !important;
+  content: '';
+  display: block;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  margin-bottom: 0;
+  height: 2px;
+  background: var(--md-primary-color);
 }`
 
     case `double-line`:
       return `#output section ${level} {
-  display: table !important;
-  text-align: left !important;
-  background: transparent !important;
-  color: hsl(var(--foreground)) !important;
-  padding: 0 !important;
-  margin: 4em 8px 0.8em 8px !important;
-  position: static !important;
-  border-bottom: 3px solid var(--md-primary-color) !important;
+  display: table;
+  text-align: left;
+  background: transparent;
+  color: hsl(var(--foreground));
+  padding: 0;
+  margin: 4em 8px 0.8em 8px;
+  position: static;
+  border-bottom: 3px solid var(--md-primary-color);
 }
 #output section:has(${level}) {
-  position: relative !important;
+  position: relative;
 }
 #output section ${level}::after {
-  content: '' !important;
-  display: block !important;
-  position: absolute !important;
-  left: 8px !important;
-  right: 8px !important;
-  margin-top: 1px !important;
-  height: 3px !important;
-  background: hsl(var(--foreground) / 0.5) !important;
+  content: '';
+  display: block;
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  margin-top: 1px;
+  height: 3px;
+  background: hsl(var(--foreground) / 0.5);
 }`
 
     default:
