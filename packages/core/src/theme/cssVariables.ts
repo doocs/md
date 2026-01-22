@@ -71,9 +71,7 @@ function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): strin
   const baseStyles = `
   display: block;
   text-align: left;
-  background: transparent;
-  margin-left: 8px;
-  margin-right: 8px;`
+  background: transparent;`
 
   switch (style) {
     case `color-only`:
@@ -91,82 +89,10 @@ function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): strin
 
     case `border-left`:
       return `#output ${level} {${baseStyles}
+  margin-left: 0;
   padding-left: 10px;
   border-left: 4px solid var(--md-primary-color);
   color: var(--md-primary-color);
-}`
-
-    case `tag-line`:
-      return `#output section ${level} {
-  display: table;
-  text-align: center;
-  background: var(--md-primary-color);
-  color: #fff;
-  padding: 0 0.2em;
-  margin: 4em 8px 2em 8px;
-  position: static;
-}
-#output section:has(${level}) {
-  position: relative;
-}
-#output section ${level}::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  margin-top: 0;
-  height: 2px;
-  background: var(--md-primary-color);
-}`
-
-    case `line-tag`:
-      return `#output section ${level} {
-  display: table;
-  text-align: center;
-  background: var(--md-primary-color);
-  color: #fff;
-  padding: 0 0.2em;
-  margin: 4em auto 2em auto;
-  position: static;
-}
-#output section:has(${level}) {
-  position: relative;
-}
-#output section ${level}::before {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  margin-bottom: 0;
-  height: 2px;
-  background: var(--md-primary-color);
-}`
-
-    case `double-line`:
-      return `#output section ${level} {
-  display: table;
-  text-align: left;
-  background: transparent;
-  color: hsl(var(--foreground));
-  padding: 0;
-  margin: 4em 8px 0.8em 8px;
-  position: static;
-  border-bottom: 3px solid var(--md-primary-color);
-}
-#output section:has(${level}) {
-  position: relative;
-}
-#output section ${level}::after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 8px;
-  right: 8px;
-  margin-top: 1px;
-  height: 3px;
-  background: hsl(var(--foreground) / 0.5);
 }`
 
     default:

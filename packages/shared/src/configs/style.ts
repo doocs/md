@@ -215,14 +215,11 @@ export const headingStyleOptions: IConfigOption[] = [
   { label: `主题色文字`, value: `color-only`, desc: `` },
   { label: `下边框`, value: `border-bottom`, desc: `` },
   { label: `左边框`, value: `border-left`, desc: `` },
-  { label: `标签式`, value: `tag-line`, desc: `` },
-  { label: `飘带式`, value: `line-tag`, desc: `` },
-  { label: `双线样式`, value: `double-line`, desc: `` },
   { label: `自定义`, value: `custom`, desc: `` },
 ]
 
 export type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-export type HeadingStyleType = 'default' | 'color-only' | 'border-bottom' | 'border-left' | 'tag-line' | 'line-tag' | 'double-line' | 'custom'
+export type HeadingStyleType = 'default' | 'color-only' | 'border-bottom' | 'border-left' | 'custom'
 
 export type HeadingStyles = {
   [K in HeadingLevel]?: HeadingStyleType
