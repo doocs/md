@@ -47,7 +47,7 @@ const platformCategories = [
   },
   {
     name: `云平台及开发者社区`,
-    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`],
+    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`, `volcengine`],
   },
 ]
 
@@ -191,6 +191,7 @@ function getPlatformUrl(type: string): string {
     qianfan: 'https://qianfan.cloud.baidu.com/qianfandev/topic/create',
     alipayopen: 'https://open.alipay.com/portal/forum/post/add#article',
     modelscope: 'https://modelscope.cn/learn/create',
+    volcengine: 'https://developer.volcengine.com/articles/draft',
   }
   return urls[type] || '#'
 }
