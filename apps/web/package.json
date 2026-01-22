@@ -101,7 +101,7 @@
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-tsc": "^3.1.8",
-    "wrangler": "^4.54.0",
+    "wrangler": "^4.59.1",
     "wxt": "^0.20.11"
   }
 }
