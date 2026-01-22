@@ -195,6 +195,48 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     cssContent.value = ``
   })
 
+  // 滚动到指定标题级别的 CSS 区域并选中
+  const scrollToHeading = (level: string) => {
+    if (!cssEditor.value)
+      return
+
+    const doc = cssEditor.value.state.doc.toString()
+    // 匹配 h1 { 或 h2 { 等模式（支持换行和空格）
+    const pattern = new RegExp(`^${level}\\s*\\{`, `m`)
+    const match = doc.match(pattern)
+
+    if (match && match.index !== undefined) {
+      const startPos = match.index
+      // 查找对应的结束括号
+      let braceCount = 0
+      let endPos = startPos
+      let foundStart = false
+
+      for (let i = startPos; i < doc.length; i++) {
+        if (doc[i] === `{`) {
+          braceCount++
+          foundStart = true
+        }
+        else if (doc[i] === `}`) {
+          braceCount--
+          if (foundStart && braceCount === 0) {
+            endPos = i + 1
+            break
+          }
+        }
+      }
+
+      // 滚动到位置并选中该区域
+      cssEditor.value.dispatch({
+        selection: { anchor: startPos, head: endPos },
+        scrollIntoView: true,
+      })
+
+      // 聚焦编辑器
+      cssEditor.value.focus()
+    }
+  }
+
   return {
     // State
     cssEditor,
@@ -213,5 +255,6 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     validatorTabName,
     resetCssConfig,
     initCssEditor,
+    scrollToHeading,
   }
 })

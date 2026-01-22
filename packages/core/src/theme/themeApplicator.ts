@@ -8,7 +8,7 @@ import type { CSSVariableConfig } from './cssVariables'
 import { baseCSSContent, themeMap } from '@md/shared/configs'
 import { processCSS } from './cssProcessor'
 import { wrapCSSWithScope } from './cssScopeWrapper'
-import { generateCSSVariables } from './cssVariables'
+import { generateCSSVariables, generateHeadingStyles } from './cssVariables'
 import { getThemeInjector } from './themeInjector'
 
 export interface ThemeConfig {
@@ -36,19 +36,24 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
     }
   }
 
-  // 4. 添加用户自定义 CSS
-  if (config.customCSS) {
-    themeCSS = `${themeCSS}\n\n${config.customCSS}`
-  }
-
-  // 5. 给主题 CSS 添加作用域（只影响 #output 预览区域）
+  // 4. 给主题 CSS 添加作用域（只影响 #output 预览区域）
   const scopedThemeCSS = wrapCSSWithScope(themeCSS, `#output`)
 
-  // 6. 拼接完整 CSS
+  // 5. 生成标题样式 CSS（在主题 CSS 之后应用，确保覆盖主题默认样式）
+  const headingStylesCSS = generateHeadingStyles(config.variables)
+
+  // 6. 处理用户自定义 CSS（添加作用域）
+  const scopedCustomCSS = config.customCSS
+    ? wrapCSSWithScope(config.customCSS, `#output`)
+    : ``
+
+  // 7. 拼接完整 CSS（用户自定义 CSS 在最后，优先级最高）
   let mergedCSS = [
     variablesCSS, // CSS 变量（全局）
     baseCSSContent, // 基础样式（全局）
     scopedThemeCSS, // 主题样式（限制在 #output）
+    headingStylesCSS, // 标题样式
+    scopedCustomCSS, // 用户自定义 CSS（最后应用，可覆盖预设样式）
   ].filter(Boolean).join(`\n\n`)
 
   // 7. 使用 PostCSS 处理 CSS（简化 calc() 表达式等）

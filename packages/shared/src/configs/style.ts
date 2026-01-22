@@ -201,6 +201,32 @@ export const codeBlockThemeOptions: IConfigOption[] = codeBlockThemeList.map(cod
   desc: ``,
 }))
 
+export const headingLevelOptions: IConfigOption[] = [
+  { label: `一级标题`, value: `h1`, desc: `` },
+  { label: `二级标题`, value: `h2`, desc: `` },
+  { label: `三级标题`, value: `h3`, desc: `` },
+  { label: `四级标题`, value: `h4`, desc: `` },
+  { label: `五级标题`, value: `h5`, desc: `` },
+  { label: `六级标题`, value: `h6`, desc: `` },
+]
+
+export const headingStyleOptions: IConfigOption[] = [
+  { label: `默认`, value: `default`, desc: `` },
+  { label: `主题色文字`, value: `color-only`, desc: `` },
+  { label: `下边框`, value: `border-bottom`, desc: `` },
+  { label: `左边框`, value: `border-left`, desc: `` },
+  { label: `自定义`, value: `custom`, desc: `` },
+]
+
+export type HeadingLevel = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
+export type HeadingStyleType = 'default' | 'color-only' | 'border-bottom' | 'border-left' | 'custom'
+
+export type HeadingStyles = {
+  [K in HeadingLevel]?: HeadingStyleType
+}
+
+export const defaultHeadingStyles: HeadingStyles = {}
+
 export const legendOptions: IConfigOption[] = [
   {
     label: `title 优先`,
@@ -240,4 +266,5 @@ export const defaultStyleConfig = {
   primaryColor: colorOptions[0].value,
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
+  headingStyles: defaultHeadingStyles as HeadingStyles,
 }
