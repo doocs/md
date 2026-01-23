@@ -73,6 +73,12 @@ function processCss(css, options) {
     if (!css) return '';
     let processed = css;
 
+    // Optimization: Convert calc(var(--md-font-size) * X) to Xem
+    // This fixes issues where 'calc' is ignored in inline styles by some platforms (like WeChat)
+    // resulting in headers being the same size as body text.
+    // e.g., calc(var(--md-font-size) * 1.4) -> 1.4em
+    processed = processed.replace(/calc\(var\(--md-font-size\)\s*\*\s*([\d\.]+)\)/g, '$1em');
+
     // Replace known variables
     // Note: We perform simple string replacement.
     // This assumes the CSS uses var(--name) format.
