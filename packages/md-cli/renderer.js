@@ -18,12 +18,20 @@ function loadThemeCss(themeName) {
     // Determine path relative to this file
     // renderer.js is in packages/md-cli/
     // themes are in packages/shared/src/configs/theme-css/
-    const themePath = path.resolve(__dirname, '../shared/src/configs/theme-css', `${themeName}.css`);
-    if (fs.existsSync(themePath)) {
-      return fs.readFileSync(themePath, 'utf-8');
+
+    // Always load default.css first as base
+    const defaultPath = path.resolve(__dirname, '../shared/src/configs/theme-css/default.css');
+    let cssContent = fs.existsSync(defaultPath) ? fs.readFileSync(defaultPath, 'utf-8') : '';
+
+    // If a different theme is requested, append its CSS (overriding default)
+    if (themeName && themeName !== 'default') {
+      const themePath = path.resolve(__dirname, '../shared/src/configs/theme-css', `${themeName}.css`);
+      if (fs.existsSync(themePath)) {
+        cssContent += '\n' + fs.readFileSync(themePath, 'utf-8');
+      }
     }
-    // Fallback to default
-    return fs.readFileSync(path.resolve(__dirname, '../shared/src/configs/theme-css/default.css'), 'utf-8');
+
+    return cssContent;
   } catch (e) {
     console.error(`Failed to load theme CSS for ${themeName}:`, e);
     return '';
