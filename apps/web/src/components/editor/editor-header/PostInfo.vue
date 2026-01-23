@@ -39,7 +39,7 @@ const allowPost = computed(() => extensionInstalled.value && form.value.accounts
 const platformCategories = [
   {
     name: `媒体平台`,
-    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`],
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`],
   },
   {
     name: `博客平台`,
@@ -192,6 +192,7 @@ function getPlatformUrl(type: string): string {
     alipayopen: 'https://open.alipay.com/portal/forum/post/add#article',
     modelscope: 'https://modelscope.cn/learn/create',
     volcengine: 'https://developer.volcengine.com/articles/draft',
+    douyin: 'https://creator.douyin.com/creator-micro/content/post/article?default-tab=5&enter_from=publish_page&media_type=article&type=new',
   }
   return urls[type] || '#'
 }
