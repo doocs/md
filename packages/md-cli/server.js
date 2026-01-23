@@ -10,6 +10,7 @@ import {
   parseArgv,
   colors
 } from './util.js'
+import { renderMarkdown } from './renderer.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -52,6 +53,39 @@ export function createServer(port = 8800) {
   app.use(express.urlencoded({ extended: true }))
 
   app.use('/public', express.static(path.join(__dirname, 'public')))
+
+  // API Route for Rendering Markdown
+  app.post('/api/render', async (req, res) => {
+    try {
+      const { 
+        markdown, 
+        theme = 'default',
+        primaryColor = '#0F4C81', 
+        fontFamily = "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif",
+        fontSize = '16px',
+        highlightTheme = 'github'
+      } = req.body;
+
+      if (!markdown) {
+        return res.status(400).json({ error: 'Markdown content is required' });
+      }
+
+      const { html } = renderMarkdown(markdown, {
+        theme,
+        primaryColor,
+        fontFamily,
+        fontSize,
+        isMacCodeBlock: true,
+        isShowLineNumber: true,
+        highlightTheme
+      });
+
+      res.json({ html });
+    } catch (error) {
+      console.error('Render error:', error);
+      res.status(500).json({ error: error.message });
+    }
+  });
 
   // 文件上传 API
   app.post('/upload', upload.single('file'), async (req, res) => {
