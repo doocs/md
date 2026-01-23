@@ -2,6 +2,7 @@ import express from 'express'
 import multer from 'multer'
 import path from 'node:path'
 import fs from 'node:fs'
+import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 import { createProxyMiddleware } from 'http-proxy-middleware'
@@ -143,8 +144,27 @@ export function createServer(port = 8800) {
 </body>
 </html>`;
 
-      res.setHeader('Content-Type', 'text/html; charset=utf-8');
-      res.send(fullHtml);
+      // Determine output filename and path
+      let filename = 'output.html';
+      if (filePath) {
+        const base = path.basename(filePath, path.extname(filePath));
+        filename = `${base}.html`;
+      }
+
+      const downloadDir = path.join(os.homedir(), 'Downloads');
+      // Ensure Downloads directory exists (it should, but good practice)
+      if (!fs.existsSync(downloadDir)) {
+         fs.mkdirSync(downloadDir, { recursive: true });
+      }
+
+      const savePath = path.join(downloadDir, filename);
+
+      // Write to local file system
+      fs.writeFileSync(savePath, fullHtml, 'utf-8');
+      console.log(`Rendered HTML saved to: ${savePath}`);
+
+      // Send the file to the client
+      res.download(savePath, filename);
     } catch (error) {
       console.error('Render error:', error);
       res.status(500).send(error.message);
