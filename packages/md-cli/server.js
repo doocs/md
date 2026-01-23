@@ -57,14 +57,23 @@ export function createServer(port = 8800) {
   // API Route for Rendering Markdown
   app.post('/api/render', async (req, res) => {
     try {
-      const { 
-        markdown, 
+      let {
+        markdown,
+        path: filePath,
         theme = 'default',
-        primaryColor = '#0F4C81', 
+        primaryColor = '#0F4C81',
         fontFamily = "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif",
         fontSize = '16px',
         highlightTheme = 'github'
       } = req.body;
+
+      if (!markdown && filePath) {
+        if (fs.existsSync(filePath)) {
+          markdown = fs.readFileSync(filePath, 'utf-8');
+        } else {
+          return res.status(400).json({ error: 'File not found' });
+        }
+      }
 
       if (!markdown) {
         return res.status(400).json({ error: 'Markdown content is required' });
@@ -84,6 +93,61 @@ export function createServer(port = 8800) {
     } catch (error) {
       console.error('Render error:', error);
       res.status(500).json({ error: error.message });
+    }
+  });
+
+  // API Route for Rendering Markdown to HTML file (Preview)
+  app.post('/api/render/html', async (req, res) => {
+    try {
+      let {
+        markdown,
+        path: filePath,
+        theme = 'default',
+        primaryColor = '#0F4C81',
+        fontFamily = "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif",
+        fontSize = '16px',
+        highlightTheme = 'github'
+      } = req.body;
+
+      if (!markdown && filePath) {
+        if (fs.existsSync(filePath)) {
+          markdown = fs.readFileSync(filePath, 'utf-8');
+        } else {
+          return res.status(400).send('File not found');
+        }
+      }
+
+      if (!markdown) {
+        return res.status(400).send('Markdown content is required');
+      }
+
+      const { html } = renderMarkdown(markdown, {
+        theme,
+        primaryColor,
+        fontFamily,
+        fontSize,
+        isMacCodeBlock: true,
+        isShowLineNumber: true,
+        highlightTheme
+      });
+
+      const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Markdown Render Preview</title>
+</head>
+<body>
+  ${html}
+</body>
+</html>`;
+
+      res.setHeader('Content-Type', 'text/html; charset=utf-8');
+      res.send(fullHtml);
+    } catch (error) {
+      console.error('Render error:', error);
+      res.status(500).send(error.message);
     }
   });
 
