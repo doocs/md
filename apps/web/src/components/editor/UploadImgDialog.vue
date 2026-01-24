@@ -399,12 +399,12 @@ function emitUploads(file: File) {
 
 <template>
   <Dialog v-model:open="uiStore.isShowUploadImgDialog">
-    <DialogContent class="md:max-w-max max-h-[90vh] overflow-y-auto" @pointer-down-outside="ev => ev.preventDefault()">
+    <DialogContent class="md:max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
-      <Tabs v-model="activeName" class="w-full md:w-max">
-        <TabsList class="grid w-full overflow-x-auto grid-cols-3 md:grid-cols-none md:flex md:flex-wrap gap-1">
+      <Tabs v-model="activeName" class="w-full md:w-full flex flex-col flex-1 overflow-hidden">
+        <TabsList class="flex w-full justify-start overflow-x-auto flex-nowrap gap-1 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <TabsTrigger value="upload" class="text-xs md:text-sm whitespace-nowrap">
             选择上传
           </TabsTrigger>
@@ -418,7 +418,7 @@ function emitUploads(file: File) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upload">
+        <TabsContent value="upload" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Label>
             <span class="my-4 block">
               图床
@@ -471,7 +471,7 @@ function emitUploads(file: File) {
           </div>
         </TabsContent>
 
-        <TabsContent value="github">
+        <TabsContent value="github" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="githubSchema" :initial-values="githubConfig" @submit="githubSubmit">
             <Field v-slot="{ field, errorMessage }" name="repo">
               <FormItem label="GitHub 仓库" required :error="errorMessage">
@@ -524,7 +524,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="aliOSS">
+        <TabsContent value="aliOSS" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="aliOSSSchema" :initial-values="aliOSSConfig" @submit="aliOSSSubmit">
             <Field v-slot="{ field, errorMessage }" name="accessKeyId">
               <FormItem label="AccessKey ID" required :error="errorMessage">
@@ -618,7 +618,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="txCOS">
+        <TabsContent value="txCOS" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="txCOSSchema" :initial-values="txCOSConfig" @submit="txCOSSubmit">
             <Field v-slot="{ field, errorMessage }" name="secretId">
               <FormItem label="SecretId" required :error="errorMessage">
@@ -701,7 +701,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="qiniu">
+        <TabsContent value="qiniu" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="qiniuSchema" :initial-values="qiniuConfig" @submit="qiniuSubmit">
             <Field v-slot="{ field, errorMessage }" name="accessKey">
               <FormItem label="AccessKey" required :error="errorMessage">
@@ -784,7 +784,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="minio">
+        <TabsContent value="minio" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="minioOSSSchema" :initial-values="minioOSSConfig" @submit="minioOSSSubmit">
             <Field v-slot="{ field, errorMessage }" name="endpoint">
               <FormItem label="Endpoint" required :error="errorMessage">
@@ -860,7 +860,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="mp">
+        <TabsContent value="mp" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
             <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
             <Field
@@ -928,7 +928,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="r2">
+        <TabsContent value="r2" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="r2Schema" :initial-values="r2Config" @submit="r2Submit">
             <Field v-slot="{ field, errorMessage }" name="accountId">
               <FormItem label="AccountId" required :error="errorMessage">
@@ -997,7 +997,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="upyun">
+        <TabsContent value="upyun" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" @submit="upyunSubmit">
             <Field v-slot="{ field, errorMessage }" name="bucket">
               <FormItem label="Bucket" required :error="errorMessage">
@@ -1049,7 +1049,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="telegram">
+        <TabsContent value="telegram" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="telegramSchema" :initial-values="telegramConfig" @submit="telegramSubmit">
             <Field v-slot="{ field, errorMessage }" name="token">
               <FormItem label="Bot Token" required :error="errorMessage">
@@ -1080,7 +1080,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="cloudinary">
+        <TabsContent value="cloudinary" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form
             :validation-schema="cloudinarySchema"
             :initial-values="cloudinaryConfig"
@@ -1159,7 +1159,7 @@ function emitUploads(file: File) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="formCustom" class="grid">
+        <TabsContent value="formCustom" class="grid flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <CustomUploadForm />
         </TabsContent>
       </Tabs>
