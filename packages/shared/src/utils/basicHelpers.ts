@@ -44,11 +44,11 @@ export function removeLeft(str: string) {
  */
 export function checkImage(file: File) {
   // 检查文件名后缀
-  const isValidSuffix = /\.(?:gif|jpe?g|png)$/i.test(file.name)
+  const isValidSuffix = /\.(?:gif|pjp|jfif|jpe|pjpeg|jpe?g|png|webp)$/i.test(file.name)
   if (!isValidSuffix) {
     return {
       ok: false,
-      msg: `请上传 JPG/PNG/GIF 格式的图片`,
+      msg: `请上传 GIF/JPG/JPEG/PNG/WEBP 格式的图片`,
     }
   }
 
