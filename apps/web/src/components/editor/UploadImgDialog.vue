@@ -123,6 +123,34 @@ async function minioOSSSubmit(formValues: any) {
   toast.success(`保存成功`)
 }
 
+// S3
+const s3Schema = toTypedSchema(yup.object({
+  endpoint: yup.string().optional(),
+  region: yup.string().required(`Region 不能为空`),
+  bucket: yup.string().required(`Bucket 不能为空`),
+  accessKeyId: yup.string().required(`AccessKey ID 不能为空`),
+  accessKeySecret: yup.string().required(`Secret AccessKey 不能为空`),
+  path: yup.string().optional(),
+  cdnHost: yup.string().optional(),
+  pathStyle: yup.boolean().optional(),
+}))
+
+const s3Config = store.reactive(`s3Config`, {
+  endpoint: ``,
+  region: ``,
+  bucket: ``,
+  accessKeyId: ``,
+  accessKeySecret: ``,
+  path: ``,
+  cdnHost: ``,
+  pathStyle: false,
+})
+
+async function s3Submit(formValues: any) {
+  Object.assign(s3Config.value, formValues)
+  toast.success(`保存成功`)
+}
+
 // Telegram 图床
 const telegramSchema = toTypedSchema(
   yup.object({
@@ -282,6 +310,10 @@ const options = [
   {
     value: `minio`,
     label: `MinIO`,
+  },
+  {
+    value: `s3`,
+    label: `S3`,
   },
   {
     value: `mp`,
@@ -851,6 +883,98 @@ function emitUploads(file: File) {
                 如何使用 MinIO？
               </Button>
             </FormItem>
+
+            <FormItem>
+              <Button type="submit">
+                保存配置
+              </Button>
+            </FormItem>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="s3" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+          <Form :validation-schema="s3Schema" :initial-values="s3Config" @submit="s3Submit">
+            <Field v-slot="{ field, errorMessage }" name="endpoint">
+              <FormItem label="Endpoint" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：s3.amazonaws.com，可不填"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="region">
+              <FormItem label="Region" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：us-east-1"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="bucket">
+              <FormItem label="Bucket" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：bucket-name"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessKeyId">
+              <FormItem label="AccessKey ID" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：AKIAIOSFODNN7EXAMPLE"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
+              <FormItem label="AccessKey Secret" required :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  type="password"
+                  placeholder="如：wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="path">
+              <FormItem label="存储路径" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：img，可不填，默认根目录"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="cdnHost">
+              <FormItem label="自定义域名" :error="errorMessage">
+                <Input
+                  v-bind="field"
+                  v-model="field.value"
+                  placeholder="如：https://cdn.example.com"
+                />
+              </FormItem>
+            </Field>
+
+            <Field v-slot="{ field, errorMessage }" name="pathStyle" type="boolean">
+              <FormItem label="Force Path Style" :error="errorMessage">
+                <Switch
+                  :checked="field.value"
+                  :name="field.name"
+                  @update:checked="field.onChange"
+                  @blur="field.onBlur"
+                />
+              </FormItem>
+            </Field>
 
             <FormItem>
               <Button type="submit">

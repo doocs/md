@@ -293,6 +293,86 @@ async function minioFileUpload(file: File) {
 }
 
 // -----------------------------------------------------------------------
+// S3 File Upload
+// -----------------------------------------------------------------------
+
+async function s3Upload(file: File) {
+  const dateFilename = getDateFilename(file.name)
+  const config = await store.getJSON(`s3Config`, {
+    endpoint: ``,
+    region: ``,
+    bucket: ``,
+    accessKeyId: ``,
+    accessKeySecret: ``,
+    path: ``,
+    cdnHost: ``,
+    pathStyle: false,
+  })
+  const { endpoint, region, bucket, accessKeyId, accessKeySecret, path, cdnHost, pathStyle } = config
+
+  const clientConfig: any = {
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey: accessKeySecret,
+    },
+    forcePathStyle: pathStyle,
+  }
+
+  if (endpoint) {
+    clientConfig.endpoint = endpoint.startsWith('http') ? endpoint : `https://${endpoint}`
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
+  })
+
+  try {
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
+      },
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
+      return `${host}/${key}`
+    }
+
+    if (endpoint) {
+      const proto = clientConfig.endpoint.startsWith('https') ? 'https' : 'http'
+      const host = clientConfig.endpoint.replace(/^https?:\/\//, '')
+      if (pathStyle) {
+        return `${proto}://${host}/${bucket}/${key}`
+      }
+      else {
+        return `${proto}://${bucket}.${host}/${key}`
+      }
+    }
+
+    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`
+  }
+  catch (err) {
+    console.error(err)
+    throw err
+  }
+}
+
+// -----------------------------------------------------------------------
 // mp File Upload
 // -----------------------------------------------------------------------
 interface MpResponse {
@@ -611,6 +691,8 @@ export async function fileUpload(content: string, file: File) {
       return aliOSSFileUpload(file)
     case `minio`:
       return minioFileUpload(file)
+    case `s3`:
+      return s3Upload(file)
     case `txCOS`:
       return txCOSFileUpload(file)
     case `qiniu`:
