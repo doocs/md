@@ -9,7 +9,6 @@ import Buffer from 'buffer-from'
 import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
-import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
 import { store } from './storage'
 
@@ -199,20 +198,55 @@ async function aliOSSFileUpload(file: File) {
   const config = await store.getJSON(`aliOSSConfig`, { region: ``, bucket: ``, accessKeyId: ``, accessKeySecret: ``, useSSL: true, cdnHost: ``, path: `` })
   const { region, bucket, accessKeyId, accessKeySecret, useSSL, cdnHost, path }
     = config || { region: ``, bucket: ``, accessKeyId: ``, accessKeySecret: ``, useSSL: true, cdnHost: ``, path: `` }
-  const dir = path ? `${path}/${dateFilename}` : dateFilename
+
+  // Transform aliOSSConfig to s3Config format
+  // Aliyun OSS endpoints follow pattern: https://<bucket>.<region>.aliyuncs.com or https://<region>.aliyuncs.com
   const secure = useSSL === undefined || useSSL
   const protocol = secure ? `https` : `http`
-  const client = new OSS({
+  const endpoint = `${protocol}://${region}.aliyuncs.com`
+
+  const clientConfig: any = {
     region,
-    bucket,
-    accessKeyId,
-    accessKeySecret,
-    secure,
+    credentials: {
+      accessKeyId,
+      secretAccessKey: accessKeySecret,
+    },
+    endpoint,
+    forcePathStyle: false, // OSS recommends virtual-hosted style
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
   })
 
   try {
-    await client.put(dir, file)
-    return cdnHost ? `${cdnHost}/${dir}` : `${protocol}://${bucket}.${region}.aliyuncs.com/${dir}`
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
+      },
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
+      return `${host}/${key}`
+    }
+
+    // Default OSS URL format
+    return `${protocol}://${bucket}.${region}.aliyuncs.com/${key}`
   }
   catch (e) {
     return Promise.reject(e)
@@ -661,7 +695,7 @@ async function formCustomUpload(content: string, file: File) {
       util: {
         axios: fetch, // axios 实例
         CryptoJS, // 加密库
-        OSS, // tiny-oss
+        // OSS, // OSS references removed
         COS, // cos-js-sdk-v5
         Buffer, // buffer-from
         uuidv4, // uuid
