@@ -1,0 +1,23 @@
+{
+  "name": "@md/mcp-server",
+  "type": "module",
+  "version": "1.0.0",
+  "bin": {
+    "md-mcp-server": "./dist/index.js"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "start": "tsx src/index.ts"
+  },
+  "dependencies": {
+    "@md/core": "workspace:*",
+    "@md/shared": "workspace:*",
+    "@modelcontextprotocol/sdk": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "tsx": "catalog:",
+    "typescript": "catalog:"
+  }
+}
