@@ -44,7 +44,6 @@
     "clsx": "^2.1.1",
     "codemirror": "^6.0.2",
     "core-js": "^3.48.0",
-    "cos-js-sdk-v5": "^1.10.1",
     "crypto-js": "^4.2.0",
     "es-toolkit": "^1.44.0",
     "front-matter": "^4.0.2",

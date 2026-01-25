@@ -28,8 +28,7 @@ util.axios
 //   util: {
 //     axios, // axios 实例
 //     CryptoJS, // 加密库
-//     OSS, // tiny-oss
-//     COS, // cos-js-sdk-v5
+//     S3, // @aws-sdk/client-s3 (S3Client, PutObjectCommand)
 //     Buffer, // buffer-from
 //     uuidv4, // uuid
 //     qiniu, // qiniu-js

@@ -6,7 +6,6 @@ import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import Buffer from 'buffer-from'
-import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
@@ -261,35 +260,61 @@ async function txCOSFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const configStr = await store.get(`txCOSConfig`)
   const { secretId, secretKey, bucket, region, path, cdnHost } = JSON.parse(configStr!)
-  const cos = new COS({
-    SecretId: secretId,
-    SecretKey: secretKey,
+
+  // Transform txCOSConfig to S3 format
+  // Tencent Cloud COS S3 endpoint: https://cos.<Region>.myqcloud.com
+  const endpoint = `https://cos.${region}.myqcloud.com`
+
+  const clientConfig: any = {
+    region,
+    credentials: {
+      accessKeyId: secretId,
+      secretAccessKey: secretKey,
+    },
+    endpoint,
+    forcePathStyle: false, // COS supports virtual-hosted style
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
   })
-  return new Promise<string>((resolve, reject) => {
-    cos.putObject(
-      {
-        Bucket: bucket,
-        Region: region,
-        Key: `${path}/${dateFilename}`,
-        Body: file,
+
+  try {
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
       },
-      (err, data) => {
-        if (err) {
-          reject(err)
-        }
-        else if (cdnHost) {
-          resolve(
-            path === ``
-              ? `${cdnHost}/${dateFilename}`
-              : `${cdnHost}/${path}/${dateFilename}`,
-          )
-        }
-        else {
-          resolve(`https://${data.Location}`)
-        }
-      },
-    )
-  })
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      return path === ``
+        ? `${cdnHost}/${dateFilename}`
+        : `${cdnHost}/${path}/${dateFilename}`
+    }
+
+    // Default COS URL: https://<BucketName-APPID>.cos.<Region>.myqcloud.com/<Key>
+    // The 'bucket' param in COS usually is 'name-appid', if not, user might need to check.
+    // However, for S3 client, we just use the bucket name provided.
+
+    return `https://${bucket}.cos.${region}.myqcloud.com/${key}`
+  }
+  catch (e) {
+    return Promise.reject(e)
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -696,13 +721,18 @@ async function formCustomUpload(content: string, file: File) {
         axios: fetch, // axios 实例
         CryptoJS, // 加密库
         // OSS, // OSS references removed
-        COS, // cos-js-sdk-v5
+        // COS, // COS references removed
         Buffer, // buffer-from
         uuidv4, // uuid
         qiniu, // qiniu-js
         tokenTools, // 一些编码转换函数
         getDir, // 获取 年/月/日 形式的目录
         getDateFilename, // 根据文件名获取它以 时间戳+uuid 的形式
+        S3: {
+          S3Client,
+          PutObjectCommand,
+          getSignedUrl,
+        },
       },
       okCb: resolve, // 重要: 上传成功后给此回调传 url 即可
       errCb: reject, // 上传失败调用的函数
