@@ -7,11 +7,12 @@ settings:
 overrides:
   '@codemirror/view': 6.38.8
   core-js@<3: ^3.46.0
+  cross-spawn@<7: ^7.0.6
   glob@<8: ^10.4.5
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
+  lodash-es: ^4.17.23
   source-map@0.8.0-beta.0: 0.7.4
   workbox-build>source-map: 0.7.4
-  lodash-es: ^4.17.23
 
 patchedDependencies:
   '@codemirror/view@6.38.8':
@@ -3687,10 +3688,6 @@ packages:
     engines: {node: '>=20'}
     hasBin: true
 
-  cross-spawn@6.0.6:
-    resolution: {integrity: sha512-VqCUuhcd1iB+dsv8gxPttb5iZh/D0iubSP21g36KXdEuf6I5JiioesUVjpCdHV9MZRUfVFlvwtIUyPfxo5trtw==}
-    engines: {node: '>=4.8'}
-
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
@@ -5983,9 +5980,6 @@ packages:
   neo-async@2.6.2:
     resolution: {integrity: sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==}
 
-  nice-try@1.0.5:
-    resolution: {integrity: sha512-1nh45deeb5olNY7eX82BkPO7SSxR5SSYJiPTrTdFUVYwAl8CKMA5N9PjTYkHiRjisVcxcQ1HXdLhx2qxxJzLNQ==}
-
   node-abi@3.87.0:
     resolution: {integrity: sha512-+CGM1L1CgmtheLcBuleyYOn7NWPVu0s0EJH2C4puxgEZb9h8QpR9G2dBfZJOAUhi7VQxuBPMd0hiISWcTyiYyQ==}
     engines: {node: '>=10'}
@@ -6817,17 +6811,9 @@ packages:
     resolution: {integrity: sha512-Ou9I5Ft9WNcCbXrU9cMgPBcCK8LiwLqcbywW3t4oDV37n1pzpuNLsYiAV8eODnjbtQlSDwZ2cUEeQz4E54Hltg==}
     engines: {node: ^18.17.0 || ^20.3.0 || >=21.0.0}
 
-  shebang-command@1.2.0:
-    resolution: {integrity: sha512-EV3L1+UQWGor21OmnvojK36mhg+TyIKDh3iFBKBohr5xeXIhNBcx8oWdgkTEEQ+BEFFYdLRuqMfd5L84N1V5Vg==}
-    engines: {node: '>=0.10.0'}
-
   shebang-command@2.0.0:
     resolution: {integrity: sha512-kHxr2zZpYtdmrN1qDjrrX/Z1rR1kG8Dx+gkpK1G4eXmvXswmcE1hTWBWYUzlraYw1/yZp6YuDY77YtvbN0dmDA==}
     engines: {node: '>=8'}
-
-  shebang-regex@1.0.0:
-    resolution: {integrity: sha512-wpoSFAxys6b2a2wHZ1XpDSgD7N9iVjg29Ph9uV/uaP9Ex/KXlkTZTeddxDPSYQpgvzKLGJke2UU0AzoGCjNIvQ==}
-    engines: {node: '>=0.10.0'}
 
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
@@ -7799,10 +7785,6 @@ packages:
 
   which@1.2.4:
     resolution: {integrity: sha512-zDRAqDSBudazdfM9zpiI30Fu9ve47htYXcGi3ln0wfKu2a7SmrT6F3VDoYONu//48V8Vz4TdCRNPjtvyRO3yBA==}
-    hasBin: true
-
-  which@1.3.1:
-    resolution: {integrity: sha512-HxJdYWq1MTIQbJ3nw0cqssHoTNU267KlrDuGZ1WYlxDStUtKUhOaJmh112/TZmHxxUfuJqPXSOm7tDyas0OSIQ==}
     hasBin: true
 
   which@2.0.2:
@@ -12019,14 +12001,6 @@ snapshots:
       '@epic-web/invariant': 1.0.0
       cross-spawn: 7.0.6
 
-  cross-spawn@6.0.6:
-    dependencies:
-      nice-try: 1.0.5
-      path-key: 2.0.1
-      semver: 5.7.2
-      shebang-command: 1.2.0
-      which: 1.3.1
-
   cross-spawn@7.0.6:
     dependencies:
       path-key: 3.1.1
@@ -13023,7 +12997,7 @@ snapshots:
 
   execa@1.0.0:
     dependencies:
-      cross-spawn: 6.0.6
+      cross-spawn: 7.0.6
       get-stream: 4.1.0
       is-stream: 1.1.0
       npm-run-path: 2.0.2
@@ -14719,8 +14693,6 @@ snapshots:
 
   neo-async@2.6.2: {}
 
-  nice-try@1.0.5: {}
-
   node-abi@3.87.0:
     dependencies:
       semver: 7.7.3
@@ -14819,7 +14791,7 @@ snapshots:
     dependencies:
       ansi-styles: 3.2.1
       chalk: 2.4.2
-      cross-spawn: 6.0.6
+      cross-spawn: 7.0.6
       memorystream: 0.3.1
       minimatch: 3.1.2
       pidtree: 0.3.1
@@ -15767,15 +15739,9 @@ snapshots:
       '@img/sharp-win32-ia32': 0.34.5
       '@img/sharp-win32-x64': 0.34.5
 
-  shebang-command@1.2.0:
-    dependencies:
-      shebang-regex: 1.0.0
-
   shebang-command@2.0.0:
     dependencies:
       shebang-regex: 3.0.0
-
-  shebang-regex@1.0.0: {}
 
   shebang-regex@3.0.0: {}
 
@@ -16875,10 +16841,6 @@ snapshots:
     dependencies:
       is-absolute: 0.1.7
       isexe: 1.1.2
-
-  which@1.3.1:
-    dependencies:
-      isexe: 2.0.0
 
   which@2.0.2:
     dependencies:
