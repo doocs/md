@@ -37,7 +37,7 @@
     "@ssttevee/multipart-parser": "^0.1.9",
     "@vee-validate/yup": "^4.15.1",
     "@vueuse/core": "^14.1.0",
-    "axios": "^1.13.2",
+    "axios": "^1.13.3",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.1",
@@ -50,7 +50,7 @@
     "highlight.js": "^11.11.1",
     "html-to-image": "^1.11.13",
     "isomorphic-dompurify": "^2.35.0",
-    "juice": "11.0.3",
+    "juice": "11.1.0",
     "lucide-vue-next": "^0.563.0",
     "marked": "^17.0.1",
     "node-fetch": "^3.3.2",
@@ -75,7 +75,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.21.2",
-    "@cloudflare/workers-types": "^4.20260124.0",
+    "@cloudflare/workers-types": "^4.20260127.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
@@ -98,7 +98,7 @@
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.0.5",
-    "vue-tsc": "^3.2.3",
+    "vue-tsc": "^3.2.4",
     "wrangler": "^4.60.0",
     "wxt": "^0.20.13"
   }
