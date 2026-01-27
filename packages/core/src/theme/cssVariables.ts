@@ -3,12 +3,15 @@
  * 根据配置动态生成 CSS 变量样式
  */
 
+import type { HeadingLevel, HeadingStyles, HeadingStyleType } from '@md/shared/configs'
+
 export interface CSSVariableConfig {
   primaryColor: string
   fontFamily: string
   fontSize: string
   isUseIndent?: boolean
   isUseJustify?: boolean
+  headingStyles?: HeadingStyles
 }
 
 /**
@@ -31,4 +34,68 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   ${config.isUseJustify ? 'text-align: justify;' : ''}
 }
   `.trim()
+}
+
+/**
+ * 生成标题样式 CSS（单独导出，用于在主题 CSS 之后应用）
+ */
+export function generateHeadingStyles(config: CSSVariableConfig): string {
+  return generateHeadingStylesCSS(config.headingStyles)
+}
+
+/**
+ * 生成标题样式 CSS
+ */
+function generateHeadingStylesCSS(headingStyles?: HeadingStyles): string {
+  if (!headingStyles)
+    return ``
+
+  const levels: HeadingLevel[] = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`]
+  const cssRules: string[] = []
+
+  for (const level of levels) {
+    const style = headingStyles[level]
+    // 自定义样式由用户在 CSS 编辑器中直接编辑，这里只处理预设样式
+    if (style && style !== `default` && style !== `custom`) {
+      cssRules.push(generateHeadingCSS(level, style))
+    }
+  }
+
+  return cssRules.join(`\n\n`)
+}
+
+/**
+ * 生成单个标题级别的样式 CSS
+ */
+function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): string {
+  const baseStyles = `
+  display: block;
+  text-align: left;
+  background: transparent;`
+
+  switch (style) {
+    case `color-only`:
+      return `#output ${level} {
+  color: var(--md-primary-color);
+  background: transparent;
+}`
+
+    case `border-bottom`:
+      return `#output ${level} {${baseStyles}
+  padding-bottom: 0.3em;
+  border-bottom: 2px solid var(--md-primary-color);
+  color: var(--md-primary-color);
+}`
+
+    case `border-left`:
+      return `#output ${level} {${baseStyles}
+  margin-left: 0;
+  padding-left: 10px;
+  border-left: 4px solid var(--md-primary-color);
+  color: var(--md-primary-color);
+}`
+
+    default:
+      return ``
+  }
 }

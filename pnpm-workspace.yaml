@@ -1,10 +1,6 @@
 catalogMode: prefer
 shellEmulator: true
 trustPolicy: no-downgrade
-trustPolicyExclude:
-  - chokidar@4.0.3
-  - 'semver@6.3.1 || 5.7.2'
-  - langium@3.3.1
 
 packages:
   - apps/*

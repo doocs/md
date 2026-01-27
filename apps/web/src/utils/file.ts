@@ -6,10 +6,8 @@ import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import Buffer from 'buffer-from'
-import COS from 'cos-js-sdk-v5'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
-import OSS from 'tiny-oss'
 import { v4 as uuidv4 } from 'uuid'
 import { store } from './storage'
 
@@ -199,20 +197,55 @@ async function aliOSSFileUpload(file: File) {
   const config = await store.getJSON(`aliOSSConfig`, { region: ``, bucket: ``, accessKeyId: ``, accessKeySecret: ``, useSSL: true, cdnHost: ``, path: `` })
   const { region, bucket, accessKeyId, accessKeySecret, useSSL, cdnHost, path }
     = config || { region: ``, bucket: ``, accessKeyId: ``, accessKeySecret: ``, useSSL: true, cdnHost: ``, path: `` }
-  const dir = path ? `${path}/${dateFilename}` : dateFilename
+
+  // Transform aliOSSConfig to s3Config format
+  // Aliyun OSS endpoints follow pattern: https://<bucket>.<region>.aliyuncs.com or https://<region>.aliyuncs.com
   const secure = useSSL === undefined || useSSL
   const protocol = secure ? `https` : `http`
-  const client = new OSS({
+  const endpoint = `${protocol}://${region}.aliyuncs.com`
+
+  const clientConfig: any = {
     region,
-    bucket,
-    accessKeyId,
-    accessKeySecret,
-    secure,
+    credentials: {
+      accessKeyId,
+      secretAccessKey: accessKeySecret,
+    },
+    endpoint,
+    forcePathStyle: false, // OSS recommends virtual-hosted style
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
   })
 
   try {
-    await client.put(dir, file)
-    return cdnHost ? `${cdnHost}/${dir}` : `${protocol}://${bucket}.${region}.aliyuncs.com/${dir}`
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
+      },
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
+      return `${host}/${key}`
+    }
+
+    // Default OSS URL format
+    return `${protocol}://${bucket}.${region}.aliyuncs.com/${key}`
   }
   catch (e) {
     return Promise.reject(e)
@@ -227,35 +260,61 @@ async function txCOSFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const configStr = await store.get(`txCOSConfig`)
   const { secretId, secretKey, bucket, region, path, cdnHost } = JSON.parse(configStr!)
-  const cos = new COS({
-    SecretId: secretId,
-    SecretKey: secretKey,
+
+  // Transform txCOSConfig to S3 format
+  // Tencent Cloud COS S3 endpoint: https://cos.<Region>.myqcloud.com
+  const endpoint = `https://cos.${region}.myqcloud.com`
+
+  const clientConfig: any = {
+    region,
+    credentials: {
+      accessKeyId: secretId,
+      secretAccessKey: secretKey,
+    },
+    endpoint,
+    forcePathStyle: false, // COS supports virtual-hosted style
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
   })
-  return new Promise<string>((resolve, reject) => {
-    cos.putObject(
-      {
-        Bucket: bucket,
-        Region: region,
-        Key: `${path}/${dateFilename}`,
-        Body: file,
+
+  try {
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
       },
-      (err, data) => {
-        if (err) {
-          reject(err)
-        }
-        else if (cdnHost) {
-          resolve(
-            path === ``
-              ? `${cdnHost}/${dateFilename}`
-              : `${cdnHost}/${path}/${dateFilename}`,
-          )
-        }
-        else {
-          resolve(`https://${data.Location}`)
-        }
-      },
-    )
-  })
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      return path === ``
+        ? `${cdnHost}/${dateFilename}`
+        : `${cdnHost}/${path}/${dateFilename}`
+    }
+
+    // Default COS URL: https://<BucketName-APPID>.cos.<Region>.myqcloud.com/<Key>
+    // The 'bucket' param in COS usually is 'name-appid', if not, user might need to check.
+    // However, for S3 client, we just use the bucket name provided.
+
+    return `https://${bucket}.cos.${region}.myqcloud.com/${key}`
+  }
+  catch (e) {
+    return Promise.reject(e)
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -290,6 +349,86 @@ async function minioFileUpload(file: File) {
     data: file,
   }).catch((err) => { console.log(err) })
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
+}
+
+// -----------------------------------------------------------------------
+// S3 File Upload
+// -----------------------------------------------------------------------
+
+async function s3Upload(file: File) {
+  const dateFilename = getDateFilename(file.name)
+  const config = await store.getJSON(`s3Config`, {
+    endpoint: ``,
+    region: ``,
+    bucket: ``,
+    accessKeyId: ``,
+    accessKeySecret: ``,
+    path: ``,
+    cdnHost: ``,
+    pathStyle: false,
+  })
+  const { endpoint, region, bucket, accessKeyId, accessKeySecret, path, cdnHost, pathStyle } = config
+
+  const clientConfig: any = {
+    region,
+    credentials: {
+      accessKeyId,
+      secretAccessKey: accessKeySecret,
+    },
+    forcePathStyle: pathStyle,
+  }
+
+  if (endpoint) {
+    clientConfig.endpoint = endpoint.startsWith('http') ? endpoint : `https://${endpoint}`
+  }
+
+  const s3Client = new S3Client(clientConfig)
+
+  const dir = path ? `${path}/` : ``
+  const key = dir + dateFilename
+
+  const command = new PutObjectCommand({
+    Bucket: bucket,
+    Key: key,
+    ContentType: file.type,
+  })
+
+  try {
+    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+    const response = await window.fetch(presignedUrl, {
+      method: `PUT`,
+      headers: {
+        'Content-Type': file.type,
+      },
+      body: file,
+    })
+
+    if (!response.ok) {
+      throw new Error(`Upload failed: ${response.statusText}`)
+    }
+
+    if (cdnHost) {
+      const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
+      return `${host}/${key}`
+    }
+
+    if (endpoint) {
+      const proto = clientConfig.endpoint.startsWith('https') ? 'https' : 'http'
+      const host = clientConfig.endpoint.replace(/^https?:\/\//, '')
+      if (pathStyle) {
+        return `${proto}://${host}/${bucket}/${key}`
+      }
+      else {
+        return `${proto}://${bucket}.${host}/${key}`
+      }
+    }
+
+    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`
+  }
+  catch (err) {
+    console.error(err)
+    throw err
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -581,14 +720,19 @@ async function formCustomUpload(content: string, file: File) {
       util: {
         axios: fetch, // axios 实例
         CryptoJS, // 加密库
-        OSS, // tiny-oss
-        COS, // cos-js-sdk-v5
+        // OSS, // OSS references removed
+        // COS, // COS references removed
         Buffer, // buffer-from
         uuidv4, // uuid
         qiniu, // qiniu-js
         tokenTools, // 一些编码转换函数
         getDir, // 获取 年/月/日 形式的目录
         getDateFilename, // 根据文件名获取它以 时间戳+uuid 的形式
+        S3: {
+          S3Client,
+          PutObjectCommand,
+          getSignedUrl,
+        },
       },
       okCb: resolve, // 重要: 上传成功后给此回调传 url 即可
       errCb: reject, // 上传失败调用的函数
@@ -611,6 +755,8 @@ export async function fileUpload(content: string, file: File) {
       return aliOSSFileUpload(file)
     case `minio`:
       return minioFileUpload(file)
+    case `s3`:
+      return s3Upload(file)
     case `txCOS`:
       return txCOSFileUpload(file)
     case `qiniu`:

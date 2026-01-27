@@ -39,7 +39,7 @@ const allowPost = computed(() => extensionInstalled.value && form.value.accounts
 const platformCategories = [
   {
     name: `媒体平台`,
-    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`],
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`],
   },
   {
     name: `博客平台`,
@@ -47,7 +47,7 @@ const platformCategories = [
   },
   {
     name: `云平台及开发者社区`,
-    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`],
+    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`, `volcengine`],
   },
 ]
 
@@ -191,6 +191,9 @@ function getPlatformUrl(type: string): string {
     qianfan: 'https://qianfan.cloud.baidu.com/qianfandev/topic/create',
     alipayopen: 'https://open.alipay.com/portal/forum/post/add#article',
     modelscope: 'https://modelscope.cn/learn/create',
+    volcengine: 'https://developer.volcengine.com/articles/draft',
+    douyin: 'https://creator.douyin.com/creator-micro/content/post/article?default-tab=5&enter_from=publish_page&media_type=article&type=new',
+    xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish?from=menu&target=article',
   }
   return urls[type] || '#'
 }

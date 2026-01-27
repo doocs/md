@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import type {
+  HeadingLevel,
+  HeadingStyleType,
   themeMap,
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
@@ -8,16 +10,21 @@ import {
   colorOptions,
   fontFamilyOptions,
   fontSizeOptions,
+  headingLevelOptions,
+  headingStyleOptions,
   legendOptions,
   themeOptions,
 } from '@md/shared/configs'
 import { X } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
+import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
+const cssEditorStore = useCssEditorStore()
+const uiStore = useUIStore()
 const themeStore = useThemeStore()
 const {
   theme,
@@ -33,7 +40,28 @@ const {
   isUseJustify,
 } = storeToRefs(themeStore)
 
-const uiStore = useUIStore()
+// 标题样式选择器状态
+const selectedHeadingLevel = ref<HeadingLevel>(`h2`)
+const selectedHeadingStyle = computed({
+  get: () => themeStore.getHeadingStyle(selectedHeadingLevel.value),
+  set: (val: HeadingStyleType) => {
+    themeStore.setHeadingStyle(selectedHeadingLevel.value, val)
+    if (val === `custom`) {
+      // 打开 CSS 编辑器并滚动到对应标题区域
+      uiStore.isShowCssEditor = true
+      // 等待 CSS 编辑器打开后再滚动
+      nextTick(() => {
+        setTimeout(() => {
+          cssEditorStore.scrollToHeading(selectedHeadingLevel.value)
+        }, 100)
+      })
+    }
+    // 无论选择预设还是自定义，都立即应用主题，确保标题样式及时恢复/更新
+    themeStore.applyCurrentTheme()
+    editorRefresh()
+  },
+})
+
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
 
 const editorStore = useEditorStore()
@@ -253,6 +281,31 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
             :popup-container="pickColorsContainer" @change="colorChanged"
           />
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2>标题样式</h2>
+        <div class="flex gap-2">
+          <Select v-model="selectedHeadingLevel">
+            <SelectTrigger class="w-[120px]">
+              <SelectValue placeholder="选择标题" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="{ label, value } in headingLevelOptions" :key="value" :value="value">
+                {{ label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+          <Select v-model="selectedHeadingStyle">
+            <SelectTrigger class="flex-1">
+              <SelectValue placeholder="选择样式" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem v-for="{ label, value } in headingStyleOptions" :key="value" :value="value">
+                {{ label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
         </div>
       </div>
       <div class="space-y-2">
