@@ -198,6 +198,9 @@ importers:
       remark-stringify:
         specifier: ^11.0.0
         version: 11.0.0
+      spark-md5:
+        specifier: 3.0.2
+        version: 3.0.2
       tailwind-merge:
         specifier: ^3.4.0
         version: 3.4.0
@@ -256,6 +259,9 @@ importers:
       '@types/mdast':
         specifier: ^4.0.4
         version: 4.0.4
+      '@types/spark-md5':
+        specifier: 3.0.5
+        version: 3.0.5
       '@types/unist':
         specifier: ^3.0.3
         version: 3.0.3
@@ -2674,6 +2680,9 @@ packages:
 
   '@types/sarif@2.1.7':
     resolution: {integrity: sha512-kRz0VEkJqWLf1LLVN4pT1cg1Z9wAuvI6L97V3m2f5B76Tg8d413ddvLBPTEHAZJlnn4XSvu0FkZtViCQGVyrXQ==}
+
+  '@types/spark-md5@3.0.5':
+    resolution: {integrity: sha512-lWf05dnD42DLVKQJZrDHtWFidcLrHuip01CtnC2/S6AMhX4t9ZlEUj4iuRlAnts0PQk7KESOqKxeGE/b6sIPGg==}
 
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
@@ -10737,6 +10746,8 @@ snapshots:
   '@types/normalize-package-data@2.4.4': {}
 
   '@types/sarif@2.1.7': {}
+
+  '@types/spark-md5@3.0.5': {}
 
   '@types/trusted-types@2.0.7':
     optional: true
