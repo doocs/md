@@ -47,7 +47,7 @@ const platformCategories = [
   },
   {
     name: `云平台及开发者社区`,
-    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`, `volcengine`],
+    platforms: [`tencentcloud`, `aliyun`, `huaweicloud`, `huaweidev`, `qianfan`, `alipayopen`, `modelscope`, `volcengine`, `elecfans`],
   },
 ]
 
@@ -194,6 +194,7 @@ function getPlatformUrl(type: string): string {
     volcengine: 'https://developer.volcengine.com/articles/draft',
     douyin: 'https://creator.douyin.com/creator-micro/content/post/article?default-tab=5&enter_from=publish_page&media_type=article&type=new',
     xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish?from=menu&target=article',
+    elecfans: 'https://www.elecfans.com/d/article/md/',
   }
   return urls[type] || '#'
 }
