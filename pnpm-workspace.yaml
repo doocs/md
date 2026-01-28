@@ -1,16 +1,21 @@
 catalogMode: prefer
-shellEmulator: true
-trustPolicy: no-downgrade
 
+shellEmulator: true
+
+trustPolicy: no-downgrade
 packages:
   - apps/*
   - packages/*
+
 overrides:
-  '@codemirror/view': 6.38.8
+  '@codemirror/view': 6.39.11
   core-js@<3: ^3.46.0
+  cross-spawn@<7: ^7.0.6
   glob@<8: ^10.4.5
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
+  lodash-es: ^4.17.23
   source-map@0.8.0-beta.0: 0.7.4
   workbox-build>source-map: 0.7.4
+
 patchedDependencies:
-  '@codemirror/view@6.38.8': patches/@codemirror__view@6.38.8.patch
+  '@codemirror/view': patches/@codemirror__view.patch

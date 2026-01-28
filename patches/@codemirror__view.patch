@@ -1,8 +1,8 @@
 diff --git a/dist/index.d.ts b/dist/index.d.ts
-index a939e0835a7615d6af30432751a947f121d9cff6..fdc524606e3bcaea0cf9335550799a23ff92f557 100644
+index 5cd2cadf4baeb46bf3d385bb201d0bb6f2743715..07a67a16909bb756527ae74fce8994086847b622 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
-@@ -482,7 +482,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+@@ -515,7 +515,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
          new (view: EditorView, arg: Arg): V;
      }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
  }
@@ -12,10 +12,10 @@ index a939e0835a7615d6af30432751a947f121d9cff6..fdc524606e3bcaea0cf9335550799a23
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index dd4b601fcac40ff82fdd9eaa8b0f1feaf2e0df9a..3be5d8385e1f81dd7ec38da9d4afd57e1c1bca8e 100644
+index 9d78d57867ec416e35317d9ff5505fc7b423be13..e9333a444d9b4bd40ff1ba2eab15d8ea56336519 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -8879,7 +8879,8 @@ function runHandlers(map, event, view, scope) {
+@@ -8944,7 +8944,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
