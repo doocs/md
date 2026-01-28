@@ -48,7 +48,10 @@
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
   },
-  "lint-staged": {
-    "*": "eslint --fix"
+  "pnpm": {
+    "patchedDependencies": {
+      "juice@11.1.0": "patches/juice@11.1.0.patch",
+      "@codemirror/view@6.39.11": "patches/@codemirror__view.patch"
+    }
   }
 }

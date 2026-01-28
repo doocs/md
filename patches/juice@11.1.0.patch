@@ -1,0 +1,16 @@
+diff --git a/lib/inline.js b/lib/inline.js
+index e39908b8c2d28f8f90263f33fa269136ca91f274..8e24c653372c0c7f23be183fd976f9d45e7bc5a2 100644
+--- a/lib/inline.js
++++ b/lib/inline.js
+@@ -113,7 +113,10 @@ module.exports = function makeJuiceClient(juiceClient) {
+               ? decode(styleAttributeValue)
+               : styleAttributeValue;
+             var cssText = '* { ' + cssStyleAttributeValue + ' } ';
+-            addProps(utils.parseCSS(cssText)[0][1], new utils.Selector('<style>', true));
++            var parsed = utils.parseCSS(cssText);
++            if (parsed && parsed.length > 0) {
++              addProps(parsed[0][1], new utils.Selector('<style>', true));
++            }
+           }
+ 
+           // store reference to an element we need to compile style="" attr for

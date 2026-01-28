@@ -15,9 +15,12 @@ overrides:
   workbox-build>source-map: 0.7.4
 
 patchedDependencies:
-  '@codemirror/view':
+  '@codemirror/view@6.39.11':
     hash: 87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40
     path: patches/@codemirror__view.patch
+  juice@11.1.0:
+    hash: 5f78a811252a4f0c002faf2e0c0d8844abb97453dbf6fe537bc5c3060b15e649
+    path: patches/juice@11.1.0.patch
 
 importers:
 
@@ -167,7 +170,7 @@ importers:
         version: 2.35.0
       juice:
         specifier: ^11.1.0
-        version: 11.1.0
+        version: 11.1.0(patch_hash=5f78a811252a4f0c002faf2e0c0d8844abb97453dbf6fe537bc5c3060b15e649)
       lucide-vue-next:
         specifier: ^0.563.0
         version: 0.563.0(vue@3.5.27(typescript@5.9.3))
@@ -13910,7 +13913,7 @@ snapshots:
       readable-stream: 2.3.8
       setimmediate: 1.0.5
 
-  juice@11.1.0:
+  juice@11.1.0(patch_hash=5f78a811252a4f0c002faf2e0c0d8844abb97453dbf6fe537bc5c3060b15e649):
     dependencies:
       cheerio: 1.0.0
       commander: 12.1.0
