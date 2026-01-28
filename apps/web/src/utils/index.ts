@@ -261,7 +261,7 @@ function mergeCss(html: string): string {
       resolveCSSVariables: false,
     })
   }
-  catch (error) {
+  catch (error: unknown) {
     console.error(`Failed to inline CSS with juice:`, error)
     // 如果 juice 处理失败，返回原始 HTML
     return html
