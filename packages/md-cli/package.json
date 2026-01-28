@@ -36,10 +36,13 @@
     "get-port": "7.1.0",
     "highlight.js": "^11.9.0",
     "http-proxy-middleware": "^3.0.5",
-    "juice": "catalog:",
+    "juice": "^11.0.3",
     "marked": "^17.0.1",
     "multer": "^2.0.2",
     "node-fetch": "^3.3.2",
+    "postcss": "^8.5.3",
+    "postcss-calc": "^10.1.1",
+    "postcss-custom-properties": "^14.0.4",
     "reading-time": "^1.5.0"
   },
   "devDependencies": {

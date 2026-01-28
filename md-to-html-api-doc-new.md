@@ -4,15 +4,26 @@
 
 ## 接口概览
 
-- **接口地址**: `http://localhost:8800/api/render`
+| 接口               | 说明                                 | 返回格式 |
+| ------------------ | ------------------------------------ | -------- |
+| `/api/render`      | 渲染 Markdown 为 HTML 片段           | JSON     |
+| `/api/render/html` | 渲染 Markdown 为完整 HTML 页面并下载 | 文件流   |
+
+**服务地址**: `http://localhost:8800`
+
+---
+
+## 1. 渲染 API (`/api/render`)
+
+将 Markdown 内容转换为 HTML 片段，返回 JSON 格式数据。
+
+- **接口地址**: `/api/render`
 - **请求方式**: `POST`
 - **Content-Type**: `application/json`
 
-## 请求参数
+### 请求参数
 
-请求体为一个 JSON 对象，支持以下参数：
-
-### 基础参数
+#### 基础参数
 
 | 参数名           | 类型     | 必填   | 默认值         | 可选值/说明                                                                                                                                                                                                                                                                                                                      |
 | :--------------- | :------- | :----- | :------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -26,7 +37,7 @@
 
 > \*默认字体栈: `"-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif"`
 
-### 样式配置参数
+#### 样式配置参数
 
 | 参数名             | 类型      | 必填 | 默认值    | 说明                                                                                                                                                   |
 | :----------------- | :-------- | :--- | :-------- | :----------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -39,38 +50,69 @@
 | `isUseJustify`     | `boolean` | 否   | `false`   | 是否开启段落两端对齐                                                                                                                                   |
 | `themeMode`        | `string`  | 否   | `'light'` | 主题模式：<br>- `'light'`: 浅色模式<br>- `'dark'`: 深色模式                                                                                            |
 
-## 响应结构
+### 响应结构
 
-### 成功响应 (200 OK)
-
-返回 JSON 对象，包含渲染后的 HTML 字符串。
+**成功响应 (200 OK)**
 
 ```json
 {
-  "html": "<section class=\"...\" ..."
+  "html": "<div class=\"preview-wrapper\" ...>...</div>"
 }
 ```
 
-### 错误响应
+**错误响应**
 
-- **400 Bad Request**: 缺少必填参数
-
+- **400 Bad Request**: 缺少必填参数或文件未找到
   ```json
-  {
-    "error": "Markdown content is required"
-  }
+  { "error": "Markdown content is required" }
+  ```
+  或
+  ```json
+  { "error": "File not found" }
+  ```
+- **500 Internal Server Error**: 服务器内部错误
+  ```json
+  { "error": "Error message details..." }
   ```
 
-- **500 Internal Server Error**: 服务器内部渲染错误
-  ```json
-  {
-    "error": "Error message details..."
-  }
-  ```
+---
+
+## 2. 渲染并下载 API (`/api/render/html`)
+
+将 Markdown 渲染为完整的 HTML 页面文件，保存到本地 `Downloads` 目录并触发下载。
+
+- **接口地址**: `/api/render/html`
+- **请求方式**: `POST`
+- **Content-Type**: `application/json`
+
+### 请求参数
+
+与 `/api/render` 接口相同，另外支持以下参数：
+
+| 参数名  | 类型     | 必填 | 默认值                      | 说明                                      |
+| :------ | :------- | :--- | :-------------------------- | :---------------------------------------- |
+| `title` | `string` | 否   | `'Markdown Render Preview'` | HTML 页面标题，如未指定则自动从文件名提取 |
+
+### 行为说明
+
+1. 接收 Markdown 内容或文件路径
+2. 调用 `/api/render` 的渲染逻辑生成 HTML 片段
+3. 封装为完整的 HTML 文档（包含 `<html>`, `<head>`, `<body>` 和基础样式）
+4. **自动保存**: 将生成的文件保存到用户的 `~/Downloads` 目录
+   - 如果提供了 `path`，文件名与源文件名一致（后缀改为 `.html`）
+   - 否则文件名为 `output.html`
+5. **响应下载**: 返回文件下载流
+
+### 响应结构
+
+- **成功 (200 OK)**: 返回文件流，触发浏览器下载
+- **失败 (400/500)**: 返回纯文本错误信息
+
+---
 
 ## 调用示例
 
-### 基础调用 (curl)
+### 基础调用 - `/api/render` (curl)
 
 ```bash
 curl -X POST http://localhost:8800/api/render \
@@ -82,7 +124,7 @@ curl -X POST http://localhost:8800/api/render \
   }'
 ```
 
-### 完整参数调用 (curl)
+### 完整参数调用 - `/api/render` (curl)
 
 ```bash
 curl -X POST http://localhost:8800/api/render \
@@ -104,15 +146,28 @@ curl -X POST http://localhost:8800/api/render \
   }'
 ```
 
+### 下载 HTML 文件 - `/api/render/html` (curl)
+
+```bash
+curl -X POST http://localhost:8800/api/render/html \
+  -H "Content-Type: application/json" \
+  -d '{
+    "markdown": "# 我的文档\n\n这是正文内容...",
+    "title": "我的文档",
+    "theme": "grace",
+    "primaryColor": "#009874",
+    "isCiteStatus": true
+  }' --output my-document.html
+```
+
 ### 使用 JavaScript (Fetch) 调用
 
 ```javascript
+// 调用 /api/render 获取 HTML 片段
 async function renderMarkdown() {
   const response = await fetch('http://localhost:8800/api/render', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       markdown: '## 测试标题\n\n这是一段测试文本。\n\n[链接](https://example.com)',
       theme: 'grace',
@@ -132,33 +187,75 @@ async function renderMarkdown() {
     console.error('Error:', data.error)
   }
 }
+
+// 调用 /api/render/html 下载文件
+async function downloadHtml() {
+  const response = await fetch('http://localhost:8800/api/render/html', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      markdown: '# 标题\n\n正文内容...',
+      title: '我的文档',
+      theme: 'grace'
+    })
+  })
+
+  if (response.ok) {
+    const blob = await response.blob()
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'output.html'
+    a.click()
+  }
+}
 ```
 
 ### 使用 Python 调用
 
 ```python
 import requests
-import json
 
-url = "http://localhost:8800/api/render"
+# 调用 /api/render 获取 HTML 片段
+def render_markdown():
+    url = "http://localhost:8800/api/render"
+    payload = {
+        "markdown": "# 标题\n\n**加粗**文本\n\n> 引用\n\n[链接](https://example.com)",
+        "theme": "grace",
+        "primaryColor": "#009874",
+        "isCiteStatus": True,
+        "isCountStatus": True,
+        "isUseIndent": True
+    }
 
-payload = {
-    "markdown": "# 标题\n\n**加粗**文本\n\n> 引用\n\n[链接](https://example.com)",
-    "theme": "grace",
-    "primaryColor": "#009874",
-    "isCiteStatus": True,
-    "isCountStatus": True,
-    "isUseIndent": True
-}
+    response = requests.post(url, json=payload)
 
-response = requests.post(url, json=payload)
+    if response.status_code == 200:
+        html = response.json()["html"]
+        print("渲染成功，HTML 长度:", len(html))
+    else:
+        print("错误:", response.json()["error"])
 
-if response.status_code == 200:
-    html = response.json()["html"]
-    print("渲染成功，HTML 长度:", len(html))
-else:
-    print("错误:", response.json()["error"])
+# 调用 /api/render/html 下载文件
+def download_html():
+    url = "http://localhost:8800/api/render/html"
+    payload = {
+        "markdown": "# 标题\n\n正文内容...",
+        "title": "我的文档",
+        "theme": "grace"
+    }
+
+    response = requests.post(url, json=payload)
+
+    if response.status_code == 200:
+        with open("output.html", "wb") as f:
+            f.write(response.content)
+        print("文件已保存")
+    else:
+        print("错误:", response.text)
 ```
+
+---
 
 ## 启动服务
 
