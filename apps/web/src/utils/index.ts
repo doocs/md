@@ -261,15 +261,20 @@ function mergeCss(html: string): string {
   tempContainer.innerHTML = html
 
   // 提取所有 style 标签
-  const styleTags = tempContainer.querySelectorAll(`style`)
+  const styleTags = Array.from(tempContainer.querySelectorAll(`style`))
   const cssRules: CSSStyleRule[] = []
+  const preservedRules: string[] = [] // 保存 @keyframes, @font-face 等规则
 
   // 收集所有 CSS 规则
-  styleTags.forEach((styleTag) => {
+  styleTags.forEach((styleTag, index) => {
     try {
+      const cssText = styleTag.textContent || ``
+      if (!cssText.trim())
+        return
+
       // 创建临时样式表来解析 CSS
       const tempStyle = document.createElement(`style`)
-      tempStyle.textContent = styleTag.textContent
+      tempStyle.textContent = cssText
       document.head.appendChild(tempStyle)
 
       const sheet = tempStyle.sheet as CSSStyleSheet
@@ -278,17 +283,23 @@ function mergeCss(html: string): string {
           if (rule instanceof CSSStyleRule) {
             cssRules.push(rule)
           }
+          else if (rule instanceof CSSKeyframesRule || rule instanceof CSSFontFaceRule) {
+            // 保留 @keyframes 和 @font-face 规则
+            preservedRules.push(rule.cssText)
+          }
         })
       }
 
       document.head.removeChild(tempStyle)
     }
     catch (error) {
-      console.warn(`Failed to parse CSS rule:`, error)
+      console.warn(`Failed to parse CSS from style tag ${index}:`, error)
     }
   })
 
-  // 将 CSS 规则应用到匹配的元素
+  // 将 CSS 规则按照源顺序应用到匹配的元素
+  // 注意：这是一个简化实现，没有完全考虑 CSS 特异性
+  // 但对于微信编辑器的使用场景已经足够
   cssRules.forEach((rule) => {
     try {
       const elements = tempContainer.querySelectorAll(rule.selectorText)
@@ -301,11 +312,19 @@ function mergeCss(html: string): string {
             const propertyValue = styles.getPropertyValue(propertyName)
             const priority = styles.getPropertyPriority(propertyName)
 
-            // 只有当元素没有该内联样式或优先级较低时才设置
+            // 获取现有内联样式
             const existingValue = element.style.getPropertyValue(propertyName)
             const existingPriority = element.style.getPropertyPriority(propertyName)
 
-            if (!existingValue || (priority === `important` && existingPriority !== `important`)) {
+            // 应用样式的优先级规则：
+            // 1. 如果当前元素没有这个属性，直接设置
+            // 2. 如果新规则是 !important 且现有规则不是，覆盖
+            // 3. 如果两者都是 !important，后来的覆盖（CSS 源顺序）
+            const shouldApply = !existingValue
+              || (priority === `important` && existingPriority !== `important`)
+              || (priority === `important` && existingPriority === `important`)
+
+            if (shouldApply) {
               element.style.setProperty(propertyName, propertyValue, priority)
             }
           }
@@ -314,12 +333,18 @@ function mergeCss(html: string): string {
     }
     catch (error) {
       // 忽略无效的选择器（如伪元素）
-      console.warn(`Failed to apply CSS rule "${rule.selectorText}":`, error)
     }
   })
 
   // 移除所有 style 标签
   tempContainer.querySelectorAll(`style`).forEach(style => style.remove())
+
+  // 如果有需要保留的规则（@keyframes, @font-face 等），添加回去
+  if (preservedRules.length > 0) {
+    const styleTag = document.createElement(`style`)
+    styleTag.textContent = preservedRules.join(`\n`)
+    tempContainer.insertBefore(styleTag, tempContainer.firstChild)
+  }
 
   return tempContainer.innerHTML
 }
