@@ -13,8 +13,10 @@ const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
 const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 
-function createRenderer(display: boolean, withStyle: boolean = true) {
+function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
   return (token: any) => {
+    const display = token.displayMode ?? defaultDisplay
+
     // @ts-expect-error MathJax is a global variable
     window.MathJax.texReset()
     // @ts-expect-error MathJax is a global variable
@@ -96,7 +98,7 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
           type: `blockKatex`,
           raw: match[0],
           text: match[2].trim(),
-          displayMode: match[1].length === 2,
+          displayMode: true,
         }
       }
     },
