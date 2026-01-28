@@ -5,7 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  '@codemirror/view': 6.38.8
+  '@codemirror/view': 6.39.11
   core-js@<3: ^3.46.0
   cross-spawn@<7: ^7.0.6
   glob@<8: ^10.4.5
@@ -15,9 +15,9 @@ overrides:
   workbox-build>source-map: 0.7.4
 
 patchedDependencies:
-  '@codemirror/view@6.38.8':
-    hash: b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2
-    path: patches/@codemirror__view@6.38.8.patch
+  '@codemirror/view':
+    hash: 87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40
+    path: patches/@codemirror__view.patch
 
 importers:
 
@@ -27,8 +27,8 @@ importers:
         specifier: ^6.5.4
         version: 6.5.4
       '@codemirror/view':
-        specifier: 6.38.8
-        version: 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+        specifier: 6.39.11
+        version: 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
     devDependencies:
       '@antfu/eslint-config':
         specifier: 6.6.1
@@ -127,8 +127,8 @@ importers:
         specifier: ^14.1.0
         version: 14.1.0(vue@3.5.27(typescript@5.9.3))
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.3
+        version: 1.13.4
       browser-image-compression:
         specifier: ^2.0.2
         version: 2.0.2
@@ -234,10 +234,10 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: ^1.21.2
-        version: 1.21.2(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2))(workerd@1.20260120.0)(wrangler@4.60.0(@cloudflare/workers-types@4.20260124.0))
+        version: 1.21.2(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2))(workerd@1.20260120.0)(wrangler@4.60.0(@cloudflare/workers-types@4.20260127.0))
       '@cloudflare/workers-types':
-        specifier: ^4.20260124.0
-        version: 4.20260124.0
+        specifier: ^4.20260127.0
+        version: 4.20260127.0
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -305,11 +305,11 @@ importers:
         specifier: ^8.0.5
         version: 8.0.5(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2))(vue@3.5.27(typescript@5.9.3))
       vue-tsc:
-        specifier: ^3.2.3
-        version: 3.2.3(typescript@5.9.3)
+        specifier: ^3.2.4
+        version: 3.2.4(typescript@5.9.3)
       wrangler:
         specifier: ^4.60.0
-        version: 4.60.0(@cloudflare/workers-types@4.20260124.0)
+        version: 4.60.0(@cloudflare/workers-types@4.20260127.0)
       wxt:
         specifier: ^0.20.13
         version: 0.20.13(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(rollup@4.56.0)(terser@5.46.0)(yaml@2.8.2)
@@ -366,7 +366,7 @@ importers:
     devDependencies:
       wrangler:
         specifier: ^4.60.0
-        version: 4.60.0(@cloudflare/workers-types@4.20260124.0)
+        version: 4.60.0(@cloudflare/workers-types@4.20260127.0)
 
   packages/md-cli:
     dependencies:
@@ -424,16 +424,16 @@ importers:
         version: 6.6.0
       '@fsegurai/codemirror-theme-vscode-dark':
         specifier: ^6.2.4
-        version: 6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)
+        version: 6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))(@lezer/highlight@1.2.3)
       '@fsegurai/codemirror-theme-vscode-light':
         specifier: ^6.2.4
-        version: 6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)
+        version: 6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))(@lezer/highlight@1.2.3)
       '@replit/codemirror-indentation-markers':
         specifier: ^6.5.3
-        version: 6.5.3(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))
+        version: 6.5.3(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))
       axios:
-        specifier: ^1.13.2
-        version: 1.13.2
+        specifier: ^1.13.3
+        version: 1.13.4
       es-toolkit:
         specifier: ^1.44.0
         version: 1.44.0
@@ -1038,8 +1038,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20260124.0':
-    resolution: {integrity: sha512-h6TJlew6AtGuEXFc+k5ifalk+tg3fkg0lla6XbMAb2AKKfJGwlFNTwW2xyT/Ha92KY631CIJ+Ace08DPdFohdA==}
+  '@cloudflare/workers-types@4.20260127.0':
+    resolution: {integrity: sha512-4M1HLcWViSdT/pAeDGEB5x5P3sqW7UIi34QrBRnxXbqjAY9if8vBU/lWRWnM+UqKzxWGB2LYjEVOzZrp0jZL+w==}
 
   '@codemirror/autocomplete@6.20.0':
     resolution: {integrity: sha512-bOwvTOIJcG5FVo5gUUupiwYh8MioPLQ4UcqbcRf7UQ98X90tCa9E1kZ3Z7tqwpZxYyOvh1YTYbmZE9RTfTp5hg==}
@@ -1128,8 +1128,8 @@ packages:
   '@codemirror/state@6.5.4':
     resolution: {integrity: sha512-8y7xqG/hpB53l25CIoit9/ngxdfoG+fx+V3SHBrinnhOtLvKHRyAJJuHzkWrR4YXXLX8eXBsejgAAxHUOdW1yw==}
 
-  '@codemirror/view@6.38.8':
-    resolution: {integrity: sha512-XcE9fcnkHCbWkjeKyi0lllwXmBLtyYb5dt89dJyx23I9+LSh5vZDIuk7OLG4VM1lgrXZQcY6cxyZyk5WVPRv/A==}
+  '@codemirror/view@6.39.11':
+    resolution: {integrity: sha512-bWdeR8gWM87l4DB/kYSF9A+dVackzDb/V56Tq7QVrQ7rn86W0rgZFtlL3g3pem6AeGcb9NQNoy3ao4WpW4h5tQ==}
 
   '@cspotcode/source-map-support@0.8.1':
     resolution: {integrity: sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw==}
@@ -1618,7 +1618,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': 6.38.8
+      '@codemirror/view': 6.39.11
       '@lezer/highlight': ^1.0.0
 
   '@fsegurai/codemirror-theme-vscode-light@6.2.4':
@@ -1626,7 +1626,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': 6.38.8
+      '@codemirror/view': 6.39.11
       '@lezer/highlight': ^1.0.0
 
   '@humanfs/core@0.19.1':
@@ -1953,7 +1953,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': 6.38.8
+      '@codemirror/view': 6.39.11
 
   '@rolldown/pluginutils@1.0.0-beta.53':
     resolution: {integrity: sha512-vENRlFU4YbrwVqNDZ7fLvy+JR1CRkyr01jhSiDpE1u6py3OMzQfztQU2jxykW3ALNxO4kSlqIDeYyD0Y9RcQeQ==}
@@ -2891,8 +2891,8 @@ packages:
   '@vue/devtools-shared@8.0.5':
     resolution: {integrity: sha512-bRLn6/spxpmgLk+iwOrR29KrYnJjG9DGpHGkDFG82UM21ZpJ39ztUT9OXX3g+usW7/b2z+h46I9ZiYyB07XMXg==}
 
-  '@vue/language-core@3.2.3':
-    resolution: {integrity: sha512-VpN/GnYDzGLh44AI6i1OB/WsLXo6vwnl0EWHBelGc4TyC0yEq6azwNaed/+Tgr8anFlSdWYnMEkyHJDPe7ii7A==}
+  '@vue/language-core@3.2.4':
+    resolution: {integrity: sha512-bqBGuSG4KZM45KKTXzGtoCl9cWju5jsaBKaJJe3h5hRAAWpZUuj5G+L+eI01sPIkm4H6setKRlw7E85wLdDNew==}
 
   '@vue/reactivity@3.5.27':
     resolution: {integrity: sha512-vvorxn2KXfJ0nBEnj4GYshSgsyMNFnIQah/wczXlsNXt+ijhugmW+PpJ2cNPe4V6jpnBcs0MhCODKllWG+nvoQ==}
@@ -3201,8 +3201,8 @@ packages:
     resolution: {integrity: sha512-wvUjBtSGN7+7SjNpq/9M2Tg350UZD3q62IFZLbRAR1bSMlCo1ZaeW+BJ+D090e4hIIZLBcTDWe4Mh4jvUDajzQ==}
     engines: {node: '>= 0.4'}
 
-  axios@1.13.2:
-    resolution: {integrity: sha512-VPk9ebNqPcy5lRGuSlKx752IlDatOjT9paPlm8A7yOuW2Fbvp4X3JznJtT4f0GzGLLiWE9W8onz51SqLYwzGaA==}
+  axios@1.13.4:
+    resolution: {integrity: sha512-1wVkUaAO6WyaYtCkcYCOx12ZgpGf9Zif+qXa4n+oYzK558YryKqiL6UWwd5DqiH3VRW0GYhTZQ/vlgJrCoNQlg==}
 
   azure-devops-node-api@12.5.0:
     resolution: {integrity: sha512-R5eFskGvOm3U/GzeAuxRkUsAl0hrAwGgWn6zAd2KrZmrEhWZVqLew4OOupbQlXUuojUzpGtq62SmdhJ06N88og==}
@@ -7665,8 +7665,8 @@ packages:
       nuxt:
         optional: true
 
-  vue-tsc@3.2.3:
-    resolution: {integrity: sha512-1RdRB7rQXGFMdpo0aXf9spVzWEPGAk7PEb/ejHQwVrcuQA/HsGiixIc3uBQeqY2YjeEEgvr2ShQewBgcN4c1Cw==}
+  vue-tsc@3.2.4:
+    resolution: {integrity: sha512-xj3YCvSLNDKt1iF9OcImWHhmYcihVu9p4b9s4PGR/qp6yhW+tZJaypGxHScRyOrdnHvaOeF+YkZOdKwbgGvp5g==}
     hasBin: true
     peerDependencies:
       typescript: '>=5.0.0'
@@ -8980,13 +8980,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260120.0
 
-  '@cloudflare/vite-plugin@1.21.2(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2))(workerd@1.20260120.0)(wrangler@4.60.0(@cloudflare/workers-types@4.20260124.0))':
+  '@cloudflare/vite-plugin@1.21.2(vite@7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2))(workerd@1.20260120.0)(wrangler@4.60.0(@cloudflare/workers-types@4.20260127.0))':
     dependencies:
       '@cloudflare/unenv-preset': 2.11.0(unenv@2.0.0-rc.24)(workerd@1.20260120.0)
       miniflare: 4.20260120.0
       unenv: 2.0.0-rc.24
       vite: 7.3.1(@types/node@25.0.10)(jiti@2.6.1)(less@4.5.1)(lightningcss@1.30.2)(terser@5.46.0)(yaml@2.8.2)
-      wrangler: 4.60.0(@cloudflare/workers-types@4.20260124.0)
+      wrangler: 4.60.0(@cloudflare/workers-types@4.20260127.0)
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -9008,20 +9008,20 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20260120.0':
     optional: true
 
-  '@cloudflare/workers-types@4.20260124.0': {}
+  '@cloudflare/workers-types@4.20260127.0': {}
 
   '@codemirror/autocomplete@6.20.0':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
 
   '@codemirror/commands@6.10.1':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
 
   '@codemirror/lang-angular@0.1.4':
@@ -9061,7 +9061,7 @@ snapshots:
       '@codemirror/lang-javascript': 6.2.4
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/css': 1.3.0
       '@lezer/html': 1.3.13
@@ -9077,7 +9077,7 @@ snapshots:
       '@codemirror/language': 6.12.1
       '@codemirror/lint': 6.9.2
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/javascript': 1.5.4
 
@@ -9108,7 +9108,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.11
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.7
@@ -9119,7 +9119,7 @@ snapshots:
       '@codemirror/lang-html': 6.4.11
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/markdown': 1.6.3
 
@@ -9182,7 +9182,7 @@ snapshots:
       '@codemirror/autocomplete': 6.20.0
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/xml': 1.0.6
 
@@ -9225,7 +9225,7 @@ snapshots:
   '@codemirror/language@6.12.1':
     dependencies:
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/common': 1.5.0
       '@lezer/highlight': 1.2.3
       '@lezer/lr': 1.4.7
@@ -9238,20 +9238,20 @@ snapshots:
   '@codemirror/lint@6.9.2':
     dependencies:
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       crelt: 1.0.6
 
   '@codemirror/search@6.6.0':
     dependencies:
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       crelt: 1.0.6
 
   '@codemirror/state@6.5.4':
     dependencies:
       '@marijn/find-cluster-break': 1.0.2
 
-  '@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)':
+  '@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)':
     dependencies:
       '@codemirror/state': 6.5.4
       crelt: 1.0.6
@@ -9586,18 +9586,18 @@ snapshots:
       - '@vue/composition-api'
       - vue
 
-  '@fsegurai/codemirror-theme-vscode-dark@6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)':
+  '@fsegurai/codemirror-theme-vscode-dark@6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))(@lezer/highlight@1.2.3)':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/highlight': 1.2.3
 
-  '@fsegurai/codemirror-theme-vscode-light@6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))(@lezer/highlight@1.2.3)':
+  '@fsegurai/codemirror-theme-vscode-light@6.2.4(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))(@lezer/highlight@1.2.3)':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
       '@lezer/highlight': 1.2.3
 
   '@humanfs/core@0.19.1': {}
@@ -9911,11 +9911,11 @@ snapshots:
 
   '@poppinss/exception@1.2.3': {}
 
-  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2))':
+  '@replit/codemirror-indentation-markers@6.5.3(@codemirror/language@6.12.1)(@codemirror/state@6.5.4)(@codemirror/view@6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40))':
     dependencies:
       '@codemirror/language': 6.12.1
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
 
   '@rolldown/pluginutils@1.0.0-beta.53': {}
 
@@ -11073,7 +11073,7 @@ snapshots:
     dependencies:
       rfdc: 1.4.1
 
-  '@vue/language-core@3.2.3':
+  '@vue/language-core@3.2.4':
     dependencies:
       '@volar/language-core': 2.4.27
       '@vue/compiler-dom': 3.5.27
@@ -11444,7 +11444,7 @@ snapshots:
     dependencies:
       possible-typed-array-names: 1.1.0
 
-  axios@1.13.2:
+  axios@1.13.4:
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
@@ -11841,7 +11841,7 @@ snapshots:
       '@codemirror/lint': 6.9.2
       '@codemirror/search': 6.6.0
       '@codemirror/state': 6.5.4
-      '@codemirror/view': 6.38.8(patch_hash=b8605747598f5f6c64ac060294b07185a9feb98ec18da8bcc47f4319a4d06ec2)
+      '@codemirror/view': 6.39.11(patch_hash=87bc28d6c221c2225dbf10d8b3289a76465f7d279c33bbd2a74e4d6f13d0ce40)
 
   color-convert@1.9.3:
     dependencies:
@@ -16649,10 +16649,10 @@ snapshots:
 
   vue-sonner@2.0.9: {}
 
-  vue-tsc@3.2.3(typescript@5.9.3):
+  vue-tsc@3.2.4(typescript@5.9.3):
     dependencies:
       '@volar/typescript': 2.4.27
-      '@vue/language-core': 3.2.3
+      '@vue/language-core': 3.2.4
       typescript: 5.9.3
 
   vue@3.5.27(typescript@5.9.3):
@@ -16864,7 +16864,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260120.0
       '@cloudflare/workerd-windows-64': 1.20260120.0
 
-  wrangler@4.60.0(@cloudflare/workers-types@4.20260124.0):
+  wrangler@4.60.0(@cloudflare/workers-types@4.20260127.0):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.2
       '@cloudflare/unenv-preset': 2.11.0(unenv@2.0.0-rc.24)(workerd@1.20260120.0)
@@ -16875,7 +16875,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20260120.0
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20260124.0
+      '@cloudflare/workers-types': 4.20260127.0
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
