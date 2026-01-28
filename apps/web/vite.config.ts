@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
       }),
       !isCfWorkers && nodePolyfills({
-        include: [`path`, `util`, `timers`, `stream`, `fs`],
+        include: [`path`, `util`, `timers`, `stream`, `fs`, `buffer`, `url`],
         overrides: {
         // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
         // fs: 'memfs',
