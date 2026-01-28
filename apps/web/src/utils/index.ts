@@ -11,7 +11,6 @@ import {
   toBase64,
 } from '@md/shared/utils'
 
-import juice from 'juice'
 import { Marked } from 'marked'
 
 export {
@@ -251,21 +250,78 @@ function getThemeStyles(): string {
   return styleContent
 }
 
+/**
+ * 使用浏览器原生 API 内联 CSS 样式
+ * 由于 juice 11.1.0 依赖 Node.js 专有模块 (undici)，无法在浏览器中运行
+ * 此函数使用 DOM API 直接内联样式
+ */
 function mergeCss(html: string): string {
-  try {
-    return juice(html, {
-      inlinePseudoElements: true,
-      preserveImportant: true,
-      // 禁用 CSS 变量解析，避免 juice 处理时的错误
-      // 新主题系统已通过 postcss 处理 CSS 变量
-      resolveCSSVariables: false,
-    })
-  }
-  catch (error: unknown) {
-    console.error(`Failed to inline CSS with juice:`, error)
-    // 如果 juice 处理失败，返回原始 HTML
-    return html
-  }
+  // 创建临时容器解析 HTML
+  const tempContainer = document.createElement(`div`)
+  tempContainer.innerHTML = html
+
+  // 提取所有 style 标签
+  const styleTags = tempContainer.querySelectorAll(`style`)
+  const cssRules: CSSStyleRule[] = []
+
+  // 收集所有 CSS 规则
+  styleTags.forEach((styleTag) => {
+    try {
+      // 创建临时样式表来解析 CSS
+      const tempStyle = document.createElement(`style`)
+      tempStyle.textContent = styleTag.textContent
+      document.head.appendChild(tempStyle)
+
+      const sheet = tempStyle.sheet as CSSStyleSheet
+      if (sheet && sheet.cssRules) {
+        Array.from(sheet.cssRules).forEach((rule) => {
+          if (rule instanceof CSSStyleRule) {
+            cssRules.push(rule)
+          }
+        })
+      }
+
+      document.head.removeChild(tempStyle)
+    }
+    catch (error) {
+      console.warn(`Failed to parse CSS rule:`, error)
+    }
+  })
+
+  // 将 CSS 规则应用到匹配的元素
+  cssRules.forEach((rule) => {
+    try {
+      const elements = tempContainer.querySelectorAll(rule.selectorText)
+      elements.forEach((element) => {
+        if (element instanceof HTMLElement) {
+          // 将 CSS 规则中的样式应用到元素的内联样式
+          const styles = rule.style
+          for (let i = 0; i < styles.length; i++) {
+            const propertyName = styles[i]
+            const propertyValue = styles.getPropertyValue(propertyName)
+            const priority = styles.getPropertyPriority(propertyName)
+
+            // 只有当元素没有该内联样式或优先级较低时才设置
+            const existingValue = element.style.getPropertyValue(propertyName)
+            const existingPriority = element.style.getPropertyPriority(propertyName)
+
+            if (!existingValue || (priority === `important` && existingPriority !== `important`)) {
+              element.style.setProperty(propertyName, propertyValue, priority)
+            }
+          }
+        }
+      })
+    }
+    catch (error) {
+      // 忽略无效的选择器（如伪元素）
+      console.warn(`Failed to apply CSS rule "${rule.selectorText}":`, error)
+    }
+  })
+
+  // 移除所有 style 标签
+  tempContainer.querySelectorAll(`style`).forEach(style => style.remove())
+
+  return tempContainer.innerHTML
 }
 
 function modifyHtmlStructure(htmlString: string): string {
