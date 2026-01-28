@@ -74,8 +74,8 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.21.2",
-    "@cloudflare/workers-types": "^4.20260127.0",
+    "@cloudflare/vite-plugin": "^1.22.0",
+    "@cloudflare/workers-types": "^4.20260128.0",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.1.18",
     "@tailwindcss/vite": "^4.1.18",
@@ -88,18 +88,18 @@
     "linkedom": "^0.18.12",
     "ohash": "^2.0.11",
     "postcss": "^8.5.6",
-    "rollup": "^4.56.0",
+    "rollup": "^4.57.0",
     "rollup-plugin-visualizer": "^6.0.5",
     "shx": "^0.4.0",
     "tailwindcss": "^4.1.18",
-    "unplugin-auto-import": "^20.3.0",
-    "unplugin-vue-components": "^30.0.0",
+    "unplugin-auto-import": "^21.0.0",
+    "unplugin-vue-components": "^31.0.0",
     "vite": "^7.3.1",
     "vite-plugin-node-polyfills": "^0.25.0",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.0.5",
     "vue-tsc": "^3.2.4",
-    "wrangler": "^4.60.0",
+    "wrangler": "^4.61.0",
     "wxt": "^0.20.13"
   }
 }

@@ -58,6 +58,11 @@ export default defineConfig(({ mode }) => {
     resolve: {
       alias: { '@': path.resolve(__dirname, `./src`) },
     },
+    optimizeDeps: {
+      esbuildOptions: {
+        target: 'esnext',
+      },
+    },
     css: { devSourcemap: true },
     build: {
       rollupOptions: {
