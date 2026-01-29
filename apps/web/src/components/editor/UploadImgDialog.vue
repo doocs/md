@@ -427,6 +427,14 @@ function emitUploads(file: File) {
   // 或者需要修改 uploadImage 方法使其返回 Promise
   emit(`uploadImage`, file, cleanup, true)
 }
+
+function onTabScroll(e: WheelEvent) {
+  if (e.deltaY !== 0) {
+    e.preventDefault()
+    const target = e.currentTarget as HTMLElement
+    target.scrollLeft += e.deltaY
+  }
+}
 </script>
 
 <template>
@@ -436,7 +444,10 @@ function emitUploads(file: File) {
         <DialogTitle>本地上传</DialogTitle>
       </DialogHeader>
       <Tabs v-model="activeName" class="w-full md:w-full flex flex-col flex-1 overflow-hidden">
-        <TabsList class="flex w-full justify-start overflow-x-auto flex-nowrap gap-1 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsList
+          class="flex w-full justify-start overflow-x-auto flex-nowrap gap-1 pb-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          @wheel="onTabScroll"
+        >
           <TabsTrigger value="upload" class="text-xs md:text-sm whitespace-nowrap">
             选择上传
           </TabsTrigger>
