@@ -10,7 +10,7 @@ const props = defineProps<{
 <template>
   <div class="min-h-[auto] md:min-h-[64px]">
     <Label class="mb-4 md:mb-[24px] flex flex-col md:flex-row md:items-start" :style="{ '--label-width': props.width ? `${props.width}px` : '150px' }">
-      <span class="mb-1 md:mb-0 md:mr-4 min-h-[auto] md:min-h-[40px] w-full md:w-[var(--label-width)] flex shrink-0 items-center justify-start md:justify-end font-bold text-sm md:text-base whitespace-nowrap" :class="{ required: props.required }">
+      <span class="mb-1 md:mb-0 md:mr-4 min-h-[auto] md:min-h-[40px] w-full md:w-[var(--label-width)] flex shrink-0 items-center justify-start md:justify-end text-sm whitespace-nowrap font-medium" :class="{ required: props.required }">
         {{ props.label }}
       </span>
       <div class="flex flex-1 flex-col justify-between">

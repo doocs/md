@@ -90,7 +90,7 @@ function submit(formValues: any) {
       <Form :validation-schema="schema" :initial-values="config" class="flex flex-col flex-1 overflow-hidden" @submit="submit">
         <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex flex-col">
           <Field v-slot="{ field, errorMessage }" name="id">
-            <FormItem label="公众号 ID" required :error="errorMessage" :width="110">
+            <FormItem label="ID" required :error="errorMessage" :width="50">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -100,7 +100,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="name">
-            <FormItem label="公众号名称" required :error="errorMessage" :width="110">
+            <FormItem label="名称" required :error="errorMessage" :width="50">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -110,7 +110,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="logo">
-            <FormItem label="公众号 Logo" :error="errorMessage" :width="110">
+            <FormItem label="Logo" :error="errorMessage" :width="50">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -120,7 +120,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="desc">
-            <FormItem label="公众号描述" :error="errorMessage" :width="110">
+            <FormItem label="描述" :error="errorMessage" :width="50">
               <Textarea
                 v-bind="field"
                 v-model.trim="field.value"
@@ -131,7 +131,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="serviceType">
-            <FormItem label="公众号类型" required :error="errorMessage" :width="110">
+            <FormItem label="类型" required :error="errorMessage" :width="50">
               <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
                 <div class="inline-flex items-center space-x-2 w-20">
                   <RadioGroupItem id="option-one" value="1" />
@@ -146,7 +146,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="verify">
-            <FormItem label="认证" required :error="errorMessage" :width="110">
+            <FormItem label="认证" required :error="errorMessage" :width="50">
               <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
                 <div class="inline-flex items-center space-x-2 w-20">
                   <RadioGroupItem id="service-type-option-one" value="0" />
