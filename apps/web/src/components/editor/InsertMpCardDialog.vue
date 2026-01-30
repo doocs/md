@@ -164,7 +164,7 @@ function submit(formValues: any) {
             </FormItem>
           </Field>
 
-          <FormItem>
+          <FormItem :width="50">
             <Button
               variant="link"
               class="p-0 h-auto text-left whitespace-normal"
