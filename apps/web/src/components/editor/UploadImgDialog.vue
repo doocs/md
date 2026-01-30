@@ -461,7 +461,7 @@ function onTabScroll(e: WheelEvent) {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="upload" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="upload" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Label>
             <span class="my-4 block">
               图床
@@ -514,7 +514,7 @@ function onTabScroll(e: WheelEvent) {
           </div>
         </TabsContent>
 
-        <TabsContent value="github" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="github" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="githubSchema" :initial-values="githubConfig" @submit="githubSubmit">
             <Field v-slot="{ field, errorMessage }" name="repo">
               <FormItem label="GitHub 仓库" required :error="errorMessage">
@@ -567,7 +567,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="aliOSS" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="aliOSS" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="aliOSSSchema" :initial-values="aliOSSConfig" @submit="aliOSSSubmit">
             <Field v-slot="{ field, errorMessage }" name="accessKeyId">
               <FormItem label="AccessKey ID" required :error="errorMessage">
@@ -661,7 +661,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="txCOS" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="txCOS" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="txCOSSchema" :initial-values="txCOSConfig" @submit="txCOSSubmit">
             <Field v-slot="{ field, errorMessage }" name="secretId">
               <FormItem label="SecretId" required :error="errorMessage">
@@ -744,7 +744,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="qiniu" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="qiniu" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="qiniuSchema" :initial-values="qiniuConfig" @submit="qiniuSubmit">
             <Field v-slot="{ field, errorMessage }" name="accessKey">
               <FormItem label="AccessKey" required :error="errorMessage">
@@ -827,7 +827,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="minio" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="minio" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="minioOSSSchema" :initial-values="minioOSSConfig" @submit="minioOSSSubmit">
             <Field v-slot="{ field, errorMessage }" name="endpoint">
               <FormItem label="Endpoint" required :error="errorMessage">
@@ -903,7 +903,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="s3" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="s3" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="s3Schema" :initial-values="s3Config" @submit="s3Submit">
             <Field v-slot="{ field, errorMessage }" name="endpoint">
               <FormItem label="Endpoint" :error="errorMessage">
@@ -995,7 +995,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="mp" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="mp" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
             <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
             <Field
@@ -1063,7 +1063,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="r2" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="r2" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="r2Schema" :initial-values="r2Config" @submit="r2Submit">
             <Field v-slot="{ field, errorMessage }" name="accountId">
               <FormItem label="AccountId" required :error="errorMessage">
@@ -1132,7 +1132,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="upyun" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="upyun" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" @submit="upyunSubmit">
             <Field v-slot="{ field, errorMessage }" name="bucket">
               <FormItem label="Bucket" required :error="errorMessage">
@@ -1184,7 +1184,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="telegram" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="telegram" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form :validation-schema="telegramSchema" :initial-values="telegramConfig" @submit="telegramSubmit">
             <Field v-slot="{ field, errorMessage }" name="token">
               <FormItem label="Bot Token" required :error="errorMessage">
@@ -1215,7 +1215,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="cloudinary" class="flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="cloudinary" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Form
             :validation-schema="cloudinarySchema"
             :initial-values="cloudinaryConfig"
@@ -1294,7 +1294,7 @@ function onTabScroll(e: WheelEvent) {
           </Form>
         </TabsContent>
 
-        <TabsContent value="formCustom" class="grid flex-1 overflow-y-auto px-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="formCustom" class="grid flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <CustomUploadForm />
         </TabsContent>
       </Tabs>
