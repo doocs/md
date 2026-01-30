@@ -126,6 +126,8 @@ patchedDependencies:
 
 shellEmulator: true
 
-trustPackage: chokidar@4.0.3
+trustPackage:
+  - chokidar@4.0.3
+  - langium@3.3.1
 
 trustPolicy: no-downgrade
