@@ -405,7 +405,7 @@ function handleDragEnd() {
       <AlertDialogFooter>
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="delPost">
-          确认
+          确定
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>

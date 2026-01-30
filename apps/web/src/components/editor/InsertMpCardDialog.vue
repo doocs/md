@@ -179,7 +179,7 @@ function submit(formValues: any) {
 
         <DialogFooter class="p-1">
           <Button type="submit">
-            确认
+            确定
           </Button>
         </DialogFooter>
       </Form>
