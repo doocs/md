@@ -122,7 +122,7 @@ overrides:
   workbox-build>source-map: 0.7.4
 
 patchedDependencies:
-  '@codemirror/view@6.38.8': patches/@codemirror__view@6.38.8.patch
+  '@codemirror/view': patches/@codemirror__view.patch
 
 shellEmulator: true
 
