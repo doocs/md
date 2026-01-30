@@ -125,6 +125,7 @@ function submit(formValues: any) {
                 v-bind="field"
                 v-model.trim="field.value"
                 rows="3"
+                class="resize-none"
                 placeholder="例：GitHub 开源组织 @Doocs 旗下唯一公众号，专注分享技术领域相关知识及行业最新资讯。"
               />
             </FormItem>
