@@ -2,6 +2,7 @@ import express from 'express'
 import multer from 'multer'
 import path from 'node:path'
 import fs from 'node:fs'
+import os from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { dirname } from 'node:path'
 import { createProxyMiddleware } from 'http-proxy-middleware'
@@ -10,6 +11,7 @@ import {
   parseArgv,
   colors
 } from './util.js'
+import { renderMarkdown } from './renderer.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -52,6 +54,126 @@ export function createServer(port = 8800) {
   app.use(express.urlencoded({ extended: true }))
 
   app.use('/public', express.static(path.join(__dirname, 'public')))
+
+  // 公共参数解析和渲染函数
+  async function parseAndRender(req) {
+    let {
+      markdown,
+      path: filePath,
+      title,
+      theme = 'default',
+      primaryColor = '#0F4C81',
+      fontFamily = "-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif",
+      fontSize = '16px',
+      highlightTheme = 'github',
+      isMacCodeBlock = true,
+      isShowLineNumber = false,
+      legend = 'alt',
+      isCiteStatus = false,
+      isCountStatus = false,
+      isUseIndent = false,
+      isUseJustify = false,
+      themeMode = 'light'
+    } = req.body;
+
+    if (!markdown && filePath) {
+      if (fs.existsSync(filePath)) {
+        markdown = fs.readFileSync(filePath, 'utf-8');
+      } else {
+        throw new Error('File not found');
+      }
+    }
+
+    if (!markdown) {
+      throw new Error('Markdown content is required');
+    }
+
+    const result = await renderMarkdown(markdown, {
+      theme,
+      primaryColor,
+      fontFamily,
+      fontSize,
+      highlightTheme,
+      isMacCodeBlock,
+      isShowLineNumber,
+      legend,
+      isCiteStatus,
+      isCountStatus,
+      isUseIndent,
+      isUseJustify,
+      themeMode
+    });
+
+    return { ...result, filePath, title };
+  }
+
+  // API Route for Rendering Markdown
+  app.post('/api/render', async (req, res) => {
+    try {
+      const { html } = await parseAndRender(req);
+      res.json({ html });
+    } catch (error) {
+      console.error('Render error:', error);
+      if (error.message === 'File not found' || error.message === 'Markdown content is required') {
+        return res.status(400).json({ error: error.message });
+      }
+      res.status(500).json({ error: error.message });
+    }
+  });
+
+  // API Route for Rendering Markdown to HTML file (Preview)
+  app.post('/api/render/html', async (req, res) => {
+    try {
+      const { html, filePath, title } = await parseAndRender(req);
+
+      // 确定页面标题
+      let pageTitle = title || 'Markdown Render Preview';
+      if (!title && filePath) {
+        pageTitle = path.basename(filePath, path.extname(filePath));
+      }
+
+      // 封装成完整 HTML 页面
+      const fullHtml = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${pageTitle}</title>
+  <style>
+    body { margin: 0; padding: 20px; background: #fff; }
+    .preview-wrapper { max-width: 750px; margin: 0 auto; }
+  </style>
+</head>
+<body>
+  ${html}
+</body>
+</html>`;
+
+      // 确定输出文件名
+      let filename = 'output.html';
+      if (filePath) {
+        const base = path.basename(filePath, path.extname(filePath));
+        filename = `${base}.html`;
+      }
+
+      const downloadDir = path.join(os.homedir(), 'Downloads');
+      if (!fs.existsSync(downloadDir)) {
+        fs.mkdirSync(downloadDir, { recursive: true });
+      }
+
+      const savePath = path.join(downloadDir, filename);
+      fs.writeFileSync(savePath, fullHtml, 'utf-8');
+      console.log(`Rendered HTML saved to: ${savePath}`);
+
+      res.download(savePath, filename);
+    } catch (error) {
+      console.error('Render error:', error);
+      if (error.message === 'File not found' || error.message === 'Markdown content is required') {
+        return res.status(400).send(error.message);
+      }
+      res.status(500).send(error.message);
+    }
+  });
 
   // 文件上传 API
   app.post('/upload', upload.single('file'), async (req, res) => {
