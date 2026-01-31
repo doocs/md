@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Post, PostAccount } from '@md/shared/types'
-import { Check, ChevronDown, ChevronRight, Info, Minus, Send } from 'lucide-vue-next'
+import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus, Send } from 'lucide-vue-next'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'radix-vue'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -23,7 +23,7 @@ const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
-const isLoadingAccounts = ref(false)
+const isCheckingLogin = ref(false)
 
 const form = ref<Post>({
   title: ``,
@@ -34,7 +34,7 @@ const form = ref<Post>({
   accounts: [] as PostAccount[],
 })
 
-const allowPost = computed(() => extensionInstalled.value && form.value.accounts.some(a => a.checked))
+const allowPost = computed(() => extensionInstalled.value && allAccounts.value.some(a => a.checked && a.loggedIn))
 
 // 平台分类配置
 const platformCategories = [
@@ -69,7 +69,7 @@ const accountsByCategory = computed(() => {
   return platformCategories.map(category => ({
     name: category.name,
     accounts: category.platforms
-      .map(type => form.value.accounts.find(a => a.type === type))
+      .map(type => allAccounts.value.find(a => a.type === type))
       .filter((a): a is PostAccount => a !== undefined),
   }))
 })
@@ -95,11 +95,10 @@ function toggleCategorySelectAll(accounts: PostAccount[]) {
 }
 
 async function prePost() {
-  // 先获取账号信息
+  // 如果扩展已安装且还没有账号数据，则开始检测
   if (extensionInstalled.value && allAccounts.value.length === 0) {
-    isLoadingAccounts.value = true
-    await getAccounts()
-    isLoadingAccounts.value = false
+    // 不 await，让检测在后台进行
+    startLoginDetection()
   }
 
   let auto: Post = {
@@ -148,18 +147,79 @@ declare global {
   }
 }
 
+// 获取初始平台列表（不带登录状态，用于立即显示）
+function getInitialPlatforms(): PostAccount[] {
+  if (window.$cose !== undefined && typeof window.$cose.getPlatforms === 'function') {
+    return window.$cose.getPlatforms().map((p: any) => ({
+      ...p,
+      checked: false,
+      loggedIn: false,
+      isChecking: true, // 标记正在检测中
+    }))
+  }
+  return []
+}
+
+// 开始登录检测（异步，不阻塞 UI，渐进式更新）
+function startLoginDetection() {
+  if (window.$cose === undefined)
+    return
+
+  // 立即显示平台列表（带检测中状态）
+  const initialPlatforms = getInitialPlatforms()
+  if (initialPlatforms.length > 0) {
+    allAccounts.value = initialPlatforms
+  }
+
+  isCheckingLogin.value = true
+  let hasReceivedAny = false
+
+  // 设置超时机制：如果 15 秒内没有任何响应，则停止检测
+  const timeoutId = setTimeout(() => {
+    if (!hasReceivedAny) {
+      console.log('[COSE] 登录检测超时，停止检测')
+      allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
+      isCheckingLogin.value = false
+    }
+  }, 15000)
+
+  // 检查是否支持渐进式 API
+  if (typeof window.$cose.getAccountsProgressive === 'function') {
+    // 使用渐进式 API：每个平台检测完成后立即更新 UI
+    window.$cose.getAccountsProgressive(
+      // onProgress: 每个平台完成时调用
+      (account: PostAccount, _completed: number, _total: number) => {
+        hasReceivedAny = true
+        // 更新对应平台的状态
+        const idx = allAccounts.value.findIndex(a => a.type === account.type)
+        if (idx !== -1) {
+          allAccounts.value[idx] = { ...account, checked: false, isChecking: false }
+        }
+      },
+      // onComplete: 所有平台完成时调用
+      () => {
+        clearTimeout(timeoutId)
+        isCheckingLogin.value = false
+      },
+    )
+  }
+  else {
+    // 回退到原有 API
+    window.$cose.getAccounts((resp: PostAccount[]) => {
+      hasReceivedAny = true
+      clearTimeout(timeoutId)
+      allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))
+      isCheckingLogin.value = false
+    })
+  }
+}
+
+// 兼容旧的 getAccounts 调用（checkExtension 使用）
 async function getAccounts(): Promise<void> {
   return new Promise((resolve) => {
-    if (window.$cose !== undefined) {
-      window.$cose.getAccounts((resp: PostAccount[]) => {
-        allAccounts.value = resp.map(a => ({ ...a, checked: false }))
-        // 确保数据完全设置后再 resolve
-        nextTick(() => resolve())
-      })
-    }
-    else {
-      resolve()
-    }
+    startLoginDetection()
+    // 立即 resolve，不等待检测完成
+    resolve()
   })
 }
 
@@ -214,6 +274,7 @@ function getPlatformUrl(type: string): string {
 function checkExtension() {
   if (window.$cose !== undefined) {
     extensionInstalled.value = true
+    getAccounts() // 立即开始登录检测
     return
   }
 
@@ -290,20 +351,7 @@ onBeforeMount(() => {
             <Textarea id="desc" v-model="form.desc" placeholder="自动提取第一个段落" />
           </div>
 
-          <div v-if="isLoadingAccounts" class="w-full flex flex-col items-center justify-center py-12 px-4">
-            <div class="relative">
-              <div class="h-12 w-12 rounded-full border-4 border-muted" />
-              <div class="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-t-primary" />
-            </div>
-            <p class="mt-4 text-sm font-medium text-foreground">
-              正在加载平台账号
-            </p>
-            <p class="mt-1 text-xs text-muted-foreground">
-              请稍候...
-            </p>
-          </div>
-
-          <div v-else class="w-full flex items-start gap-4">
+          <div class="w-full flex items-start gap-4">
             <Label class="w-10 text-end">
               平台
             </Label>
@@ -354,8 +402,13 @@ onBeforeMount(() => {
                       class="inline-block h-[16px] w-[16px] shrink-0"
                     >
                     <span class="text-sm font-medium">{{ account.title }}</span>
+                    <!-- 检测中：显示转圈动画 -->
+                    <template v-if="account.isChecking">
+                      <Loader2 class="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />
+                      <span class="text-xs text-muted-foreground">检测中</span>
+                    </template>
                     <!-- 已登录：显示头像和用户名 -->
-                    <template v-if="account.loggedIn">
+                    <template v-else-if="account.loggedIn">
                       <img
                         v-if="account.avatar"
                         :src="account.avatar"
