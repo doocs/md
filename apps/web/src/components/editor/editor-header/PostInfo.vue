@@ -23,6 +23,7 @@ const dialogVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
+const isLoadingAccounts = ref(false)
 
 const form = ref<Post>({
   title: ``,
@@ -94,8 +95,11 @@ function toggleCategorySelectAll(accounts: PostAccount[]) {
 }
 
 async function prePost() {
+  // 先获取账号信息
   if (extensionInstalled.value && allAccounts.value.length === 0) {
+    isLoadingAccounts.value = true
     await getAccounts()
+    isLoadingAccounts.value = false
   }
 
   let auto: Post = {
@@ -130,6 +134,13 @@ async function prePost() {
   }
 }
 
+// 监听对话框打开，自动加载数据
+watch(dialogVisible, (newVal) => {
+  if (newVal) {
+    prePost()
+  }
+})
+
 declare global {
   interface Window {
     syncPost: (data: { thumb: string, title: string, desc: string, content: string }) => void
@@ -142,7 +153,8 @@ async function getAccounts(): Promise<void> {
     if (window.$cose !== undefined) {
       window.$cose.getAccounts((resp: PostAccount[]) => {
         allAccounts.value = resp.map(a => ({ ...a, checked: false }))
-        resolve()
+        // 确保数据完全设置后再 resolve
+        nextTick(() => resolve())
       })
     }
     else {
@@ -231,7 +243,7 @@ onBeforeMount(() => {
   <div v-bind="$attrs">
     <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
       <DialogTrigger>
-        <Button v-if="!isMobile" variant="outline" class="h-9" @click="prePost">
+        <Button v-if="!isMobile" variant="outline" class="h-9">
           <Send class="mr-2 h-4 w-4" />
           发布
         </Button>
@@ -278,7 +290,20 @@ onBeforeMount(() => {
             <Textarea id="desc" v-model="form.desc" placeholder="自动提取第一个段落" />
           </div>
 
-          <div class="w-full flex items-start gap-4">
+          <div v-if="isLoadingAccounts" class="w-full flex flex-col items-center justify-center py-12 px-4">
+            <div class="relative">
+              <div class="h-12 w-12 rounded-full border-4 border-muted" />
+              <div class="absolute inset-0 h-12 w-12 animate-spin rounded-full border-4 border-transparent border-t-primary" />
+            </div>
+            <p class="mt-4 text-sm font-medium text-foreground">
+              正在加载平台账号
+            </p>
+            <p class="mt-1 text-xs text-muted-foreground">
+              请稍候...
+            </p>
+          </div>
+
+          <div v-else class="w-full flex items-start gap-4">
             <Label class="w-10 text-end">
               平台
             </Label>
