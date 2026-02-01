@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
 import type { Format } from 'vue-pick-colors'
-import { ctrlKey, ctrlSign } from '@md/shared/configs'
+import { headingLevels as baseHeadingLevels, ctrlKey, ctrlSign } from '@md/shared/configs'
 import {
   applyHeading,
   formatBold,
@@ -75,6 +75,12 @@ const colorState = reactive({
   formatOptions: [`rgb`] as Format[],
   textColor: `rgba(0, 0, 0, 1)`,
 })
+
+const headingIcons = [Heading1, Heading2, Heading3, Heading4, Heading5, Heading6]
+const headingLevels = baseHeadingLevels.map((item, index) => ({
+  ...item,
+  icon: headingIcons[index],
+}))
 
 function textColorChanged(color: string) {
   colorState.textColor = color
@@ -213,52 +219,16 @@ function addFormat(cmd: string) {
           标题
         </MenubarSubTrigger>
         <MenubarSubContent class="w-48">
-          <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
-            <Heading1 class="mr-2 h-4 w-4" />
-            标题 1
+          <MenubarItem
+            v-for="{ level, icon, label } in headingLevels"
+            :key="level"
+            @click="addFormat(`${ctrlKey}-${level}`)"
+          >
+            <component :is="icon" class="mr-2 h-4 w-4" />
+            {{ label }}
             <MenubarShortcut>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-2`)">
-            <Heading2 class="mr-2 h-4 w-4" />
-            标题 2
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-3`)">
-            <Heading3 class="mr-2 h-4 w-4" />
-            标题 3
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-4`)">
-            <Heading4 class="mr-2 h-4 w-4" />
-            标题 4
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-5`)">
-            <Heading5 class="mr-2 h-4 w-4" />
-            标题 5
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-6`)">
-            <Heading6 class="mr-2 h-4 w-4" />
-            标题 6
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ level }}</kbd>
             </MenubarShortcut>
           </MenubarItem>
         </MenubarSubContent>
@@ -371,52 +341,16 @@ function addFormat(cmd: string) {
           标题
         </MenubarSubTrigger>
         <MenubarSubContent class="w-48">
-          <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
-            <Heading1 class="mr-2 h-4 w-4" />
-            标题 1
+          <MenubarItem
+            v-for="{ level, icon, label } in headingLevels"
+            :key="level"
+            @click="addFormat(`${ctrlKey}-${level}`)"
+          >
+            <component :is="icon" class="mr-2 h-4 w-4" />
+            {{ label }}
             <MenubarShortcut>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-2`)">
-            <Heading2 class="mr-2 h-4 w-4" />
-            标题 2
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-3`)">
-            <Heading3 class="mr-2 h-4 w-4" />
-            标题 3
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-4`)">
-            <Heading4 class="mr-2 h-4 w-4" />
-            标题 4
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-5`)">
-            <Heading5 class="mr-2 h-4 w-4" />
-            标题 5
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
-            </MenubarShortcut>
-          </MenubarItem>
-          <MenubarItem @click="addFormat(`${ctrlKey}-6`)">
-            <Heading6 class="mr-2 h-4 w-4" />
-            标题 6
-            <MenubarShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ level }}</kbd>
             </MenubarShortcut>
           </MenubarItem>
         </MenubarSubContent>

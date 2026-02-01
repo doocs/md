@@ -1,6 +1,6 @@
 <script setup lang='ts'>
 import type { EditorView } from '@codemirror/view'
-import { altSign, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
+import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import {
   applyHeading,
   formatBold,
@@ -60,6 +60,12 @@ const {
 const { editor } = storeToRefs(editorStore)
 
 const importMarkdownContent = useImportMarkdownContent()
+
+const headingIcons = [Heading1, Heading2, Heading3, Heading4, Heading5, Heading6]
+const headingLevels = baseHeadingLevels.map((item, index) => ({
+  ...item,
+  icon: headingIcons[index],
+}))
 
 // 格式化文档
 async function formatContent() {
@@ -252,52 +258,16 @@ function addFormat(cmd: string) {
           标题
         </ContextMenuSubTrigger>
         <ContextMenuSubContent class="w-48">
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-1`)">
-            <Heading1 class="mr-2 h-4 w-4" />
-            标题 1
+          <ContextMenuItem
+            v-for="{ level, icon, label } in headingLevels"
+            :key="level"
+            @click="addFormat(`${ctrlKey}-${level}`)"
+          >
+            <component :is="icon" class="mr-2 h-4 w-4" />
+            {{ label }}
             <ContextMenuShortcut>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-2`)">
-            <Heading2 class="mr-2 h-4 w-4" />
-            标题 2
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-3`)">
-            <Heading3 class="mr-2 h-4 w-4" />
-            标题 3
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-4`)">
-            <Heading4 class="mr-2 h-4 w-4" />
-            标题 4
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-5`)">
-            <Heading5 class="mr-2 h-4 w-4" />
-            标题 5
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuItem @click="addFormat(`${ctrlKey}-6`)">
-            <Heading6 class="mr-2 h-4 w-4" />
-            标题 6
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ level }}</kbd>
             </ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuSubContent>
