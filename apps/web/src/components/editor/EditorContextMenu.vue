@@ -158,21 +158,28 @@ function addFormat(cmd: string) {
       <slot />
     </ContextMenuTrigger>
     <ContextMenuContent class="w-64">
-      <!-- 编辑操作 -->
-      <ContextMenuItem @click="copyToClipboard()">
-        <Copy class="mr-2 h-4 w-4" />
-        复制
-        <ContextMenuShortcut>
-          {{ ctrlSign }} + C
-        </ContextMenuShortcut>
-      </ContextMenuItem>
-      <ContextMenuItem @click="pasteFromClipboard">
-        <ClipboardPaste class="mr-2 h-4 w-4" />
-        粘贴
-        <ContextMenuShortcut>
-          {{ ctrlSign }} + V
-        </ContextMenuShortcut>
-      </ContextMenuItem>
+      <!-- 插入子菜单 -->
+      <ContextMenuSub>
+        <ContextMenuSubTrigger>
+          <Import class="mr-2 h-4 w-4" />
+          插入
+        </ContextMenuSubTrigger>
+        <ContextMenuSubContent class="w-48">
+          <ContextMenuItem @click="toggleShowUploadImgDialog()">
+            <Image class="mr-2 h-4 w-4" />
+            图片
+          </ContextMenuItem>
+          <ContextMenuItem @click="toggleShowInsertFormDialog()">
+            <Table class="mr-2 h-4 w-4" />
+            表格
+          </ContextMenuItem>
+          <ContextMenuItem @click="toggleShowInsertMpCardDialog()">
+            <FileText class="mr-2 h-4 w-4" />
+            公众号名片
+          </ContextMenuItem>
+        </ContextMenuSubContent>
+      </ContextMenuSub>
+
       <ContextMenuSeparator />
 
       <!-- 格式化子菜单 -->
@@ -249,30 +256,6 @@ function addFormat(cmd: string) {
 
       <ContextMenuSeparator />
 
-      <!-- 插入子菜单 -->
-      <ContextMenuSub>
-        <ContextMenuSubTrigger>
-          <Import class="mr-2 h-4 w-4" />
-          插入
-        </ContextMenuSubTrigger>
-        <ContextMenuSubContent class="w-48">
-          <ContextMenuItem @click="toggleShowUploadImgDialog()">
-            <Image class="mr-2 h-4 w-4" />
-            图片
-          </ContextMenuItem>
-          <ContextMenuItem @click="toggleShowInsertFormDialog()">
-            <Table class="mr-2 h-4 w-4" />
-            表格
-          </ContextMenuItem>
-          <ContextMenuItem @click="toggleShowInsertMpCardDialog()">
-            <FileText class="mr-2 h-4 w-4" />
-            公众号名片
-          </ContextMenuItem>
-        </ContextMenuSubContent>
-      </ContextMenuSub>
-
-      <ContextMenuSeparator />
-
       <!-- 文档操作子菜单 -->
       <ContextMenuSub>
         <ContextMenuSubTrigger>
@@ -324,6 +307,24 @@ function addFormat(cmd: string) {
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
+
+      <ContextMenuSeparator />
+
+      <!-- 编辑操作 -->
+      <ContextMenuItem @click="copyToClipboard()">
+        <Copy class="mr-2 h-4 w-4" />
+        复制
+        <ContextMenuShortcut>
+          {{ ctrlSign }} + C
+        </ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuItem @click="pasteFromClipboard">
+        <ClipboardPaste class="mr-2 h-4 w-4" />
+        粘贴
+        <ContextMenuShortcut>
+          {{ ctrlSign }} + V
+        </ContextMenuShortcut>
+      </ContextMenuItem>
 
       <ContextMenuSeparator />
 
