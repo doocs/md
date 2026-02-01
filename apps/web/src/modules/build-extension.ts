@@ -44,10 +44,8 @@ export default defineWxtModule({
                 return `prettier`
               if (id.includes(`katex`))
                 return `katex`
-              if (id.includes(`mermaid`))
-                return `mermaid`
-              if (id.includes(`highlight.js`))
-                return `hljs`
+              if (id.includes(`mermaid`) || id.includes(`highlight.js`))
+                return `mermaid-vendors`
             }
           }
         }
