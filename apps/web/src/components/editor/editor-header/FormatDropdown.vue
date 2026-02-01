@@ -212,7 +212,7 @@ function addFormat(cmd: string) {
           <Heading1 class="mr-2 h-4 w-4" />
           标题
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-48">
           <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
             <Heading1 class="mr-2 h-4 w-4" />
             标题 1
@@ -370,7 +370,7 @@ function addFormat(cmd: string) {
           <Heading1 class="mr-2 h-4 w-4" />
           标题
         </MenubarSubTrigger>
-        <MenubarSubContent>
+        <MenubarSubContent class="w-48">
           <MenubarItem @click="addFormat(`${ctrlKey}-1`)">
             <Heading1 class="mr-2 h-4 w-4" />
             标题 1

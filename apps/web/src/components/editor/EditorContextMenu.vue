@@ -21,6 +21,11 @@ import {
   FileText,
   FileUp,
   Heading1,
+  Heading2,
+  Heading3,
+  Heading4,
+  Heading5,
+  Heading6,
   Image,
   Import,
   Italic,
@@ -141,6 +146,15 @@ function addFormat(cmd: string) {
     case `${ctrlKey}-3`:
       applyHeading(editorView, 3)
       break
+    case `${ctrlKey}-4`:
+      applyHeading(editorView, 4)
+      break
+    case `${ctrlKey}-5`:
+      applyHeading(editorView, 5)
+      break
+    case `${ctrlKey}-6`:
+      applyHeading(editorView, 6)
+      break
     case `${ctrlKey}-U`:
       formatUnorderedList(editorView)
       break
@@ -247,7 +261,7 @@ function addFormat(cmd: string) {
             </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-2`)">
-            <Heading1 class="mr-2 h-4 w-4" />
+            <Heading2 class="mr-2 h-4 w-4" />
             标题 2
             <ContextMenuShortcut>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
@@ -255,11 +269,35 @@ function addFormat(cmd: string) {
             </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-3`)">
-            <Heading1 class="mr-2 h-4 w-4" />
+            <Heading3 class="mr-2 h-4 w-4" />
             标题 3
             <ContextMenuShortcut>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
+            </ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuItem @click="addFormat(`${ctrlKey}-4`)">
+            <Heading4 class="mr-2 h-4 w-4" />
+            标题 4
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">4</kbd>
+            </ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuItem @click="addFormat(`${ctrlKey}-5`)">
+            <Heading5 class="mr-2 h-4 w-4" />
+            标题 5
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">5</kbd>
+            </ContextMenuShortcut>
+          </ContextMenuItem>
+          <ContextMenuItem @click="addFormat(`${ctrlKey}-6`)">
+            <Heading6 class="mr-2 h-4 w-4" />
+            标题 6
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">6</kbd>
             </ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuSubContent>
