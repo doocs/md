@@ -1,16 +1,5 @@
 <script setup lang='ts'>
-import type { EditorView } from '@codemirror/view'
 import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
-import {
-  applyHeading,
-  formatBold,
-  formatCode,
-  formatItalic,
-  formatLink,
-  formatOrderedList,
-  formatStrikethrough,
-  formatUnorderedList,
-} from '@md/shared/editor'
 import {
   Bold,
   ClipboardPaste,
@@ -40,6 +29,7 @@ import {
   Wand2,
 } from 'lucide-vue-next'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { useEditorFormat } from '@/composables/useEditorFormat'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { usePostStore } from '@/stores/post'
@@ -58,6 +48,8 @@ const {
 } = uiStore
 
 const { editor } = storeToRefs(editorStore)
+
+const { addFormat } = useEditorFormat(editor)
 
 const importMarkdownContent = useImportMarkdownContent()
 
@@ -119,55 +111,6 @@ function exportEditorContent2MD() {
 
 function downloadAsCardImage() {
   exportStore.downloadAsCardImage()
-}
-
-// 格式化工具函数
-function addFormat(cmd: string) {
-  const editorView = editor.value as EditorView
-  if (!editor.value)
-    return
-
-  switch (cmd) {
-    case `${ctrlKey}-B`:
-      formatBold(editorView)
-      break
-    case `${ctrlKey}-I`:
-      formatItalic(editorView)
-      break
-    case `${ctrlKey}-D`:
-      formatStrikethrough(editorView)
-      break
-    case `${ctrlKey}-K`:
-      formatLink(editorView)
-      break
-    case `${ctrlKey}-E`:
-      formatCode(editorView)
-      break
-    case `${ctrlKey}-1`:
-      applyHeading(editorView, 1)
-      break
-    case `${ctrlKey}-2`:
-      applyHeading(editorView, 2)
-      break
-    case `${ctrlKey}-3`:
-      applyHeading(editorView, 3)
-      break
-    case `${ctrlKey}-4`:
-      applyHeading(editorView, 4)
-      break
-    case `${ctrlKey}-5`:
-      applyHeading(editorView, 5)
-      break
-    case `${ctrlKey}-6`:
-      applyHeading(editorView, 6)
-      break
-    case `${ctrlKey}-U`:
-      formatUnorderedList(editorView)
-      break
-    case `${ctrlKey}-O`:
-      formatOrderedList(editorView)
-      break
-  }
 }
 </script>
 
