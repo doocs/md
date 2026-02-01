@@ -15,7 +15,6 @@ import {
   Bold,
   ClipboardPaste,
   Copy,
-  Download,
   FileCode,
   FileDown,
   FileImage,
@@ -157,7 +156,7 @@ function addFormat(cmd: string) {
     <ContextMenuTrigger>
       <slot />
     </ContextMenuTrigger>
-    <ContextMenuContent class="w-64">
+    <ContextMenuContent class="w-64 max-h-[80vh] overflow-y-auto">
       <!-- 插入子菜单 -->
       <ContextMenuSub>
         <ContextMenuSubTrigger>
@@ -286,59 +285,48 @@ function addFormat(cmd: string) {
 
       <ContextMenuSeparator />
 
-      <!-- 文档操作子菜单 -->
-      <ContextMenuSub>
-        <ContextMenuSubTrigger>
-          <FileText class="mr-2 h-4 w-4" />
-          文档
-        </ContextMenuSubTrigger>
-        <ContextMenuSubContent class="w-56">
-          <ContextMenuItem @click="importMarkdownContent()">
-            <FileUp class="mr-2 h-4 w-4" />
-            导入 .md 文档
-          </ContextMenuItem>
-          <ContextMenuItem @click="formatContent()">
-            <Wand2 class="mr-2 h-4 w-4" />
-            格式化
-            <ContextMenuShortcut>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ altSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ shiftSign }}</kbd>
-              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
-            </ContextMenuShortcut>
-          </ContextMenuItem>
-          <ContextMenuSeparator />
-          <ContextMenuItem @click="importDefaultContent()">
-            <RefreshCw class="mr-2 h-4 w-4" />
-            重置文档
-          </ContextMenuItem>
-          <ContextMenuItem @click="clearContent()">
-            <Trash2 class="mr-2 h-4 w-4" />
-            清空内容
-          </ContextMenuItem>
-        </ContextMenuSubContent>
-      </ContextMenuSub>
+      <!-- 导入导出操作 -->
+      <ContextMenuItem @click="importMarkdownContent()">
+        <FileUp class="mr-2 h-4 w-4" />
+        导入 .md 文档
+      </ContextMenuItem>
+      <ContextMenuItem @click="exportEditorContent2MD()">
+        <FileDown class="mr-2 h-4 w-4" />
+        导出 .md 文档
+      </ContextMenuItem>
+      <ContextMenuItem @click="exportEditorContent2HTML()">
+        <FileCode class="mr-2 h-4 w-4" />
+        导出 .html
+      </ContextMenuItem>
+      <ContextMenuItem @click="downloadAsCardImage()">
+        <FileImage class="mr-2 h-4 w-4" />
+        导出 .png
+      </ContextMenuItem>
 
-      <!-- 导出子菜单 -->
-      <ContextMenuSub>
-        <ContextMenuSubTrigger>
-          <Download class="mr-2 h-4 w-4" />
-          导出
-        </ContextMenuSubTrigger>
-        <ContextMenuSubContent class="w-48">
-          <ContextMenuItem @click="exportEditorContent2MD()">
-            <FileDown class="mr-2 h-4 w-4" />
-            导出 .md 文档
-          </ContextMenuItem>
-          <ContextMenuItem @click="exportEditorContent2HTML()">
-            <FileCode class="mr-2 h-4 w-4" />
-            导出 .html
-          </ContextMenuItem>
-          <ContextMenuItem @click="downloadAsCardImage()">
-            <FileImage class="mr-2 h-4 w-4" />
-            导出 .png
-          </ContextMenuItem>
-        </ContextMenuSubContent>
-      </ContextMenuSub>
+      <ContextMenuSeparator />
+
+      <!-- 文档操作 -->
+      <ContextMenuItem @click="formatContent()">
+        <Wand2 class="mr-2 h-4 w-4" />
+        格式化
+        <ContextMenuShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ altSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ shiftSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
+        </ContextMenuShortcut>
+      </ContextMenuItem>
+      <ContextMenuItem @click="importDefaultContent()">
+        <RefreshCw class="mr-2 h-4 w-4" />
+        重置文档
+      </ContextMenuItem>
+      <ContextMenuItem @click="resetStyleConfirm()">
+        <RotateCcw class="mr-2 h-4 w-4" />
+        重置样式
+      </ContextMenuItem>
+      <ContextMenuItem @click="clearContent()">
+        <Trash2 class="mr-2 h-4 w-4" />
+        清空内容
+      </ContextMenuItem>
 
       <ContextMenuSeparator />
 
@@ -358,14 +346,6 @@ function addFormat(cmd: string) {
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">V</kbd>
         </ContextMenuShortcut>
-      </ContextMenuItem>
-
-      <ContextMenuSeparator />
-
-      <!-- 其他操作 -->
-      <ContextMenuItem @click="resetStyleConfirm()">
-        <RotateCcw class="mr-2 h-4 w-4" />
-        重置样式
       </ContextMenuItem>
     </ContextMenuContent>
   </ContextMenu>
