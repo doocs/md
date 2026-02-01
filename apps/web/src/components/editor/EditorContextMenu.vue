@@ -192,27 +192,42 @@ function addFormat(cmd: string) {
           <ContextMenuItem @click="addFormat(`${ctrlKey}-B`)">
             <Bold class="mr-2 h-4 w-4" />
             加粗
-            <ContextMenuShortcut>{{ ctrlSign }} + B</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">B</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-I`)">
             <Italic class="mr-2 h-4 w-4" />
             斜体
-            <ContextMenuShortcut>{{ ctrlSign }} + I</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">I</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-D`)">
             <Strikethrough class="mr-2 h-4 w-4" />
             删除线
-            <ContextMenuShortcut>{{ ctrlSign }} + D</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-K`)">
             <Link class="mr-2 h-4 w-4" />
             超链接
-            <ContextMenuShortcut>{{ ctrlSign }} + K</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">K</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-E`)">
             <FileCode class="mr-2 h-4 w-4" />
             行内代码
-            <ContextMenuShortcut>{{ ctrlSign }} + E</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
@@ -227,17 +242,26 @@ function addFormat(cmd: string) {
           <ContextMenuItem @click="addFormat(`${ctrlKey}-1`)">
             <Heading1 class="mr-2 h-4 w-4" />
             标题 1
-            <ContextMenuShortcut>{{ ctrlSign }} + 1</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">1</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-2`)">
             <Heading1 class="mr-2 h-4 w-4" />
             标题 2
-            <ContextMenuShortcut>{{ ctrlSign }} + 2</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">2</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuItem @click="addFormat(`${ctrlKey}-3`)">
             <Heading1 class="mr-2 h-4 w-4" />
             标题 3
-            <ContextMenuShortcut>{{ ctrlSign }} + 3</ContextMenuShortcut>
+            <ContextMenuShortcut>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">3</kbd>
+            </ContextMenuShortcut>
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
@@ -246,12 +270,18 @@ function addFormat(cmd: string) {
       <ContextMenuItem @click="addFormat(`${ctrlKey}-U`)">
         <List class="mr-2 h-4 w-4" />
         无序列表
-        <ContextMenuShortcut>{{ ctrlSign }} + U</ContextMenuShortcut>
+        <ContextMenuShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">U</kbd>
+        </ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem @click="addFormat(`${ctrlKey}-O`)">
         <ListOrdered class="mr-2 h-4 w-4" />
         有序列表
-        <ContextMenuShortcut>{{ ctrlSign }} + O</ContextMenuShortcut>
+        <ContextMenuShortcut>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">O</kbd>
+        </ContextMenuShortcut>
       </ContextMenuItem>
 
       <ContextMenuSeparator />
@@ -271,7 +301,9 @@ function addFormat(cmd: string) {
             <Wand2 class="mr-2 h-4 w-4" />
             格式化
             <ContextMenuShortcut>
-              {{ altSign }} + {{ shiftSign }} + F
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ altSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ shiftSign }}</kbd>
+              <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
             </ContextMenuShortcut>
           </ContextMenuItem>
           <ContextMenuSeparator />
@@ -315,14 +347,16 @@ function addFormat(cmd: string) {
         <Copy class="mr-2 h-4 w-4" />
         复制
         <ContextMenuShortcut>
-          {{ ctrlSign }} + C
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">C</kbd>
         </ContextMenuShortcut>
       </ContextMenuItem>
       <ContextMenuItem @click="pasteFromClipboard">
         <ClipboardPaste class="mr-2 h-4 w-4" />
         粘贴
         <ContextMenuShortcut>
-          {{ ctrlSign }} + V
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+          <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">V</kbd>
         </ContextMenuShortcut>
       </ContextMenuItem>
 
