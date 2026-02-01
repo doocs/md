@@ -737,7 +737,7 @@ async function formCustomUpload(content: string, file: File) {
       okCb: resolve, // 重要: 上传成功后给此回调传 url 即可
       errCb: reject, // 上传失败调用的函数
     }
-    // Use Function constructor instead of eval for better security
+    // Use Function constructor instead of eval
     // eslint-disable-next-line no-new-func
     const fn = new Function(`return ${str}`)()
     fn(exportObj).catch((err: any) => {

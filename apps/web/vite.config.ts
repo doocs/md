@@ -80,7 +80,8 @@ export default defineConfig(({ mode }) => {
                 return `katex`
               if (id.includes(`prettier`))
                 return `prettier`
-              if (id.includes(`.pnpm`))
+              // Skip automatic vendor splitting for pnpm virtual store to avoid circular deps
+              if (id.includes(`/.pnpm/`))
                 return
               const pkg = id
                 .split(`node_modules/`)[1]
