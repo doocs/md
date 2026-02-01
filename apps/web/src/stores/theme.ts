@@ -1,6 +1,7 @@
 import type { HeadingLevel, HeadingStyles, HeadingStyleType, ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core'
 import { defaultStyleConfig, widthOptions } from '@md/shared/configs'
+import { useCssEditorStore } from '@/stores/cssEditor'
 import { addPrefix } from '@/utils'
 import { store } from '@/utils/storage'
 
@@ -118,10 +119,7 @@ export const useThemeStore = defineStore(`theme`, () => {
    */
   const applyCurrentTheme = async () => {
     try {
-      // 动态导入避免循环依赖
-      const { useCssEditorStore } = await import(`@/stores/cssEditor`)
       const cssEditorStore = useCssEditorStore()
-
       const customCSS = cssEditorStore.getCurrentTabContent()
 
       await applyTheme({
