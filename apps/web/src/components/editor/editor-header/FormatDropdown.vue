@@ -28,7 +28,7 @@ import {
   Link2,
   List,
   ListOrdered,
-  Palette,
+  Paintbrush,
   Strikethrough,
 } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
@@ -186,7 +186,7 @@ function addFormat(cmd: string) {
       <HoverCard :open-delay="100">
         <HoverCardTrigger as-child>
           <MenubarItem @click.prevent>
-            <Palette class="mr-2 h-4 w-4" />
+            <Paintbrush class="mr-2 h-4 w-4" />
             文字颜色
           </MenubarItem>
         </HoverCardTrigger>
@@ -344,7 +344,7 @@ function addFormat(cmd: string) {
       <HoverCard :open-delay="100">
         <HoverCardTrigger as-child>
           <MenubarItem @click.prevent>
-            <Palette class="mr-2 h-4 w-4" />
+            <Paintbrush class="mr-2 h-4 w-4" />
             文字颜色
           </MenubarItem>
         </HoverCardTrigger>
