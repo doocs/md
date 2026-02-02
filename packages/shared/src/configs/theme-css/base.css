@@ -25,7 +25,7 @@ container {
   margin-top: 0 !important;
 }
 
-.nodeLabel p {
+.mermaid-diagram .nodeLabel p {
   color: unset !important;
   letter-spacing: unset !important;
 }
