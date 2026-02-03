@@ -81,7 +81,9 @@ function clearContent() {
 // 复制到剪贴板
 async function copyToClipboard() {
   const selectedText = editorStore.getSelection()
-  copyPlain(selectedText)
+  if (selectedText) {
+    await copyPlain(selectedText)
+  }
 }
 
 // 从剪贴板粘贴
@@ -142,8 +144,6 @@ function downloadAsCardImage() {
         </ContextMenuSubContent>
       </ContextMenuSub>
 
-      <ContextMenuSeparator />
-
       <!-- 格式化子菜单 -->
       <ContextMenuSub>
         <ContextMenuSubTrigger>
@@ -175,6 +175,7 @@ function downloadAsCardImage() {
               <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
             </ContextMenuShortcut>
           </ContextMenuItem>
+          <ContextMenuSeparator />
           <ContextMenuItem @click="addFormat(`${ctrlKey}-K`)">
             <Link class="mr-2 h-4 w-4" />
             超链接
@@ -241,18 +242,26 @@ function downloadAsCardImage() {
         <FileUp class="mr-2 h-4 w-4" />
         导入 .md 文档
       </ContextMenuItem>
-      <ContextMenuItem @click="exportEditorContent2MD()">
-        <FileDown class="mr-2 h-4 w-4" />
-        导出 .md 文档
-      </ContextMenuItem>
-      <ContextMenuItem @click="exportEditorContent2HTML()">
-        <FileCode class="mr-2 h-4 w-4" />
-        导出 .html
-      </ContextMenuItem>
-      <ContextMenuItem @click="downloadAsCardImage()">
-        <FileImage class="mr-2 h-4 w-4" />
-        导出 .png
-      </ContextMenuItem>
+      <ContextMenuSub>
+        <ContextMenuSubTrigger>
+          <FileDown class="mr-2 h-4 w-4" />
+          导出
+        </ContextMenuSubTrigger>
+        <ContextMenuSubContent class="w-48">
+          <ContextMenuItem @click="exportEditorContent2MD()">
+            <FileDown class="mr-2 h-4 w-4" />
+            导出 .md 文档
+          </ContextMenuItem>
+          <ContextMenuItem @click="exportEditorContent2HTML()">
+            <FileCode class="mr-2 h-4 w-4" />
+            导出 .html
+          </ContextMenuItem>
+          <ContextMenuItem @click="downloadAsCardImage()">
+            <FileImage class="mr-2 h-4 w-4" />
+            导出 .png
+          </ContextMenuItem>
+        </ContextMenuSubContent>
+      </ContextMenuSub>
 
       <ContextMenuSeparator />
 
