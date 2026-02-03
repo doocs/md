@@ -81,9 +81,7 @@ function clearContent() {
 // 复制到剪贴板
 async function copyToClipboard() {
   const selectedText = editorStore.getSelection()
-  if (selectedText) {
-    await copyPlain(selectedText)
-  }
+  copyPlain(selectedText)
 }
 
 // 从剪贴板粘贴
