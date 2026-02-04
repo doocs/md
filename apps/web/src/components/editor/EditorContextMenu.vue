@@ -105,6 +105,10 @@ function exportEditorContent2HTML() {
   exportStore.exportEditorContent2HTML()
 }
 
+function exportEditorContent2PDF() {
+  exportStore.exportEditorContent2PDF()
+}
+
 function exportEditorContent2MD() {
   exportStore.exportEditorContent2MD(editorStore.getContent())
 }
@@ -253,6 +257,10 @@ function downloadAsCardImage() {
           <ContextMenuItem @click="exportEditorContent2HTML()">
             <FileCode class="mr-2 h-4 w-4" />
             导出 .html
+          </ContextMenuItem>
+          <ContextMenuItem @click="exportEditorContent2PDF()">
+            <FileText class="mr-2 h-4 w-4" />
+            导出 .pdf
           </ContextMenuItem>
           <ContextMenuItem @click="downloadAsCardImage()">
             <FileImage class="mr-2 h-4 w-4" />
