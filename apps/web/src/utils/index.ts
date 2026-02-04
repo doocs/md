@@ -153,7 +153,7 @@ export async function exportPDF(title: string = `untitled`) {
             color: #666;
           }
           @bottom-left {
-            content: "微信 Markdown 编辑器";
+            content: "https://md.doocs.org";
             font-size: 10px;
             color: #999;
           }
