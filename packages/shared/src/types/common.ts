@@ -67,6 +67,7 @@ export interface PostAccount {
   uid: string
   checked: boolean
   loggedIn?: boolean
+  isChecking?: boolean
   status?: string
   error?: string
 }

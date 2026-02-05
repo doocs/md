@@ -374,7 +374,7 @@ function onUpdate(val: boolean) {
       <AlertDialogFooter>
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="confirmDelete">
-          删除
+          确定
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>

@@ -37,6 +37,7 @@ export default defineConfig({
       `https://*.weixin.qq.com/*`,
       // 微信公众号图片
       `https://*.qpic.cn/*`,
+      `https://www.plantuml.com/*`,
     ],
     web_accessible_resources: [
       {

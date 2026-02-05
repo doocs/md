@@ -74,12 +74,15 @@ export default defineConfig(({ mode }) => {
           globals: { mermaid: `mermaid` },
           manualChunks(id) {
             if (id.includes(`node_modules`)) {
-              if (id.includes(`katex`))
-                return `katex`
               if (id.includes(`codemirror`))
                 return `codemirror`
+              if (id.includes(`katex`))
+                return `katex`
               if (id.includes(`prettier`))
                 return `prettier`
+              // Skip automatic vendor splitting for pnpm virtual store to avoid circular deps
+              if (id.includes(`/.pnpm/`))
+                return
               const pkg = id
                 .split(`node_modules/`)[1]
                 .split(`/`)[0]

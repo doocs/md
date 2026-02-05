@@ -391,7 +391,7 @@ function exportCurrentTheme() {
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction @click="delTab">
-              确认
+              确定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

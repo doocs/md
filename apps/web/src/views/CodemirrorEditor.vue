@@ -884,7 +884,7 @@ onUnmounted(() => {
           <AlertDialogFooter>
             <AlertDialogCancel>取消</AlertDialogCancel>
             <AlertDialogAction @click="resetStyle">
-              确认
+              确定
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

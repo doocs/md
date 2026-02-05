@@ -24,3 +24,8 @@ container {
 #output section > :first-child {
   margin-top: 0 !important;
 }
+
+.mermaid-diagram .nodeLabel p {
+  color: unset !important;
+  letter-spacing: unset !important;
+}
