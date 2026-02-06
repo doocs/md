@@ -42,6 +42,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowFloatingToc = store.reactive(addPrefix(`isShowFloatingToc`), true)
   const toggleShowFloatingToc = useToggle(isShowFloatingToc)
 
+  // 是否启用图片转存（默认关闭）
+  const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
+  const toggleImageReupload = useToggle(enableImageReupload)
+
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
@@ -116,6 +120,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isPinFloatingToc,
     isShowFloatingToc,
     isOpenFolderPanel,
+    enableImageReupload,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,
@@ -145,5 +150,6 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleAIToolbox,
     togglePinFloatingToc,
     toggleShowFloatingToc,
+    toggleImageReupload,
   }
 })

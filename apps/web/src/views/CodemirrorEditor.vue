@@ -46,6 +46,7 @@ const {
   isOpenFolderPanel,
   isOpenRightSlider,
   isOpenConfirmDialog,
+  enableImageReupload,
 } = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = uiStore
@@ -588,10 +589,10 @@ function createFormTextArea(dom: HTMLDivElement) {
               // 并发处理
               Promise.all(uniqueUrls.map(async (url) => {
                 try {
-                  // 调用去重上传 Hook
-                  const newUrl = await upload(url)
+                  // 根据开关决定是否转存
+                  const newUrl = enableImageReupload.value ? await upload(url) : url
 
-                  // 2.3 转存成功后，精确替换编辑器中的对应内容
+                  // 2.3 转存成功后（或直接使用原URL），精确替换编辑器中的对应内容
                   // 遍历 map，找到所有 originalUrl 为当前 url 的占位符 ID
                   for (const [id, info] of placeholderMap.entries()) {
                     if (info.originalUrl === url) {
