@@ -7,6 +7,7 @@ packages:
 
 overrides:
   '@codemirror/view': 6.39.12
+  confbox: 0.2.2
   core-js@<3: ^3.46.0
   cross-spawn@<7: ^7.0.6
   glob@<8: ^10.4.5
