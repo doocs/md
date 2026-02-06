@@ -10,6 +10,8 @@ import { store } from '@/utils/storage'
 const emit = defineEmits([`uploadImage`])
 
 const uiStore = useUIStore()
+const { enableImageReupload } = storeToRefs(uiStore)
+const { toggleImageReupload } = uiStore
 
 // github
 const githubSchema = toTypedSchema(yup.object({
@@ -491,6 +493,19 @@ function onTabScroll(e: WheelEvent) {
               name="UseCompression"
               @update:checked="changeCompression"
             />
+          </Label>
+          <Label label="EnableImageReupload">
+            <span class="my-4 block">
+              粘贴图片时自动转存
+            </span>
+            <Switch
+              v-model:checked="enableImageReupload"
+              name="EnableImageReupload"
+              @update:checked="toggleImageReupload"
+            />
+            <p class="text-xs text-muted-foreground mt-2">
+              粘贴 Markdown 图片链接时自动转存到配置的图床
+            </p>
           </Label>
           <div
             class="bg-clip-padding mt-4 h-50 relative flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
