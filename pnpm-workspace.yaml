@@ -8,11 +8,15 @@ packages:
 overrides:
   '@codemirror/view': 6.39.12
   confbox: 0.2.2
-  core-js@<3: ^3.46.0
+  core-js: ^3.48.0
   cross-spawn@<7: ^7.0.6
   glob@<8: ^10.4.5
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
+  juice: 11.0.3
   lodash-es: ^4.17.23
+  prettier: 2.8.8
+  qs: ^6.13.1
+  querystring: npm:qs@^6.13.1
   source-map@0.8.0-beta.0: 0.7.4
   workbox-build>source-map: 0.7.4
 

@@ -33,8 +33,7 @@
     "form-data": "4.0.5",
     "get-port": "7.1.0",
     "http-proxy-middleware": "^3.0.5",
-    "multer": "^2.0.2",
-    "node-fetch": "^3.3.2"
+    "multer": "^2.0.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.11"

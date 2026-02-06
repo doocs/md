@@ -53,7 +53,6 @@
     "juice": "11.0.3",
     "lucide-vue-next": "^0.563.0",
     "marked": "^17.0.1",
-    "node-fetch": "^3.3.2",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.3",
     "radix-vue": "^1.9.17",

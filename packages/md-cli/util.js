@@ -3,8 +3,6 @@ import process from 'node:process'
 import util from 'node:util'
 import crypto from 'node:crypto'
 
-const fetch = (...args) => import(`node-fetch`).then(({ default: fetch }) => fetch(...args))
-
 /**
  * 自定义控制台颜色
  * https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
