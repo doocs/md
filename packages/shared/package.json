@@ -24,7 +24,7 @@
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language": "^6.12.1",
     "@codemirror/language-data": "^6.5.2",
-    "@codemirror/lint": "^6.9.2",
+    "@codemirror/lint": "^6.9.3",
     "@codemirror/search": "^6.6.0",
     "@fsegurai/codemirror-theme-vscode-dark": "^6.2.4",
     "@fsegurai/codemirror-theme-vscode-light": "^6.2.4",
