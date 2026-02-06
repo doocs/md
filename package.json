@@ -30,11 +30,11 @@
   },
   "dependencies": {
     "@codemirror/state": "^6.5.4",
-    "@codemirror/view": "6.39.11"
+    "@codemirror/view": "6.39.12"
   },
   "devDependencies": {
     "@antfu/eslint-config": "7.2.0",
-    "@types/node": "^25.0.10",
+    "@types/node": "^25.2.1",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
     "eslint": "^9.39.2",
