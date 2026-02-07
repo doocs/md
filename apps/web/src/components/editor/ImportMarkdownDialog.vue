@@ -15,6 +15,7 @@ const activeTab = ref<'url' | 'file'>(`file`)
 const url = ref(``)
 const isUrlLoading = ref(false)
 const urlError = ref(``)
+let abortController: AbortController | null = null
 
 async function importFromUrl() {
   const rawUrl = url.value.trim()
@@ -23,22 +24,28 @@ async function importFromUrl() {
     return
   }
 
-  // 简单的 URL 格式校验
-  if (!URL.canParse(rawUrl)) {
-    urlError.value = `请输入有效的 URL 地址`
+  // URL 格式及协议校验
+  if (!URL.canParse(rawUrl) || !/^https?:\/\//i.test(rawUrl)) {
+    urlError.value = `请输入有效的 URL 地址（仅支持 http/https）`
     return
   }
 
   urlError.value = ``
   isUrlLoading.value = true
+  abortController?.abort()
+  abortController = new AbortController()
+  const { signal } = abortController
 
   try {
-    const response = await fetch(rawUrl)
+    const response = await fetch(rawUrl, { signal })
     if (!response.ok) {
       throw new Error(`请求失败: ${response.status} ${response.statusText}`)
     }
 
     const content = await response.text()
+    if (signal.aborted)
+      return
+
     if (!content.trim()) {
       throw new Error(`获取到的内容为空`)
     }
@@ -46,7 +53,9 @@ async function importFromUrl() {
     editorStore.importContent(content)
     closeDialog()
   }
-  catch {
+  catch (err) {
+    if ((err as Error).name === `AbortError`)
+      return
     urlError.value = `导入失败，请检查链接是否有效且可公开访问`
   }
   finally {
@@ -109,6 +118,8 @@ async function readAndImportFiles(files: File[]) {
 
 // ==================== 对话框控制 ====================
 function closeDialog() {
+  abortController?.abort()
+  abortController = null
   isShowImportMdDialog.value = false
   url.value = ``
   urlError.value = ``
