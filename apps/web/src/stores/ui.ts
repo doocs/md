@@ -63,6 +63,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowUploadImgDialog = ref(false)
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
 
+  // 是否展示导入 Markdown 对话框
+  const isShowImportMdDialog = ref(false)
+  const toggleShowImportMdDialog = useToggle(isShowImportMdDialog)
+
   // 是否展示模板管理对话框
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
@@ -131,6 +135,8 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowInsertMpCardDialog,
     isShowUploadImgDialog,
     toggleShowUploadImgDialog,
+    isShowImportMdDialog,
+    toggleShowImportMdDialog,
     isShowTemplateDialog,
     toggleShowTemplateDialog,
     isOpenConfirmDialog,

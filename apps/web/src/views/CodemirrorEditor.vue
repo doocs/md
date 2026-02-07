@@ -872,6 +872,8 @@ onUnmounted(() => {
 
       <InsertMpCardDialog />
 
+      <ImportMarkdownDialog />
+
       <TemplateDialog />
 
       <AlertDialog v-model:open="isOpenConfirmDialog">
