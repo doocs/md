@@ -464,49 +464,49 @@ function onTabScroll(e: WheelEvent) {
         </TabsList>
 
         <TabsContent value="upload" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Label>
-            <span class="my-4 block">
-              图床
-            </span>
-            <Select v-model="imgHost" @update:model-value="changeImgHost">
-              <SelectTrigger>
-                <SelectValue placeholder="请选择" />
-              </SelectTrigger>
-              <SelectContent class="max-h-64 md:max-h-96">
-                <SelectItem
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </Label>
-          <Label label="UseCompression">
-            <span class="my-4 block">
-              开启图片压缩
-            </span>
-            <Switch
-              v-model:checked="useCompression"
-              name="UseCompression"
-              @update:checked="changeCompression"
-            />
-          </Label>
-          <Label label="EnableImageReupload">
-            <span class="my-4 block">
-              粘贴图片时自动转存
-            </span>
-            <Switch
-              v-model:checked="enableImageReupload"
-              name="EnableImageReupload"
-              @update:checked="toggleImageReupload"
-            />
-            <p class="text-xs text-muted-foreground mt-2">
+          <Select v-model="imgHost" class="my-4" @update:model-value="changeImgHost">
+            <SelectTrigger>
+              <SelectValue placeholder="请选择图床" />
+            </SelectTrigger>
+            <SelectContent class="max-h-64 md:max-h-96">
+              <SelectItem
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div class="space-y-3 my-4">
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-sm">
+                开启图片压缩
+              </span>
+              <Switch
+                v-model:checked="useCompression"
+                name="UseCompression"
+                @update:checked="changeCompression"
+              />
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-sm">
+                粘贴图片时自动转存
+              </span>
+              <Switch
+                v-model:checked="enableImageReupload"
+                name="EnableImageReupload"
+                @update:checked="toggleImageReupload"
+              />
+            </div>
+            <p class="text-xs text-muted-foreground mt-1.5">
               粘贴 Markdown 图片链接时自动转存到配置的图床
             </p>
-          </Label>
+          </div>
+
           <div
             class="bg-clip-padding mt-4 h-50 relative flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
             :class="{
