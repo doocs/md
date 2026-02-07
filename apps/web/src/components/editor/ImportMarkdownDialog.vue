@@ -44,7 +44,6 @@ async function importFromUrl() {
     }
 
     editorStore.importContent(content)
-    toast.success(`文档导入成功`)
     closeDialog()
   }
   catch {
@@ -59,13 +58,13 @@ async function importFromUrl() {
 const isDragover = ref(false)
 const { open: openFileDialog, reset: resetFileDialog, onChange: onFileChange } = useFileDialog({
   accept: `.md,.markdown,.txt`,
-  multiple: false,
+  multiple: true,
 })
 
 onFileChange((files) => {
   if (files == null || files.length === 0)
     return
-  readAndImportFile(files[0])
+  readAndImportFiles(Array.from(files))
 })
 
 function handleDrop(event: DragEvent) {
@@ -76,31 +75,35 @@ function handleDrop(event: DragEvent) {
   if (!files || files.length === 0)
     return
 
-  const file = files[0]
-  if (!file.name.match(/\.(md|markdown|txt)$/i)) {
+  const validFiles = Array.from(files).filter(file =>
+    file.name.match(/\.(md|markdown|txt)$/i),
+  )
+
+  if (validFiles.length === 0) {
     toast.error(`请拖入 Markdown 文件（.md / .markdown / .txt）`)
     return
   }
 
-  readAndImportFile(file)
+  readAndImportFiles(validFiles)
 }
 
-function readAndImportFile(file: File) {
-  const reader = new FileReader()
-  reader.readAsText(file, `UTF-8`)
-  reader.onload = (event) => {
-    const content = event.target?.result as string
-    if (!content?.trim()) {
-      toast.error(`文件内容为空`)
-      return
+function readFileAsText(file: File): Promise<string> {
+  return new Promise((resolve) => {
+    const reader = new FileReader()
+    reader.readAsText(file, `UTF-8`)
+    reader.onload = (event) => {
+      resolve((event.target?.result as string) || ``)
     }
+    reader.onerror = () => resolve(``)
+  })
+}
 
-    editorStore.importContent(content)
-    toast.success(`文档导入成功`)
+async function readAndImportFiles(files: File[]) {
+  const contents = await Promise.all(files.map(readFileAsText))
+  const merged = contents.filter(c => c.trim()).join(`\n\n`)
+  if (merged) {
+    editorStore.importContent(merged)
     closeDialog()
-  }
-  reader.onerror = () => {
-    toast.error(`文件读取失败`)
   }
 }
 
