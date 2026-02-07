@@ -45,13 +45,12 @@ const {
   toggleShowInsertFormDialog,
   toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
+  toggleShowImportMdDialog,
 } = uiStore
 
 const { editor } = storeToRefs(editorStore)
 
 const { addFormat } = useEditorFormat(editor)
-
-const importMarkdownContent = useImportMarkdownContent()
 
 const headingIcons = [Heading1, Heading2, Heading3, Heading4, Heading5, Heading6]
 const headingLevels = baseHeadingLevels.map((item, index) => ({
@@ -240,7 +239,7 @@ function downloadAsCardImage() {
       <ContextMenuSeparator />
 
       <!-- 导入导出操作 -->
-      <ContextMenuItem @click="importMarkdownContent()">
+      <ContextMenuItem @click="toggleShowImportMdDialog(true)">
         <FileUp class="mr-2 h-4 w-4" />
         导入 .md 文档
       </ContextMenuItem>

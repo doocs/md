@@ -19,9 +19,7 @@ const exportStore = useExportStore()
 const uiStore = useUIStore()
 
 const { isOpenPostSlider, isOpenFolderPanel } = storeToRefs(uiStore)
-const { toggleShowTemplateDialog } = uiStore
-
-const importMarkdownContent = useImportMarkdownContent()
+const { toggleShowTemplateDialog, toggleShowImportMdDialog } = uiStore
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
@@ -75,7 +73,7 @@ function exportEditorContent2PDF() {
           导入
         </MenubarSubTrigger>
         <MenubarSubContent class="w-56">
-          <MenubarItem @click="importMarkdownContent()">
+          <MenubarItem @click="toggleShowImportMdDialog(true)">
             <FileText class="mr-2 size-4" />
             导入 Markdown
           </MenubarItem>
@@ -159,7 +157,7 @@ function exportEditorContent2PDF() {
           导入
         </MenubarSubTrigger>
         <MenubarSubContent class="w-56">
-          <MenubarItem @click="importMarkdownContent()">
+          <MenubarItem @click="toggleShowImportMdDialog(true)">
             <FileText class="mr-2 size-4" />
             导入 Markdown
           </MenubarItem>
