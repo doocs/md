@@ -17,6 +17,16 @@ const isUrlLoading = ref(false)
 const urlError = ref(``)
 let abortController: AbortController | null = null
 
+/** 是否为浏览器因 CORS 或网络问题拒绝请求导致的错误 */
+function isCorsOrNetworkError(err: unknown): boolean {
+  const e = err as Error
+  return e?.name === `TypeError` || (typeof e?.message === `string` && e.message.includes(`Failed to fetch`))
+}
+
+const CORS_GUIDANCE = `因跨域限制无法访问该链接，需由提供该文件的服务器配置 CORS。`
+const CORS_DOC_URL = `https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS`
+const isCorsError = ref(false)
+
 async function importFromUrl() {
   const rawUrl = url.value.trim()
   if (!rawUrl) {
@@ -24,7 +34,6 @@ async function importFromUrl() {
     return
   }
 
-  // URL 格式及协议校验
   if (!URL.canParse(rawUrl) || !/^https?:\/\//i.test(rawUrl)) {
     urlError.value = `请输入有效的 URL 地址（仅支持 http/https）`
     return
@@ -39,7 +48,8 @@ async function importFromUrl() {
   try {
     const response = await fetch(rawUrl, { signal })
     if (!response.ok) {
-      throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+      urlError.value = `导入失败：${response.status} ${response.statusText}。请确认链接有效且可公开访问。`
+      return
     }
 
     const content = await response.text()
@@ -47,7 +57,8 @@ async function importFromUrl() {
       return
 
     if (!content.trim()) {
-      throw new Error(`获取到的内容为空`)
+      urlError.value = `导入失败：该链接返回的内容为空。`
+      return
     }
 
     editorStore.importContent(content)
@@ -56,7 +67,14 @@ async function importFromUrl() {
   catch (err) {
     if ((err as Error).name === `AbortError`)
       return
-    urlError.value = `导入失败，请检查链接是否有效且可公开访问`
+    if (isCorsOrNetworkError(err)) {
+      urlError.value = CORS_GUIDANCE
+      isCorsError.value = true
+    }
+    else {
+      urlError.value = `导入失败：${(err as Error).message}。请检查链接是否有效且可公开访问。`
+      isCorsError.value = false
+    }
   }
   finally {
     isUrlLoading.value = false
@@ -123,6 +141,7 @@ function closeDialog() {
   isShowImportMdDialog.value = false
   url.value = ``
   urlError.value = ``
+  isCorsError.value = false
   isUrlLoading.value = false
   isDragover.value = false
   resetFileDialog()
@@ -194,10 +213,19 @@ function onOpenChange(val: boolean) {
                 placeholder="如：https://raw.githubusercontent.com/doocs/md/main/README.md"
                 :class="{ 'border-destructive': urlError }"
                 @keydown.enter="importFromUrl"
-                @input="urlError = ``"
+                @input="urlError = ``; isCorsError = false"
               />
               <p v-if="urlError" class="text-xs text-destructive">
                 {{ urlError }}
+                <a
+                  v-if="isCorsError"
+                  :href="CORS_DOC_URL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline ml-1"
+                >
+                  了解 CORS
+                </a>
               </p>
               <p v-else class="text-xs text-muted-foreground">
                 输入 Markdown 文件的网络地址，支持 GitHub raw 链接等
