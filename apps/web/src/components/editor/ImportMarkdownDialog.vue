@@ -17,6 +17,49 @@ const isUrlLoading = ref(false)
 const urlError = ref(``)
 let abortController: AbortController | null = null
 
+/** 从异常中取可读文案（部分环境 CORS 信息在 toString 里） */
+function getErrorText(err: unknown): string {
+  const e = err as Error
+  const msg = typeof e?.message === `string` ? e.message : ``
+  const str = typeof err?.toString === `function` ? err.toString() : ``
+  return `${msg} ${str}`.trim()
+}
+
+/** 浏览器明确报出的 CORS 错误（如 "blocked by CORS policy"） */
+function isCorsBlockedError(err: unknown): boolean {
+  const text = getErrorText(err).toLowerCase()
+  return text.includes(`cors`) || text.includes(`access-control-allow-origin`)
+}
+
+/** 请求未得到响应就失败（网络异常、域名不可达、连接被拒等），与 CORS 不同 */
+function isNetworkOrRequestFailure(err: unknown): boolean {
+  const e = err as Error
+  return e?.name === `TypeError` || (typeof e?.message === `string` && e.message.includes(`Failed to fetch`))
+}
+
+function getImportErrorDisplay(err: unknown): { message: string, showCorsLink: boolean } {
+  if (isCorsBlockedError(err)) {
+    return {
+      message: `因跨域限制无法访问该链接，需由提供该文件的服务器配置 CORS。`,
+      showCorsLink: true,
+    }
+  }
+  if (isNetworkOrRequestFailure(err)) {
+    return {
+      message: `无法获取该链接（可能为跨域限制、网络异常或链接不可达）。若您拥有该链接所在服务器，可配置 CORS；否则请检查链接或改用「本地文件」导入。`,
+      showCorsLink: true,
+    }
+  }
+  const text = getErrorText(err) || `未知错误`
+  return {
+    message: `导入失败：${text}。请检查链接是否有效且可公开访问。`,
+    showCorsLink: false,
+  }
+}
+
+const CORS_DOC_URL = `https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS`
+const isCorsError = ref(false)
+
 async function importFromUrl() {
   const rawUrl = url.value.trim()
   if (!rawUrl) {
@@ -24,7 +67,6 @@ async function importFromUrl() {
     return
   }
 
-  // URL 格式及协议校验
   if (!URL.canParse(rawUrl) || !/^https?:\/\//i.test(rawUrl)) {
     urlError.value = `请输入有效的 URL 地址（仅支持 http/https）`
     return
@@ -39,7 +81,8 @@ async function importFromUrl() {
   try {
     const response = await fetch(rawUrl, { signal })
     if (!response.ok) {
-      throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+      urlError.value = `导入失败：${response.status} ${response.statusText}。请确认链接有效且可公开访问。`
+      return
     }
 
     const content = await response.text()
@@ -47,7 +90,8 @@ async function importFromUrl() {
       return
 
     if (!content.trim()) {
-      throw new Error(`获取到的内容为空`)
+      urlError.value = `导入失败：该链接返回的内容为空。`
+      return
     }
 
     editorStore.importContent(content)
@@ -56,7 +100,9 @@ async function importFromUrl() {
   catch (err) {
     if ((err as Error).name === `AbortError`)
       return
-    urlError.value = `导入失败，请检查链接是否有效且可公开访问`
+    const { message, showCorsLink } = getImportErrorDisplay(err)
+    urlError.value = message
+    isCorsError.value = showCorsLink
   }
   finally {
     isUrlLoading.value = false
@@ -123,6 +169,7 @@ function closeDialog() {
   isShowImportMdDialog.value = false
   url.value = ``
   urlError.value = ``
+  isCorsError.value = false
   isUrlLoading.value = false
   isDragover.value = false
   resetFileDialog()
@@ -133,6 +180,19 @@ function onOpenChange(val: boolean) {
     closeDialog()
   }
 }
+
+// URL 参数 open 传入的链接：打开对话框时自动填入并执行导入
+watch(isShowImportMdDialog, (visible) => {
+  if (!visible || !uiStore.importMdOpenUrl)
+    return
+  const urlToImport = uiStore.importMdOpenUrl
+  uiStore.importMdOpenUrl = null
+  url.value = urlToImport
+  activeTab.value = `url`
+  urlError.value = ``
+  isCorsError.value = false
+  nextTick(() => importFromUrl())
+})
 </script>
 
 <template>
@@ -194,10 +254,19 @@ function onOpenChange(val: boolean) {
                 placeholder="如：https://raw.githubusercontent.com/doocs/md/main/README.md"
                 :class="{ 'border-destructive': urlError }"
                 @keydown.enter="importFromUrl"
-                @input="urlError = ``"
+                @input="urlError = ``; isCorsError = false"
               />
               <p v-if="urlError" class="text-xs text-destructive">
                 {{ urlError }}
+                <a
+                  v-if="isCorsError"
+                  :href="CORS_DOC_URL"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="underline ml-1"
+                >
+                  了解 CORS
+                </a>
               </p>
               <p v-else class="text-xs text-muted-foreground">
                 输入 Markdown 文件的网络地址，支持 GitHub raw 链接等
