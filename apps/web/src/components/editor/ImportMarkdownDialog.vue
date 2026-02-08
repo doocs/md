@@ -152,6 +152,19 @@ function onOpenChange(val: boolean) {
     closeDialog()
   }
 }
+
+// URL 参数 open 传入的链接：打开对话框时自动填入并执行导入
+watch(isShowImportMdDialog, (visible) => {
+  if (!visible || !uiStore.importMdOpenUrl)
+    return
+  const urlToImport = uiStore.importMdOpenUrl
+  uiStore.importMdOpenUrl = null
+  url.value = urlToImport
+  activeTab.value = `url`
+  urlError.value = ``
+  isCorsError.value = false
+  nextTick(() => importFromUrl())
+})
 </script>
 
 <template>
