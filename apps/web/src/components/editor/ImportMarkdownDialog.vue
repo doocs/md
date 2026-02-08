@@ -17,13 +17,46 @@ const isUrlLoading = ref(false)
 const urlError = ref(``)
 let abortController: AbortController | null = null
 
-/** 是否为浏览器因 CORS 或网络问题拒绝请求导致的错误 */
-function isCorsOrNetworkError(err: unknown): boolean {
+/** 从异常中取可读文案（部分环境 CORS 信息在 toString 里） */
+function getErrorText(err: unknown): string {
+  const e = err as Error
+  const msg = typeof e?.message === `string` ? e.message : ``
+  const str = typeof err?.toString === `function` ? err.toString() : ``
+  return `${msg} ${str}`.trim()
+}
+
+/** 浏览器明确报出的 CORS 错误（如 "blocked by CORS policy"） */
+function isCorsBlockedError(err: unknown): boolean {
+  const text = getErrorText(err).toLowerCase()
+  return text.includes(`cors`) || text.includes(`access-control-allow-origin`)
+}
+
+/** 请求未得到响应就失败（网络异常、域名不可达、连接被拒等），与 CORS 不同 */
+function isNetworkOrRequestFailure(err: unknown): boolean {
   const e = err as Error
   return e?.name === `TypeError` || (typeof e?.message === `string` && e.message.includes(`Failed to fetch`))
 }
 
-const CORS_GUIDANCE = `因跨域限制无法访问该链接，需由提供该文件的服务器配置 CORS。`
+function getImportErrorDisplay(err: unknown): { message: string, showCorsLink: boolean } {
+  if (isCorsBlockedError(err)) {
+    return {
+      message: `因跨域限制无法访问该链接，需由提供该文件的服务器配置 CORS。`,
+      showCorsLink: true,
+    }
+  }
+  if (isNetworkOrRequestFailure(err)) {
+    return {
+      message: `无法获取该链接（可能为跨域限制、网络异常或链接不可达）。若您拥有该链接所在服务器，可配置 CORS；否则请检查链接或改用「本地文件」导入。`,
+      showCorsLink: true,
+    }
+  }
+  const text = getErrorText(err) || `未知错误`
+  return {
+    message: `导入失败：${text}。请检查链接是否有效且可公开访问。`,
+    showCorsLink: false,
+  }
+}
+
 const CORS_DOC_URL = `https://developer.mozilla.org/zh-CN/docs/Web/HTTP/CORS`
 const isCorsError = ref(false)
 
@@ -67,14 +100,9 @@ async function importFromUrl() {
   catch (err) {
     if ((err as Error).name === `AbortError`)
       return
-    if (isCorsOrNetworkError(err)) {
-      urlError.value = CORS_GUIDANCE
-      isCorsError.value = true
-    }
-    else {
-      urlError.value = `导入失败：${(err as Error).message}。请检查链接是否有效且可公开访问。`
-      isCorsError.value = false
-    }
+    const { message, showCorsLink } = getImportErrorDisplay(err)
+    urlError.value = message
+    isCorsError.value = showCorsLink
   }
   finally {
     isUrlLoading.value = false
