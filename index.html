@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <script src="https://www.googletagmanager.com/gtag/js?id=G-7NZL3PZ0NK" async></script>
+    <script>window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'G-7NZL3PZ0NK');
+</script>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta name="keywords" content="md,markdown,markdown-editor,wechat,official-account,yanglbme,doocs" />
+    <meta name="description" content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <title>微信 Markdown 编辑器 | Doocs 开源社区</title>
+    <link rel="shortcut icon" href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/favicon.png" />
+    <link
+      rel="apple-touch-icon-precomposed"
+      href="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
+    />
+    <style>
+      .loading {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 99999;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        font-size: 18px;
+      }
+
+      .loading::before {
+        content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGQAAABkCAMAAABHPGVmAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JQAAgIMAAPn/AACA6QAAdTAAAOpgAAA6mAAAF2+SX8VGAAAAt1BMVEX///8AAABIz0hHzkdIzkhIz0hIz0hHzkdIzkhFz0VAz0BHzUdIz0hHzkdIzkhIzUhHzUdHzUdIzkhEzEREzERGz0ZIz0hHzUdIzkhIzUhHzkdHzkdHzUdGz0ZIzkhHzkdKzkpIzUhGzUZD00NIzUhGzUZIzkhIzkhHzkdHzkdIzkhHz0dIzUhK1UpHzUdC0EJHzkdHzkdIz0hH1UdHzUdGzkZIzUhJ20lD10NJzklIzkhIzkj////r6/fCAAAAO3RSTlMAACDvoEBg0MAwEI9fz9+A8JDgDx5Ff/r9i+VdbHSDkx9RTRdce+6q6brLb58YSBvtd0oScFTxBxM/v5xq7LMAAAABYktHRACIBR1IAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4wwcCBssFsYwawAAAe9JREFUaN7t2tlywiAUBmABiQY1W6vWbna1i6Z2sYs97/9eNcQ6U40kEMhoh/824qeAxwSo1Wx2MUgimAAQLNNCAanDInWzCAUeahRxUsQx212NxGgaHhMq21sqCHIpdZFpRDoW2ROEtdpY/S1xu8XyEdZZ/BA8VcNbNO6wPIQbAK6akZa2v0rWN0mLk6+G+Gnr3O5qgnR1EjfOQviHCRS7yw02uyELwWGkbHAlCnGR3wkuM4WxLSuGkQNfmLYW5BDE8fUgXcHVXv9oYB45PoGBeQSd5ioaEHSWp+hA0DkMzSNoKFZKI78zuWsQuaA8l3BlEFnm2iL/FrlpZqanFbntZxmjO73IfdbVh31ERjQjj1LImEyYGMn+9xUjbELGKyRObviJI57CTzBdu/b8Ip7CDkkeQuIlQrffY5dB0rtvuqvINHnpqwISR8nTQsExSWbVW7ExSZ4jong1u2ZByJDu7kKsHszkCqQCIl+FLbKLyPtaefwwgWxEP2LvVixiEYtoQgqlHPJJC+XLLqoZRsyvpuKJB0R9XZiA18pfF+Yr3KqKS4qtcFeyVl/FrgNrlN8/aeTun3AlUh34aMPYsqcVOmWmsBMyW1Ysooi487nx/fhKThbwDdVvs0glpz0qObdSyQkchAOAQOUskU3h/AAe7qmqtAqp/QAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAxOS0xMi0yOFQwODoyNzo0NCswMDowMPJYdAwAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMTItMjhUMDg6Mjc6NDQrMDA6MDCDBcywAAAAAElFTkSuQmCC');
+        width: 100px;
+        height: 100px;
+        margin-bottom: 26px;
+      }
+
+      .loading.dark {
+        color: #ffffff;
+        background-color: #141414;
+      }
+
+      .loading .txt {
+        position: absolute;
+        bottom: 10%;
+      }
+
+      .loading .txt::after {
+        content: '...';
+        animation: dots 1.5s steps(4, end) infinite;
+      }
+
+      @keyframes dots {
+        0% {
+          content: ' ';
+        }
+        25% {
+          content: '.';
+        }
+        50% {
+          content: '..';
+        }
+        75% {
+          content: '...';
+        }
+      }
+    </style>
+    <script type="module" crossorigin src="/md/static/js/md-index-dB7bg3oz.js"></script>
+    <link rel="modulepreload" crossorigin href="/md/static/js/md-codemirror-vb2fa-rn.js">
+    <link rel="modulepreload" crossorigin href="/md/static/js/md-prettier-CUwD58R1.js">
+    <link rel="stylesheet" crossorigin href="/md/static/css/md-index-EFkJBpkt.css">
+  </head>
+
+  <body>
+    <noscript>
+      <strong>Please enable JavaScript to continue.</strong>
+    </noscript>
+    <div id="app">
+      <div class="loading">
+        <strong>致力于让 Markdown 编辑更简单</strong>
+        <p class="txt">正在加载编辑器</p>
+        <p class="timeout-tip" style="display: none; color: #e53935; font-size: 16px; margin-top: 2em">
+          加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息
+        </p>
+      </div>
+    </div>
+    <script>
+      const theme = localStorage.getItem('vueuse-color-scheme')
+      if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+        document.querySelector('.loading').classList.add('dark')
+      }
+
+      setTimeout(() => {
+        const tip = document.querySelector('.loading .timeout-tip')
+        if (tip) {
+          tip.style.display = 'block'
+        }
+      }, 30000)
+    </script>
+    <script>
+      window.MathJax = {
+        tex: { tags: 'ams' },
+        svg: { fontCache: 'none' },
+      }
+    </script>
+    <script
+      id="MathJax-script"
+      src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js"
+    ></script>
+    <script src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mermaid@11/dist/mermaid.min.js"></script>
+  </body>
+  <script src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/main.js"></script>
+</html>
