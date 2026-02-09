@@ -264,4 +264,5 @@ cd packages/md-cli
 node index.js
 ```
 
+或者 pnpm cli dev
 服务默认运行在 `http://localhost:8800`。
