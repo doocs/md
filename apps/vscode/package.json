@@ -80,15 +80,15 @@
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
-    "@types/webpack": "catalog:",
-    "isomorphic-dompurify": "catalog:",
-    "postcss": "catalog:",
-    "ts-loader": "catalog:",
-    "tsconfig-paths-webpack-plugin": "catalog:"
+    "@types/webpack": "^5.28.5",
+    "isomorphic-dompurify": "^2.35.0",
+    "postcss": "^8.5.6",
+    "ts-loader": "^9.5.4",
+    "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
   "devDependencies": {
-    "@types/vscode": "catalog:",
-    "@vscode/vsce": "catalog:",
-    "webpack-cli": "catalog:"
+    "@types/vscode": "^1.109.0",
+    "@vscode/vsce": "^3.7.1",
+    "webpack-cli": "^6.0.1"
   }
 }

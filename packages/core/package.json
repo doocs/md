@@ -11,19 +11,19 @@
     "./theme": "./src/theme/index.ts"
   },
   "dependencies": {
-    "@antv/infographic": "catalog:",
+    "@antv/infographic": "^0.2.13",
     "@md/shared": "workspace:*",
-    "es-toolkit": "catalog:",
-    "fflate": "catalog:",
-    "front-matter": "catalog:",
-    "highlight.js": "catalog:",
-    "isomorphic-dompurify": "catalog:",
-    "marked": "catalog:",
-    "mermaid": "catalog:",
-    "postcss": "catalog:",
-    "postcss-calc": "catalog:",
-    "postcss-custom-properties": "catalog:",
-    "reading-time": "catalog:"
+    "es-toolkit": "^1.44.0",
+    "fflate": "^0.8.2",
+    "front-matter": "^4.0.2",
+    "highlight.js": "^11.11.1",
+    "isomorphic-dompurify": "^2.35.0",
+    "marked": "^17.0.1",
+    "mermaid": "^11.12.2",
+    "postcss": "^8.5.6",
+    "postcss-calc": "^10.1.1",
+    "postcss-custom-properties": "^15.0.0",
+    "reading-time": "^1.5.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*"

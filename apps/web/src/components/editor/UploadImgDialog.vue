@@ -10,6 +10,8 @@ import { store } from '@/utils/storage'
 const emit = defineEmits([`uploadImage`])
 
 const uiStore = useUIStore()
+const { enableImageReupload } = storeToRefs(uiStore)
+const { toggleImageReupload } = uiStore
 
 // github
 const githubSchema = toTypedSchema(yup.object({
@@ -462,36 +464,49 @@ function onTabScroll(e: WheelEvent) {
         </TabsList>
 
         <TabsContent value="upload" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Label>
-            <span class="my-4 block">
-              图床
-            </span>
-            <Select v-model="imgHost" @update:model-value="changeImgHost">
-              <SelectTrigger>
-                <SelectValue placeholder="请选择" />
-              </SelectTrigger>
-              <SelectContent class="max-h-64 md:max-h-96">
-                <SelectItem
-                  v-for="item in options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                  {{ item.label }}
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </Label>
-          <Label label="UseCompression">
-            <span class="my-4 block">
-              开启图片压缩
-            </span>
-            <Switch
-              v-model:checked="useCompression"
-              name="UseCompression"
-              @update:checked="changeCompression"
-            />
-          </Label>
+          <Select v-model="imgHost" class="my-4" @update:model-value="changeImgHost">
+            <SelectTrigger>
+              <SelectValue placeholder="请选择图床" />
+            </SelectTrigger>
+            <SelectContent class="max-h-64 md:max-h-96">
+              <SelectItem
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              >
+                {{ item.label }}
+              </SelectItem>
+            </SelectContent>
+          </Select>
+
+          <div class="space-y-3 my-4">
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-sm">
+                开启图片压缩
+              </span>
+              <Switch
+                v-model:checked="useCompression"
+                name="UseCompression"
+                @update:checked="changeCompression"
+              />
+            </div>
+
+            <div class="flex items-center justify-between gap-4">
+              <span class="text-sm">
+                粘贴图片时自动转存
+              </span>
+              <Switch
+                v-model:checked="enableImageReupload"
+                name="EnableImageReupload"
+                @update:checked="toggleImageReupload"
+              />
+            </div>
+            <p class="text-xs text-muted-foreground mt-1.5">
+              粘贴 Markdown 图片链接时自动转存到配置的图床
+            </p>
+          </div>
+
           <div
             class="bg-clip-padding mt-4 h-50 relative flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
             :class="{
@@ -514,787 +529,811 @@ function onTabScroll(e: WheelEvent) {
           </div>
         </TabsContent>
 
-        <TabsContent value="github" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="githubSchema" :initial-values="githubConfig" @submit="githubSubmit">
-            <Field v-slot="{ field, errorMessage }" name="repo">
-              <FormItem label="GitHub 仓库" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：github.com/yanglbme/resource"
-                />
-              </FormItem>
-            </Field>
+        <TabsContent value="github" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="githubSchema" :initial-values="githubConfig" class="flex flex-col flex-1 overflow-hidden" @submit="githubSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="repo">
+                <FormItem label="GitHub 仓库" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：github.com/yanglbme/resource"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="branch">
-              <FormItem label="分支" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：release，可不填，默认 master"
-                />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="branch">
+                <FormItem label="分支" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：release，可不填，默认 master"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="accessToken">
-              <FormItem label="Token" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
-                />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="accessToken">
+                <FormItem label="Token" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
+                  />
+                </FormItem>
+              </Field>
 
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0 h-auto text-left whitespace-normal"
-                as="a"
-                href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                target="_blank"
-              >
-                如何获取 GitHub Token？
-              </Button>
-            </FormItem>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="aliOSS" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="aliOSSSchema" :initial-values="aliOSSConfig" @submit="aliOSSSubmit">
-            <Field v-slot="{ field, errorMessage }" name="accessKeyId">
-              <FormItem label="AccessKey ID" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
-              <FormItem label="AccessKey Secret" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：doocs"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="region">
-              <FormItem label="Bucket 所在区域" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：oss-cn-shenzhen"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
-              <FormItem label="UseSSL" required :error="errorMessage">
-                <Switch
-                  :checked="field.value"
-                  :name="field.name"
-                  @update:checked="field.onChange"
-                  @blur="field.onBlur"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="cdnHost">
-              <FormItem label="自定义 CDN 域名" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：https://imagecdn.alidaodao.com，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：img，可不填，默认为根目录"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0 h-auto text-left whitespace-normal"
-                as="a"
-                href="https://help.aliyun.com/document_detail/31883.html"
-                target="_blank"
-              >
-                如何使用阿里云 OSS？
-              </Button>
-            </FormItem>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="txCOS" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="txCOSSchema" :initial-values="txCOSConfig" @submit="txCOSSubmit">
-            <Field v-slot="{ field, errorMessage }" name="secretId">
-              <FormItem label="SecretId" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="secretKey">
-              <FormItem label="SecretKey" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：doocs-3212520134"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="region">
-              <FormItem label="Bucket 所在区域" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：ap-guangzhou"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="cdnHost">
-              <FormItem label="自定义 CDN 域名" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：https://imagecdn.alidaodao.com，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：img，可不填，默认根目录"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0 h-auto text-left whitespace-normal"
-                as="a"
-                href="https://cloud.tencent.com/document/product/436/38484"
-                target="_blank"
-              >
-                如何使用腾讯云 COS？
-              </Button>
-            </FormItem>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="qiniu" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="qiniuSchema" :initial-values="qiniuConfig" @submit="qiniuSubmit">
-            <Field v-slot="{ field, errorMessage }" name="accessKey">
-              <FormItem label="AccessKey" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="secretKey">
-              <FormItem label="SecretKey" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：md"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="domain">
-              <FormItem label="Bucket 对应域名" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：https://images.123ylb.cn"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="region">
-              <FormItem label="存储区域" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：z2，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：img，可不填，默认为根目录"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0 h-auto text-left whitespace-normal"
-                as="a"
-                href="https://developer.qiniu.com/kodo"
-                target="_blank"
-              >
-                如何使用七牛云 Kodo？
-              </Button>
-            </FormItem>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="minio" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="minioOSSSchema" :initial-values="minioOSSConfig" @submit="minioOSSSubmit">
-            <Field v-slot="{ field, errorMessage }" name="endpoint">
-              <FormItem label="Endpoint" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：play.min.io"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="port">
-              <FormItem label="Port" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="number"
-                  placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
-              <FormItem label="UseSSL" required :error="errorMessage">
-                <Switch
-                  :checked="field.value"
-                  :name="field.name"
-                  @update:checked="field.onChange"
-                  @blur="field.onBlur"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：doocs"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="accessKey">
-              <FormItem label="AccessKey" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：zhangsan" />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="secretKey">
-              <FormItem label="SecretKey" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：asdasdasd" />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0"
-                as="a"
-                href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
-                target="_blank"
-              >
-                如何使用 MinIO？
-              </Button>
-            </FormItem>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="s3" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="s3Schema" :initial-values="s3Config" @submit="s3Submit">
-            <Field v-slot="{ field, errorMessage }" name="endpoint">
-              <FormItem label="Endpoint" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：s3.amazonaws.com，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="region">
-              <FormItem label="Region" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：us-east-1"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：bucket-name"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="accessKeyId">
-              <FormItem label="AccessKey ID" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：AKIAIOSFODNN7EXAMPLE"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
-              <FormItem label="AccessKey Secret" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="如：wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：img，可不填，默认根目录"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="cdnHost">
-              <FormItem label="自定义域名" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：https://cdn.example.com"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="pathStyle" type="boolean">
-              <FormItem label="Force Path Style" :error="errorMessage">
-                <Switch
-                  :checked="field.value"
-                  :name="field.name"
-                  @update:checked="field.onChange"
-                  @blur="field.onBlur"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button type="submit">
-                保存配置
-              </Button>
-            </FormItem>
-          </Form>
-        </TabsContent>
-
-        <TabsContent value="mp" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="mpSchema" :initial-values="mpConfig" @submit="mpSubmit">
-            <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
-            <Field
-              v-if="isProxyRequired"
-              v-slot="{ field, errorMessage }"
-              name="proxyOrigin"
-            >
-              <FormItem label="代理域名" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  :placeholder="mpPlaceholder"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="appID">
-              <FormItem label="appID" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：wx6e1234567890efa3"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="appsecret">
-              <FormItem label="appsecret" required :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：d9f1abcdef01234567890abcdef82397"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <div class="flex flex-col items-start">
+              <FormItem>
                 <Button
                   variant="link"
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
-                  href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
+                  href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
                   target="_blank"
                 >
-                  如何开启公众号开发者模式并获取应用账号密钥？
+                  如何获取 GitHub Token？
                 </Button>
-                <Button
-                  variant="link"
-                  class="p-0 h-auto text-left whitespace-normal"
-                  as="a"
-                  href="https://md-pages.doocs.org/tutorial/"
-                  target="_blank"
-                >
-                  如何在浏览器插件中使用公众号图床？
-                </Button>
-              </div>
-            </FormItem>
+              </FormItem>
+            </div>
 
-            <FormItem>
+            <DialogFooter class="p-1">
               <Button type="submit">
                 保存配置
               </Button>
-            </FormItem>
+            </DialogFooter>
           </Form>
         </TabsContent>
 
-        <TabsContent value="r2" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="r2Schema" :initial-values="r2Config" @submit="r2Submit">
-            <Field v-slot="{ field, errorMessage }" name="accountId">
-              <FormItem label="AccountId" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="w-full min-w-0 md:min-w-[350px]" />
-              </FormItem>
-            </Field>
+        <TabsContent value="aliOSS" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="aliOSSSchema" :initial-values="aliOSSConfig" class="flex flex-col flex-1 overflow-hidden" @submit="aliOSSSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="accessKeyId">
+                <FormItem label="AccessKey ID" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="accessKey">
-              <FormItem label="AccessKey" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
+                <FormItem label="AccessKey Secret" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="secretKey">
-              <FormItem label="SecretKey" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：doocs"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：md" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="region">
+                <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：oss-cn-shenzhen"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="domain">
-              <FormItem label="域名" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
+                <FormItem label="UseSSL" required :error="errorMessage">
+                  <Switch
+                    :checked="field.value"
+                    :name="field.name"
+                    @update:checked="field.onChange"
+                    @blur="field.onBlur"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="cdnHost">
+                <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                  />
+                </FormItem>
+              </Field>
 
-            <FormItem>
-              <div class="flex flex-col items-start">
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：img，可不填，默认为根目录"
+                  />
+                </FormItem>
+              </Field>
+
+              <FormItem>
                 <Button
                   variant="link"
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
-                  href="https://developers.cloudflare.com/r2/api/s3/api/"
+                  href="https://help.aliyun.com/document_detail/31883.html"
                   target="_blank"
                 >
-                  如何使用 S3 API 操作 Cloudflare R2？
+                  如何使用阿里云 OSS？
                 </Button>
-                <Button
-                  variant="link"
-                  class="p-0 h-auto text-left whitespace-normal"
-                  as="a"
-                  href="https://developers.cloudflare.com/r2/buckets/cors/"
-                  target="_blank"
-                >
-                  如何设置跨域(CORS)？
-                </Button>
-              </div>
-            </FormItem>
+              </FormItem>
+            </div>
 
-            <FormItem>
+            <DialogFooter class="p-1">
               <Button type="submit">
                 保存配置
               </Button>
-            </FormItem>
+            </DialogFooter>
           </Form>
         </TabsContent>
 
-        <TabsContent value="upyun" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" @submit="upyunSubmit">
-            <Field v-slot="{ field, errorMessage }" name="bucket">
-              <FormItem label="Bucket" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: md" class="w-full min-w-0 md:min-w-[350px]" />
-              </FormItem>
-            </Field>
+        <TabsContent value="txCOS" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="txCOSSchema" :initial-values="txCOSConfig" class="flex flex-col flex-1 overflow-hidden" @submit="txCOSSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="secretId">
+                <FormItem label="SecretId" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="operator">
-              <FormItem label="操作员" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如: operator" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="secretKey">
+                <FormItem label="SecretKey" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="password">
-              <FormItem label="操作员密码" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：doocs-3212520134"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="domain">
-              <FormItem label="域名" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：http://xxx.test.upcdn.net" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="region">
+                <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：ap-guangzhou"
+                  />
+                </FormItem>
+              </Field>
 
-            <Field v-slot="{ field, errorMessage }" name="path">
-              <FormItem label="存储路径" :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
-              </FormItem>
-            </Field>
+              <Field v-slot="{ field, errorMessage }" name="cdnHost">
+                <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                  />
+                </FormItem>
+              </Field>
 
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0"
-                as="a"
-                href="https://help.upyun.com/"
-                target="_blank"
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：img，可不填，默认根目录"
+                  />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="https://cloud.tencent.com/document/product/436/38484"
+                  target="_blank"
+                >
+                  如何使用腾讯云 COS？
+                </Button>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="qiniu" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="qiniuSchema" :initial-values="qiniuConfig" class="flex flex-col flex-1 overflow-hidden" @submit="qiniuSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="accessKey">
+                <FormItem label="AccessKey" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="secretKey">
+                <FormItem label="SecretKey" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：md"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="domain">
+                <FormItem label="Bucket 对应域名" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：https://images.123ylb.cn"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="region">
+                <FormItem label="存储区域" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：z2，可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：img，可不填，默认为根目录"
+                  />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="https://developer.qiniu.com/kodo"
+                  target="_blank"
+                >
+                  如何使用七牛云 Kodo？
+                </Button>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="minio" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="minioOSSSchema" :initial-values="minioOSSConfig" class="flex flex-col flex-1 overflow-hidden" @submit="minioOSSSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="endpoint">
+                <FormItem label="Endpoint" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：play.min.io"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="port">
+                <FormItem label="Port" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="number"
+                    placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
+                <FormItem label="UseSSL" required :error="errorMessage">
+                  <Switch
+                    :checked="field.value"
+                    :name="field.name"
+                    @update:checked="field.onChange"
+                    @blur="field.onBlur"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：doocs"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="accessKey">
+                <FormItem label="AccessKey" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：zhangsan" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="secretKey">
+                <FormItem label="SecretKey" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：asdasdasd" />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
+                  target="_blank"
+                >
+                  如何使用 MinIO？
+                </Button>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="s3" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="s3Schema" :initial-values="s3Config" class="flex flex-col flex-1 overflow-hidden" @submit="s3Submit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="endpoint">
+                <FormItem label="Endpoint" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：s3.amazonaws.com，可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="region">
+                <FormItem label="Region" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：us-east-1"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：bucket-name"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="accessKeyId">
+                <FormItem label="AccessKey ID" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：AKIAIOSFODNN7EXAMPLE"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="accessKeySecret">
+                <FormItem label="AccessKey Secret" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="如：wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：img，可不填，默认根目录"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="cdnHost">
+                <FormItem label="自定义域名" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：https://cdn.example.com"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="pathStyle" type="boolean">
+                <FormItem label="Force Path Style" :error="errorMessage">
+                  <Switch
+                    :checked="field.value"
+                    :name="field.name"
+                    @update:checked="field.onChange"
+                    @blur="field.onBlur"
+                  />
+                </FormItem>
+              </Field>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="mp" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="mpSchema" :initial-values="mpConfig" class="flex flex-col flex-1 overflow-hidden" @submit="mpSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
+              <Field
+                v-if="isProxyRequired"
+                v-slot="{ field, errorMessage }"
+                name="proxyOrigin"
               >
-                如何使用 又拍云？
-              </Button>
-            </FormItem>
+                <FormItem label="代理域名" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    :placeholder="mpPlaceholder"
+                  />
+                </FormItem>
+              </Field>
 
-            <FormItem>
+              <Field v-slot="{ field, errorMessage }" name="appID">
+                <FormItem label="appID" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：wx6e1234567890efa3"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="appsecret">
+                <FormItem label="appsecret" required :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：d9f1abcdef01234567890abcdef82397"
+                  />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <div class="flex flex-col items-start">
+                  <Button
+                    variant="link"
+                    class="p-0 h-auto text-left whitespace-normal"
+                    as="a"
+                    href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
+                    target="_blank"
+                  >
+                    如何开启公众号开发者模式并获取应用账号密钥？
+                  </Button>
+                  <Button
+                    variant="link"
+                    class="p-0 h-auto text-left whitespace-normal"
+                    as="a"
+                    href="https://md-pages.doocs.org/tutorial/"
+                    target="_blank"
+                  >
+                    如何在浏览器插件中使用公众号图床？
+                  </Button>
+                </div>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
               <Button type="submit">
                 保存配置
               </Button>
-            </FormItem>
+            </DialogFooter>
           </Form>
         </TabsContent>
 
-        <TabsContent value="telegram" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          <Form :validation-schema="telegramSchema" :initial-values="telegramConfig" @submit="telegramSubmit">
-            <Field v-slot="{ field, errorMessage }" name="token">
-              <FormItem label="Bot Token" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：123456789:ABCdefGHIjkl-MNOPqrSTUvwxYZ" />
+        <TabsContent value="r2" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="r2Schema" :initial-values="r2Config" class="flex flex-col flex-1 overflow-hidden" @submit="r2Submit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="accountId">
+                <FormItem label="AccountId" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="w-full min-w-0 md:min-w-[350px]" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="accessKey">
+                <FormItem label="AccessKey" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="secretKey">
+                <FormItem label="SecretKey" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：md" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="domain">
+                <FormItem label="域名" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <div class="flex flex-col items-start">
+                  <Button
+                    variant="link"
+                    class="p-0 h-auto text-left whitespace-normal"
+                    as="a"
+                    href="https://developers.cloudflare.com/r2/api/s3/api/"
+                    target="_blank"
+                  >
+                    如何使用 S3 API 操作 Cloudflare R2？
+                  </Button>
+                  <Button
+                    variant="link"
+                    class="p-0 h-auto text-left whitespace-normal"
+                    as="a"
+                    href="https://developers.cloudflare.com/r2/buckets/cors/"
+                    target="_blank"
+                  >
+                    如何设置跨域(CORS)？
+                  </Button>
+                </div>
               </FormItem>
-            </Field>
-            <Field v-slot="{ field, errorMessage }" name="chatId">
-              <FormItem label="Chat ID" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：-1001234567890" />
-              </FormItem>
-            </Field>
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0"
-                as="a"
-                href="https://github.com/doocs/md/blob/main/docs/telegram-usage.md"
-                target="_blank"
-              >
-                如何使用 Telegram？
-              </Button>
-            </FormItem>
-            <FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
               <Button type="submit">
                 保存配置
               </Button>
-            </FormItem>
+            </DialogFooter>
           </Form>
         </TabsContent>
 
-        <TabsContent value="cloudinary" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="upyun" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="upyunSchema" :initial-values="upyunConfig" class="flex flex-col flex-1 overflow-hidden" @submit="upyunSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="bucket">
+                <FormItem label="Bucket" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如: md" class="w-full min-w-0 md:min-w-[350px]" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="operator">
+                <FormItem label="操作员" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如: operator" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="password">
+                <FormItem label="操作员密码" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="domain">
+                <FormItem label="域名" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：http://xxx.test.upcdn.net" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="path">
+                <FormItem label="存储路径" :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="https://help.upyun.com/"
+                  target="_blank"
+                >
+                  如何使用 又拍云？
+                </Button>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="telegram" class="flex-1 flex flex-col overflow-hidden">
+          <Form :validation-schema="telegramSchema" :initial-values="telegramConfig" class="flex flex-col flex-1 overflow-hidden" @submit="telegramSubmit">
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="token">
+                <FormItem label="Bot Token" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：123456789:ABCdefGHIjkl-MNOPqrSTUvwxYZ" />
+                </FormItem>
+              </Field>
+              <Field v-slot="{ field, errorMessage }" name="chatId">
+                <FormItem label="Chat ID" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：-1001234567890" />
+                </FormItem>
+              </Field>
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="https://github.com/doocs/md/blob/main/docs/telegram-usage.md"
+                  target="_blank"
+                >
+                  如何使用 Telegram？
+                </Button>
+              </FormItem>
+            </div>
+
+            <DialogFooter class="p-1">
+              <Button type="submit">
+                保存配置
+              </Button>
+            </DialogFooter>
+          </Form>
+        </TabsContent>
+
+        <TabsContent value="cloudinary" class="flex-1 flex flex-col overflow-hidden">
           <Form
             :validation-schema="cloudinarySchema"
             :initial-values="cloudinaryConfig"
+            class="flex flex-col flex-1 overflow-hidden"
             @submit="cloudinarySubmit"
           >
-            <Field v-slot="{ field, errorMessage }" name="cloudName">
-              <FormItem label="Cloud Name" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：demo" />
+            <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+              <Field v-slot="{ field, errorMessage }" name="cloudName">
+                <FormItem label="Cloud Name" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：demo" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="apiKey">
+                <FormItem label="API Key" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" placeholder="如：1234567890" />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="apiSecret">
+                <FormItem label="API Secret" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    type="password"
+                    placeholder="用于签名上传，可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="uploadPreset">
+                <FormItem label="Upload Preset" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="unsigned 时必填，signed 时可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="folder">
+                <FormItem label="Folder" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：blog/image，可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <Field v-slot="{ field, errorMessage }" name="domain">
+                <FormItem label="自定义域名 / CDN" :error="errorMessage">
+                  <Input
+                    v-bind="field"
+                    v-model="field.value"
+                    placeholder="如：https://cdn.example.com，可不填"
+                  />
+                </FormItem>
+              </Field>
+
+              <FormItem>
+                <Button
+                  variant="link"
+                  class="p-0 h-auto text-left whitespace-normal"
+                  as="a"
+                  href="https://cloudinary.com/documentation/upload_images"
+                  target="_blank"
+                >
+                  Cloudinary 使用文档
+                </Button>
               </FormItem>
-            </Field>
+            </div>
 
-            <Field v-slot="{ field, errorMessage }" name="apiKey">
-              <FormItem label="API Key" required :error="errorMessage">
-                <Input v-bind="field" v-model="field.value" placeholder="如：1234567890" />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="apiSecret">
-              <FormItem label="API Secret" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  type="password"
-                  placeholder="用于签名上传，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="uploadPreset">
-              <FormItem label="Upload Preset" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="unsigned 时必填，signed 时可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="folder">
-              <FormItem label="Folder" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：blog/image，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <Field v-slot="{ field, errorMessage }" name="domain">
-              <FormItem label="自定义域名 / CDN" :error="errorMessage">
-                <Input
-                  v-bind="field"
-                  v-model="field.value"
-                  placeholder="如：https://cdn.example.com，可不填"
-                />
-              </FormItem>
-            </Field>
-
-            <FormItem>
-              <Button
-                variant="link"
-                class="p-0"
-                as="a"
-                href="https://cloudinary.com/documentation/upload_images"
-                target="_blank"
-              >
-                Cloudinary 使用文档
-              </Button>
-            </FormItem>
-
-            <FormItem>
+            <DialogFooter class="p-1">
               <Button type="submit">
                 保存配置
               </Button>
-            </FormItem>
+            </DialogFooter>
           </Form>
         </TabsContent>
 
-        <TabsContent value="formCustom" class="grid flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+        <TabsContent value="formCustom" class="flex-1 flex flex-col overflow-hidden">
           <CustomUploadForm />
         </TabsContent>
       </Tabs>

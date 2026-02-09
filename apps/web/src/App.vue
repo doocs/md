@@ -15,12 +15,25 @@ onMounted(() => {
   if (isUtools.value) {
     document.documentElement.classList.add(`is-utools`)
   }
+
+  // 若 URL 带有 open 参数（Markdown 链接），打开导入对话框并自动导入
+  const params = new URLSearchParams(window.location.search)
+  const openUrl = params.get(`open`)
+  if (openUrl && URL.canParse(openUrl) && /^https?:\/\//i.test(openUrl)) {
+    uiStore.importMdOpenUrl = openUrl
+    uiStore.isShowImportMdDialog = true
+    params.delete(`open`)
+    const newSearch = params.toString()
+    const newUrl = window.location.pathname + (newSearch ? `?${newSearch}` : ``) + window.location.hash
+    window.history.replaceState({}, ``, newUrl)
+  }
 })
 </script>
 
 <template>
   <AppSplash />
   <CodemirrorEditor />
+
   <Toaster
     rich-colors
     position="top-center"
