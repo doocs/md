@@ -17,6 +17,11 @@ async function startServer() {
     let { port = 8800 } = arg
     port = Number(port)
 
+    port = await getPort({ port }).catch(_ => {
+      console.log(`端口 ${port} 被占用，正在寻找可用端口...`)
+      return getPort()
+    })
+
     // 固定使用指定端口，不自动切换
     // port = await getPort({ port }).catch(_ => {
     //   console.log(`端口 ${port} 被占用，正在寻找可用端口...`)
