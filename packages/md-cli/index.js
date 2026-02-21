@@ -22,6 +22,12 @@ async function startServer() {
       return getPort()
     })
 
+    // 固定使用指定端口，不自动切换
+    // port = await getPort({ port }).catch(_ => {
+    //   console.log(`端口 ${port} 被占用，正在寻找可用端口...`)
+    //   return getPort()
+    // })
+
     console.log(`doocs/md-cli v${packageJson.version}`)
     console.log(`服务启动中...`)
 
