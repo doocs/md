@@ -357,9 +357,7 @@ onMounted(() => {
 /* 提示气泡淡入淡出过渡 */
 .hint-fade-enter-active,
 .hint-fade-leave-active {
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
 .hint-fade-enter-from {

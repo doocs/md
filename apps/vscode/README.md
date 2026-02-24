@@ -4,27 +4,27 @@
 
 ## 功能特性
 
-- 侧边栏Markdown预览视图
+- 侧边栏 Markdown 预览视图
 - 支持微信图文特有的样式渲染
 - 可自定义字体
 - 支持自定义字体大小
 - 支持自定义文本主题颜色
 - 支持自定义主题样式
 - 显示字数统计状态
-- 支持Mac风格代码块切换
+- 支持 Mac 风格代码块切换
 
 ## 使用方法
 
-1. 安装扩展后，打开Markdown文件
+1. 安装扩展后，打开 Markdown 文件
 2. 点击活动栏中的 doocs-md 的 icon 图标
 3. 在侧边栏查看实时渲染效果
 
 ## 命令
 
-- `markdown.preview`: 打开Markdown预览
+- `markdown.preview`: 打开 Markdown 预览
 - `markdown.setFontFamily`: 设置预览字体
 - `markdown.toggleCountStatus`: 切换字数统计显示
-- `markdown.toggleMacCodeBlock`: 切换Mac风格代码块
+- `markdown.toggleMacCodeBlock`: 切换 Mac 风格代码块
 
 ## 与主项目的关系
 

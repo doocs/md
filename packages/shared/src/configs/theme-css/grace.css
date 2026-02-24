@@ -60,13 +60,7 @@ pre.code__pre,
 
 pre.code__pre > code,
 .hljs.code__pre > code {
-  font-family:
-    'Fira Code',
-    Menlo,
-    Operator Mono,
-    Consolas,
-    Monaco,
-    monospace;
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
 }
 
 /* ==================== 图片 ==================== */

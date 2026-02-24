@@ -8,16 +8,19 @@ packages:
 overrides:
   '@codemirror/view': 6.39.12
   ajv@^8: ^8.18.0
+  bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
   confbox: 0.2.2
   core-js: ^3.48.0
   cross-spawn@<7: ^7.0.6
+  crypto-browserify: npm:empty-module@0.0.2
   glob@<8: ^10.5.0
   glob@^10: ^10.5.0
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
   juice: 11.0.3
   lodash-es: ^4.17.23
   markdown-it: ^14.1.1
+  minimatch: '>=10.2.1'
   minimatch@^10: ^10.2.1
   minimatch@^5: ^10.2.1
   minimatch@^9: ^10.2.1
