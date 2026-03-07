@@ -32,15 +32,9 @@
     "axios": "^1.13.6",
     "es-toolkit": "^1.45.1",
     "marked": "^17.0.4",
-    "reading-time": "^1.5.0",
-    "remark-parse": "^11.0.0",
-    "remark-stringify": "^11.0.0",
-    "unified": "^11.0.5",
-    "unist-util-visit": "^5.1.0"
+    "reading-time": "^1.5.0"
   },
   "devDependencies": {
-    "@md/config": "workspace:*",
-    "@types/mdast": "^4.0.4",
-    "@types/unist": "^3.0.3"
+    "@md/config": "workspace:*"
   }
 }
