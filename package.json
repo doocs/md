@@ -33,11 +33,11 @@
     "@codemirror/view": "6.39.16"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "7.6.1",
+    "@antfu/eslint-config": "7.7.0",
     "@types/node": "^25.3.5",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
-    "eslint": "^10.0.2",
+    "eslint": "^10.0.3",
     "eslint-plugin-format": "^2.0.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "2.8.8",
