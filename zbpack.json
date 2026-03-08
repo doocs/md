@@ -1,0 +1,4 @@
+{
+  "build_command": "pnpm web build",
+  "output_dir": "apps/web/dist"
+}
