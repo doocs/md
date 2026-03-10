@@ -1,5 +1,4 @@
 diff --git a/dist/index.d.ts b/dist/index.d.ts
-index 5cd2cadf4baeb46bf3d385bb201d0bb6f2743715..07a67a16909bb756527ae74fce8994086847b622 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
 @@ -515,7 +515,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
@@ -12,10 +11,9 @@ index 5cd2cadf4baeb46bf3d385bb201d0bb6f2743715..07a67a16909bb756527ae74fce899408
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index b532584332332504748a8e5755eb3689cbe8ce4e..96e5e987980bb710cffe86759e6b3bacdcf016b1 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9057,7 +9057,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9093,7 +9093,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
