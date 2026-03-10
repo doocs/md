@@ -34,7 +34,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "7.7.0",
-    "@types/node": "^25.3.5",
+    "@types/node": "^25.4.0",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.0.3",
