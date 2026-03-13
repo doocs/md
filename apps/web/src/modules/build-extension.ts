@@ -10,6 +10,9 @@ import {
   defineWxtModule,
 } from 'wxt/modules'
 
+type AddedViteConfig = ReturnType<Parameters<typeof addViteConfig>[1]>
+type AddedVitePlugins = NonNullable<NonNullable<AddedViteConfig>['plugins']>
+
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
@@ -52,15 +55,13 @@ export default defineWxtModule({
       }
     })
     addViteConfig(wxt, () => ({
-      // WXT currently ships Vite 7 types, so cast plugin values locally to avoid
-      // cross-version type conflicts while keeping the runtime plugin contract intact.
-      plugins: [
+      plugins: toWxtPluginOptions([
         htmlScriptToVirtual(wxt.config, () => wxt.server),
         vueDevtoolsHack(wxt.config, () => wxt.server),
         wxt.config.command === `build`
           ? htmlScriptToLocal(wxt)
           : undefined,
-      ].filter(Boolean) as any[],
+      ]),
     }))
   },
 })
@@ -68,6 +69,17 @@ export default defineWxtModule({
 // Stored outside the plugin to effect all instances of the htmlScriptToVirtual plugin.
 const inlineScriptContents: Record<string, string> = {}
 const SCRIPT_FILE_NAME_REGEX = /\/([^/]+)\.js$/
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined
+}
+
+function toWxtPluginOptions(
+  plugins: ReadonlyArray<vite.PluginOption | undefined>,
+): AddedVitePlugins {
+  return plugins.filter(isDefined) as unknown as AddedVitePlugins
+}
+
 export function htmlScriptToVirtual(
   config: wxt.ResolvedConfig,
   getWxtDevServer: () => wxt.WxtDevServer | undefined,
