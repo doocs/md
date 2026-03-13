@@ -8,7 +8,6 @@ import { visualizer } from 'rollup-plugin-visualizer'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components/vite'
 import { defineConfig, loadEnv } from 'vite'
-import { nodePolyfills } from 'vite-plugin-node-polyfills'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
@@ -35,13 +34,6 @@ export default defineConfig(({ mode }) => {
       vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
       }),
-      !isCfWorkers && nodePolyfills({
-        include: [`path`, `util`, `timers`, `stream`, `fs`],
-        overrides: {
-        // Since `fs` is not supported in browsers, we can use the `memfs` package to polyfill it.
-        // fs: 'memfs',
-        },
-      }),
       VitePluginRadar({
         analytics: { id: `G-7NZL3PZ0NK` },
       }),
@@ -57,11 +49,6 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: { '@': path.resolve(__dirname, `./src`) },
-    },
-    optimizeDeps: {
-      esbuildOptions: {
-        target: 'esnext',
-      },
     },
     css: { devSourcemap: true },
     build: {

@@ -1,7 +1,11 @@
 import type { RendererAPI } from '@md/shared/types'
-import type { ReadTimeResults } from 'reading-time'
+import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import DOMPurify from 'isomorphic-dompurify'
 import { marked } from 'marked'
+
+const INFOGRAPHIC_PLACEHOLDER_REGEX = /<!--infographic-start-->[\s\S]*?<!--infographic-end-->/g
+const MERMAID_PLACEHOLDER_REGEX = /<!--mermaid-start-->[\s\S]*?<!--mermaid-end-->/g
+const PROTECTED_SPAN_REGEX = /<span data-md-protected="(\d+)"><\/span>/g
 
 /**
  * DOMPurify v3.1.7+ 会强制移除 foreignObject 内容
@@ -15,7 +19,7 @@ function sanitizeHtml(html: string): string {
 
   // 保护 infographic-diagram（使用注释标记定界，避免嵌套 div 问题）
   html = html.replace(
-    /<!--infographic-start-->[\s\S]*?<!--infographic-end-->/g,
+    INFOGRAPHIC_PLACEHOLDER_REGEX,
     (match) => {
       protectedContents.push(match)
       return `<span data-md-protected="${protectedContents.length - 1}"></span>`
@@ -24,7 +28,7 @@ function sanitizeHtml(html: string): string {
 
   // 保护 mermaid-diagram（使用注释标记定界，避免嵌套 div 问题）
   html = html.replace(
-    /<!--mermaid-start-->[\s\S]*?<!--mermaid-end-->/g,
+    MERMAID_PLACEHOLDER_REGEX,
     (match) => {
       protectedContents.push(match)
       return `<span data-md-protected="${protectedContents.length - 1}"></span>`
@@ -36,7 +40,7 @@ function sanitizeHtml(html: string): string {
 
   // 还原被保护的内容
   html = html.replace(
-    /<span data-md-protected="(\d+)"><\/span>/g,
+    PROTECTED_SPAN_REGEX,
     (_, i) => protectedContents[Number(i)],
   )
 

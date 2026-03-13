@@ -10,6 +10,9 @@ import {
   defineWxtModule,
 } from 'wxt/modules'
 
+type AddedViteConfig = ReturnType<Parameters<typeof addViteConfig>[1]>
+type AddedVitePlugins = NonNullable<NonNullable<AddedViteConfig>['plugins']>
+
 export default defineWxtModule({
   async setup(wxt) {
     wxt.config.alias[`/src/main.ts`] = `./src/main.ts`
@@ -52,19 +55,31 @@ export default defineWxtModule({
       }
     })
     addViteConfig(wxt, () => ({
-      plugins: [
+      plugins: toWxtPluginOptions([
         htmlScriptToVirtual(wxt.config, () => wxt.server),
         vueDevtoolsHack(wxt.config, () => wxt.server),
         wxt.config.command === `build`
           ? htmlScriptToLocal(wxt)
           : undefined,
-      ],
+      ]),
     }))
   },
 })
 
 // Stored outside the plugin to effect all instances of the htmlScriptToVirtual plugin.
 const inlineScriptContents: Record<string, string> = {}
+const SCRIPT_FILE_NAME_REGEX = /\/([^/]+)\.js$/
+
+function isDefined<T>(value: T | undefined): value is T {
+  return value !== undefined
+}
+
+function toWxtPluginOptions(
+  plugins: ReadonlyArray<vite.PluginOption | undefined>,
+): AddedVitePlugins {
+  return plugins.filter(isDefined) as unknown as AddedVitePlugins
+}
+
 export function htmlScriptToVirtual(
   config: wxt.ResolvedConfig,
   getWxtDevServer: () => wxt.WxtDevServer | undefined,
@@ -168,7 +183,7 @@ export function htmlScriptToLocal(
               }
               const textContent = await doFetch(url)
               const key = hash(textContent)
-              let jsName = url.match(/\/([^/]+)\.js$/)?.[1] ?? `.js`
+              let jsName = url.match(SCRIPT_FILE_NAME_REGEX)?.[1] ?? `.js`
               if (url.indexOf(`?`) > 0) {
                 jsName = `${url.substring(url.indexOf(`?`) + 1)}.js`
               }

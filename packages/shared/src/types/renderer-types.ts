@@ -1,4 +1,4 @@
-import type { ReadTimeResults } from 'reading-time'
+import type { ReadTimeResults } from '../utils/readingTime'
 import type { IOpts } from './common'
 
 export interface RendererAPI {
