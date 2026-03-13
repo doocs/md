@@ -31,8 +31,7 @@
     "@replit/codemirror-indentation-markers": "^6.5.3",
     "axios": "^1.13.6",
     "es-toolkit": "^1.45.1",
-    "marked": "^17.0.4",
-    "reading-time": "^1.5.0"
+    "marked": "^17.0.4"
   },
   "devDependencies": {
     "@md/config": "workspace:*"

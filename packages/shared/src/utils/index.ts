@@ -1,4 +1,5 @@
 export * from './basicHelpers'
 export * from './fetch'
 export * from './fileHelpers'
+export * from './readingTime'
 export * from './tokenTools'

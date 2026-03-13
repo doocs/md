@@ -1,10 +1,10 @@
 import type { IOpts, RendererAPI } from '@md/shared/types'
+import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import type { RendererObject, Tokens } from 'marked'
-import type { ReadTimeResults } from 'reading-time'
+import readingTime from '@md/shared/utils/readingTime'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
-import readingTime from 'reading-time'
 import {
   markedAlert,
   markedFootnotes,
@@ -30,14 +30,25 @@ marked.setOptions({
 })
 marked.use(markedSlider())
 
+const AMPERSAND_REGEX = /&/g
+const LESS_THAN_REGEX = /</g
+const GREATER_THAN_REGEX = />/g
+const DOUBLE_QUOTE_REGEX = /"/g
+const SINGLE_QUOTE_REGEX = /'/g
+const BACKTICK_REGEX = /`/g
+const UNDERSCORE_REGEX = /_/g
+const HEADING_TAG_REGEX = /^h\d$/
+const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
+const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
+
 function escapeHtml(text: string): string {
   return text
-    .replace(/&/g, `&amp;`) // 转义 &
-    .replace(/</g, `&lt;`) // 转义 <
-    .replace(/>/g, `&gt;`) // 转义 >
-    .replace(/"/g, `&quot;`) // 转义 "
-    .replace(/'/g, `&#39;`) // 转义 '
-    .replace(/`/g, `&#96;`) // 转义 `
+    .replace(AMPERSAND_REGEX, `&amp;`) // 转义 &
+    .replace(LESS_THAN_REGEX, `&lt;`) // 转义 <
+    .replace(GREATER_THAN_REGEX, `&gt;`) // 转义 >
+    .replace(DOUBLE_QUOTE_REGEX, `&quot;`) // 转义 "
+    .replace(SINGLE_QUOTE_REGEX, `&#39;`) // 转义 '
+    .replace(BACKTICK_REGEX, `&#96;`) // 转义 `
 }
 
 function buildAddition(): string {
@@ -138,8 +149,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
    */
   function styledContent(styleLabel: string, content: string, tagName?: string): string {
     const tag = tagName ?? styleLabel
-    const className = `${styleLabel.replace(/_/g, `-`)}`
-    const headingAttr = /^h\d$/.test(tag) ? ` data-heading="true"` : ``
+    const className = `${styleLabel.replace(UNDERSCORE_REGEX, `-`)}`
+    const headingAttr = HEADING_TAG_REGEX.test(tag) ? ` data-heading="true"` : ``
     return `<${tag} class="${className}"${headingAttr}>${content}</${tag}>`
   }
 
@@ -225,7 +236,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       // 如果语言未注册，添加 data-language-pending 属性和原始代码文本用于后续动态加载
       let pendingAttr = ``
       if (!isLanguageRegistered && langText !== `plaintext`) {
-        const escapedText = text.replace(/"/g, `&quot;`)
+        const escapedText = text.replace(DOUBLE_QUOTE_REGEX, `&quot;`)
         pendingAttr = ` data-language-pending="${langText}" data-raw-code="${escapedText}" data-show-line-number="${opts.isShowLineNumber}"`
       }
       const code = `<code class="language-${lang}"${pendingAttr}>${highlighted}</code>`
@@ -257,8 +268,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
     // 2. listitem：从栈顶取 ordered + counter，计算 prefix 并自增
     listitem(token: Tokens.ListItem) {
-      const ordered = listOrderedStack[listOrderedStack.length - 1]
-      const idx = listCounters[listCounters.length - 1]!
+      const ordered = listOrderedStack.at(-1)
+      const idx = listCounters.at(-1)!
 
       // 准备下一个
       listCounters[listCounters.length - 1] = idx + 1
@@ -275,7 +286,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       catch {
         content = this.parser
           .parse(token.tokens)
-          .replace(/^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/, `$1`)
+          .replace(PARAGRAPH_WRAPPER_REGEX, `$1`)
       }
 
       return styledContent(
@@ -294,7 +305,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
     link({ href, title, text, tokens }: Tokens.Link): string {
       const parsedText = this.parser.parseInline(tokens)
-      if (/^https?:\/\/mp\.weixin\.qq\.com/.test(href)) {
+      if (MP_WEIXIN_LINK_REGEX.test(href)) {
         return `<a href="${href}" title="${title || text}">${parsedText}</a>`
       }
       if (href === text) {
