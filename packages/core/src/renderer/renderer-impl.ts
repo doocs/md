@@ -269,7 +269,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     // 2. listitem：从栈顶取 ordered + counter，计算 prefix 并自增
     listitem(token: Tokens.ListItem) {
       const ordered = listOrderedStack.at(-1)
-      const idx = listCounters.at(-1)!
+      const idx = listCounters.at(-1)
 
       // 准备下一个
       listCounters[listCounters.length - 1] = idx + 1
