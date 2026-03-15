@@ -16,6 +16,7 @@ overrides:
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
   dompurify@<3.3.2: ^3.3.2
+  flatted@<3.4.0: ^3.4.0
   glob@<8: ^10.5.0
   glob@^10: ^10.5.0
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
@@ -32,7 +33,10 @@ overrides:
   serialize-javascript@<7.0.3: ^7.0.4
   source-map@0.8.0-beta.0: 0.7.4
   underscore@<1.13.8: 1.13.8
+  undici@^6: ^6.24.0
+  undici@^7: ^7.24.0
   workbox-build>source-map: 0.7.4
+  yauzl: ^3.2.1
 
 patchedDependencies:
   '@codemirror/view@6.40.0': patches/@codemirror__view@6.40.0.patch
