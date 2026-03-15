@@ -29,12 +29,12 @@
     "utools:package": "node ./scripts/package-utools.mjs"
   },
   "dependencies": {
-    "@codemirror/state": "^6.5.4",
-    "@codemirror/view": "6.39.17"
+    "@codemirror/state": "6.6.0",
+    "@codemirror/view": "6.40.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "7.7.0",
-    "@types/node": "^25.4.0",
+    "@antfu/eslint-config": "7.7.2",
+    "@types/node": "^25.5.0",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
     "eslint": "^10.0.3",

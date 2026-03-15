@@ -6,7 +6,8 @@ packages:
   - packages/*
 
 overrides:
-  '@codemirror/view': 6.39.17
+  '@codemirror/state': 6.6.0
+  '@codemirror/view': 6.40.0
   ajv@^8: ^8.18.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -34,4 +35,4 @@ overrides:
   workbox-build>source-map: 0.7.4
 
 patchedDependencies:
-  '@codemirror/view@6.39.17': patches/@codemirror__view@6.39.17.patch
+  '@codemirror/view@6.40.0': patches/@codemirror__view@6.40.0.patch
