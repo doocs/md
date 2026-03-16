@@ -63,7 +63,7 @@ function getDir() {
  * @returns {string} `时间戳+uuid`
  */
 function getDateFilename(filename: string) {
-  const currentTimestamp = new Date().getTime()
+  const currentTimestamp = Date.now()
   // 获取最后一个点号后的内容作为文件扩展名
   const fileSuffix = filename.split(`.`).pop()
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
@@ -108,9 +108,7 @@ async function ghFileUpload(content: string, filename: string) {
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
   const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
   res.content = res.data?.content || res.content
-  return useDefault
-    ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
-    : res.content.download_url
+  return res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
 }
 
 // -----------------------------------------------------------------------
@@ -168,7 +166,7 @@ async function qiniuUpload(file: File) {
   const { accessKey, secretKey, bucket, region, path, domain } = JSON.parse(configStr!)
   const token = getQiniuToken(accessKey, secretKey, {
     scope: bucket,
-    deadline: Math.trunc(new Date().getTime() / 1000) + 3600,
+    deadline: Math.trunc(Date.now() / 1000) + 3600,
   })
   const dir = path ? `${path}/` : ``
   const dateFilename = dir + getDateFilename(file.name)
@@ -355,6 +353,8 @@ async function minioFileUpload(file: File) {
 // S3 File Upload
 // -----------------------------------------------------------------------
 
+const PROTOCOL_REGEX = /^https?:\/\//
+
 async function s3Upload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const config = await store.getJSON(`s3Config`, {
@@ -414,7 +414,7 @@ async function s3Upload(file: File) {
 
     if (endpoint) {
       const proto = clientConfig.endpoint.startsWith('https') ? 'https' : 'http'
-      const host = clientConfig.endpoint.replace(/^https?:\/\//, '')
+      const host = clientConfig.endpoint.replace(PROTOCOL_REGEX, '')
       if (pathStyle) {
         return `${proto}://${host}/${bucket}/${key}`
       }
@@ -444,7 +444,7 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
   const data = await store.get(`mpToken:${appID}`)
   if (data) {
     const token = JSON.parse(data)
-    if (token.expire && token.expire > new Date().getTime()) {
+    if (token.expire && token.expire > Date.now()) {
       return token.access_token
     }
   }
@@ -464,7 +464,7 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin: string)
   if (res.access_token) {
     const tokenInfo = {
       ...res,
-      expire: new Date().getTime() + res.expires_in * 1000,
+      expire: Date.now() + res.expires_in * 1000,
     }
     await store.setJSON(`mpToken:${appID}`, tokenInfo)
     return res.access_token
