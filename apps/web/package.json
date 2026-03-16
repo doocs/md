@@ -63,8 +63,8 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.28.0",
-    "@cloudflare/workers-types": "^4.20260313.1",
+    "@cloudflare/vite-plugin": "1.29.0",
+    "@cloudflare/workers-types": "^4.20260316.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.2.1",
     "@tailwindcss/vite": "^4.2.1",
@@ -86,7 +86,7 @@
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.0",
     "vue-tsc": "^3.2.5",
-    "wrangler": "^4.73.0",
+    "wrangler": "^4.74.0",
     "wxt": "^0.20.19"
   }
 }
