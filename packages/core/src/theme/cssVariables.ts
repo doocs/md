@@ -90,7 +90,8 @@ function generateHeadingCSS(level: HeadingLevel, style: HeadingStyleType): strin
     case `border-left`:
       return `#output ${level} {${baseStyles}
   margin-left: 0;
-  padding-left: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
   border-left: 4px solid var(--md-primary-color);
   color: var(--md-primary-color);
 }`

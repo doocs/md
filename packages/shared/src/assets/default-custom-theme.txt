@@ -21,6 +21,8 @@ h1 {
 }
 
 h2 {
+  margin-top: 1.2em;
+	margin-bottom: 0.6em;
 }
 
 h3 {

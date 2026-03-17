@@ -128,7 +128,7 @@ blockquote > p {
 }
 
 .alert-title-info {
-  color: #93c5fd;
+  color: var(--md-primary-color);
 }
 
 .alert-title-important {
@@ -199,7 +199,7 @@ blockquote > p {
 }
 
 .alert-icon-info {
-  fill: #93c5fd;
+  fill: var(--md-primary-color);
 }
 
 .alert-icon-important {
@@ -258,6 +258,35 @@ blockquote > p {
 .alert-icon-quote,
 .alert-icon-cite {
   fill: #9ca3af;
+}
+
+.markdown-alert-info {
+  padding: 1.2em 1.25em;
+  border: 1px solid color-mix(in srgb, var(--md-primary-color) 9%, white);
+  border-radius: 14px;
+  background: color-mix(in srgb, var(--md-primary-color) 4%, white);
+  box-shadow: inset 0 1px 0 color-mix(in srgb, white 92%, transparent);
+}
+
+.markdown-alert-info > .alert-title-info {
+  display: none;
+}
+
+.markdown-alert-info > p:not(.alert-title-info) {
+  margin: 0.75em 0 0;
+  color: color-mix(in srgb, hsl(var(--foreground)) 94%, var(--md-primary-color) 6%);
+}
+
+.markdown-alert-info > .alert-title-info + p:not(.alert-title-info) {
+  margin-top: 0;
+}
+
+.markdown-alert-info > p:not(.alert-title-info):last-child {
+  margin-bottom: 0;
+}
+
+.markdown-alert-info > p:not(.alert-title-info):first-of-type {
+  margin-top: 0;
 }
 
 /* ==================== 代码块 ==================== */
