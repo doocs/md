@@ -42,6 +42,7 @@ async function getConfig(useDefault: boolean, platform: string) {
     repo: repoUrl[1],
     branch: customConfig.branch || `master`,
     accessToken: customConfig.accessToken,
+    useCDN: customConfig.useCDN ?? false,
   }
 }
 
@@ -75,7 +76,7 @@ function getDateFilename(filename: string) {
 
 async function ghFileUpload(content: string, filename: string) {
   const useDefault = await store.get(`imgHost`) === `default`
-  const { username, repo, branch, accessToken } = await getConfig(
+  const { username, repo, branch, accessToken, useCDN } = await getConfig(
     useDefault,
     `github`,
   )
@@ -108,7 +109,10 @@ async function ghFileUpload(content: string, filename: string) {
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
   const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
   res.content = res.data?.content || res.content
-  return res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+  const shouldUseCDN = useDefault || useCDN
+  return shouldUseCDN
+    ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
+    : res.content.download_url
 }
 
 // -----------------------------------------------------------------------
