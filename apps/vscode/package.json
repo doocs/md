@@ -81,7 +81,7 @@
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
-    "isomorphic-dompurify": "^3.3.0",
+    "isomorphic-dompurify": "^3.5.1",
     "postcss": "^8.5.8",
     "ts-loader": "^9.5.4",
     "tsconfig-paths-webpack-plugin": "^4.2.0"
@@ -89,6 +89,6 @@
   "devDependencies": {
     "@types/vscode": "^1.110.0",
     "@vscode/vsce": "^3.7.1",
-    "webpack-cli": "^7.0.0"
+    "webpack-cli": "^7.0.2"
   }
 }
