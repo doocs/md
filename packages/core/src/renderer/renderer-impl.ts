@@ -107,7 +107,7 @@ function transform(legend: string, text: string | null, title: string | null, hr
     if (option === `filename` && href) {
       const fileName = extractFileName(href)
       if (fileName) {
-        return fileName
+        return escapeHtml(fileName)
       }
     }
   }
