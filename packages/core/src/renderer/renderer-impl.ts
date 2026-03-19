@@ -105,7 +105,10 @@ function transform(legend: string, text: string | null, title: string | null, hr
       return title
     }
     if (option === `filename` && href) {
-      return extractFileName(href)
+      const fileName = extractFileName(href)
+      if (fileName) {
+        return fileName
+      }
     }
   }
   return ``
