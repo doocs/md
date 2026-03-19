@@ -249,6 +249,11 @@ export const legendOptions: IConfigOption[] = [
     desc: ``,
   },
   {
+    label: `文件名`,
+    value: `filename`,
+    desc: ``,
+  },
+  {
     label: `不显示`,
     value: `none`,
     desc: ``,

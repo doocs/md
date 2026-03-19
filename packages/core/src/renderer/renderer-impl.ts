@@ -80,7 +80,22 @@ function buildFootnoteArray(footnotes: [number, string, string][]): string {
     .join(`\n`)
 }
 
-function transform(legend: string, text: string | null, title: string | null): string {
+function extractFileName(href: string): string {
+  try {
+    // 移除查询参数和哈希
+    const urlPath = href.split('?')[0].split('#')[0]
+    // 获取最后一个 / 之后的部分
+    const fileName = urlPath.split('/').pop() || ''
+    // 移除文件扩展名
+    const nameWithoutExt = fileName.replace(/\.[^.]*$/, '')
+    return nameWithoutExt
+  }
+  catch {
+    return ''
+  }
+}
+
+function transform(legend: string, text: string | null, title: string | null, href: string = ''): string {
   const options = legend.split(`-`)
   for (const option of options) {
     if (option === `alt` && text) {
@@ -88,6 +103,12 @@ function transform(legend: string, text: string | null, title: string | null): s
     }
     if (option === `title` && title) {
       return title
+    }
+    if (option === `filename` && href) {
+      const fileName = extractFileName(href)
+      if (fileName) {
+        return escapeHtml(fileName)
+      }
     }
   }
   return ``
@@ -297,7 +318,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
 
     image({ href, title, text }: Tokens.Image): string {
-      const newText = opts.legend ? transform(opts.legend, text, title) : ``
+      const newText = opts.legend ? transform(opts.legend, text, title, href) : ``
       const subText = newText ? styledContent(`figcaption`, newText) : ``
       const titleAttr = title ? ` title="${title}"` : ``
       return `<figure><img src="${href}"${titleAttr} alt="${text}"/>${subText}</figure>`
