@@ -31,7 +31,7 @@
   "dependencies": {
     "express": "^5.2.1",
     "form-data": "4.0.5",
-    "get-port": "7.1.0",
+    "get-port": "7.2.0",
     "http-proxy-middleware": "^3.0.5",
     "multer": "^2.1.1"
   },
