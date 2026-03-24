@@ -40,3 +40,4 @@ overrides:
 
 patchedDependencies:
   '@codemirror/view@6.40.0': patches/@codemirror__view@6.40.0.patch
+  isomorphic-dompurify@3.7.0: patches/isomorphic-dompurify@3.7.0.patch
