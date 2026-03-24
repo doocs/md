@@ -101,8 +101,8 @@ importers:
         specifier: ^5.28.5
         version: 5.28.5(webpack-cli@7.0.2)
       isomorphic-dompurify:
-        specifier: ^3.5.1
-        version: 3.5.1
+        specifier: ^3.7.0
+        version: 3.7.0
       postcss:
         specifier: ^8.5.8
         version: 8.5.8
@@ -321,8 +321,8 @@ importers:
         specifier: ^11.11.1
         version: 11.11.1
       isomorphic-dompurify:
-        specifier: ^3.5.1
-        version: 3.5.1
+        specifier: ^3.7.0
+        version: 3.7.0
       marked:
         specifier: ^17.0.5
         version: 17.0.5
@@ -5136,8 +5136,8 @@ packages:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
 
-  isomorphic-dompurify@3.5.1:
-    resolution: {integrity: sha512-LlUCZikq/W6CmSq1UWcFLgS4nhkNBwimmVyNQtdByDffT0yVjKYef9lincZ7/ohBlknPkX1C97BBmjeNuFFR4Q==}
+  isomorphic-dompurify@3.7.0:
+    resolution: {integrity: sha512-HYd0J+d/r+LXx9M2mppwTkujCXKmK+GPi5UQRUXlhQrluZTojMSO9mtnLMill40Q5ES5N1H/7TtPqUaoOulxFQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24.0.0}
 
   istextorbinary@9.5.0:
@@ -10468,8 +10468,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.56.1(typescript@5.9.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.56.1(typescript@5.9.3)
-      '@typescript-eslint/types': 8.56.1
+      '@typescript-eslint/tsconfig-utils': 8.57.1(typescript@5.9.3)
+      '@typescript-eslint/types': 8.57.1
       debug: 4.4.3(supports-color@5.5.0)
       typescript: 5.9.3
     transitivePeerDependencies:
@@ -12994,7 +12994,7 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-dompurify@3.5.1:
+  isomorphic-dompurify@3.7.0:
     dependencies:
       dompurify: 3.3.3
       jsdom: 29.0.1
