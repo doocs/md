@@ -348,17 +348,6 @@ function onUpdate(val: boolean) {
           </div>
         </div>
       </div>
-
-      <DialogFooter v-if="!isShowForm" class="px-6 pb-6 pt-4 border-t">
-        <div class="flex items-center justify-between w-full">
-          <p class="text-sm text-muted-foreground">
-            共 {{ templateStore.templateCount }} 个模板
-          </p>
-          <Button variant="outline" @click="toggleShowTemplateDialog(false)">
-            关闭
-          </Button>
-        </div>
-      </DialogFooter>
     </DialogContent>
   </Dialog>
 
