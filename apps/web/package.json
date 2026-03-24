@@ -46,7 +46,7 @@
     "es-toolkit": "^1.45.1",
     "html-to-image": "^1.11.13",
     "juice": "11.0.3",
-    "lucide-vue-next": "^0.577.0",
+    "lucide-vue-next": "^1.0.0",
     "marked": "^17.0.4",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.3",
