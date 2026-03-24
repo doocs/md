@@ -1,65 +1,65 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import { Field, Form } from 'vee-validate'
-import * as yup from 'yup'
+import type { MpAccount } from '@/stores/mpAccounts'
+import { FileDown, Pencil, Plus, Rss, Search, Trash2 } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
-import { addPrefix } from '@/utils'
-import { store } from '@/utils/storage'
 
-/** 编辑器实例和全局弹窗状态 */
 const editorStore = useEditorStore()
 const uiStore = useUIStore()
 const { toggleShowInsertMpCardDialog } = uiStore
+const mpAccountsStore = useMpAccountsStore()
 
-interface Config {
-  id: string
-  name: string
-  logo: string
-  desc: string
-  /**
-   * 1: 公众号
-   * 2: 服务号
-   */
-  serviceType: `1` | `2`
-  /**
-   * 0: 无标识
-   * 1: 个人认证
-   * 2: 企业认证
-   */
-  verify: `0` | `1` | `2`
-}
+// 搜索关键词
+const searchKeyword = ref('')
 
-/** 表单字段 */
-const config = store.reactive<Config>(addPrefix(`mp-profile`), {
-  id: ``,
-  name: ``,
-  logo: ``,
-  desc: ``,
-  serviceType: `1`,
-  verify: `0`,
+// 搜索结果
+const filteredAccounts = computed(() => {
+  const kw = searchKeyword.value.trim().toLowerCase()
+  if (!kw)
+    return mpAccountsStore.accounts as MpAccount[]
+  return (mpAccountsStore.accounts as MpAccount[]).filter(a =>
+    a.name.toLowerCase().includes(kw)
+    || a.mpId.toLowerCase().includes(kw)
+    || a.desc.toLowerCase().includes(kw),
+  )
 })
 
-const schema = toTypedSchema(yup.object({
-  id: yup.string().required(`公众号 ID 不能为空`),
-  name: yup.string().required(`公众号名称 不能为空`),
-  logo: yup.string().optional().url(`公众号 Logo 必须是一个有效的 URL`),
-  desc: yup.string().optional(),
-  serviceType: yup.string().required(),
-  verify: yup.string().required(),
-}))
+/** 配置弹窗状态 */
+const isShowConfigDialog = ref(false)
+const editingAccountId = ref<string | null>(null)
+
+function openConfigForNew() {
+  editingAccountId.value = null
+  isShowConfigDialog.value = true
+}
+
+function openConfigForEdit(id: string) {
+  editingAccountId.value = id
+  isShowConfigDialog.value = true
+}
+
+const SERVICE_TYPE_LABELS: Record<string, string> = {
+  1: '公众号',
+  2: '服务号',
+}
+
+const VERIFY_LABELS: Record<string, string> = {
+  0: '无',
+  1: '个人认证',
+  2: '企业认证',
+}
 
 /** 组装 HTML 片段 */
-function buildMpHtml(config: Config) {
-  const logo = config.logo || `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/mp-logo.png`
+function buildMpHtml(account: MpAccount) {
+  const logo = account.logo || 'https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/mp-logo.png'
   const attrs = [
     `data-pluginname="mpprofile"`,
-    `data-id="${config.id}"`,
-    `data-nickname="${config.name}"`,
+    `data-id="${account.mpId}"`,
+    `data-nickname="${account.name}"`,
     `data-headimg="${logo}"`,
-    config.desc && `data-signature="${config.desc}"`,
-    `data-service_type="${config.serviceType || `1`}"`,
-    `data-verify_status="${config.verify || `0`}"`,
-  ].filter(Boolean).join(` `)
+    account.desc && `data-signature="${account.desc}"`,
+    `data-service_type="${account.serviceType || '1'}"`,
+    `data-verify_status="${account.verify || '0'}"`,
+  ].filter(Boolean).join(' ')
 
   return `<section class="mp_profile_iframe_wrp custom_select_card_wrp" nodeleaf="">
   <mp-common-profile class="mpprofile js_uneditable custom_select_card mp_profile_iframe" ${attrs}></mp-common-profile>
@@ -67,123 +67,173 @@ function buildMpHtml(config: Config) {
 </section>`
 }
 
-function submit(formValues: any) {
-  config.value = formValues as Config
-  const html = buildMpHtml(formValues as Config)
+function insertAccount(account: MpAccount) {
+  const html = buildMpHtml(account)
   const editor = toRaw(editorStore.editor!)
   const selection = editor.state.selection.main
   editor.dispatch({
     changes: { from: selection.from, to: selection.to, insert: `\n${html}\n` },
   })
-  toast.success(`公众号名片插入成功`)
+  toast.success('公众号名片插入成功')
   toggleShowInsertMpCardDialog(false)
+}
+
+// 删除确认对话框
+const deleteConfirmDialog = ref(false)
+const accountToDelete = ref<MpAccount | null>(null)
+
+function openDeleteConfirm(account: MpAccount) {
+  accountToDelete.value = account
+  deleteConfirmDialog.value = true
+}
+
+function confirmDelete() {
+  if (accountToDelete.value) {
+    mpAccountsStore.deleteAccount(accountToDelete.value.id)
+    toast.success('已删除')
+    accountToDelete.value = null
+  }
+  deleteConfirmDialog.value = false
+}
+
+// 对话框关闭回调
+function onUpdate(val: boolean) {
+  if (!val) {
+    toggleShowInsertMpCardDialog(false)
+    searchKeyword.value = ''
+  }
 }
 </script>
 
 <template>
-  <Dialog v-model:open="uiStore.isShowInsertMpCardDialog">
-    <DialogContent class="!w-[750px] !max-w-[95vw] max-h-[85vh] flex flex-col overflow-hidden">
-      <DialogHeader>
-        <DialogTitle>插入公众号名片</DialogTitle>
+  <Dialog :open="uiStore.isShowInsertMpCardDialog" @update:open="onUpdate">
+    <DialogContent class="max-w-3xl max-h-[85vh] flex flex-col p-0">
+      <DialogHeader class="px-6 pt-6 pb-4 border-b">
+        <DialogTitle class="flex items-center gap-2">
+          <Rss class="size-5" />
+          插入公众号名片
+        </DialogTitle>
+        <DialogDescription>
+          选择已配置的公众号，将名片插入到编辑器
+        </DialogDescription>
       </DialogHeader>
 
-      <Form :validation-schema="schema" :initial-values="config" class="flex flex-col flex-1 overflow-hidden" @submit="submit">
-        <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex flex-col">
-          <Field v-slot="{ field, errorMessage }" name="id">
-            <FormItem label="ID" required :error="errorMessage" :width="50">
-              <Input
-                v-bind="field"
-                v-model.trim="field.value"
-                placeholder="例：MzIxNjA5ODQ0OQ=="
-              />
-            </FormItem>
-          </Field>
-
-          <Field v-slot="{ field, errorMessage }" name="name">
-            <FormItem label="名称" required :error="errorMessage" :width="50">
-              <Input
-                v-bind="field"
-                v-model.trim="field.value"
-                placeholder="例：Doocs"
-              />
-            </FormItem>
-          </Field>
-
-          <Field v-slot="{ field, errorMessage }" name="logo">
-            <FormItem label="Logo" :error="errorMessage" :width="50">
-              <Input
-                v-bind="field"
-                v-model.trim="field.value"
-                placeholder="例：https://doocs.com/mp-logo.png"
-              />
-            </FormItem>
-          </Field>
-
-          <Field v-slot="{ field, errorMessage }" name="desc">
-            <FormItem label="描述" :error="errorMessage" :width="50">
-              <Textarea
-                v-bind="field"
-                v-model.trim="field.value"
-                rows="3"
-                class="resize-none"
-                placeholder="例：GitHub 开源组织 @Doocs 旗下唯一公众号，专注分享技术领域相关知识及行业最新资讯。"
-              />
-            </FormItem>
-          </Field>
-
-          <Field v-slot="{ field, errorMessage }" name="serviceType">
-            <FormItem label="类型" required :error="errorMessage" :width="50">
-              <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
-                <div class="inline-flex items-center space-x-2 w-20">
-                  <RadioGroupItem id="option-one" value="1" />
-                  <Label for="option-one">公众号</Label>
-                </div>
-                <div class="inline-flex items-center space-x-2 w-20">
-                  <RadioGroupItem id="option-two" value="2" />
-                  <Label for="option-two">服务号</Label>
-                </div>
-              </RadioGroup>
-            </FormItem>
-          </Field>
-
-          <Field v-slot="{ field, errorMessage }" name="verify">
-            <FormItem label="认证" required :error="errorMessage" :width="50">
-              <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
-                <div class="inline-flex items-center space-x-2 w-20">
-                  <RadioGroupItem id="service-type-option-one" value="0" />
-                  <Label for="service-type-option-one">无</Label>
-                </div>
-                <div class="inline-flex items-center space-x-2 w-20">
-                  <RadioGroupItem id="service-type-option-two" value="1" />
-                  <Label for="service-type-option-two">个人</Label>
-                </div>
-                <div class="inline-flex items-center space-x-2 w-20">
-                  <RadioGroupItem id="service-type-option-three" value="2" />
-                  <Label for="service-type-option-three">企业</Label>
-                </div>
-              </RadioGroup>
-            </FormItem>
-          </Field>
-
-          <FormItem :width="50">
-            <Button
-              variant="link"
-              class="p-0 h-auto text-left whitespace-normal"
-              as="a"
-              href="https://github.com/doocs/md/blob/main/docs/mp-card.md"
-              target="_blank"
-            >
-              如何获取公众号 ID？
-            </Button>
-          </FormItem>
+      <!-- 主体内容区域 -->
+      <div class="flex-1 overflow-auto px-6 py-4">
+        <!-- 搜索栏和新增按钮 -->
+        <div class="flex gap-2 mb-4">
+          <div class="relative flex-1">
+            <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+            <Input
+              v-model="searchKeyword"
+              placeholder="搜索公众号名称、ID、描述..."
+              class="pl-9"
+            />
+          </div>
+          <Button @click="openConfigForNew">
+            <Plus class="mr-2 size-4" />
+            新增公众号
+          </Button>
         </div>
 
-        <DialogFooter class="p-1">
-          <Button type="submit">
-            确定
-          </Button>
-        </DialogFooter>
-      </Form>
+        <!-- 账号卡片列表 -->
+        <div class="space-y-3">
+          <!-- 空状态 -->
+          <div v-if="filteredAccounts.length === 0" class="text-center py-12">
+            <Rss class="mx-auto size-12 text-muted-foreground mb-4" />
+            <p class="text-muted-foreground mb-2">
+              {{ searchKeyword ? '未找到匹配的公众号' : '暂无已配置的公众号' }}
+            </p>
+            <p v-if="!searchKeyword" class="text-sm text-muted-foreground mb-4">
+              点击「新增公众号」按钮添加您的公众号
+            </p>
+          </div>
+
+          <div
+            v-for="account in filteredAccounts"
+            :key="account.id"
+            class="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
+          >
+            <div class="flex items-start justify-between gap-4">
+              <!-- 公众号信息 -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-2">
+                  <h4 class="font-medium truncate">
+                    {{ account.name || '未命名公众号' }}
+                  </h4>
+                  <span class="text-xs rounded px-1.5 py-0.5 bg-muted text-muted-foreground flex-shrink-0">
+                    {{ SERVICE_TYPE_LABELS[account.serviceType] }}
+                  </span>
+                  <span
+                    v-if="account.verify !== '0'"
+                    class="text-xs rounded px-1.5 py-0.5 bg-muted text-muted-foreground flex-shrink-0"
+                  >
+                    {{ VERIFY_LABELS[account.verify] }}
+                  </span>
+                </div>
+                <p v-if="account.desc" class="text-sm text-muted-foreground line-clamp-2">
+                  {{ account.desc }}
+                </p>
+              </div>
+
+              <!-- 操作按钮 -->
+              <div class="flex gap-1 flex-shrink-0">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  title="插入名片"
+                  @click="insertAccount(account)"
+                >
+                  <FileDown class="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8"
+                  title="编辑"
+                  @click="openConfigForEdit(account.id)"
+                >
+                  <Pencil class="size-4" />
+                </Button>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  class="size-8 text-destructive hover:text-destructive"
+                  title="删除"
+                  @click="openDeleteConfirm(account)"
+                >
+                  <Trash2 class="size-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </DialogContent>
   </Dialog>
+
+  <!-- 配置弹窗 -->
+  <MpAccountConfigDialog
+    v-model:open="isShowConfigDialog"
+    :account-id="editingAccountId"
+  />
+
+  <!-- 删除确认对话框 -->
+  <AlertDialog v-model:open="deleteConfirmDialog">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>确认删除</AlertDialogTitle>
+        <AlertDialogDescription>
+          确定要删除公众号「{{ accountToDelete?.name }}」吗？此操作不可恢复。
+        </AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction @click="confirmDelete">
+          确定
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
 </template>
