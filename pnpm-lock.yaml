@@ -189,8 +189,8 @@ importers:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.30(typescript@5.9.3))
       qiniu-js:
-        specifier: ^3.4.3
-        version: 3.4.3
+        specifier: ^3.4.4
+        version: 3.4.4
       radix-vue:
         specifier: ^1.9.17
         version: 1.9.17(vue@3.5.30(typescript@5.9.3))
@@ -6257,8 +6257,8 @@ packages:
     resolution: {integrity: sha512-LjgDO2zPtoXP2wJpDjZrGdojii1uqO0cnwKoIoUzkfS98HDmbeiGmYiXo3lXeFlq2xvne1QFQhwYXSUCLKtEuA==}
     engines: {node: '>=12.20'}
 
-  qiniu-js@3.4.3:
-    resolution: {integrity: sha512-3kO82r0jvGkiKnTtRStrETESBK0lKDsDVSHSp55R5liVPAUoEYII0koGTXdjdU8zfxCrWxMw1vRuL58feuLJIQ==}
+  qiniu-js@3.4.4:
+    resolution: {integrity: sha512-S/ooashZjyFQIIbxrte+OfwRxZQz5/MfVv55xWewc9GoxogP/xMmWixCaBEbdqmyjPAmJ2+VtZiWUuP8teB/BA==}
 
   qs@6.15.0:
     resolution: {integrity: sha512-mAZTtNCeetKMH+pSjrb76NAM8V9a05I9aBZOHztWy/UqcJdQYNsf59vrRKWnojAT9Y+GbIvoTBC++CPHqpDBhQ==}
@@ -14347,7 +14347,7 @@ snapshots:
     dependencies:
       escape-goat: 4.0.0
 
-  qiniu-js@3.4.3:
+  qiniu-js@3.4.4:
     dependencies:
       '@babel/runtime-corejs2': 7.29.2
       querystring: qs@6.15.0
