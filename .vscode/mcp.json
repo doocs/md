@@ -1,0 +1,14 @@
+{
+  "servers": {
+    "md": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        "--import",
+        "tsx/esm",
+        "${workspaceFolder}/packages/mcp-server/src/index.ts"
+      ],
+      "cwd": "${workspaceFolder}/packages/mcp-server"
+    }
+  }
+}

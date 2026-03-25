@@ -35,7 +35,7 @@ const abortController = ref<AbortController | null>(null)
 const customPrompts = ref<string[]>([])
 const hasResult = ref(false)
 const selectedAction = ref<
-  `optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `custom`
+  `optimize` | `summarize` | `spellcheck` | `translate-zh` | `translate-en` | `expand` | `continue` | `custom`
 >(`optimize`)
 const currentText = ref(``)
 const error = ref(``)
@@ -91,6 +91,16 @@ const actionOptions: ActionOption[] = [
     value: `translate-en`,
     label: `翻译为英文`,
     defaultPrompt: `请将文本翻译为自然流畅的英文。`,
+  },
+  {
+    value: `expand`,
+    label: `扩写`,
+    defaultPrompt: `请对文本进行扩写，丰富细节、充实内容，保持原有风格和意图。`,
+  },
+  {
+    value: `continue`,
+    label: `续写`,
+    defaultPrompt: `请根据文本内容，以相同风格继续向下补充撰写，保持语言连贯。`,
   },
   { value: `custom`, label: `自定义`, defaultPrompt: `` },
 ]

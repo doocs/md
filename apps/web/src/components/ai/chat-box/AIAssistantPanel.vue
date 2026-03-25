@@ -3,6 +3,7 @@ import type { QuickCommandRuntime } from '@/stores/quickCommands'
 import {
   Check,
   Copy,
+  FilePlus2,
   FolderOpen,
   Image as ImageIcon,
   MessageCircle,
@@ -59,6 +60,7 @@ const configVisible = ref(false)
 const loading = ref(false)
 const fetchController = ref<AbortController | null>(null)
 const copiedIndex = ref<number | null>(null)
+const insertedIndex = ref<number | null>(null)
 const memoryKey = `ai_memory_context`
 const isQuoteAllContent = ref(false)
 const cmdMgrOpen = ref(false)
@@ -261,6 +263,13 @@ async function copyToClipboard(text: string, index: number) {
   copyPlain(text)
   copiedIndex.value = index
   setTimeout(() => (copiedIndex.value = null), 1500)
+}
+
+function insertToDocument(text: string, index: number) {
+  editorStore.insertAtCursor(text)
+  insertedIndex.value = index
+  setTimeout(() => (insertedIndex.value = null), 1500)
+  toast.success(`已插入文档`)
 }
 
 async function resetMessages() {
@@ -664,6 +673,20 @@ async function sendMessage() {
                   class="h-3 w-3 text-green-600"
                 />
                 <Copy v-else class="text-muted-foreground h-3 w-3" />
+              </Button>
+              <Button
+                v-if="msg.role === 'assistant' && (msg.done || index < messages.length - 1) && index > 0"
+                variant="ghost"
+                size="icon"
+                class="ml-1 h-5 w-5 p-1"
+                aria-label="插入文档"
+                @click="insertToDocument(msg.content, index)"
+              >
+                <Check
+                  v-if="insertedIndex === index"
+                  class="h-3 w-3 text-green-600"
+                />
+                <FilePlus2 v-else class="text-muted-foreground h-3 w-3" />
               </Button>
               <Button
                 v-if="msg.role === 'assistant' && msg.done && index === messages.length - 1"
