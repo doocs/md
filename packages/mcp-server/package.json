@@ -14,12 +14,12 @@
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.25.3",
+    "@modelcontextprotocol/sdk": "^1.28.0",
     "tsx": "^4.21.0",
-    "zod": "^3.25.76"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
-    "@types/node": "^22.0.0",
-    "typescript": "^5.9.3"
+    "@types/node": "^25.5.0",
+    "typescript": "~5.9.3"
   }
 }

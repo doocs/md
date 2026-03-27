@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1015.0",
-    "@aws-sdk/s3-request-presigner": "^3.1015.0",
+    "@aws-sdk/client-s3": "^3.1018.0",
+    "@aws-sdk/s3-request-presigner": "^3.1018.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -57,7 +57,7 @@
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^13.0.0",
     "vee-validate": "^4.15.1",
-    "vue": "^3.5.30",
+    "vue": "^3.5.31",
     "vue-pick-colors": "^1.8.0",
     "vue-sonner": "^2.0.9",
     "yup": "^1.7.1"
@@ -82,7 +82,7 @@
     "tailwindcss": "^4.2.2",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.0.0",
-    "vite": "^8.0.2",
+    "vite": "^8.0.3",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.6",
