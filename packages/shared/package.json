@@ -22,7 +22,7 @@
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-markdown": "^6.5.0",
-    "@codemirror/language": "^6.12.2",
+    "@codemirror/language": "^6.12.3",
     "@codemirror/language-data": "^6.5.2",
     "@codemirror/lint": "^6.9.5",
     "@codemirror/search": "^6.6.0",
