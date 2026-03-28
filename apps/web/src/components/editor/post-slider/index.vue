@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ArrowUpNarrowWide, ChevronsDownUp, ChevronsUpDown, PlusSquare, X } from 'lucide-vue-next'
+import { ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, X } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
@@ -212,22 +212,22 @@ function handleDragEnd() {
 
 <template>
   <!-- 移动端遮罩层 -->
-  <div
-    v-if="isMobile && isOpenPostSlider"
-    class="fixed inset-0 bg-black/50 z-40"
-    @click="isOpenPostSlider = false"
-  />
+  <Transition name="fade">
+    <div
+      v-if="isMobile && isOpenPostSlider"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+      @click="isOpenPostSlider = false"
+    />
+  </Transition>
 
   <!-- 侧栏容器 -->
   <div
-    class="h-full w-full overflow-hidden mobile-drawer"
+    class="h-full w-full overflow-hidden"
     :class="{
-      // 移动端样式
-      'fixed top-0 left-0 z-55 bg-background border-r shadow-lg': isMobile,
-      'animate': isMobile && enableAnimation,
-      // 桌面端样式
-      'border-2 border-[#0000] border-dashed bg-gray/20 transition-colors': !isMobile,
-      'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': !isMobile && dragover,
+      'fixed top-0 left-0 z-55 w-[85vw] max-w-xs bg-background border-r border-border shadow-xl': isMobile,
+      'animate-slider': isMobile && enableAnimation,
+      'bg-background transition-colors duration-200': !isMobile,
+      'bg-primary/5 outline-2 outline-dashed outline-primary/30': !isMobile && dragover,
     }"
     :style="{
       transform: isMobile && isOpenPostSlider ? 'translateX(0)'
@@ -239,70 +239,42 @@ function handleDragEnd() {
     @dragend="handleDragEnd"
   >
     <nav
-      class="h-full flex flex-col transition-transform overflow-hidden"
-      :class="{ 'p-2': isMobile }"
+      class="h-full flex flex-col overflow-hidden"
       @dragover="handleDragOver"
       @drop.prevent="handleDrop(null)"
     >
-      <!-- 移动端标题栏 -->
-      <div v-if="isMobile" class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b mb-2 bg-background">
-        <h2 class="text-lg font-semibold">
-          内容管理
-        </h2>
-        <Button variant="ghost" size="sm" @click="isOpenPostSlider = false">
-          <X class="h-4 w-4" />
-        </Button>
-      </div>
+      <!-- 标题栏 -->
+      <div class="flex items-center h-10 px-3 shrink-0">
+        <span class="inline-flex items-center text-muted-foreground select-none">
+          <FileText class="size-4" />
+        </span>
+        <span
+          v-if="posts.length"
+          class="ml-1.5 inline-flex items-center justify-center rounded-full bg-muted px-1.5 text-[10px] font-medium tabular-nums text-muted-foreground min-w-[18px] h-[18px]"
+        >
+          {{ posts.length }}
+        </span>
+        <span class="flex-1" />
 
-      <!-- 顶部：新增 + 排序按钮 -->
-      <div class="space-x-4 mb-2 flex justify-center shrink-0 py-2">
         <!-- 新增 -->
-        <Dialog v-model:open="isOpenAddDialog">
-          <DialogTrigger>
-            <TooltipProvider :delay-duration="200">
-              <Tooltip>
-                <TooltipTrigger as-child>
-                  <Button variant="ghost" size="xs" class="h-max p-1">
-                    <PlusSquare class="size-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  新增内容
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>新增内容</DialogTitle>
-              <DialogDescription>请输入内容名称</DialogDescription>
-            </DialogHeader>
-            <Input v-model="addPostInputVal" @keyup.enter="addPost" />
-            <DialogFooter>
-              <Button @click="addPost">
-                确 定
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          @click="isOpenAddDialog = true"
+        >
+          <Plus class="size-4" />
+        </button>
 
-        <!-- 排序 -->
+        <!-- 更多操作 -->
         <DropdownMenu>
-          <DropdownMenuTrigger>
-            <TooltipProvider :delay-duration="200">
-              <Tooltip>
-                <TooltipTrigger as-child>
-                  <Button variant="ghost" size="xs" class="h-max p-1">
-                    <ArrowUpNarrowWide class="size-5" />
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent side="bottom">
-                  排序模式
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+          <DropdownMenuTrigger as-child>
+            <button class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150">
+              <Ellipsis class="size-4" />
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent>
+          <DropdownMenuContent align="end" class="w-48">
+            <DropdownMenuLabel class="text-xs text-muted-foreground font-normal">
+              排序方式
+            </DropdownMenuLabel>
             <DropdownMenuRadioGroup v-model="sortMode">
               <DropdownMenuRadioItem value="A-Z">
                 文件名（A-Z）
@@ -310,14 +282,12 @@ function handleDragEnd() {
               <DropdownMenuRadioItem value="Z-A">
                 文件名（Z-A）
               </DropdownMenuRadioItem>
-              <DropdownMenuSeparator />
               <DropdownMenuRadioItem value="update-new-old">
                 编辑时间（新→旧）
               </DropdownMenuRadioItem>
               <DropdownMenuRadioItem value="update-old-new">
                 编辑时间（旧→新）
               </DropdownMenuRadioItem>
-              <DropdownMenuSeparator />
               <DropdownMenuRadioItem value="create-new-old">
                 创建时间（新→旧）
               </DropdownMenuRadioItem>
@@ -325,40 +295,32 @@ function handleDragEnd() {
                 创建时间（旧→新）
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="postStore.collapseAllPosts">
+              <ChevronsDownUp class="mr-2 size-4" />
+              全部收起
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="postStore.expandAllPosts">
+              <ChevronsUpDown class="mr-2 size-4" />
+              全部展开
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <TooltipProvider :delay-duration="200">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <Button variant="ghost" size="xs" class="h-max p-1" @click="postStore.collapseAllPosts">
-                <ChevronsDownUp class="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              全部收起
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        <TooltipProvider :delay-duration="200">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <Button variant="ghost" size="xs" class="h-max p-1" @click="postStore.expandAllPosts">
-                <ChevronsUpDown class="size-5" />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent side="bottom">
-              全部展开
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
+        <!-- 移动端关闭 -->
+        <button
+          v-if="isMobile"
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 ml-0.5"
+          @click="isOpenPostSlider = false"
+        >
+          <X class="size-4" />
+        </button>
       </div>
 
-      <!-- 列表 -->
-      <div class="flex-1 overflow-y-auto space-y-1 px-1">
-        <!-- 包裹根文章和子文章，保持间距 -->
+      <!-- 内容列表 -->
+      <div class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
         <PostItem
+          v-if="sortedPosts.length"
           :parent-id="null"
           :sorted-posts="sortedPosts"
           :start-rename-post="startRenamePost"
@@ -372,9 +334,40 @@ function handleDragEnd() {
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
         />
+
+        <!-- 空状态 -->
+        <div v-else class="flex flex-col items-center justify-center gap-4 py-20 px-6">
+          <div class="flex items-center justify-center size-12 rounded-xl bg-muted/50">
+            <FileText class="size-6 text-muted-foreground/40" />
+          </div>
+          <div class="text-center space-y-1">
+            <p class="text-sm font-medium text-muted-foreground/60">
+              暂无内容
+            </p>
+            <p class="text-xs text-muted-foreground/40">
+              点击上方 + 按钮创建
+            </p>
+          </div>
+        </div>
       </div>
     </nav>
   </div>
+
+  <!-- 新增弹窗 -->
+  <Dialog v-model:open="isOpenAddDialog">
+    <DialogContent>
+      <DialogHeader>
+        <DialogTitle>新增内容</DialogTitle>
+        <DialogDescription>请输入内容名称</DialogDescription>
+      </DialogHeader>
+      <Input v-model="addPostInputVal" placeholder="输入标题…" @keyup.enter="addPost" />
+      <DialogFooter>
+        <Button @click="addPost">
+          确 定
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 
   <!-- 重命名弹窗 -->
   <Dialog v-model:open="isOpenEditDialog">
@@ -419,37 +412,25 @@ function handleDragEnd() {
         <DialogDescription>每隔 30 秒自动保存，最多保留 10 条</DialogDescription>
       </DialogHeader>
 
-      <div class="h-[50vh] flex">
+      <div class="h-[50vh] flex gap-3">
         <!-- 左侧时间轴 -->
-        <ul class="space-y-1.5 w-[180px]">
+        <ul class="w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
           <li
             v-for="(item, idx) in postStore.getPostById(currentPostId!)?.history"
             :key="item.datetime"
-            class="min-h-[2.75rem] w-full inline-flex cursor-pointer items-center gap-2 rounded-md px-3 py-2.5 text-sm transition-colors leading-tight"
-            :class="[
-              // eslint-disable-next-line vue/prefer-separate-static-class
-              'hover:bg-primary hover:text-primary-foreground',
-              {
-                'bg-primary text-primary-foreground shadow-sm':
-                  currentHistoryIndex === idx,
-              },
-            ]"
+            class="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground"
+            :class="{ 'bg-primary/8 text-primary font-medium': currentHistoryIndex === idx }"
             @click="currentHistoryIndex = idx"
           >
-            <span class="break-words w-full">{{ item.datetime }}</span>
+            <span class="text-xs leading-snug">{{ item.datetime }}</span>
           </li>
         </ul>
 
-        <Separator orientation="vertical" class="mx-2" />
+        <Separator orientation="vertical" />
 
         <!-- 右侧内容 -->
-        <div class="space-y-2 max-h-full flex-1 overflow-y-auto">
-          <div
-            class="whitespace-pre-wrap p-2"
-            style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-all; hyphens: auto;"
-          >
-            {{ postStore.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '' }}
-          </div>
+        <div class="flex-1 overflow-y-auto rounded-lg bg-muted/30 p-4">
+          <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit]">{{ postStore.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '' }}</pre>
         </div>
       </div>
 
@@ -477,8 +458,28 @@ function handleDragEnd() {
 </template>
 
 <style scoped>
-/* 移动端侧边栏动画 - 只有添加了 animate 类才启用 */
-.mobile-drawer.animate {
+/* 移动端侧边栏动画 */
+.animate-slider {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 细滚动条 — 默认隐藏，hover 时显示 */
+.thin-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.thin-scrollbar:hover {
+  scrollbar-color: hsl(var(--border)) transparent;
+}
+
+/* 遮罩动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
