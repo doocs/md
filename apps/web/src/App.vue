@@ -59,17 +59,21 @@ body {
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
-  background-color: rgba(243, 244, 247, 0.5);
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
   border-radius: 6px;
-  background-color: rgba(200, 200, 200, 0.3);
+  background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
   border-radius: 6px;
-  background-color: rgba(144, 146, 152, 0.5);
+  background-color: #dadada;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #424242;
 }
 
 // Utools 模式下隐藏所有滚动条

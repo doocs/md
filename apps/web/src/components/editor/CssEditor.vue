@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { exportMergedTheme } from '@md/core'
 import { themeMap, themeOptionsMap } from '@md/shared'
-import { Download, Edit3, Eye, Plus, X } from 'lucide-vue-next'
+import { Download, Edit3, Ellipsis, Eye, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -40,8 +40,7 @@ const editInputVal = ref(``)
 // 滚动到活跃的 tab
 async function scrollToActiveTab() {
   await nextTick()
-  // 使用 data-state="active" 查找活跃的 tab
-  const activeTab = document.querySelector('[role="tab"][data-state="active"]')
+  const activeTab = document.querySelector('.cssEditor-wrapper .css-tab-active')
   if (activeTab) {
     activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })
   }
@@ -227,10 +226,8 @@ function exportCurrentTheme() {
       fontFamily: themeStore.fontFamily,
       fontSize: themeStore.fontSize,
     },
-    `${currentThemeName}-merged`,
+    currentThemeName,
   )
-
-  toast.success(`主题导出成功`)
 }
 </script>
 
@@ -247,58 +244,99 @@ function exportCurrentTheme() {
       v-show="uiStore.isShowCssEditor"
       class="cssEditor-wrapper h-full flex flex-col mobile-css-editor overflow-y-auto"
       :class="{
-        // 移动端样式
         'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': isMobile,
         'animate': isMobile && enableAnimation,
-        // 桌面端样式
-        'border-l-2 flex-1 order-2 border-gray/50 min-w-0': !isMobile,
+        'border-l border-border flex-1 order-2 min-w-0': !isMobile,
       }"
       :style="{
         transform: isMobile ? (uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
       }"
     >
-      <!-- 移动端标题栏 -->
-      <div v-if="isMobile" class="sticky top-0 z-10 flex items-center justify-between px-4 py-3 border-b mb-2 bg-background">
-        <h2 class="text-lg font-semibold">
-          自定义 CSS
-        </h2>
-        <Button variant="ghost" size="sm" @click="uiStore.isShowCssEditor = false">
-          <X class="h-4 w-4" />
-        </Button>
-      </div>
-      <Tabs
-        v-model="cssContentConfig.active"
-        @update:model-value="tabChanged"
-      >
-        <div class="flex items-center border-b bg-muted">
-          <TabsList class="flex-1 overflow-x-auto justify-start border-0 bg-transparent h-auto p-0 custom-scrollbar">
-            <TabsTrigger
-              v-for="item in cssContentConfig.tabs"
-              :key="item.name"
-              :value="item.name"
-              class="flex-1"
-            >
-              {{ item.title }}
-              <Edit3
-                v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-                @click="rename(item.name)"
-              />
-              <X
-                v-show="cssContentConfig.active === item.name" class="cursor-pointer inline size-4 rounded-full p-0.5 transition-color hover:bg-gray-200 dark:hover:bg-gray-600"
-                @click.self="removeHandler(item.name)"
-              />
-            </TabsTrigger>
-          </TabsList>
-          <Button
-            variant="ghost"
-            size="icon"
-            class="h-9 w-9 shrink-0 hover:bg-accent"
+      <!-- Tab 栏 + 工具栏合并 -->
+      <div class="flex items-center h-9 px-2 shrink-0 border-b border-border">
+        <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full">
+          <button
+            v-for="item in cssContentConfig.tabs"
+            :key="item.name"
+            class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
+            :class="{
+              'css-tab-active text-foreground font-medium': cssContentConfig.active === item.name,
+              'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.name,
+            }"
+            @click="tabChanged(item.name)"
+          >
+            <span class="truncate max-w-[100px]">{{ item.title }}</span>
+
+            <!-- 活跃 tab 下划线指示器 -->
+            <span
+              v-if="cssContentConfig.active === item.name"
+              class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
+            />
+
+            <!-- 活跃 tab 操作: 更多菜单 -->
+            <DropdownMenu v-if="cssContentConfig.active === item.name">
+              <DropdownMenuTrigger as-child>
+                <span
+                  class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
+                  @click.stop
+                >
+                  <Ellipsis class="size-3" />
+                </span>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start" class="w-32">
+                <DropdownMenuItem @click.stop="rename(item.name)">
+                  <Edit3 class="mr-2 size-4" /> 重命名
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  v-if="cssContentConfig.tabs.length > 1"
+                  class="text-destructive focus:text-destructive"
+                  @click.stop="removeHandler(item.name)"
+                >
+                  <X class="mr-2 size-4" /> 删除
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </button>
+        </div>
+
+        <!-- 工具按钮组 -->
+        <div class="flex items-center shrink-0">
+          <!-- 新增 Tab -->
+          <button
+            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             @click="addHandler"
           >
-            <Plus class="h-5 w-5" />
-          </Button>
+            <Plus class="size-3.5" />
+          </button>
+
+          <!-- 内置主题 -->
+          <button
+            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+            @click="openViewThemeDialog"
+          >
+            <Eye class="size-3.5" />
+          </button>
+
+          <!-- 导出主题 -->
+          <button
+            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+            @click="exportCurrentTheme"
+          >
+            <Download class="size-3.5" />
+          </button>
+
+          <!-- 移动端关闭 -->
+          <button
+            v-if="isMobile"
+            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+            @click="uiStore.isShowCssEditor = false"
+          >
+            <X class="size-3.5" />
+          </button>
         </div>
-      </Tabs>
+      </div>
+
       <!-- CSS编辑器内容区域 -->
       <div class="flex-1 min-h-0">
         <textarea
@@ -398,31 +436,6 @@ function exportCurrentTheme() {
       </AlertDialog>
     </div>
   </transition>
-
-  <Button
-    v-show="uiStore.isShowCssEditor"
-    class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
-      isMobile ? 'bottom-16 right-4' : 'bottom-22 right-4',
-    ]"
-    size="sm"
-    variant="outline"
-    @click="openViewThemeDialog"
-  >
-    <Eye class="h-4 w-4 mr-2" />
-    内置主题
-  </Button>
-
-  <Button
-    v-show="uiStore.isShowCssEditor"
-    class="fixed z-100 shadow-lg hover:bg-accent cursor-pointer transition-shadow bg-background text-background-foreground border" :class="[
-      isMobile ? 'bottom-4 right-4' : 'bottom-10 right-4',
-    ]"
-    size="sm"
-    @click="exportCurrentTheme"
-  >
-    <Download class="h-4 w-4 mr-2" />
-    导出主题
-  </Button>
 
   <!-- 查看内置主题对话框 -->
   <Dialog v-model:open="isOpenViewThemeDialog">
