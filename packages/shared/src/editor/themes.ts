@@ -9,6 +9,19 @@ const customStyles = EditorView.theme({
     justifyContent: `right`,
     alignItems: `center`,
   },
+  // 去掉侧边栏底色和边框
+  '&.cm-editor .cm-gutters': {
+    backgroundColor: `transparent !important`,
+    borderRight: `none !important`,
+  },
+  // 折叠图标默认隐藏，hover 侧边栏时才显示
+  '.cm-foldGutter .cm-gutterElement span': {
+    opacity: `0`,
+    transition: `opacity 0.15s ease`,
+  },
+  '&.cm-editor .cm-gutters:hover .cm-foldGutter .cm-gutterElement span': {
+    opacity: `1`,
+  },
 })
 
 export function lightTheme() {
