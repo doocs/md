@@ -41,7 +41,6 @@ const { posts, currentPostIndex } = storeToRefs(postStore)
 const { previewWidth } = storeToRefs(themeStore)
 const {
   isMobile,
-  isEditOnLeft,
   isOpenPostSlider,
   isOpenFolderPanel,
   isOpenRightSlider,
@@ -766,9 +765,9 @@ onUnmounted(() => {
       >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
-            :default-size="15"
-            :max-size="isOpenPostSlider ? 20 : 0"
-            :min-size="isOpenPostSlider ? 10 : 0"
+            :default-size="isMobile ? 0 : 15"
+            :max-size="!isMobile && isOpenPostSlider ? 20 : 0"
+            :min-size="!isMobile && isOpenPostSlider ? 10 : 0"
           >
             <PostSlider />
           </ResizablePanel>
@@ -781,72 +780,113 @@ onUnmounted(() => {
             <FolderSourcePanel />
           </ResizablePanel>
           <ResizableHandle v-if="isOpenFolderPanel" class="hidden md:block" />
-          <ResizablePanel class="flex">
-            <div
-              v-show="!isMobile || (isMobile && showEditor)"
-              ref="codeMirrorWrapper"
-              class="codeMirror-wrapper relative flex-1"
-              :class="{
-                'order-1 border-l': !isEditOnLeft,
-                'border-r': isEditOnLeft,
-              }"
-            >
-              <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
-              <SidebarAIToolbar
-                :is-mobile="isMobile"
-                :show-editor="showEditor"
-              />
 
-              <EditorContextMenu>
-                <div
-                  id="editor"
-                  ref="editorRef"
-                  class="codemirror-container"
-                />
-              </EditorContextMenu>
-            </div>
-            <div
-              v-show="!isMobile || (isMobile && !showEditor)"
-              class="relative flex-1 overflow-x-hidden transition-width"
-              :class="[isOpenRightSlider ? 'w-0' : 'w-100']"
-            >
-              <div
-                id="preview"
-                ref="previewRef"
-                class="preview-wrapper w-full p-5 flex justify-center"
+          <!-- 主内容区域 (嵌套灵动布局) -->
+          <ResizablePanel :min-size="30">
+            <ResizablePanelGroup direction="horizontal">
+              <!-- Markdown 编辑器 -->
+              <ResizablePanel
+                :order="1"
+                :default-size="50"
+                :min-size="isMobile ? (showEditor ? 100 : 0) : 15"
+                :max-size="isMobile ? (showEditor ? 100 : 0) : 85"
               >
                 <div
-                  id="output-wrapper"
-                  class="w-full max-w-full"
-                  :class="{ output_night: !backLight }"
+                  ref="codeMirrorWrapper"
+                  class="codeMirror-wrapper relative h-full"
                 >
+                  <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
+                  <SidebarAIToolbar
+                    :is-mobile="isMobile"
+                    :show-editor="showEditor"
+                  />
+
+                  <EditorContextMenu>
+                    <div
+                      id="editor"
+                      ref="editorRef"
+                      class="codemirror-container"
+                    />
+                  </EditorContextMenu>
+                </div>
+              </ResizablePanel>
+              <ResizableHandle class="hidden md:block" />
+
+              <!-- 预览区 -->
+              <ResizablePanel
+                :order="2"
+                :default-size="50"
+                :min-size="isMobile ? (!showEditor ? 100 : 0) : 15"
+                :max-size="isMobile ? (!showEditor ? 100 : 0) : 85"
+              >
+                <div class="relative h-full overflow-x-hidden">
                   <div
-                    class="preview border-x shadow-xl mx-auto"
-                    :class="[
-                      isMobile ? 'w-full' : previewWidth,
-                      themeStore.previewWidth === 'w-[375px]' ? 'max-w-full' : '',
-                    ]"
+                    id="preview"
+                    ref="previewRef"
+                    class="preview-wrapper w-full p-5 flex justify-center"
                   >
-                    <section id="output" class="w-full" v-html="output" />
-                    <div v-if="isCoping" class="loading-mask">
-                      <div class="loading-mask-box">
-                        <div class="loading__img" />
-                        <span>正在生成</span>
+                    <div
+                      id="output-wrapper"
+                      class="w-full max-w-full"
+                      :class="{ output_night: !backLight }"
+                    >
+                      <div
+                        class="preview border-x shadow-xl mx-auto"
+                        :class="[
+                          isMobile ? 'w-full' : previewWidth,
+                          themeStore.previewWidth === 'w-[375px]' ? 'max-w-full' : '',
+                        ]"
+                      >
+                        <section id="output" class="w-full" v-html="output" />
+                        <div v-if="isCoping" class="loading-mask">
+                          <div class="loading-mask-box">
+                            <div class="loading__img" />
+                            <span>正在生成</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
+                    <BackTop
+                      target="preview"
+                      :right="isMobile ? 24 : 20"
+                      :bottom="isMobile ? 90 : 20"
+                    />
                   </div>
-                </div>
-                <BackTop
-                  target="preview"
-                  :right="isMobile ? 24 : 20"
-                  :bottom="isMobile ? 90 : 20"
-                />
-              </div>
 
-              <FloatingToc />
-            </div>
-            <CssEditor />
-            <RightSlider />
+                  <FloatingToc />
+                </div>
+              </ResizablePanel>
+
+              <!-- CSS 编辑器面板 -->
+              <ResizableHandle v-if="!isMobile && uiStore.isShowCssEditor" class="hidden md:block" />
+              <ResizablePanel
+                v-if="!isMobile && uiStore.isShowCssEditor"
+                :order="3"
+                :default-size="25"
+                :min-size="10"
+                :max-size="60"
+              >
+                <CssEditor />
+              </ResizablePanel>
+
+              <!-- 样式面板 -->
+              <ResizableHandle v-if="!isMobile && isOpenRightSlider" class="hidden md:block" />
+              <ResizablePanel
+                v-if="!isMobile && isOpenRightSlider"
+                :order="4"
+                :default-size="40"
+                :min-size="25"
+                :max-size="60"
+              >
+                <RightSlider />
+              </ResizablePanel>
+            </ResizablePanelGroup>
+
+            <!-- 移动端：CssEditor 和 RightSlider 作为浮层 -->
+            <template v-if="isMobile">
+              <CssEditor />
+              <RightSlider />
+            </template>
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

@@ -239,203 +239,198 @@ function exportCurrentTheme() {
     @click="uiStore.isShowCssEditor = false"
   />
 
-  <transition enter-active-class="bounceInRight">
-    <div
-      v-show="uiStore.isShowCssEditor"
-      class="cssEditor-wrapper h-full flex flex-col mobile-css-editor overflow-y-auto"
-      :class="{
-        'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg': isMobile,
-        'animate': isMobile && enableAnimation,
-        'border-l border-border flex-1 order-2 min-w-0': !isMobile,
-      }"
-      :style="{
-        transform: isMobile ? (uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)') : 'none',
-      }"
-    >
-      <!-- Tab 栏 + 工具栏合并 -->
-      <div class="flex items-center h-9 px-2 shrink-0 border-b border-border">
-        <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full">
-          <button
-            v-for="item in cssContentConfig.tabs"
-            :key="item.name"
-            class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
-            :class="{
-              'css-tab-active text-foreground font-medium': cssContentConfig.active === item.name,
-              'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.name,
-            }"
-            @click="tabChanged(item.name)"
-          >
-            <span class="truncate max-w-[100px]">{{ item.title }}</span>
+  <div
+    v-show="isMobile ? uiStore.isShowCssEditor : true"
+    class="cssEditor-wrapper h-full flex flex-col overflow-y-auto"
+    :class="{
+      'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg mobile-css-editor': isMobile,
+      'animate': isMobile && enableAnimation,
+    }"
+    :style="isMobile ? { transform: uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)' } : undefined"
+  >
+    <!-- Tab 栏 + 工具栏合并 -->
+    <div class="flex items-center h-9 px-2 shrink-0 border-b border-border">
+      <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full">
+        <button
+          v-for="item in cssContentConfig.tabs"
+          :key="item.name"
+          class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
+          :class="{
+            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.name,
+            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.name,
+          }"
+          @click="tabChanged(item.name)"
+        >
+          <span class="truncate max-w-[100px]">{{ item.title }}</span>
 
-            <!-- 活跃 tab 下划线指示器 -->
-            <span
-              v-if="cssContentConfig.active === item.name"
-              class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
-            />
+          <!-- 活跃 tab 下划线指示器 -->
+          <span
+            v-if="cssContentConfig.active === item.name"
+            class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
+          />
 
-            <!-- 活跃 tab 操作: 更多菜单 -->
-            <DropdownMenu v-if="cssContentConfig.active === item.name">
-              <DropdownMenuTrigger as-child>
-                <span
-                  class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
-                  @click.stop
-                >
-                  <Ellipsis class="size-3" />
-                </span>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="start" class="w-32">
-                <DropdownMenuItem @click.stop="rename(item.name)">
-                  <Edit3 class="mr-2 size-4" /> 重命名
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  v-if="cssContentConfig.tabs.length > 1"
-                  class="text-destructive focus:text-destructive"
-                  @click.stop="removeHandler(item.name)"
-                >
-                  <X class="mr-2 size-4" /> 删除
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </button>
-        </div>
-
-        <!-- 工具按钮组 -->
-        <div class="flex items-center shrink-0">
-          <!-- 新增 Tab -->
-          <button
-            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-            @click="addHandler"
-          >
-            <Plus class="size-3.5" />
-          </button>
-
-          <!-- 内置主题 -->
-          <button
-            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-            @click="openViewThemeDialog"
-          >
-            <Eye class="size-3.5" />
-          </button>
-
-          <!-- 导出主题 -->
-          <button
-            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-            @click="exportCurrentTheme"
-          >
-            <Download class="size-3.5" />
-          </button>
-
-          <!-- 移动端关闭 -->
-          <button
-            v-if="isMobile"
-            class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-            @click="uiStore.isShowCssEditor = false"
-          >
-            <X class="size-3.5" />
-          </button>
-        </div>
+          <!-- 活跃 tab 操作: 更多菜单 -->
+          <DropdownMenu v-if="cssContentConfig.active === item.name">
+            <DropdownMenuTrigger as-child>
+              <span
+                class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
+                @click.stop
+              >
+                <Ellipsis class="size-3" />
+              </span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start" class="w-32">
+              <DropdownMenuItem @click.stop="rename(item.name)">
+                <Edit3 class="mr-2 size-4" /> 重命名
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                v-if="cssContentConfig.tabs.length > 1"
+                class="text-destructive focus:text-destructive"
+                @click.stop="removeHandler(item.name)"
+              >
+                <X class="mr-2 size-4" /> 删除
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </button>
       </div>
 
-      <!-- CSS编辑器内容区域 -->
-      <div class="flex-1 min-h-0">
-        <textarea
-          id="cssEditor"
-          type="textarea"
-          placeholder="Your custom css here."
-        />
+      <!-- 工具按钮组 -->
+      <div class="flex items-center shrink-0">
+        <!-- 新增 Tab -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          @click="addHandler"
+        >
+          <Plus class="size-3.5" />
+        </button>
+
+        <!-- 内置主题 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          @click="openViewThemeDialog"
+        >
+          <Eye class="size-3.5" />
+        </button>
+
+        <!-- 导出主题 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          @click="exportCurrentTheme"
+        >
+          <Download class="size-3.5" />
+        </button>
+
+        <!-- 移动端关闭 -->
+        <button
+          v-if="isMobile"
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          @click="uiStore.isShowCssEditor = false"
+        >
+          <X class="size-3.5" />
+        </button>
       </div>
-
-      <!-- 新增弹窗 -->
-      <Dialog v-model:open="isOpenAddDialog">
-        <DialogContent class="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>新建自定义 CSS</DialogTitle>
-            <DialogDescription>
-              请输入方案名称，并选择初始模板
-            </DialogDescription>
-          </DialogHeader>
-          <div class="space-y-4">
-            <div class="space-y-2">
-              <label class="text-sm font-medium">方案名称</label>
-              <Input v-model="addInputVal" placeholder="输入方案名称" />
-            </div>
-            <div class="space-y-2">
-              <label class="text-sm font-medium">初始模板</label>
-              <Select v-model="baseThemeForNew">
-                <SelectTrigger>
-                  <SelectValue placeholder="选择初始模板" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="blank">
-                    空白方案
-                  </SelectItem>
-                  <SelectItem value="default">
-                    基于经典主题
-                  </SelectItem>
-                  <SelectItem value="grace">
-                    基于优雅主题
-                  </SelectItem>
-                  <SelectItem value="simple">
-                    基于简洁主题
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-              <p class="text-xs text-muted-foreground">
-                选择一个内置主题作为起点，可以在其基础上进行修改
-              </p>
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" @click="isOpenAddDialog = false">
-              取消
-            </Button>
-            <Button @click="addTab()">
-              创建
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <!-- 重命名弹窗 -->
-      <Dialog v-model:open="isOpenEditDialog">
-        <DialogContent class="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>编辑方案名称</DialogTitle>
-            <DialogDescription>
-              请输入新的方案名称
-            </DialogDescription>
-          </DialogHeader>
-          <Input v-model="editInputVal" />
-          <DialogFooter>
-            <Button variant="outline" @click="isOpenEditDialog = false">
-              取消
-            </Button>
-            <Button @click="editTabName">
-              保存
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      <AlertDialog v-model:open="isOpenDelTabConfirmDialog">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>提示</AlertDialogTitle>
-            <AlertDialogDescription>
-              此操作将删除该自定义方案，是否继续？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction @click="delTab">
-              确定
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
-  </transition>
+
+    <!-- CSS编辑器内容区域 -->
+    <div class="flex-1 min-h-0">
+      <textarea
+        id="cssEditor"
+        type="textarea"
+        placeholder="Your custom css here."
+      />
+    </div>
+
+    <!-- 新增弹窗 -->
+    <Dialog v-model:open="isOpenAddDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>新建自定义 CSS</DialogTitle>
+          <DialogDescription>
+            请输入方案名称，并选择初始模板
+          </DialogDescription>
+        </DialogHeader>
+        <div class="space-y-4">
+          <div class="space-y-2">
+            <label class="text-sm font-medium">方案名称</label>
+            <Input v-model="addInputVal" placeholder="输入方案名称" />
+          </div>
+          <div class="space-y-2">
+            <label class="text-sm font-medium">初始模板</label>
+            <Select v-model="baseThemeForNew">
+              <SelectTrigger>
+                <SelectValue placeholder="选择初始模板" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="blank">
+                  空白方案
+                </SelectItem>
+                <SelectItem value="default">
+                  基于经典主题
+                </SelectItem>
+                <SelectItem value="grace">
+                  基于优雅主题
+                </SelectItem>
+                <SelectItem value="simple">
+                  基于简洁主题
+                </SelectItem>
+              </SelectContent>
+            </Select>
+            <p class="text-xs text-muted-foreground">
+              选择一个内置主题作为起点，可以在其基础上进行修改
+            </p>
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" @click="isOpenAddDialog = false">
+            取消
+          </Button>
+          <Button @click="addTab()">
+            创建
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <!-- 重命名弹窗 -->
+    <Dialog v-model:open="isOpenEditDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>编辑方案名称</DialogTitle>
+          <DialogDescription>
+            请输入新的方案名称
+          </DialogDescription>
+        </DialogHeader>
+        <Input v-model="editInputVal" />
+        <DialogFooter>
+          <Button variant="outline" @click="isOpenEditDialog = false">
+            取消
+          </Button>
+          <Button @click="editTabName">
+            保存
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <AlertDialog v-model:open="isOpenDelTabConfirmDialog">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>提示</AlertDialogTitle>
+          <AlertDialogDescription>
+            此操作将删除该自定义方案，是否继续？
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction @click="delTab">
+            确定
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  </div>
 
   <!-- 查看内置主题对话框 -->
   <Dialog v-model:open="isOpenViewThemeDialog">
@@ -505,44 +500,5 @@ function exportCurrentTheme() {
 /* 移动端CSS编辑器动画 - 只有添加了 animate 类才启用 */
 .mobile-css-editor.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* 桌面端的bounceInRight动画 */
-.bounceInRight {
-  animation-name: bounceInRight;
-  animation-duration: 1s;
-  animation-fill-mode: both;
-}
-
-@keyframes bounceInRight {
-  0%,
-  60%,
-  75%,
-  90%,
-  100% {
-    transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
-  }
-
-  0% {
-    opacity: 0;
-    transform: translate3d(3000px, 0, 0);
-  }
-
-  60% {
-    opacity: 1;
-    transform: translate3d(-25px, 0, 0);
-  }
-
-  75% {
-    transform: translate3d(10px, 0, 0);
-  }
-
-  90% {
-    transform: translate3d(-5px, 0, 0);
-  }
-
-  100% {
-    transform: none;
-  }
 }
 </style>
