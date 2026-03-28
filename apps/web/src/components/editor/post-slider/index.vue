@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, X } from 'lucide-vue-next'
+import { ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
@@ -138,6 +138,84 @@ function recoverHistory() {
   isOpenHistoryDialog.value = false
 }
 
+/* ============ 全局搜索 ============ */
+const isSearching = ref(false)
+const searchQuery = ref(``)
+const searchInputRef = ref<HTMLInputElement | null>(null)
+
+function toggleSearch() {
+  isSearching.value = !isSearching.value
+  if (isSearching.value) {
+    nextTick(() => searchInputRef.value?.focus())
+  }
+  else {
+    searchQuery.value = ``
+  }
+}
+
+function closeSearch() {
+  isSearching.value = false
+  searchQuery.value = ``
+}
+
+interface HighlightPart {
+  text: string
+  highlight: boolean
+}
+
+function highlightParts(text: string, query: string): HighlightPart[] {
+  if (!query)
+    return [{ text, highlight: false }]
+  const lower = text.toLowerCase()
+  const qLower = query.toLowerCase()
+  const parts: HighlightPart[] = []
+  let cursor = 0
+  let idx = lower.indexOf(qLower, cursor)
+  while (idx !== -1) {
+    if (idx > cursor)
+      parts.push({ text: text.slice(cursor, idx), highlight: false })
+    parts.push({ text: text.slice(idx, idx + query.length), highlight: true })
+    cursor = idx + query.length
+    idx = lower.indexOf(qLower, cursor)
+  }
+  if (cursor < text.length)
+    parts.push({ text: text.slice(cursor), highlight: false })
+  return parts
+}
+
+function getContentSnippet(content: string, query: string): string {
+  if (!query.trim())
+    return ``
+  const lower = content.toLowerCase()
+  const idx = lower.indexOf(query.toLowerCase())
+  if (idx === -1)
+    return ``
+  const start = Math.max(0, idx - 20)
+  const end = Math.min(content.length, idx + query.length + 40)
+  let snippet = content.slice(start, end).replace(/\n/g, ` `)
+  if (start > 0)
+    snippet = `…${snippet}`
+  if (end < content.length)
+    snippet = `${snippet}…`
+  return snippet
+}
+
+const searchResults = computed(() => {
+  const q = searchQuery.value.trim().toLowerCase()
+  if (!q)
+    return []
+  return posts.value
+    .filter(post => post.title.toLowerCase().includes(q) || post.content.toLowerCase().includes(q))
+    .map((post) => {
+      const snippet = getContentSnippet(post.content, searchQuery.value.trim())
+      return {
+        ...post,
+        titleParts: highlightParts(post.title, searchQuery.value.trim()),
+        snippetParts: snippet ? highlightParts(snippet, searchQuery.value.trim()) : [],
+      }
+    })
+})
+
 /* ============ 排序 ============ */
 const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
@@ -256,6 +334,15 @@ function handleDragEnd() {
         </span>
         <span class="flex-1" />
 
+        <!-- 搜索 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          :class="{ 'text-primary bg-primary/10': isSearching }"
+          @click="toggleSearch"
+        >
+          <Search class="size-4" />
+        </button>
+
         <!-- 新增 -->
         <button
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
@@ -317,8 +404,71 @@ function handleDragEnd() {
         </button>
       </div>
 
+      <!-- 搜索栏 -->
+      <div v-if="isSearching" class="px-2 pb-1.5 shrink-0">
+        <div class="relative">
+          <Search class="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground/50" />
+          <input
+            ref="searchInputRef"
+            v-model="searchQuery"
+            class="w-full h-8 rounded-md border border-border bg-background pl-7 pr-7 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+            placeholder="搜索标题或内容…"
+            @keydown.escape="closeSearch"
+          >
+          <button
+            v-if="searchQuery"
+            class="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
+            @click="searchQuery = ''"
+          >
+            <X class="size-3" />
+          </button>
+        </div>
+      </div>
+
+      <!-- 搜索结果 -->
+      <div v-if="isSearching && searchQuery.trim()" class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
+        <template v-if="searchResults.length">
+          <a
+            v-for="result in searchResults"
+            :key="result.id"
+            class="group relative flex w-full cursor-pointer flex-col gap-0.5 rounded-lg px-2 py-[7px] text-[13px] leading-snug transition-all duration-150 ease-out"
+            :class="{
+              'bg-accent text-accent-foreground font-medium': postStore.currentPostId === result.id,
+              'text-foreground/70 hover:text-foreground hover:bg-accent/50': postStore.currentPostId !== result.id,
+            }"
+            @click="postStore.currentPostId = result.id; closeSearch()"
+          >
+            <span
+              v-if="postStore.currentPostId === result.id"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
+            />
+            <span class="truncate select-none">
+              <template v-for="(part, i) in result.titleParts" :key="i">
+                <mark v-if="part.highlight" class="bg-primary/20 text-inherit rounded-sm px-px">{{ part.text }}</mark>
+                <span v-else>{{ part.text }}</span>
+              </template>
+            </span>
+            <span
+              v-if="result.snippetParts.length"
+              class="text-[11px] text-muted-foreground/60 truncate"
+            >
+              <template v-for="(part, i) in result.snippetParts" :key="i">
+                <mark v-if="part.highlight" class="bg-primary/20 text-inherit rounded-sm px-px">{{ part.text }}</mark>
+                <span v-else>{{ part.text }}</span>
+              </template>
+            </span>
+          </a>
+        </template>
+        <div v-else class="flex flex-col items-center justify-center gap-2 py-12 px-6">
+          <Search class="size-5 text-muted-foreground/30" />
+          <p class="text-xs text-muted-foreground/50">
+            没有匹配的内容
+          </p>
+        </div>
+      </div>
+
       <!-- 内容列表 -->
-      <div class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
+      <div v-else class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
         <PostItem
           v-if="sortedPosts.length"
           :parent-id="null"
