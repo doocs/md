@@ -224,7 +224,7 @@ function handleDragEnd() {
   <div
     class="h-full w-full overflow-hidden"
     :class="{
-      'fixed top-0 left-0 z-55 w-[85vw] max-w-xs bg-background border-r border-border shadow-xl': isMobile,
+      'fixed top-0 left-0 z-55 w-full bg-background border-r border-border shadow-xl': isMobile,
       'animate-slider': isMobile && enableAnimation,
       'bg-background transition-colors duration-200': !isMobile,
       'bg-primary/5 outline-2 outline-dashed outline-primary/30': !isMobile && dragover,
