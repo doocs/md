@@ -228,8 +228,6 @@ function exportCurrentTheme() {
     },
     currentThemeName,
   )
-
-  toast.success(`主题导出成功`)
 }
 </script>
 
