@@ -100,7 +100,7 @@ function setPreviewMode(width: string) {
             :checked="uiStore.isShowFloatingToc && !uiStore.isPinFloatingToc"
             @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = false }"
           >
-            移入触发
+            点击展开
           </MenubarCheckboxItem>
           <MenubarCheckboxItem
             :checked="!uiStore.isShowFloatingToc"
@@ -195,7 +195,7 @@ function setPreviewMode(width: string) {
             :checked="uiStore.isShowFloatingToc && !uiStore.isPinFloatingToc"
             @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = false }"
           >
-            移入触发
+            点击展开
           </MenubarCheckboxItem>
           <MenubarCheckboxItem
             :checked="!uiStore.isShowFloatingToc"
