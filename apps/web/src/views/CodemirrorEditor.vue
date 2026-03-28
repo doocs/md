@@ -525,8 +525,7 @@ function createFormTextArea(dom: HTMLDivElement) {
               return true
             }
             Promise.all(
-              [...event.clipboardData.items]
-                .map(item => item.getAsFile())
+              Array.from(event.clipboardData.items, item => item.getAsFile())
                 .filter(item => item != null)
                 .map(async item => (await beforeImageUpload(item!)) ? item : null),
             ).then((items) => {
@@ -951,6 +950,38 @@ onUnmounted(() => {
 .codeMirror-wrapper,
 .preview-wrapper {
   height: 100%;
+}
+
+.preview-wrapper {
+  overflow-y: auto;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #dadada;
+    border-radius: 3px;
+
+    &:hover {
+      background-color: #cccccc;
+    }
+  }
+
+  :global(.dark) & {
+    &::-webkit-scrollbar-thumb {
+      background-color: #424242;
+
+      &:hover {
+        background-color: #525252;
+      }
+    }
+  }
 }
 
 .codeMirror-wrapper {
