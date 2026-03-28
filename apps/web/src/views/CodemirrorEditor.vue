@@ -954,33 +954,10 @@ onUnmounted(() => {
 
 .preview-wrapper {
   overflow-y: auto;
+  scrollbar-width: none;
 
   &::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background-color: #dadada;
-    border-radius: 3px;
-
-    &:hover {
-      background-color: #cccccc;
-    }
-  }
-
-  :global(.dark) & {
-    &::-webkit-scrollbar-thumb {
-      background-color: #424242;
-
-      &:hover {
-        background-color: #525252;
-      }
-    }
+    display: none;
   }
 }
 
