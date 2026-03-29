@@ -24,17 +24,10 @@ const selectionLength = ref(0)
 const totalLines = ref(1)
 
 // 监听编辑器变化，更新光标位置
-let cleanupFns: (() => void)[] = []
-
 watch(editor, (view, _, onCleanup) => {
-  // 清理上次的事件监听
-  cleanupFns.forEach(fn => fn())
-  cleanupFns = []
-
   if (!view)
     return
 
-  // 初始化
   updateCursorInfo(view)
 
   const onKeyUp = () => updateCursorInfo(view)
@@ -43,14 +36,9 @@ watch(editor, (view, _, onCleanup) => {
   view.dom.addEventListener(`keyup`, onKeyUp)
   view.dom.addEventListener(`mouseup`, onMouseUp)
 
-  cleanupFns.push(
-    () => view.dom.removeEventListener(`keyup`, onKeyUp),
-    () => view.dom.removeEventListener(`mouseup`, onMouseUp),
-  )
-
   onCleanup(() => {
-    cleanupFns.forEach(fn => fn())
-    cleanupFns = []
+    view.dom.removeEventListener(`keyup`, onKeyUp)
+    view.dom.removeEventListener(`mouseup`, onMouseUp)
   })
 }, { immediate: true })
 
@@ -105,15 +93,23 @@ const displaySavedTime = computed(() => {
   refreshKey.value
   return savedTimeAgo.value
 })
+
+// 右侧统计项
+const stats = computed(() => [
+  { icon: Pilcrow, value: readingTime.value.words, tooltip: `词数` },
+  { icon: Type, value: readingTime.value.chars, tooltip: `字符数` },
+  { icon: Clock, value: `${readingTime.value.minutes} 分钟`, tooltip: `预计阅读时间` },
+  { icon: BookOpen, value: totalLines.value, tooltip: `总行数` },
+])
 </script>
 
 <template>
   <footer
     class="flex select-none items-center px-3 py-1 text-xs text-muted-foreground"
   >
-    <!-- 左侧：光标位置 & 选区 -->
-    <div class="flex items-center gap-3">
-      <TooltipProvider :delay-duration="300">
+    <TooltipProvider :delay-duration="300">
+      <!-- 左侧：光标位置 & 选区 -->
+      <div class="flex items-center gap-3">
         <Tooltip>
           <TooltipTrigger as-child>
             <span class="flex cursor-default items-center gap-1 tabular-nums">
@@ -125,24 +121,22 @@ const displaySavedTime = computed(() => {
             <p>光标位置（共 {{ totalLines }} 行）</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <span
-        v-if="selectionLength > 0"
-        class="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums"
-      >
-        已选 {{ selectionLength }} 字符
-      </span>
-    </div>
+        <span
+          v-if="selectionLength > 0"
+          class="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums"
+        >
+          已选 {{ selectionLength }} 字符
+        </span>
+      </div>
 
-    <!-- 中间弹性间距 -->
-    <div class="flex-1" />
+      <!-- 中间弹性间距 -->
+      <div class="flex-1" />
 
-    <!-- 右侧：统计信息 -->
-    <div class="flex items-center gap-3">
-      <!-- 保存状态 -->
-      <TooltipProvider v-if="displaySavedTime" :delay-duration="300">
-        <Tooltip>
+      <!-- 右侧：统计信息 -->
+      <div class="flex items-center gap-3">
+        <!-- 保存状态 -->
+        <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>
             <span class="flex cursor-default items-center gap-1 opacity-70 transition-opacity hover:opacity-100">
               <FileText class="size-3" />
@@ -153,65 +147,21 @@ const displaySavedTime = computed(() => {
             <p>上次修改时间</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <span class="text-border">·</span>
+        <span class="text-border">·</span>
 
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
+        <Tooltip v-for="stat in stats" :key="stat.tooltip">
           <TooltipTrigger as-child>
             <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Pilcrow class="size-3 opacity-60" />
-              {{ readingTime.words }}
+              <component :is="stat.icon" class="size-3 opacity-60" />
+              {{ stat.value }}
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6">
-            <p>词数</p>
+            <p>{{ stat.tooltip }}</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Type class="size-3 opacity-60" />
-              {{ readingTime.chars }}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>字符数</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Clock class="size-3 opacity-60" />
-              {{ readingTime.minutes }} 分钟
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>预计阅读时间</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <BookOpen class="size-3 opacity-60" />
-              {{ totalLines }}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>总行数</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
+      </div>
+    </TooltipProvider>
   </footer>
 </template>
