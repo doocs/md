@@ -97,6 +97,18 @@ img {
 hr {
 }
 
+/* 分隔线变体：--- */
+hr.hr-dash {
+}
+
+/* 分隔线变体：*** */
+hr.hr-star {
+}
+
+/* 分隔线变体：___ */
+hr.hr-underscore {
+}
+
 figure {
 }
 
