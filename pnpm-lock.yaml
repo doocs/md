@@ -126,11 +126,11 @@ importers:
   apps/web:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1018.0
-        version: 3.1018.0
+        specifier: ^3.1019.0
+        version: 3.1019.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.1018.0
-        version: 3.1018.0
+        specifier: ^3.1019.0
+        version: 3.1019.0
       '@exercism/highlightjs-gdscript':
         specifier: ^0.0.1
         version: 0.0.1
@@ -223,11 +223,11 @@ importers:
         version: 1.7.1
     devDependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.30.1
-        version: 1.30.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260317.1)(wrangler@4.77.0(@cloudflare/workers-types@4.20260317.1))
+        specifier: 1.30.2
+        version: 1.30.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260317.1)(wrangler@4.78.0(@cloudflare/workers-types@4.20260329.1))
       '@cloudflare/workers-types':
-        specifier: ^4.20260317.1
-        version: 4.20260317.1
+        specifier: ^4.20260329.1
+        version: 4.20260329.1
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -236,7 +236,7 @@ importers:
         version: 4.2.2
       '@tailwindcss/vite':
         specifier: ^4.2.2
-        version: 4.2.2(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 4.2.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@types/buffer-from':
         specifier: ^1.1.3
         version: 1.1.3
@@ -248,7 +248,7 @@ importers:
         version: 3.0.5
       '@vitejs/plugin-vue':
         specifier: ^6.0.5
-        version: 6.0.5(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
+        version: 6.0.5(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
       less:
         specifier: ^4.6.4
         version: 4.6.4
@@ -266,7 +266,7 @@ importers:
         version: 4.60.0
       rollup-plugin-visualizer:
         specifier: ^7.0.1
-        version: 7.0.1(rolldown@1.0.0-rc.12)(rollup@4.60.0)
+        version: 7.0.1(rolldown@1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1))(rollup@4.60.0)
       shx:
         specifier: ^0.4.0
         version: 0.4.0
@@ -281,22 +281,22 @@ importers:
         version: 32.0.0(vue@3.5.31(typescript@5.9.3))
       vite:
         specifier: ^8.0.3
-        version: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+        version: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       vite-plugin-radar:
         specifier: ^0.10.1
-        version: 0.10.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+        version: 0.10.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       vite-plugin-vue-devtools:
         specifier: ^8.1.1
-        version: 8.1.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
+        version: 8.1.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))
       vue-tsc:
         specifier: ^3.2.6
         version: 3.2.6(typescript@5.9.3)
       wrangler:
-        specifier: ^4.77.0
-        version: 4.77.0(@cloudflare/workers-types@4.20260317.1)
+        specifier: ^4.78.0
+        version: 4.78.0(@cloudflare/workers-types@4.20260329.1)
       wxt:
         specifier: ^0.20.20
-        version: 0.20.20(@types/node@25.5.0)(eslint@10.1.0(jiti@2.6.1))(jiti@2.6.1)(less@4.6.4)(rollup@4.60.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+        version: 0.20.20(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(eslint@10.1.0(jiti@2.6.1))(jiti@2.6.1)(less@4.6.4)(rollup@4.60.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   packages/config: {}
 
@@ -346,8 +346,8 @@ importers:
   packages/example:
     devDependencies:
       wrangler:
-        specifier: ^4.77.0
-        version: 4.77.0(@cloudflare/workers-types@4.20260317.1)
+        specifier: ^4.78.0
+        version: 4.78.0(@cloudflare/workers-types@4.20260329.1)
 
   packages/mcp-server:
     dependencies:
@@ -435,8 +435,8 @@ importers:
         specifier: ^6.5.3
         version: 6.5.3(@codemirror/language@6.12.3)(@codemirror/state@6.6.0)(@codemirror/view@6.40.0(patch_hash=745b176d69d1f3b7a791eaaa3b29c78ae9c999dd05d8d8dbf51e027ea947b8e9))
       axios:
-        specifier: ^1.13.6
-        version: 1.13.6
+        specifier: ^1.14.0
+        version: 1.14.0
       es-toolkit:
         specifier: ^1.45.1
         version: 1.45.1
@@ -589,8 +589,8 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-s3@3.1018.0':
-    resolution: {integrity: sha512-BiGKMjrkAJkyse1ECpVyxVYugf82FB3cM9zgKpx3boFuWobyolG5ri6XjoMIY8fpHddaO8ZClXEedACyelSLWA==}
+  '@aws-sdk/client-s3@3.1019.0':
+    resolution: {integrity: sha512-0pb9x7PPhS4oEi4c0rL3vzQQoXA4cWKtPuGga/UfVYLZ68yrqdq0NDKg0fr55qzdhNvWFCpmGx73g9Iyy03kkA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.973.25':
@@ -609,28 +609,28 @@ packages:
     resolution: {integrity: sha512-qPymamdPcLp6ugoVocG1y5r69ScNiRzb0hogX25/ij+Wz7c7WnsgjLTaz7+eB5BfRxeyUwuw5hgULMuwOGOpcw==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/credential-provider-ini@3.972.25':
-    resolution: {integrity: sha512-G/v/PicYn4qs7xCv4vT6I4QKdvMyRvsgIFNBkUueCGlbLo7/PuKcNKgUozmLSsaYnE7jIl6UrfkP07EUubr48w==}
+  '@aws-sdk/credential-provider-ini@3.972.26':
+    resolution: {integrity: sha512-xKxEAMuP6GYx2y5GET+d3aGEroax3AgGfwBE65EQAUe090lzyJ/RzxPX9s8v7Z6qAk0XwfQl+LrmH05X7YvTeg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/credential-provider-login@3.972.25':
-    resolution: {integrity: sha512-bUdmyJeVua7SmD+g2a65x2/0YqsGn4K2k4GawI43js0odaNaIzpIhLtHehUnPnfLuyhPWbJR1NyuIO4iMVfM0w==}
+  '@aws-sdk/credential-provider-login@3.972.26':
+    resolution: {integrity: sha512-EFcM8RM3TUxnZOfMJo++3PnyxFu1fL/huzmn3Vh+8IWRgqZawUD3cRwwOr+/4bE9DpyHaLOWFAjY0lfK5X9ZkQ==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/credential-provider-node@3.972.26':
-    resolution: {integrity: sha512-5XSK74rCXxCNj+UWv5bjq1EccYkiyW4XOHFU9NXnsCcQF8dJuHdua1qFg0m/LIwVOWklbKsrcnMtfxIXwgvwzQ==}
+  '@aws-sdk/credential-provider-node@3.972.27':
+    resolution: {integrity: sha512-jXpxSolfFnPVj6GCTtx3xIdWNoDR7hYC/0SbetGZxOC9UnNmipHeX1k6spVstf7eWJrMhXNQEgXC0pD1r5tXIg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/credential-provider-process@3.972.23':
     resolution: {integrity: sha512-IL/TFW59++b7MpHserjUblGrdP5UXy5Ekqqx1XQkERXBFJcZr74I7VaSrQT5dxdRMU16xGK4L0RQ5fQG1pMgnA==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/credential-provider-sso@3.972.25':
-    resolution: {integrity: sha512-r4OGAfHmlEa1QBInHWz+/dOD4tRljcjVNQe9wJ/AJNXEj1d2WdsRLppvRFImRV6FIs+bTpjtL0a23V5ELQpRPw==}
+  '@aws-sdk/credential-provider-sso@3.972.26':
+    resolution: {integrity: sha512-c6ghvRb6gTlMznWhGxn/bpVCcp0HRaz4DobGVD9kI4vwHq186nU2xN/S7QGkm0lo0H2jQU8+dgpUFLxfTcwCOg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/credential-provider-web-identity@3.972.25':
-    resolution: {integrity: sha512-uM1OtoJgj+yK3MlAmda8uR9WJJCdm5HB25JyCeFL5a5q1Fbafalf4uKidFO3/L0Pgd+Fsflkb4cM6jHIswi3QQ==}
+  '@aws-sdk/credential-provider-web-identity@3.972.26':
+    resolution: {integrity: sha512-cXcS3+XD3iwhoXkM44AmxjmbcKueoLCINr1e+IceMmCySda5ysNIfiGBGe9qn5EMiQ9Jd7pP0AGFtcd6OV3Lvg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/middleware-bucket-endpoint@3.972.8':
@@ -673,24 +673,24 @@ packages:
     resolution: {integrity: sha512-AilFIh4rI/2hKyyGN6XrB0yN96W2o7e7wyrPWCM6QjZM1mcC/pVkW3IWWRvuBWMpVP8Fg+rMpbzeLQ6dTM4gig==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/nested-clients@3.996.15':
-    resolution: {integrity: sha512-k6WAVNkub5DrU46iPQvH1m0xc1n+0dX79+i287tYJzf5g1yU2rX3uf4xNeL5JvK1NtYgfwMnsxHqhOXFBn367A==}
+  '@aws-sdk/nested-clients@3.996.16':
+    resolution: {integrity: sha512-L7Qzoj/qQU1cL5GnYLQP5LbI+wlLCLoINvcykR3htKcQ4tzrPf2DOs72x933BM7oArYj1SKrkb2lGlsJHIic3g==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/region-config-resolver@3.972.10':
     resolution: {integrity: sha512-1dq9ToC6e070QvnVhhbAs3bb5r6cQ10gTVc6cyRV5uvQe7P138TV2uG2i6+Yok4bAkVAcx5AqkTEBUvWEtBlsQ==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.1018.0':
-    resolution: {integrity: sha512-DEb/p6275ZRKnScU2IhFiiB6U8B1HYjBwSGWNuAZxf7aNqOc1ZQeM31yUb3qBw6aezyNRYly8JqE7/Vyc3vbwA==}
+  '@aws-sdk/s3-request-presigner@3.1019.0':
+    resolution: {integrity: sha512-KFv5UaIORIF6MTmEc79MQTPQSnRZjUmOIaOzXn9g6ujtViQLIrNYJiaSmVw8LqK1ebcndS6L6s4bBdLd9AQVJA==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.14':
     resolution: {integrity: sha512-4nZSrBr1NO+48HCM/6BRU8mnRjuHZjcpziCvLXZk5QVftwWz5Mxqbhwdz4xf7WW88buaTB8uRO2MHklSX1m0vg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/token-providers@3.1018.0':
-    resolution: {integrity: sha512-97OPNJHy37wmGOX44xAcu6E9oSTiqK9uPcy/fWpmN5uB3JuEp1f6x60Xot/jp+FxwhQWIFUsVJFnm3QKqt7T6Q==}
+  '@aws-sdk/token-providers@3.1019.0':
+    resolution: {integrity: sha512-OF+2RfRmUKyjzrRWlDcyju3RBsuqcrYDQ8TwrJg8efcOotMzuZN4U9mpVTIdATpmEc4lWNZBMSjPzrGm6JPnAQ==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/types@3.973.6':
@@ -771,8 +771,8 @@ packages:
     resolution: {integrity: sha512-fCqPIfOcLE+CGqGPd66c8bZpwAji98tZ4JI9i/mlTNTlsIWslCfpg48s/ypyLxZTump5sypjrKn2/kY7q8oAbA==}
     engines: {node: '>=20.0.0'}
 
-  '@azure/msal-browser@5.6.1':
-    resolution: {integrity: sha512-Ylmp8yngH7YRLV5mA1aF4CNS6WsJTPbVXaA0Tb1x1Gv/J3BM3hE4Q7nDaf7dRfU00FcxDBBudTjqlpH74ZSsgw==}
+  '@azure/msal-browser@5.6.2':
+    resolution: {integrity: sha512-ZgcN9ToRJ80f+wNPBBKYJ+DG0jlW7ktEjYtSNkNsTrlHVMhKB8tKMdI1yIG1I9BJtykkXtqnuOjlJaEMC7J6aw==}
     engines: {node: '>=0.8.0'}
 
   '@azure/msal-common@16.4.0':
@@ -972,11 +972,11 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/vite-plugin@1.30.1':
-    resolution: {integrity: sha512-gDWf2VJNRDp3ktWsTapx3gzffVfE2mkLiziiQOZGPgipvVBgWsCHO4UGqCDoLkXtB2gw4zgbGUKKqxBOn7WTSg==}
+  '@cloudflare/vite-plugin@1.30.2':
+    resolution: {integrity: sha512-1TG/GyYxMAVhRtbKs9dPCsJY+c4qaPk+NKiLywKLV/BuvgMTBGhrmIvkC9NQSaw9sa5fPOYmv9me68AIs5kXJQ==}
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0 || ^8.0.0
-      wrangler: ^4.77.0
+      wrangler: ^4.78.0
 
   '@cloudflare/workerd-darwin-64@1.20260317.1':
     resolution: {integrity: sha512-8hjh3sPMwY8M/zedq3/sXoA2Q4BedlGufn3KOOleIG+5a4ReQKLlUah140D7J6zlKmYZAFMJ4tWC7hCuI/s79g==}
@@ -1008,8 +1008,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20260317.1':
-    resolution: {integrity: sha512-+G4eVwyCpm8Au1ex8vQBCuA9wnwqetz4tPNRoB/53qvktERWBRMQnrtvC1k584yRE3emMThtuY0gWshvSJ++PQ==}
+  '@cloudflare/workers-types@4.20260329.1':
+    resolution: {integrity: sha512-LxBHrYYI/AZ6OCbUzRqRgg6Rt1qev2KxN2NNd3saye41AO2g52cYvHV+ohts5oPnrIUD7YRjbgN/J3NU7e7m5A==}
 
   '@codemirror/autocomplete@6.20.1':
     resolution: {integrity: sha512-1cvg3Vz1dSSToCNlJfRA2WSI4ht3K+WplO0UMOgmUYPivCyy2oueZY6Lx7M9wThm7SDUBViRmuT+OG/i8+ON9A==}
@@ -1904,8 +1904,11 @@ packages:
       '@cfworker/json-schema':
         optional: true
 
-  '@napi-rs/wasm-runtime@1.1.1':
-    resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
+  '@napi-rs/wasm-runtime@1.1.2':
+    resolution: {integrity: sha512-sNXv5oLJ7ob93xkZ1XnxisYhGYXfaG9f65/ZgYuAu3qt7b3NadcOEhLvx28hv31PgX8SZJRYrAIPQilQmFpLVw==}
+    peerDependencies:
+      '@emnapi/core': ^1.7.1
+      '@emnapi/runtime': ^1.7.1
 
   '@nodelib/fs.scandir@2.1.5':
     resolution: {integrity: sha512-vq24Bq3ym5HEQm2NKCr3yXDwjc7vTsEThRDnkp2DK9p1uqLR+DHurm/NOTo0KG7HYHU7eppKZj3MyqYuMBf62g==}
@@ -3429,8 +3432,8 @@ packages:
   atomically@2.1.1:
     resolution: {integrity: sha512-P4w9o2dqARji6P7MHprklbfiArZAWvo07yW7qs3pdljb3BWr12FIB7W+p0zJiuiVsUpRO0iZn1kFFcpPegg0tQ==}
 
-  axios@1.13.6:
-    resolution: {integrity: sha512-ChTCHMouEe2kn713WHbQGcuYrr6fXTBiu460OTwWrWob16g1bXn4vtz07Ope7ewMozJAnEquLk5lWQWtBig9DQ==}
+  axios@1.14.0:
+    resolution: {integrity: sha512-3Y8yrqLSwjuzpXuZ0oIYZ/XGgLwUIBU3uLvbcpb0pidD9ctpShJd43KSlEEkVQg6DS0G9NKyzOvBfUtDKEyHvQ==}
 
   azure-devops-node-api@12.5.0:
     resolution: {integrity: sha512-R5eFskGvOm3U/GzeAuxRkUsAl0hrAwGgWn6zAd2KrZmrEhWZVqLew4OOupbQlXUuojUzpGtq62SmdhJ06N88og==}
@@ -3464,8 +3467,8 @@ packages:
       bare-buffer:
         optional: true
 
-  bare-os@3.8.0:
-    resolution: {integrity: sha512-Dc9/SlwfxkXIGYhvMQNUtKaXCaGkZYGcd1vuNUUADVqzu4/vQfvnMkYYOUnt2VwQ2AqKr/8qAVFRtwETljgeFg==}
+  bare-os@3.8.4:
+    resolution: {integrity: sha512-4JboWUl7/2LhgU536tjUszzaVC8/WEWKtyX5crayvlN71ih8+O2SdvBhotQeDsuhhmPZmLCrPBJEcwVPhI/kkQ==}
     engines: {bare: '>=1.14.0'}
 
   bare-path@3.0.0:
@@ -3491,8 +3494,8 @@ packages:
   base64-js@1.5.1:
     resolution: {integrity: sha512-AKpaYlHn8t4SVbOHCy+b5+KKgvR4vrsD8vbvrbiQJps7fKDTkjkDry6ji0rUJjC0kzbNePLwzxq8iypo41qeWA==}
 
-  baseline-browser-mapping@2.10.11:
-    resolution: {integrity: sha512-DAKrHphkJyiGuau/cFieRYhcTFeK/lBuD++C7cZ6KZHbMhBrisoi+EvhQ5RZrIfV5qwsW8kgQ07JIC+MDJRAhg==}
+  baseline-browser-mapping@2.10.12:
+    resolution: {integrity: sha512-qyq26DxfY4awP2gIRXhhLWfwzwI+N5Nxk6iQi8EFizIaWIjqicQTE4sLnZZVdeKPRcVNoJOkkpfzoIYuvCKaIQ==}
     engines: {node: '>=6.0.0'}
     hasBin: true
 
@@ -3769,6 +3772,10 @@ packages:
 
   comment-parser@1.4.5:
     resolution: {integrity: sha512-aRDkn3uyIlCFfk5NUA+VdwMmMsh8JGhc4hapfV4yxymHGQ3BVskMQfoXGpCo5IoBuQ9tS5iiVKhCpTcB4pW4qw==}
+    engines: {node: '>= 12.0.0'}
+
+  comment-parser@1.4.6:
+    resolution: {integrity: sha512-ObxuY6vnbWTN6Od72xfwN9DbzC7Y2vv8u1Soi9ahRKL37gb6y1qk6/dgjs+3JWuXJHWvsg3BXIwzd/rkmAwavg==}
     engines: {node: '>= 12.0.0'}
 
   compress-commons@6.0.2:
@@ -4685,8 +4692,8 @@ packages:
     resolution: {integrity: sha512-XXTUwCvisa5oacNGRP9SfNtYBNAMi+RPwBFmblZEF7N7swHYQS6/Zfk7SRwx4D5j3CH211YNRco1DEMNVfZCnQ==}
     engines: {node: '>=16.0.0'}
 
-  filesize@11.0.14:
-    resolution: {integrity: sha512-2+pBV36IghE/lC78KmHqq4GGzSwqxisNb6YH17W6owdAFoXChND4WZ/51CUYXKyaEiJOhNKKsZSwZ8HbejrKTA==}
+  filesize@11.0.15:
+    resolution: {integrity: sha512-30TpbYxQxCpi4XdVjkwXYQ37CzZltV38+P7MYroQ+4NK/Dmx9mxixFNrolzcmEIBsjT/uowC9T7kiy2+C12r1A==}
     engines: {node: '>= 10.8.0'}
 
   fill-range@7.1.1:
@@ -5334,8 +5341,8 @@ packages:
   jws@4.0.1:
     resolution: {integrity: sha512-EKI/M/yqPncGUUh44xz0PxSidXFr/+r0pA70+gIYhjv+et7yxM+s29Y+VGDkovRofQem0fs7Uvf4+YmAdyRduA==}
 
-  katex@0.16.43:
-    resolution: {integrity: sha512-K7NL5JtGrFEglipOAjY4UYA69CnTuNmjArxeXF6+bw7h2OGySUPv6QWRjfb1gmutJ4Mw/qLeBqiROOEDULp4nA==}
+  katex@0.16.44:
+    resolution: {integrity: sha512-EkxoDTk8ufHqHlf9QxGwcxeLkWRR3iOuYfRpfORgYfqc8s13bgb+YtRY59NK5ZpRaCwq1kqA6a5lpX8C/eLphQ==}
     hasBin: true
 
   keytar@7.9.0:
@@ -5811,8 +5818,8 @@ packages:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
 
-  miniflare@4.20260317.2:
-    resolution: {integrity: sha512-qNL+yWAFMX6fr0pWU6Lx1vNpPobpnDSF1V8eunIckWvoIQl8y1oBjL2RJFEGY3un+l3f9gwW9dirDPP26usYJQ==}
+  miniflare@4.20260317.3:
+    resolution: {integrity: sha512-tK78D3X4q30/SXqVwMhWrUfH+ffRou9dJLC+jkhNy5zh1I7i7T4JH6xihOvYxdCSBavJ5fQXaaxDJz6orh09BA==}
     engines: {node: '>=18.0.0'}
     hasBin: true
 
@@ -6309,8 +6316,9 @@ packages:
     resolution: {integrity: sha512-llQsMLSUDUPT44jdrU/O37qlnifitDP+ZwrmmZcoSKyLKvtZxpyV0n2/bD/N4tBAAZ/gJEdZU7KMraoK1+XYAg==}
     engines: {node: '>= 0.10'}
 
-  proxy-from-env@1.1.0:
-    resolution: {integrity: sha512-D+zkORCbA9f1tdWRK0RaCR3GPv50cMxcrz4X8k5LTSUD1Dkw47mKJEZQNunItRTkWwgtaUSo1RVFRIG9ZXiFYg==}
+  proxy-from-env@2.1.0:
+    resolution: {integrity: sha512-cJ+oHTW1VAEa8cJslgmUZrc+sjRKgAKl3Zyse6+PV38hZe/V6Z14TbCuXcan9F9ghlz4QrFr2c92TNF82UkYHA==}
+    engines: {node: '>=10'}
 
   prr@1.0.1:
     resolution: {integrity: sha512-yPw4Sng1gWghHQWj0B3ZggWUm4qVbPwPFcRG8KyxiU7J2OHFSoEHKS+EZ3fv5l1t9CyCiop6l/ZYeWbrgoQejw==}
@@ -7471,6 +7479,7 @@ packages:
   whatwg-encoding@3.1.1:
     resolution: {integrity: sha512-6qN4hJdMwfYBtE3YBTTHhoeuUrDBPZmbQaxWAqSALV/MeEnR5z1xd8UKud2RAkFoPkmB+hli1TZSnyi84xz1vQ==}
     engines: {node: '>=18'}
+    deprecated: Use @exodus/bytes instead for a more spec-conformant and faster implementation
 
   whatwg-mimetype@4.0.0:
     resolution: {integrity: sha512-QaKxh0eNIi2mE9p2vEdzfagOKHCcj1pJ56EEHGQOVxp8r9/iszLUUV7v89x9O1p/T+NlTM5W7jW6+cz4Fq1YVg==}
@@ -7523,8 +7532,8 @@ packages:
     engines: {node: '>=16'}
     hasBin: true
 
-  wrangler@4.77.0:
-    resolution: {integrity: sha512-E2Gm69+K++BFd3QvoWjC290RPQj1vDOUotA++sNHmtKPb7EP6C8Qv+1D5Ii73tfZtyNgakpqHlh8lBBbVWTKAQ==}
+  wrangler@4.78.0:
+    resolution: {integrity: sha512-He/vUhk4ih0D0eFmtNnlbT6Od8j+BEokaSR+oYjbVsH0SWIrIch+eHqfLRSBjBQaOoh6HCNxcafcIkBm2u0Hag==}
     engines: {node: '>=20.3.0'}
     hasBin: true
     peerDependencies:
@@ -7870,13 +7879,13 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-s3@3.1018.0':
+  '@aws-sdk/client-s3@3.1019.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
       '@aws-sdk/core': 3.973.25
-      '@aws-sdk/credential-provider-node': 3.972.26
+      '@aws-sdk/credential-provider-node': 3.972.27
       '@aws-sdk/middleware-bucket-endpoint': 3.972.8
       '@aws-sdk/middleware-expect-continue': 3.972.8
       '@aws-sdk/middleware-flexible-checksums': 3.974.5
@@ -7972,16 +7981,16 @@ snapshots:
       '@smithy/util-stream': 4.5.20
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-ini@3.972.25':
+  '@aws-sdk/credential-provider-ini@3.972.26':
     dependencies:
       '@aws-sdk/core': 3.973.25
       '@aws-sdk/credential-provider-env': 3.972.23
       '@aws-sdk/credential-provider-http': 3.972.25
-      '@aws-sdk/credential-provider-login': 3.972.25
+      '@aws-sdk/credential-provider-login': 3.972.26
       '@aws-sdk/credential-provider-process': 3.972.23
-      '@aws-sdk/credential-provider-sso': 3.972.25
-      '@aws-sdk/credential-provider-web-identity': 3.972.25
-      '@aws-sdk/nested-clients': 3.996.15
+      '@aws-sdk/credential-provider-sso': 3.972.26
+      '@aws-sdk/credential-provider-web-identity': 3.972.26
+      '@aws-sdk/nested-clients': 3.996.16
       '@aws-sdk/types': 3.973.6
       '@smithy/credential-provider-imds': 4.2.12
       '@smithy/property-provider': 4.2.12
@@ -7991,10 +8000,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-login@3.972.25':
+  '@aws-sdk/credential-provider-login@3.972.26':
     dependencies:
       '@aws-sdk/core': 3.973.25
-      '@aws-sdk/nested-clients': 3.996.15
+      '@aws-sdk/nested-clients': 3.996.16
       '@aws-sdk/types': 3.973.6
       '@smithy/property-provider': 4.2.12
       '@smithy/protocol-http': 5.3.12
@@ -8004,14 +8013,14 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-node@3.972.26':
+  '@aws-sdk/credential-provider-node@3.972.27':
     dependencies:
       '@aws-sdk/credential-provider-env': 3.972.23
       '@aws-sdk/credential-provider-http': 3.972.25
-      '@aws-sdk/credential-provider-ini': 3.972.25
+      '@aws-sdk/credential-provider-ini': 3.972.26
       '@aws-sdk/credential-provider-process': 3.972.23
-      '@aws-sdk/credential-provider-sso': 3.972.25
-      '@aws-sdk/credential-provider-web-identity': 3.972.25
+      '@aws-sdk/credential-provider-sso': 3.972.26
+      '@aws-sdk/credential-provider-web-identity': 3.972.26
       '@aws-sdk/types': 3.973.6
       '@smithy/credential-provider-imds': 4.2.12
       '@smithy/property-provider': 4.2.12
@@ -8030,11 +8039,11 @@ snapshots:
       '@smithy/types': 4.13.1
       tslib: 2.8.1
 
-  '@aws-sdk/credential-provider-sso@3.972.25':
+  '@aws-sdk/credential-provider-sso@3.972.26':
     dependencies:
       '@aws-sdk/core': 3.973.25
-      '@aws-sdk/nested-clients': 3.996.15
-      '@aws-sdk/token-providers': 3.1018.0
+      '@aws-sdk/nested-clients': 3.996.16
+      '@aws-sdk/token-providers': 3.1019.0
       '@aws-sdk/types': 3.973.6
       '@smithy/property-provider': 4.2.12
       '@smithy/shared-ini-file-loader': 4.4.7
@@ -8043,10 +8052,10 @@ snapshots:
     transitivePeerDependencies:
       - aws-crt
 
-  '@aws-sdk/credential-provider-web-identity@3.972.25':
+  '@aws-sdk/credential-provider-web-identity@3.972.26':
     dependencies:
       '@aws-sdk/core': 3.973.25
-      '@aws-sdk/nested-clients': 3.996.15
+      '@aws-sdk/nested-clients': 3.996.16
       '@aws-sdk/types': 3.973.6
       '@smithy/property-provider': 4.2.12
       '@smithy/shared-ini-file-loader': 4.4.7
@@ -8150,7 +8159,7 @@ snapshots:
       '@smithy/util-retry': 4.2.12
       tslib: 2.8.1
 
-  '@aws-sdk/nested-clients@3.996.15':
+  '@aws-sdk/nested-clients@3.996.16':
     dependencies:
       '@aws-crypto/sha256-browser': 5.2.0
       '@aws-crypto/sha256-js': 5.2.0
@@ -8201,7 +8210,7 @@ snapshots:
       '@smithy/types': 4.13.1
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.1018.0':
+  '@aws-sdk/s3-request-presigner@3.1019.0':
     dependencies:
       '@aws-sdk/signature-v4-multi-region': 3.996.14
       '@aws-sdk/types': 3.973.6
@@ -8221,10 +8230,10 @@ snapshots:
       '@smithy/types': 4.13.1
       tslib: 2.8.1
 
-  '@aws-sdk/token-providers@3.1018.0':
+  '@aws-sdk/token-providers@3.1019.0':
     dependencies:
       '@aws-sdk/core': 3.973.25
-      '@aws-sdk/nested-clients': 3.996.15
+      '@aws-sdk/nested-clients': 3.996.16
       '@aws-sdk/types': 3.973.6
       '@smithy/property-provider': 4.2.12
       '@smithy/shared-ini-file-loader': 4.4.7
@@ -8348,7 +8357,7 @@ snapshots:
       '@azure/core-tracing': 1.3.1
       '@azure/core-util': 1.13.1
       '@azure/logger': 1.3.0
-      '@azure/msal-browser': 5.6.1
+      '@azure/msal-browser': 5.6.2
       '@azure/msal-node': 5.1.1
       open: 10.2.0
       tslib: 2.8.1
@@ -8362,7 +8371,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@azure/msal-browser@5.6.1':
+  '@azure/msal-browser@5.6.2':
     dependencies:
       '@azure/msal-common': 16.4.0
 
@@ -8611,13 +8620,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260317.1
 
-  '@cloudflare/vite-plugin@1.30.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260317.1)(wrangler@4.77.0(@cloudflare/workers-types@4.20260317.1))':
+  '@cloudflare/vite-plugin@1.30.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(workerd@1.20260317.1)(wrangler@4.78.0(@cloudflare/workers-types@4.20260329.1))':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.0(unenv@2.0.0-rc.24)(workerd@1.20260317.1)
-      miniflare: 4.20260317.2
+      miniflare: 4.20260317.3
       unenv: 2.0.0-rc.24
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
-      wrangler: 4.77.0(@cloudflare/workers-types@4.20260317.1)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      wrangler: 4.78.0(@cloudflare/workers-types@4.20260329.1)
       ws: 8.18.0
     transitivePeerDependencies:
       - bufferutil
@@ -8639,7 +8648,7 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20260317.1':
     optional: true
 
-  '@cloudflare/workers-types@4.20260317.1': {}
+  '@cloudflare/workers-types@4.20260329.1': {}
 
   '@codemirror/autocomplete@6.20.1':
     dependencies:
@@ -9531,7 +9540,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@napi-rs/wasm-runtime@1.1.1':
+  '@napi-rs/wasm-runtime@1.1.2(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)':
     dependencies:
       '@emnapi/core': 1.9.1
       '@emnapi/runtime': 1.9.1
@@ -9686,9 +9695,12 @@ snapshots:
   '@rolldown/binding-openharmony-arm64@1.0.0-rc.12':
     optional: true
 
-  '@rolldown/binding-wasm32-wasi@1.0.0-rc.12':
+  '@rolldown/binding-wasm32-wasi@1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.1
+      '@napi-rs/wasm-runtime': 1.1.2(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
     optional: true
 
   '@rolldown/binding-win32-arm64-msvc@1.0.0-rc.12':
@@ -10291,12 +10303,12 @@ snapshots:
       postcss: 8.5.8
       tailwindcss: 4.2.2
 
-  '@tailwindcss/vite@4.2.2(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
+  '@tailwindcss/vite@4.2.2(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))':
     dependencies:
       '@tailwindcss/node': 4.2.2
       '@tailwindcss/oxide': 4.2.2
       tailwindcss: 4.2.2
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
   '@tanstack/virtual-core@3.13.23': {}
 
@@ -10725,10 +10737,10 @@ snapshots:
     transitivePeerDependencies:
       - vue
 
-  '@vitejs/plugin-vue@6.0.5(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))':
+  '@vitejs/plugin-vue@6.0.5(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3))':
     dependencies:
       '@rolldown/pluginutils': 1.0.0-rc.2
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       vue: 3.5.31(typescript@5.9.3)
 
   '@vitest/eslint-plugin@1.6.13(@typescript-eslint/eslint-plugin@8.57.2(@typescript-eslint/parser@8.57.2(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3))(eslint@10.1.0(jiti@2.6.1))(typescript@5.9.3)':
@@ -11226,11 +11238,11 @@ snapshots:
       stubborn-fs: 2.0.0
       when-exit: 2.1.5
 
-  axios@1.13.6:
+  axios@1.14.0:
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
       form-data: 4.0.5
-      proxy-from-env: 1.1.0
+      proxy-from-env: 2.1.0
     transitivePeerDependencies:
       - debug
 
@@ -11256,11 +11268,11 @@ snapshots:
       - bare-abort-controller
       - react-native-b4a
 
-  bare-os@3.8.0: {}
+  bare-os@3.8.4: {}
 
   bare-path@3.0.0:
     dependencies:
-      bare-os: 3.8.0
+      bare-os: 3.8.4
 
   bare-stream@2.11.0(bare-events@2.8.2):
     dependencies:
@@ -11277,7 +11289,7 @@ snapshots:
 
   base64-js@1.5.1: {}
 
-  baseline-browser-mapping@2.10.11: {}
+  baseline-browser-mapping@2.10.12: {}
 
   bidi-js@1.0.3:
     dependencies:
@@ -11347,7 +11359,7 @@ snapshots:
 
   browserslist@4.28.1:
     dependencies:
-      baseline-browser-mapping: 2.10.11
+      baseline-browser-mapping: 2.10.12
       caniuse-lite: 1.0.30001781
       electron-to-chromium: 1.5.328
       node-releases: 2.0.36
@@ -11601,6 +11613,8 @@ snapshots:
   commander@9.5.0: {}
 
   comment-parser@1.4.5: {}
+
+  comment-parser@1.4.6: {}
 
   compress-commons@6.0.2:
     dependencies:
@@ -12361,7 +12375,7 @@ snapshots:
     dependencies:
       '@eslint-community/eslint-utils': 4.9.1(eslint@10.1.0(jiti@2.6.1))
       '@eslint-community/regexpp': 4.12.2
-      comment-parser: 1.4.5
+      comment-parser: 1.4.6
       eslint: 10.1.0(jiti@2.6.1)
       jsdoc-type-pratt-parser: 7.1.1
       refa: 0.12.1
@@ -12654,7 +12668,7 @@ snapshots:
     dependencies:
       flat-cache: 4.0.1
 
-  filesize@11.0.14: {}
+  filesize@11.0.15: {}
 
   fill-range@7.1.1:
     dependencies:
@@ -13277,7 +13291,7 @@ snapshots:
       jwa: 2.0.1
       safe-buffer: 5.2.1
 
-  katex@0.16.43:
+  katex@0.16.44:
     dependencies:
       commander: 8.3.0
 
@@ -13676,7 +13690,7 @@ snapshots:
       dagre-d3-es: 7.0.14
       dayjs: 1.11.20
       dompurify: 3.3.3
-      katex: 0.16.43
+      katex: 0.16.44
       khroma: 2.1.0
       lodash-es: 4.17.23
       marked: 16.4.2
@@ -13909,7 +13923,7 @@ snapshots:
   mimic-response@3.1.0:
     optional: true
 
-  miniflare@4.20260317.2:
+  miniflare@4.20260317.3:
     dependencies:
       '@cspotcode/source-map-support': 0.8.1
       sharp: 0.34.5
@@ -14443,7 +14457,7 @@ snapshots:
       forwarded: 0.2.0
       ipaddr.js: 1.9.1
 
-  proxy-from-env@1.1.0: {}
+  proxy-from-env@2.1.0: {}
 
   prr@1.0.1:
     optional: true
@@ -14671,7 +14685,7 @@ snapshots:
 
   robust-predicates@3.0.3: {}
 
-  rolldown@1.0.0-rc.12:
+  rolldown@1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1):
     dependencies:
       '@oxc-project/types': 0.122.0
       '@rolldown/pluginutils': 1.0.0-rc.12
@@ -14688,18 +14702,21 @@ snapshots:
       '@rolldown/binding-linux-x64-gnu': 1.0.0-rc.12
       '@rolldown/binding-linux-x64-musl': 1.0.0-rc.12
       '@rolldown/binding-openharmony-arm64': 1.0.0-rc.12
-      '@rolldown/binding-wasm32-wasi': 1.0.0-rc.12
+      '@rolldown/binding-wasm32-wasi': 1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
       '@rolldown/binding-win32-arm64-msvc': 1.0.0-rc.12
       '@rolldown/binding-win32-x64-msvc': 1.0.0-rc.12
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
 
-  rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.12)(rollup@4.60.0):
+  rollup-plugin-visualizer@7.0.1(rolldown@1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1))(rollup@4.60.0):
     dependencies:
       open: 11.0.0
       picomatch: 4.0.4
       source-map: 0.7.6
       yargs: 18.0.0
     optionalDependencies:
-      rolldown: 1.0.0-rc.12
+      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
       rollup: 4.60.0
 
   rollup@4.60.0:
@@ -15539,24 +15556,26 @@ snapshots:
 
   version-range@4.15.0: {}
 
-  vite-dev-rpc@1.1.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vite-dev-rpc@1.1.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       birpc: 2.9.0
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
-      vite-hot-client: 2.1.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite-hot-client: 2.1.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
 
-  vite-hot-client@2.1.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vite-hot-client@2.1.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
-  vite-node@6.0.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
+  vite-node@6.0.0(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       cac: 7.0.0
       es-module-lexer: 2.0.0
       obug: 2.1.1
       pathe: 2.0.3
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
       - '@types/node'
       - '@vitejs/devtools'
       - esbuild
@@ -15570,7 +15589,7 @@ snapshots:
       - tsx
       - yaml
 
-  vite-plugin-inspect@11.3.3(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vite-plugin-inspect@11.3.3(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       ansis: 4.2.0
       debug: 4.4.3(supports-color@5.5.0)
@@ -15580,30 +15599,30 @@ snapshots:
       perfect-debounce: 2.1.0
       sirv: 3.0.2
       unplugin-utils: 0.3.1
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
-      vite-dev-rpc: 1.1.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite-dev-rpc: 1.1.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - supports-color
 
-  vite-plugin-radar@0.10.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vite-plugin-radar@0.10.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
 
-  vite-plugin-vue-devtools@8.1.1(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3)):
+  vite-plugin-vue-devtools@8.1.1(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))(vue@3.5.31(typescript@5.9.3)):
     dependencies:
       '@vue/devtools-core': 8.1.1(vue@3.5.31(typescript@5.9.3))
       '@vue/devtools-kit': 8.1.1
       '@vue/devtools-shared': 8.1.1
       sirv: 3.0.2
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
-      vite-plugin-inspect: 11.3.3(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
-      vite-plugin-vue-inspector: 5.4.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite-plugin-inspect: 11.3.3(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
+      vite-plugin-vue-inspector: 5.4.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
     transitivePeerDependencies:
       - '@nuxt/kit'
       - supports-color
       - vue
 
-  vite-plugin-vue-inspector@5.4.0(vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
+  vite-plugin-vue-inspector@5.4.0(vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)):
     dependencies:
       '@babel/core': 7.29.0
       '@babel/plugin-proposal-decorators': 7.29.0(@babel/core@7.29.0)
@@ -15614,16 +15633,16 @@ snapshots:
       '@vue/compiler-dom': 3.5.31
       kolorist: 1.8.0
       magic-string: 0.30.21
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
     transitivePeerDependencies:
       - supports-color
 
-  vite@8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
+  vite@8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       lightningcss: 1.32.0
       picomatch: 4.0.4
       postcss: 8.5.8
-      rolldown: 1.0.0-rc.12
+      rolldown: 1.0.0-rc.12(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)
       tinyglobby: 0.2.15
     optionalDependencies:
       '@types/node': 25.5.0
@@ -15634,6 +15653,9 @@ snapshots:
       terser: 5.46.1
       tsx: 4.21.0
       yaml: 2.8.3
+    transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
 
   vscode-jsonrpc@8.2.0: {}
 
@@ -15850,18 +15872,18 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260317.1
       '@cloudflare/workerd-windows-64': 1.20260317.1
 
-  wrangler@4.77.0(@cloudflare/workers-types@4.20260317.1):
+  wrangler@4.78.0(@cloudflare/workers-types@4.20260329.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.4.2
       '@cloudflare/unenv-preset': 2.16.0(unenv@2.0.0-rc.24)(workerd@1.20260317.1)
       blake3-wasm: 2.1.5
       esbuild: 0.27.3
-      miniflare: 4.20260317.2
+      miniflare: 4.20260317.3
       path-to-regexp: 6.3.0
       unenv: 2.0.0-rc.24
       workerd: 1.20260317.1
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20260317.1
+      '@cloudflare/workers-types': 4.20260329.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
@@ -15904,7 +15926,7 @@ snapshots:
       is-wsl: 3.1.1
       powershell-utils: 0.1.0
 
-  wxt@0.20.20(@types/node@25.5.0)(eslint@10.1.0(jiti@2.6.1))(jiti@2.6.1)(less@4.6.4)(rollup@4.60.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
+  wxt@0.20.20(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(eslint@10.1.0(jiti@2.6.1))(jiti@2.6.1)(less@4.6.4)(rollup@4.60.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3):
     dependencies:
       '@1natsu/wait-element': 4.1.2
       '@aklinker1/rollup-plugin-visualizer': 5.12.0(rollup@4.60.0)
@@ -15923,7 +15945,7 @@ snapshots:
       dotenv: 17.3.1
       dotenv-expand: 12.0.3
       esbuild: 0.27.4
-      filesize: 11.0.14
+      filesize: 11.0.15
       get-port-please: 3.2.0
       giget: 3.2.0
       hookable: 6.1.0
@@ -15947,12 +15969,14 @@ snapshots:
       scule: 1.3.0
       tinyglobby: 0.2.15
       unimport: 6.0.2
-      vite: 8.0.3(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
-      vite-node: 6.0.0(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite: 8.0.3(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
+      vite-node: 6.0.0(@emnapi/core@1.9.1)(@emnapi/runtime@1.9.1)(@types/node@25.5.0)(esbuild@0.27.4)(jiti@2.6.1)(less@4.6.4)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3)
       web-ext-run: 0.2.4
     optionalDependencies:
       eslint: 10.1.0(jiti@2.6.1)
     transitivePeerDependencies:
+      - '@emnapi/core'
+      - '@emnapi/runtime'
       - '@types/node'
       - '@vitejs/devtools'
       - canvas
