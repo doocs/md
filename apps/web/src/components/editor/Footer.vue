@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, ChevronRight, Clock, FileText, Keyboard, Pilcrow, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, Clock, FileText, Keyboard, Moon, Pilcrow, Sun, Type } from 'lucide-vue-next'
 import {
   Tooltip,
   TooltipContent,
@@ -9,13 +9,16 @@ import {
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
+import { useUIStore } from '@/stores/ui'
 
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
 const postStore = usePostStore()
+const uiStore = useUIStore()
 const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
+const { isDark } = storeToRefs(uiStore)
 
 // 光标位置
 const cursorLine = ref(1)
@@ -264,6 +267,25 @@ const stats = computed(() => [
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>{{ stat.tooltip }}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <span class="text-border">·</span>
+
+        <!-- 深浅色切换 -->
+        <Tooltip>
+          <TooltipTrigger as-child>
+            <button
+              class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
+              :class="isDark ? 'text-foreground' : ''"
+              @click="uiStore.toggleDark()"
+            >
+              <Moon v-if="isDark" class="size-3" />
+              <Sun v-else class="size-3" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>{{ isDark ? '浅色模式' : '深色模式' }}</p>
           </TooltipContent>
         </Tooltip>
       </div>
