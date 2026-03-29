@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Clock, FileText, Keyboard, Pilcrow, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, Clock, FileText, Keyboard, Pilcrow, Type } from 'lucide-vue-next'
 import {
   Tooltip,
   TooltipContent,
@@ -90,6 +90,46 @@ function updateCursorInfo(view: any) {
   cursorCol.value = main.head - line.from + 1
   totalLines.value = state.doc.lines
   selectionLength.value = Math.abs(main.to - main.from)
+  updateBreadcrumb(state.doc, line.number)
+}
+
+// TOC 面包屑
+interface BreadcrumbItem {
+  title: string
+  level: number
+  line: number
+}
+
+const breadcrumbs = ref<BreadcrumbItem[]>([])
+
+function updateBreadcrumb(doc: any, currentLine: number) {
+  const stack: BreadcrumbItem[] = []
+  for (let i = 1; i <= currentLine; i++) {
+    const text = doc.line(i).text
+    const match = text.match(/^(#{1,6})\s+(.+)/)
+    if (match) {
+      const level = match[1].length
+      const title = match[2].replace(/\s*#+\s*$/, ``).trim()
+      // 弹出所有 >= 当前 level 的项
+      while (stack.length > 0 && stack[stack.length - 1].level >= level)
+        stack.pop()
+      stack.push({ title, level, line: i })
+    }
+  }
+  breadcrumbs.value = stack
+}
+
+function jumpToHeading(line: number) {
+  const view = editor.value
+  if (!view)
+    return
+  const target = view.state.doc.line(line)
+  view.dispatch({
+    selection: { anchor: target.from },
+    scrollIntoView: true,
+  })
+  view.focus()
+  updateCursorInfo(view)
 }
 
 // 上次保存时间（相对时间显示）
@@ -163,7 +203,7 @@ const stats = computed(() => [
               行 {{ cursorLine }}，列 {{ cursorCol }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>光标位置（共 {{ totalLines }} 行） · 点击跳转</p>
           </TooltipContent>
         </Tooltip>
@@ -176,8 +216,27 @@ const stats = computed(() => [
         </span>
       </div>
 
-      <!-- 中间弹性间距 -->
-      <div class="flex-1" />
+      <!-- 中间：TOC 面包屑 -->
+      <div class="mx-3 flex min-w-0 flex-1 items-center justify-center">
+        <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
+          <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
+            <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-40" />
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  class="max-w-28 cursor-pointer truncate rounded px-1 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  @click="jumpToHeading(crumb.line)"
+                >
+                  {{ crumb.title }}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>H{{ crumb.level }} · 第 {{ crumb.line }} 行 · 点击跳转</p>
+              </TooltipContent>
+            </Tooltip>
+          </template>
+        </div>
+      </div>
 
       <!-- 右侧：统计信息 -->
       <div class="flex items-center gap-3">
@@ -189,7 +248,7 @@ const stats = computed(() => [
               {{ displaySavedTime }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>上次修改时间</p>
           </TooltipContent>
         </Tooltip>
@@ -203,7 +262,7 @@ const stats = computed(() => [
               {{ stat.value }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>{{ stat.tooltip }}</p>
           </TooltipContent>
         </Tooltip>
