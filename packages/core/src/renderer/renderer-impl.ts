@@ -377,8 +377,16 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       return styledContent(`td`, text)
     },
 
-    hr(_: Tokens.Hr): string {
-      return styledContent(`hr`, ``)
+    hr(token: Tokens.Hr): string {
+      const raw = token.raw.trim()
+      let variant = `dash`
+      if (raw.includes(`*`)) {
+        variant = `star`
+      }
+      else if (raw.includes(`_`)) {
+        variant = `underscore`
+      }
+      return `<hr class="hr hr-${variant}">`
     },
   }
 
