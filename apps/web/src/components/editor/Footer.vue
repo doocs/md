@@ -23,6 +23,37 @@ const cursorCol = ref(1)
 const selectionLength = ref(0)
 const totalLines = ref(1)
 
+// Go-to-Line
+const isGoToLineActive = ref(false)
+const goToLineInput = ref(``)
+const goToLineRef = ref<HTMLInputElement | null>(null)
+
+function openGoToLine() {
+  isGoToLineActive.value = true
+  goToLineInput.value = String(cursorLine.value)
+  nextTick(() => goToLineRef.value?.select())
+}
+
+function goToLine() {
+  const view = editor.value
+  if (!view)
+    return
+  const target = Math.max(1, Math.min(Number.parseInt(goToLineInput.value) || 1, totalLines.value))
+  const line = view.state.doc.line(target)
+  view.dispatch({
+    selection: { anchor: line.from },
+    scrollIntoView: true,
+  })
+  view.focus()
+  isGoToLineActive.value = false
+  updateCursorInfo(view)
+}
+
+function cancelGoToLine() {
+  isGoToLineActive.value = false
+  editor.value?.focus()
+}
+
 // 监听编辑器变化，更新光标位置
 watch(editor, (view, _, onCleanup) => {
   if (!view)
@@ -110,15 +141,30 @@ const stats = computed(() => [
     <TooltipProvider :delay-duration="300">
       <!-- 左侧：光标位置 & 选区 -->
       <div class="flex items-center gap-3">
-        <Tooltip>
+        <!-- Go-to-Line 内联输入 -->
+        <span v-if="isGoToLineActive" class="flex items-center gap-1">
+          <Keyboard class="size-3 opacity-60" />
+          <input
+            ref="goToLineRef"
+            v-model="goToLineInput"
+            type="text"
+            inputmode="numeric"
+            class="h-4 w-16 rounded border border-primary/40 bg-transparent px-1 text-xs tabular-nums text-foreground outline-none focus:border-primary"
+            :placeholder="`1–${totalLines}`"
+            @keydown.enter="goToLine"
+            @keydown.escape="cancelGoToLine"
+            @blur="cancelGoToLine"
+          >
+        </span>
+        <Tooltip v-else>
           <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
+            <span class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
               <Keyboard class="size-3 opacity-60" />
               行 {{ cursorLine }}，列 {{ cursorCol }}
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6">
-            <p>光标位置（共 {{ totalLines }} 行）</p>
+            <p>光标位置（共 {{ totalLines }} 行） · 点击跳转</p>
           </TooltipContent>
         </Tooltip>
 
