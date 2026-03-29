@@ -12,16 +12,6 @@
 
 </div>
 
-## 🎯 赞助商
-
-<div align="center">
-
-[![302.AI](https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/sponsor-1.jpg)](https://share.302.ai/ftIXIE)
-
-</div>
-
-> **[302.AI](https://share.302.ai/ftIXIE)** 是一个按用量付费的企业级 AI 资源平台，提供市场上最新、最全面的 AI 模型和 API，以及多种开箱即用的在线 AI 应用。
-
 ## 📝 项目介绍
 
 **Markdown 文档自动即时渲染为微信图文**，让你不再为微信内容排版而发愁！只要你会基本的 Markdown 语法（现在有了 AI，你甚至不需要会 Markdown），就能做出一篇样式简洁而又美观大方的微信图文。
@@ -189,12 +179,14 @@ docker run -d -p 8080:80 doocs/md:latest
       <td align="center" style="width: 260px">
         <img
           src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/support1.jpg"
+          alt="support1"
           style="width: 200px"
         /><br />
       </td>
       <td align="center" style="width: 260px">
         <img
           src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/support2.jpg"
+          alt="support2"
           style="width: 200px"
         /><br />
       </td>
@@ -212,12 +204,14 @@ docker run -d -p 8080:80 doocs/md:latest
       <td align="center" style="width: 260px">
         <img
           src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/doocs-md-wechat-group.jpg"
+          alt="doocs-md-wechat-group"
           style="width: 200px"
         /><br />
       </td>
       <td align="center" style="width: 260px">
         <img
           src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/wechat-ylb.jpg"
+          alt="wechat-ylb"
           style="width: 200px"
         /><br />
       </td>
