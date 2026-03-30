@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { BookOpen, ChevronRight, Clock, FileText, Keyboard, Moon, Pilcrow, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger as PopoverTriggerPrimitive,
+} from '@/components/ui/popover'
 import {
   Tooltip,
   TooltipContent,
@@ -19,6 +24,96 @@ const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark } = storeToRefs(uiStore)
+
+// 相对时间格式化（复用）
+function formatRelativeTime(date: Date | string) {
+  const now = new Date()
+  const d = new Date(date)
+  const diff = now.getTime() - d.getTime()
+  const seconds = Math.floor(diff / 1000)
+  if (seconds < 10)
+    return `刚刚`
+  if (seconds < 60)
+    return `${seconds} 秒前`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60)
+    return `${minutes} 分钟前`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24)
+    return `${hours} 小时前`
+  const days = Math.floor(hours / 24)
+  if (days < 30)
+    return `${days} 天前`
+  return d.toLocaleDateString(`zh-CN`)
+}
+
+// 快速文档切换器
+const isSwitcherOpen = ref(false)
+const switcherQuery = ref(``)
+const switcherInputRef = ref<HTMLInputElement | null>(null)
+
+interface TreeNode {
+  id: string
+  title: string
+  updateDatetime: Date
+  depth: number
+  children: TreeNode[]
+}
+
+function buildTree(posts: typeof postStore.posts): TreeNode[] {
+  const map = new Map<string, TreeNode>()
+  for (const p of posts) {
+    map.set(p.id, { id: p.id, title: p.title, updateDatetime: p.updateDatetime, depth: 0, children: [] })
+  }
+  const roots: TreeNode[] = []
+  for (const p of posts) {
+    const node = map.get(p.id)!
+    if (p.parentId && map.has(p.parentId)) {
+      map.get(p.parentId)!.children.push(node)
+    }
+    else {
+      roots.push(node)
+    }
+  }
+  // 排序子节点
+  function sortChildren(nodes: TreeNode[]) {
+    nodes.sort((a, b) => new Date(b.updateDatetime).getTime() - new Date(a.updateDatetime).getTime())
+    nodes.forEach(n => sortChildren(n.children))
+  }
+  sortChildren(roots)
+  return roots
+}
+
+function flattenTree(nodes: TreeNode[], depth = 0): Array<{ id: string, title: string, updateDatetime: Date, depth: number }> {
+  const result: Array<{ id: string, title: string, updateDatetime: Date, depth: number }> = []
+  for (const node of nodes) {
+    result.push({ id: node.id, title: node.title, updateDatetime: node.updateDatetime, depth })
+    if (node.children.length)
+      result.push(...flattenTree(node.children, depth + 1))
+  }
+  return result
+}
+
+const flatPosts = computed(() => flattenTree(buildTree(postStore.posts)))
+
+const filteredPosts = computed(() => {
+  const q = switcherQuery.value.toLowerCase().trim()
+  if (!q)
+    return flatPosts.value
+  return flatPosts.value.filter(p => p.title.toLowerCase().includes(q))
+})
+
+function openSwitcher() {
+  isSwitcherOpen.value = true
+  switcherQuery.value = ``
+  nextTick(() => switcherInputRef.value?.focus())
+}
+
+function switchToPost(id: string) {
+  postStore.currentPostId = id
+  isSwitcherOpen.value = false
+  nextTick(() => editor.value?.focus())
+}
 
 // 光标位置
 const cursorLine = ref(1)
@@ -169,25 +264,11 @@ function jumpToHeading(line: number) {
   updateCursorInfo(view)
 }
 
-// 上次保存时间（相对时间显示）
+// 上次保存时间（复用 formatRelativeTime）
 const savedTimeAgo = computed(() => {
   if (!currentPost.value?.updateDatetime)
     return ``
-  const date = new Date(currentPost.value.updateDatetime)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const seconds = Math.floor(diff / 1000)
-  if (seconds < 10)
-    return `刚刚`
-  if (seconds < 60)
-    return `${seconds} 秒前`
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60)
-    return `${minutes} 分钟前`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24)
-    return `${hours} 小时前`
-  return date.toLocaleDateString(`zh-CN`)
+  return formatRelativeTime(currentPost.value.updateDatetime)
 })
 
 // 每 10 秒刷新一次相对时间
@@ -252,6 +333,57 @@ const stats = computed(() => [
           已选 {{ selectionLength }} 字符
         </span>
       </div>
+
+      <!-- 文档切换器 -->
+      <Popover v-model:open="isSwitcherOpen">
+        <PopoverTriggerPrimitive as-child>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <button
+                class="ml-2 flex max-w-36 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                @click="openSwitcher"
+              >
+                <FileText class="size-3 shrink-0 opacity-60" />
+                <span class="truncate">{{ currentPost?.title || '未命名' }}</span>
+                <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+              <p>切换文档</p>
+            </TooltipContent>
+          </Tooltip>
+        </PopoverTriggerPrimitive>
+        <PopoverContent side="top" :side-offset="8" align="start" class="w-64 p-0">
+          <div class="flex items-center gap-2 border-b px-3 py-2">
+            <Search class="size-3.5 shrink-0 opacity-50" />
+            <input
+              ref="switcherInputRef"
+              v-model="switcherQuery"
+              type="text"
+              class="h-5 w-full bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+              placeholder="搜索文档..."
+              @keydown.escape="isSwitcherOpen = false"
+            >
+          </div>
+          <div class="max-h-52 overflow-y-auto py-1">
+            <div v-if="filteredPosts.length === 0" class="px-3 py-4 text-center text-xs text-muted-foreground">
+              无匹配文档
+            </div>
+            <button
+              v-for="post in filteredPosts"
+              :key="post.id"
+              class="flex w-full cursor-pointer items-center gap-2 py-1.5 pr-3 text-left text-xs transition-colors hover:bg-accent"
+              :class="post.id === postStore.currentPostId ? 'bg-accent/50 text-foreground' : 'text-muted-foreground'"
+              :style="{ paddingLeft: `${12 + post.depth * 16}px` }"
+              @click="switchToPost(post.id)"
+            >
+              <FileText class="size-3 shrink-0 opacity-50" />
+              <span class="min-w-0 flex-1 truncate">{{ post.title }}</span>
+              <span class="shrink-0 text-[10px] opacity-50">{{ formatRelativeTime(post.updateDatetime) }}</span>
+            </button>
+          </div>
+        </PopoverContent>
+      </Popover>
 
       <!-- 中间：TOC 面包屑 -->
       <div class="mx-3 flex min-w-0 flex-1 items-center justify-center">
