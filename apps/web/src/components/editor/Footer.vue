@@ -294,11 +294,11 @@ const stats = computed(() => [
 
 <template>
   <footer
-    class="flex select-none items-center px-3 py-1 text-xs text-muted-foreground"
+    class="flex select-none items-center overflow-hidden px-3 py-1 text-xs text-muted-foreground"
   >
     <TooltipProvider :delay-duration="300">
       <!-- 左侧：光标位置 & 选区 -->
-      <div class="flex items-center gap-3">
+      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <!-- Go-to-Line 内联输入 -->
         <span v-if="isGoToLineActive" class="flex items-center gap-1">
           <Keyboard class="size-3 opacity-60" />
@@ -318,7 +318,8 @@ const stats = computed(() => [
           <TooltipTrigger as-child>
             <span class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
               <Keyboard class="size-3 opacity-60" />
-              行 {{ cursorLine }}，列 {{ cursorCol }}
+              <span class="hidden sm:inline">行 {{ cursorLine }}，列 {{ cursorCol }}</span>
+              <span class="sm:hidden">{{ cursorLine }}:{{ cursorCol }}</span>
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
@@ -328,7 +329,7 @@ const stats = computed(() => [
 
         <span
           v-if="selectionLength > 0"
-          class="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums"
+          class="hidden items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums sm:flex"
         >
           已选 {{ selectionLength }} 字符
         </span>
@@ -340,7 +341,7 @@ const stats = computed(() => [
           <Tooltip>
             <TooltipTrigger as-child>
               <button
-                class="ml-2 flex max-w-36 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                class="ml-1.5 flex max-w-24 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-36"
                 @click="openSwitcher"
               >
                 <FileText class="size-3 shrink-0 opacity-60" />
@@ -385,8 +386,8 @@ const stats = computed(() => [
         </PopoverContent>
       </Popover>
 
-      <!-- 中间：TOC 面包屑 -->
-      <div class="mx-3 flex min-w-0 flex-1 items-center justify-center">
+      <!-- 中间：TOC 面包屑（小屏隐藏） -->
+      <div class="mx-3 hidden min-w-0 flex-1 items-center justify-center sm:flex">
         <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
           <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
             <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-40" />
@@ -408,11 +409,11 @@ const stats = computed(() => [
       </div>
 
       <!-- 右侧：统计信息 -->
-      <div class="flex items-center gap-3">
-        <!-- 保存状态 -->
+      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+        <!-- 保存状态（小屏隐藏） -->
         <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 opacity-70 transition-opacity hover:opacity-100">
+            <span class="hidden cursor-default items-center gap-1 opacity-70 transition-opacity hover:opacity-100 sm:flex">
               <FileText class="size-3" />
               {{ displaySavedTime }}
             </span>
@@ -422,11 +423,12 @@ const stats = computed(() => [
           </TooltipContent>
         </Tooltip>
 
-        <span class="text-border">·</span>
+        <span class="hidden text-border sm:block">·</span>
 
+        <!-- 统计项（小屏隐藏） -->
         <Tooltip v-for="stat in stats" :key="stat.tooltip">
           <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
+            <span class="hidden cursor-default items-center gap-1 tabular-nums sm:flex">
               <component :is="stat.icon" class="size-3 opacity-60" />
               {{ stat.value }}
             </span>
@@ -436,7 +438,7 @@ const stats = computed(() => [
           </TooltipContent>
         </Tooltip>
 
-        <span class="text-border">·</span>
+        <span class="hidden text-border sm:block">·</span>
 
         <!-- 深浅色切换 -->
         <Tooltip>
