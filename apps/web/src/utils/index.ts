@@ -53,6 +53,29 @@ export function downloadMD(doc: string, title: string = `untitled`) {
 }
 
 /**
+ * 批量导出多篇文章为 ZIP
+ * @param posts - 文章列表（含 title 和 content）
+ */
+export async function exportPostsAsZip(posts: Array<{ title: string, content: string }>) {
+  const JSZip = (await import(`jszip`)).default
+  const zip = new JSZip()
+  posts.forEach(({ title, content }) => {
+    const safeTitle = sanitizeTitle(title)
+    zip.file(`${safeTitle}.md`, content)
+  })
+  const blob = await zip.generateAsync({ type: `blob` })
+  const date = new Date().toISOString().slice(0, 10)
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement(`a`)
+  a.href = url
+  a.download = `posts-${date}.zip`
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
+/**
  * 获取 HTML 内容
  * @returns {string} HTML 字符串
  */

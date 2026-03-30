@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
+import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix } from '@/utils'
+import { addPrefix, exportPostsAsZip } from '@/utils'
 import { store } from '@/utils/storage'
 
 const uiStore = useUIStore()
@@ -243,6 +243,50 @@ const dragover = ref(false)
 const dragSourceId = ref<string | null>(null)
 const dropTargetId = ref<string | null>(null)
 
+/* ============ 选择模式 ============ */
+const isSelectMode = ref(false)
+const selectedPostIds = ref<string[]>([])
+
+function toggleSelectMode() {
+  isSelectMode.value = !isSelectMode.value
+  selectedPostIds.value = []
+}
+
+function toggleSelectPost(id: string) {
+  const idx = selectedPostIds.value.indexOf(id)
+  if (idx === -1)
+    selectedPostIds.value.push(id)
+  else
+    selectedPostIds.value.splice(idx, 1)
+}
+
+function selectAll() {
+  selectedPostIds.value = posts.value.map(p => p.id)
+}
+
+function clearSelection() {
+  selectedPostIds.value = []
+}
+
+async function exportSelected() {
+  if (!selectedPostIds.value.length)
+    return
+  const toExport = selectedPostIds.value.map((id) => {
+    const p = postStore.getPostById(id)!
+    return { title: p.title, content: p.content }
+  })
+  if (toExport.length === 1) {
+    const { downloadMD } = await import(`@/utils`)
+    downloadMD(toExport[0].content, toExport[0].title)
+  }
+  else {
+    await exportPostsAsZip(toExport)
+  }
+  toast.success(`导出成功，共 ${toExport.length} 篇`)
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
 function handleDrop(targetId: string | null) {
   const sourceId = dragSourceId.value
   if (!sourceId) {
@@ -341,6 +385,16 @@ function handleDragEnd() {
           @click="toggleSearch"
         >
           <Search class="size-4" />
+        </button>
+
+        <!-- 多选 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          :class="{ 'text-primary bg-primary/10': isSelectMode }"
+          :title="isSelectMode ? '退出选择' : '多选导出'"
+          @click="toggleSelectMode"
+        >
+          <CheckSquare class="size-4" />
         </button>
 
         <!-- 新增 -->
@@ -483,6 +537,9 @@ function handleDragEnd() {
           :handle-drop="handleDrop"
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
+          :is-select-mode="isSelectMode"
+          :selected-ids="selectedPostIds"
+          :on-toggle-select="toggleSelectPost"
         />
 
         <!-- 空状态 -->
@@ -500,6 +557,40 @@ function handleDragEnd() {
           </div>
         </div>
       </div>
+
+      <!-- 选择模式底部操作栏 -->
+      <Transition name="slide-up">
+        <div
+          v-if="isSelectMode"
+          class="shrink-0 border-t border-border bg-background px-3 py-2 space-y-2"
+        >
+          <div class="flex items-center justify-between text-xs text-muted-foreground">
+            <span>已选 {{ selectedPostIds.length }} 篇</span>
+            <div class="flex gap-2">
+              <button
+                class="hover:text-foreground transition-colors"
+                @click="selectedPostIds.length === posts.length ? clearSelection() : selectAll()"
+              >
+                {{ selectedPostIds.length === posts.length ? '取消全选' : '全选' }}
+              </button>
+              <span class="text-border">|</span>
+              <button class="hover:text-foreground transition-colors" @click="toggleSelectMode">
+                取消
+              </button>
+            </div>
+          </div>
+          <button
+            class="w-full flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-40"
+            :disabled="!selectedPostIds.length"
+            @click="exportSelected"
+          >
+            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+            </svg>
+            导出选中 {{ selectedPostIds.length > 1 ? '（ZIP）' : '' }}
+          </button>
+        </div>
+      </Transition>
     </nav>
   </div>
 
@@ -630,6 +721,18 @@ function handleDragEnd() {
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+/* 底部操作栏动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
   opacity: 0;
 }
 </style>
