@@ -173,6 +173,9 @@ importers:
       html-to-image:
         specifier: ^1.11.13
         version: 1.11.13
+      jszip:
+        specifier: ^3.10.1
+        version: 3.10.1
       juice:
         specifier: 11.0.3
         version: 11.0.3

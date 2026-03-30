@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
+import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix } from '@/utils'
+import { addPrefix, exportPostsAsZip } from '@/utils'
 import { store } from '@/utils/storage'
 
 const uiStore = useUIStore()
@@ -243,6 +243,116 @@ const dragover = ref(false)
 const dragSourceId = ref<string | null>(null)
 const dropTargetId = ref<string | null>(null)
 
+/* ============ 选择模式 ============ */
+const isSelectMode = ref(false)
+const selectedPostIds = ref<string[]>([])
+
+const allSelected = computed(
+  () => posts.value.length > 0 && selectedPostIds.value.length === posts.value.length,
+)
+
+function toggleSelectMode() {
+  isSelectMode.value = !isSelectMode.value
+  selectedPostIds.value = []
+}
+
+function toggleSelectPost(id: string) {
+  const idx = selectedPostIds.value.indexOf(id)
+  if (idx === -1)
+    selectedPostIds.value.push(id)
+  else
+    selectedPostIds.value.splice(idx, 1)
+}
+
+function selectAll() {
+  selectedPostIds.value = posts.value.map(p => p.id)
+}
+
+function clearSelection() {
+  selectedPostIds.value = []
+}
+
+async function exportSelected() {
+  if (!selectedPostIds.value.length)
+    return
+  const toExport = selectedPostIds.value.map((id) => {
+    const p = postStore.getPostById(id)!
+    return { title: p.title, content: p.content }
+  })
+  if (toExport.length === 1) {
+    const { downloadMD } = await import(`@/utils`)
+    downloadMD(toExport[0].content, toExport[0].title)
+  }
+  else {
+    await exportPostsAsZip(toExport)
+  }
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
+const isOpenBatchDelConfirmDialog = ref(false)
+
+const batchDelConfirmText = computed(() => {
+  const n = selectedPostIds.value.length
+  return n === 1
+    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ``}」，是否继续？`
+    : `此操作将删除已选的 ${n} 篇内容，是否继续？`
+})
+
+function batchDeleteSelected() {
+  const ids = [...selectedPostIds.value]
+  ids.forEach(id => postStore.delPost(id))
+  toast.success(`已删除 ${ids.length} 篇内容`)
+  isOpenBatchDelConfirmDialog.value = false
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
+/* ============ 批量复制 ============ */
+function duplicateSelected() {
+  if (!selectedPostIds.value.length)
+    return
+  selectedPostIds.value.forEach((id) => {
+    const p = postStore.getPostById(id)!
+    postStore.addPost(`${p.title} 副本`, p.parentId ?? null)
+    // 覆盖刚创建的那篇内容
+    const newPost = posts.value[posts.value.length - 1]
+    postStore.updatePostContent(newPost.id, p.content)
+  })
+  toast.success(`已复制 ${selectedPostIds.value.length} 篇内容`)
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
+/* ============ 合并为一篇 ============ */
+const isOpenMergeDialog = ref(false)
+const mergeTitle = ref(``)
+
+function openMergeDialog() {
+  if (selectedPostIds.value.length < 2)
+    return
+  const titles = selectedPostIds.value.map(id => postStore.getPostById(id)!.title)
+  mergeTitle.value = titles.join(` + `)
+  isOpenMergeDialog.value = true
+}
+
+function mergeSelected() {
+  if (!mergeTitle.value.trim())
+    return toast.error(`合并标题不可为空`)
+  const parts = selectedPostIds.value.map((id) => {
+    const p = postStore.getPostById(id)!
+    return `## ${p.title}\n\n${p.content}`
+  })
+  const mergedContent = parts.join(`\n\n---\n\n`)
+  postStore.addPost(mergeTitle.value.trim(), null)
+  const newPost = posts.value[posts.value.length - 1]
+  postStore.updatePostContent(newPost.id, mergedContent)
+  toast.success(`已合并为「${mergeTitle.value.trim()}」`)
+  isOpenMergeDialog.value = false
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
 function handleDrop(targetId: string | null) {
   const sourceId = dragSourceId.value
   if (!sourceId) {
@@ -341,6 +451,16 @@ function handleDragEnd() {
           @click="toggleSearch"
         >
           <Search class="size-4" />
+        </button>
+
+        <!-- 多选 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          :class="{ 'text-primary bg-primary/10': isSelectMode }"
+          :title="isSelectMode ? '退出选择' : '多选操作'"
+          @click="toggleSelectMode"
+        >
+          <CheckSquare class="size-4" />
         </button>
 
         <!-- 新增 -->
@@ -483,6 +603,9 @@ function handleDragEnd() {
           :handle-drop="handleDrop"
           :handle-drag-end="handleDragEnd"
           :open-add-post-dialog="openAddPostDialog"
+          :is-select-mode="isSelectMode"
+          :selected-ids="selectedPostIds"
+          :on-toggle-select="toggleSelectPost"
         />
 
         <!-- 空状态 -->
@@ -500,6 +623,84 @@ function handleDragEnd() {
           </div>
         </div>
       </div>
+
+      <!-- 选择模式底部操作栏 -->
+      <Transition name="slide-up">
+        <div
+          v-if="isSelectMode"
+          class="shrink-0 border-t border-border bg-background px-3 pt-2 pb-3 space-y-2"
+        >
+          <!-- 选中信息行 -->
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-muted-foreground">
+              已选
+              <strong class="text-foreground font-semibold">{{ selectedPostIds.length }}</strong>
+              篇
+            </span>
+            <div class="flex items-center gap-2 text-muted-foreground">
+              <button
+                class="hover:text-foreground transition-colors"
+                @click="allSelected ? clearSelection() : selectAll()"
+              >
+                {{ allSelected ? '取消全选' : '全选' }}
+              </button>
+              <span class="opacity-30">·</span>
+              <button class="hover:text-foreground transition-colors" @click="toggleSelectMode">
+                完成
+              </button>
+            </div>
+          </div>
+          <!-- 操作工具栏 -->
+          <div class="flex">
+            <!-- 导出 -->
+            <button
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              title="导出"
+              :disabled="!selectedPostIds.length"
+              @click="exportSelected"
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+            </button>
+            <!-- 复制 -->
+            <button
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              title="复制"
+              :disabled="!selectedPostIds.length"
+              @click="duplicateSelected"
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+            </button>
+            <!-- 合并 -->
+            <button
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              :title="selectedPostIds.length < 2 ? '至少选择 2 篇才能合并' : '合并'"
+              :disabled="selectedPostIds.length < 2"
+              @click="openMergeDialog"
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3" /><path d="M16 6h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" /><line x1="12" y1="2" x2="12" y2="22" />
+              </svg>
+            </button>
+            <!-- 分隔 -->
+            <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
+            <!-- 删除 -->
+            <button
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
+              :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : '删除'"
+              :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
+              @click="isOpenBatchDelConfirmDialog = true"
+            >
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </Transition>
     </nav>
   </div>
 
@@ -549,6 +750,44 @@ function handleDragEnd() {
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="delPost">
           确定
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+
+  <!-- 合并弹窗 -->
+  <Dialog v-model:open="isOpenMergeDialog">
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>合并为一篇</DialogTitle>
+        <DialogDescription>将选中的 {{ selectedPostIds.length }} 篇内容按顺序合并，请为合并结果命名</DialogDescription>
+      </DialogHeader>
+      <Input v-model="mergeTitle" placeholder="输入合并后的标题…" @keyup.enter="mergeSelected" />
+      <DialogFooter>
+        <Button variant="outline" @click="isOpenMergeDialog = false">
+          取消
+        </Button>
+        <Button @click="mergeSelected">
+          合并
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
+
+  <!-- 批量删除确认 -->
+  <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>提示</AlertDialogTitle>
+        <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction
+          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          @click="batchDeleteSelected"
+        >
+          确定删除
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
@@ -630,6 +869,18 @@ function handleDragEnd() {
 
 .fade-enter-from,
 .fade-leave-to {
+  opacity: 0;
+}
+
+/* 底部操作栏动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
   opacity: 0;
 }
 </style>

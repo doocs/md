@@ -45,6 +45,7 @@
     "crypto-js": "^4.2.0",
     "es-toolkit": "^1.45.1",
     "html-to-image": "^1.11.13",
+    "jszip": "^3.10.1",
     "juice": "11.0.3",
     "lucide-vue-next": "^1.0.0",
     "marked": "^17.0.5",
