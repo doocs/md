@@ -107,12 +107,46 @@ const breadcrumbs = ref<BreadcrumbItem[]>([])
 
 function updateBreadcrumb(doc: any, currentLine: number) {
   const stack: BreadcrumbItem[] = []
+  let codeFenceChar = ``
+  let codeFenceCount = 0
+  let inFrontMatter = false
   for (let i = 1; i <= currentLine; i++) {
     const text = doc.line(i).text
-    const match = text.match(/^(#{1,6})\s+(.+)/)
+    const trimmed = text.trimStart()
+
+    // 检测 YAML front matter（仅在文档开头）
+    if (i === 1 && trimmed === `---`) {
+      inFrontMatter = true
+      continue
+    }
+    if (inFrontMatter) {
+      if (trimmed === `---` || trimmed === `...`)
+        inFrontMatter = false
+      continue
+    }
+
+    // 检测围栏代码块的开始/结束
+    if (codeFenceChar) {
+      // 已在代码块内，检测是否为对应的关闭围栏
+      const closeMatch = trimmed.match(/^(`{3,}|~{3,})\s*$/)
+      if (closeMatch && closeMatch[1][0] === codeFenceChar && closeMatch[1].length >= codeFenceCount) {
+        codeFenceChar = ``
+        codeFenceCount = 0
+      }
+      continue
+    }
+    const openMatch = trimmed.match(/^(`{3,}|~{3,})/)
+    if (openMatch) {
+      codeFenceChar = openMatch[1][0]
+      codeFenceCount = openMatch[1].length
+      continue
+    }
+
+    // 匹配 ATX 标题（CommonMark: 最多 3 个前导空格）
+    const match = text.match(/^(\s{0,3})(#{1,6})\s+(.+)/)
     if (match) {
-      const level = match[1].length
-      const title = match[2].replace(/\s*#+\s*$/, ``).trim()
+      const level = match[2].length
+      const title = match[3].replace(/\s*#+\s*$/, ``).trim()
       // 弹出所有 >= 当前 level 的项
       while (stack.length > 0 && stack[stack.length - 1].level >= level)
         stack.pop()
