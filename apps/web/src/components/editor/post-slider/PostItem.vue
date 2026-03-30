@@ -129,8 +129,7 @@ function applyTemplate(postId: string) {
       class="post-item group relative flex w-full cursor-pointer items-center gap-1 rounded-lg px-2 py-[7px] text-[13px] leading-snug transition-all duration-150 ease-out"
       :class="{
         'bg-accent text-accent-foreground font-medium active-item': !props.isSelectMode && currentPostId === post.id,
-        'bg-primary/10': props.isSelectMode && props.selectedIds?.includes(post.id),
-        'text-foreground/70 hover:text-foreground hover:bg-accent/50': props.isSelectMode ? !props.selectedIds?.includes(post.id) : currentPostId !== post.id,
+        'text-foreground/70 hover:text-foreground hover:bg-accent/50': props.isSelectMode ? true : currentPostId !== post.id,
         'opacity-30': props.dragSourceId === post.id,
         'ring-1 ring-primary/40 ring-inset bg-primary/5': props.dropTargetId === post.id,
       }"

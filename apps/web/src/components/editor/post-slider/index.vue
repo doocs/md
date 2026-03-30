@@ -286,7 +286,6 @@ async function exportSelected() {
   else {
     await exportPostsAsZip(toExport)
   }
-  toast.success(`导出成功，共 ${toExport.length} 篇`)
   isSelectMode.value = false
   selectedPostIds.value = []
 }
@@ -651,53 +650,53 @@ function handleDragEnd() {
               </button>
             </div>
           </div>
-          <!-- 操作按钮网格 2×2 -->
-          <div class="grid grid-cols-2 gap-2">
+          <!-- 操作工具栏 -->
+          <div class="flex">
             <!-- 导出 -->
             <button
-              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              title="导出"
               :disabled="!selectedPostIds.length"
               @click="exportSelected"
             >
-              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              导出
             </button>
             <!-- 复制 -->
             <button
-              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              title="复制"
               :disabled="!selectedPostIds.length"
               @click="duplicateSelected"
             >
-              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
-              复制
             </button>
             <!-- 合并 -->
             <button
-              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+              :title="selectedPostIds.length < 2 ? '至少选择 2 篇才能合并' : '合并'"
               :disabled="selectedPostIds.length < 2"
-              :title="selectedPostIds.length < 2 ? '至少选择 2 篇才能合并' : ''"
               @click="openMergeDialog"
             >
-              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M8 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3" /><path d="M16 6h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" /><line x1="12" y1="2" x2="12" y2="22" />
               </svg>
-              合并
             </button>
+            <!-- 分隔 -->
+            <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
             <!-- 删除 -->
             <button
-              class="flex items-center justify-center gap-1.5 rounded-md border border-destructive/30 bg-background px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 disabled:pointer-events-none disabled:opacity-40"
+              class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
+              :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : '删除'"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
-              :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : ''"
               @click="isOpenBatchDelConfirmDialog = true"
             >
-              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
               </svg>
-              删除
             </button>
           </div>
         </div>
