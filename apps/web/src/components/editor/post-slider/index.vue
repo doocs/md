@@ -247,6 +247,10 @@ const dropTargetId = ref<string | null>(null)
 const isSelectMode = ref(false)
 const selectedPostIds = ref<string[]>([])
 
+const allSelected = computed(
+  () => posts.value.length > 0 && selectedPostIds.value.length === posts.value.length,
+)
+
 function toggleSelectMode() {
   isSelectMode.value = !isSelectMode.value
   selectedPostIds.value = []
@@ -283,6 +287,24 @@ async function exportSelected() {
     await exportPostsAsZip(toExport)
   }
   toast.success(`导出成功，共 ${toExport.length} 篇`)
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
+const isOpenBatchDelConfirmDialog = ref(false)
+
+const batchDelConfirmText = computed(() => {
+  const n = selectedPostIds.value.length
+  return n === 1
+    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ``}」，是否继续？`
+    : `此操作将删除已选的 ${n} 篇内容，是否继续？`
+})
+
+function batchDeleteSelected() {
+  const ids = [...selectedPostIds.value]
+  ids.forEach(id => postStore.delPost(id))
+  toast.success(`已删除 ${ids.length} 篇内容`)
+  isOpenBatchDelConfirmDialog.value = false
   isSelectMode.value = false
   selectedPostIds.value = []
 }
@@ -391,7 +413,7 @@ function handleDragEnd() {
         <button
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
           :class="{ 'text-primary bg-primary/10': isSelectMode }"
-          :title="isSelectMode ? '退出选择' : '多选导出'"
+          :title="isSelectMode ? '退出选择' : '多选操作'"
           @click="toggleSelectMode"
         >
           <CheckSquare class="size-4" />
@@ -562,33 +584,54 @@ function handleDragEnd() {
       <Transition name="slide-up">
         <div
           v-if="isSelectMode"
-          class="shrink-0 border-t border-border bg-background px-3 py-2 space-y-2"
+          class="shrink-0 border-t border-border bg-background px-3 pt-2 pb-3 space-y-2"
         >
-          <div class="flex items-center justify-between text-xs text-muted-foreground">
-            <span>已选 {{ selectedPostIds.length }} 篇</span>
-            <div class="flex gap-2">
+          <!-- 选中信息行 -->
+          <div class="flex items-center justify-between text-xs">
+            <span class="text-muted-foreground">
+              已选
+              <strong class="text-foreground font-semibold">{{ selectedPostIds.length }}</strong>
+              篇
+            </span>
+            <div class="flex items-center gap-2 text-muted-foreground">
               <button
                 class="hover:text-foreground transition-colors"
-                @click="selectedPostIds.length === posts.length ? clearSelection() : selectAll()"
+                @click="allSelected ? clearSelection() : selectAll()"
               >
-                {{ selectedPostIds.length === posts.length ? '取消全选' : '全选' }}
+                {{ allSelected ? '取消全选' : '全选' }}
               </button>
-              <span class="text-border">|</span>
+              <span class="opacity-30">·</span>
               <button class="hover:text-foreground transition-colors" @click="toggleSelectMode">
-                取消
+                完成
               </button>
             </div>
           </div>
-          <button
-            class="w-full flex items-center justify-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground transition-opacity disabled:opacity-40"
-            :disabled="!selectedPostIds.length"
-            @click="exportSelected"
-          >
-            <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
-            </svg>
-            导出选中 {{ selectedPostIds.length > 1 ? '（ZIP）' : '' }}
-          </button>
+          <!-- 操作按钮行 -->
+          <div class="flex gap-2">
+            <!-- 导出 -->
+            <button
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              :disabled="!selectedPostIds.length"
+              @click="exportSelected"
+            >
+              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              导出{{ selectedPostIds.length > 1 ? ' ZIP' : '' }}
+            </button>
+            <!-- 删除 -->
+            <button
+              class="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-destructive/30 bg-background px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 disabled:pointer-events-none disabled:opacity-40"
+              :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
+              :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : ''"
+              @click="isOpenBatchDelConfirmDialog = true"
+            >
+              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+              </svg>
+              删除
+            </button>
+          </div>
         </div>
       </Transition>
     </nav>
@@ -640,6 +683,25 @@ function handleDragEnd() {
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="delPost">
           确定
+        </AlertDialogAction>
+      </AlertDialogFooter>
+    </AlertDialogContent>
+  </AlertDialog>
+
+  <!-- 批量删除确认 -->
+  <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
+    <AlertDialogContent>
+      <AlertDialogHeader>
+        <AlertDialogTitle>提示</AlertDialogTitle>
+        <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
+      </AlertDialogHeader>
+      <AlertDialogFooter>
+        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogAction
+          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          @click="batchDeleteSelected"
+        >
+          确定删除
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
