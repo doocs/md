@@ -107,3 +107,29 @@
 .cm-comment {
   font-style: normal !important;
 }
+
+// CodeMirror v6 折叠装订线样式
+.cm-foldGutter {
+  .cm-gutterElement {
+    padding: 0 4px;
+    cursor: pointer;
+    color: #aaa;
+    line-height: inherit;
+
+    &:hover {
+      color: #555;
+    }
+  }
+}
+
+.dark {
+  .cm-foldGutter {
+    .cm-gutterElement {
+      color: #666;
+
+      &:hover {
+        color: #bbb;
+      }
+    }
+  }
+}
