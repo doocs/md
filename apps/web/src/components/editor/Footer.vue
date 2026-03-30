@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { BookOpen, Clock, FileText, Keyboard, Pilcrow, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger as PopoverTriggerPrimitive,
+} from '@/components/ui/popover'
 import {
   Tooltip,
   TooltipContent,
@@ -9,13 +14,106 @@ import {
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
+import { useUIStore } from '@/stores/ui'
 
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
 const postStore = usePostStore()
+const uiStore = useUIStore()
 const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
+const { isDark } = storeToRefs(uiStore)
+
+// 相对时间格式化（复用）
+function formatRelativeTime(date: Date | string) {
+  const now = new Date()
+  const d = new Date(date)
+  const diff = now.getTime() - d.getTime()
+  const seconds = Math.floor(diff / 1000)
+  if (seconds < 10)
+    return `刚刚`
+  if (seconds < 60)
+    return `${seconds} 秒前`
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60)
+    return `${minutes} 分钟前`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24)
+    return `${hours} 小时前`
+  const days = Math.floor(hours / 24)
+  if (days < 30)
+    return `${days} 天前`
+  return d.toLocaleDateString(`zh-CN`)
+}
+
+// 快速文档切换器
+const isSwitcherOpen = ref(false)
+const switcherQuery = ref(``)
+const switcherInputRef = ref<HTMLInputElement | null>(null)
+
+interface TreeNode {
+  id: string
+  title: string
+  updateDatetime: Date
+  depth: number
+  children: TreeNode[]
+}
+
+function buildTree(posts: typeof postStore.posts): TreeNode[] {
+  const map = new Map<string, TreeNode>()
+  for (const p of posts) {
+    map.set(p.id, { id: p.id, title: p.title, updateDatetime: p.updateDatetime, depth: 0, children: [] })
+  }
+  const roots: TreeNode[] = []
+  for (const p of posts) {
+    const node = map.get(p.id)!
+    if (p.parentId && map.has(p.parentId)) {
+      map.get(p.parentId)!.children.push(node)
+    }
+    else {
+      roots.push(node)
+    }
+  }
+  // 排序子节点
+  function sortChildren(nodes: TreeNode[]) {
+    nodes.sort((a, b) => new Date(b.updateDatetime).getTime() - new Date(a.updateDatetime).getTime())
+    nodes.forEach(n => sortChildren(n.children))
+  }
+  sortChildren(roots)
+  return roots
+}
+
+function flattenTree(nodes: TreeNode[], depth = 0): Array<{ id: string, title: string, updateDatetime: Date, depth: number }> {
+  const result: Array<{ id: string, title: string, updateDatetime: Date, depth: number }> = []
+  for (const node of nodes) {
+    result.push({ id: node.id, title: node.title, updateDatetime: node.updateDatetime, depth })
+    if (node.children.length)
+      result.push(...flattenTree(node.children, depth + 1))
+  }
+  return result
+}
+
+const flatPosts = computed(() => flattenTree(buildTree(postStore.posts)))
+
+const filteredPosts = computed(() => {
+  const q = switcherQuery.value.toLowerCase().trim()
+  if (!q)
+    return flatPosts.value
+  return flatPosts.value.filter(p => p.title.toLowerCase().includes(q))
+})
+
+function openSwitcher() {
+  isSwitcherOpen.value = true
+  switcherQuery.value = ``
+  nextTick(() => switcherInputRef.value?.focus())
+}
+
+function switchToPost(id: string) {
+  postStore.currentPostId = id
+  isSwitcherOpen.value = false
+  nextTick(() => editor.value?.focus())
+}
 
 // 光标位置
 const cursorLine = ref(1)
@@ -23,18 +121,42 @@ const cursorCol = ref(1)
 const selectionLength = ref(0)
 const totalLines = ref(1)
 
+// Go-to-Line
+const isGoToLineActive = ref(false)
+const goToLineInput = ref(``)
+const goToLineRef = ref<HTMLInputElement | null>(null)
+
+function openGoToLine() {
+  isGoToLineActive.value = true
+  goToLineInput.value = String(cursorLine.value)
+  nextTick(() => goToLineRef.value?.select())
+}
+
+function goToLine() {
+  const view = editor.value
+  if (!view)
+    return
+  const target = Math.max(1, Math.min(Number.parseInt(goToLineInput.value) || 1, totalLines.value))
+  const line = view.state.doc.line(target)
+  view.dispatch({
+    selection: { anchor: line.from },
+    scrollIntoView: true,
+  })
+  view.focus()
+  isGoToLineActive.value = false
+  updateCursorInfo(view)
+}
+
+function cancelGoToLine() {
+  isGoToLineActive.value = false
+  editor.value?.focus()
+}
+
 // 监听编辑器变化，更新光标位置
-let cleanupFns: (() => void)[] = []
-
 watch(editor, (view, _, onCleanup) => {
-  // 清理上次的事件监听
-  cleanupFns.forEach(fn => fn())
-  cleanupFns = []
-
   if (!view)
     return
 
-  // 初始化
   updateCursorInfo(view)
 
   const onKeyUp = () => updateCursorInfo(view)
@@ -43,14 +165,9 @@ watch(editor, (view, _, onCleanup) => {
   view.dom.addEventListener(`keyup`, onKeyUp)
   view.dom.addEventListener(`mouseup`, onMouseUp)
 
-  cleanupFns.push(
-    () => view.dom.removeEventListener(`keyup`, onKeyUp),
-    () => view.dom.removeEventListener(`mouseup`, onMouseUp),
-  )
-
   onCleanup(() => {
-    cleanupFns.forEach(fn => fn())
-    cleanupFns = []
+    view.dom.removeEventListener(`keyup`, onKeyUp)
+    view.dom.removeEventListener(`mouseup`, onMouseUp)
   })
 }, { immediate: true })
 
@@ -71,27 +188,87 @@ function updateCursorInfo(view: any) {
   cursorCol.value = main.head - line.from + 1
   totalLines.value = state.doc.lines
   selectionLength.value = Math.abs(main.to - main.from)
+  updateBreadcrumb(state.doc, line.number)
 }
 
-// 上次保存时间（相对时间显示）
+// TOC 面包屑
+interface BreadcrumbItem {
+  title: string
+  level: number
+  line: number
+}
+
+const breadcrumbs = ref<BreadcrumbItem[]>([])
+
+function updateBreadcrumb(doc: any, currentLine: number) {
+  const stack: BreadcrumbItem[] = []
+  let codeFenceChar = ``
+  let codeFenceCount = 0
+  let inFrontMatter = false
+  for (let i = 1; i <= currentLine; i++) {
+    const text = doc.line(i).text
+    const trimmed = text.trimStart()
+
+    // 检测 YAML front matter（仅在文档开头）
+    if (i === 1 && trimmed === `---`) {
+      inFrontMatter = true
+      continue
+    }
+    if (inFrontMatter) {
+      if (trimmed === `---` || trimmed === `...`)
+        inFrontMatter = false
+      continue
+    }
+
+    // 检测围栏代码块的开始/结束
+    if (codeFenceChar) {
+      // 已在代码块内，检测是否为对应的关闭围栏
+      const closeMatch = trimmed.match(/^(`{3,}|~{3,})\s*$/)
+      if (closeMatch && closeMatch[1][0] === codeFenceChar && closeMatch[1].length >= codeFenceCount) {
+        codeFenceChar = ``
+        codeFenceCount = 0
+      }
+      continue
+    }
+    const openMatch = trimmed.match(/^(`{3,}|~{3,})/)
+    if (openMatch) {
+      codeFenceChar = openMatch[1][0]
+      codeFenceCount = openMatch[1].length
+      continue
+    }
+
+    // 匹配 ATX 标题（CommonMark: 最多 3 个前导空格）
+    const match = text.match(/^(\s{0,3})(#{1,6})\s+(.+)/)
+    if (match) {
+      const level = match[2].length
+      const title = match[3].replace(/\s*#+\s*$/, ``).trim()
+      // 弹出所有 >= 当前 level 的项
+      while (stack.length > 0 && stack[stack.length - 1].level >= level)
+        stack.pop()
+      stack.push({ title, level, line: i })
+    }
+  }
+  breadcrumbs.value = stack
+}
+
+function jumpToHeading(line: number) {
+  const view = editor.value
+  if (!view)
+    return
+  const target = view.state.doc.line(line)
+  view.dispatch({
+    selection: { anchor: target.from },
+    scrollIntoView: true,
+  })
+  view.focus()
+  updateCursorInfo(view)
+}
+
+// 上次保存时间（复用 formatRelativeTime）
 const savedTimeAgo = computed(() => {
   if (!currentPost.value?.updateDatetime)
     return ``
-  const date = new Date(currentPost.value.updateDatetime)
-  const now = new Date()
-  const diff = now.getTime() - date.getTime()
-  const seconds = Math.floor(diff / 1000)
-  if (seconds < 10)
-    return `刚刚`
-  if (seconds < 60)
-    return `${seconds} 秒前`
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60)
-    return `${minutes} 分钟前`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24)
-    return `${hours} 小时前`
-  return date.toLocaleDateString(`zh-CN`)
+  return formatRelativeTime(currentPost.value.updateDatetime)
 })
 
 // 每 10 秒刷新一次相对时间
@@ -105,113 +282,179 @@ const displaySavedTime = computed(() => {
   refreshKey.value
   return savedTimeAgo.value
 })
+
+// 右侧统计项
+const stats = computed(() => [
+  { icon: Pilcrow, value: readingTime.value.words, tooltip: `词数` },
+  { icon: Type, value: readingTime.value.chars, tooltip: `字符数` },
+  { icon: Clock, value: `${readingTime.value.minutes} 分钟`, tooltip: `预计阅读时间` },
+  { icon: BookOpen, value: totalLines.value, tooltip: `总行数` },
+])
 </script>
 
 <template>
   <footer
     class="flex select-none items-center px-3 py-1 text-xs text-muted-foreground"
   >
-    <!-- 左侧：光标位置 & 选区 -->
-    <div class="flex items-center gap-3">
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
+    <TooltipProvider :delay-duration="300">
+      <!-- 左侧：光标位置 & 选区 -->
+      <div class="flex items-center gap-3">
+        <!-- Go-to-Line 内联输入 -->
+        <span v-if="isGoToLineActive" class="flex items-center gap-1">
+          <Keyboard class="size-3 opacity-60" />
+          <input
+            ref="goToLineRef"
+            v-model="goToLineInput"
+            type="text"
+            inputmode="numeric"
+            class="h-4 w-16 rounded border border-primary/40 bg-transparent px-1 text-xs tabular-nums text-foreground outline-none focus:border-primary"
+            :placeholder="`1–${totalLines}`"
+            @keydown.enter="goToLine"
+            @keydown.escape="cancelGoToLine"
+            @blur="cancelGoToLine"
+          >
+        </span>
+        <Tooltip v-else>
           <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
+            <span class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
               <Keyboard class="size-3 opacity-60" />
               行 {{ cursorLine }}，列 {{ cursorCol }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>光标位置（共 {{ totalLines }} 行）</p>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>光标位置（共 {{ totalLines }} 行） · 点击跳转</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <span
-        v-if="selectionLength > 0"
-        class="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums"
-      >
-        已选 {{ selectionLength }} 字符
-      </span>
-    </div>
+        <span
+          v-if="selectionLength > 0"
+          class="flex items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums"
+        >
+          已选 {{ selectionLength }} 字符
+        </span>
+      </div>
 
-    <!-- 中间弹性间距 -->
-    <div class="flex-1" />
+      <!-- 文档切换器 -->
+      <Popover v-model:open="isSwitcherOpen">
+        <PopoverTriggerPrimitive as-child>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <button
+                class="ml-2 flex max-w-36 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                @click="openSwitcher"
+              >
+                <FileText class="size-3 shrink-0 opacity-60" />
+                <span class="truncate">{{ currentPost?.title || '未命名' }}</span>
+                <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+              <p>切换文档</p>
+            </TooltipContent>
+          </Tooltip>
+        </PopoverTriggerPrimitive>
+        <PopoverContent side="top" :side-offset="8" align="start" class="w-64 p-0">
+          <div class="flex items-center gap-2 border-b px-3 py-2">
+            <Search class="size-3.5 shrink-0 opacity-50" />
+            <input
+              ref="switcherInputRef"
+              v-model="switcherQuery"
+              type="text"
+              class="h-5 w-full bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
+              placeholder="搜索文档..."
+              @keydown.escape="isSwitcherOpen = false"
+            >
+          </div>
+          <div class="max-h-52 overflow-y-auto py-1">
+            <div v-if="filteredPosts.length === 0" class="px-3 py-4 text-center text-xs text-muted-foreground">
+              无匹配文档
+            </div>
+            <button
+              v-for="post in filteredPosts"
+              :key="post.id"
+              class="flex w-full cursor-pointer items-center gap-2 py-1.5 pr-3 text-left text-xs transition-colors hover:bg-accent"
+              :class="post.id === postStore.currentPostId ? 'bg-accent/50 text-foreground' : 'text-muted-foreground'"
+              :style="{ paddingLeft: `${12 + post.depth * 16}px` }"
+              @click="switchToPost(post.id)"
+            >
+              <FileText class="size-3 shrink-0 opacity-50" />
+              <span class="min-w-0 flex-1 truncate">{{ post.title }}</span>
+              <span class="shrink-0 text-[10px] opacity-50">{{ formatRelativeTime(post.updateDatetime) }}</span>
+            </button>
+          </div>
+        </PopoverContent>
+      </Popover>
 
-    <!-- 右侧：统计信息 -->
-    <div class="flex items-center gap-3">
-      <!-- 保存状态 -->
-      <TooltipProvider v-if="displaySavedTime" :delay-duration="300">
-        <Tooltip>
+      <!-- 中间：TOC 面包屑 -->
+      <div class="mx-3 flex min-w-0 flex-1 items-center justify-center">
+        <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
+          <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
+            <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-40" />
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  class="max-w-28 cursor-pointer truncate rounded px-1 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  @click="jumpToHeading(crumb.line)"
+                >
+                  {{ crumb.title }}
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>H{{ crumb.level }} · 第 {{ crumb.line }} 行 · 点击跳转</p>
+              </TooltipContent>
+            </Tooltip>
+          </template>
+        </div>
+      </div>
+
+      <!-- 右侧：统计信息 -->
+      <div class="flex items-center gap-3">
+        <!-- 保存状态 -->
+        <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>
             <span class="flex cursor-default items-center gap-1 opacity-70 transition-opacity hover:opacity-100">
               <FileText class="size-3" />
               {{ displaySavedTime }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>上次修改时间</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <span class="text-border">·</span>
+        <span class="text-border">·</span>
 
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
+        <Tooltip v-for="stat in stats" :key="stat.tooltip">
           <TooltipTrigger as-child>
             <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Pilcrow class="size-3 opacity-60" />
-              {{ readingTime.words }}
+              <component :is="stat.icon" class="size-3 opacity-60" />
+              {{ stat.value }}
             </span>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>词数</p>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>{{ stat.tooltip }}</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
 
-      <TooltipProvider :delay-duration="300">
+        <span class="text-border">·</span>
+
+        <!-- 深浅色切换 -->
         <Tooltip>
           <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Type class="size-3 opacity-60" />
-              {{ readingTime.chars }}
-            </span>
+            <button
+              class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
+              :class="isDark ? 'text-foreground' : ''"
+              @click="uiStore.toggleDark()"
+            >
+              <Moon v-if="isDark" class="size-3" />
+              <Sun v-else class="size-3" />
+            </button>
           </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>字符数</p>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>{{ isDark ? '浅色模式' : '深色模式' }}</p>
           </TooltipContent>
         </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <Clock class="size-3 opacity-60" />
-              {{ readingTime.minutes }} 分钟
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>预计阅读时间</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-
-      <TooltipProvider :delay-duration="300">
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <span class="flex cursor-default items-center gap-1 tabular-nums">
-              <BookOpen class="size-3 opacity-60" />
-              {{ totalLines }}
-            </span>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6">
-            <p>总行数</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
+      </div>
+    </TooltipProvider>
   </footer>
 </template>
