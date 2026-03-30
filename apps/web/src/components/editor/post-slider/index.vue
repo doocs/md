@@ -309,6 +309,51 @@ function batchDeleteSelected() {
   selectedPostIds.value = []
 }
 
+/* ============ 批量复制 ============ */
+function duplicateSelected() {
+  if (!selectedPostIds.value.length)
+    return
+  selectedPostIds.value.forEach((id) => {
+    const p = postStore.getPostById(id)!
+    postStore.addPost(`${p.title} 副本`, p.parentId ?? null)
+    // 覆盖刚创建的那篇内容
+    const newPost = posts.value[posts.value.length - 1]
+    postStore.updatePostContent(newPost.id, p.content)
+  })
+  toast.success(`已复制 ${selectedPostIds.value.length} 篇内容`)
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
+/* ============ 合并为一篇 ============ */
+const isOpenMergeDialog = ref(false)
+const mergeTitle = ref(``)
+
+function openMergeDialog() {
+  if (selectedPostIds.value.length < 2)
+    return
+  const titles = selectedPostIds.value.map(id => postStore.getPostById(id)!.title)
+  mergeTitle.value = titles.join(` + `)
+  isOpenMergeDialog.value = true
+}
+
+function mergeSelected() {
+  if (!mergeTitle.value.trim())
+    return toast.error(`合并标题不可为空`)
+  const parts = selectedPostIds.value.map((id) => {
+    const p = postStore.getPostById(id)!
+    return `## ${p.title}\n\n${p.content}`
+  })
+  const mergedContent = parts.join(`\n\n---\n\n`)
+  postStore.addPost(mergeTitle.value.trim(), null)
+  const newPost = posts.value[posts.value.length - 1]
+  postStore.updatePostContent(newPost.id, mergedContent)
+  toast.success(`已合并为「${mergeTitle.value.trim()}」`)
+  isOpenMergeDialog.value = false
+  isSelectMode.value = false
+  selectedPostIds.value = []
+}
+
 function handleDrop(targetId: string | null) {
   const sourceId = dragSourceId.value
   if (!sourceId) {
@@ -606,22 +651,45 @@ function handleDragEnd() {
               </button>
             </div>
           </div>
-          <!-- 操作按钮行 -->
-          <div class="flex gap-2">
+          <!-- 操作按钮网格 2×2 -->
+          <div class="grid grid-cols-2 gap-2">
             <!-- 导出 -->
             <button
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
               :disabled="!selectedPostIds.length"
               @click="exportSelected"
             >
               <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
               </svg>
-              导出{{ selectedPostIds.length > 1 ? ' ZIP' : '' }}
+              导出
+            </button>
+            <!-- 复制 -->
+            <button
+              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              :disabled="!selectedPostIds.length"
+              @click="duplicateSelected"
+            >
+              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+              </svg>
+              复制
+            </button>
+            <!-- 合并 -->
+            <button
+              class="flex items-center justify-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground transition-colors hover:bg-accent disabled:pointer-events-none disabled:opacity-40"
+              :disabled="selectedPostIds.length < 2"
+              :title="selectedPostIds.length < 2 ? '至少选择 2 篇才能合并' : ''"
+              @click="openMergeDialog"
+            >
+              <svg class="size-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3" /><path d="M16 6h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" /><line x1="12" y1="2" x2="12" y2="22" />
+              </svg>
+              合并
             </button>
             <!-- 删除 -->
             <button
-              class="flex flex-1 items-center justify-center gap-1.5 rounded-md border border-destructive/30 bg-background px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 disabled:pointer-events-none disabled:opacity-40"
+              class="flex items-center justify-center gap-1.5 rounded-md border border-destructive/30 bg-background px-3 py-1.5 text-xs font-medium text-destructive transition-colors hover:bg-destructive/8 disabled:pointer-events-none disabled:opacity-40"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
               :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : ''"
               @click="isOpenBatchDelConfirmDialog = true"
@@ -687,6 +755,25 @@ function handleDragEnd() {
       </AlertDialogFooter>
     </AlertDialogContent>
   </AlertDialog>
+
+  <!-- 合并弹窗 -->
+  <Dialog v-model:open="isOpenMergeDialog">
+    <DialogContent class="sm:max-w-[425px]">
+      <DialogHeader>
+        <DialogTitle>合并为一篇</DialogTitle>
+        <DialogDescription>将选中的 {{ selectedPostIds.length }} 篇内容按顺序合并，请为合并结果命名</DialogDescription>
+      </DialogHeader>
+      <Input v-model="mergeTitle" placeholder="输入合并后的标题…" @keyup.enter="mergeSelected" />
+      <DialogFooter>
+        <Button variant="outline" @click="isOpenMergeDialog = false">
+          取消
+        </Button>
+        <Button @click="mergeSelected">
+          合并
+        </Button>
+      </DialogFooter>
+    </DialogContent>
+  </Dialog>
 
   <!-- 批量删除确认 -->
   <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
