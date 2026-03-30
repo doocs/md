@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { StateEffect } from '@codemirror/state'
+import { EditorView } from '@codemirror/view'
 import { BookOpen, ChevronRight, ChevronsUpDown, Clock, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
@@ -153,21 +155,26 @@ function cancelGoToLine() {
 }
 
 // 监听编辑器变化，更新光标位置
-watch(editor, (view, _, onCleanup) => {
-  if (!view)
+const attachedViews = new WeakSet()
+
+watch(editor, (view) => {
+  if (!view || attachedViews.has(view))
     return
 
+  attachedViews.add(view)
+
+  // 初始化一次
   updateCursorInfo(view)
 
-  const onKeyUp = () => updateCursorInfo(view)
-  const onMouseUp = () => updateCursorInfo(view)
+  const extension = EditorView.updateListener.of((update) => {
+    // 只在光标或文档变化时更新
+    if (update.selectionSet || update.docChanged) {
+      updateCursorInfo(update.view)
+    }
+  })
 
-  view.dom.addEventListener(`keyup`, onKeyUp)
-  view.dom.addEventListener(`mouseup`, onMouseUp)
-
-  onCleanup(() => {
-    view.dom.removeEventListener(`keyup`, onKeyUp)
-    view.dom.removeEventListener(`mouseup`, onMouseUp)
+  view.dispatch({
+    effects: StateEffect.appendConfig.of(extension),
   })
 }, { immediate: true })
 
