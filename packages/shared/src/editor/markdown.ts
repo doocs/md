@@ -1,6 +1,7 @@
 import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
+import { foldGutter, foldKeymap } from '@codemirror/language'
 import { languages } from '@codemirror/language-data'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorSelection, EditorState, Prec } from '@codemirror/state'
@@ -116,11 +117,15 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
     // Markdown 快捷键（高优先级，优先于默认快捷键）
     Prec.high(markdownKeymap(options)),
 
+    // 折叠功能
+    foldGutter(),
+
     // 默认快捷键
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
       ...closeBracketsKeymap,
+      ...foldKeymap,
     ]),
 
     // 编辑器配置
