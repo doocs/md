@@ -40,12 +40,6 @@ export function utoolsLocalAssetsPlugin(): Plugin {
           `./static/libs/mermaid/mermaid.min.js`,
         )
 
-        // 替换 WeChat Sync
-        html = html.replace(
-          /https:\/\/cdn-doocs\.oss-cn-shenzhen\.aliyuncs\.com\/gh\/wechatsync\/article-syncjs@latest\/dist\/main\.js/g,
-          `./static/libs/article-syncjs/main.js`,
-        )
-
         return html
       },
     },
