@@ -24,11 +24,6 @@ const resources = [
     url: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mermaid@11/dist/mermaid.min.js`,
     output: path.join(libsDir, `mermaid`, `mermaid.min.js`),
   },
-  {
-    name: `WeChat Sync`,
-    url: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/wechatsync/article-syncjs@latest/dist/main.js`,
-    output: path.join(libsDir, `article-syncjs`, `main.js`),
-  },
 ]
 
 async function downloadFile(url, outputPath) {
