@@ -28,9 +28,9 @@ export function utoolsLocalAssetsPlugin(): Plugin {
           `./src/assets/images/favicon.png`,
         )
 
-        // 替换 MathJax
+        // 替换 MathJax (已改为本地引用，utools 需要替换为相对路径)
         html = html.replace(
-          /https:\/\/cdn-doocs\.oss-cn-shenzhen\.aliyuncs\.com\/npm\/mathjax@3\/es5\/tex-svg\.js/g,
+          /static\/mathjax\/tex-svg\.js/g,
           `./static/libs/mathjax/tex-svg.js`,
         )
 

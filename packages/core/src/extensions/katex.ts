@@ -17,31 +17,36 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
   return (token: any) => {
     const display = token.displayMode ?? defaultDisplay
 
-    // @ts-expect-error MathJax is a global variable
-    window.MathJax.texReset()
-    // @ts-expect-error MathJax is a global variable
-    const mjxContainer = window.MathJax.tex2svg(token.text, { display })
-    const svg = mjxContainer.firstChild
-    const width = svg.style[`min-width`] || svg.getAttribute(`width`)
-    svg.removeAttribute(`width`)
+    try {
+      // @ts-expect-error MathJax is a global variable
+      window.MathJax.texReset()
+      // @ts-expect-error MathJax is a global variable
+      const mjxContainer = window.MathJax.tex2svg(token.text, { display })
+      const svg = mjxContainer.firstChild
+      const width = svg.style[`min-width`] || svg.getAttribute(`width`)
+      svg.removeAttribute(`width`)
 
-    // 行内公式对齐 https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
-    // 直接覆盖 style 会覆盖 MathJax 的样式，需要手动设置
-    // svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
+      if (withStyle) {
+        svg.style.display = `initial`
+        svg.style.setProperty(`max-width`, `300vw`, `important`)
+        svg.style.flexShrink = `0`
+        svg.style.width = width
+      }
 
-    if (withStyle) {
-      svg.style.display = `initial`
-      svg.style.setProperty(`max-width`, `300vw`, `important`)
-      svg.style.flexShrink = `0`
-      svg.style.width = width
+      if (!display) {
+        return `<span class="katex-inline">${svg.outerHTML}</span>`
+      }
+
+      return `<section class="katex-block">${svg.outerHTML}</section>`
     }
-
-    if (!display) {
-      // 新主题系统：使用 class 而非内联样式
-      return `<span class="katex-inline">${svg.outerHTML}</span>`
+    catch {
+      // MathJax v4 may throw retry errors when font data not yet loaded
+      const escaped = token.text.replace(/</g, `&lt;`).replace(/>/g, `&gt;`)
+      if (!display) {
+        return `<span class="katex-inline"><code>${escaped}</code></span>`
+      }
+      return `<section class="katex-block"><code>${escaped}</code></section>`
     }
-
-    return `<section class="katex-block">${svg.outerHTML}</section>`
   }
 }
 

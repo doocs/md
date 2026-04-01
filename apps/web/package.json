@@ -49,6 +49,7 @@
     "juice": "11.0.3",
     "lucide-vue-next": "^1.0.0",
     "marked": "^17.0.5",
+    "mathjax": "^4.1.1",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.4",
     "radix-vue": "^1.9.17",
