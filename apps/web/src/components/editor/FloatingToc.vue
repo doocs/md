@@ -140,7 +140,7 @@ function handlePin() {
   }
 }
 
-function handleItemClick(url: string) {
+function handleItemClick(url: string, title: string, level: number) {
   if (isDragging.value)
     return
   const id = url.replace(`#`, ``)
@@ -148,6 +148,11 @@ function handleItemClick(url: string) {
   if (el) {
     el.scrollIntoView({ behavior: `smooth`, block: `start` })
   }
+
+  window.dispatchEvent(new CustomEvent(`floating-toc:select`, {
+    detail: { url, title, level },
+  }))
+
   if (!isPinFloatingToc.value) {
     isOpen.value = false
   }
@@ -242,7 +247,7 @@ const containerStyle = computed(() => {
               :key="index"
               class="group flex w-full items-start rounded-md px-2 py-1.5 text-left text-sm transition-colors hover:bg-accent"
               :style="getLevelStyle(item.level)"
-              @click="handleItemClick(item.url)"
+              @click="handleItemClick(item.url, item.title, item.level)"
             >
               <span
                 class="mr-2 mt-1.5 inline-block size-1.5 shrink-0 rounded-full bg-current opacity-30 transition-opacity group-hover:opacity-70"
