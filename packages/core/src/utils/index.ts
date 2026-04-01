@@ -1,4 +1,4 @@
+export { initializeMermaid } from '../extensions/mermaid'
 export * from './basicHelpers'
-export * from './initializeMermaid'
 export * from './languages'
 export * from './markdownHelpers'

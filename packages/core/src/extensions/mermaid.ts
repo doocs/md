@@ -1,6 +1,22 @@
 import type { MarkedExtension } from 'marked'
 import { simpleHash } from '../utils/basicHelpers'
 
+let initPromise: Promise<typeof import('mermaid')['default']> | null = null
+
+export async function initializeMermaid() {
+  return getMermaid()
+}
+
+function getMermaid() {
+  if (!initPromise) {
+    initPromise = import('mermaid').then((m) => {
+      m.default.initialize({ startOnLoad: false })
+      return m.default
+    })
+  }
+  return initPromise
+}
+
 // key -> svg
 const svgCache = new Map<string, string>()
 // 上一次渲染的结果（用于在新渲染完成前显示旧图片）
@@ -28,8 +44,8 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     }
   }
 
-  import('mermaid')
-    .then(mermaid => mermaid.default.render(`mermaid-svg-${cacheKey}`, code))
+  getMermaid()
+    .then(mermaid => mermaid.render(`mermaid-svg-${cacheKey}`, code))
     .then((result: { svg: string }) => handleResult(result.svg))
     .catch(handleError)
 }
