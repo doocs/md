@@ -12,7 +12,6 @@ import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 import { mathjaxLocalPlugin } from './plugins/vite-plugin-mathjax-local'
-import { utoolsLocalAssetsPlugin } from './plugins/vite-plugin-utools-local-assets'
 
 const isNetlify = process.env.SERVER_ENV === `NETLIFY`
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
@@ -48,7 +47,6 @@ export default defineConfig(({ mode }) => {
       Components({
         resolvers: [],
       }),
-      isUTools && utoolsLocalAssetsPlugin(),
       mathjaxLocalPlugin(),
     ],
     resolve: {
