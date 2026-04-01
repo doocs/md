@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Code2, Columns2, Eye, FileText, Keyboard, Monitor, Moon, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Code2, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -292,6 +292,30 @@ function jumpToHeading(line: number) {
   updateCursorInfo(view)
 }
 
+// TOC Popover
+const isTocOpen = ref(false)
+
+function handleTocItemClick(url: string) {
+  const id = url.replace(`#`, ``)
+  const el = document.getElementById(id)
+  if (el) {
+    el.scrollIntoView({ behavior: `smooth`, block: `start` })
+  }
+  isTocOpen.value = false
+}
+
+function getTocLevelStyle(level: number) {
+  return { paddingLeft: `${(level - 1) * 12}px` }
+}
+
+function getTocLevelClass(level: number) {
+  if (level === 1)
+    return `font-semibold text-foreground`
+  if (level === 2)
+    return `font-medium text-foreground/90`
+  return `text-muted-foreground`
+}
+
 // 上次保存时间（复用 formatRelativeTime）
 const savedTimeAgo = computed(() => {
   if (!currentPost.value?.updateDatetime)
@@ -512,6 +536,57 @@ const stats = computed(() => [
             <p>{{ stat.tooltip }}</p>
           </TooltipContent>
         </Tooltip>
+
+        <span class="hidden text-border sm:block">·</span>
+
+        <!-- 目录大纲 -->
+        <Popover v-model:open="isTocOpen">
+          <PopoverTriggerPrimitive as-child>
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  class="relative flex cursor-pointer items-center gap-1 rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  :class="isTocOpen ? 'bg-accent text-foreground' : ''"
+                  @click="isTocOpen = !isTocOpen"
+                >
+                  <ListTree class="size-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent v-if="!isTocOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>目录大纲</p>
+              </TooltipContent>
+            </Tooltip>
+          </PopoverTriggerPrimitive>
+          <PopoverContent side="top" :side-offset="8" align="end" class="w-60 p-0">
+            <div class="flex items-center gap-1.5 border-b px-3 py-2">
+              <ListTree class="size-3.5 shrink-0 text-muted-foreground/60" />
+              <span class="text-xs font-medium tracking-wide text-muted-foreground uppercase">目录大纲</span>
+            </div>
+            <div class="custom-scroll max-h-72 overflow-y-auto overflow-x-hidden p-1.5">
+              <template v-if="renderStore.titleList.length > 0">
+                <button
+                  v-for="(item, index) in renderStore.titleList"
+                  :key="index"
+                  class="group flex w-full items-start rounded-md px-2 py-1.5 text-left text-xs transition-colors hover:bg-accent"
+                  :style="getTocLevelStyle(item.level)"
+                  @click="handleTocItemClick(item.url)"
+                >
+                  <span
+                    class="mr-2 mt-1.5 inline-block size-1.5 shrink-0 rounded-full bg-current opacity-30 transition-opacity group-hover:opacity-70"
+                    :class="item.level <= 2 ? 'opacity-50' : ''"
+                  />
+                  <span
+                    class="line-clamp-2 leading-snug"
+                    :class="getTocLevelClass(item.level)"
+                  >{{ item.title }}</span>
+                </button>
+              </template>
+              <div v-else class="px-3 py-6 text-center text-xs text-muted-foreground">
+                暂无标题
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
 
         <span class="hidden text-border sm:block">·</span>
 

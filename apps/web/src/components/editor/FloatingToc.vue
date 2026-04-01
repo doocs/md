@@ -1,11 +1,11 @@
 <script setup lang='ts'>
-import { GripVertical, ListTree, Pin, PinOff } from 'lucide-vue-next'
+import { GripVertical, Pin, PinOff } from 'lucide-vue-next'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
-const { isPinFloatingToc, isShowFloatingToc, isMobile } = storeToRefs(uiStore)
+const { isPinFloatingToc } = storeToRefs(uiStore)
 
 const isOpen = ref(false)
 const panelRef = ref<HTMLElement>()
@@ -13,7 +13,7 @@ const triggerRef = ref<HTMLElement>()
 const containerRef = ref<HTMLElement | null>(null)
 const dragHandleRef = ref<HTMLElement | null>(null)
 
-const isPanelVisible = computed(() => isOpen.value || isPinFloatingToc.value)
+const isPanelVisible = computed(() => isPinFloatingToc.value)
 
 // 拖拽支持
 const isDragging = ref(false)
@@ -123,16 +123,6 @@ onClickOutside(panelRef, () => {
   }
 }, { ignore: [triggerRef] })
 
-function handleToggle() {
-  if (isPinFloatingToc.value) {
-    isPinFloatingToc.value = false
-    isOpen.value = false
-  }
-  else {
-    isOpen.value = !isOpen.value
-  }
-}
-
 function handlePin() {
   isPinFloatingToc.value = !isPinFloatingToc.value
   if (isPinFloatingToc.value) {
@@ -147,9 +137,6 @@ function handleItemClick(url: string) {
   const el = document.getElementById(id)
   if (el) {
     el.scrollIntoView({ behavior: `smooth`, block: `start` })
-  }
-  if (!isPinFloatingToc.value) {
-    isOpen.value = false
   }
 }
 
@@ -179,22 +166,7 @@ const containerStyle = computed(() => {
 </script>
 
 <template>
-  <!-- 触发按钮 - 与 BackTop 垂直对齐 -->
-  <Button
-    v-show="isShowFloatingToc"
-    ref="triggerRef"
-    variant="outline"
-    size="icon"
-    class="absolute z-50 rounded-full border-border/40 bg-background/60 text-muted-foreground/70 backdrop-blur-sm hover:bg-background/80 hover:text-foreground"
-    :class="{ '!bg-accent/80 !text-accent-foreground': isPanelVisible }"
-    :style="{ right: `${isMobile ? 24 : 20}px`, top: `${isMobile ? 24 : 20}px` }"
-    title="目录大纲"
-    @click="handleToggle"
-  >
-    <ListTree />
-  </Button>
-
-  <!-- 可拖拽目录面板 -->
+  <!-- 可拖拽目录面板（固定模式） -->
   <Transition
     enter-active-class="transition duration-200 ease-out"
     enter-from-class="opacity-0 translate-y-[-8px] scale-95"
@@ -209,7 +181,7 @@ const containerStyle = computed(() => {
       class="absolute z-50 w-64 origin-top-right rounded-lg border bg-popover text-popover-foreground shadow-lg"
       :class="{ 'shadow-xl': isDragging }"
       :style="[
-        { right: `${isMobile ? 24 : 20}px`, top: `${isMobile ? 64 : 60}px` },
+        { right: `20px`, top: `20px` },
         containerStyle,
       ]"
     >
