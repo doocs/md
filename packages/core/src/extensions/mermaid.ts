@@ -1,6 +1,22 @@
 import type { MarkedExtension } from 'marked'
 import { simpleHash } from '../utils/basicHelpers'
 
+let initPromise: Promise<typeof import('mermaid')['default']> | null = null
+
+export async function initializeMermaid() {
+  return getMermaid()
+}
+
+function getMermaid() {
+  if (!initPromise) {
+    initPromise = import('mermaid').then((m) => {
+      m.default.initialize({ startOnLoad: false })
+      return m.default
+    })
+  }
+  return initPromise
+}
+
 // key -> svg
 const svgCache = new Map<string, string>()
 // 上一次渲染的结果（用于在新渲染完成前显示旧图片）
@@ -28,20 +44,10 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     }
   }
 
-  // 优先使用全局 CDN 的 mermaid
-  if ((window as any).mermaid) {
-    const mermaid = (window as any).mermaid
-    mermaid.render(`mermaid-svg-${cacheKey}`, code)
-      .then((result: { svg: string }) => handleResult(result.svg))
-      .catch(handleError)
-  }
-  else {
-    // 回退到动态导入（开发环境）
-    import('mermaid')
-      .then(mermaid => mermaid.default.render(`mermaid-svg-${cacheKey}`, code))
-      .then((result: { svg: string }) => handleResult(result.svg))
-      .catch(handleError)
-  }
+  getMermaid()
+    .then(mermaid => mermaid.render(`mermaid-svg-${cacheKey}`, code))
+    .then((result: { svg: string }) => handleResult(result.svg))
+    .catch(handleError)
 }
 
 export function markedMermaid(): MarkedExtension {

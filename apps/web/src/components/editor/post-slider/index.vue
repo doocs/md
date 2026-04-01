@@ -3,7 +3,7 @@ import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, 
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, exportPostsAsZip } from '@/utils'
+import { addPrefix, downloadMD, exportPostsAsZip } from '@/utils'
 import { store } from '@/utils/storage'
 
 const uiStore = useUIStore()
@@ -280,7 +280,6 @@ async function exportSelected() {
     return { title: p.title, content: p.content }
   })
   if (toExport.length === 1) {
-    const { downloadMD } = await import(`@/utils`)
     downloadMD(toExport[0].content, toExport[0].title)
   }
   else {
