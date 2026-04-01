@@ -28,20 +28,10 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     }
   }
 
-  // 优先使用全局 CDN 的 mermaid
-  if ((window as any).mermaid) {
-    const mermaid = (window as any).mermaid
-    mermaid.render(`mermaid-svg-${cacheKey}`, code)
-      .then((result: { svg: string }) => handleResult(result.svg))
-      .catch(handleError)
-  }
-  else {
-    // 回退到动态导入（开发环境）
-    import('mermaid')
-      .then(mermaid => mermaid.default.render(`mermaid-svg-${cacheKey}`, code))
-      .then((result: { svg: string }) => handleResult(result.svg))
-      .catch(handleError)
-  }
+  import('mermaid')
+    .then(mermaid => mermaid.default.render(`mermaid-svg-${cacheKey}`, code))
+    .then((result: { svg: string }) => handleResult(result.svg))
+    .catch(handleError)
 }
 
 export function markedMermaid(): MarkedExtension {

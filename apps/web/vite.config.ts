@@ -58,12 +58,10 @@ export default defineConfig(({ mode }) => {
     css: { devSourcemap: true },
     build: {
       rollupOptions: {
-        external: [`mermaid`],
         output: {
           chunkFileNames: `static/js/md-[name]-[hash].js`,
           entryFileNames: `static/js/md-[name]-[hash].js`,
           assetFileNames: `static/[ext]/md-[name]-[hash].[ext]`,
-          globals: { mermaid: `mermaid` },
           manualChunks(id) {
             if (id.includes(`node_modules`)) {
               // @lezer/* are CodeMirror's parser primitives, keep together
