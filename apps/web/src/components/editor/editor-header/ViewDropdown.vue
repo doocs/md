@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { widthOptions } from '@md/shared/configs'
-import { FileCode, Monitor, Moon, Palette, PanelLeft, Smartphone, Sun } from 'lucide-vue-next'
-import { useThemeStore } from '@/stores/theme'
+import { FileCode, Moon, Palette, PanelLeft, Sun } from 'lucide-vue-next'
 import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
@@ -13,19 +11,8 @@ const props = withDefaults(defineProps<{
 const { asSub } = toRefs(props)
 
 const uiStore = useUIStore()
-const themeStore = useThemeStore()
 
 const { isDark, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
-const { previewWidth } = storeToRefs(themeStore)
-
-// Get mobile and desktop width values
-const mobileWidth = widthOptions[0].value
-const desktopWidth = widthOptions[1].value
-
-// Set preview mode
-function setPreviewMode(width: string) {
-  themeStore.previewWidth = width
-}
 </script>
 
 <template>
@@ -47,22 +34,6 @@ function setPreviewMode(width: string) {
           </MenubarCheckboxItem>
           <MenubarCheckboxItem :checked="isDark" @click="isDark = true">
             深色模式
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
-      <!-- 预览模式子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <component :is="previewWidth === mobileWidth ? Smartphone : Monitor" class="mr-2 h-4 w-4" />
-          预览模式
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem :checked="previewWidth === mobileWidth" @click="setPreviewMode(mobileWidth)">
-            移动端
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem :checked="previewWidth === desktopWidth" @click="setPreviewMode(desktopWidth)">
-            电脑端
           </MenubarCheckboxItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -126,22 +97,6 @@ function setPreviewMode(width: string) {
           </MenubarCheckboxItem>
           <MenubarCheckboxItem :checked="isDark" @click="isDark = true">
             深色模式
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
-      <!-- 预览模式子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <component :is="previewWidth === mobileWidth ? Smartphone : Monitor" class="mr-2 h-4 w-4" />
-          预览模式
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem :checked="previewWidth === mobileWidth" @click="setPreviewMode(mobileWidth)">
-            移动端
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem :checked="previewWidth === desktopWidth" @click="setPreviewMode(desktopWidth)">
-            电脑端
           </MenubarCheckboxItem>
         </MenubarSubContent>
       </MenubarSub>

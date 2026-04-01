@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Code2, Columns2, Eye, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Code2, Columns2, Eye, FileText, Keyboard, Monitor, Moon, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -16,18 +16,21 @@ import {
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
 const postStore = usePostStore()
 const uiStore = useUIStore()
+const themeStore = useThemeStore()
 const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark, mobileViewMode, isMobile } = storeToRefs(uiStore)
+const { previewWidth } = storeToRefs(themeStore)
 
-// 视图模式按钮（移动端不含双栏）
+// 视图模式定义
 const allViewModes = [
   { value: 'editor' as const, icon: Code2, label: '编辑区' },
   { value: 'split' as const, icon: Columns2, label: '双栏' },
@@ -38,11 +41,12 @@ const visibleViewModes = computed(() =>
   isMobile.value ? allViewModes.filter(m => m.value !== 'split') : allViewModes,
 )
 
-// 移动端下自动退出双栏模式
 watch(isMobile, (val) => {
   if (val && mobileViewMode.value === 'split')
     mobileViewMode.value = 'editor'
 })
+
+const showPreviewWidthToggle = computed(() => mobileViewMode.value !== 'editor' && !isMobile.value)
 
 // 相对时间格式化（复用）
 function formatRelativeTime(date: Date | string) {
@@ -433,6 +437,30 @@ const stats = computed(() => [
           </Tooltip>
         </div>
 
+        <!-- 预览宽度单键切换（split/preview 模式 + 桌面端） -->
+        <Transition
+          enter-active-class="transition-all duration-200 ease-out"
+          leave-active-class="transition-all duration-150 ease-in"
+          enter-from-class="opacity-0 scale-90"
+          leave-to-class="opacity-0 scale-90"
+        >
+          <span v-if="showPreviewWidthToggle" class="inline-flex">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  class="flex size-5 cursor-pointer items-center justify-center rounded p-0.5 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+                  @click="themeStore.previewWidth = previewWidth === 'w-[375px]' ? 'w-full' : 'w-[375px]'"
+                >
+                  <component :is="previewWidth === 'w-[375px]' ? Smartphone : Monitor" class="size-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" :side-offset="8" class="text-xs text-muted-foreground">
+                <p>{{ previewWidth === 'w-[375px]' ? '切换为电脑端预览' : '切换为移动端预览' }}</p>
+              </TooltipContent>
+            </Tooltip>
+          </span>
+        </Transition>
+
         <!-- TOC 面包屑（仅桌面端显示） -->
         <div v-if="breadcrumbs.length" class="hidden min-w-0 items-center gap-0.5 truncate sm:flex">
           <span class="mx-1 text-border">·</span>
@@ -456,7 +484,7 @@ const stats = computed(() => [
       </div>
 
       <!-- 右侧：统计信息 -->
-      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
+      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
         <!-- 保存状态（小屏隐藏） -->
         <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>
