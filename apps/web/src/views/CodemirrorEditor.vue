@@ -6,7 +6,6 @@ import { EditorView } from '@codemirror/view'
 import { highlightPendingBlocks, hljs } from '@md/core'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
-import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import {
@@ -46,6 +45,8 @@ const {
   isOpenRightSlider,
   isOpenConfirmDialog,
   enableImageReupload,
+  mobileViewMode,
+  isEditOnLeft,
 } = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = uiStore
@@ -97,13 +98,6 @@ function endCopy() {
   setTimeout(() => {
     isCoping.value = false
   }, 800)
-}
-
-const showEditor = ref(true)
-
-// 切换编辑/预览视图（仅限移动端）
-function toggleView() {
-  showEditor.value = !showEditor.value
 }
 
 // AI 工具箱已移到侧边栏
@@ -786,10 +780,10 @@ onUnmounted(() => {
             <ResizablePanelGroup direction="horizontal">
               <!-- Markdown 编辑器 -->
               <ResizablePanel
-                :order="1"
+                :order="isEditOnLeft ? 1 : 2"
                 :default-size="50"
-                :min-size="isMobile ? (showEditor ? 100 : 0) : 15"
-                :max-size="isMobile ? (showEditor ? 100 : 0) : 85"
+                :min-size="mobileViewMode === 'editor' ? 100 : mobileViewMode === 'split' ? 15 : 0"
+                :max-size="mobileViewMode === 'editor' ? 100 : mobileViewMode === 'split' ? 85 : 0"
               >
                 <div
                   ref="codeMirrorWrapper"
@@ -798,7 +792,7 @@ onUnmounted(() => {
                   <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
                   <SidebarAIToolbar
                     :is-mobile="isMobile"
-                    :show-editor="showEditor"
+                    :show-editor="mobileViewMode !== 'preview'"
                   />
 
                   <EditorContextMenu>
@@ -810,14 +804,14 @@ onUnmounted(() => {
                   </EditorContextMenu>
                 </div>
               </ResizablePanel>
-              <ResizableHandle class="hidden md:block" />
+              <ResizableHandle v-if="mobileViewMode === 'split'" class="hidden md:block" />
 
               <!-- 预览区 -->
               <ResizablePanel
-                :order="2"
+                :order="isEditOnLeft ? 2 : 1"
                 :default-size="50"
-                :min-size="isMobile ? (!showEditor ? 100 : 0) : 15"
-                :max-size="isMobile ? (!showEditor ? 100 : 0) : 85"
+                :min-size="mobileViewMode === 'preview' ? 100 : mobileViewMode === 'split' ? 15 : 0"
+                :max-size="mobileViewMode === 'preview' ? 100 : mobileViewMode === 'split' ? 85 : 0"
               >
                 <div class="relative h-full overflow-x-hidden">
                   <div
@@ -892,17 +886,6 @@ onUnmounted(() => {
       </div>
 
       <!-- 移动端浮动按钮组 -->
-      <div v-if="isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
-        <!-- 切换编辑/预览按钮 -->
-        <button
-          class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-          aria-label="切换编辑/预览"
-          @click="toggleView"
-        >
-          <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
-        </button>
-      </div>
-
       <!-- AI工具箱已移到侧边栏，这里不再显示 -->
 
       <UploadImgDialog @upload-image="uploadImage" />

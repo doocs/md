@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { BookOpen, ChevronRight, ChevronsUpDown, Clock, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Code2, Columns2, Eye, FileText, Keyboard, Moon, Pilcrow, Search, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -25,7 +25,24 @@ const uiStore = useUIStore()
 const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
-const { isDark } = storeToRefs(uiStore)
+const { isDark, mobileViewMode, isMobile } = storeToRefs(uiStore)
+
+// 视图模式按钮（移动端不含双栏）
+const allViewModes = [
+  { value: 'editor' as const, icon: Code2, label: '编辑区' },
+  { value: 'split' as const, icon: Columns2, label: '双栏' },
+  { value: 'preview' as const, icon: Eye, label: '预览区' },
+] as const
+
+const visibleViewModes = computed(() =>
+  isMobile.value ? allViewModes.filter(m => m.value !== 'split') : allViewModes,
+)
+
+// 移动端下自动退出双栏模式
+watch(isMobile, (val) => {
+  if (val && mobileViewMode.value === 'split')
+    mobileViewMode.value = 'editor'
+})
 
 // 相对时间格式化（复用）
 function formatRelativeTime(date: Date | string) {
@@ -393,9 +410,32 @@ const stats = computed(() => [
         </PopoverContent>
       </Popover>
 
-      <!-- 中间：TOC 面包屑（小屏隐藏） -->
-      <div class="mx-3 hidden min-w-0 flex-1 items-center justify-center sm:flex">
-        <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
+      <!-- 中间：视图切换 + TOC 面包屑 -->
+      <div class="mx-2 flex min-w-0 flex-1 items-center justify-center gap-1.5">
+        <!-- 视图模式切换 pill -->
+        <div class="flex shrink-0 items-center rounded-full bg-muted p-0.5">
+          <Tooltip v-for="mode in visibleViewModes" :key="mode.value">
+            <TooltipTrigger as-child>
+              <button
+                class="flex size-5 items-center justify-center rounded-full transition-all duration-200"
+                :class="mobileViewMode === mode.value
+                  ? 'bg-background text-foreground shadow-sm'
+                  : 'text-muted-foreground hover:text-foreground'"
+                :aria-label="mode.label"
+                @click="mobileViewMode = mode.value"
+              >
+                <component :is="mode.icon" class="size-3" />
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" :side-offset="8" class="text-xs text-muted-foreground">
+              <p>{{ mode.label }}</p>
+            </TooltipContent>
+          </Tooltip>
+        </div>
+
+        <!-- TOC 面包屑（仅桌面端显示） -->
+        <div v-if="breadcrumbs.length" class="hidden min-w-0 items-center gap-0.5 truncate sm:flex">
+          <span class="mx-1 text-border">·</span>
           <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
             <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-40" />
             <Tooltip>
@@ -416,7 +456,7 @@ const stats = computed(() => [
       </div>
 
       <!-- 右侧：统计信息 -->
-      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+      <div class="flex shrink-0 items-center gap-2 sm:gap-3">
         <!-- 保存状态（小屏隐藏） -->
         <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>

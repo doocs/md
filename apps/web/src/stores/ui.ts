@@ -88,6 +88,9 @@ export const useUIStore = defineStore(`ui`, () => {
     aiImageDialogVisible.value = value ?? !aiImageDialogVisible.value
   }
 
+  // 视图模式（持久化）
+  const mobileViewMode = store.reactive<'editor' | 'split' | 'preview'>(`viewMode`, `split`)
+
   // 搜索面板状态
   const searchTabRequest = ref<{ word: string, showReplace: boolean } | null>(null)
 
@@ -147,6 +150,9 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleAIDialog,
     aiImageDialogVisible,
     toggleAIImageDialog,
+
+    // ==================== 移动端视图 ====================
+    mobileViewMode,
 
     // ==================== 搜索面板 ====================
     searchTabRequest,

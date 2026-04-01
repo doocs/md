@@ -15,7 +15,7 @@ const { asSub } = toRefs(props)
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
 
-const { isDark, isEditOnLeft, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
+const { isDark, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
 const { previewWidth } = storeToRefs(themeStore)
 
 // Get mobile and desktop width values
@@ -47,22 +47,6 @@ function setPreviewMode(width: string) {
           </MenubarCheckboxItem>
           <MenubarCheckboxItem :checked="isDark" @click="isDark = true">
             深色模式
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
-      <!-- 编辑模式子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <PanelLeft class="mr-2 h-4 w-4" />
-          编辑模式
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem :checked="isEditOnLeft" @click="isEditOnLeft = true">
-            左侧编辑
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem :checked="!isEditOnLeft" @click="isEditOnLeft = false">
-            右侧编辑
           </MenubarCheckboxItem>
         </MenubarSubContent>
       </MenubarSub>
@@ -142,22 +126,6 @@ function setPreviewMode(width: string) {
           </MenubarCheckboxItem>
           <MenubarCheckboxItem :checked="isDark" @click="isDark = true">
             深色模式
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
-      <!-- 编辑模式子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <PanelLeft class="mr-2 h-4 w-4" />
-          编辑模式
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem :checked="isEditOnLeft" @click="isEditOnLeft = true">
-            左侧编辑
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem :checked="!isEditOnLeft" @click="isEditOnLeft = false">
-            右侧编辑
           </MenubarCheckboxItem>
         </MenubarSubContent>
       </MenubarSub>
