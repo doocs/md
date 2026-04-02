@@ -436,6 +436,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           <Tooltip v-for="mode in viewModes" :key="mode.key">
             <TooltipTrigger as-child>
               <button
+                :aria-label="mode.label"
                 class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
                 :class="viewMode === mode.key
                   ? 'bg-primary text-primary-foreground shadow-sm'
@@ -455,6 +456,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         <Tooltip v-if="!isMobile">
           <TooltipTrigger as-child>
             <button
+              :aria-label="previewDevice === 'desktop' ? '切换到移动端' : '切换到电脑端'"
               class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
               :class="showDeviceToggle
                 ? 'text-muted-foreground hover:bg-accent hover:text-foreground opacity-100'
