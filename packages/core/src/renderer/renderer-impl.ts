@@ -167,12 +167,14 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
    * @param styleLabel CSS 类名标识
    * @param content 内容
    * @param tagName HTML 标签名（可选）
+   * @param style 内联样式（可选）
    */
-  function styledContent(styleLabel: string, content: string, tagName?: string): string {
+  function styledContent(styleLabel: string, content: string, tagName?: string, style?: string): string {
     const tag = tagName ?? styleLabel
     const className = `${styleLabel.replace(UNDERSCORE_REGEX, `-`)}`
     const headingAttr = HEADING_TAG_REGEX.test(tag) ? ` data-heading="true"` : ``
-    return `<${tag} class="${className}"${headingAttr}>${content}</${tag}>`
+    const styleAttr = style ? ` style="${style}"` : ``
+    return `<${tag} class="${className}"${headingAttr}${styleAttr}>${content}</${tag}>`
   }
 
   function addFootnote(title: string, link: string): number {
@@ -351,8 +353,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       const headerRow = header
         .map((cell) => {
           const text = this.parser.parseInline(cell.tokens)
-          const align = cell.align || `left`
-          return `<th class="th" style="text-align: ${align}">${text}</th>`
+          return styledContent(`th`, text, undefined, `text-align: ${cell.align || `left`}`)
         })
         .join(``)
       const body = rows
@@ -375,8 +376,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
     tablecell(token: Tokens.TableCell): string {
       const text = this.parser.parseInline(token.tokens)
-      const align = token.align || `left`
-      return `<td class="td" style="text-align: ${align}">${text}</td>`
+      return styledContent(`td`, text, undefined, `text-align: ${token.align || `left`}`)
     },
 
     hr(token: Tokens.Hr): string {
