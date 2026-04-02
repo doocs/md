@@ -364,7 +364,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
         })
         .join(``)
       return `
-        <section style="max-width: 100%; overflow: auto">
+        <section style="max-width: 100%; overflow: auto; -webkit-overflow-scrolling: touch">
           <table class="preview-table">
             <thead>${headerRow}</thead>
             <tbody>${body}</tbody>
