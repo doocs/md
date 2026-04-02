@@ -34,6 +34,24 @@ export const useUIStore = defineStore(`ui`, () => {
   // 是否为移动端
   const isMobile = store.reactive(`isMobile`, false)
 
+  // 视图模式：edit（纯编辑）| split（双屏）| preview（纯预览）
+  const viewMode = store.reactive<'edit' | 'split' | 'preview'>(`viewMode`, `split`)
+
+  function setViewMode(mode: 'edit' | 'split' | 'preview') {
+    viewMode.value = mode
+  }
+
+  // 预览设备：desktop（电脑端）| mobile（移动端模拟）
+  const previewDevice = store.reactive<'desktop' | 'mobile'>(`previewDevice`, `desktop`)
+
+  function setPreviewDevice(device: 'desktop' | 'mobile') {
+    previewDevice.value = device
+  }
+
+  function togglePreviewDevice() {
+    previewDevice.value = previewDevice.value === `desktop` ? `mobile` : `desktop`
+  }
+
   // 是否固定显示浮动目录
   const isPinFloatingToc = store.reactive(addPrefix(`isPinFloatingToc`), false)
   const togglePinFloatingToc = useToggle(isPinFloatingToc)
@@ -103,6 +121,9 @@ export const useUIStore = defineStore(`ui`, () => {
   // 处理窗口大小变化
   function handleResize() {
     isMobile.value = window.innerWidth <= 768
+    if (isMobile.value && viewMode.value === `split`) {
+      viewMode.value = `edit`
+    }
   }
 
   onMounted(() => {
@@ -123,6 +144,8 @@ export const useUIStore = defineStore(`ui`, () => {
     isOpenRightSlider,
     isOpenPostSlider,
     isMobile,
+    viewMode,
+    previewDevice,
     isPinFloatingToc,
     isShowFloatingToc,
     isOpenFolderPanel,
@@ -160,5 +183,8 @@ export const useUIStore = defineStore(`ui`, () => {
     togglePinFloatingToc,
     toggleShowFloatingToc,
     toggleImageReupload,
+    setViewMode,
+    setPreviewDevice,
+    togglePreviewDevice,
   }
 })
