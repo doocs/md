@@ -439,7 +439,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 :aria-label="mode.label"
                 class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
                 :class="viewMode === mode.key
-                  ? 'bg-primary text-primary-foreground shadow-sm'
+                  ? 'bg-accent text-foreground'
                   : 'text-muted-foreground hover:bg-accent hover:text-foreground'"
                 @click="uiStore.setViewMode(mode.key)"
               >
