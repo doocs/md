@@ -185,9 +185,6 @@ importers:
       marked:
         specifier: ^17.0.5
         version: 17.0.5
-      mathjax:
-        specifier: ^4.1.1
-        version: 4.1.1
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.9.3)(vue@3.5.31(typescript@5.9.3))
@@ -1896,9 +1893,6 @@ packages:
 
   '@marijn/find-cluster-break@1.0.2':
     resolution: {integrity: sha512-l0h88YhZFyKdXIFNfSWpyjStDjGHwZ/U7iobcK1cQQD8sejsONdQtTVU+1wVN1PBw40PiiHB1vA5S7VTfQiP9g==}
-
-  '@mathjax/mathjax-newcm-font@4.1.1':
-    resolution: {integrity: sha512-LeV5AWzoR7k/k2tg5mW0Ad3Jr9oK9guW/zBUIP8aoiIZcZIhvAV9dlbtUSqSe1wgEBUP1KOcJXcrE/NxOqkxlQ==}
 
   '@mermaid-js/parser@1.0.1':
     resolution: {integrity: sha512-opmV19kN1JsK0T6HhhokHpcVkqKpF+x2pPDKKM2ThHtZAB5F4PROopk0amuVYK5qMrIA4erzpNm8gmPNJgMDxQ==}
@@ -5623,9 +5617,6 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
-
-  mathjax@4.1.1:
-    resolution: {integrity: sha512-NyvA8c39LUUM/m+oCg7sfA13hmw7yGkre5kiRWN9qzChCyhce39lecnbjgMA/oEUgq9Vyetk6u78apwcIXpW/A==}
 
   mdast-util-find-and-replace@3.0.2:
     resolution: {integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==}
@@ -9521,8 +9512,6 @@ snapshots:
       '@lezer/lr': 1.4.8
 
   '@marijn/find-cluster-break@1.0.2': {}
-
-  '@mathjax/mathjax-newcm-font@4.1.1': {}
 
   '@mermaid-js/parser@1.0.1':
     dependencies:
@@ -13544,10 +13533,6 @@ snapshots:
   marky@1.3.0: {}
 
   math-intrinsics@1.1.0: {}
-
-  mathjax@4.1.1:
-    dependencies:
-      '@mathjax/mathjax-newcm-font': 4.1.1
 
   mdast-util-find-and-replace@3.0.2:
     dependencies:
