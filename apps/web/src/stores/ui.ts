@@ -42,7 +42,7 @@ export const useUIStore = defineStore(`ui`, () => {
   }
 
   // 预览设备：desktop（电脑端）| mobile（移动端模拟）
-  const previewDevice = store.reactive<'desktop' | 'mobile'>(`previewDevice`, `desktop`)
+  const previewDevice = store.reactive<'desktop' | 'mobile'>(`previewDevice`, `mobile`)
 
   function setPreviewDevice(device: 'desktop' | 'mobile') {
     previewDevice.value = device
