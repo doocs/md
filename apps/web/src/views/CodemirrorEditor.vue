@@ -6,7 +6,6 @@ import { EditorView } from '@codemirror/view'
 import { highlightPendingBlocks, hljs } from '@md/core'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
-import { Eye, Pen } from 'lucide-vue-next'
 import { SidebarAIToolbar } from '@/components/ai'
 import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import {
@@ -38,7 +37,6 @@ const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { isDark } = storeToRefs(uiStore)
 const { posts, currentPostIndex } = storeToRefs(postStore)
-const { previewWidth } = storeToRefs(themeStore)
 const {
   isMobile,
   isOpenPostSlider,
@@ -46,6 +44,8 @@ const {
   isOpenRightSlider,
   isOpenConfirmDialog,
   enableImageReupload,
+  viewMode,
+  previewDevice,
 } = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = uiStore
@@ -93,12 +93,85 @@ function endCopy() {
   }, 800)
 }
 
-const showEditor = ref(true)
+const showEditor = computed(() => viewMode.value !== `preview`)
 
-// 切换编辑/预览视图（仅限移动端）
-function toggleView() {
-  showEditor.value = !showEditor.value
-}
+// 是否有侧面板打开（样式面板 / CSS编辑器）
+const hasSidePanel = computed(() => !isMobile.value && (isOpenRightSlider.value || uiStore.isShowCssEditor))
+
+// 编辑器面板尺寸配置
+const editorPanelConfig = computed(() => {
+  const mode = viewMode.value
+  if (mode === `preview`) {
+    return { min: 0, max: 0 }
+  }
+  if (mode === `edit`) {
+    return hasSidePanel.value ? { min: 30, max: 85 } : { min: 100, max: 100 }
+  }
+  // split
+  if (isMobile.value)
+    return { min: 30, max: 70 }
+  return { min: 15, max: 85 }
+})
+
+// 预览面板尺寸配置
+const previewPanelConfig = computed(() => {
+  const mode = viewMode.value
+  if (mode === `edit`) {
+    return { min: 0, max: 0 }
+  }
+  if (mode === `preview`) {
+    return hasSidePanel.value ? { min: 20, max: 75 } : { min: 100, max: 100 }
+  }
+  // split
+  if (isMobile.value)
+    return { min: 30, max: 70 }
+  return { min: 15, max: 85 }
+})
+
+// 编辑器/预览面板引用（用于 collapse/expand）
+const editorPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const previewPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+
+// 监听 viewMode 变化，编程式调整面板大小
+watch(viewMode, (mode) => {
+  nextTick(() => {
+    if (mode === `edit`) {
+      // 编辑模式：编辑器占满，预览折叠
+      editorPanelRef.value?.resize(hasSidePanel.value ? 60 : 100)
+      previewPanelRef.value?.resize(0)
+    }
+    else if (mode === `preview`) {
+      // 预览模式：预览占满，编辑器折叠
+      editorPanelRef.value?.resize(0)
+      previewPanelRef.value?.resize(hasSidePanel.value ? 60 : 100)
+    }
+    else {
+      // 双屏模式：各占一半
+      editorPanelRef.value?.resize(50)
+      previewPanelRef.value?.resize(50)
+    }
+  })
+})
+
+// 监听侧面板变化，在单屏模式下需重新分配空间
+watch(hasSidePanel, (has) => {
+  nextTick(() => {
+    const mode = viewMode.value
+    if (mode === `edit`) {
+      editorPanelRef.value?.resize(has ? 60 : 100)
+    }
+    else if (mode === `preview`) {
+      previewPanelRef.value?.resize(has ? 60 : 100)
+    }
+  })
+})
+
+// 预览区域宽度样式（受设备切换影响）
+const effectivePreviewWidth = computed(() => {
+  if (isMobile.value)
+    return `w-full`
+  return previewDevice.value === `mobile` ? `w-[375px]` : `w-full`
+})
 
 // AI 工具箱已移到侧边栏
 
@@ -936,12 +1009,16 @@ onUnmounted(() => {
             <ResizablePanelGroup direction="horizontal">
               <!-- Markdown 编辑器 -->
               <ResizablePanel
+                ref="editorPanelRef"
                 :order="1"
-                :default-size="50"
-                :min-size="isMobile ? (showEditor ? 100 : 0) : 15"
-                :max-size="isMobile ? (showEditor ? 100 : 0) : 85"
+                :default-size="viewMode === 'preview' ? 0 : viewMode === 'edit' ? 100 : 50"
+                :min-size="editorPanelConfig.min"
+                :max-size="editorPanelConfig.max"
+                collapsible
+                :collapsed-size="0"
               >
                 <div
+                  v-show="viewMode !== 'preview'"
                   ref="codeMirrorWrapper"
                   class="codeMirror-wrapper relative h-full"
                 >
@@ -960,16 +1037,19 @@ onUnmounted(() => {
                   </EditorContextMenu>
                 </div>
               </ResizablePanel>
-              <ResizableHandle class="hidden md:block" />
+              <ResizableHandle v-show="viewMode === 'split'" />
 
               <!-- 预览区 -->
               <ResizablePanel
+                ref="previewPanelRef"
                 :order="2"
-                :default-size="50"
-                :min-size="isMobile ? (!showEditor ? 100 : 0) : 15"
-                :max-size="isMobile ? (!showEditor ? 100 : 0) : 85"
+                :default-size="viewMode === 'edit' ? 0 : viewMode === 'preview' ? 100 : 50"
+                :min-size="previewPanelConfig.min"
+                :max-size="previewPanelConfig.max"
+                collapsible
+                :collapsed-size="0"
               >
-                <div class="relative h-full overflow-x-hidden">
+                <div v-show="viewMode !== 'edit'" class="relative h-full overflow-x-hidden">
                   <div
                     id="preview"
                     ref="previewRef"
@@ -983,8 +1063,8 @@ onUnmounted(() => {
                       <div
                         class="preview border-x shadow-xl mx-auto"
                         :class="[
-                          isMobile ? 'w-full' : previewWidth,
-                          themeStore.previewWidth === 'w-[375px]' ? 'max-w-full' : '',
+                          effectivePreviewWidth,
+                          effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
                         ]"
                       >
                         <section id="output" class="w-full" @click="handlePreviewContentClick" v-html="output" />
@@ -1039,18 +1119,6 @@ onUnmounted(() => {
             </template>
           </ResizablePanel>
         </ResizablePanelGroup>
-      </div>
-
-      <!-- 移动端浮动按钮组 -->
-      <div v-if="isMobile" class="fixed bottom-16 right-6 z-50 flex flex-col gap-2">
-        <!-- 切换编辑/预览按钮 -->
-        <button
-          class="bg-primary flex items-center justify-center rounded-full p-3 text-white shadow-lg transition active:scale-95 hover:scale-105 dark:bg-gray-700 dark:text-white dark:ring-2 dark:ring-white/30"
-          aria-label="切换编辑/预览"
-          @click="toggleView"
-        >
-          <component :is="showEditor ? Eye : Pen" class="h-5 w-5" />
-        </button>
       </div>
 
       <!-- AI工具箱已移到侧边栏，这里不再显示 -->
