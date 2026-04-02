@@ -351,7 +351,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       const headerRow = header
         .map((cell) => {
           const text = this.parser.parseInline(cell.tokens)
-          return styledContent(`th`, text)
+          const align = cell.align || `left`
+          return `<th class="th" style="text-align: ${align}">${text}</th>`
         })
         .join(``)
       const body = rows
@@ -374,7 +375,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
     tablecell(token: Tokens.TableCell): string {
       const text = this.parser.parseInline(token.tokens)
-      return styledContent(`td`, text)
+      const align = token.align || `left`
+      return `<td class="td" style="text-align: ${align}">${text}</td>`
     },
 
     hr(token: Tokens.Hr): string {
