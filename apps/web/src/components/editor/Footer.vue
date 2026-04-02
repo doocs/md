@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -196,10 +196,10 @@ function updateCursorInfo(view: any) {
   cursorCol.value = main.head - line.from + 1
   totalLines.value = state.doc.lines
   selectionLength.value = Math.abs(main.to - main.from)
-  updateBreadcrumb(state.doc, line.number)
+  updateHeadingsAndBreadcrumb(state.doc, line.number)
 }
 
-// TOC 面包屑
+// 大纲 & 面包屑
 interface BreadcrumbItem {
   title: string
   level: number
@@ -207,17 +207,21 @@ interface BreadcrumbItem {
 }
 
 const breadcrumbs = ref<BreadcrumbItem[]>([])
+const allHeadings = ref<BreadcrumbItem[]>([])
+const isOutlineOpen = ref(false)
+const outlineScrollRef = ref<HTMLElement | null>(null)
 
-function updateBreadcrumb(doc: any, currentLine: number) {
+function updateHeadingsAndBreadcrumb(doc: any, currentLine: number) {
+  const items: BreadcrumbItem[] = []
   const stack: BreadcrumbItem[] = []
   let codeFenceChar = ``
   let codeFenceCount = 0
   let inFrontMatter = false
-  for (let i = 1; i <= currentLine; i++) {
+
+  for (let i = 1; i <= doc.lines; i++) {
     const text = doc.line(i).text
     const trimmed = text.trimStart()
 
-    // 检测 YAML front matter（仅在文档开头）
     if (i === 1 && trimmed === `---`) {
       inFrontMatter = true
       continue
@@ -228,9 +232,7 @@ function updateBreadcrumb(doc: any, currentLine: number) {
       continue
     }
 
-    // 检测围栏代码块的开始/结束
     if (codeFenceChar) {
-      // 已在代码块内，检测是否为对应的关闭围栏
       const closeMatch = trimmed.match(/^(`{3,}|~{3,})\s*$/)
       if (closeMatch && closeMatch[1][0] === codeFenceChar && closeMatch[1].length >= codeFenceCount) {
         codeFenceChar = ``
@@ -245,19 +247,52 @@ function updateBreadcrumb(doc: any, currentLine: number) {
       continue
     }
 
-    // 匹配 ATX 标题（CommonMark: 最多 3 个前导空格）
     const match = text.match(/^(\s{0,3})(#{1,6})\s+(.+)/)
     if (match) {
       const level = match[2].length
       const title = match[3].replace(/\s*#+\s*$/, ``).trim()
-      // 弹出所有 >= 当前 level 的项
-      while (stack.length > 0 && stack[stack.length - 1].level >= level)
-        stack.pop()
-      stack.push({ title, level, line: i })
+      const item = { title, level, line: i }
+      items.push(item)
+
+      if (i <= currentLine) {
+        while (stack.length > 0 && stack[stack.length - 1].level >= level)
+          stack.pop()
+        stack.push(item)
+      }
     }
   }
-  breadcrumbs.value = stack
+
+  breadcrumbs.value = [...stack]
+  allHeadings.value = items
 }
+
+const activeHeadingLine = computed(() => {
+  if (breadcrumbs.value.length === 0)
+    return -1
+  return breadcrumbs.value[breadcrumbs.value.length - 1].line
+})
+
+function getOutlineLevelClass(level: number) {
+  if (level === 1)
+    return `font-semibold text-foreground`
+  if (level === 2)
+    return `font-medium text-foreground/90`
+  return `text-muted-foreground`
+}
+
+function jumpToHeadingAndClose(line: number) {
+  jumpToHeading(line)
+  isOutlineOpen.value = false
+}
+
+watch(isOutlineOpen, (open) => {
+  if (open) {
+    nextTick(() => {
+      const el = outlineScrollRef.value?.querySelector(`[data-active="true"]`)
+      el?.scrollIntoView({ block: `nearest` })
+    })
+  }
+})
 
 function jumpToHeading(line: number) {
   const view = editor.value
@@ -407,26 +442,65 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         </PopoverContent>
       </Popover>
 
-      <!-- 中间：TOC 面包屑（小屏隐藏） -->
+      <!-- 中间：大纲视图（小屏隐藏） -->
       <div class="mx-3 hidden min-w-0 flex-1 items-center justify-center sm:flex">
-        <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
-          <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
-            <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-40" />
+        <Popover v-model:open="isOutlineOpen">
+          <PopoverTriggerPrimitive as-child>
             <Tooltip>
               <TooltipTrigger as-child>
                 <button
-                  class="max-w-28 cursor-pointer truncate rounded px-1 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
-                  @click="jumpToHeading(crumb.line)"
+                  class="flex min-w-0 cursor-pointer items-center gap-1.5 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  @click="isOutlineOpen = !isOutlineOpen"
                 >
-                  {{ crumb.title }}
+                  <ListTree class="size-3 shrink-0 opacity-60" />
+                  <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
+                    <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
+                      <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-30" />
+                      <span class="max-w-24 truncate">{{ crumb.title }}</span>
+                    </template>
+                  </div>
+                  <span v-else class="opacity-50">大纲</span>
                 </button>
               </TooltipTrigger>
-              <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>H{{ crumb.level }} · 第 {{ crumb.line }} 行 · 点击跳转</p>
+              <TooltipContent v-if="!isOutlineOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>目录大纲</p>
               </TooltipContent>
             </Tooltip>
-          </template>
-        </div>
+          </PopoverTriggerPrimitive>
+          <PopoverContent side="top" :side-offset="8" align="center" class="w-72 p-0">
+            <div class="flex items-center justify-between border-b px-3 py-2">
+              <span class="text-xs font-medium tracking-wide text-muted-foreground">大纲</span>
+              <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ allHeadings.length }} 个标题</span>
+            </div>
+            <div ref="outlineScrollRef" class="max-h-72 overflow-y-auto overflow-x-hidden py-1">
+              <template v-if="allHeadings.length > 0">
+                <button
+                  v-for="item in allHeadings"
+                  :key="item.line"
+                  :data-active="activeHeadingLine === item.line"
+                  class="group flex w-full items-start px-2 py-1 text-left text-[13px] transition-colors hover:bg-accent"
+                  :class="activeHeadingLine === item.line ? 'bg-accent/60' : ''"
+                  :style="{ paddingLeft: `${8 + (item.level - 1) * 16}px` }"
+                  @click="jumpToHeadingAndClose(item.line)"
+                >
+                  <span
+                    class="mr-2 mt-[7px] inline-block size-1 shrink-0 rounded-full bg-current transition-opacity"
+                    :class="activeHeadingLine === item.line ? 'opacity-80' : item.level <= 2 ? 'opacity-40' : 'opacity-20'"
+                  />
+                  <span
+                    class="line-clamp-1 leading-relaxed"
+                    :class="getOutlineLevelClass(item.level)"
+                  >
+                    {{ item.title }}
+                  </span>
+                </button>
+              </template>
+              <div v-else class="px-3 py-8 text-center text-xs text-muted-foreground">
+                暂无标题
+              </div>
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
 
       <!-- 右侧：统计信息 -->

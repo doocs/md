@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileCode, Moon, Palette, PanelLeft, Sun } from 'lucide-vue-next'
+import { FileCode, Moon, Palette, Sun } from 'lucide-vue-next'
 import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
@@ -38,34 +38,6 @@ const { isDark, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
         </MenubarSubContent>
       </MenubarSub>
 
-      <!-- 浮动目录子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <PanelLeft class="mr-2 h-4 w-4" />
-          浮动目录
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem
-            :checked="uiStore.isShowFloatingToc && uiStore.isPinFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = true }"
-          >
-            常驻显示
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem
-            :checked="uiStore.isShowFloatingToc && !uiStore.isPinFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = false }"
-          >
-            点击展开
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem
-            :checked="!uiStore.isShowFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = false }"
-          >
-            隐藏
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
       <MenubarSeparator />
 
       <MenubarItem @click="isOpenRightSlider = !isOpenRightSlider">
@@ -97,34 +69,6 @@ const { isDark, isShowCssEditor, isOpenRightSlider } = storeToRefs(uiStore)
           </MenubarCheckboxItem>
           <MenubarCheckboxItem :checked="isDark" @click="isDark = true">
             深色模式
-          </MenubarCheckboxItem>
-        </MenubarSubContent>
-      </MenubarSub>
-
-      <!-- 浮动目录子菜单 -->
-      <MenubarSub>
-        <MenubarSubTrigger>
-          <PanelLeft class="mr-2 h-4 w-4" />
-          浮动目录
-        </MenubarSubTrigger>
-        <MenubarSubContent>
-          <MenubarCheckboxItem
-            :checked="uiStore.isShowFloatingToc && uiStore.isPinFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = true }"
-          >
-            常驻显示
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem
-            :checked="uiStore.isShowFloatingToc && !uiStore.isPinFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = true; uiStore.isPinFloatingToc = false }"
-          >
-            点击展开
-          </MenubarCheckboxItem>
-          <MenubarCheckboxItem
-            :checked="!uiStore.isShowFloatingToc"
-            @click="() => { uiStore.isShowFloatingToc = false }"
-          >
-            隐藏
           </MenubarCheckboxItem>
         </MenubarSubContent>
       </MenubarSub>

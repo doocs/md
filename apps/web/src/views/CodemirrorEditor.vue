@@ -396,19 +396,6 @@ function handlePreviewContentClick(event: MouseEvent) {
   syncEditorToPreviewElement(block)
 }
 
-function handleFloatingTocSelect(event: Event) {
-  const detail = (event as CustomEvent<{ title?: string, level?: number }>).detail
-  const title = detail?.title
-  const level = detail?.level
-  if (!title)
-    return
-
-  const pos = findHeadingPosInEditor(title, level)
-  if (pos != null) {
-    focusEditorAtPos(pos)
-  }
-}
-
 const searchTabRef
   = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
 
@@ -500,7 +487,6 @@ function handleGlobalKeydown(e: KeyboardEvent) {
 onMounted(() => {
   // 使用较低优先级确保 CodeMirror 键盘事件先处理
   document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
-  window.addEventListener(`floating-toc:select`, handleFloatingTocSelect)
 })
 
 async function beforeImageUpload(file: File) {
@@ -970,7 +956,6 @@ onUnmounted(() => {
 
   // 清理全局事件监听器 - 防止全局事件触发已销毁的组件
   document.removeEventListener(`keydown`, handleGlobalKeydown)
-  window.removeEventListener(`floating-toc:select`, handleFloatingTocSelect)
 })
 </script>
 
@@ -1082,8 +1067,6 @@ onUnmounted(() => {
                       :bottom="isMobile ? 90 : 20"
                     />
                   </div>
-
-                  <FloatingToc />
                 </div>
               </ResizablePanel>
 
