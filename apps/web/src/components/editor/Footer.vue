@@ -442,66 +442,67 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         </PopoverContent>
       </Popover>
 
-      <!-- 中间：大纲视图（小屏隐藏） -->
-      <div class="mx-3 hidden min-w-0 flex-1 items-center justify-center sm:flex">
-        <Popover v-model:open="isOutlineOpen">
-          <PopoverTriggerPrimitive as-child>
-            <Tooltip>
-              <TooltipTrigger as-child>
-                <button
-                  class="flex min-w-0 cursor-pointer items-center gap-1.5 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground"
-                  @click="isOutlineOpen = !isOutlineOpen"
+      <!-- 大纲视图 -->
+      <Popover v-model:open="isOutlineOpen">
+        <PopoverTriggerPrimitive as-child>
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <button
+                class="ml-1 flex min-w-0 cursor-pointer items-center gap-1.5 rounded px-1 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:mx-3 sm:px-1.5"
+                @click="isOutlineOpen = !isOutlineOpen"
+              >
+                <ListTree class="size-3.5 shrink-0 opacity-60 sm:size-3" />
+                <div v-if="breadcrumbs.length" class="hidden min-w-0 items-center gap-0.5 truncate sm:flex">
+                  <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
+                    <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-30" />
+                    <span class="max-w-24 truncate">{{ crumb.title }}</span>
+                  </template>
+                </div>
+                <span v-else class="hidden opacity-50 sm:inline">大纲</span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent v-if="!isOutlineOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+              <p>目录大纲</p>
+            </TooltipContent>
+          </Tooltip>
+        </PopoverTriggerPrimitive>
+        <PopoverContent side="top" :side-offset="8" align="center" class="w-72 p-0">
+          <div class="flex items-center justify-between border-b px-3 py-2">
+            <span class="text-xs font-medium tracking-wide text-muted-foreground">大纲</span>
+            <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ allHeadings.length }} 个标题</span>
+          </div>
+          <div ref="outlineScrollRef" class="max-h-72 overflow-y-auto overflow-x-hidden py-1">
+            <template v-if="allHeadings.length > 0">
+              <button
+                v-for="item in allHeadings"
+                :key="item.line"
+                :data-active="activeHeadingLine === item.line"
+                class="group flex w-full items-start px-2 py-1 text-left text-[13px] transition-colors hover:bg-accent"
+                :class="activeHeadingLine === item.line ? 'bg-accent/60' : ''"
+                :style="{ paddingLeft: `${8 + (item.level - 1) * 16}px` }"
+                @click="jumpToHeadingAndClose(item.line)"
+              >
+                <span
+                  class="mr-2 mt-[7px] inline-block size-1 shrink-0 rounded-full bg-current transition-opacity"
+                  :class="activeHeadingLine === item.line ? 'opacity-80' : item.level <= 2 ? 'opacity-40' : 'opacity-20'"
+                />
+                <span
+                  class="line-clamp-1 leading-relaxed"
+                  :class="getOutlineLevelClass(item.level)"
                 >
-                  <ListTree class="size-3 shrink-0 opacity-60" />
-                  <div v-if="breadcrumbs.length" class="flex min-w-0 items-center gap-0.5 truncate">
-                    <template v-for="(crumb, idx) in breadcrumbs" :key="crumb.line">
-                      <ChevronRight v-if="idx > 0" class="size-3 shrink-0 opacity-30" />
-                      <span class="max-w-24 truncate">{{ crumb.title }}</span>
-                    </template>
-                  </div>
-                  <span v-else class="opacity-50">大纲</span>
-                </button>
-              </TooltipTrigger>
-              <TooltipContent v-if="!isOutlineOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>目录大纲</p>
-              </TooltipContent>
-            </Tooltip>
-          </PopoverTriggerPrimitive>
-          <PopoverContent side="top" :side-offset="8" align="center" class="w-72 p-0">
-            <div class="flex items-center justify-between border-b px-3 py-2">
-              <span class="text-xs font-medium tracking-wide text-muted-foreground">大纲</span>
-              <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ allHeadings.length }} 个标题</span>
+                  {{ item.title }}
+                </span>
+              </button>
+            </template>
+            <div v-else class="px-3 py-8 text-center text-xs text-muted-foreground">
+              暂无标题
             </div>
-            <div ref="outlineScrollRef" class="max-h-72 overflow-y-auto overflow-x-hidden py-1">
-              <template v-if="allHeadings.length > 0">
-                <button
-                  v-for="item in allHeadings"
-                  :key="item.line"
-                  :data-active="activeHeadingLine === item.line"
-                  class="group flex w-full items-start px-2 py-1 text-left text-[13px] transition-colors hover:bg-accent"
-                  :class="activeHeadingLine === item.line ? 'bg-accent/60' : ''"
-                  :style="{ paddingLeft: `${8 + (item.level - 1) * 16}px` }"
-                  @click="jumpToHeadingAndClose(item.line)"
-                >
-                  <span
-                    class="mr-2 mt-[7px] inline-block size-1 shrink-0 rounded-full bg-current transition-opacity"
-                    :class="activeHeadingLine === item.line ? 'opacity-80' : item.level <= 2 ? 'opacity-40' : 'opacity-20'"
-                  />
-                  <span
-                    class="line-clamp-1 leading-relaxed"
-                    :class="getOutlineLevelClass(item.level)"
-                  >
-                    {{ item.title }}
-                  </span>
-                </button>
-              </template>
-              <div v-else class="px-3 py-8 text-center text-xs text-muted-foreground">
-                暂无标题
-              </div>
-            </div>
-          </PopoverContent>
-        </Popover>
-      </div>
+          </div>
+        </PopoverContent>
+      </Popover>
+
+      <!-- 桌面端占位 flex-1 -->
+      <div class="hidden min-w-0 flex-1 sm:block" />
 
       <!-- 右侧：统计信息 -->
       <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
