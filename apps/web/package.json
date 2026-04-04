@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1020.0",
-    "@aws-sdk/s3-request-presigner": "^3.1020.0",
+    "@aws-sdk/client-s3": "^3.1024.0",
+    "@aws-sdk/s3-request-presigner": "^3.1024.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -52,20 +52,20 @@
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.4",
     "radix-vue": "^1.9.17",
-    "reka-ui": "^2.9.2",
+    "reka-ui": "^2.9.3",
     "spark-md5": "3.0.2",
     "tailwind-merge": "^3.5.0",
     "tailwindcss-animate": "^1.0.7",
     "uuid": "^13.0.0",
     "vee-validate": "^4.15.1",
-    "vue": "^3.5.31",
+    "vue": "^3.5.32",
     "vue-pick-colors": "^1.8.0",
     "vue-sonner": "^2.0.9",
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.30.3",
-    "@cloudflare/workers-types": "^4.20260331.1",
+    "@cloudflare/vite-plugin": "1.31.0",
+    "@cloudflare/workers-types": "^4.20260403.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.2.2",
     "@tailwindcss/vite": "^4.2.2",
@@ -87,7 +87,7 @@
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.6",
-    "wrangler": "^4.79.0",
+    "wrangler": "^4.80.0",
     "wxt": "^0.20.20"
   }
 }

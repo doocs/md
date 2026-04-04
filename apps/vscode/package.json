@@ -83,7 +83,7 @@
     "@types/webpack": "^5.28.5",
     "isomorphic-dompurify": "^3.7.1",
     "postcss": "^8.5.8",
-    "ts-loader": "^9.5.4",
+    "ts-loader": "^9.5.7",
     "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
   "devDependencies": {
