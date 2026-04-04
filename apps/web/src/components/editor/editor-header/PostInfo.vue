@@ -40,7 +40,7 @@ const allowPost = computed(() => extensionInstalled.value && allAccounts.value.s
 const platformCategories = [
   {
     name: `媒体平台`,
-    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`],
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`, `douban`],
   },
   {
     name: `博客平台`,
@@ -268,8 +268,16 @@ function getPlatformUrl(type: string): string {
     douyin: 'https://creator.douyin.com/creator-micro/content/post/article?default-tab=5&enter_from=publish_page&media_type=article&type=new',
     xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish?from=menu&target=article',
     elecfans: 'https://www.elecfans.com/d/article/md/',
+    douban: 'https://www.douban.com/note/create',
   }
   return urls[type] || '#'
+}
+
+function onAvatarError(account: PostAccount, event: Event) {
+  const img = event.target as HTMLImageElement
+  if (!account)
+    return
+  img.style.display = 'none'
 }
 
 function checkExtension() {
@@ -415,8 +423,7 @@ onBeforeMount(() => {
                         :src="account.avatar"
                         alt=""
                         class="ml-1 h-4 w-4 rounded-full object-cover"
-                        crossorigin="anonymous"
-                        @error="(e: Event) => (e.target as HTMLImageElement).style.display = 'none'"
+                        @error="onAvatarError(account, $event)"
                       >
                       <span class="text-sm text-muted-foreground">@{{ account.displayName }}</span>
                     </template>
