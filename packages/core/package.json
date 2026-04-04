@@ -19,7 +19,7 @@
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^3.7.1",
     "marked": "^17.0.5",
-    "mermaid": "^11.13.0",
+    "mermaid": "^11.14.0",
     "postcss": "^8.5.8",
     "postcss-calc": "^10.1.1",
     "postcss-custom-properties": "^15.0.1"
