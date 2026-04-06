@@ -1,0 +1,1 @@
+function e(e,t){let n=e.parent;for(;n;)if(n.type===`atrule`&&n.name.toLowerCase()===`supports`){if(t.test(n.params))return!0;n=n.parent}else n=n.parent;return!1}export{e as t};

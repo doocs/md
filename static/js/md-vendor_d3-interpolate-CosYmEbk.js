@@ -1,0 +1,1 @@
+import{Nt as e,Pt as t}from"./md-vendor_antv_infographic-CYyOGDCE.js";import{t as n}from"./md-vendor_d3-color-C6uZSshE.js";function r(e){return function(r,i){var a=e((r=n(r)).h,(i=n(i)).h),o=t(r.c,i.c),s=t(r.l,i.l),c=t(r.opacity,i.opacity);return function(e){return r.h=a(e),r.c=o(e),r.l=s(e),r.opacity=c(e),r+``}}}var i=r(e);export{i as t};

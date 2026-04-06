@@ -1,0 +1,1 @@
+import{Bt as e,Vt as t}from"./md-vendor_antv_infographic-CYyOGDCE.js";function n(n){return typeof n==`string`?new e([[document.querySelector(n)]],[document.documentElement]):new e([[n]],t)}export{n as t};

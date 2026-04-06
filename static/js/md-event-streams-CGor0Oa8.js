@@ -1,0 +1,1 @@
+import{t as e}from"./md-vendor_smithy_core-Bki1tEsX.js";export{e as EventStreamSerde};

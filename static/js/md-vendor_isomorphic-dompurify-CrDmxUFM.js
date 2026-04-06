@@ -1,0 +1,1 @@
+import{t as e}from"./md-vendor_dompurify-Dxiz_HbZ.js";var t=e;e.sanitize.bind(e),e.isSupported,e.addHook.bind(e),e.removeHook.bind(e),e.removeHooks.bind(e),e.removeAllHooks.bind(e),e.setConfig.bind(e),e.clearConfig.bind(e),e.isValidAttribute.bind(e),e.version,e.removed;export{t};

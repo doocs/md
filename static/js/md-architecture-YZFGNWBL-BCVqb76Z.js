@@ -1,0 +1,1 @@
+import{X as e}from"./md-vendor_mermaid-B2j2qzU5.js";import"./md-vendor_mermaid-js_parser-CGaJBCOG.js";export{e as createArchitectureServices};
