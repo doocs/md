@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -22,7 +23,7 @@ const AIImageConfigStore = useAIImageConfigStore()
 const { type, endpoint, model, apiKey, size, quality, style } = storeToRefs(AIImageConfigStore)
 
 /** UI 状态 */
-const loading = ref(false)
+const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
 
 /** 当前服务信息 */
@@ -82,15 +83,10 @@ async function testConnection() {
   testResult.value = ``
   loading.value = true
 
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== DEFAULT_SERVICE_TYPE)
-    headers.Authorization = `Bearer ${apiKey.value}`
+  const headers = buildAIHeaders(apiKey.value, type.value)
 
   try {
-    const url = new URL(endpoint.value)
-    if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`)) {
-      url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
-    }
+    const url = resolveEndpointUrl(endpoint.value, `image`)
 
     const payload = {
       model: model.value,
@@ -101,18 +97,13 @@ async function testConnection() {
       n: 1,
     }
 
-    const res = await window.fetch(url.toString(), {
-      method: `POST`,
-      headers,
-      body: JSON.stringify(payload),
-    })
+    const res = await fetchJSON(url, headers, payload)
 
     if (res.ok) {
       testResult.value = `✅ 连接成功`
     }
     else {
-      const errorText = await res.text()
-      testResult.value = `❌ 连接失败：${res.status} ${errorText}`
+      testResult.value = `❌ 连接失败：${res.status} ${res.errorText}`
     }
   }
   catch (error) {

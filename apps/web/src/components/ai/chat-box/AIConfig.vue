@@ -3,6 +3,7 @@ import { serviceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Info } from 'lucide-vue-next'
 import { PasswordInput } from '@/components/ui/password-input'
+import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
 import useAIConfigStore from '@/stores/aiConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -13,7 +14,7 @@ const AIConfigStore = useAIConfigStore()
 const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
 
 /** UI 状态 */
-const loading = ref(false)
+const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
 
 /** 当前服务信息 */
@@ -51,14 +52,10 @@ async function testConnection() {
   testResult.value = ``
   loading.value = true
 
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== DEFAULT_SERVICE_TYPE)
-    headers.Authorization = `Bearer ${apiKey.value}`
+  const headers = buildAIHeaders(apiKey.value, type.value)
 
   try {
-    const url = new URL(endpoint.value)
-    if (!url.pathname.endsWith(`/chat/completions`))
-      url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
+    const url = resolveEndpointUrl(endpoint.value, `chat`)
 
     const payload = {
       model: model.value,
@@ -68,20 +65,15 @@ async function testConnection() {
       stream: false,
     }
 
-    const res = await window.fetch(url.toString(), {
-      method: `POST`,
-      headers,
-      body: JSON.stringify(payload),
-    })
+    const res = await fetchJSON(url, headers, payload)
 
     if (res.ok) {
       testResult.value = `✅ 测试成功，/chat/completions 可用`
       saveConfig(false)
     }
     else {
-      const text = await res.text()
       try {
-        const { error } = JSON.parse(text)
+        const { error } = JSON.parse(res.errorText)
         if (
           res.status === 404
           && (error?.code === `ModelNotOpen`
@@ -93,7 +85,7 @@ async function testConnection() {
         }
       }
       catch {}
-      testResult.value = `❌ 测试失败：${res.status} ${res.statusText}，${text}`
+      testResult.value = `❌ 测试失败：${res.status} ${res.statusText}，${res.errorText}`
     }
   }
   catch (err) {
