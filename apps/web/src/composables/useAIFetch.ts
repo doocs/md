@@ -14,13 +14,15 @@ export function buildAIHeaders(apiKey: string, serviceType: string): Record<stri
  */
 export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image`): string {
   const url = new URL(endpoint)
+  // Normalize trailing slashes so endsWith checks work reliably
+  url.pathname = url.pathname.replace(/\/+$/, ``)
   if (kind === `chat`) {
     if (!url.pathname.endsWith(`/chat/completions`))
-      url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
+      url.pathname += `/chat/completions`
   }
   else {
     if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`))
-      url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
+      url.pathname += `/images/generations`
   }
   return url.toString()
 }
