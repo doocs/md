@@ -19,6 +19,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
+import { buildAIHeaders, resolveEndpointUrl } from '@/composables/useAIFetch'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
@@ -154,7 +155,7 @@ onMounted(async () => {
   else {
     // 补齐较短的数组
     if (promptsLength < imagesLength) {
-      imagePrompts.value = [...imagePrompts.value, ...Array.from({ length: imagesLength - promptsLength }, () => ``)]
+      imagePrompts.value = [...imagePrompts.value, ...Array.from({ length: imagesLength - promptsLength }).fill(``)]
     }
     if (timestampsLength < imagesLength) {
       imageTimestamps.value = [...imageTimestamps.value, ...Array.from({ length: imagesLength - timestampsLength }, () => Date.now())]
@@ -202,31 +203,22 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
-/* ---------- 生成图像 ---------- */
-async function generateImage() {
-  if (!prompt.value.trim() || loading.value)
+/* ---------- 生成图像（核心） ---------- */
+async function doGenerateImage(promptText: string, clearInput = false) {
+  if (!promptText.trim() || loading.value)
     return
-
-  // 保存当前提示词用于重新生成
-  const currentPrompt = prompt.value.trim()
-  lastUsedPrompt.value = currentPrompt
 
   loading.value = true
   abortController.value = new AbortController()
 
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== `default`)
-    headers.Authorization = `Bearer ${apiKey.value}`
+  const headers = buildAIHeaders(apiKey.value, type.value)
 
   try {
-    const url = new URL(endpoint.value)
-    if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`)) {
-      url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
-    }
+    const url = resolveEndpointUrl(endpoint.value, `image`)
 
     const payload: any = {
       model: model.value,
-      prompt: currentPrompt,
+      prompt: promptText.trim(),
       size: size.value,
       n: 1,
     }
@@ -237,7 +229,7 @@ async function generateImage() {
       payload.style = style.value
     }
 
-    const res = await window.fetch(url.toString(), {
+    const res = await window.fetch(url, {
       method: `POST`,
       headers,
       body: JSON.stringify(payload),
@@ -263,7 +255,7 @@ async function generateImage() {
         const currentTimestamp = Date.now()
 
         generatedImages.value.unshift(finalUrl)
-        imagePrompts.value.unshift(currentPrompt) // 保存对应的prompt
+        imagePrompts.value.unshift(promptText.trim()) // 保存对应的prompt
         imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
         currentImageIndex.value = 0
 
@@ -279,7 +271,8 @@ async function generateImage() {
         await store.setJSON(`ai_image_timestamps`, imageTimestamps.value)
 
         // 清空输入框
-        prompt.value = ``
+        if (clearInput)
+          prompt.value = ``
       }
     }
     else {
@@ -292,13 +285,22 @@ async function generateImage() {
     }
     else {
       console.error(`图像生成失败:`, e)
-      // 可以在这里添加错误提示
     }
   }
   finally {
     loading.value = false
     abortController.value = null
   }
+}
+
+/* ---------- 生成图像 ---------- */
+async function generateImage() {
+  if (!prompt.value.trim() || loading.value)
+    return
+
+  // 保存当前提示词用于重新生成
+  lastUsedPrompt.value = prompt.value.trim()
+  await doGenerateImage(prompt.value, true)
 }
 
 /* ---------- 取消生成 ---------- */
@@ -380,93 +382,7 @@ function regenerateImage() {
 
 /* ---------- 使用指定prompt重新生成 ---------- */
 async function regenerateWithPrompt(promptText: string) {
-  if (!promptText.trim() || loading.value)
-    return
-
-  loading.value = true
-  abortController.value = new AbortController()
-
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== `default`)
-    headers.Authorization = `Bearer ${apiKey.value}`
-
-  try {
-    const url = new URL(endpoint.value)
-    if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`)) {
-      url.pathname = url.pathname.replace(/\/?$/, `/images/generations`)
-    }
-
-    const payload: any = {
-      model: model.value,
-      prompt: promptText.trim(),
-      size: size.value,
-      n: 1,
-    }
-
-    // 只对 DALL-E 模型添加额外参数
-    if (model.value.includes(`dall-e`)) {
-      payload.quality = quality.value
-      payload.style = style.value
-    }
-
-    const res = await window.fetch(url.toString(), {
-      method: `POST`,
-      headers,
-      body: JSON.stringify(payload),
-      signal: abortController.value.signal,
-    })
-
-    if (!res.ok) {
-      const errorText = await res.text()
-      throw new Error(`${res.status}: ${errorText}`)
-    }
-
-    const data = await res.json()
-
-    if (data.data && data.data.length > 0) {
-      const imageUrl = data.data[0].url || data.data[0].b64_json
-
-      if (imageUrl) {
-        // 如果是 base64 格式，转换为 data URL
-        const finalUrl = imageUrl.startsWith(`data:`) || imageUrl.startsWith(`http`)
-          ? imageUrl
-          : `data:image/png;base64,${imageUrl}`
-
-        const currentTimestamp = Date.now()
-
-        generatedImages.value.unshift(finalUrl)
-        imagePrompts.value.unshift(promptText.trim()) // 保存对应的prompt
-        imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
-        currentImageIndex.value = 0
-
-        // 限制存储的图片数量，避免占用过多存储空间
-        if (generatedImages.value.length > 20) {
-          generatedImages.value = generatedImages.value.slice(0, 20)
-          imagePrompts.value = imagePrompts.value.slice(0, 20)
-          imageTimestamps.value = imageTimestamps.value.slice(0, 20)
-        }
-
-        await store.setJSON(`ai_generated_images`, generatedImages.value)
-        await store.setJSON(`ai_image_prompts`, imagePrompts.value)
-        await store.setJSON(`ai_image_timestamps`, imageTimestamps.value)
-      }
-    }
-    else {
-      throw new Error(`未收到有效的图像数据`)
-    }
-  }
-  catch (e) {
-    if ((e as Error).name === `AbortError`) {
-      console.log(`图像生成请求中止`)
-    }
-    else {
-      console.error(`图像生成失败:`, e)
-    }
-  }
-  finally {
-    loading.value = false
-    abortController.value = null
-  }
+  await doGenerateImage(promptText)
 }
 
 /* ---------- 切换图像 ---------- */

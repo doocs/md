@@ -29,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
+import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
 import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useQuickCommands } from '@/stores/quickCommands'
@@ -57,8 +58,7 @@ const inputHistory = ref<string[]>([])
 const historyIndex = ref<number | null>(null)
 
 const configVisible = ref(false)
-const loading = ref(false)
-const fetchController = ref<AbortController | null>(null)
+const { loading, abort: abortFetch, fetchSSE } = useAIFetch()
 const copiedIndex = ref<number | null>(null)
 const insertedIndex = ref<number | null>(null)
 const memoryKey = `ai_memory_context`
@@ -273,10 +273,7 @@ function insertToDocument(text: string, index: number) {
 }
 
 async function resetMessages() {
-  if (fetchController.value) {
-    fetchController.value.abort()
-    fetchController.value = null
-  }
+  abortFetch()
 
   if (currentConversationId.value) {
     conversationList.value = conversationList.value.filter(c => c.id !== currentConversationId.value)
@@ -292,11 +289,7 @@ async function resetMessages() {
 }
 
 function pauseStreaming() {
-  if (fetchController.value) {
-    fetchController.value.abort()
-    fetchController.value = null
-  }
-  loading.value = false
+  abortFetch()
   const last = messages.value[messages.value.length - 1]
   if (last?.role === `assistant`)
     last.done = true
@@ -386,78 +379,42 @@ async function streamResponse(replyMessageProxy: ChatMessage) {
     max_tokens: maxToken.value,
     stream: true,
   }
-  const headers: Record<string, string> = { 'Content-Type': `application/json` }
-  if (apiKey.value && type.value !== `default`)
-    headers.Authorization = `Bearer ${apiKey.value}`
-
-  fetchController.value = new AbortController()
-  const signal = fetchController.value.signal
+  const headers = buildAIHeaders(apiKey.value, type.value)
+  const url = resolveEndpointUrl(endpoint.value, `chat`)
 
   try {
-    const url = new URL(endpoint.value)
-    if (!url.pathname.endsWith(`/chat/completions`))
-      url.pathname = url.pathname.replace(/\/?$/, `/chat/completions`)
-
-    const res = await window.fetch(url.toString(), {
-      method: `POST`,
-      headers,
-      body: JSON.stringify(payload),
-      signal,
-    })
-    if (!res.ok || !res.body)
-      throw new Error(`响应错误：${res.status} ${res.statusText}`)
-
-    const reader = res.body.getReader()
-    const decoder = new TextDecoder(`utf-8`)
-    let buffer = ``
-
-    while (true) {
-      const { value, done } = await reader.read()
-      if (done) {
+    await fetchSSE(url, headers, payload, {
+      onDelta(content) {
+        const last = messages.value[messages.value.length - 1]
+        if (last !== replyMessageProxy)
+          return
+        last.content += content
+        scrollToBottom()
+      },
+      onReasoningDelta(reasoning) {
+        const last = messages.value[messages.value.length - 1]
+        if (last !== replyMessageProxy)
+          return
+        last.reasoning = (last.reasoning || ``) + reasoning
+        scrollToBottom()
+      },
+      onDone() {
         const last = messages.value[messages.value.length - 1]
         if (last.role === `assistant`) {
           last.done = true
-          await scrollToBottom(true)
+          scrollToBottom(true)
         }
-        break
-      }
-
-      buffer += decoder.decode(value, { stream: true })
-      const lines = buffer.split(`\n`)
-      buffer = lines.pop() || ``
-
-      for (const line of lines) {
-        if (!line.trim() || line.trim() === `data: [DONE]`)
-          continue
-        try {
-          const json = JSON.parse(line.replace(/^data: /, ``))
-          const delta = json.choices?.[0]?.delta || {}
-          const last = messages.value[messages.value.length - 1]
-          if (last !== replyMessageProxy)
-            return
-          if (delta.content)
-            last.content += delta.content
-          else if (delta.reasoning_content)
-            last.reasoning = (last.reasoning || ``) + delta.reasoning_content
-          await scrollToBottom()
-        }
-        catch {
-        }
-      }
-    }
+      },
+    })
   }
   catch (e) {
-    if ((e as Error).name !== `AbortError`) {
-      messages.value[messages.value.length - 1].content
-        = `❌ 请求失败: ${(e as Error).message}`
-    }
+    messages.value[messages.value.length - 1].content
+      = `❌ 请求失败: ${(e as Error).message}`
     await scrollToBottom(true)
   }
   finally {
     await store.setJSON(memoryKey, messages.value)
     await autoSaveCurrentConversation()
-    loading.value = false
-    fetchController.value = null
   }
 }
 
