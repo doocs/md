@@ -48,7 +48,7 @@
     "jszip": "^3.10.1",
     "juice": "11.0.3",
     "lucide-vue-next": "^1.0.0",
-    "marked": "^17.0.6",
+    "marked": "^18.0.0",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.4",
     "radix-vue": "^1.9.17",
