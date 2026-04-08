@@ -1,10 +1,9 @@
 {
   "extends": "@md/config/tsconfig.base.json",
   "compilerOptions": {
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"],
-      "radix-vue/dist/DismissableLayer": ["./node_modules/radix-vue/dist/DismissableLayer"],
-      "radix-vue/dist/shared/types": ["./node_modules/radix-vue/dist/shared/types"]
+      "@/*": ["./src/*"]
     }
   },
   "include": [
