@@ -34,7 +34,7 @@
     "@codemirror/view": "6.41.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "8.0.0",
+    "@antfu/eslint-config": "8.1.0",
     "@types/node": "^25.5.2",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
