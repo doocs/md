@@ -115,12 +115,29 @@ function delPost() {
 const isOpenHistoryDialog = ref(false)
 const currentPostId = ref<string | null>(null)
 const currentHistoryIndex = ref(0)
+const historyViewMode = ref<'content' | 'diff'>(`content`)
+const compareTargetIndex = ref(`1`)
 
 function openHistoryDialog(id: string) {
   currentPostId.value = id
   currentHistoryIndex.value = 0
+  historyViewMode.value = `content`
+  compareTargetIndex.value = `1`
   isOpenHistoryDialog.value = true
 }
+
+const currentHistoryList = computed(() => {
+  return postStore.getPostById(currentPostId.value!)?.history ?? []
+})
+
+// 当选中版本与对比目标冲突时，自动调整对比目标
+watch(currentHistoryIndex, (idx) => {
+  if (Number(compareTargetIndex.value) === idx) {
+    const len = currentHistoryList.value.length
+    compareTargetIndex.value = String(idx + 1 < len ? idx + 1 : Math.max(0, idx - 1))
+  }
+})
+
 function recoverHistory() {
   const post = postStore.getPostById(currentPostId.value!)
   if (!post) {
@@ -804,7 +821,7 @@ function handleDragEnd() {
         <!-- 左侧时间轴 -->
         <ul class="w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
           <li
-            v-for="(item, idx) in postStore.getPostById(currentPostId!)?.history"
+            v-for="(item, idx) in currentHistoryList"
             :key="item.datetime"
             class="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground"
             :class="{ 'bg-primary/8 text-primary font-medium': currentHistoryIndex === idx }"
@@ -816,9 +833,54 @@ function handleDragEnd() {
 
         <Separator orientation="vertical" />
 
-        <!-- 右侧内容 -->
-        <div class="flex-1 overflow-y-auto rounded-lg bg-muted/30 p-4">
-          <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit]">{{ postStore.getPostById(currentPostId!)?.history[currentHistoryIndex].content ?? '' }}</pre>
+        <!-- 右侧内容（带 Tabs） -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+          <Tabs v-model="historyViewMode" class="flex flex-col h-full">
+            <TabsList class="shrink-0 w-fit">
+              <TabsTrigger value="content">
+                原文
+              </TabsTrigger>
+              <TabsTrigger value="diff">
+                版本对比
+              </TabsTrigger>
+            </TabsList>
+
+            <TabsContent value="content" class="flex-1 overflow-y-auto mt-2">
+              <div class="rounded-lg bg-muted/30 p-4 h-full overflow-y-auto">
+                <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit]">{{ currentHistoryList[currentHistoryIndex]?.content ?? '' }}</pre>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="diff" class="flex-1 overflow-hidden mt-2">
+              <div class="flex items-center gap-2 mb-2 text-xs text-muted-foreground shrink-0">
+                <span>对比：</span>
+                <Select v-model="compareTargetIndex">
+                  <SelectTrigger class="h-7 w-auto text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem
+                      v-for="(item, idx) in currentHistoryList"
+                      :key="idx"
+                      :value="String(idx)"
+                      :disabled="idx === currentHistoryIndex"
+                    >
+                      {{ item.datetime }}
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+                <span>→</span>
+                <span class="font-medium text-foreground">{{ currentHistoryList[currentHistoryIndex]?.datetime ?? '' }}</span>
+              </div>
+
+              <div class="flex-1 overflow-hidden rounded-lg border h-[calc(100%-2.5rem)]">
+                <VersionDiffViewer
+                  :old-text="currentHistoryList[Number(compareTargetIndex)]?.content ?? ''"
+                  :new-text="currentHistoryList[currentHistoryIndex]?.content ?? ''"
+                />
+              </div>
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
 
