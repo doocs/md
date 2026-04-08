@@ -46,7 +46,7 @@
     "es-toolkit": "^1.45.1",
     "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
-    "juice": "11.0.3",
+    "juice": "11.1.1",
     "lucide-vue-next": "^1.0.0",
     "marked": "^18.0.0",
     "pinia": "^3.0.4",
@@ -64,7 +64,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.31.0",
+    "@cloudflare/vite-plugin": "1.31.1",
     "@cloudflare/workers-types": "^4.20260405.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.2.2",
