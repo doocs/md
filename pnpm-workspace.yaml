@@ -20,7 +20,6 @@ overrides:
   glob@<8: ^10.5.0
   glob@^10: ^10.5.0
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
-  juice: 11.0.3
   lodash-es: ^4.17.23
   markdown-it: ^14.1.1
   minimatch: ^10.2.4
@@ -40,3 +39,4 @@ overrides:
 
 patchedDependencies:
   '@codemirror/view@6.41.0': patches/@codemirror__view@6.41.0.patch
+  juice@11.1.1: patches/juice@11.1.1.patch
