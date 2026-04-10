@@ -418,6 +418,9 @@ importers:
       '@codemirror/lang-css':
         specifier: ^6.3.1
         version: 6.3.1
+      '@codemirror/lang-html':
+        specifier: ^6.4.11
+        version: 6.4.11
       '@codemirror/lang-javascript':
         specifier: ^6.2.5
         version: 6.2.5

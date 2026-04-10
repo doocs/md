@@ -17,6 +17,7 @@ import { SearchTab } from '@/components/ui/search-tab'
 import { useImageUploader } from '@/composables/useImageUploader'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
+import { useHtmlEditorStore } from '@/stores/htmlEditor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -26,6 +27,7 @@ import { fileUpload } from '@/utils/file'
 import { store } from '@/utils/storage'
 
 const editorStore = useEditorStore()
+const htmlEditorStore = useHtmlEditorStore()
 const postStore = usePostStore()
 const renderStore = useRenderStore()
 const themeStore = useThemeStore()
@@ -46,6 +48,7 @@ const {
   enableImageReupload,
   viewMode,
   previewDevice,
+  editorMode,
 } = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = uiStore
@@ -54,8 +57,15 @@ const { toggleShowUploadImgDialog } = uiStore
 function editorRefresh() {
   themeStore.updateCodeTheme()
 
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
+  if (editorMode.value === `markdown`) {
+    const raw = editorStore.getContent()
+    renderStore.render(raw)
+  }
+  else {
+    const raw = htmlEditorStore.getHtmlContent()
+    // 对于 HTML 模式，直接设置为 HTML 输出
+    output.value = raw
+  }
 }
 
 // Reset style function
@@ -881,6 +891,12 @@ onMounted(() => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
 
+    if (editorMode.value === `html`) {
+      htmlEditorStore.initHtmlEditor((content) => {
+        output.value = content
+      })
+    }
+
     // AI 工具箱已移到侧边栏，不再需要初始化编辑器事件
     editorRefresh()
     mdLocalToRemote()
@@ -922,6 +938,25 @@ watch(currentPostIndex, () => {
     // 更新编辑器后刷新渲染
     editorRefresh()
   }
+})
+
+// 监听编辑器模式变化
+watch(editorMode, (newMode) => {
+  nextTick(() => {
+    if (newMode === `html`) {
+      // 切换到 HTML 模式，初始化 HTML 编辑器
+      if (!htmlEditorStore.htmlEditor) {
+        htmlEditorStore.initHtmlEditor((content) => {
+          output.value = content
+        })
+      }
+      editorRefresh()
+    }
+    else {
+      // 切换到 Markdown 模式
+      editorRefresh()
+    }
+  })
 })
 
 // 历史记录的定时器
@@ -992,7 +1027,7 @@ onUnmounted(() => {
           <!-- 主内容区域 (嵌套灵动布局) -->
           <ResizablePanel :min-size="30">
             <ResizablePanelGroup direction="horizontal">
-              <!-- Markdown 编辑器 -->
+              <!-- Markdown/HTML 编辑器 -->
               <ResizablePanel
                 ref="editorPanelRef"
                 :order="1"
@@ -1002,8 +1037,9 @@ onUnmounted(() => {
                 collapsible
                 :collapsed-size="0"
               >
+                <!-- Markdown 编辑器 -->
                 <div
-                  v-show="viewMode !== 'preview'"
+                  v-show="viewMode !== 'preview' && editorMode === 'markdown'"
                   ref="codeMirrorWrapper"
                   class="codeMirror-wrapper relative h-full"
                 >
@@ -1020,6 +1056,14 @@ onUnmounted(() => {
                       class="codemirror-container"
                     />
                   </EditorContextMenu>
+                </div>
+
+                <!-- HTML 编辑器 -->
+                <div
+                  v-show="viewMode !== 'preview' && editorMode === 'html'"
+                  class="codeMirror-wrapper relative h-full"
+                >
+                  <div id="htmlEditor" class="h-full" />
                 </div>
               </ResizablePanel>
               <ResizableHandle v-show="viewMode === 'split'" />

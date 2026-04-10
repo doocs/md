@@ -1,6 +1,7 @@
 export * from './basicSetup'
 export * from './css'
 export * from './format'
+export * from './html'
 export * from './javascript'
 export * from './markdown'
 export * from './themes'

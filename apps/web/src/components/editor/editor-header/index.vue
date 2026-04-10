@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Copy, Menu, Palette } from 'lucide-vue-next'
+import { Code, Copy, FileText, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
+import { useHtmlEditorStore } from '@/stores/htmlEditor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
@@ -17,6 +18,7 @@ import StyleDropdown from './StyleDropdown.vue'
 const emit = defineEmits([`startCopy`, `endCopy`])
 
 const editorStore = useEditorStore()
+const htmlEditorStore = useHtmlEditorStore()
 const themeStore = useThemeStore()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
@@ -25,15 +27,7 @@ const exportStore = useExportStore()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider } = storeToRefs(uiStore)
-
-// Editor refresh function
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
+const { isOpenRightSlider, editorMode } = storeToRefs(uiStore)
 
 // 对话框状态
 const aboutDialogVisible = ref(false)
@@ -126,9 +120,15 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
 async function copy() {
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
-    const mdContent = editor.value?.state.doc.toString() || ``
-    await copyContent(mdContent)
-    toast.success(`已复制 Markdown 源码到剪贴板。`)
+    if (editorMode.value === `html`) {
+      await copyContent(htmlEditorStore.getHtmlContent())
+      toast.success(`当前为 HTML 模式，已复制 HTML 源码到剪贴板。`)
+    }
+    else {
+      const mdContent = editor.value?.state.doc.toString() || ``
+      await copyContent(mdContent)
+      toast.success(`已复制 Markdown 源码到剪贴板。`)
+    }
     return
   }
 
@@ -142,7 +142,6 @@ async function copy() {
       }
       catch (error) {
         toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
-        editorRefresh()
         emit(`endCopy`)
         return
       }
@@ -151,7 +150,6 @@ async function copy() {
 
       if (!clipboardDiv) {
         toast.error(`未找到复制输出区域，请刷新页面后重试。`)
-        editorRefresh()
         emit(`endCopy`)
         return
       }
@@ -180,7 +178,6 @@ async function copy() {
           if (!fallbackSucceeded) {
             clipboardDiv.innerHTML = output.value
             window.getSelection()?.removeAllRanges()
-            editorRefresh()
             toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
             emit(`endCopy`)
             return
@@ -194,10 +191,20 @@ async function copy() {
         await copyContent(temp)
       }
       else if (copyMode.value === `html-without-style`) {
-        await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
+        if (editorMode.value === `html`) {
+          await copyContent(htmlEditorStore.getHtmlContent())
+        }
+        else {
+          await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
+        }
       }
       else if (copyMode.value === `html-and-style`) {
-        await copyContent(exportStore.editorContent2HTML())
+        if (editorMode.value === `html`) {
+          await copyContent(temp)
+        }
+        else {
+          await copyContent(exportStore.editorContent2HTML())
+        }
       }
 
       // 输出提示
@@ -213,7 +220,6 @@ async function copy() {
           },
         }),
       )
-      editorRefresh()
       emit(`endCopy`)
     })
   }, 350)
@@ -269,6 +275,28 @@ function copyToWeChat() {
 
     <!-- 右侧操作区 -->
     <div class="flex flex-wrap items-center gap-2">
+      <!-- 编辑器模式切换 -->
+      <div class="flex rounded-md border">
+        <Button
+          variant="ghost"
+          class="rounded-none rounded-l-md border-r-0 h-9 px-3"
+          :class="{ 'bg-accent': editorMode === 'markdown' }"
+          @click="uiStore.setEditorMode('markdown')"
+        >
+          <FileText class="h-4 w-4 mr-1" />
+          <span class="hidden sm:inline">Markdown</span>
+        </Button>
+        <Button
+          variant="ghost"
+          class="rounded-none rounded-r-md h-9 px-3"
+          :class="{ 'bg-accent': editorMode === 'html' }"
+          @click="uiStore.setEditorMode('html')"
+        >
+          <Code class="h-4 w-4 mr-1" />
+          <span class="hidden sm:inline">HTML</span>
+        </Button>
+      </div>
+
       <!-- 复制按钮 -->
       <Button
         variant="outline"

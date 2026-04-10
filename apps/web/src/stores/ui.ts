@@ -64,6 +64,17 @@ export const useUIStore = defineStore(`ui`, () => {
   const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
   const toggleImageReupload = useToggle(enableImageReupload)
 
+  // 编辑器模式：markdown | html
+  const editorMode = store.reactive<'markdown' | 'html'>(`editorMode`, `markdown`)
+
+  function setEditorMode(mode: 'markdown' | 'html') {
+    editorMode.value = mode
+  }
+
+  function toggleEditorMode() {
+    editorMode.value = editorMode.value === `markdown` ? `html` : `markdown`
+  }
+
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
@@ -150,6 +161,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowFloatingToc,
     isOpenFolderPanel,
     enableImageReupload,
+    editorMode,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,
@@ -186,5 +198,7 @@ export const useUIStore = defineStore(`ui`, () => {
     setViewMode,
     setPreviewDevice,
     togglePreviewDevice,
+    setEditorMode,
+    toggleEditorMode,
   }
 })
