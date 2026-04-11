@@ -34,7 +34,7 @@ function openReleases() {
     <MenubarSubTrigger>
       帮助
     </MenubarSubTrigger>
-    <MenubarSubContent align="start">
+    <MenubarSubContent>
       <MenubarItem @click="openFeedback()">
         <MessageSquare class="mr-2 h-4 w-4" />
         反馈
