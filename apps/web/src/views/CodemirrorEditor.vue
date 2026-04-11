@@ -112,34 +112,43 @@ const previewPanelConfig = computed(() => {
 
 const editorResizablePanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const previewResizablePanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const cssEditorPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const rightSliderPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 
-watch(viewMode, (mode) => {
-  nextTick(() => {
-    if (mode === `edit`) {
-      editorResizablePanelRef.value?.resize(hasSidePanel.value ? 60 : 100)
-      previewResizablePanelRef.value?.resize(0)
-    }
-    else if (mode === `preview`) {
-      editorResizablePanelRef.value?.resize(0)
-      previewResizablePanelRef.value?.resize(hasSidePanel.value ? 60 : 100)
-    }
-    else {
-      editorResizablePanelRef.value?.resize(50)
-      previewResizablePanelRef.value?.resize(50)
-    }
-  })
+function redistributePanelSizes() {
+  const cssTarget = !isMobile.value && uiStore.isShowCssEditor ? 25 : 0
+  const rightTarget = !isMobile.value && isOpenRightSlider.value ? 30 : 0
+  const contentSpace = 100 - cssTarget - rightTarget
+
+  const mode = viewMode.value
+  if (mode === `edit`) {
+    editorResizablePanelRef.value?.resize(contentSpace)
+    previewResizablePanelRef.value?.resize(0)
+  }
+  else if (mode === `preview`) {
+    editorResizablePanelRef.value?.resize(0)
+    previewResizablePanelRef.value?.resize(contentSpace)
+  }
+  else {
+    const half = contentSpace / 2
+    editorResizablePanelRef.value?.resize(half)
+    previewResizablePanelRef.value?.resize(half)
+  }
+
+  cssEditorPanelRef.value?.resize(cssTarget)
+  rightSliderPanelRef.value?.resize(rightTarget)
+}
+
+watch(viewMode, () => {
+  nextTick(redistributePanelSizes)
 })
 
-watch(hasSidePanel, (has) => {
-  nextTick(() => {
-    const mode = viewMode.value
-    if (mode === `edit`) {
-      editorResizablePanelRef.value?.resize(has ? 60 : 100)
-    }
-    else if (mode === `preview`) {
-      previewResizablePanelRef.value?.resize(has ? 60 : 100)
-    }
-  })
+watch(() => uiStore.isShowCssEditor, () => {
+  nextTick(redistributePanelSizes)
+})
+
+watch(isOpenRightSlider, () => {
+  nextTick(redistributePanelSizes)
 })
 
 // --- 进度条 ---
@@ -221,27 +230,31 @@ onUnmounted(() => {
               </ResizablePanel>
 
               <!-- CSS 编辑器面板 -->
-              <ResizableHandle v-if="!isMobile && uiStore.isShowCssEditor" class="hidden md:block" />
+              <ResizableHandle v-show="!isMobile && uiStore.isShowCssEditor" class="hidden md:block" />
               <ResizablePanel
-                v-if="!isMobile && uiStore.isShowCssEditor"
+                ref="cssEditorPanelRef"
                 :order="3"
-                :default-size="25"
-                :min-size="10"
-                :max-size="60"
+                :default-size="0"
+                :min-size="!isMobile && uiStore.isShowCssEditor ? 10 : 0"
+                :max-size="!isMobile && uiStore.isShowCssEditor ? 60 : 0"
+                collapsible
+                :collapsed-size="0"
               >
-                <CssEditor />
+                <CssEditor v-if="!isMobile" />
               </ResizablePanel>
 
               <!-- 样式面板 -->
-              <ResizableHandle v-if="!isMobile && isOpenRightSlider" class="hidden md:block" />
+              <ResizableHandle v-show="!isMobile && isOpenRightSlider" class="hidden md:block" />
               <ResizablePanel
-                v-if="!isMobile && isOpenRightSlider"
+                ref="rightSliderPanelRef"
                 :order="4"
-                :default-size="40"
-                :min-size="25"
-                :max-size="60"
+                :default-size="0"
+                :min-size="!isMobile && isOpenRightSlider ? 25 : 0"
+                :max-size="!isMobile && isOpenRightSlider ? 60 : 0"
+                collapsible
+                :collapsed-size="0"
               >
-                <RightSlider />
+                <RightSlider v-if="!isMobile" />
               </ResizablePanel>
             </ResizablePanelGroup>
 
