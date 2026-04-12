@@ -1,0 +1,117 @@
+name: Deploy Static Site to Caddy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      build_command:
+        description: "Build command for @md/web (build or build:h5-netlify)"
+        required: false
+        default: "build:h5-netlify"
+      reload_caddy:
+        description: "Reload Caddy after deploy"
+        required: false
+        default: "true"
+
+concurrency:
+  group: deploy-caddy-static-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      # 默认根路径部署；如需 /md 子路径可改为 build
+      DEFAULT_BUILD_COMMAND: build:h5-netlify
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v5
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Resolve build command
+        id: resolve-build
+        run: |
+          CMD="${{ github.event.inputs.build_command }}"
+          if [ -z "$CMD" ]; then
+            CMD="${{ env.DEFAULT_BUILD_COMMAND }}"
+          fi
+          if [ "$CMD" != "build" ] && [ "$CMD" != "build:h5-netlify" ]; then
+            echo "Invalid build command: $CMD"
+            exit 1
+          fi
+          echo "command=$CMD" >> "$GITHUB_OUTPUT"
+          echo "Build command: $CMD"
+
+      - name: Build static assets
+        run: pnpm web ${{ steps.resolve-build.outputs.command }}
+
+      - name: Pack dist
+        run: |
+          tar -czf md-dist.tar.gz -C apps/web/dist .
+          ls -lh md-dist.tar.gz
+
+      - name: Upload package to server
+        uses: appleboy/scp-action@v1.0.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          source: "md-dist.tar.gz"
+          target: "/tmp"
+
+      - name: Deploy on server
+        uses: appleboy/ssh-action@v1.2.0
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+          RELOAD_CADDY: ${{ github.event.inputs.reload_caddy || 'true' }}
+          SHA: ${{ github.sha }}
+          ATTEMPT: ${{ github.run_attempt }}
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          port: ${{ secrets.DEPLOY_PORT || 22 }}
+          envs: DEPLOY_PATH,RELOAD_CADDY,SHA,ATTEMPT
+          script: |
+            set -e
+            if [ -z "$DEPLOY_PATH" ]; then
+              echo "DEPLOY_PATH is empty, please set repository secret DEPLOY_PATH"
+              exit 1
+            fi
+
+            RELEASE_DIR="$DEPLOY_PATH/releases/$SHA-$ATTEMPT"
+            CURRENT_LINK="$DEPLOY_PATH/current"
+
+            mkdir -p "$RELEASE_DIR"
+            tar -xzf /tmp/md-dist.tar.gz -C "$RELEASE_DIR"
+            ln -sfn "$RELEASE_DIR" "$CURRENT_LINK"
+            rm -f /tmp/md-dist.tar.gz
+
+            # 可选：如果 Caddy 已经指向 current 目录，通常不重载也可生效
+            if [ "$RELOAD_CADDY" = "true" ]; then
+              if command -v systemctl >/dev/null 2>&1; then
+                sudo systemctl reload caddy || true
+              fi
+            fi
+
+            echo "Deploy done: $CURRENT_LINK -> $RELEASE_DIR"
+
+      - name: Deployment summary
+        run: |
+          echo "✅ Static deploy completed"
+          echo "Server: ${{ secrets.DEPLOY_HOST }}"
+          echo "Path:   ${{ secrets.DEPLOY_PATH }}/current"
