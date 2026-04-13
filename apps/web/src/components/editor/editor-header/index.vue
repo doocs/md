@@ -11,7 +11,6 @@ import { store } from '@/utils/storage'
 import EditDropdown from './EditDropdown.vue'
 import FileDropdown from './FileDropdown.vue'
 import FormatDropdown from './FormatDropdown.vue'
-import HelpDropdown from './HelpDropdown.vue'
 import InsertDropdown from './InsertDropdown.vue'
 import StyleDropdown from './StyleDropdown.vue'
 
