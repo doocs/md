@@ -1096,7 +1096,17 @@ onUnmounted(() => {
                           effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
                         ]"
                       >
-                        <section id="output" class="w-full" @click="handlePreviewContentClick" v-html="output" />
+                        <template v-if="editorMode === 'markdown'">
+                          <section id="output" class="w-full" @click="handlePreviewContentClick" v-html="output" />
+                        </template>
+                        <template v-else>
+                          <iframe
+                            id="output"
+                            class="w-full h-full border-0"
+                            :srcdoc="output"
+                            sandbox="allow-scripts allow-same-origin"
+                          />
+                        </template>
                         <div v-if="isCoping" class="loading-mask">
                           <div class="loading-mask-box">
                             <div class="loading__img" />
