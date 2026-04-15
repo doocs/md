@@ -1089,31 +1089,33 @@ onUnmounted(() => {
                       class="w-full max-w-full"
                       :class="{ output_night: !backLight }"
                     >
-                      <div
-                        class="preview border-x shadow-xl mx-auto"
-                        :class="[
-                          effectivePreviewWidth,
-                          effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
-                        ]"
-                      >
-                        <template v-if="editorMode === 'markdown'">
+                      <template v-if="editorMode === 'markdown'">
+                        <div
+                          class="preview border-x shadow-xl mx-auto"
+                          :class="[
+                            effectivePreviewWidth,
+                            effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
+                          ]"
+                        >
                           <section id="output" class="w-full" @click="handlePreviewContentClick" v-html="output" />
-                        </template>
-                        <template v-else>
+                          <div v-if="isCoping" class="loading-mask">
+                            <div class="loading-mask-box">
+                              <div class="loading__img" />
+                              <span>正在生成</span>
+                            </div>
+                          </div>
+                        </div>
+                      </template>
+                      <template v-else>
+                        <div class="w-full h-full">
                           <iframe
                             id="output"
                             class="w-full h-full border-0"
                             :srcdoc="output"
                             sandbox="allow-scripts allow-same-origin"
                           />
-                        </template>
-                        <div v-if="isCoping" class="loading-mask">
-                          <div class="loading-mask-box">
-                            <div class="loading__img" />
-                            <span>正在生成</span>
-                          </div>
                         </div>
-                      </div>
+                      </template>
                     </div>
                     <BackTop
                       target="preview"
