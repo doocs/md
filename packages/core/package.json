@@ -11,16 +11,16 @@
     "./theme": "./src/theme/index.ts"
   },
   "dependencies": {
-    "@antv/infographic": "^0.2.16",
+    "@antv/infographic": "^0.2.17",
     "@md/shared": "workspace:*",
     "es-toolkit": "^1.45.1",
     "fflate": "^0.8.2",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
-    "isomorphic-dompurify": "^3.8.0",
+    "isomorphic-dompurify": "^3.9.0",
     "marked": "^18.0.0",
     "mermaid": "^11.14.0",
-    "postcss": "^8.5.9",
+    "postcss": "^8.5.10",
     "postcss-calc": "^10.1.1",
     "postcss-custom-properties": "^15.0.1"
   },
