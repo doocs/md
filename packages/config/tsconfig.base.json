@@ -2,6 +2,7 @@
   "compilerOptions": {
     "composite": true,
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
+    "ignoreDeprecations": "6.0",
     "target": "ES2020",
     "jsx": "preserve",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
