@@ -246,6 +246,7 @@ onUnmounted(() => {
               <!-- 样式面板 -->
               <ResizableHandle v-show="!isMobile && isOpenRightSlider" class="hidden md:block" />
               <ResizablePanel
+                v-if="isOpenRightSlider"
                 ref="rightSliderPanelRef"
                 :order="4"
                 :default-size="0"
