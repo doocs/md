@@ -15,7 +15,7 @@ overrides:
   core-js: ^3.48.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
-  dompurify@<3.3.2: ^3.3.2
+  dompurify@<3.4.0: ^3.4.0
   flatted@<3.4.0: ^3.4.0
   glob@<8: ^10.5.0
   glob@^10: ^10.5.0
