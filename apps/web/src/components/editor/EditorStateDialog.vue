@@ -347,11 +347,11 @@ function applyImportedConfig() {
 
         <TabsContent value="export">
           <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
-            <div class="flex flex-col overflow-hidden">
-              <p class="bg-white p-2 dark:bg-gray-900">
+            <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 请选择需要导出的配置
               </p>
-              <ul v-if="storeStates.data" class="space-y-2 overflow-auto">
+              <ul v-if="storeStates.data" class="space-y-2 overflow-auto px-3 py-2">
                 <li v-for="(_, key) in storeStates.data" :key="key" class="space-x-2 flex items-center">
                   <input
                     :id="`export-${key}`"
@@ -370,12 +370,12 @@ function applyImportedConfig() {
                 </p>
               </div>
             </div>
-            <div class="flex flex-col overflow-hidden">
-              <p class="relative bg-white p-2 dark:bg-gray-900">
+            <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 <span>当前 JSON 预览</span>
                 <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
               </p>
-              <div class="w-full overflow-auto border rounded-md bg-gray-50 p-2 dark:bg-gray-800">
+              <div class="w-full overflow-auto border border-gray-200 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:border-gray-700">
                 <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
               </div>
             </div>
@@ -393,59 +393,63 @@ function applyImportedConfig() {
 
         <TabsContent value="import">
           <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
-            <div class="overflow-auto h-full flex flex-col">
-              <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
+            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 <span>导入 JSON 配置文件</span>
                 <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
               </p>
-              <div v-if="!originalImportData" class="m-4 flex-1 flex flex-col items-center justify-center border-2 rounded-lg border-dashed">
-                <input
-                  id="json-import-input"
-                  ref="fileInputRef"
-                  type="file"
-                  accept=".json"
-                  class="hidden"
-                  @change="handleFileImport"
-                >
-                <label
-                  for="json-import-input"
-                  class="flex-1 w-full flex flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
-                >
-                  <UploadCloud class="mb-2 size-16 text-gray-500 dark:text-gray-400" />
-                  <span class="text-sm text-gray-500 dark:text-gray-400">
-                    点击或拖拽 JSON 文件到此处
-                  </span>
-                  <span class="mt-1 text-xs text-gray-400 dark:text-gray-500">
-                    支持格式: .json
-                  </span>
-                </label>
-              </div>
-              <div v-else class="mt-4 border rounded-md bg-gray-50 p-2 dark:bg-gray-800">
-                <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredImportJSON, null, 2) }}</pre>
+              <div class="flex-1 min-h-0 p-2">
+                <div v-if="!originalImportData" class="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                  <input
+                    id="json-import-input"
+                    ref="fileInputRef"
+                    type="file"
+                    accept=".json"
+                    class="hidden"
+                    @change="handleFileImport"
+                  >
+                  <label
+                    for="json-import-input"
+                    class="flex h-full w-full flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                  >
+                    <UploadCloud class="mb-2 size-16 text-gray-500 dark:text-gray-400" />
+                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                      点击或拖拽 JSON 文件到此处
+                    </span>
+                    <span class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                      支持格式: .json
+                    </span>
+                  </label>
+                </div>
+                <div v-else class="h-full overflow-auto border border-gray-200 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:border-gray-700">
+                  <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredImportJSON, null, 2) }}</pre>
+                </div>
               </div>
             </div>
 
-            <div class="overflow-auto h-full flex flex-col">
-              <p class="sticky top-0 z-10 bg-white p-2 dark:bg-gray-900">
+            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+              <p class="bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 选择要导入的配置项
               </p>
-              <div v-if="originalImportData">
-                <ul class="space-y-2">
-                  <li v-for="(_, key) in importStates.data" :key="key" class="space-x-2 flex items-center">
-                    <input
-                      :id="`import-${key}`"
-                      v-model="importStates.selected[key]"
-                      type="checkbox"
-                      class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
-                    >
-                    <label :for="`import-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
-                      {{ storeLabels[key] || key }}
-                    </label>
-                  </li>
-                </ul>
-              </div>
-              <div v-else class="flex-1 flex items-center justify-center text-gray-500 dark:text-gray-400">
-                请先导入JSON文件
+              <div class="flex-1 min-h-0 overflow-auto">
+                <div v-if="originalImportData">
+                  <ul class="space-y-2 px-3 py-2">
+                    <li v-for="(_, key) in importStates.data" :key="key" class="space-x-2 flex items-center">
+                      <input
+                        :id="`import-${key}`"
+                        v-model="importStates.selected[key]"
+                        type="checkbox"
+                        class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                      >
+                      <label :for="`import-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
+                        {{ storeLabels[key] || key }}
+                      </label>
+                    </li>
+                  </ul>
+                </div>
+                <div v-else class="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
+                  请先导入JSON文件
+                </div>
               </div>
             </div>
             <div class="flex-1 col-span-1 lg:col-span-2 flex justify-end">
