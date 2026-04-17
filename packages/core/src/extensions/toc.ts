@@ -6,14 +6,14 @@ import type { MarkedExtension } from 'marked'
 export function markedToc(): MarkedExtension {
   let headings: { text: string, depth: number, index: number }[] = []
 
-  let firstToken = true
-
   return {
-    walkTokens(token) {
-      if (firstToken) {
+    hooks: {
+      preprocess(markdown) {
         headings = []
-        firstToken = false
-      }
+        return markdown
+      },
+    },
+    walkTokens(token) {
       if (token.type === `heading`) {
         const text = token.text || ``
         const depth = token.depth || 1
@@ -65,7 +65,6 @@ export function markedToc(): MarkedExtension {
 
           html += `</ul></nav>`
 
-          firstToken = true
           return html
         },
       },
