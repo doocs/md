@@ -40,11 +40,13 @@ export function markedToc(): MarkedExtension {
           }
         },
         renderer() {
-          if (!headings.length)
+          const tocHeadings = headings.filter(h => h.depth !== 1)
+          if (!tocHeadings.length)
             return ``
-          let html = `<nav class="markdown-toc"><ul class="toc-ul toc-level-1 pl-4 border-l ml-2">`
-          let lastDepth = 1
-          headings.forEach(({ text, depth, index }) => {
+          const minDepth = Math.min(...tocHeadings.map(h => h.depth))
+          let html = `<nav class="markdown-toc"><ul class="toc-ul toc-level-${minDepth} pl-4 border-l ml-2">`
+          let lastDepth = minDepth
+          tocHeadings.forEach(({ text, depth, index }) => {
             if (depth > lastDepth) {
               for (let i = lastDepth + 1; i <= depth; i++) {
                 html += `<ul class="toc-ul toc-level-${i} pl-4 border-l ml-2">`
