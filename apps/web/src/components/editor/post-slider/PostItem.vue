@@ -214,7 +214,7 @@ function applyTemplate(postId: string) {
           <DropdownMenuItem @click.stop="applyTemplate(post.id)">
             <FileInput class="mr-2 size-4" /> 应用模板
           </DropdownMenuItem>
-          <DropdownMenuSeparator />
+          <DropdownMenuSeparator v-if="posts.length > 1" />
           <DropdownMenuItem
             v-if="posts.length > 1"
             class="text-destructive focus:text-destructive"
