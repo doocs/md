@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { FileText, Globe, Loader2, Upload } from 'lucide-vue-next'
-import { useEditorStore } from '@/stores/editor'
+import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 
-const editorStore = useEditorStore()
+const postStore = usePostStore()
 const uiStore = useUIStore()
 
 const { isShowImportMdDialog } = storeToRefs(uiStore)
@@ -94,7 +94,19 @@ async function importFromUrl() {
       ? await fetchMarkdownFile(rawUrl, signal)
       : await fetchViaAnythingMd(rawUrl, signal)
 
-    editorStore.importContent(content)
+    // 从 URL 中提取标题
+    const urlTitle = (() => {
+      try {
+        const { pathname } = new URL(rawUrl)
+        const name = pathname.split(`/`).filter(Boolean).pop() || `untitled`
+        return name.replace(/\.(md|markdown|txt)$/i, ``)
+      }
+      catch {
+        return `untitled`
+      }
+    })()
+    postStore.addPost(urlTitle)
+    postStore.updatePostContent(postStore.currentPostId, content)
     closeDialog()
   }
   catch (err) {
@@ -152,12 +164,22 @@ function readFileAsText(file: File): Promise<string> {
 }
 
 async function readAndImportFiles(files: File[]) {
-  const contents = await Promise.all(files.map(readFileAsText))
-  const merged = contents.filter(c => c.trim()).join(`\n\n`)
-  if (merged) {
-    editorStore.importContent(merged)
-    closeDialog()
+  const results = await Promise.all(
+    files.map(async (file) => {
+      const content = await readFileAsText(file)
+      return { file, content }
+    }),
+  )
+  const validResults = results.filter(r => r.content.trim())
+  if (validResults.length === 0)
+    return
+  for (const { file, content } of validResults) {
+    const title = file.name.replace(/\.(md|markdown|txt)$/i, ``)
+    postStore.addPost(title)
+    postStore.updatePostContent(postStore.currentPostId, content)
   }
+  toast.success(validResults.length === 1 ? `已导入 1 篇文章` : `已批量导入 ${validResults.length} 篇文章`)
+  closeDialog()
 }
 
 // ==================== 对话框控制 ====================

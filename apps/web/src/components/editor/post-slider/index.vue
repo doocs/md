@@ -52,8 +52,6 @@ function openAddPostDialog(id: string) {
 function addPost() {
   if (!addPostInputVal.value.trim())
     return toast.error(`内容标题不可为空`)
-  if (posts.value.some(post => post.title === addPostInputVal.value.trim()))
-    return toast.error(`内容标题已存在`)
   postStore.addPost(addPostInputVal.value.trim(), parentId.value)
   isOpenAddDialog.value = false
   toast.success(`内容新增成功`)
@@ -72,14 +70,6 @@ function startRenamePost(id: string) {
 function renamePost() {
   if (!renamePostInputVal.value.trim()) {
     return toast.error(`内容标题不可为空`)
-  }
-
-  if (
-    posts.value.some(
-      post => post.title === renamePostInputVal.value.trim() && post.id !== editId.value,
-    )
-  ) {
-    return toast.error(`内容标题已存在`)
   }
 
   if (renamePostInputVal.value === postStore.getPostById(editId.value!)?.title) {
