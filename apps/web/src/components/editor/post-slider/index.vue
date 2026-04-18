@@ -598,19 +598,25 @@ function handleDragEnd() {
           v-if="sortedPosts.length"
           :parent-id="null"
           :sorted-posts="sortedPosts"
-          :start-rename-post="startRenamePost"
-          :open-history-dialog="openHistoryDialog"
-          :start-del-post="startDelPost"
-          :drop-target-id="dropTargetId"
-          :set-drop-target-id="(id: string | null) => (dropTargetId = id)"
-          :drag-source-id="dragSourceId"
-          :set-drag-source-id="(id: string | null) => (dragSourceId = id)"
-          :handle-drop="handleDrop"
-          :handle-drag-end="handleDragEnd"
-          :open-add-post-dialog="openAddPostDialog"
-          :is-select-mode="isSelectMode"
-          :selected-ids="selectedPostIds"
-          :on-toggle-select="toggleSelectPost"
+          :actions="{
+            startRenamePost,
+            openHistoryDialog,
+            startDelPost,
+            openAddPostDialog,
+          }"
+          :drag="{
+            dragSourceId,
+            dropTargetId,
+            setDragSourceId: (id: string | null) => (dragSourceId = id),
+            setDropTargetId: (id: string | null) => (dropTargetId = id),
+            handleDrop,
+            handleDragEnd,
+          }"
+          :select="{
+            isSelectMode,
+            selectedIds: selectedPostIds,
+            onToggleSelect: toggleSelectPost,
+          }"
         />
 
         <!-- 空状态 -->

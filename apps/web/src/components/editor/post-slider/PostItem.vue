@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { Post, PostItemProps } from '@/types/post'
 import {
   ChevronRight,
   Copy,
@@ -16,52 +17,7 @@ import { useTemplateStore } from '@/stores/template'
 import { useUIStore } from '@/stores/ui'
 import { downloadMD } from '@/utils'
 
-interface Post {
-  id: string
-  title: string
-  content: string
-  history: {
-    datetime: string
-    content: string
-  }[]
-  createDatetime: Date
-  updateDatetime: Date
-  // 父标签
-  parentId?: string | null
-  // 展开状态
-  collapsed?: boolean
-}
-
-const props = defineProps<{
-  // 父文章的 ID，如果值是 null，则日表示这是第一层文件
-  parentId: string | null
-  // 排序好的文章列表
-  sortedPosts: Post[]
-  // 开始重命名文章
-  startRenamePost: (id: string) => void
-  // 打开历史记录对话框
-  openHistoryDialog: (id: string) => void
-  // 开始删除文章
-  startDelPost: (id: string) => void
-  // 拖拽目的地 ID
-  dropTargetId: string | null
-  // 设置拖拽目的地
-  setDropTargetId: (id: string | null) => void
-  // 被拖拽对象
-  dragSourceId: string | null
-  // 设置被拖拽对象
-  setDragSourceId: (id: string | null) => void
-  handleDrop: (targetId: string | null) => void
-  handleDragEnd: () => void
-  // 以添加子文章的方式打开对话框
-  openAddPostDialog: (parentId: string) => void
-  // 选择模式
-  isSelectMode?: boolean
-  // 已选 ID 列表
-  selectedIds?: string[]
-  // 切换选中
-  onToggleSelect?: (id: string) => void
-}>()
+const props = defineProps<PostItemProps>()
 
 const postStore = usePostStore()
 const templateStore = useTemplateStore()
@@ -69,22 +25,17 @@ const uiStore = useUIStore()
 const { posts, currentPostId } = storeToRefs(postStore)
 const { toggleShowTemplateDialog } = uiStore
 
-/* ============ 新增内容 ============ */
-const isOpenAddDialog = ref(false)
-const addPostInputVal = ref(``)
-watch(isOpenAddDialog, (o) => {
-  if (o)
-    addPostInputVal.value = ``
-})
+const { drag, select, actions } = props
+const isSelectMode = select?.isSelectMode ?? false
+const selectedIds = select?.selectedIds ?? []
+const onToggleSelect = select?.onToggleSelect
 
-// 新增：拖拽开始时记录ID并设置数据
 function handleDragStart(id: string, e: DragEvent) {
-  props.setDragSourceId(id)
+  drag.setDragSourceId(id)
   e.dataTransfer?.setData(`text/plain`, id)
-  e.dataTransfer!.effectAllowed = `move` // 明确拖拽效果
+  e.dataTransfer!.effectAllowed = `move`
 }
 
-/* ============ 折叠展开 ============ */
 function togglePostExpanded(postId: string) {
   const targetPost = posts.value.find(p => p.id === postId)
   if (targetPost) {
@@ -92,16 +43,10 @@ function togglePostExpanded(postId: string) {
   }
 }
 
-/*
- * 判断文章是否有子文章
- */
 function isHasChild(postId: string) {
   return props.sortedPosts.some(p => p.parentId === postId)
 }
 
-/*
- * 保存为模板
- */
 function saveAsTemplate(postId: string) {
   const post = posts.value.find(p => p.id === postId)
   if (!post)
@@ -114,9 +59,6 @@ function saveAsTemplate(postId: string) {
   })
 }
 
-/*
- * 复制单篇
- */
 function duplicateSingle(postId: string) {
   const p = posts.value.find(p => p.id === postId)
   if (!p)
@@ -126,15 +68,11 @@ function duplicateSingle(postId: string) {
   postStore.updatePostContent(newPost.id, p.content)
 }
 
-/*
- * 应用模板
- */
 function applyTemplate(postId: string) {
   currentPostId.value = postId
   toggleShowTemplateDialog(true)
 }
 
-/* ============ 双击内联重命名 ============ */
 const inlineEditId = ref<string | null>(null)
 const inlineEditVal = ref(``)
 let inlineInputRef: HTMLInputElement | null = null
@@ -168,50 +106,46 @@ function cancelInlineRename() {
 
 <template>
   <div v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)" :key="post.id">
-    <!-- 文章项容器 -->
     <a
       class="post-item group relative flex w-full cursor-pointer items-center gap-1 rounded-lg px-2 py-[7px] text-[13px] leading-snug transition-all duration-150 ease-out"
       :class="{
-        'bg-accent text-accent-foreground font-medium active-item': !props.isSelectMode && currentPostId === post.id,
-        'text-foreground/70 hover:text-foreground hover:bg-accent/50': props.isSelectMode ? true : currentPostId !== post.id,
-        'opacity-30': props.dragSourceId === post.id,
-        'ring-1 ring-primary/40 ring-inset bg-primary/5': props.dropTargetId === post.id,
+        'bg-accent text-accent-foreground font-medium active-item': !isSelectMode && currentPostId === post.id,
+        'text-foreground/70 hover:text-foreground hover:bg-accent/50': isSelectMode ? true : currentPostId !== post.id,
+        'opacity-30': drag.dragSourceId === post.id,
+        'ring-1 ring-primary/40 ring-inset bg-primary/5': drag.dropTargetId === post.id,
       }"
-      :draggable="!props.isSelectMode && inlineEditId !== post.id"
-      @dragstart="!props.isSelectMode && handleDragStart(post.id, $event)"
-      @dragend="props.handleDragEnd"
-      @drop.prevent="!props.isSelectMode && props.handleDrop(post.id)"
-      @dragover.stop.prevent="!props.isSelectMode && props.setDropTargetId(post.id)"
-      @dragleave.prevent="props.setDropTargetId(null)"
-      @click="props.isSelectMode ? props.onToggleSelect?.(post.id) : (currentPostId = post.id)"
+      :draggable="!isSelectMode && inlineEditId !== post.id"
+      @dragstart="!isSelectMode && handleDragStart(post.id, $event)"
+      @dragend="drag.handleDragEnd"
+      @drop.prevent="!isSelectMode && drag.handleDrop(post.id)"
+      @dragover.stop.prevent="!isSelectMode && drag.setDropTargetId(post.id)"
+      @dragleave.prevent="drag.setDropTargetId(null)"
+      @click="isSelectMode ? onToggleSelect?.(post.id) : (currentPostId = post.id)"
     >
-      <!-- 活动指示条 -->
       <span
-        v-if="!props.isSelectMode && currentPostId === post.id"
+        v-if="!isSelectMode && currentPostId === post.id"
         class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
       />
 
-      <!-- 选择模式复选框 -->
       <span
-        v-if="props.isSelectMode"
+        v-if="isSelectMode"
         class="flex shrink-0 items-center justify-center size-5"
-        @click.stop="props.onToggleSelect?.(post.id)"
+        @click.stop="onToggleSelect?.(post.id)"
       >
         <span
           class="flex items-center justify-center size-4 rounded border transition-colors duration-150"
-          :class="props.selectedIds?.includes(post.id)
+          :class="selectedIds?.includes(post.id)
             ? 'bg-primary border-primary text-primary-foreground'
             : 'border-border bg-background'"
         >
-          <svg v-if="props.selectedIds?.includes(post.id)" class="size-2.5" viewBox="0 0 10 10" fill="none">
+          <svg v-if="selectedIds?.includes(post.id)" class="size-2.5" viewBox="0 0 10 10" fill="none">
             <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
           </svg>
         </span>
       </span>
 
-      <!-- 折叠展开图标 -->
       <button
-        v-if="!props.isSelectMode"
+        v-if="!isSelectMode"
         class="flex shrink-0 items-center justify-center size-5 rounded text-muted-foreground/50 transition-colors duration-150"
         :class="{
           'hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5': isHasChild(post.id),
@@ -241,8 +175,7 @@ function cancelInlineRename() {
         @dblclick.stop="startInlineRename(post)"
       >{{ post.title }}</span>
 
-      <!-- 上下文菜单 — hover 时渐入 -->
-      <DropdownMenu v-if="!props.isSelectMode">
+      <DropdownMenu v-if="!isSelectMode">
         <DropdownMenuTrigger as-child>
           <button
             class="ml-auto flex shrink-0 items-center justify-center size-6 rounded-md text-muted-foreground/40 opacity-0 transition-all duration-150 group-hover:opacity-100 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:opacity-100 data-[state=open]:text-foreground"
@@ -252,16 +185,16 @@ function cancelInlineRename() {
           </button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="start" class="w-40">
-          <DropdownMenuItem @click.stop="props.openAddPostDialog(post.id)">
+          <DropdownMenuItem @click.stop="actions.openAddPostDialog(post.id)">
             <PlusSquare class="mr-2 size-4" /> 新增内容
           </DropdownMenuItem>
-          <DropdownMenuItem @click.stop="props.startRenamePost(post.id)">
+          <DropdownMenuItem @click.stop="actions.startRenamePost(post.id)">
             <Edit3 class="mr-2 size-4" /> 重命名
           </DropdownMenuItem>
           <DropdownMenuItem @click.stop="duplicateSingle(post.id)">
             <Copy class="mr-2 size-4" /> 复制
           </DropdownMenuItem>
-          <DropdownMenuItem @click.stop="props.openHistoryDialog(post.id)">
+          <DropdownMenuItem @click.stop="actions.openHistoryDialog(post.id)">
             <History class="mr-2 size-4" /> 历史记录
           </DropdownMenuItem>
           <DropdownMenuSeparator />
@@ -279,7 +212,7 @@ function cancelInlineRename() {
           <DropdownMenuItem
             v-if="posts.length > 1"
             class="text-destructive focus:text-destructive"
-            @click.stop="props.startDelPost(post.id)"
+            @click.stop="actions.startDelPost(post.id)"
           >
             <Trash2 class="mr-2 size-4" /> 删除
           </DropdownMenuItem>
@@ -287,7 +220,6 @@ function cancelInlineRename() {
       </DropdownMenu>
     </a>
 
-    <!-- 子级树 -->
     <div
       v-if="isHasChild(post.id) && !post.collapsed"
       class="ml-3 border-l border-border/40 pl-1.5 py-0.5"
@@ -295,19 +227,9 @@ function cancelInlineRename() {
       <PostItem
         :parent-id="post.id"
         :sorted-posts="props.sortedPosts"
-        :start-rename-post="props.startRenamePost"
-        :open-history-dialog="props.openHistoryDialog"
-        :start-del-post="props.startDelPost"
-        :drag-source-id="props.dragSourceId"
-        :set-drag-source-id="props.setDragSourceId"
-        :drop-target-id="props.dropTargetId"
-        :set-drop-target-id="props.setDropTargetId"
-        :handle-drag-end="props.handleDragEnd"
-        :handle-drop="props.handleDrop"
-        :open-add-post-dialog="props.openAddPostDialog"
-        :is-select-mode="props.isSelectMode"
-        :selected-ids="props.selectedIds"
-        :on-toggle-select="props.onToggleSelect"
+        :actions="actions"
+        :drag="drag"
+        :select="select"
       />
     </div>
   </div>
