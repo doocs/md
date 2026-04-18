@@ -120,6 +120,37 @@ function applyTemplate(postId: string) {
   currentPostId.value = postId
   toggleShowTemplateDialog(true)
 }
+
+/* ============ 双击内联重命名 ============ */
+const inlineEditId = ref<string | null>(null)
+const inlineEditVal = ref(``)
+let inlineInputRef: HTMLInputElement | null = null
+function setInlineInputRef(el: unknown) {
+  inlineInputRef = el as HTMLInputElement | null
+}
+
+function startInlineRename(post: Post) {
+  inlineEditId.value = post.id
+  inlineEditVal.value = post.title
+  nextTick(() => {
+    inlineInputRef?.select()
+  })
+}
+
+function commitInlineRename() {
+  const id = inlineEditId.value
+  if (!id)
+    return
+  const trimmed = inlineEditVal.value.trim()
+  if (trimmed && trimmed !== postStore.getPostById(id)?.title) {
+    postStore.renamePost(id, trimmed)
+  }
+  inlineEditId.value = null
+}
+
+function cancelInlineRename() {
+  inlineEditId.value = null
+}
 </script>
 
 <template>
@@ -133,7 +164,7 @@ function applyTemplate(postId: string) {
         'opacity-30': props.dragSourceId === post.id,
         'ring-1 ring-primary/40 ring-inset bg-primary/5': props.dropTargetId === post.id,
       }"
-      :draggable="!props.isSelectMode"
+      :draggable="!props.isSelectMode && inlineEditId !== post.id"
       @dragstart="!props.isSelectMode && handleDragStart(post.id, $event)"
       @dragend="props.handleDragEnd"
       @drop.prevent="!props.isSelectMode && props.handleDrop(post.id)"
@@ -181,7 +212,21 @@ function applyTemplate(postId: string) {
         />
       </button>
 
-      <span class="flex-1 truncate select-none">{{ post.title }}</span>
+      <input
+        v-if="inlineEditId === post.id"
+        :ref="setInlineInputRef"
+        v-model="inlineEditVal"
+        class="flex-1 min-w-0 bg-transparent outline-none border-b border-primary text-[13px] leading-snug"
+        @click.stop
+        @keyup.enter="commitInlineRename"
+        @keyup.escape="cancelInlineRename"
+        @blur="commitInlineRename"
+      >
+      <span
+        v-else
+        class="flex-1 truncate select-none"
+        @dblclick.stop="startInlineRename(post)"
+      >{{ post.title }}</span>
 
       <!-- 上下文菜单 — hover 时渐入 -->
       <DropdownMenu v-if="!props.isSelectMode">
