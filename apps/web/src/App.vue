@@ -37,6 +37,8 @@ onMounted(() => {
   <Toaster
     rich-colors
     position="top-center"
+    :duration="1200"
+    :visible-toasts="1"
     :theme="isDark ? 'dark' : 'light'"
   />
 </template>
