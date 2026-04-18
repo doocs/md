@@ -37,7 +37,45 @@ watch(() => isMobile.value, () => {
 const isOpenEditDialog = ref(false)
 const editInputVal = ref(``)
 
-// 滚动到活跃的 tab
+const inlineEditId = ref<string | null>(null)
+const inlineEditVal = ref(``)
+let inlineInputRef: HTMLInputElement | null = null
+function setInlineInputRef(el: unknown) {
+  inlineInputRef = el as HTMLInputElement | null
+}
+
+function startInlineRename(tab: { id: string, title: string }) {
+  inlineEditId.value = tab.id
+  inlineEditVal.value = tab.title
+  nextTick(() => {
+    inlineInputRef?.select()
+  })
+}
+
+function commitInlineRename() {
+  const id = inlineEditId.value
+  if (!id)
+    return
+  const trimmed = inlineEditVal.value.trim()
+  if (!trimmed) {
+    toast.error(`方案名不可为空`)
+    inlineEditId.value = null
+    return
+  }
+  const currentTab = cssContentConfig.value.tabs.find(t => t.id === id)
+  if (currentTab && trimmed !== currentTab.title) {
+    currentTab.title = trimmed
+    currentTab.name = trimmed
+    currentTab.updateDatetime = new Date()
+    toast.success(`修改成功`)
+  }
+  inlineEditId.value = null
+}
+
+function cancelInlineRename() {
+  inlineEditId.value = null
+}
+
 async function scrollToActiveTab() {
   await nextTick()
   const activeTab = document.querySelector('.cssEditor-wrapper .css-tab-active')
@@ -250,8 +288,19 @@ function exportCurrentTheme() {
             'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.id,
           }"
           @click="tabChanged(item.id)"
+          @dblclick.stop="startInlineRename(item)"
         >
-          <span class="truncate max-w-[100px]">{{ item.title }}</span>
+          <input
+            v-if="inlineEditId === item.id"
+            :ref="setInlineInputRef"
+            v-model="inlineEditVal"
+            class="w-[80px] bg-transparent outline-none border-b border-primary text-xs"
+            @click.stop
+            @keyup.enter="commitInlineRename"
+            @keyup.escape="cancelInlineRename"
+            @blur="commitInlineRename"
+          >
+          <span v-else class="truncate max-w-[100px]">{{ item.title }}</span>
 
           <!-- 活跃 tab 下划线指示器 -->
           <span

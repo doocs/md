@@ -93,8 +93,15 @@ function commitInlineRename() {
   if (!id)
     return
   const trimmed = inlineEditVal.value.trim()
-  if (trimmed && trimmed !== postStore.getPostById(id)?.title) {
+  if (!trimmed) {
+    toast.error(`内容标题不可为空`)
+    inlineEditId.value = null
+    return
+  }
+  const currentTitle = postStore.getPostById(id)?.title
+  if (trimmed !== currentTitle) {
     postStore.renamePost(id, trimmed)
+    toast.success(`修改成功`)
   }
   inlineEditId.value = null
 }
