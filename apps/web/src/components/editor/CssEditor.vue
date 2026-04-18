@@ -312,9 +312,8 @@ function exportCurrentTheme() {
           <Download class="size-3.5" />
         </button>
 
-        <!-- 移动端关闭 -->
+        <!-- 关闭 -->
         <button
-          v-if="isMobile"
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
           @click="uiStore.isShowCssEditor = false"
         >

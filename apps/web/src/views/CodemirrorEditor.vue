@@ -186,13 +186,13 @@ onUnmounted(() => {
           </ResizablePanel>
           <ResizableHandle class="hidden md:block" />
           <ResizablePanel
-            :default-size="isOpenFolderPanel ? 15 : 0"
-            :max-size="isOpenFolderPanel ? 25 : 0"
-            :min-size="isOpenFolderPanel ? 10 : 0"
+            :default-size="!isMobile && isOpenFolderPanel ? 15 : 0"
+            :max-size="!isMobile && isOpenFolderPanel ? 25 : 0"
+            :min-size="!isMobile && isOpenFolderPanel ? 10 : 0"
           >
             <FolderSourcePanel />
           </ResizablePanel>
-          <ResizableHandle v-if="isOpenFolderPanel" class="hidden md:block" />
+          <ResizableHandle v-if="!isMobile && isOpenFolderPanel" class="hidden md:block" />
 
           <!-- 主内容区域 (嵌套灵动布局) -->
           <ResizablePanel :min-size="30">
