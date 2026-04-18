@@ -11,11 +11,28 @@ import {
 import { useFolderFileSync } from '@/composables/useFolderFileSync'
 import { useFolderSourceStore } from '@/stores/folderSource'
 import { usePostStore } from '@/stores/post'
+import { useUIStore } from '@/stores/ui'
 import FolderTree from './FolderTree.vue'
 
 const folderSourceStore = useFolderSourceStore()
 const postStore = usePostStore()
+const uiStore = useUIStore()
 const { setCurrentFilePath } = useFolderFileSync()
+
+const { isMobile, isOpenFolderPanel } = storeToRefs(uiStore)
+
+// 控制是否启用动画
+const enableAnimation = ref(false)
+
+watch(isOpenFolderPanel, () => {
+  if (isMobile.value) {
+    enableAnimation.value = true
+  }
+})
+
+watch(isMobile, () => {
+  enableAnimation.value = false
+})
 
 const {
   currentFolderHandle,
@@ -83,7 +100,23 @@ async function handleOpenFile(node: any) {
 </script>
 
 <template>
-  <div class="folder-source-panel h-full flex flex-col">
+  <!-- 移动端遮罩层 -->
+  <Transition name="fade">
+    <div
+      v-if="isMobile && isOpenFolderPanel"
+      class="fixed inset-0 bg-black/40 backdrop-blur-sm z-40"
+      @click="isOpenFolderPanel = false"
+    />
+  </Transition>
+
+  <div
+    class="folder-source-panel h-full flex flex-col"
+    :class="{
+      'fixed top-0 left-0 z-55 w-full bg-background border-r border-border shadow-xl': isMobile,
+      'animate-slider': isMobile && enableAnimation,
+    }"
+    :style="isMobile ? { transform: isOpenFolderPanel ? 'translateX(0)' : 'translateX(-100%)' } : undefined"
+  >
     <!-- 头部工具栏 -->
     <div class="panel-header sticky top-0 z-10 bg-background border-b p-2">
       <div class="flex items-center justify-between mb-2">
@@ -91,15 +124,27 @@ async function handleOpenFile(node: any) {
           <FolderTreeIcon class="h-4 w-4" />
           本地文件夹
         </h3>
-        <Button
-          v-if="currentFolderHandle"
-          variant="ghost"
-          size="sm"
-          class="h-7 w-7 p-0"
-          @click="handleCloseFolder"
-        >
-          <X class="h-3 w-3" />
-        </Button>
+        <div class="flex items-center gap-1">
+          <Button
+            v-if="currentFolderHandle"
+            variant="ghost"
+            size="sm"
+            class="h-7 w-7 p-0"
+            title="关闭文件夹"
+            @click="handleCloseFolder"
+          >
+            <FolderClosed class="h-3 w-3" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            class="h-7 w-7 p-0"
+            title="关闭面板"
+            @click="isOpenFolderPanel = false"
+          >
+            <X class="h-3 w-3" />
+          </Button>
+        </div>
       </div>
 
       <!-- 操作按钮 -->
@@ -212,5 +257,21 @@ async function handleOpenFile(node: any) {
 
 .file-tree-container {
   min-height: 100%;
+}
+
+/* 移动端侧边栏动画 */
+.animate-slider {
+  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 遮罩动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 200ms ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
