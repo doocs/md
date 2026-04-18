@@ -38,13 +38,13 @@
     "@types/node": "^25.6.0",
     "archiver": "^7.0.1",
     "cross-env": "^10.1.0",
-    "eslint": "^10.2.0",
+    "eslint": "^10.2.1",
     "eslint-plugin-format": "^2.0.1",
     "npm-run-all2": "^8.0.4",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "~6.0.2"
+    "typescript": "~6.0.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
