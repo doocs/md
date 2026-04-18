@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EditorPanel from '@/components/editor/EditorPanel.vue'
+import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
 import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
@@ -41,9 +42,30 @@ const getPreviewContainer = () => previewPanelCompRef.value?.previewRef ?? null
 const {
   skipCursorDrivenPreviewSync,
   scheduleSyncPreviewToEditorCursor,
-  handlePreviewContentClick,
+  handlePreviewContentClick: handlePreviewNavigationClick,
   cleanup: cleanupCursorSync,
 } = useCursorSync(getEditorView, getPreviewContainer)
+
+function handlePreviewContentClick(event: MouseEvent) {
+  const target = event.target as HTMLElement | null
+  const formulaElement = target?.closest(`[data-math-latex]`) as HTMLElement | null
+
+  if (formulaElement) {
+    const latex = formulaElement.dataset.mathLatex ?? ``
+    if (latex) {
+      uiStore.openFormulaEditor({
+        value: latex,
+        displayMode: formulaElement.dataset.mathDisplay === `true`,
+        sourceRaw: formulaElement.dataset.mathRaw ?? null,
+      })
+      event.preventDefault()
+      event.stopPropagation()
+      return
+    }
+  }
+
+  handlePreviewNavigationClick(event)
+}
 
 // --- 编辑器刷新 & 样式重置 ---
 function editorRefresh() {
@@ -279,6 +301,8 @@ onUnmounted(() => {
       <InsertMpCardDialog />
 
       <ImportMarkdownDialog />
+
+      <FormulaEditorDialog />
 
       <TemplateDialog />
 
