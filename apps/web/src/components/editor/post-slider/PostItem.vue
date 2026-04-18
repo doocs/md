@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import {
   ChevronRight,
+  Copy,
   Edit3,
   Ellipsis,
   FileDown,
@@ -111,6 +112,18 @@ function saveAsTemplate(postId: string) {
     content: post.content,
     description: `从「${post.title}」创建于 ${new Date().toLocaleString('zh-CN')}`,
   })
+}
+
+/*
+ * 复制单篇
+ */
+function duplicateSingle(postId: string) {
+  const p = posts.value.find(p => p.id === postId)
+  if (!p)
+    return
+  postStore.addPost(`${p.title} 副本`, p.parentId ?? null)
+  const newPost = posts.value[posts.value.length - 1]
+  postStore.updatePostContent(newPost.id, p.content)
 }
 
 /*
@@ -245,6 +258,9 @@ function cancelInlineRename() {
           <DropdownMenuItem @click.stop="props.startRenamePost(post.id)">
             <Edit3 class="mr-2 size-4" /> 重命名
           </DropdownMenuItem>
+          <DropdownMenuItem @click.stop="duplicateSingle(post.id)">
+            <Copy class="mr-2 size-4" /> 复制
+          </DropdownMenuItem>
           <DropdownMenuItem @click.stop="props.openHistoryDialog(post.id)">
             <History class="mr-2 size-4" /> 历史记录
           </DropdownMenuItem>
@@ -274,7 +290,7 @@ function cancelInlineRename() {
     <!-- 子级树 -->
     <div
       v-if="isHasChild(post.id) && !post.collapsed"
-      class="ml-[18px] border-l border-border/40 pl-2 py-0.5"
+      class="ml-3 border-l border-border/40 pl-1.5 py-0.5"
     >
       <PostItem
         :parent-id="post.id"
