@@ -57,10 +57,6 @@ function editTabName() {
     return
   }
 
-  if (!cssEditorStore.validatorTabName(editInputVal.value)) {
-    toast.error(`不能与现有方案重名`)
-    return
-  }
   cssEditorStore.renameTab(editInputVal.value)
   isOpenEditDialog.value = false
   toast.success(`修改成功`)
@@ -75,11 +71,6 @@ const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
 async function addTab() {
   if (!(addInputVal.value).trim()) {
     toast.error(`新建失败，方案名不可为空`)
-    return
-  }
-
-  if (!cssEditorStore.validatorTabName(addInputVal.value)) {
-    toast.error(`不能与现有方案重名`)
     return
   }
 
@@ -109,10 +100,10 @@ async function addTab() {
 }
 
 const isOpenDelTabConfirmDialog = ref(false)
-const delTargetName = ref(``)
+const delTargetId = ref(``)
 
-function removeHandler(targetName: string) {
-  delTargetName.value = targetName
+function removeHandler(targetId: string) {
+  delTargetId.value = targetId
   isOpenDelTabConfirmDialog.value = true
 }
 
@@ -123,20 +114,20 @@ function delTab() {
     return
   }
 
-  let activeName = cssContentConfig.value.active
-  if (activeName === delTargetName.value) {
+  let activeId = cssContentConfig.value.active
+  if (activeId === delTargetId.value) {
     tabs.forEach((tab, index) => {
-      if (tab.name === delTargetName.value) {
+      if (tab.id === delTargetId.value) {
         const nextTab = tabs[index + 1] || tabs[index - 1]
         if (nextTab) {
-          activeName = nextTab.name
+          activeId = nextTab.id
         }
       }
     })
   }
 
-  cssEditorStore.tabChanged(activeName)
-  cssContentConfig.value.tabs = tabs.filter(tab => tab.name !== delTargetName.value)
+  cssEditorStore.tabChanged(activeId)
+  cssContentConfig.value.tabs = tabs.filter(tab => tab.id !== delTargetId.value)
 
   toast.success(`删除成功`)
 }
@@ -173,9 +164,8 @@ function createFromViewTheme() {
   isOpenAddDialog.value = true
 }
 
-function tabChanged(tabName: string | number) {
-  console.log(`tabChanged`, tabName)
-  cssEditorStore.tabChanged(tabName as string)
+function tabChanged(tabId: string | number) {
+  cssEditorStore.tabChanged(tabId as string)
   // 切换后滚动到活跃的 tab
   scrollToActiveTab()
 }
@@ -205,7 +195,7 @@ onMounted(() => {
 
 // 导出合并后的主题
 function exportCurrentTheme() {
-  const currentTab = cssContentConfig.value.tabs.find(tab => tab.name === cssContentConfig.value.active)
+  const currentTab = cssContentConfig.value.tabs.find(tab => tab.id === cssContentConfig.value.active)
   if (!currentTab) {
     toast.error(`未找到当前方案`)
     return
@@ -256,21 +246,21 @@ function exportCurrentTheme() {
           :key="item.name"
           class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
           :class="{
-            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.name,
-            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.name,
+            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.id,
+            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.id,
           }"
-          @click="tabChanged(item.name)"
+          @click="tabChanged(item.id)"
         >
           <span class="truncate max-w-[100px]">{{ item.title }}</span>
 
           <!-- 活跃 tab 下划线指示器 -->
           <span
-            v-if="cssContentConfig.active === item.name"
+            v-if="cssContentConfig.active === item.id"
             class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
           />
 
           <!-- 活跃 tab 操作: 更多菜单 -->
-          <DropdownMenu v-if="cssContentConfig.active === item.name">
+          <DropdownMenu v-if="cssContentConfig.active === item.id">
             <DropdownMenuTrigger as-child>
               <span
                 class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
@@ -287,7 +277,7 @@ function exportCurrentTheme() {
               <DropdownMenuItem
                 v-if="cssContentConfig.tabs.length > 1"
                 class="text-destructive focus:text-destructive"
-                @click.stop="removeHandler(item.name)"
+                @click.stop="removeHandler(item.id)"
               >
                 <X class="mr-2 size-4" /> 删除
               </DropdownMenuItem>
