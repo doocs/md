@@ -151,6 +151,10 @@ watch(isOpenRightSlider, () => {
   nextTick(redistributePanelSizes)
 })
 
+onMounted(() => {
+  nextTick(redistributePanelSizes)
+})
+
 // --- 进度条 ---
 const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 0)
 
