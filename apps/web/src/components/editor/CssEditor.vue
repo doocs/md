@@ -53,7 +53,7 @@ function rename(name: string) {
 
 function editTabName() {
   if (!(editInputVal.value).trim()) {
-    toast.error(`新建失败，方案名不可为空`)
+    toast.error(`编辑失败，方案名不可为空`)
     return
   }
 
@@ -344,7 +344,7 @@ function exportCurrentTheme() {
         <div class="space-y-4">
           <div class="space-y-2">
             <label class="text-sm font-medium">方案名称</label>
-            <Input v-model="addInputVal" placeholder="输入方案名称" />
+            <Input v-model="addInputVal" placeholder="输入方案名称" @keyup.enter="addTab" />
           </div>
           <div class="space-y-2">
             <label class="text-sm font-medium">初始模板</label>
@@ -392,7 +392,7 @@ function exportCurrentTheme() {
             请输入新的方案名称
           </DialogDescription>
         </DialogHeader>
-        <Input v-model="editInputVal" />
+        <Input v-model="editInputVal" @keyup.enter="editTabName" />
         <DialogFooter>
           <Button variant="outline" @click="isOpenEditDialog = false">
             取消
