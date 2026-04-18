@@ -119,10 +119,21 @@ export const useUIStore = defineStore(`ui`, () => {
 
   // ==================== 工具函数 ====================
   // 处理窗口大小变化
+  let splitCollapsedByResize = false
+
   function handleResize() {
+    const wasMobile = isMobile.value
     isMobile.value = window.innerWidth <= 768
-    if (isMobile.value && viewMode.value === `split`) {
+
+    if (!wasMobile && isMobile.value && viewMode.value === `split`) {
+      // 从桌面端变为移动端且当前是双屏：切换为编辑模式并记录
       viewMode.value = `edit`
+      splitCollapsedByResize = true
+    }
+    else if (wasMobile && !isMobile.value && splitCollapsedByResize) {
+      // 从移动端变回桌面端且是由 resize 触发的折叠：还原为双屏
+      viewMode.value = `split`
+      splitCollapsedByResize = false
     }
   }
 
