@@ -56,10 +56,10 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
     scopedCustomCSS, // 用户自定义 CSS（最后应用，可覆盖预设样式）
   ].filter(Boolean).join(`\n\n`)
 
-  // 7. 使用 PostCSS 处理 CSS（简化 calc() 表达式等）
-  mergedCSS = await processCSS(mergedCSS)
+  // 8. 解析 CSS 变量（将 var(--xxx) 替换为实际值，供导出/复制内联样式使用）
+  mergedCSS = processCSS(mergedCSS)
 
-  // 8. 注入到页面
+  // 9. 注入到页面
   const injector = getThemeInjector()
   injector.inject(mergedCSS)
 }

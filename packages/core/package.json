@@ -18,11 +18,8 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^3.9.0",
-    "marked": "^18.0.0",
-    "mermaid": "^11.14.0",
-    "postcss": "^8.5.10",
-    "postcss-calc": "^10.1.1",
-    "postcss-custom-properties": "^15.0.1"
+    "marked": "^18.0.1",
+    "mermaid": "^11.14.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*"
