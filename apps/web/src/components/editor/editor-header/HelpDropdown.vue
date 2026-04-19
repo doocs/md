@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Heart, HelpCircle, MessageSquare, Tag } from 'lucide-vue-next'
+import { BookText, Heart, HelpCircle, MessageSquare, Tag } from 'lucide-vue-next'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -7,16 +7,20 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openAbout`, `openFund`])
+const emit = defineEmits(['openAbout', 'openFund', 'openMarkdownHelp'])
 
 const { asSub } = toRefs(props)
 
 function openAboutDialog() {
-  emit(`openAbout`)
+  emit('openAbout')
 }
 
 function openFundDialog() {
-  emit(`openFund`)
+  emit('openFund')
+}
+
+function openMarkdownHelp() {
+  emit('openMarkdownHelp')
 }
 
 function openFeedback() {
@@ -35,6 +39,10 @@ function openReleases() {
       帮助
     </MenubarSubTrigger>
     <MenubarSubContent>
+      <MenubarItem @click="openMarkdownHelp()">
+        <BookText class="mr-2 h-4 w-4" />
+        语法帮助
+      </MenubarItem>
       <MenubarItem @click="openFeedback()">
         <MessageSquare class="mr-2 h-4 w-4" />
         反馈
@@ -58,6 +66,10 @@ function openReleases() {
   <MenubarMenu v-else>
     <MenubarTrigger>帮助</MenubarTrigger>
     <MenubarContent align="start">
+      <MenubarItem @click="openMarkdownHelp()">
+        <BookText class="mr-2 h-4 w-4" />
+        语法帮助
+      </MenubarItem>
       <MenubarItem @click="openFeedback()">
         <MessageSquare class="mr-2 h-4 w-4" />
         反馈
