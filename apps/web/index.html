@@ -94,8 +94,12 @@
     </script>
     <script>
       window.MathJax = {
-        tex: { tags: 'ams' },
+        tex: {
+          tags: 'ams',
+          packages: { '[+]': ['amscd'] },
+        },
         svg: { fontCache: 'none' },
+        loader: { load: ['[tex]/amscd'] },
       }
     </script>
     <script
