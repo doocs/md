@@ -11,7 +11,7 @@
     "./theme": "./src/theme/index.ts"
   },
   "dependencies": {
-    "@antv/infographic": "^0.2.17",
+    "@antv/infographic": "^0.2.18",
     "@md/shared": "workspace:*",
     "es-toolkit": "^1.45.1",
     "fflate": "^0.8.2",
