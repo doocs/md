@@ -7,7 +7,7 @@ packages:
 
 overrides:
   '@codemirror/state': 6.6.0
-  '@codemirror/view': 6.41.0
+  '@codemirror/view': 6.41.1
   ajv@^8: ^8.18.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -38,5 +38,5 @@ overrides:
   yauzl: ^3.2.1
 
 patchedDependencies:
-  '@codemirror/view@6.41.0': patches/@codemirror__view@6.41.0.patch
+  '@codemirror/view@6.41.1': patches/@codemirror__view@6.41.1.patch
   juice@11.1.1: patches/juice@11.1.1.patch
