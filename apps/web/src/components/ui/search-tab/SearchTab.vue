@@ -421,7 +421,7 @@ defineExpose({
   <Transition name="slide-down">
     <div
       v-if="showSearchTab"
-      class="bg-background absolute right-0 top-0 z-50 min-w-[300px] w-fit flex gap-1 border rounded-lg px-2 py-1 shadow-md transition-all"
+      class="bg-background absolute right-0 top-0 z-50 flex max-w-[calc(100%-1rem)] gap-1 rounded-lg border px-2 py-1 shadow-md transition-all"
       :class="showReplace ? 'items-start' : 'items-center'"
     >
       <!-- 折叠/展开按钮 -->
@@ -436,49 +436,53 @@ defineExpose({
       </Button>
 
       <!-- 查找 / 替换主体 -->
-      <div class="flex flex-col gap-0.5">
+      <div class="grid min-w-0 flex-1 grid-cols-[1fr_auto] items-center gap-0.5">
         <!-- 查找行 -->
-        <div class="flex items-center gap-1">
+        <div class="relative min-w-0">
           <Input
             ref="searchInputRef"
             v-model="searchWord"
             placeholder="查找"
-            class="h-7 w-40 text-sm"
+            class="h-7 w-full min-w-0 pr-16 text-sm"
             @keydown="handleSearchInputKeyDown"
           />
-          <Button
-            variant="ghost"
-            size="xs"
-            title="区分大小写"
-            aria-label="区分大小写"
-            class="h-6 w-6 p-0"
-            :class="{ 'bg-accent': isCaseSensitive }"
-            @click="toggleCaseSensitive"
-          >
-            <CaseSensitive class="h-3 w-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            title="正则表达式"
-            aria-label="正则表达式"
-            class="h-6 w-6 p-0"
-            :class="{ 'bg-accent': isRegex }"
-            @click="toggleRegex"
-          >
-            <Regex class="h-3 w-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            title="在选区内查找"
-            aria-label="在选区内查找"
-            class="h-6 w-6 p-0"
-            :class="{ 'bg-accent': findInSelection }"
-            @click="toggleFindInSelection"
-          >
-            <WholeWord class="h-3 w-3" />
-          </Button>
+          <div class="absolute right-1 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
+            <Button
+              variant="ghost"
+              size="xs"
+              title="区分大小写"
+              aria-label="区分大小写"
+              class="h-5 w-5 p-0"
+              :class="{ 'bg-accent': isCaseSensitive }"
+              @click="toggleCaseSensitive"
+            >
+              <CaseSensitive class="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              title="正则表达式"
+              aria-label="正则表达式"
+              class="h-5 w-5 p-0"
+              :class="{ 'bg-accent': isRegex }"
+              @click="toggleRegex"
+            >
+              <Regex class="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              title="在选区内查找"
+              aria-label="在选区内查找"
+              class="h-5 w-5 p-0"
+              :class="{ 'bg-accent': findInSelection }"
+              @click="toggleFindInSelection"
+            >
+              <WholeWord class="h-3 w-3" />
+            </Button>
+          </div>
+        </div>
+        <div class="flex items-center gap-1">
           <span class="w-10 select-none text-center text-xs">
             {{ numberOfMatches ? indexOfMatch + 1 : 0 }}/{{ numberOfMatches }}
           </span>
@@ -515,34 +519,36 @@ defineExpose({
         </div>
 
         <!-- 替换行（可折叠） -->
-        <div v-if="showReplace" class="flex items-center gap-1">
+        <template v-if="showReplace">
           <Input
             v-model="replaceWord"
             placeholder="替换"
-            class="h-7 w-40 text-sm"
+            class="h-7 min-w-0 text-sm mt-0.5"
             @keydown="handleReplaceInputKeyDown"
           />
-          <Button
-            variant="ghost"
-            size="xs"
-            title="替换"
-            aria-label="替换"
-            class="h-6 w-6 p-0"
-            @click="handleReplace"
-          >
-            <Replace class="h-3 w-3" />
-          </Button>
-          <Button
-            variant="ghost"
-            size="xs"
-            title="全部替换"
-            aria-label="全部替换"
-            class="h-6 w-6 p-0"
-            @click="handleReplaceAll"
-          >
-            <ReplaceAll class="h-3 w-3" />
-          </Button>
-        </div>
+          <div class="flex items-center gap-1 mt-0.5">
+            <Button
+              variant="ghost"
+              size="xs"
+              title="替换"
+              aria-label="替换"
+              class="h-6 w-6 p-0"
+              @click="handleReplace"
+            >
+              <Replace class="h-3 w-3" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="xs"
+              title="全部替换"
+              aria-label="全部替换"
+              class="h-6 w-6 p-0"
+              @click="handleReplaceAll"
+            >
+              <ReplaceAll class="h-3 w-3" />
+            </Button>
+          </div>
+        </template>
       </div>
     </div>
   </Transition>
