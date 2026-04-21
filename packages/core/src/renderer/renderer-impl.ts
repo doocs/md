@@ -320,10 +320,21 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
 
     image({ href, title, text }: Tokens.Image): string {
-      const newText = opts.legend ? transform(opts.legend, text, title, href) : ``
+      let widthAttr = ``
+      let heightAttr = ``
+      let altText = text
+
+      const sizeMatch = text.match(/\|(\d+)(?:x(\d+))?$/)
+      if (sizeMatch) {
+        altText = text.replace(/\|(\d+)(?:x(\d+))?$/, ``)
+        widthAttr = sizeMatch[1] ? ` width="${sizeMatch[1]}"` : ``
+        heightAttr = sizeMatch[2] ? ` height="${sizeMatch[2]}"` : ``
+      }
+
+      const newText = opts.legend ? transform(opts.legend, altText, title, href) : ``
       const subText = newText ? styledContent(`figcaption`, newText) : ``
       const titleAttr = title ? ` title="${title}"` : ``
-      return `<figure><img src="${href}"${titleAttr} alt="${text}"/>${subText}</figure>`
+      return `<figure><img src="${href}"${titleAttr}${widthAttr}${heightAttr} alt="${altText}"/>${subText}</figure>`
     },
 
     link({ href, title, text, tokens }: Tokens.Link): string {
