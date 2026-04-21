@@ -41,7 +41,7 @@
     "eslint": "^10.2.1",
     "eslint-plugin-format": "^2.0.1",
     "npm-run-all2": "^8.0.4",
-    "prettier": "2.8.8",
+    "prettier": "3.8.3",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
     "typescript": "~6.0.3"
