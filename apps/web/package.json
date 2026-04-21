@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1032.0",
-    "@aws-sdk/s3-request-presigner": "^3.1032.0",
+    "@aws-sdk/client-s3": "^3.1033.0",
+    "@aws-sdk/s3-request-presigner": "^3.1033.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -49,7 +49,7 @@
     "jszip": "^3.10.1",
     "juice": "^11.1.1",
     "lucide-vue-next": "^1.0.0",
-    "marked": "^18.0.1",
+    "marked": "^18.0.2",
     "pinia": "^3.0.4",
     "qiniu-js": "^3.4.4",
     "radix-vue": "^1.9.17",
@@ -65,11 +65,11 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.32.3",
-    "@cloudflare/workers-types": "^4.20260418.1",
+    "@cloudflare/vite-plugin": "1.33.0",
+    "@cloudflare/workers-types": "^4.20260421.1",
     "@md/config": "workspace:*",
-    "@tailwindcss/postcss": "^4.2.2",
-    "@tailwindcss/vite": "^4.2.2",
+    "@tailwindcss/postcss": "^4.2.3",
+    "@tailwindcss/vite": "^4.2.3",
     "@types/buffer-from": "^1.1.3",
     "@types/crypto-js": "^4.2.2",
     "@types/diff-match-patch": "^1.0.36",
@@ -79,17 +79,17 @@
     "linkedom": "^0.18.12",
     "ohash": "^2.0.11",
     "postcss": "^8.5.10",
-    "rollup": "^4.60.1",
+    "rollup": "^4.60.2",
     "rollup-plugin-visualizer": "^7.0.1",
     "shx": "^0.4.0",
-    "tailwindcss": "^4.2.2",
+    "tailwindcss": "^4.2.3",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.0.0",
     "vite": "^8.0.8",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.1",
-    "vue-tsc": "^3.2.6",
-    "wrangler": "^4.83.0",
-    "wxt": "^0.20.24"
+    "vue-tsc": "^3.2.7",
+    "wrangler": "^4.84.0",
+    "wxt": "^0.20.25"
   }
 }
