@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1033.0",
-    "@aws-sdk/s3-request-presigner": "^3.1033.0",
+    "@aws-sdk/client-s3": "^3.1034.0",
+    "@aws-sdk/s3-request-presigner": "^3.1034.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -65,11 +65,11 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.33.0",
+    "@cloudflare/vite-plugin": "1.33.1",
     "@cloudflare/workers-types": "^4.20260421.1",
     "@md/config": "workspace:*",
-    "@tailwindcss/postcss": "^4.2.3",
-    "@tailwindcss/vite": "^4.2.3",
+    "@tailwindcss/postcss": "^4.2.4",
+    "@tailwindcss/vite": "^4.2.4",
     "@types/buffer-from": "^1.1.3",
     "@types/crypto-js": "^4.2.2",
     "@types/diff-match-patch": "^1.0.36",
@@ -82,14 +82,14 @@
     "rollup": "^4.60.2",
     "rollup-plugin-visualizer": "^7.0.1",
     "shx": "^0.4.0",
-    "tailwindcss": "^4.2.3",
+    "tailwindcss": "^4.2.4",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.0.0",
     "vite": "^8.0.9",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.1",
     "vue-tsc": "^3.2.7",
-    "wrangler": "^4.84.0",
+    "wrangler": "^4.84.1",
     "wxt": "^0.20.25"
   }
 }
