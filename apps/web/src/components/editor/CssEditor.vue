@@ -368,12 +368,10 @@ function exportCurrentTheme() {
           v-for="item in cssContentConfig.tabs"
           :key="item.id"
           class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
-          :class="{
-            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.id && !isSelectMode,
-            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.id && !isSelectMode,
-            'bg-accent text-accent-foreground': isSelectMode && selectedIds.includes(item.id),
-            'text-muted-foreground hover:text-foreground': isSelectMode && !selectedIds.includes(item.id),
-          }"
+          :class="[
+            cssContentConfig.active === item.id && !isSelectMode ? 'css-tab-active text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
+            isSelectMode && selectedIds.includes(item.id) ? 'bg-accent text-accent-foreground' : '',
+          ]"
           @click="handleTabClick(item.id)"
           @dblclick.stop="startInlineRename(item)"
           @contextmenu="onContextMenu($event, item.id)"
