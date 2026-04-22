@@ -3,7 +3,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
 import { v4 as uuid } from 'uuid'
-import { addPrefix } from '@/utils'
+import { addPrefix, downloadFile, sanitizeTitle } from '@/utils'
 import { store } from '@/utils/storage'
 
 const DEFAULT_CSS_CONTENT = DEFAULT_CUSTOM_THEME
@@ -21,6 +21,8 @@ export interface CssContentConfig {
     createDatetime: Date
     updateDatetime: Date
   }[]
+  selectedIds?: string[]
+  isSelectMode?: boolean
 }
 
 /**
@@ -223,13 +225,11 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       return
 
     const doc = cssEditor.value.state.doc.toString()
-    // 匹配 h1 { 或 h2 { 等模式（支持换行和空格）
     const pattern = new RegExp(`^${level}\\s*\\{`, `m`)
     const match = doc.match(pattern)
 
     if (match && match.index !== undefined) {
       const startPos = match.index
-      // 查找对应的结束括号
       let braceCount = 0
       let endPos = startPos
       let foundStart = false
@@ -248,14 +248,101 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
         }
       }
 
-      // 滚动到位置并选中该区域
       cssEditor.value.dispatch({
         selection: { anchor: startPos, head: endPos },
         scrollIntoView: true,
       })
 
-      // 聚焦编辑器
       cssEditor.value.focus()
+    }
+  }
+
+  const toggleSelectMode = () => {
+    cssContentConfig.value.isSelectMode = !(cssContentConfig.value.isSelectMode ?? false)
+    if (!cssContentConfig.value.isSelectMode) {
+      cssContentConfig.value.selectedIds = []
+    }
+  }
+
+  const toggleSelectTab = (id: string) => {
+    const selectedIds = cssContentConfig.value.selectedIds ?? []
+    const idx = selectedIds.indexOf(id)
+    if (idx === -1) {
+      cssContentConfig.value.selectedIds = [...selectedIds, id]
+    }
+    else {
+      cssContentConfig.value.selectedIds = selectedIds.filter(i => i !== id)
+    }
+  }
+
+  const selectAllTabs = () => {
+    cssContentConfig.value.selectedIds = cssContentConfig.value.tabs.map(t => t.id)
+  }
+
+  const clearSelection = () => {
+    cssContentConfig.value.selectedIds = []
+  }
+
+  const batchDeleteTabs = () => {
+    const selectedIds = cssContentConfig.value.selectedIds ?? []
+    if (selectedIds.length === 0)
+      return
+
+    if (selectedIds.length >= cssContentConfig.value.tabs.length) {
+      toast.warning(`至少保留一个方案`)
+      return
+    }
+
+    const tabs = cssContentConfig.value.tabs.filter(tab => !selectedIds.includes(tab.id))
+
+    if (selectedIds.includes(cssContentConfig.value.active)) {
+      cssContentConfig.value.active = tabs[0].id
+      setCssEditorValue(tabs[0].content)
+      if (onTabChangedCallback) {
+        onTabChangedCallback(tabs[0].content)
+      }
+    }
+
+    cssContentConfig.value.tabs = tabs
+    cssContentConfig.value.selectedIds = []
+    cssContentConfig.value.isSelectMode = false
+    toast.success(`已删除 ${selectedIds.length} 个方案`)
+  }
+
+  const batchExportTabs = async () => {
+    const selectedIds = cssContentConfig.value.selectedIds ?? []
+    if (selectedIds.length === 0)
+      return
+
+    if (selectedIds.length === 1) {
+      const tab = cssContentConfig.value.tabs.find(t => t.id === selectedIds[0])
+      if (tab) {
+        downloadFile(`data:text/css;charset=utf-8,${encodeURIComponent(tab.content)}`, `${sanitizeTitle(tab.title)}.css`)
+      }
+    }
+    else {
+      const { default: JSZip } = await import('jszip')
+      const zip = new JSZip()
+      selectedIds.forEach((id) => {
+        const tab = cssContentConfig.value.tabs.find(t => t.id === id)
+        if (tab) {
+          zip.file(`${sanitizeTitle(tab.title)}.css`, tab.content)
+        }
+      })
+      const blob = await zip.generateAsync({ type: `blob` })
+      downloadFile(URL.createObjectURL(blob), `css-schemes.zip`)
+    }
+
+    cssContentConfig.value.selectedIds = []
+    cssContentConfig.value.isSelectMode = false
+    toast.success(`已导出 ${selectedIds.length} 个方案`)
+  }
+
+  const exportSingleTab = (id: string) => {
+    const tab = cssContentConfig.value.tabs.find(t => t.id === id)
+    if (tab) {
+      downloadFile(`data:text/css;charset=utf-8,${encodeURIComponent(tab.content)}`, `${sanitizeTitle(tab.title)}.css`)
+      toast.success(`已导出「${tab.title}」`)
     }
   }
 
@@ -263,6 +350,8 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     // State
     cssEditor,
     cssContentConfig,
+    isSelectMode: computed(() => cssContentConfig.value.isSelectMode ?? false),
+    selectedIds: computed(() => cssContentConfig.value.selectedIds ?? []),
 
     // Getters
     getCurrentTab,
@@ -277,5 +366,14 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     resetCssConfig,
     initCssEditor,
     scrollToHeading,
+
+    // Batch Actions
+    toggleSelectMode,
+    toggleSelectTab,
+    selectAllTabs,
+    clearSelection,
+    batchDeleteTabs,
+    batchExportTabs,
+    exportSingleTab,
   }
 })

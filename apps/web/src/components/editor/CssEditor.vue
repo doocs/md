@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { exportMergedTheme } from '@md/core'
 import { themeMap, themeOptionsMap } from '@md/shared'
-import { Download, Edit3, Ellipsis, Eye, Plus, X } from 'lucide-vue-next'
+import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -16,7 +16,7 @@ const editorStore = useEditorStore()
 const themeStore = useThemeStore()
 
 const { isMobile } = storeToRefs(uiStore)
-const { cssContentConfig } = storeToRefs(cssEditorStore)
+const { cssContentConfig, isSelectMode, selectedIds } = storeToRefs(cssEditorStore)
 
 // 控制是否启用动画
 const enableAnimation = ref(false)
@@ -176,11 +176,89 @@ function addHandler() {
   isOpenAddDialog.value = true
 }
 
-// 查看内置主题功能
 const isOpenViewThemeDialog = ref(false)
 const selectedViewTheme = ref<'default' | 'grace' | 'simple'>('default')
 
-// 打开查看内置主题对话框
+const contextMenuTargetId = ref<string | null>(null)
+const showContextMenu = ref(false)
+const contextMenuPos = ref({ x: 0, y: 0 })
+
+function onContextMenu(e: MouseEvent, tabId: string) {
+  e.preventDefault()
+  e.stopPropagation()
+  contextMenuTargetId.value = tabId
+  contextMenuPos.value = { x: e.clientX, y: e.clientY }
+  showContextMenu.value = true
+}
+
+function closeContextMenu() {
+  showContextMenu.value = false
+  contextMenuTargetId.value = null
+}
+
+function contextMenuRename() {
+  const tab = cssContentConfig.value.tabs.find(t => t.id === contextMenuTargetId.value)
+  if (tab) {
+    rename(tab.name)
+  }
+  closeContextMenu()
+}
+
+function contextMenuExport() {
+  if (contextMenuTargetId.value) {
+    cssEditorStore.exportSingleTab(contextMenuTargetId.value)
+  }
+  closeContextMenu()
+}
+
+function contextMenuDelete() {
+  if (contextMenuTargetId.value) {
+    removeHandler(contextMenuTargetId.value)
+  }
+  closeContextMenu()
+}
+
+function enterSelectModeFromContextMenu() {
+  if (contextMenuTargetId.value) {
+    cssEditorStore.toggleSelectMode()
+    cssEditorStore.toggleSelectTab(contextMenuTargetId.value)
+  }
+  closeContextMenu()
+}
+
+const allSelected = computed(
+  () => cssContentConfig.value.tabs.length > 0 && selectedIds.value.length === cssContentConfig.value.tabs.length,
+)
+
+const isOpenBatchDelConfirmDialog = ref(false)
+
+const batchDelConfirmText = computed(() => {
+  const n = selectedIds.value.length
+  if (n === 1) {
+    const tab = cssContentConfig.value.tabs.find(t => t.id === selectedIds.value[0])
+    return `此操作将删除「${tab?.title ?? ``}」，是否继续？`
+  }
+  return `此操作将删除已选的 ${n} 个方案，是否继续？`
+})
+
+function confirmBatchDelete() {
+  cssEditorStore.batchDeleteTabs()
+  isOpenBatchDelConfirmDialog.value = false
+}
+
+function handleTabClick(tabId: string) {
+  if (isSelectMode.value) {
+    cssEditorStore.toggleSelectTab(tabId)
+  }
+  else {
+    tabChanged(tabId)
+  }
+}
+
+function exitSelectMode() {
+  cssEditorStore.toggleSelectMode()
+}
+
 function openViewThemeDialog() {
   selectedViewTheme.value = 'default'
   isOpenViewThemeDialog.value = true
@@ -229,6 +307,13 @@ onMounted(() => {
 
   // 初始化时滚动到活跃的 tab
   scrollToActiveTab()
+
+  // 点击外部关闭右键菜单
+  document.addEventListener('click', closeContextMenu)
+})
+
+onUnmounted(() => {
+  document.removeEventListener('click', closeContextMenu)
 })
 
 // 导出合并后的主题
@@ -279,17 +364,27 @@ function exportCurrentTheme() {
     <!-- Tab 栏 + 工具栏合并 -->
     <div class="flex items-center h-9 px-2 shrink-0 border-b border-border">
       <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full">
-        <button
+        <div
           v-for="item in cssContentConfig.tabs"
-          :key="item.name"
+          :key="item.id"
           class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
           :class="{
-            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.id,
-            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.id,
+            'css-tab-active text-foreground font-medium': cssContentConfig.active === item.id && !isSelectMode,
+            'text-muted-foreground hover:text-foreground': cssContentConfig.active !== item.id && !isSelectMode,
+            'bg-accent text-accent-foreground': isSelectMode && selectedIds.includes(item.id),
+            'text-muted-foreground hover:text-foreground': isSelectMode && !selectedIds.includes(item.id),
           }"
-          @click="tabChanged(item.id)"
+          @click="handleTabClick(item.id)"
           @dblclick.stop="startInlineRename(item)"
+          @contextmenu="onContextMenu($event, item.id)"
         >
+          <span
+            v-if="isSelectMode"
+            class="inline-flex items-center justify-center size-4 rounded border transition-colors mr-1"
+            :class="selectedIds.includes(item.id) ? 'bg-primary border-primary text-primary-foreground' : 'border-border'"
+          >
+            <Check v-if="selectedIds.includes(item.id)" class="size-3" />
+          </span>
           <input
             v-if="inlineEditId === item.id"
             :ref="setInlineInputRef"
@@ -302,14 +397,12 @@ function exportCurrentTheme() {
           >
           <span v-else class="truncate max-w-[100px]">{{ item.title }}</span>
 
-          <!-- 活跃 tab 下划线指示器 -->
           <span
-            v-if="cssContentConfig.active === item.id"
+            v-if="cssContentConfig.active === item.id && !isSelectMode"
             class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
           />
 
-          <!-- 活跃 tab 操作: 更多菜单 -->
-          <DropdownMenu v-if="cssContentConfig.active === item.id">
+          <DropdownMenu v-if="cssContentConfig.active === item.id && !isSelectMode">
             <DropdownMenuTrigger as-child>
               <span
                 class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
@@ -322,6 +415,9 @@ function exportCurrentTheme() {
               <DropdownMenuItem @click.stop="rename(item.name)">
                 <Edit3 class="mr-2 size-4" /> 重命名
               </DropdownMenuItem>
+              <DropdownMenuItem @click.stop="cssEditorStore.exportSingleTab(item.id)">
+                <Download class="mr-2 size-4" /> 导出
+              </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
                 v-if="cssContentConfig.tabs.length > 1"
@@ -332,7 +428,7 @@ function exportCurrentTheme() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-        </button>
+        </div>
       </div>
 
       <!-- 工具按钮组 -->
@@ -379,6 +475,90 @@ function exportCurrentTheme() {
         placeholder="Your custom css here."
       />
     </div>
+
+    <!-- 选择模式底部操作栏 -->
+    <Transition name="slide-up">
+      <div
+        v-if="isSelectMode"
+        class="shrink-0 border-t border-border bg-background px-3 pt-2 pb-3 space-y-2"
+      >
+        <div class="flex items-center justify-between text-xs">
+          <span class="text-muted-foreground">
+            已选
+            <strong class="text-foreground font-semibold">{{ selectedIds.length }}</strong>
+            个
+          </span>
+          <div class="flex items-center gap-2 text-muted-foreground">
+            <button
+              class="hover:text-foreground transition-colors"
+              @click="allSelected ? cssEditorStore.clearSelection() : cssEditorStore.selectAllTabs()"
+            >
+              {{ allSelected ? '取消全选' : '全选' }}
+            </button>
+            <span class="opacity-30">·</span>
+            <button class="hover:text-foreground transition-colors" @click="exitSelectMode">
+              完成
+            </button>
+          </div>
+        </div>
+        <div class="flex">
+          <button
+            class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
+            title="导出"
+            :disabled="!selectedIds.length"
+            @click="cssEditorStore.batchExportTabs"
+          >
+            <Download class="size-4" />
+          </button>
+          <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
+          <button
+            class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
+            :title="selectedIds.length >= cssContentConfig.tabs.length ? '至少保留一个方案' : '删除'"
+            :disabled="!selectedIds.length || selectedIds.length >= cssContentConfig.tabs.length"
+            @click="isOpenBatchDelConfirmDialog = true"
+          >
+            <X class="size-4" />
+          </button>
+        </div>
+      </div>
+    </Transition>
+
+    <!-- 右键菜单 -->
+    <Teleport to="body">
+      <div
+        v-if="showContextMenu"
+        class="fixed z-50 min-w-[120px] rounded-md border border-border bg-background p-1 shadow-md animate-in fade-in-0 zoom-in-95"
+        :style="{ left: `${contextMenuPos.x}px`, top: `${contextMenuPos.y}px` }"
+        @click.stop
+      >
+        <button
+          class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
+          @click="contextMenuRename"
+        >
+          <Edit3 class="mr-2 size-3.5" /> 重命名
+        </button>
+        <button
+          class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
+          @click="contextMenuExport"
+        >
+          <Download class="mr-2 size-3.5" /> 导出
+        </button>
+        <div class="my-1 h-px bg-border" />
+        <button
+          v-if="cssContentConfig.tabs.length > 1"
+          class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-destructive hover:bg-destructive/8 transition-colors"
+          @click="contextMenuDelete"
+        >
+          <X class="mr-2 size-3.5" /> 删除
+        </button>
+        <button
+          class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
+          @click="enterSelectModeFromContextMenu"
+        >
+          <CheckSquare class="mr-2 size-3.5" /> 多选
+        </button>
+      </div>
+    </Teleport>
 
     <!-- 新增弹窗 -->
     <Dialog v-model:open="isOpenAddDialog">
@@ -468,6 +648,25 @@ function exportCurrentTheme() {
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
+
+    <!-- 批量删除确认 -->
+    <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>提示</AlertDialogTitle>
+          <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>取消</AlertDialogCancel>
+          <AlertDialogAction
+            class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            @click="confirmBatchDelete"
+          >
+            确定删除
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
   </div>
 
   <!-- 查看内置主题对话框 -->
@@ -538,5 +737,17 @@ function exportCurrentTheme() {
 /* 移动端CSS编辑器动画 - 只有添加了 animate 类才启用 */
 .mobile-css-editor.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 底部操作栏动画 */
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: transform 200ms ease, opacity 200ms ease;
+}
+
+.slide-up-enter-from,
+.slide-up-leave-to {
+  transform: translateY(100%);
+  opacity: 0;
 }
 </style>
