@@ -26,15 +26,8 @@ export function processCSS(css: string): string {
   // 1. 从 CSS 字符串本身提取变量定义
   const vars = extractCSSVariables(css)
 
-  // 2. 用文档上的计算值覆盖（更准确，处理跨文件或动态设置的变量）
-  if (typeof document !== `undefined`) {
-    const computed = getComputedStyle(document.documentElement)
-    vars.forEach((_, key) => {
-      const val = computed.getPropertyValue(key).trim()
-      if (val)
-        vars.set(key, val)
-    })
-  }
+  // 注意：不从 DOM 计算值覆盖 CSS 字符串中已定义的变量。
+  // 若用 getComputedStyle 覆盖，会读取到上一次注入的旧值，导致主题色更新滞后一次点击。
 
   // 3. 迭代替换 var() 引用，直到没有可解析的为止（处理嵌套变量）
   const varRegex = /var\(\s*(--[\w-]+)\s*(?:,([^()]*(?:\([^()]*\)[^()]*)*))?\)/g
