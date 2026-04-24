@@ -29,7 +29,7 @@ export function processCSS(css: string): string {
   // 注意：不从 DOM 计算值覆盖 CSS 字符串中已定义的变量。
   // 若用 getComputedStyle 覆盖，会读取到上一次注入的旧值，导致主题色更新滞后一次点击。
 
-  // 3. 迭代替换 var() 引用，直到没有可解析的为止（处理嵌套变量）
+  // 2. 迭代替换 var() 引用，直到没有可解析的为止（处理嵌套变量）
   const varRegex = /var\(\s*(--[\w-]+)\s*(?:,([^()]*(?:\([^()]*\)[^()]*)*))?\)/g
   let result = css
   let prev = ``
@@ -45,7 +45,7 @@ export function processCSS(css: string): string {
     iterations++
   }
 
-  // 4. 化简 calc() 表达式（由内而外，迭代处理嵌套）
+  // 3. 化简 calc() 表达式（由内而外，迭代处理嵌套）
   const calcRegex = /calc\(([^()]+)\)/g
   prev = ``
   iterations = 0
