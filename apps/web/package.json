@@ -47,6 +47,7 @@
     "es-toolkit": "^1.46.0",
     "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
+    "katex": "^0.16.22",
     "juice": "^11.1.1",
     "lucide-vue-next": "^1.0.0",
     "marked": "^18.0.2",

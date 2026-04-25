@@ -1,4 +1,5 @@
 import type { MarkedExtension } from 'marked'
+import { escapeHtml } from '../utils/basicHelpers'
 
 export interface MarkedKatexOptions {
   nonStandard?: boolean
@@ -38,10 +39,10 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
 
     if (!display) {
       // 新主题系统：使用 class 而非内联样式
-      return `<span class="katex-inline">${svg.outerHTML}</span>`
+      return `<span class="katex-inline" data-math-latex="${escapeHtml(token.text)}" data-math-display="false" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</span>`
     }
 
-    return `<section class="katex-block">${svg.outerHTML}</section>`
+    return `<section class="katex-block" data-math-latex="${escapeHtml(token.text)}" data-math-display="true" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</section>`
   }
 }
 

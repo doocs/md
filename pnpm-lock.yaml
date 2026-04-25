@@ -184,6 +184,9 @@ importers:
       juice:
         specifier: ^11.1.1
         version: 11.1.1(patch_hash=64286af9d3913b3ffbee649d634de8ec5a603857ce1185030d8bb6e4a384c92c)
+      katex:
+        specifier: ^0.16.22
+        version: 0.16.45
       lucide-vue-next:
         specifier: ^1.0.0
         version: 1.0.0(vue@3.5.33(typescript@6.0.3))

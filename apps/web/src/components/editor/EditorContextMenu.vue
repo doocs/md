@@ -35,6 +35,7 @@ import { useExportStore } from '@/stores/export'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
+import { normalizeFormulaInput } from '@/utils/formula'
 
 const editorStore = useEditorStore()
 const postStore = usePostStore()
@@ -75,6 +76,15 @@ function importDefaultContent() {
 // 清空内容
 function clearContent() {
   editorStore.clearContent()
+}
+
+function openFormulaEditor() {
+  const selection = normalizeFormulaInput(editorStore.getSelection())
+  uiStore.openFormulaEditor({
+    value: selection.latex,
+    displayMode: selection.displayMode,
+    sourceRaw: selection.sourceRaw,
+  })
 }
 
 // 复制到剪贴板
@@ -133,6 +143,10 @@ function downloadAsCardImage() {
           <ContextMenuItem @click="toggleShowUploadImgDialog()">
             <Image class="mr-2 h-4 w-4" />
             图片
+          </ContextMenuItem>
+          <ContextMenuItem @click="openFormulaEditor()">
+            <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
+            公式
           </ContextMenuItem>
           <ContextMenuItem @click="toggleShowInsertFormDialog()">
             <Table class="mr-2 h-4 w-4" />
