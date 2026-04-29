@@ -8,6 +8,7 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { useCursorSync } from '@/composables/useCursorSync'
+import { useScrollSync } from '@/composables/useScrollSync'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -27,6 +28,7 @@ const {
   isOpenRightSlider,
   isOpenConfirmDialog,
   viewMode,
+  enableScrollSync,
 } = storeToRefs(uiStore)
 
 // --- 子组件引用 ---
@@ -44,6 +46,9 @@ const {
   handlePreviewContentClick,
   cleanup: cleanupCursorSync,
 } = useCursorSync(getEditorView, getPreviewContainer)
+
+// --- 滚动同步 ---
+useScrollSync(getEditorView, getPreviewContainer, enableScrollSync)
 
 // --- 编辑器刷新 & 样式重置 ---
 function editorRefresh() {

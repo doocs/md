@@ -64,6 +64,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
   const toggleImageReupload = useToggle(enableImageReupload)
 
+  // 是否开启同步滚动（编辑器与预览区联动）
+  const enableScrollSync = store.reactive(addPrefix(`enableScrollSync`), false)
+  const toggleScrollSync = useToggle(enableScrollSync)
+
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
@@ -161,6 +165,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowFloatingToc,
     isOpenFolderPanel,
     enableImageReupload,
+    enableScrollSync,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,
@@ -194,6 +199,7 @@ export const useUIStore = defineStore(`ui`, () => {
     togglePinFloatingToc,
     toggleShowFloatingToc,
     toggleImageReupload,
+    toggleScrollSync,
     setViewMode,
     setPreviewDevice,
     togglePreviewDevice,

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
+import { BookOpen, ArrowUpDown, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -26,7 +26,7 @@ const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark } = storeToRefs(uiStore)
-const { isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
+const { isMobile, viewMode, previewDevice, enableScrollSync } = storeToRefs(uiStore)
 
 // 相对时间格式化（复用）
 function formatRelativeTime(date: Date | string) {
@@ -544,6 +544,25 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>{{ previewDevice === 'desktop' ? '移动端预览' : '桌面端预览' }}</p>
+          </TooltipContent>
+        </Tooltip>
+
+        <!-- 同步滚动（双屏模式下可用，真实移动端隐藏） -->
+        <Tooltip v-if="!isMobile && viewMode === 'split'">
+          <TooltipTrigger as-child>
+            <button
+              :aria-label="enableScrollSync ? '关闭同步滚动' : '开启同步滚动'"
+              class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
+              :class="enableScrollSync
+                ? 'bg-accent text-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-foreground'"
+              @click="uiStore.toggleScrollSync()"
+            >
+              <ArrowUpDown class="size-3" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>{{ enableScrollSync ? '关闭同步滚动' : '开启同步滚动' }}</p>
           </TooltipContent>
         </Tooltip>
 
