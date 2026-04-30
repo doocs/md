@@ -84,6 +84,7 @@ function renamePost() {
 
 const delId = ref<string | null>(null)
 const isOpenDelPostConfirmDialog = ref(false)
+const delRecursive = ref(false)
 
 const delConfirmText = computed(() => {
   const title = postStore.getPostById(delId.value || ``)?.title ?? ``
@@ -91,12 +92,18 @@ const delConfirmText = computed(() => {
   return `此操作将删除「${short}」，是否继续？`
 })
 
+const hasSubPosts = computed(() => {
+  if (!delId.value) return false
+  return posts.value.some(p => p.parentId === delId.value)
+})
+
 function startDelPost(id: string) {
   delId.value = id
+  delRecursive.value = false
   isOpenDelPostConfirmDialog.value = true
 }
 function delPost() {
-  postStore.delPost(delId.value!)
+  postStore.delPost(delId.value!, delRecursive.value)
   isOpenDelPostConfirmDialog.value = false
   toast.success(`内容删除成功`)
 }
@@ -931,6 +938,20 @@ function handleDragEnd() {
         <AlertDialogTitle>提示</AlertDialogTitle>
         <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
       </AlertDialogHeader>
+      <div v-if="hasSubPosts" class="flex items-center gap-2 mt-2">
+        <input
+          id="del-recursive"
+          v-model="delRecursive"
+          type="checkbox"
+          class="size-3.5 rounded border-border accent-primary cursor-pointer"
+        >
+        <label
+          for="del-recursive"
+          class="text-xs text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
+        >
+          同时删除所有子内容（若不勾选，子级内容将挂载至同级）
+        </label>
+      </div>
       <AlertDialogFooter>
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="delPost">

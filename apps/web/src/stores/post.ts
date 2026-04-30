@@ -92,10 +92,32 @@ export const usePostStore = defineStore(`post`, () => {
   }
 
   // 删除文章
-  const delPost = (id: string) => {
+  const delPost = (id: string, recursive: boolean = false) => {
     const post = getPostById(id)
     if (!post)
       return
+
+    if (recursive) {
+      const getChildIds = (parentId: string): string[] => {
+        const children = posts.value.filter(p => p.parentId === parentId)
+        return children.reduce((acc, child) => {
+          return acc.concat(child.id, getChildIds(child.id))
+        }, [] as string[])
+      }
+
+      const allIdsToDelete = [id, ...getChildIds(id)]
+      allIdsToDelete.forEach(toDelId => {
+        const idx = findIndexById(toDelId)
+        if (idx !== -1) {
+          posts.value.splice(idx, 1)
+        }
+      })
+
+      if (!posts.value.some(p => p.id === currentPostId.value)) {
+        currentPostId.value = posts.value[Math.max(0, posts.value.length - 1)]?.id ?? ``
+      }
+      return
+    }
 
     // 子内容挂靠到父级的父级
     const newParentId = post.parentId ?? null
