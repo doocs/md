@@ -13,11 +13,11 @@
   "dependencies": {
     "@antv/infographic": "^0.2.18",
     "@md/shared": "workspace:*",
-    "es-toolkit": "^1.46.0",
+    "es-toolkit": "^1.46.1",
     "fflate": "^0.8.2",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
-    "isomorphic-dompurify": "^3.10.0",
+    "isomorphic-dompurify": "^3.11.0",
     "marked": "^18.0.2",
     "mermaid": "^11.14.0"
   },
