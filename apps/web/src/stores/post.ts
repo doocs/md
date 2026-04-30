@@ -93,6 +93,19 @@ export const usePostStore = defineStore(`post`, () => {
 
   // 删除文章
   const delPost = (id: string) => {
+    const post = getPostById(id)
+    if (!post)
+      return
+
+    // 子内容挂靠到父级的父级
+    const newParentId = post.parentId ?? null
+    posts.value.forEach((p) => {
+      if (p.parentId === id) {
+        p.parentId = newParentId
+        p.updateDatetime = new Date()
+      }
+    })
+
     const idx = findIndexById(id)
     if (idx === -1)
       return

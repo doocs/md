@@ -382,6 +382,12 @@ const allSelected = computed(
   () => posts.value.length > 0 && selectedPostIds.value.length === posts.value.length,
 )
 
+const selectProps = computed(() => ({
+  isSelectMode: isSelectMode.value,
+  selectedIds: selectedPostIds.value,
+  onToggleSelect: toggleSelectPost,
+}))
+
 function toggleSelectMode() {
   isSelectMode.value = !isSelectMode.value
   selectedPostIds.value = []
@@ -784,11 +790,7 @@ function handleDragEnd() {
             handleDrop,
             handleDragEnd,
           }"
-          :select="{
-            isSelectMode,
-            selectedIds: selectedPostIds,
-            onToggleSelect: toggleSelectPost,
-          }"
+          :select="selectProps"
         />
 
         <!-- 空状态 -->
