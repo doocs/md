@@ -93,7 +93,8 @@ const delConfirmText = computed(() => {
 })
 
 const hasSubPosts = computed(() => {
-  if (!delId.value) return false
+  if (!delId.value)
+    return false
   return posts.value.some(p => p.parentId === delId.value)
 })
 
@@ -949,7 +950,7 @@ function handleDragEnd() {
           for="del-recursive"
           class="text-xs text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
         >
-          同时删除所有子内容（若不勾选，子级内容将挂载至同级）
+          同时删除所有子内容
         </label>
       </div>
       <AlertDialogFooter>

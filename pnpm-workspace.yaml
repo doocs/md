@@ -8,34 +8,34 @@ packages:
 overrides:
   '@codemirror/state': 6.6.0
   '@codemirror/view': 6.41.1
-  ajv@^8: ^8.18.0
+  ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
-  confbox: 0.2.2
-  core-js: ^3.48.0
+  confbox: 0.2.4
+  core-js: ^3.49.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
-  dompurify@<3.4.0: ^3.4.0
-  flatted@<3.4.0: ^3.4.0
-  glob@<8: ^10.5.0
-  glob@^10: ^10.5.0
+  dompurify@<3.4.0: ^3.4.2
+  flatted@<3.4.0: ^3.4.2
+  glob@<8: ^13.0.6
+  glob@^10: ^13.0.6
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
-  lodash-es: ^4.17.23
+  lodash-es: ^4.18.1
   markdown-it: ^14.1.1
-  minimatch: ^10.2.4
-  minimatch@^10: ^10.2.4
-  minimatch@^5: ^10.2.4
-  minimatch@^9: ^10.2.4
+  minimatch: ^10.2.5
+  minimatch@^10: ^10.2.5
+  minimatch@^5: ^10.2.5
+  minimatch@^9: ^10.2.5
   prettier: 2.8.8
-  qs: ^6.14.2
-  querystring: npm:qs@^6.14.2
-  serialize-javascript@<7.0.3: ^7.0.4
+  qs: ^6.15.1
+  querystring: npm:qs@^6.15.1
+  serialize-javascript@<7.0.3: ^7.0.5
   source-map@0.8.0-beta.0: 0.7.4
   underscore@<1.13.8: 1.13.8
-  undici@^6: ^6.24.0
-  undici@^7: ^7.24.0
+  undici@^6: ^8.1.0
+  undici@^7: ^8.1.0
   workbox-build>source-map: 0.7.4
-  yauzl: ^3.2.1
+  yauzl: ^3.3.0
 
 patchedDependencies:
   '@codemirror/view@6.41.1': patches/@codemirror__view@6.41.1.patch
