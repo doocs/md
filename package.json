@@ -13,7 +13,7 @@
     "url": "https://github.com/doocs/md/issues"
   },
   "engines": {
-    "node": ">=22.16.0"
+    "node": ">=22.19.0"
   },
   "scripts": {
     "start": "pnpm web dev",

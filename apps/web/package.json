@@ -3,7 +3,7 @@
   "type": "module",
   "private": true,
   "engines": {
-    "node": ">=22.16.0"
+    "node": ">=22.19.0"
   },
   "scripts": {
     "start": "pnpm run dev",
