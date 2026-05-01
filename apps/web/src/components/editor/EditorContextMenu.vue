@@ -30,15 +30,23 @@ import {
 } from 'lucide-vue-next'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import { useEditorFormat } from '@/composables/useEditorFormat'
+import { useConfirmStore } from '@/stores/confirm'
+import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 
+const confirmStore = useConfirmStore()
+const cssEditorStore = useCssEditorStore()
 const editorStore = useEditorStore()
-const postStore = usePostStore()
 const exportStore = useExportStore()
+const postStore = usePostStore()
+const renderStore = useRenderStore()
+const themeStore = useThemeStore()
 const uiStore = useUIStore()
 
 const {
@@ -96,7 +104,19 @@ async function pasteFromClipboard() {
 
 // 重置样式确认
 function resetStyleConfirm() {
-  uiStore.isOpenConfirmDialog = true
+  confirmStore.confirm({
+    title: '提示',
+    description: '此操作将丢失本地自定义样式，是否继续？',
+    onConfirm: () => {
+      themeStore.resetStyle()
+      cssEditorStore.resetCssConfig()
+      themeStore.applyCurrentTheme()
+      themeStore.updateCodeTheme()
+      const raw = editorStore.getContent()
+      renderStore.render(raw)
+      toast.success(`样式已重置`)
+    },
+  })
 }
 
 // 导出函数

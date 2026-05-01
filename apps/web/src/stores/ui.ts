@@ -95,9 +95,6 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
 
-  // 是否打开重置样式确认对话框
-  const isOpenConfirmDialog = ref(false)
-
   // AI 对话框
   const aiDialogVisible = ref(false)
   const aiImageDialogVisible = ref(false)
@@ -181,7 +178,6 @@ export const useUIStore = defineStore(`ui`, () => {
     importMdOpenUrl,
     isShowTemplateDialog,
     toggleShowTemplateDialog,
-    isOpenConfirmDialog,
     aiDialogVisible,
     toggleAIDialog,
     aiImageDialogVisible,

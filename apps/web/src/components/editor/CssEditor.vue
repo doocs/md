@@ -2,6 +2,7 @@
 import { exportMergedTheme } from '@md/core'
 import { themeMap, themeOptionsMap } from '@md/shared'
 import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from 'lucide-vue-next'
+import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -9,6 +10,7 @@ import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 
+const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
 const renderStore = useRenderStore()
@@ -137,37 +139,35 @@ async function addTab() {
   scrollToActiveTab()
 }
 
-const isOpenDelTabConfirmDialog = ref(false)
-const delTargetId = ref(``)
-
 function removeHandler(targetId: string) {
-  delTargetId.value = targetId
-  isOpenDelTabConfirmDialog.value = true
-}
-
-function delTab() {
-  const tabs = cssContentConfig.value.tabs
-  if (tabs.length === 1) {
-    toast.warning(`至少保留一个方案`)
-    return
-  }
-
-  let activeId = cssContentConfig.value.active
-  if (activeId === delTargetId.value) {
-    tabs.forEach((tab, index) => {
-      if (tab.id === delTargetId.value) {
-        const nextTab = tabs[index + 1] || tabs[index - 1]
-        if (nextTab) {
-          activeId = nextTab.id
-        }
+  confirmStore.confirm({
+    title: '提示',
+    description: '此操作将删除该自定义方案，是否继续？',
+    onConfirm: () => {
+      const tabs = cssContentConfig.value.tabs
+      if (tabs.length === 1) {
+        toast.warning(`至少保留一个方案`)
+        return
       }
-    })
-  }
 
-  cssEditorStore.tabChanged(activeId)
-  cssContentConfig.value.tabs = tabs.filter(tab => tab.id !== delTargetId.value)
+      let activeId = cssContentConfig.value.active
+      if (activeId === targetId) {
+        tabs.forEach((tab, index) => {
+          if (tab.id === targetId) {
+            const nextTab = tabs[index + 1] || tabs[index - 1]
+            if (nextTab) {
+              activeId = nextTab.id
+            }
+          }
+        })
+      }
 
-  toast.success(`删除成功`)
+      cssEditorStore.tabChanged(activeId)
+      cssContentConfig.value.tabs = tabs.filter(tab => tab.id !== targetId)
+
+      toast.success(`删除成功`)
+    },
+  })
 }
 
 function addHandler() {
@@ -230,20 +230,21 @@ const allSelected = computed(
   () => cssContentConfig.value.tabs.length > 0 && selectedIds.value.length === cssContentConfig.value.tabs.length,
 )
 
-const isOpenBatchDelConfirmDialog = ref(false)
-
-const batchDelConfirmText = computed(() => {
+function openBatchDelConfirm() {
   const n = selectedIds.value.length
-  if (n === 1) {
-    const tab = cssContentConfig.value.tabs.find(t => t.id === selectedIds.value[0])
-    return `此操作将删除「${tab?.title ?? ``}」，是否继续？`
-  }
-  return `此操作将删除已选的 ${n} 个方案，是否继续？`
-})
+  const description = n === 1
+    ? `此操作将删除「${cssContentConfig.value.tabs.find(t => t.id === selectedIds.value[0])?.title ?? ''}」，是否继续？`
+    : `此操作将删除已选的 ${n} 个方案，是否继续？`
 
-function confirmBatchDelete() {
-  cssEditorStore.batchDeleteTabs()
-  isOpenBatchDelConfirmDialog.value = false
+  confirmStore.confirm({
+    title: '提示',
+    description,
+    confirmText: '确定删除',
+    destructive: true,
+    onConfirm: () => {
+      cssEditorStore.batchDeleteTabs()
+    },
+  })
 }
 
 function handleTabClick(tabId: string) {
@@ -513,7 +514,7 @@ function exportCurrentTheme() {
             class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
             :title="selectedIds.length >= cssContentConfig.tabs.length ? '至少保留一个方案' : '删除'"
             :disabled="!selectedIds.length || selectedIds.length >= cssContentConfig.tabs.length"
-            @click="isOpenBatchDelConfirmDialog = true"
+            @click="openBatchDelConfirm()"
           >
             <X class="size-4" />
           </button>
@@ -629,42 +630,6 @@ function exportCurrentTheme() {
         </DialogFooter>
       </DialogContent>
     </Dialog>
-
-    <AlertDialog v-model:open="isOpenDelTabConfirmDialog">
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>提示</AlertDialogTitle>
-          <AlertDialogDescription>
-            此操作将删除该自定义方案，是否继续？
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction @click="delTab">
-            确定
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-
-    <!-- 批量删除确认 -->
-    <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>提示</AlertDialogTitle>
-          <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>取消</AlertDialogCancel>
-          <AlertDialogAction
-            class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-            @click="confirmBatchDelete"
-          >
-            确定删除
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
   </div>
 
   <!-- 查看内置主题对话框 -->

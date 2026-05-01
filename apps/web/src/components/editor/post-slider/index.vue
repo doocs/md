@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, X } from 'lucide-vue-next'
+import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import { addPrefix, downloadMD, exportPostsAsZip } from '@/utils'
 import { store } from '@/utils/storage'
 
+const confirmStore = useConfirmStore()
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
 
@@ -151,6 +153,15 @@ function recoverHistory() {
   })
   toast.success(`记录恢复成功`)
   isOpenHistoryDialog.value = false
+}
+
+function confirmRestoreHistory() {
+  confirmStore.confirm({
+    title: '提示',
+    description: '此操作将用该记录替换当前文章内容，是否继续？',
+    confirmText: '恢 复',
+    onConfirm: () => recoverHistory(),
+  })
 }
 
 /* ============ 全局搜索与替换 ============ */
@@ -434,22 +445,25 @@ async function exportSelected() {
   selectedPostIds.value = []
 }
 
-const isOpenBatchDelConfirmDialog = ref(false)
-
-const batchDelConfirmText = computed(() => {
+function openBatchDelConfirm() {
   const n = selectedPostIds.value.length
-  return n === 1
-    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ``}」，是否继续？`
+  const description = n === 1
+    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ''}」，是否继续？`
     : `此操作将删除已选的 ${n} 篇内容，是否继续？`
-})
 
-function batchDeleteSelected() {
-  const ids = [...selectedPostIds.value]
-  ids.forEach(id => postStore.delPost(id))
-  toast.success(`已删除 ${ids.length} 篇内容`)
-  isOpenBatchDelConfirmDialog.value = false
-  isSelectMode.value = false
-  selectedPostIds.value = []
+  confirmStore.confirm({
+    title: '提示',
+    description,
+    confirmText: '确定删除',
+    destructive: true,
+    onConfirm: () => {
+      const ids = [...selectedPostIds.value]
+      ids.forEach(id => postStore.delPost(id))
+      toast.success(`已删除 ${ids.length} 篇内容`)
+      isSelectMode.value = false
+      selectedPostIds.value = []
+    },
+  })
 }
 
 /* ============ 批量复制 ============ */
@@ -885,7 +899,7 @@ function handleDragEnd() {
               class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : '删除'"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
-              @click="isOpenBatchDelConfirmDialog = true"
+              @click="openBatchDelConfirm()"
             >
               <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
@@ -981,25 +995,6 @@ function handleDragEnd() {
     </DialogContent>
   </Dialog>
 
-  <!-- 批量删除确认 -->
-  <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>提示</AlertDialogTitle>
-        <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>取消</AlertDialogCancel>
-        <AlertDialogAction
-          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          @click="batchDeleteSelected"
-        >
-          确定删除
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-
   <!-- 历史记录 -->
   <Dialog v-model:open="isOpenHistoryDialog">
     <DialogContent class="sm:max-w-4xl">
@@ -1076,23 +1071,9 @@ function handleDragEnd() {
       </div>
 
       <DialogFooter>
-        <AlertDialog>
-          <AlertDialogTrigger><Button>恢 复</Button></AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>提示</AlertDialogTitle>
-              <AlertDialogDescription>
-                此操作将用该记录替换当前文章内容，是否继续？
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>取消</AlertDialogCancel>
-              <AlertDialogAction @click="recoverHistory">
-                恢 复
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button @click="confirmRestoreHistory">
+          恢 复
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

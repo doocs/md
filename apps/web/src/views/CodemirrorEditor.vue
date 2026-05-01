@@ -9,24 +9,15 @@ import {
 } from '@/components/ui/resizable'
 import { useCursorSync } from '@/composables/useCursorSync'
 import { useScrollSync } from '@/composables/useScrollSync'
-import { useCssEditorStore } from '@/stores/cssEditor'
-import { useEditorStore } from '@/stores/editor'
-import { useRenderStore } from '@/stores/render'
-import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
-const editorStore = useEditorStore()
-const renderStore = useRenderStore()
-const themeStore = useThemeStore()
 const uiStore = useUIStore()
-const cssEditorStore = useCssEditorStore()
 
 const {
   isMobile,
   isOpenPostSlider,
   isOpenFolderPanel,
   isOpenRightSlider,
-  isOpenConfirmDialog,
   viewMode,
   enableScrollSync,
 } = storeToRefs(uiStore)
@@ -49,21 +40,6 @@ const {
 
 // --- 滚动同步 ---
 useScrollSync(getEditorView, getPreviewContainer, enableScrollSync)
-
-// --- 编辑器刷新 & 样式重置 ---
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
-
-function resetStyle() {
-  themeStore.resetStyle()
-  cssEditorStore.resetCssConfig()
-  themeStore.applyCurrentTheme()
-  editorRefresh()
-  toast.success(`样式已重置`)
-}
 
 // --- 复制状态 ---
 const backLight = ref(false)
@@ -286,23 +262,6 @@ onUnmounted(() => {
       <ImportMarkdownDialog />
 
       <TemplateDialog />
-
-      <AlertDialog v-model:open="isOpenConfirmDialog">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>提示</AlertDialogTitle>
-            <AlertDialogDescription>
-              此操作将丢失本地自定义样式，是否继续？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction @click="resetStyle">
-              确定
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </main>
 
     <Footer />
