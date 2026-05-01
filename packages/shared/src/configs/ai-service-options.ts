@@ -312,8 +312,6 @@ export const serviceOptions: ServiceOption[] = [
   },
 ]
 
-export const DEFAULT_SERVICE_MODEL = serviceOptions[0].models[0]
-
 // 图片模型
 export const imageServiceOptions: ImageServiceOption[] = [
   {
@@ -416,5 +414,3 @@ export const imageServiceOptions: ImageServiceOption[] = [
     models: [],
   },
 ]
-
-export const DEFAULT_IMAGE_MODEL = imageServiceOptions[0].models[0]
