@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid'
 import { ref, watch } from 'vue'
 import { store } from '@/utils/storage'
 
@@ -63,7 +64,7 @@ export const useQuickCommands = defineStore(`quickCommands`, () => {
 
   // ---------- CRUD ----------
   function add(label: string, template: string) {
-    const id = crypto.randomUUID()
+    const id = uuidv4()
     commands.value.push(hydrate({ id, label, template }))
   }
 

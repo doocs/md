@@ -1,5 +1,5 @@
 import type { Post } from '@/types/post'
-import { v4 as uuid } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import { addPrefix } from '@/utils'
 import { store } from '@/utils/storage'
@@ -14,7 +14,7 @@ export const usePostStore = defineStore(`post`, () => {
   // 内容列表
   const posts = store.reactive<Post[]>(addPrefix(`posts`), [
     {
-      id: uuid(),
+      id: uuidv4(),
       title: `内容1`,
       content: DEFAULT_CONTENT,
       history: [
@@ -34,7 +34,7 @@ export const usePostStore = defineStore(`post`, () => {
       const now = Date.now()
       return {
         ...post,
-        id: post.id ?? uuid(),
+        id: post.id ?? uuidv4(),
         createDatetime: post.createDatetime ?? new Date(now + index),
         updateDatetime: post.updateDatetime ?? new Date(now + index),
       }
@@ -68,7 +68,7 @@ export const usePostStore = defineStore(`post`, () => {
   // 添加文章
   const addPost = (title: string, parentId: string | null = null) => {
     const newPost: Post = {
-      id: uuid(),
+      id: uuidv4(),
       title,
       content: `# ${title}`,
       history: [
@@ -106,7 +106,7 @@ export const usePostStore = defineStore(`post`, () => {
       }
 
       const allIdsToDelete = [id, ...getChildIds(id)]
-      allIdsToDelete.forEach(toDelId => {
+      allIdsToDelete.forEach((toDelId) => {
         const idx = findIndexById(toDelId)
         if (idx !== -1) {
           posts.value.splice(idx, 1)
