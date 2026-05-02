@@ -2,7 +2,7 @@ import type { EditorView } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
-import { v4 as uuid } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import { addPrefix, downloadFile, sanitizeTitle } from '@/utils'
 import { store } from '@/utils/storage'
 
@@ -48,7 +48,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     // 如果没有任何 tab，初始化默认方案
     if (cssContentConfig.value.tabs.length === 0) {
-      const defaultId = uuid()
+      const defaultId = uuidv4()
       cssContentConfig.value.tabs = [{
         id: defaultId,
         title: `方案1`,
@@ -63,7 +63,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     cssContentConfig.value.tabs = cssContentConfig.value.tabs.map((tab, index) => ({
       ...tab,
-      id: tab.id ?? uuid(),
+      id: tab.id ?? uuidv4(),
       createDatetime: tab.createDatetime ?? new Date(now.getTime() + index),
       updateDatetime: tab.updateDatetime ?? new Date(now.getTime() + index),
     }))
@@ -129,7 +129,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     const content = initialContent || DEFAULT_CSS_CONTENT
     const now = new Date()
     cssContentConfig.value.tabs.push({
-      id: uuid(),
+      id: uuidv4(),
       name,
       title: name,
       content,
@@ -148,7 +148,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
   // 重置 CSS 配置
   const resetCssConfig = () => {
-    const defaultId = uuid()
+    const defaultId = uuidv4()
     cssContentConfig.value = {
       active: defaultId,
       tabs: [
