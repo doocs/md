@@ -23,11 +23,11 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
     <MenubarSubContent class="w-52">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        插入图片
+        图片
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        插入表格
+        表格
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertMpCardDialog()">
         <Contact class="mr-2 h-4 w-4" />
@@ -44,11 +44,11 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
     <MenubarContent class="w-52" align="start">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        插入图片
+        图片
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        插入表格
+        表格
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertMpCardDialog()">
         <Contact class="mr-2 h-4 w-4" />
