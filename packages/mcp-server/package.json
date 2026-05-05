@@ -8,8 +8,8 @@
     "md-mcp": "src/index.ts"
   },
   "scripts": {
-    "start": "tsx src/index.ts",
-    "dev": "tsx watch src/index.ts"
+    "start": "node --import tsx/esm run.mjs",
+    "dev": "node --import tsx/esm --watch run.mjs"
   },
   "dependencies": {
     "@md/core": "workspace:*",

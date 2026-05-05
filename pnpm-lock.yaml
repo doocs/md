@@ -33,6 +33,7 @@ overrides:
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.1.0
   undici@^7: ^8.1.0
+  jsdom>undici: ^7.25.0
   uuid: ^14.0.0
   workbox-build>source-map: 0.7.4
   yauzl: ^3.3.0
@@ -7085,6 +7086,10 @@ packages:
   undici-types@7.19.2:
     resolution: {integrity: sha512-qYVnV5OEm2AW8cJMCpdV20CDyaN3g0AjDlOGf1OW4iaDEx8MwdtChUp4zu4H0VP3nDRF/8RKWH+IPp9uW0YGZg==}
 
+  undici@7.25.0:
+    resolution: {integrity: sha512-xXnp4kTyor2Zq+J1FfPI6Eq3ew5h6Vl0F/8d9XU5zZQf1tX9s2Su1/3PiMmUANFULpmksxkClamIZcaUqryHsQ==}
+    engines: {node: '>=20.18.1'}
+
   undici@8.2.0:
     resolution: {integrity: sha512-Z+4Hx9GE26Lh9Upwfnc8C7SsrpBPGaM/Gm6kMFtiG7c+5IvQKlXi/t+9x9DrrCh29cww5TSP9YdVaBcnLDs5fQ==}
     engines: {node: '>=22.19.0'}
@@ -13123,7 +13128,7 @@ snapshots:
       saxes: 6.0.0
       symbol-tree: 3.2.4
       tough-cookie: 6.0.1
-      undici: 8.2.0
+      undici: 7.25.0
       w3c-xmlserializer: 5.0.0
       webidl-conversions: 8.0.1
       whatwg-mimetype: 5.0.0
@@ -15298,6 +15303,8 @@ snapshots:
   underscore@1.13.8: {}
 
   undici-types@7.19.2: {}
+
+  undici@7.25.0: {}
 
   undici@8.2.0: {}
 

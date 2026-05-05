@@ -1,8 +1,5 @@
 // Preload polyfill for Node.js environment
 // Must be loaded via --import BEFORE the main entry point
-import { writeSync } from 'node:fs'
-
-writeSync(2, '[polyfill] loaded, setting globals\n')
 
 function noop() {}
 globalThis.MathJax = {
@@ -30,6 +27,7 @@ globalThis.MathJax = {
   },
 }
 globalThis.window = {
+  MathJax: globalThis.MathJax,
   addEventListener: noop,
   removeEventListener: noop,
   dispatchEvent: () => true,

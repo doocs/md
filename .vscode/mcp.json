@@ -6,7 +6,7 @@
       "args": [
         "--import",
         "tsx/esm",
-        "${workspaceFolder}/packages/mcp-server/src/index.ts"
+        "${workspaceFolder}/packages/mcp-server/run.mjs"
       ],
       "cwd": "${workspaceFolder}/packages/mcp-server"
     }
