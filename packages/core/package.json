@@ -12,7 +12,7 @@
     "./theme/cssVariables": "./src/theme/cssVariables.ts"
   },
   "dependencies": {
-    "@antv/infographic": "^0.2.18",
+    "@antv/infographic": "^0.2.19",
     "@md/shared": "workspace:*",
     "es-toolkit": "^1.46.1",
     "fflate": "^0.8.2",

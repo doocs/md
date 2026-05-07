@@ -17,14 +17,14 @@
     "./editor/*": "./src/editor/*.ts"
   },
   "dependencies": {
-    "@codemirror/autocomplete": "^6.20.1",
+    "@codemirror/autocomplete": "^6.20.2",
     "@codemirror/commands": "^6.10.3",
     "@codemirror/lang-css": "^6.3.1",
     "@codemirror/lang-javascript": "^6.2.5",
     "@codemirror/lang-markdown": "^6.5.0",
     "@codemirror/language": "^6.12.3",
     "@codemirror/language-data": "^6.5.2",
-    "@codemirror/lint": "^6.9.5",
+    "@codemirror/lint": "^6.9.6",
     "@codemirror/search": "^6.7.0",
     "@fsegurai/codemirror-theme-vscode-dark": "^6.2.6",
     "@fsegurai/codemirror-theme-vscode-light": "^6.2.6",
