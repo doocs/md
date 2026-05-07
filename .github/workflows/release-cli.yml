@@ -1,4 +1,4 @@
-name: Create Cli Release
+﻿name: Create Cli Release
 
 on:
   push:
@@ -22,7 +22,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
           version: 10
 
