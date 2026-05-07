@@ -7,6 +7,7 @@ RUN curl -L "https://github.com/doocs/md/archive/refs/heads/main.zip" -o "main.z
 WORKDIR /app
 RUN npm install -g pnpm
 ENV NODE_OPTIONS="--openssl-legacy-provider"
+RUN pnpm config set ignore-scripts false
 RUN pnpm install && pnpm web build:h5-netlify
 
 FROM scratch
