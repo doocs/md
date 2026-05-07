@@ -1,0 +1,26 @@
+{
+  "name": "@doocs/pdf-cli",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Stirling PDF CLI — manipulate PDFs via Stirling-PDF server (80+ commands)",
+  "main": "index.js",
+  "bin": {
+    "pdf-cli": "index.js"
+  },
+  "files": [
+    "*.js",
+    "lib/"
+  ],
+  "keywords": ["pdf", "cli", "stirling-pdf", "pdf-tools"],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doocs/md"
+  },
+  "dependencies": {
+    "commander": "^13.0.0",
+    "form-data": "^4.0.0",
+    "node-fetch": "^3.3.2"
+  }
+}
