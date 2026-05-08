@@ -5,10 +5,10 @@ ENV LC_ALL="en_US.UTF-8"
 RUN apk add --no-cache curl unzip
 RUN curl -L "https://github.com/doocs/md/archive/refs/heads/main.zip" -o "main.zip" && unzip "main.zip" && mv "md-main" /app
 WORKDIR /app
-RUN npm install -g pnpm
+ARG PNPM_VERSION=9.15.4
+RUN npm install -g pnpm@$PNPM_VERSION
 ENV NODE_OPTIONS="--openssl-legacy-provider"
-RUN pnpm config set ignore-scripts false
-RUN pnpm install && pnpm web build:h5-netlify
+RUN pnpm install --ignore-scripts=false && pnpm web build:h5-netlify
 
 FROM scratch
 LABEL MAINTAINER="ylb<contact@yanglibin.info>"
