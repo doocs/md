@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
 
   return {
     base,
-    define: { 'process.env': {} },
+    define: { process },
     envPrefix: [`VITE_`, `CF_`],
     plugins: [
       vue(),
