@@ -1,4 +1,4 @@
-import type { EditorView } from '@codemirror/view'
+import type { EditorLike } from './editor-types'
 import { formatDoc } from '@/utils'
 
 /**
@@ -7,7 +7,7 @@ import { formatDoc } from '@/utils'
  */
 export const useEditorStore = defineStore(`editor`, () => {
   // 内容编辑器实例
-  const editor = ref<EditorView | null>(null)
+  const editor = ref<EditorLike | null>(null)
 
   // 格式化文档
   const formatContent = async () => {

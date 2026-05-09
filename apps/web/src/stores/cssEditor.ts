@@ -1,4 +1,4 @@
-import type { EditorView } from '@codemirror/view'
+import type { EditorLike } from './editor-types'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
@@ -33,7 +33,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   const isDark = useDark()
 
   // CSS 编辑器实例
-  const cssEditor = ref<EditorView | null>(null)
+  const cssEditor = ref<EditorLike | null>(null)
   const cssEditorThemeCompartment = ref<Compartment | null>(null)
 
   // CSS 内容配置
