@@ -31,12 +31,12 @@
   },
   "dependencies": {
     "@codemirror/state": "6.6.0",
-    "@codemirror/view": "6.41.1"
+    "@codemirror/view": "6.42.1"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "8.2.0",
-    "@types/node": "^25.6.0",
-    "archiver": "^7.0.1",
+    "@antfu/eslint-config": "9.0.0",
+    "@types/node": "^25.7.0",
+    "archiver": "^8.0.0",
     "cross-env": "^10.1.0",
     "eslint": "^10.3.0",
     "eslint-plugin-format": "^2.0.1",
