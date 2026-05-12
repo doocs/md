@@ -65,7 +65,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.36.3",
+    "@cloudflare/vite-plugin": "1.36.4",
     "@cloudflare/workers-types": "^4.20260511.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.0",
@@ -89,7 +89,7 @@
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vue-tsc": "^3.2.8",
-    "wrangler": "^4.90.0",
+    "wrangler": "^4.90.1",
     "wxt": "^0.20.26"
   }
 }
