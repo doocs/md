@@ -2,7 +2,23 @@ import { EditorView } from '@codemirror/view'
 import { vsCodeDark } from '@fsegurai/codemirror-theme-vscode-dark'
 import { vsCodeLight } from '@fsegurai/codemirror-theme-vscode-light'
 
+// 阻止编辑区在获得焦点时自动滚动（跳动）
+const noScrollOnFocus = EditorView.domEventHandlers({
+  focus(_event, _view) {
+    const scrollDOM = _view.scrollDOM
+    scrollDOM.scrollTop = scrollDOM.scrollTop
+    return false
+  },
+})
+
 const customStyles = EditorView.theme({
+  // 禁止编辑器获得焦点时浏览器自动滚动到视图中
+  '&.cm-focused': {
+    outline: `none`,
+  },
+  '.cm-scroller': {
+    overscrollBehavior: `contain`,
+  },
   // 装订线：垂直居中、无背景无边框无内边距
   '.cm-gutterElement': {
     display: `flex`,
@@ -37,11 +53,11 @@ const customStyles = EditorView.theme({
 })
 
 export function lightTheme() {
-  return [vsCodeLight, customStyles]
+  return [vsCodeLight, customStyles, noScrollOnFocus]
 }
 
 export function darkTheme() {
-  return [vsCodeDark, customStyles]
+  return [vsCodeDark, customStyles, noScrollOnFocus]
 }
 
 // 根据主题模式获取主题扩展
