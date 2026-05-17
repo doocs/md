@@ -5,6 +5,7 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
+  '@codemirror/view': 6.43.0
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -16,6 +17,7 @@ overrides:
   flatted@<3.4.0: ^3.4.2
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
+  ini: '>=1.3.8'
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
@@ -48,7 +50,7 @@ importers:
         specifier: 6.6.0
         version: 6.6.0
       '@codemirror/view':
-        specifier: ^6.43.0
+        specifier: 6.43.0
         version: 6.43.0(patch_hash=09f7b84fce74b6f9b4f2bb0fe2cece0a2815284f7dcbee34b095ed13bc802e5f)
     devDependencies:
       '@antfu/eslint-config':
@@ -1720,7 +1722,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
+      '@codemirror/view': 6.43.0
       '@lezer/highlight': ^1.0.0
 
   '@fsegurai/codemirror-theme-vscode-light@6.2.6':
@@ -1728,7 +1730,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
+      '@codemirror/view': 6.43.0
       '@lezer/highlight': ^1.0.0
 
   '@hono/node-server@1.19.14':
@@ -2201,7 +2203,7 @@ packages:
     peerDependencies:
       '@codemirror/language': ^6.0.0
       '@codemirror/state': ^6.0.0
-      '@codemirror/view': ^6.0.0
+      '@codemirror/view': 6.43.0
 
   '@rolldown/binding-android-arm64@1.0.1':
     resolution: {integrity: sha512-fJI3I0r3C3Oj/zdBCpaCmBRZYf07xpaq4yCfDDoSFm+beWNzbIl26puW8RraUdugoJw/95zerNOn6jasAhzSmg==}
@@ -5014,21 +5016,13 @@ packages:
   inherits@2.0.4:
     resolution: {integrity: sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==}
 
-  ini@1.3.0:
-    resolution: {integrity: sha512-6tyfJkFAmQV64x9Li007PNZgNxqRywig4Rv8PDfzU9kgDBmURaIvjSL2wKyx45LPSIXsvDkFGbOMqMHC1PsORA==}
-    deprecated: Please update to ini >=1.3.6 to avoid a prototype pollution issue
-
-  ini@1.3.4:
-    resolution: {integrity: sha512-VUA7WAWNCWfm6/8f9kAb8Y6iGBWnmCfgFS5dTrv2C38LLm1KUmpY388mCVCJCsMKQomvOQ1oW8/edXdChd9ZXQ==}
-    deprecated: Please update to ini >=1.3.6 to avoid a prototype pollution issue
-
-  ini@4.1.1:
-    resolution: {integrity: sha512-QQnnxNyfvmHFIsj7gkPcYymR8Jdw/o7mp5ZFihxn6h8Ci6fh3Dx4E1gPjpQEpIuPo9XVNY/ZUwh4BPMjGyL01g==}
-    engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
-
   ini@4.1.3:
     resolution: {integrity: sha512-X7rqawQBvfdjS10YU1y1YVreA3SsLrW9dX2CewP2EbBJM4ypVNLDkO5y04gejPwKIY9lR+7r9gn3rFPt/kmWFg==}
     engines: {node: ^14.17.0 || ^16.13.0 || >=18.0.0}
+
+  ini@7.0.0:
+    resolution: {integrity: sha512-ifK0CgjALofS5bkrcTy4RaQ9Vx2Knf/eLeIO+NaswQEpH1UblrtTSCIvN71qQDMq0PeQ/SSPojvEJp9vvvfr+w==}
+    engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
   internmap@1.0.1:
     resolution: {integrity: sha512-lDB5YccMydFBtasVtxnZ3MRBHuaoE8GKsppq+EchKL2U4nK/DmEpPHNH8MZe5HkMtpSiTSOZwfN0tzYjO/lJEw==}
@@ -11284,7 +11278,7 @@ snapshots:
 
   config-chain@1.1.13:
     dependencies:
-      ini: 1.3.4
+      ini: 7.0.0
       proto-list: 1.2.4
 
   configstore@7.0.0:
@@ -12516,7 +12510,7 @@ snapshots:
 
   global-directory@4.0.1:
     dependencies:
-      ini: 4.1.1
+      ini: 7.0.0
 
   globals@15.11.0: {}
 
@@ -12686,13 +12680,9 @@ snapshots:
 
   inherits@2.0.4: {}
 
-  ini@1.3.0: {}
-
-  ini@1.3.4: {}
-
-  ini@4.1.1: {}
-
   ini@4.1.3: {}
+
+  ini@7.0.0: {}
 
   internmap@1.0.1: {}
 
@@ -14222,7 +14212,7 @@ snapshots:
   rc@1.2.8:
     dependencies:
       deep-extend: 0.6.0
-      ini: 1.3.0
+      ini: 7.0.0
       minimist: 1.2.8
       strip-json-comments: 2.0.1
 
