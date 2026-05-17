@@ -1,13 +1,13 @@
 shellEmulator: true
 
-trustPolicy: no-downgrade
+trustPolicy: audit
+
 packages:
   - apps/*
   - packages/*
 
 overrides:
-  '@codemirror/state': 6.6.0
-  '@codemirror/view': 6.42.1
+  '@codemirror/view': 6.43.0
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -20,6 +20,7 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
+  ini: '>=1.3.8'
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
   markdown-it: ^14.1.1
@@ -39,6 +40,17 @@ overrides:
   workbox-build>source-map: 0.7.4
   yauzl: ^3.3.0
 
+allowBuilds:
+  '@vscode/vsce-sign': true
+  core-js: true
+  esbuild: true
+  keytar: true
+  sharp: true
+  simple-git-hooks: true
+  spawn-sync: true
+  vue-demi: true
+  workerd: true
+
 patchedDependencies:
-  '@codemirror/view@6.42.1': patches/@codemirror__view@6.42.1.patch
+  '@codemirror/view@6.43.0': patches/@codemirror__view@6.43.0.patch
   juice@11.1.1: patches/juice@11.1.1.patch

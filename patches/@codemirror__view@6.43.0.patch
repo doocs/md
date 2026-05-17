@@ -1,7 +1,8 @@
 diff --git a/dist/index.d.ts b/dist/index.d.ts
+index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf88fe973a 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
-@@ -515,7 +515,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+@@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
          new (view: EditorView, arg: Arg): V;
      }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
  }
@@ -11,15 +12,16 @@ diff --git a/dist/index.d.ts b/dist/index.d.ts
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
+index cfb44591c515154334d9896228db3b86c5a863e6..efc071a1dbac9a33e85f01034f1c42c9d4979746 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9136,7 +9136,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9151,7 +9151,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
 -            !(browser.mac && event.altKey && !(event.ctrlKey || event.metaKey)) &&
-+            // 但 Alt+Shift 组合应该被视为快捷键而不是特殊字符输入
-+            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey)) &&
++            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey))
++            // 但 Alt+Shift 组合应该被视为快捷键而不是特殊字符输入 &&
              (baseName = base[event.keyCode]) && baseName != name) {
              if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
                  handled = true;

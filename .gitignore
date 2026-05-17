@@ -50,6 +50,9 @@ components.d.ts
 web-ext.config.ts
 .wrangler
 
+# Claude Code local settings
+.claude/settings.local.json
+
 # vite-plugin-pwa dev output
 dev-dist
 
