@@ -2,7 +2,10 @@
   "permissions": {
     "allow": [
       "Bash(pnpm install *)",
-      "Bash(pnpm *)"
+      "Bash(pnpm *)",
+      "Bash(git checkout *)",
+      "Bash(git restore *)",
+      "Bash(git stash *)"
     ]
   }
 }

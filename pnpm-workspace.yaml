@@ -6,8 +6,6 @@ packages:
   - packages/*
 
 overrides:
-  '@codemirror/state': 6.6.0
-  '@codemirror/view': 6.42.1
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -39,10 +37,6 @@ overrides:
   workbox-build>source-map: 0.7.4
   yauzl: ^3.3.0
 
-patchedDependencies:
-  '@codemirror/view@6.42.1': patches/@codemirror__view@6.42.1.patch
-  juice@11.1.1: patches/juice@11.1.1.patch
-
 allowBuilds:
   '@vscode/vsce-sign': true
   core-js: true
@@ -53,3 +47,7 @@ allowBuilds:
   spawn-sync: true
   vue-demi: true
   workerd: true
+
+patchedDependencies:
+  '@codemirror/view@6.43.0': patches/@codemirror__view@6.43.0.patch
+  juice@11.1.1: patches/juice@11.1.1.patch
