@@ -42,3 +42,14 @@ overrides:
 patchedDependencies:
   '@codemirror/view@6.42.1': patches/@codemirror__view@6.42.1.patch
   juice@11.1.1: patches/juice@11.1.1.patch
+
+allowBuilds:
+  '@vscode/vsce-sign': true
+  core-js: true
+  esbuild: true
+  keytar: true
+  sharp: true
+  simple-git-hooks: true
+  spawn-sync: true
+  vue-demi: true
+  workerd: true
