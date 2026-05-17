@@ -1,6 +1,6 @@
 shellEmulator: true
 
-trustPolicy: no-downgrade
+trustPolicy: audit
 
 packages:
   - apps/*
