@@ -126,5 +126,5 @@ pnpm mcp <cmd>        # 在 @md/mcp-server 中执行命令
 
 ## Git 规范
 
-- **提交信息:** 遵循 Conventional Commits（`feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`build`、`chore`）
+- **提交信息:** 遵循 Conventional Commits（`feat`、`fix`、`docs`、`style`、`refactor`、`perf`、`test`、`build`、`chore`），**一律使用英文**
 - **分支命名:** `feat/description`、`fix/description`
