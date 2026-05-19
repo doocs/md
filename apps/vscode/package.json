@@ -81,8 +81,8 @@
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
-    "isomorphic-dompurify": "^3.13.0",
-    "postcss": "^8.5.14",
+    "isomorphic-dompurify": "^3.14.0",
+    "postcss": "^8.5.15",
     "ts-loader": "^9.5.7",
     "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
