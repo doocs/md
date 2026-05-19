@@ -49,11 +49,9 @@ export function useImageUploader() {
 
   // URL 转 File (需注意 CORS)
   const urlToFile = async (url: string): Promise<File> => {
-    // 提取文件名
     const getFilename = (u: string) => u.split('/').pop()?.split('?')[0] || `image-${Date.now()}.png`
     const filename = getFilename(url)
 
-    // 内部函数：尝试获取 Blob
     const fetchBlob = async (targetUrl: string, options?: RequestInit) => {
       const res = await fetch(targetUrl, options)
       if (!res.ok)
@@ -62,21 +60,18 @@ export function useImageUploader() {
     }
 
     try {
-      // 1. 尝试直接请求 (设置 no-referrer 以尝试绕过部分防盗链)
       const blob = await fetchBlob(url, { referrerPolicy: 'no-referrer' })
       return new File([blob], filename, { type: blob.type })
     }
     catch (directErr) {
       console.warn(`Direct fetch failed for ${url}, trying proxy...`, directErr)
 
-      // 2. 失败后尝试通过 wsrv.nl 代理请求
       try {
         const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(url)}`
         const blob = await fetchBlob(proxyUrl)
         return new File([blob], filename, { type: blob.type })
       }
       catch (proxyErr: any) {
-        // 3. 代理也失败，抛出异常
         console.error(`Proxy fetch failed for ${url}`, proxyErr)
         const isCors = proxyErr.message.includes('Failed to fetch') || proxyErr.name === 'TypeError'
         const msg = isCors
@@ -101,25 +96,17 @@ export function useImageUploader() {
         file = resource
       }
 
-      // 1. 计算 Hash
       const hash = await calculateHash(file)
-      console.log('File Hash:', hash)
 
-      // 2. 检查缓存
       const cache = getStorageMap()
       if (cache[hash]) {
-        console.log('⚡️ 命中缓存，跳过上传')
         return cache[hash]
       }
 
-      // 3. 准备上传：转换 Base64 (fileUpload 需要)
       const base64Content = await toBase64(file)
 
-      // 4. 调用项目现有 API 上传
-      console.log('🚀 调用 fileUpload 上传...')
       const url = await fileUpload(base64Content, file)
 
-      // 5. 写入缓存
       if (url) {
         updateStorageMap(hash, url)
       }
