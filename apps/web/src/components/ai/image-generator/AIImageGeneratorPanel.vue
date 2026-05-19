@@ -85,7 +85,6 @@ async function cleanExpiredImages() {
 
   // 如果没有时间戳数据，说明是旧版本，默认清除所有数据
   if (!savedTimestamps || timestamps.length === 0) {
-    console.log(`🧹 检测到旧版本数据，清除所有过期图片`)
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
@@ -114,7 +113,6 @@ async function cleanExpiredImages() {
 
   // 如果有数据被清除，更新存储
   if (validImages.length < images.length) {
-    console.log(`🧹 清除了 ${images.length - validImages.length} 张过期图片`)
     if (validImages.length > 0) {
       await store.setJSON(`ai_generated_images`, validImages)
       await store.setJSON(`ai_image_prompts`, validPrompts)
@@ -126,8 +124,6 @@ async function cleanExpiredImages() {
       await store.remove(`ai_image_timestamps`)
     }
   }
-
-  console.log(`📊 过期检查完成，有效图片数量:`, validImages.length)
 }
 
 /* ---------- 初始数据 ---------- */
@@ -280,10 +276,7 @@ async function doGenerateImage(promptText: string, clearInput = false) {
     }
   }
   catch (e) {
-    if ((e as Error).name === `AbortError`) {
-      console.log(`图像生成请求中止`)
-    }
-    else {
+    if ((e as Error).name !== `AbortError`) {
       console.error(`图像生成失败:`, e)
     }
   }
@@ -353,7 +346,6 @@ async function downloadImage(imageUrl: string, index: number) {
 async function copyImageUrl(imageUrl: string) {
   try {
     await copyPlain(imageUrl)
-    console.log(`✅ 图片链接已复制到剪贴板`)
     if (typeof toast !== `undefined`) {
       toast.success(`图片链接已复制到剪贴板`)
     }
@@ -371,7 +363,6 @@ function regenerateImage() {
   // 使用当前图片对应的prompt
   const currentPrompt = imagePrompts.value[currentImageIndex.value]
   if (currentPrompt) {
-    console.log(`🔄 重新生成图像，使用当前图片的prompt:`, currentPrompt)
     // 直接使用当前图片的prompt生成，不修改输入框内容
     regenerateWithPrompt(currentPrompt)
   }
@@ -408,7 +399,6 @@ function insertImageToCursor(imageUrl: string) {
   try {
     // 获取当前图片对应的prompt
     const imagePrompt = imagePrompts.value[currentImageIndex.value] || ``
-    console.log(`🔗 插入图片，使用关联的prompt:`, imagePrompt)
 
     // 生成简洁的alt文本
     const altText = imagePrompt.trim()
@@ -430,8 +420,6 @@ function insertImageToCursor(imageUrl: string) {
 
     // 关闭弹窗
     dialogVisible.value = false
-
-    console.log(`✅ 图像已成功插入到光标位置`)
   }
   catch (error) {
     console.error(`❌ 插入图像到光标位置失败:`, error)
@@ -440,7 +428,6 @@ function insertImageToCursor(imageUrl: string) {
 
 /* ---------- 查看大图 ---------- */
 function viewFullImage(imageUrl: string) {
-  console.log(`🔍 点击查看大图:`, imageUrl)
   if (!imageUrl) {
     console.error(`❌ 图片URL为空`)
     return

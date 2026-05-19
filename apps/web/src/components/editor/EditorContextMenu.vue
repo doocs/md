@@ -97,8 +97,8 @@ async function pasteFromClipboard() {
     const text = await navigator.clipboard.readText()
     editorStore.replaceSelection(text)
   }
-  catch (error) {
-    console.log(`粘贴失败`, error)
+  catch {
+    // 静默失败
   }
 }
 

@@ -359,11 +359,6 @@ function handleReplaceAll() {
   findAllMatches()
 }
 
-// function handleEditorChange() {
-//   const debouncedSearch = useDebounceFn(findAllMatches, 300)
-//   debouncedSearch()
-// }
-
 function setSearchWord(word: string) {
   searchWord.value = word
   if (!showSearchTab.value) {

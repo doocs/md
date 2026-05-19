@@ -52,14 +52,6 @@ export const useUIStore = defineStore(`ui`, () => {
     previewDevice.value = previewDevice.value === `desktop` ? `mobile` : `desktop`
   }
 
-  // 是否固定显示浮动目录
-  const isPinFloatingToc = store.reactive(addPrefix(`isPinFloatingToc`), false)
-  const togglePinFloatingToc = useToggle(isPinFloatingToc)
-
-  // 是否显示浮动目录
-  const isShowFloatingToc = store.reactive(addPrefix(`isShowFloatingToc`), true)
-  const toggleShowFloatingToc = useToggle(isShowFloatingToc)
-
   // 是否启用图片转存（默认关闭）
   const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
   const toggleImageReupload = useToggle(enableImageReupload)
@@ -158,8 +150,6 @@ export const useUIStore = defineStore(`ui`, () => {
     isMobile,
     viewMode,
     previewDevice,
-    isPinFloatingToc,
-    isShowFloatingToc,
     isOpenFolderPanel,
     enableImageReupload,
     enableScrollSync,
@@ -192,8 +182,6 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleDark,
     toggleEditOnLeft,
     toggleAIToolbox,
-    togglePinFloatingToc,
-    toggleShowFloatingToc,
     toggleImageReupload,
     toggleScrollSync,
     setViewMode,
