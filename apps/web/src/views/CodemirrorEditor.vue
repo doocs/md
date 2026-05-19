@@ -30,13 +30,8 @@ const previewPanelCompRef = ref<InstanceType<typeof PreviewPanel> | null>(null)
 const getEditorView = () => editorPanelCompRef.value?.codeMirrorView ?? null
 const getPreviewContainer = () => previewPanelCompRef.value?.previewRef ?? null
 
-// --- 游标同步 ---
-const {
-  skipCursorDrivenPreviewSync,
-  scheduleSyncPreviewToEditorCursor,
-  handlePreviewContentClick,
-  cleanup: cleanupCursorSync,
-} = useCursorSync(getEditorView, getPreviewContainer)
+// --- 点击预览内容跳转到编辑器对应位置 ---
+const { handlePreviewContentClick } = useCursorSync(getEditorView)
 
 // --- 滚动同步 ---
 useScrollSync(getEditorView, getPreviewContainer, enableScrollSync)
@@ -141,7 +136,6 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
 
 // --- 清理 ---
 onUnmounted(() => {
-  cleanupCursorSync()
 })
 </script>
 
@@ -188,11 +182,7 @@ onUnmounted(() => {
                 collapsible
                 :collapsed-size="0"
               >
-                <EditorPanel
-                  ref="editorPanelCompRef"
-                  :skip-cursor-driven-preview-sync="skipCursorDrivenPreviewSync"
-                  :on-cursor-activity="scheduleSyncPreviewToEditorCursor"
-                />
+                <EditorPanel ref="editorPanelCompRef" />
               </ResizablePanel>
               <ResizableHandle v-show="viewMode === 'split'" />
 
