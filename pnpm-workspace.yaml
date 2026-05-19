@@ -1,6 +1,6 @@
 shellEmulator: true
 
-trustPolicy: audit
+trustPolicy: no-downgrade
 
 packages:
   - apps/*
@@ -8,6 +8,7 @@ packages:
 
 overrides:
   '@codemirror/view': 6.43.0
+  '@webext-core/isolated-element': 1.1.4
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
   bn.js@^5: ^5.2.3
@@ -32,7 +33,7 @@ overrides:
   prettier: 2.8.8
   qs: ^6.15.1
   querystring: npm:qs@^6.15.1
-  semver@<5.7.2: ^5.7.2
+  semver: ^7.8.0
   serialize-javascript@<7.0.3: ^7.0.5
   source-map@0.8.0-beta.0: 0.7.4
   underscore@<1.13.8: 1.13.8
