@@ -3481,8 +3481,8 @@ packages:
   birpc@2.6.1:
     resolution: {integrity: sha512-LPnFhlDpdSH6FJhJyn4M0kFO7vtQ5iPw24FnG0y21q09xC7e8+1LeR31S1MAIrDAHp4m7aas4bEkTDTvMAtebQ==}
 
-  bl@2.2.0:
-    resolution: {integrity: sha512-wbgvOpqopSr7uq6fJrLH8EsvYMJf9gzfo2jCsL2eTy75qXPukA4pCgHamOQkZtY5vmfVtjB+P3LNlMHW5CEZXA==}
+  bl@2.2.1:
+    resolution: {integrity: sha512-6Pesp1w0DEX1N550i/uGV/TqucVL4AM/pgThFSN/Qq9si1/DF9aIHs1BxD8V/QU0HoeHO6cQRTAuYnLPKq1e4g==}
 
   blake3-wasm@2.1.5:
     resolution: {integrity: sha512-F1+K8EbfOZE49dtoPtmxUQrpXaBIl3ICvasLh+nJta0xkz+9kF/7uet9fLnwKqhDrmj6g+6K3Tw9yQPUg2ka5g==}
@@ -10972,7 +10972,7 @@ snapshots:
 
   birpc@2.6.1: {}
 
-  bl@2.2.0:
+  bl@2.2.1:
     dependencies:
       readable-stream: 2.3.8
       safe-buffer: 5.2.1
@@ -14870,7 +14870,7 @@ snapshots:
 
   tar-stream@2.0.0:
     dependencies:
-      bl: 2.2.0
+      bl: 2.2.1
       end-of-stream: 1.4.5
       fs-constants: 1.0.0
       inherits: 2.0.4
