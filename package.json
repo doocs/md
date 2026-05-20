@@ -13,7 +13,7 @@
     "url": "https://github.com/doocs/md/issues"
   },
   "engines": {
-    "node": ">=22.19.0"
+    "node": ">=22.22.2"
   },
   "scripts": {
     "start": "pnpm web dev",
@@ -35,12 +35,12 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "9.0.0",
-    "@types/node": "^25.8.0",
+    "@types/node": "^25.9.0",
     "archiver": "^8.0.0",
     "cross-env": "^10.1.0",
     "eslint": "^10.4.0",
     "eslint-plugin-format": "^2.0.1",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.0",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
