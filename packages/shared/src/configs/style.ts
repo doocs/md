@@ -1,4 +1,5 @@
 import type { IConfigOption } from '../types'
+import type { ThemeName } from './theme-css'
 import { themeOptions } from './theme'
 
 export const fontFamilyOptions: IConfigOption[] = [
@@ -273,3 +274,27 @@ export const defaultStyleConfig = {
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
 }
+
+export interface PerThemeSettings {
+  primaryColor: string
+  fontFamily: string
+  fontSize: string
+  codeBlockTheme: string
+  headingStyles: HeadingStyles
+  isShowLineNumber: boolean
+  isMacCodeBlock: boolean
+}
+
+export function defaultPerThemeSettings(): PerThemeSettings {
+  return {
+    primaryColor: defaultStyleConfig.primaryColor,
+    fontFamily: defaultStyleConfig.fontFamily,
+    fontSize: defaultStyleConfig.fontSize,
+    codeBlockTheme: defaultStyleConfig.codeBlockTheme,
+    headingStyles: { ...defaultStyleConfig.headingStyles },
+    isShowLineNumber: defaultStyleConfig.isShowLineNumber,
+    isMacCodeBlock: defaultStyleConfig.isMacCodeBlock,
+  }
+}
+
+export type PerThemeSettingsMap = Partial<Record<ThemeName, PerThemeSettings>>
