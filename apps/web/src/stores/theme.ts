@@ -9,6 +9,81 @@ import { store } from '@/utils/storage'
 const LEGACY_KEYS = [`fonts`, `size`, `color`, `codeBlockTheme`, `headingStyles`, `isMacCodeBlock`, `isShowLineNumber`]
 
 /**
+ * Run legacy migration synchronously before store.reactive installs its watch.
+ * Returns the migrated PerThemeSettingsMap (or {} if nothing to migrate).
+ */
+function migrateLegacySettingsSync(currentTheme: ThemeName): PerThemeSettingsMap {
+  let hasAnyLegacyKey = false
+  try {
+    hasAnyLegacyKey = LEGACY_KEYS.some(key => localStorage.getItem(key) !== null)
+  }
+  catch { return {} }
+  if (!hasAnyLegacyKey)
+    return {}
+
+  const migrationKey = addPrefix(`legacy_migrated`)
+  try {
+    if (localStorage.getItem(migrationKey) !== null)
+      return {}
+  }
+  catch { return {} }
+
+  const existingMapRaw = localStorage.getItem(addPrefix(`themeSettings`))
+  const existingMap: PerThemeSettingsMap = existingMapRaw ? JSON.parse(existingMapRaw) : {}
+
+  const defaults = defaultPerThemeSettings()
+  const settings: PerThemeSettings = { ...existingMap[currentTheme] ?? defaults }
+
+  const legacyFont = localStorage.getItem(`fonts`)
+  if (legacyFont)
+    settings.fontFamily = legacyFont
+
+  const legacySize = localStorage.getItem(`size`)
+  if (legacySize)
+    settings.fontSize = legacySize
+
+  const legacyColor = localStorage.getItem(`color`)
+  if (legacyColor)
+    settings.primaryColor = legacyColor
+
+  const legacyCodeTheme = localStorage.getItem(`codeBlockTheme`)
+  if (legacyCodeTheme)
+    settings.codeBlockTheme = legacyCodeTheme
+
+  const legacyHeading = localStorage.getItem(`headingStyles`)
+  if (legacyHeading) {
+    try { settings.headingStyles = JSON.parse(legacyHeading) }
+    catch { /* ignore parse error */ }
+  }
+
+  const legacyMacBlock = localStorage.getItem(`isMacCodeBlock`)
+  if (legacyMacBlock !== null)
+    settings.isMacCodeBlock = legacyMacBlock === `true`
+
+  const legacyLineNum = localStorage.getItem(`isShowLineNumber`)
+  if (legacyLineNum !== null)
+    settings.isShowLineNumber = legacyLineNum === `true`
+
+  const result: PerThemeSettingsMap = { ...existingMap, [currentTheme]: settings }
+
+  // Persist the merged map so store.reactive will pick it up
+  try { localStorage.setItem(addPrefix(`themeSettings`), JSON.stringify(result)) }
+  catch { /* quota error — non-critical */ }
+
+  // Mark migration as done
+  try { localStorage.setItem(migrationKey, `1`) }
+  catch { /* ignore */ }
+
+  // Clean up legacy keys
+  for (const key of LEGACY_KEYS) {
+    try { localStorage.removeItem(key) }
+    catch { /* ignore */ }
+  }
+
+  return result
+}
+
+/**
  * 主题和样式配置 Store
  * 负责管理所有与主题、字体、颜色相关的配置
  *
@@ -16,70 +91,21 @@ const LEGACY_KEYS = [`fonts`, `size`, `color`, `codeBlockTheme`, `headingStyles`
  * headingStyles、isShowLineNumber、isMacCodeBlock），切换主题时自动加载对应配置。
  */
 export const useThemeStore = defineStore(`theme`, () => {
+  // --- Legacy migration: run BEFORE reactive so initial value is correct ---
+  const initialTheme = (() => {
+    try { return localStorage.getItem(addPrefix(`theme`)) ?? defaultStyleConfig.theme }
+    catch { return defaultStyleConfig.theme }
+  })()
+  const migratedSettings = migrateLegacySettingsSync(initialTheme as ThemeName)
+
   // 当前选中的主题
   const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)
 
   // 每个主题的独立配置（持久化到 localStorage）
   const themeSettings = store.reactive<PerThemeSettingsMap>(
     addPrefix(`themeSettings`),
-    {},
+    migratedSettings,
   )
-
-  // --- Legacy migration: run once on store init ---
-  const hasAnyLegacyKey = LEGACY_KEYS.some(key => localStorage.getItem(key) !== null)
-  const migrationKey = `MD__legacy_migrated`
-  const alreadyMigrated = localStorage.getItem(migrationKey) !== null
-
-  if (hasAnyLegacyKey && !alreadyMigrated) {
-    const targetTheme = theme.value
-    const existing = themeSettings.value[targetTheme] ?? defaultPerThemeSettings()
-    const settings: PerThemeSettings = { ...existing }
-
-    const legacyFont = localStorage.getItem(`fonts`)
-    if (legacyFont)
-      settings.fontFamily = legacyFont
-
-    const legacySize = localStorage.getItem(`size`)
-    if (legacySize)
-      settings.fontSize = legacySize
-
-    const legacyColor = localStorage.getItem(`color`)
-    if (legacyColor)
-      settings.primaryColor = legacyColor
-
-    const legacyCodeTheme = localStorage.getItem(`codeBlockTheme`)
-    if (legacyCodeTheme)
-      settings.codeBlockTheme = legacyCodeTheme
-
-    const legacyHeading = localStorage.getItem(`headingStyles`)
-    if (legacyHeading) {
-      try {
-        settings.headingStyles = JSON.parse(legacyHeading)
-      }
-      catch { /* ignore parse error */ }
-    }
-
-    const legacyMacBlock = localStorage.getItem(`isMacCodeBlock`)
-    if (legacyMacBlock !== null)
-      settings.isMacCodeBlock = legacyMacBlock === `true`
-
-    const legacyLineNum = localStorage.getItem(`isShowLineNumber`)
-    if (legacyLineNum !== null)
-      settings.isShowLineNumber = legacyLineNum === `true`
-
-    themeSettings.value = {
-      ...themeSettings.value,
-      [targetTheme]: settings,
-    }
-
-    // Mark migration as done
-    localStorage.setItem(migrationKey, `1`)
-
-    // Clean up legacy keys
-    for (const key of LEGACY_KEYS) {
-      localStorage.removeItem(key)
-    }
-  }
 
   // 获取当前主题的配置（不存在时返回默认值）
   const currentSettings = computed<PerThemeSettings>(() => {
@@ -173,6 +199,7 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
     isCiteStatus.value = defaultStyleConfig.isCiteStatus
     isCountStatus.value = defaultStyleConfig.isCountStatus
+    legend.value = defaultStyleConfig.legend
     isUseIndent.value = false
     isUseJustify.value = false
   }
