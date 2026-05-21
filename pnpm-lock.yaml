@@ -43,8 +43,12 @@ overrides:
   yauzl: ^3.3.0
 
 patchedDependencies:
-  '@codemirror/view@6.43.0': 09f7b84fce74b6f9b4f2bb0fe2cece0a2815284f7dcbee34b095ed13bc802e5f
-  juice@11.1.1: 64286af9d3913b3ffbee649d634de8ec5a603857ce1185030d8bb6e4a384c92c
+  '@codemirror/view@6.43.0':
+    hash: 09f7b84fce74b6f9b4f2bb0fe2cece0a2815284f7dcbee34b095ed13bc802e5f
+    path: patches/@codemirror__view@6.43.0.patch
+  juice@11.1.1:
+    hash: 64286af9d3913b3ffbee649d634de8ec5a603857ce1185030d8bb6e4a384c92c
+    path: patches/juice@11.1.1.patch
 
 importers:
 
@@ -130,11 +134,11 @@ importers:
   apps/web:
     dependencies:
       '@aws-sdk/client-s3':
-        specifier: ^3.1050.0
-        version: 3.1050.0
+        specifier: ^3.1051.0
+        version: 3.1051.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.1050.0
-        version: 3.1050.0
+        specifier: ^3.1051.0
+        version: 3.1051.0
       '@exercism/highlightjs-gdscript':
         specifier: ^0.0.1
         version: 0.0.1
@@ -234,10 +238,10 @@ importers:
     devDependencies:
       '@cloudflare/vite-plugin':
         specifier: 1.37.2
-        version: 1.37.2(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(workerd@1.20260518.1)(wrangler@4.93.0(@cloudflare/workers-types@4.20260520.1))
+        version: 1.37.2(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(workerd@1.20260518.1)(wrangler@4.93.0(@cloudflare/workers-types@4.20260521.1))
       '@cloudflare/workers-types':
-        specifier: ^4.20260520.1
-        version: 4.20260520.1
+        specifier: ^4.20260521.1
+        version: 4.20260521.1
       '@md/config':
         specifier: workspace:*
         version: link:../../packages/config
@@ -306,7 +310,7 @@ importers:
         version: 3.3.1(typescript@6.0.3)
       wrangler:
         specifier: ^4.93.0
-        version: 4.93.0(@cloudflare/workers-types@4.20260520.1)
+        version: 4.93.0(@cloudflare/workers-types@4.20260521.1)
       wxt:
         specifier: ^0.20.26
         version: 0.20.26(@types/node@25.9.1)(eslint@10.4.0(jiti@2.7.0))(jiti@2.7.0)(less@4.6.4)(rolldown@1.0.1)(rollup@4.60.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
@@ -351,7 +355,7 @@ importers:
     devDependencies:
       wrangler:
         specifier: ^4.93.0
-        version: 4.93.0(@cloudflare/workers-types@4.20260520.1)
+        version: 4.93.0(@cloudflare/workers-types@4.20260521.1)
 
   packages/mcp-server:
     dependencies:
@@ -594,8 +598,8 @@ packages:
   '@aws-crypto/util@5.2.0':
     resolution: {integrity: sha512-4RkU9EsI6ZpBve5fseQlGNUWKMa1RLPQ1dnjnQoe07ldfIzcsGb5hC5W0Dm7u423KWzawlrpbjXBrXCEv9zazQ==}
 
-  '@aws-sdk/client-s3@3.1050.0':
-    resolution: {integrity: sha512-9kgtv+bXZQrOIJT2INPPBCezrJu1FlgGrzEat/ut4A4V53IT00LynsBZgp12eFKbjJuNCeTo7iPSKjPsX8ub+A==}
+  '@aws-sdk/client-s3@3.1051.0':
+    resolution: {integrity: sha512-0Yhq7AMw2te5YtxDHkm2KKpXF8IccOO4nmCsp12EzYB/e3IKQ73NHH4jA2ki8mQwvAQzFGB+1GoycT00U8sZCg==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/core@3.974.12':
@@ -666,8 +670,8 @@ packages:
     resolution: {integrity: sha512-FtQ/Bt327peZJuyo4WZSOLVUTw9ujRxntepiC7L65FxA2P82Xlq0g14T22BuqBUeMjDoxa9nvwiMHjLIfP3eUg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.1050.0':
-    resolution: {integrity: sha512-tTQ+MYyQehtA5SMXnLumFpOMrVBcn88f1k6oyzs4sOQ1Upq72T/BYkKZ+Yn7ejncSsCp3exIVcYwZHFEGKAugQ==}
+  '@aws-sdk/s3-request-presigner@3.1051.0':
+    resolution: {integrity: sha512-9ZULJHf5IAObmqtg2XhiufMmgEl+aM9jlRog2V9qbICeSOgDCHekmlRxF9FuqZKMqrpLzGtJPDbd8gGAHJZv/A==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.27':
@@ -959,8 +963,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@cloudflare/workers-types@4.20260520.1':
-    resolution: {integrity: sha512-wdmf9Fwabp06OgK9ZyCl8Q77GZ94k9J7OA9qA65FbgxZ/hd3hYRkVNiY7Bvsx4tKim+sWmKqGOblecZInAvoRg==}
+  '@cloudflare/workers-types@4.20260521.1':
+    resolution: {integrity: sha512-cerUUdckXWiNm0x0XEIomBkr58xja5hn/1F9wzzDfJTE96L98L/Ra0ToTxKfzsXLklPflOagce8Vhg0vx8Ytgw==}
 
   '@codemirror/autocomplete@6.20.2':
     resolution: {integrity: sha512-G5FPkgIiLjOgZMjqVjvuKQ1rGPtHogLldJr33eFJdVLtmwY+giGrlv/ewljLz6b9BSQLkjxuwBc6g6omDM+YxQ==}
@@ -7756,7 +7760,7 @@ snapshots:
       '@smithy/util-utf8': 2.3.0
       tslib: 2.8.1
 
-  '@aws-sdk/client-s3@3.1050.0':
+  '@aws-sdk/client-s3@3.1051.0':
     dependencies:
       '@aws-crypto/sha1-browser': 5.2.0
       '@aws-crypto/sha256-browser': 5.2.0
@@ -7939,7 +7943,7 @@ snapshots:
       '@smithy/types': 4.14.2
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.1050.0':
+  '@aws-sdk/s3-request-presigner@3.1051.0':
     dependencies:
       '@aws-sdk/core': 3.974.12
       '@aws-sdk/signature-v4-multi-region': 3.996.27
@@ -8296,13 +8300,13 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260518.1
 
-  '@cloudflare/vite-plugin@1.37.2(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(workerd@1.20260518.1)(wrangler@4.93.0(@cloudflare/workers-types@4.20260520.1))':
+  '@cloudflare/vite-plugin@1.37.2(vite@8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0))(workerd@1.20260518.1)(wrangler@4.93.0(@cloudflare/workers-types@4.20260521.1))':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260518.1)
       miniflare: 4.20260518.0
       unenv: 2.0.0-rc.24
       vite: 8.0.13(@types/node@25.9.1)(esbuild@0.27.7)(jiti@2.7.0)(less@4.6.4)(terser@5.47.1)(tsx@4.22.3)(yaml@2.9.0)
-      wrangler: 4.93.0(@cloudflare/workers-types@4.20260520.1)
+      wrangler: 4.93.0(@cloudflare/workers-types@4.20260521.1)
       ws: 8.20.1
     transitivePeerDependencies:
       - bufferutil
@@ -8324,7 +8328,7 @@ snapshots:
   '@cloudflare/workerd-windows-64@1.20260518.1':
     optional: true
 
-  '@cloudflare/workers-types@4.20260520.1': {}
+  '@cloudflare/workers-types@4.20260521.1': {}
 
   '@codemirror/autocomplete@6.20.2':
     dependencies:
@@ -15267,7 +15271,7 @@ snapshots:
       '@cloudflare/workerd-linux-arm64': 1.20260518.1
       '@cloudflare/workerd-windows-64': 1.20260518.1
 
-  wrangler@4.93.0(@cloudflare/workers-types@4.20260520.1):
+  wrangler@4.93.0(@cloudflare/workers-types@4.20260521.1):
     dependencies:
       '@cloudflare/kv-asset-handler': 0.5.0
       '@cloudflare/unenv-preset': 2.16.1(unenv@2.0.0-rc.24)(workerd@1.20260518.1)
@@ -15278,7 +15282,7 @@ snapshots:
       unenv: 2.0.0-rc.24
       workerd: 1.20260518.1
     optionalDependencies:
-      '@cloudflare/workers-types': 4.20260520.1
+      '@cloudflare/workers-types': 4.20260521.1
       fsevents: 2.3.3
     transitivePeerDependencies:
       - bufferutil
