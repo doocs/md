@@ -57,9 +57,10 @@ export const useExportStore = defineStore(`export`, () => {
     if (!el)
       return
 
-    // 添加临时样式：禁用代码块滚动，启用换行
+    // 添加临时样式：禁用代码块滚动，启用换行，隐藏仅用于预览的 UI 覆盖层
     const style = document.createElement('style')
     style.textContent = `
+      .diagram-download-bar { display: none !important; }
       .preview pre.code__pre,
       .preview .hljs.code__pre,
       .preview pre.code__pre > code,
