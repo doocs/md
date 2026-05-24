@@ -165,36 +165,34 @@ export function setupDiagramDownloadOverlay(outputEl: HTMLElement): DiagramDownl
 
   scan()
 
-  const observer = new MutationObserver((mutations) => {
+  let rafId: ReturnType<typeof requestAnimationFrame> | null = null
+
+  const observer = new MutationObserver(() => {
     if (paused)
       return
-
-    const candidates = new Set<HTMLElement>()
-
-    for (const { target, addedNodes } of mutations) {
-      const t = target as HTMLElement
-      if (t.matches(DIAGRAM_SELECTORS))
-        candidates.add(t)
-
-      for (const node of addedNodes) {
-        if (node.nodeType !== Node.ELEMENT_NODE)
-          continue
-        const el = node as HTMLElement
-        if (el.matches(DIAGRAM_SELECTORS))
-          candidates.add(el)
-        el.querySelectorAll<HTMLElement>(DIAGRAM_SELECTORS).forEach(c => candidates.add(c))
-      }
-    }
-
-    candidates.forEach(inject)
+    if (rafId !== null)
+      return
+    rafId = requestAnimationFrame(() => {
+      rafId = null
+      if (!paused)
+        scan()
+    })
   })
 
   observer.observe(outputEl, { childList: true, subtree: true })
 
   return {
-    cleanup: () => observer.disconnect(),
+    cleanup: () => {
+      if (rafId !== null)
+        cancelAnimationFrame(rafId)
+      observer.disconnect()
+    },
     pause: () => {
       paused = true
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId)
+        rafId = null
+      }
       outputEl.querySelectorAll(`.diagram-download-bar`).forEach(el => el.remove())
     },
     resume: () => {

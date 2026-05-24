@@ -169,16 +169,21 @@ defineExpose({
   display: flex;
   gap: 4px;
   opacity: 0;
+  visibility: hidden;
   pointer-events: none;
   transform: translateY(-6px);
-  transition: opacity 0.18s ease, transform 0.18s ease;
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s 0.18s;
 }
 
 .mermaid-diagram:hover .diagram-download-bar,
-.plantuml-diagram:hover .diagram-download-bar {
+.plantuml-diagram:hover .diagram-download-bar,
+.mermaid-diagram:focus-within .diagram-download-bar,
+.plantuml-diagram:focus-within .diagram-download-bar {
   opacity: 1;
+  visibility: visible;
   pointer-events: auto;
   transform: translateY(0);
+  transition: opacity 0.18s ease, transform 0.18s ease, visibility 0s;
 }
 
 .diagram-download-btn {
