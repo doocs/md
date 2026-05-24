@@ -81,7 +81,11 @@ export async function exportPostsAsZip(posts: Array<{ title: string, content: st
  */
 export function getHtmlContent(): string {
   const element = document.querySelector(`#output`)!
-  return element.innerHTML
+  // Clone to avoid mutating the live DOM, then strip injected UI overlays
+  // (e.g. diagram download bars) that must not appear in exported content.
+  const clone = element.cloneNode(true) as HTMLElement
+  clone.querySelectorAll(`.diagram-download-bar`).forEach(el => el.remove())
+  return clone.innerHTML
 }
 
 /**

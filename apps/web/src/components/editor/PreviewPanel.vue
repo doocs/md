@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { DiagramDownloadOverlay } from '@/utils/diagramDownload'
 import { highlightPendingBlocks, hljs } from '@md/core'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
+import { setupDiagramDownloadOverlay } from '@/utils/diagramDownload'
 
-defineProps<{
+const props = defineProps<{
   backLight: boolean
   isCoping: boolean
   onContentClick: (event: MouseEvent) => void
@@ -30,6 +32,33 @@ watch(output, () => {
       highlightPendingBlocks(hljs, outputElement)
     }
   })
+})
+
+let diagramOverlay: DiagramDownloadOverlay | null = null
+
+// Pause bar injection for the entire duration of isCoping so that
+// processClipboardContent mutations never re-inject bars, and resume
+// after the copy pipeline resets the DOM.
+watch(() => props.isCoping, (coping) => {
+  if (coping) {
+    diagramOverlay?.pause()
+  }
+  else {
+    nextTick(() => diagramOverlay?.resume())
+  }
+})
+
+onMounted(() => {
+  nextTick(() => {
+    const outputEl = document.getElementById(`output`)
+    if (outputEl) {
+      diagramOverlay = setupDiagramDownloadOverlay(outputEl)
+    }
+  })
+})
+
+onUnmounted(() => {
+  diagramOverlay?.cleanup()
 })
 
 defineExpose({
@@ -122,5 +151,92 @@ defineExpose({
 
 :deep(.preview-table) {
   border-spacing: 0;
+}
+</style>
+
+<style>
+/* Diagram download overlay — unscoped to affect v-html content */
+.mermaid-diagram,
+.plantuml-diagram {
+  position: relative;
+}
+
+.diagram-download-bar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+  display: flex;
+  gap: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.mermaid-diagram:hover .diagram-download-bar,
+.plantuml-diagram:hover .diagram-download-bar {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.diagram-download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 4px 9px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border-radius: 6px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.88);
+  color: #444;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 0 0 0.5px rgba(0, 0, 0, 0.06);
+  transition: background 0.15s ease, box-shadow 0.15s ease, color 0.15s ease, transform 0.1s ease;
+  user-select: none;
+  font-family: system-ui, -apple-system, sans-serif;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.diagram-download-btn:hover {
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14), 0 0 0 0.5px rgba(0, 0, 0, 0.08);
+  color: #111;
+}
+
+.diagram-download-btn:active {
+  transform: scale(0.95);
+}
+
+.diagram-download-btn:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.diagram-btn-loading {
+  letter-spacing: 0.1em;
+  opacity: 0.7;
+}
+
+/* Dark mode */
+.output_night .diagram-download-btn {
+  background: rgba(30, 32, 38, 0.88);
+  border-color: rgba(255, 255, 255, 0.1);
+  color: #b8bcc8;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4), 0 0 0 0.5px rgba(255, 255, 255, 0.04);
+}
+
+.output_night .diagram-download-btn:hover {
+  background: rgba(50, 53, 62, 0.96);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
 }
 </style>
