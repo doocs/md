@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import katex from 'katex'
-import 'katex/dist/katex.min.css'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 import { escapeHtml, normalizeFormulaInput, wrapFormula } from '@/utils/formula'
@@ -169,23 +167,29 @@ const selectedGroup = computed(() => {
   return formulaGroups.find(group => group.name === selectedGroupName.value) ?? formulaGroups[0]
 })
 
+function renderWithMathJax(latex: string, display: boolean): string {
+  try {
+    // @ts-expect-error MathJax is a global variable
+    window.MathJax.texReset()
+    // @ts-expect-error MathJax is a global variable
+    const mjxContainer = window.MathJax.tex2svg(latex, { display })
+    const svg = mjxContainer.firstChild as SVGElement
+    svg.style.display = display ? `block` : `initial`
+    svg.style.setProperty(`max-width`, `300vw`, `important`)
+    svg.style.flexShrink = `0`
+    return svg.outerHTML
+  }
+  catch {
+    return `<div class="text-sm text-destructive break-all">${escapeHtml(latex)}</div>`
+  }
+}
+
 const previewHtml = computed(() => {
   const content = latexText.value.trim()
   if (!content) {
     return `<div class="text-sm text-muted-foreground">输入公式后会在这里显示预览</div>`
   }
-
-  try {
-    return katex.renderToString(content, {
-      displayMode: uiStore.formulaEditorDisplayMode,
-      throwOnError: false,
-      strict: false,
-      trust: true,
-    })
-  }
-  catch {
-    return `<div class="text-sm text-destructive break-all">${escapeHtml(content)}</div>`
-  }
+  return renderWithMathJax(content, uiStore.formulaEditorDisplayMode)
 })
 
 watch(
@@ -273,8 +277,8 @@ function setSelectedGroup(groupName: string) {
         </DialogDescription>
       </DialogHeader>
 
-      <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-0">
-        <div class="min-h-0 border-b lg:border-b-0 lg:border-r p-6 space-y-4 overflow-hidden flex flex-col">
+      <div class="flex-1 min-h-0 overflow-y-auto lg:overflow-hidden grid grid-cols-1 lg:grid-cols-[1.05fr_0.95fr] gap-0">
+        <div class="lg:min-h-0 border-b lg:border-b-0 lg:border-r p-6 space-y-4 lg:overflow-hidden flex flex-col">
           <div class="space-y-2">
             <div class="flex items-center justify-between gap-3 flex-wrap">
               <label class="text-sm font-medium">LaTeX 输入</label>
@@ -306,7 +310,7 @@ function setSelectedGroup(groupName: string) {
             />
           </div>
 
-          <div class="space-y-2 flex-1 min-h-0 flex flex-col">
+          <div class="space-y-2 lg:flex-1 lg:min-h-0 flex flex-col">
             <label class="text-sm font-medium">预览</label>
             <div class="rounded-lg border bg-muted/30 p-4 overflow-x-auto min-h-28 flex-1 flex items-center">
               <div class="w-full" v-html="previewHtml" />
@@ -314,9 +318,11 @@ function setSelectedGroup(groupName: string) {
           </div>
         </div>
 
-        <div class="min-h-0 p-6 space-y-4 overflow-hidden bg-muted/20 flex flex-col">
+        <div class="lg:min-h-0 p-6 space-y-4 lg:overflow-hidden bg-muted/20 flex flex-col">
           <div class="space-y-2 flex-shrink-0">
-            <h3 class="text-sm font-medium">公式库</h3>
+            <h3 class="text-sm font-medium">
+              公式库
+            </h3>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="group in formulaGroups"
@@ -331,8 +337,8 @@ function setSelectedGroup(groupName: string) {
             </div>
           </div>
 
-          <div class="min-h-0 flex-1 overflow-hidden rounded-lg border bg-background p-3">
-            <div class="grid grid-cols-2 xl:grid-cols-3 gap-2 h-full content-start overflow-hidden">
+          <div class="lg:min-h-0 lg:flex-1 lg:overflow-y-auto rounded-lg border bg-background p-3">
+            <div class="grid grid-cols-2 xl:grid-cols-3 gap-2 content-start">
               <button
                 v-for="snippet in selectedGroup.items"
                 :key="`${selectedGroup.name}-${snippet}`"
@@ -340,7 +346,7 @@ function setSelectedGroup(groupName: string) {
                 class="rounded-lg border bg-background px-3 py-2 text-left text-sm hover:border-primary hover:bg-primary/5 transition-colors"
                 @click="insertSnippet(snippet)"
               >
-                <span class="flex items-center overflow-x-auto whitespace-nowrap font-mono h-15" v-html="katex.renderToString(snippet, { throwOnError: false, strict: false, trust: true })" />
+                <span class="flex items-center overflow-x-auto whitespace-nowrap font-mono h-15" v-html="renderWithMathJax(snippet, false)" />
               </button>
             </div>
           </div>
