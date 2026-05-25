@@ -57,7 +57,7 @@ export const useUIStore = defineStore(`ui`, () => {
   const toggleImageReupload = useToggle(enableImageReupload)
 
   // 是否开启同步滚动（编辑器与预览区联动）
-  const enableScrollSync = store.reactive(addPrefix(`enableScrollSync`), false)
+  const enableScrollSync = store.reactive(addPrefix(`enableScrollSync`), true)
   const toggleScrollSync = useToggle(enableScrollSync)
 
   // ==================== 对话框状态 ====================
