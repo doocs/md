@@ -20,8 +20,8 @@ index cfb44591c515154334d9896228db3b86c5a863e6..efc071a1dbac9a33e85f01034f1c42c9
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
 -            !(browser.mac && event.altKey && !(event.ctrlKey || event.metaKey)) &&
-+            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey))
-+            // 但 Alt+Shift 组合应该被视为快捷键而不是特殊字符输入 &&
++            // Allow Alt+Shift combinations to be treated as shortcuts rather than special character input
++            !(browser.mac && event.altKey && !event.shiftKey && !(event.ctrlKey || event.metaKey)) &&
              (baseName = base[event.keyCode]) && baseName != name) {
              if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
                  handled = true;
