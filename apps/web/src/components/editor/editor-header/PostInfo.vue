@@ -123,8 +123,8 @@ async function prePost() {
       accounts,
     }
   }
-  catch (error) {
-    console.log(`error`, error)
+  catch {
+    // 静默失败
   }
   finally {
     form.value = {
@@ -177,7 +177,6 @@ function startLoginDetection() {
   // 设置超时机制：如果 15 秒内没有任何响应，则停止检测
   const timeoutId = setTimeout(() => {
     if (!hasReceivedAny) {
-      console.log('[COSE] 登录检测超时，停止检测')
       allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
       isCheckingLogin.value = false
     }

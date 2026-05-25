@@ -13,6 +13,8 @@ import {
 } from '@md/shared/configs'
 import { ALargeSmall, Code, Droplet, FileCode, ImageIcon, Palette, Pipette, RotateCcw, SquareCode, Type } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
+import { useConfirmStore } from '@/stores/confirm'
+import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -26,6 +28,8 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 
+const confirmStore = useConfirmStore()
+const cssEditorStore = useCssEditorStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
@@ -97,7 +101,19 @@ function macCodeBlockChanged() {
 }
 
 function resetStyleConfirm() {
-  uiStore.isOpenConfirmDialog = true
+  confirmStore.confirm({
+    title: '提示',
+    description: '此操作将丢失本地自定义样式，是否继续？',
+    onConfirm: () => {
+      themeStore.resetStyle()
+      cssEditorStore.resetCssConfig()
+      themeStore.applyCurrentTheme()
+      themeStore.updateCodeTheme()
+      const raw = editorStore.getContent()
+      renderStore.render(raw)
+      toast.success(`样式已重置`)
+    },
+  })
 }
 
 const colorPicker = ref<HTMLElement & { show: () => void } | null>(null)

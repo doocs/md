@@ -14,6 +14,7 @@ import {
   Settings,
   Trash2,
 } from 'lucide-vue-next'
+import { v4 as uuidv4 } from 'uuid'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -123,14 +124,14 @@ onMounted(async () => {
   messages.value = saved
     ? JSON.parse(saved).map((msg: ChatMessage) => ({
         ...msg,
-        id: msg.id || crypto.randomUUID(),
+        id: msg.id || uuidv4(),
       }))
     : getDefaultMessages()
   await scrollToBottom(true)
 })
 
 function getDefaultMessages(): ChatMessage[] {
-  return [{ role: `assistant`, content: `你好，我是 AI 助手，有什么可以帮你的？`, id: crypto.randomUUID() }]
+  return [{ role: `assistant`, content: `你好，我是 AI 助手，有什么可以帮你的？`, id: uuidv4() }]
 }
 
 function generateConversationTitle(): string {
@@ -151,7 +152,7 @@ async function autoSaveCurrentConversation() {
     return
 
   if (!currentConversationId.value) {
-    currentConversationId.value = crypto.randomUUID()
+    currentConversationId.value = uuidv4()
 
     const conversation = {
       id: currentConversationId.value,
@@ -189,7 +190,7 @@ async function loadConversation(id: string) {
   if (saved.length > 0) {
     messages.value = saved.map(msg => ({
       ...msg,
-      id: msg.id || crypto.randomUUID(),
+      id: msg.id || uuidv4(),
     }))
     currentConversationId.value = id
     await store.setJSON(memoryKey, messages.value)

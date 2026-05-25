@@ -5,7 +5,7 @@ ENV LC_ALL="en_US.UTF-8"
 RUN apk add --no-cache curl unzip
 RUN curl -L "https://github.com/doocs/md/archive/refs/heads/main.zip" -o "main.zip" && unzip "main.zip" && mv "md-main" /app
 WORKDIR /app
-RUN npm install -g pnpm
+RUN npm install -g pnpm@11
 ENV NODE_OPTIONS="--openssl-legacy-provider"
 RUN pnpm install && pnpm web build:h5-netlify
 

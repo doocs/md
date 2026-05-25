@@ -29,9 +29,9 @@ jobs:
           node-version: 22
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
-          version: 10
+          version: 11
 
       - name: Install dependencies
         run: pnpm install
@@ -43,7 +43,7 @@ jobs:
 
       - name: Deploy to Cloudflare Workers
         id: deploy
-        uses: cloudflare/wrangler-action@v3
+        uses: cloudflare/wrangler-action@v4
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -61,16 +61,42 @@ jobs:
           echo "Preview URL: $PREVIEW_URL"
 
       - name: Comment PR with preview link
-        uses: actions-cool/maintain-one-comment@v3
+        uses: actions/github-script@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            🚀 Cloudflare Workers Preview has been successfully deployed!
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ github.event.pull_request.number }};
+            const deployUrl = '${{ steps.deployment-url.outputs.url }}';
+            const commitSha = '${{ github.event.pull_request.head.sha }}';
+            const body = [
+              '🚀 Cloudflare Workers Preview has been successfully deployed!',
+              '',
+              `**Preview URL:** ${deployUrl}`,
+              '',
+              `<sub>Built with commit ${commitSha}</sub>`,
+              '',
+              '<!-- Cloudflare Preview Comment -->',
+            ].join('\n');
 
-            **Preview URL:** ${{ steps.deployment-url.outputs.url }}
-
-            <sub>Built with commit ${{ github.event.pull_request.head.sha }}</sub>
-
-            <!-- Cloudflare Preview Comment -->
-          body-include: '<!-- Cloudflare Preview Comment -->'
-          number: ${{ github.event.pull_request.number }}
+            // Upsert: find existing comment and update, or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body.includes('<!-- Cloudflare Preview Comment -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }

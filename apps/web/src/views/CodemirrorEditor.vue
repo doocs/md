@@ -9,25 +9,18 @@ import {
   ResizablePanelGroup,
 } from '@/components/ui/resizable'
 import { useCursorSync } from '@/composables/useCursorSync'
-import { useCssEditorStore } from '@/stores/cssEditor'
-import { useEditorStore } from '@/stores/editor'
-import { useRenderStore } from '@/stores/render'
-import { useThemeStore } from '@/stores/theme'
+import { useScrollSync } from '@/composables/useScrollSync'
 import { useUIStore } from '@/stores/ui'
 
-const editorStore = useEditorStore()
-const renderStore = useRenderStore()
-const themeStore = useThemeStore()
 const uiStore = useUIStore()
-const cssEditorStore = useCssEditorStore()
 
 const {
   isMobile,
   isOpenPostSlider,
   isOpenFolderPanel,
   isOpenRightSlider,
-  isOpenConfirmDialog,
   viewMode,
+  enableScrollSync,
 } = storeToRefs(uiStore)
 
 // --- 子组件引用 ---
@@ -38,49 +31,11 @@ const previewPanelCompRef = ref<InstanceType<typeof PreviewPanel> | null>(null)
 const getEditorView = () => editorPanelCompRef.value?.codeMirrorView ?? null
 const getPreviewContainer = () => previewPanelCompRef.value?.previewRef ?? null
 
-// --- 游标同步 ---
-const {
-  skipCursorDrivenPreviewSync,
-  scheduleSyncPreviewToEditorCursor,
-  handlePreviewContentClick: handlePreviewNavigationClick,
-  cleanup: cleanupCursorSync,
-} = useCursorSync(getEditorView, getPreviewContainer)
+// --- 点击预览内容跳转到编辑器对应位置 ---
+const { handlePreviewContentClick } = useCursorSync(getEditorView)
 
-function handlePreviewContentClick(event: MouseEvent) {
-  const target = event.target as HTMLElement | null
-  const formulaElement = target?.closest(`[data-math-latex]`) as HTMLElement | null
-
-  if (formulaElement) {
-    const latex = formulaElement.dataset.mathLatex ?? ``
-    if (latex) {
-      uiStore.openFormulaEditor({
-        value: latex,
-        displayMode: formulaElement.dataset.mathDisplay === `true`,
-        sourceRaw: formulaElement.dataset.mathRaw ?? null,
-      })
-      event.preventDefault()
-      event.stopPropagation()
-      return
-    }
-  }
-
-  handlePreviewNavigationClick(event)
-}
-
-// --- 编辑器刷新 & 样式重置 ---
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
-
-function resetStyle() {
-  themeStore.resetStyle()
-  cssEditorStore.resetCssConfig()
-  themeStore.applyCurrentTheme()
-  editorRefresh()
-  toast.success(`样式已重置`)
-}
+// --- 滚动同步 ---
+useScrollSync(getEditorView, getPreviewContainer, enableScrollSync)
 
 // --- 复制状态 ---
 const backLight = ref(false)
@@ -182,7 +137,6 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
 
 // --- 清理 ---
 onUnmounted(() => {
-  cleanupCursorSync()
 })
 </script>
 
@@ -229,11 +183,7 @@ onUnmounted(() => {
                 collapsible
                 :collapsed-size="0"
               >
-                <EditorPanel
-                  ref="editorPanelCompRef"
-                  :skip-cursor-driven-preview-sync="skipCursorDrivenPreviewSync"
-                  :on-cursor-activity="scheduleSyncPreviewToEditorCursor"
-                />
+                <EditorPanel ref="editorPanelCompRef" />
               </ResizablePanel>
               <ResizableHandle v-show="viewMode === 'split'" />
 
@@ -305,23 +255,6 @@ onUnmounted(() => {
       <FormulaEditorDialog />
 
       <TemplateDialog />
-
-      <AlertDialog v-model:open="isOpenConfirmDialog">
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>提示</AlertDialogTitle>
-            <AlertDialogDescription>
-              此操作将丢失本地自定义样式，是否继续？
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>取消</AlertDialogCancel>
-            <AlertDialogAction @click="resetStyle">
-              确定
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </main>
 
     <Footer />

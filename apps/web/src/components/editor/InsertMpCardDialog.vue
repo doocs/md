@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import type { MpAccount } from '@/stores/mpAccounts'
 import { FileDown, Pencil, Plus, Rss, Search, Trash2 } from 'lucide-vue-next'
+import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 
+const confirmStore = useConfirmStore()
 const editorStore = useEditorStore()
 const uiStore = useUIStore()
 const { toggleShowInsertMpCardDialog } = uiStore
@@ -78,22 +80,16 @@ function insertAccount(account: MpAccount) {
   toggleShowInsertMpCardDialog(false)
 }
 
-// 删除确认对话框
-const deleteConfirmDialog = ref(false)
-const accountToDelete = ref<MpAccount | null>(null)
-
+// 打开删除确认对话框
 function openDeleteConfirm(account: MpAccount) {
-  accountToDelete.value = account
-  deleteConfirmDialog.value = true
-}
-
-function confirmDelete() {
-  if (accountToDelete.value) {
-    mpAccountsStore.deleteAccount(accountToDelete.value.id)
-    toast.success('已删除')
-    accountToDelete.value = null
-  }
-  deleteConfirmDialog.value = false
+  confirmStore.confirm({
+    title: '确认删除',
+    description: `确定要删除公众号「${account.name}」吗？此操作不可恢复。`,
+    onConfirm: () => {
+      mpAccountsStore.deleteAccount(account.id)
+      toast.success('已删除')
+    },
+  })
 }
 
 // 对话框关闭回调
@@ -218,22 +214,4 @@ function onUpdate(val: boolean) {
     v-model:open="isShowConfigDialog"
     :account-id="editingAccountId"
   />
-
-  <!-- 删除确认对话框 -->
-  <AlertDialog v-model:open="deleteConfirmDialog">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>确认删除</AlertDialogTitle>
-        <AlertDialogDescription>
-          确定要删除公众号「{{ accountToDelete?.name }}」吗？此操作不可恢复。
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>取消</AlertDialogCancel>
-        <AlertDialogAction @click="confirmDelete">
-          确定
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
 </template>

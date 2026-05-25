@@ -17,11 +17,6 @@ import { checkImage, toBase64 } from '@/utils'
 import { fileUpload } from '@/utils/file'
 import { store } from '@/utils/storage'
 
-const props = defineProps<{
-  skipCursorDrivenPreviewSync: boolean
-  onCursorActivity: () => void
-}>()
-
 const editorStore = useEditorStore()
 const postStore = usePostStore()
 const renderStore = useRenderStore()
@@ -455,10 +450,6 @@ function createFormTextArea(dom: HTMLDivElement) {
             currentPost.updateDatetime = new Date()
             currentPost.content = value
           }, 300)
-        }
-
-        if (update.selectionSet || update.docChanged) {
-          props.onCursorActivity()
         }
       }),
       EditorView.domEventHandlers({

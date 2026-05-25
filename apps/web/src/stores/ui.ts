@@ -52,17 +52,13 @@ export const useUIStore = defineStore(`ui`, () => {
     previewDevice.value = previewDevice.value === `desktop` ? `mobile` : `desktop`
   }
 
-  // 是否固定显示浮动目录
-  const isPinFloatingToc = store.reactive(addPrefix(`isPinFloatingToc`), false)
-  const togglePinFloatingToc = useToggle(isPinFloatingToc)
-
-  // 是否显示浮动目录
-  const isShowFloatingToc = store.reactive(addPrefix(`isShowFloatingToc`), true)
-  const toggleShowFloatingToc = useToggle(isShowFloatingToc)
-
   // 是否启用图片转存（默认关闭）
   const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
   const toggleImageReupload = useToggle(enableImageReupload)
+
+  // 是否开启同步滚动（编辑器与预览区联动）
+  const enableScrollSync = store.reactive(addPrefix(`enableScrollSync`), true)
+  const toggleScrollSync = useToggle(enableScrollSync)
 
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
@@ -114,9 +110,6 @@ export const useUIStore = defineStore(`ui`, () => {
   // 是否展示模板管理对话框
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
-
-  // 是否打开重置样式确认对话框
-  const isOpenConfirmDialog = ref(false)
 
   // AI 对话框
   const aiDialogVisible = ref(false)
@@ -181,10 +174,9 @@ export const useUIStore = defineStore(`ui`, () => {
     isMobile,
     viewMode,
     previewDevice,
-    isPinFloatingToc,
-    isShowFloatingToc,
     isOpenFolderPanel,
     enableImageReupload,
+    enableScrollSync,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,
@@ -206,7 +198,6 @@ export const useUIStore = defineStore(`ui`, () => {
     importMdOpenUrl,
     isShowTemplateDialog,
     toggleShowTemplateDialog,
-    isOpenConfirmDialog,
     aiDialogVisible,
     toggleAIDialog,
     aiImageDialogVisible,
@@ -221,9 +212,8 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleDark,
     toggleEditOnLeft,
     toggleAIToolbox,
-    togglePinFloatingToc,
-    toggleShowFloatingToc,
     toggleImageReupload,
+    toggleScrollSync,
     setViewMode,
     setPreviewDevice,
     togglePreviewDevice,

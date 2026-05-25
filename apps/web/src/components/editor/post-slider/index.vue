@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Search, X } from 'lucide-vue-next'
+import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, X } from 'lucide-vue-next'
+import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import { addPrefix, downloadMD, exportPostsAsZip } from '@/utils'
 import { store } from '@/utils/storage'
 
+const confirmStore = useConfirmStore()
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
 
@@ -84,6 +86,7 @@ function renamePost() {
 
 const delId = ref<string | null>(null)
 const isOpenDelPostConfirmDialog = ref(false)
+const delRecursive = ref(false)
 
 const delConfirmText = computed(() => {
   const title = postStore.getPostById(delId.value || ``)?.title ?? ``
@@ -91,12 +94,19 @@ const delConfirmText = computed(() => {
   return `此操作将删除「${short}」，是否继续？`
 })
 
+const hasSubPosts = computed(() => {
+  if (!delId.value)
+    return false
+  return posts.value.some(p => p.parentId === delId.value)
+})
+
 function startDelPost(id: string) {
   delId.value = id
+  delRecursive.value = false
   isOpenDelPostConfirmDialog.value = true
 }
 function delPost() {
-  postStore.delPost(delId.value!)
+  postStore.delPost(delId.value!, delRecursive.value)
   isOpenDelPostConfirmDialog.value = false
   toast.success(`内容删除成功`)
 }
@@ -145,10 +155,23 @@ function recoverHistory() {
   isOpenHistoryDialog.value = false
 }
 
-/* ============ 全局搜索 ============ */
+function confirmRestoreHistory() {
+  confirmStore.confirm({
+    title: '提示',
+    description: '此操作将用该记录替换当前文章内容，是否继续？',
+    confirmText: '恢 复',
+    onConfirm: () => recoverHistory(),
+  })
+}
+
+/* ============ 全局搜索与替换 ============ */
 const isSearching = ref(false)
 const searchQuery = ref(``)
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const replaceQuery = ref(``)
+const showReplace = ref(true)
+const isRegex = ref(false)
+const isCaseSensitive = ref(false)
 
 function toggleSearch() {
   isSearching.value = !isSearching.value
@@ -157,12 +180,16 @@ function toggleSearch() {
   }
   else {
     searchQuery.value = ``
+    replaceQuery.value = ``
+    showReplace.value = false
   }
 }
 
 function closeSearch() {
   isSearching.value = false
   searchQuery.value = ``
+  replaceQuery.value = ``
+  showReplace.value = false
 }
 
 interface HighlightPart {
@@ -170,35 +197,57 @@ interface HighlightPart {
   highlight: boolean
 }
 
+function getSearchRegex(query: string): RegExp | null {
+  if (!query.trim())
+    return null
+  try {
+    if (isRegex.value) {
+      return new RegExp(query, `gm${isCaseSensitive.value ? `` : `i`}`)
+    }
+    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`)
+    return new RegExp(escaped, `gm${isCaseSensitive.value ? `` : `i`}`)
+  }
+  catch {
+    return null
+  }
+}
+
 function highlightParts(text: string, query: string): HighlightPart[] {
   if (!query)
     return [{ text, highlight: false }]
-  const lower = text.toLowerCase()
-  const qLower = query.toLowerCase()
+  const regex = getSearchRegex(query)
+  if (!regex)
+    return [{ text, highlight: false }]
   const parts: HighlightPart[] = []
-  let cursor = 0
-  let idx = lower.indexOf(qLower, cursor)
-  while (idx !== -1) {
-    if (idx > cursor)
-      parts.push({ text: text.slice(cursor, idx), highlight: false })
-    parts.push({ text: text.slice(idx, idx + query.length), highlight: true })
-    cursor = idx + query.length
-    idx = lower.indexOf(qLower, cursor)
+  let lastIndex = 0
+  let match = regex.exec(text)
+  while (match !== null) {
+    if (match.index > lastIndex)
+      parts.push({ text: text.slice(lastIndex, match.index), highlight: false })
+    parts.push({ text: match[0], highlight: true })
+    lastIndex = match.index + match[0].length
+    if (match[0].length === 0)
+      regex.lastIndex++
+    match = regex.exec(text)
   }
-  if (cursor < text.length)
-    parts.push({ text: text.slice(cursor), highlight: false })
+  if (lastIndex < text.length)
+    parts.push({ text: text.slice(lastIndex), highlight: false })
   return parts
 }
 
 function getContentSnippet(content: string, query: string): string {
   if (!query.trim())
     return ``
-  const lower = content.toLowerCase()
-  const idx = lower.indexOf(query.toLowerCase())
-  if (idx === -1)
+  const regex = getSearchRegex(query)
+  if (!regex)
     return ``
+  const match = regex.exec(content)
+  if (!match)
+    return ``
+  const idx = match.index
+  const matchLen = match[0].length
   const start = Math.max(0, idx - 20)
-  const end = Math.min(content.length, idx + query.length + 40)
+  const end = Math.min(content.length, idx + matchLen + 40)
   let snippet = content.slice(start, end).replace(/\n/g, ` `)
   if (start > 0)
     snippet = `…${snippet}`
@@ -208,11 +257,14 @@ function getContentSnippet(content: string, query: string): string {
 }
 
 const searchResults = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase()
+  const q = searchQuery.value.trim()
   if (!q)
     return []
+  const regex = getSearchRegex(q)
+  if (!regex)
+    return []
   return posts.value
-    .filter(post => post.title.toLowerCase().includes(q) || post.content.toLowerCase().includes(q))
+    .filter(post => regex.test(post.title) || regex.test(post.content))
     .map((post) => {
       const snippet = getContentSnippet(post.content, searchQuery.value.trim())
       return {
@@ -222,6 +274,97 @@ const searchResults = computed(() => {
       }
     })
 })
+
+const totalMatches = computed(() => {
+  const q = searchQuery.value.trim()
+  if (!q)
+    return 0
+  const regex = getSearchRegex(q)
+  if (!regex)
+    return 0
+  let count = 0
+  posts.value.forEach((post) => {
+    const titleMatches = (post.title.match(regex) || []).length
+    regex.lastIndex = 0
+    const contentMatches = (post.content.match(regex) || []).length
+    regex.lastIndex = 0
+    count += titleMatches + contentMatches
+  })
+  return count
+})
+
+function replaceInText(text: string, search: string, replace: string): string {
+  const regex = getSearchRegex(search)
+  if (!regex)
+    return text
+  return text.replace(regex, replace)
+}
+
+function replaceFirst() {
+  const q = searchQuery.value.trim()
+  if (!q)
+    return
+  const regex = getSearchRegex(q)
+  if (!regex)
+    return
+  for (const post of posts.value) {
+    regex.lastIndex = 0
+    if (regex.test(post.title)) {
+      regex.lastIndex = 0
+      postStore.renamePost(post.id, replaceInText(post.title, q, replaceQuery.value))
+      toast.success(`已替换 1 处`)
+      return
+    }
+    regex.lastIndex = 0
+    if (regex.test(post.content)) {
+      regex.lastIndex = 0
+      postStore.updatePostContent(post.id, replaceInText(post.content, q, replaceQuery.value))
+      if (postStore.currentPostId === post.id && editor.value) {
+        const ed = toRaw(editor.value)
+        ed.dispatch({
+          changes: { from: 0, to: ed.state.doc.length, insert: post.content },
+        })
+      }
+      toast.success(`已替换 1 处`)
+      return
+    }
+  }
+}
+
+function replaceAll() {
+  const q = searchQuery.value.trim()
+  if (!q)
+    return
+  const regex = getSearchRegex(q)
+  if (!regex)
+    return
+  let count = 0
+  posts.value.forEach((post) => {
+    regex.lastIndex = 0
+    const titleMatches = (post.title.match(regex) || []).length
+    regex.lastIndex = 0
+    const contentMatches = (post.content.match(regex) || []).length
+    if (titleMatches > 0) {
+      regex.lastIndex = 0
+      postStore.renamePost(post.id, replaceInText(post.title, q, replaceQuery.value))
+      count += titleMatches
+    }
+    if (contentMatches > 0) {
+      regex.lastIndex = 0
+      const newContent = replaceInText(post.content, q, replaceQuery.value)
+      postStore.updatePostContent(post.id, newContent)
+      if (postStore.currentPostId === post.id && editor.value) {
+        const ed = toRaw(editor.value)
+        ed.dispatch({
+          changes: { from: 0, to: ed.state.doc.length, insert: newContent },
+        })
+      }
+      count += contentMatches
+    }
+  })
+  if (count > 0)
+    toast.success(`已替换 ${count} 处`)
+}
 
 /* ============ 排序 ============ */
 const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
@@ -257,6 +400,12 @@ const selectedPostIds = ref<string[]>([])
 const allSelected = computed(
   () => posts.value.length > 0 && selectedPostIds.value.length === posts.value.length,
 )
+
+const selectProps = computed(() => ({
+  isSelectMode: isSelectMode.value,
+  selectedIds: selectedPostIds.value,
+  onToggleSelect: toggleSelectPost,
+}))
 
 function toggleSelectMode() {
   isSelectMode.value = !isSelectMode.value
@@ -296,22 +445,25 @@ async function exportSelected() {
   selectedPostIds.value = []
 }
 
-const isOpenBatchDelConfirmDialog = ref(false)
-
-const batchDelConfirmText = computed(() => {
+function openBatchDelConfirm() {
   const n = selectedPostIds.value.length
-  return n === 1
-    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ``}」，是否继续？`
+  const description = n === 1
+    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ''}」，是否继续？`
     : `此操作将删除已选的 ${n} 篇内容，是否继续？`
-})
 
-function batchDeleteSelected() {
-  const ids = [...selectedPostIds.value]
-  ids.forEach(id => postStore.delPost(id))
-  toast.success(`已删除 ${ids.length} 篇内容`)
-  isOpenBatchDelConfirmDialog.value = false
-  isSelectMode.value = false
-  selectedPostIds.value = []
+  confirmStore.confirm({
+    title: '提示',
+    description,
+    confirmText: '确定删除',
+    destructive: true,
+    onConfirm: () => {
+      const ids = [...selectedPostIds.value]
+      ids.forEach(id => postStore.delPost(id))
+      toast.success(`已删除 ${ids.length} 篇内容`)
+      isSelectMode.value = false
+      selectedPostIds.value = []
+    },
+  })
 }
 
 /* ============ 批量复制 ============ */
@@ -530,28 +682,76 @@ function handleDragEnd() {
       </div>
 
       <!-- 搜索栏 -->
-      <div v-if="isSearching" class="px-2 pb-1.5 shrink-0">
+      <div v-if="isSearching" class="px-2 pb-1.5 shrink-0 space-y-1">
         <div class="relative">
-          <Search class="absolute left-2 top-1/2 -translate-y-1/2 size-3.5 text-muted-foreground/50" />
           <input
             ref="searchInputRef"
             v-model="searchQuery"
-            class="w-full h-8 rounded-md border border-border bg-background pl-7 pr-7 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
-            placeholder="搜索标题或内容…"
+            class="w-full h-8 rounded-md border border-border bg-background px-2.5 pr-20 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+            placeholder="搜索"
             @keydown.escape="closeSearch"
           >
-          <button
-            v-if="searchQuery"
-            class="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
-            @click="searchQuery = ''"
+          <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <button
+              class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
+              :class="{ 'text-primary bg-primary/10': isRegex }"
+              title="正则表达式"
+              @click="isRegex = !isRegex"
+            >
+              <Regex class="size-3" />
+            </button>
+            <button
+              class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
+              :class="{ 'text-primary bg-primary/10': isCaseSensitive }"
+              title="区分大小写"
+              @click="isCaseSensitive = !isCaseSensitive"
+            >
+              <span class="text-[10px] font-bold">Aa</span>
+            </button>
+            <button
+              v-if="searchQuery"
+              class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
+              @click="searchQuery = ''"
+            >
+              <X class="size-3" />
+            </button>
+          </div>
+        </div>
+
+        <!-- 替换栏 -->
+        <div class="relative">
+          <input
+            v-model="replaceQuery"
+            class="w-full h-8 rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+            placeholder="替换为…"
           >
-            <X class="size-3" />
-          </button>
+          <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            <button
+              class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
+              title="替换一处"
+              :disabled="!searchQuery || totalMatches === 0"
+              @click="replaceFirst"
+            >
+              <Replace class="size-3" />
+            </button>
+            <button
+              class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
+              title="全部替换"
+              :disabled="!searchQuery || totalMatches === 0"
+              @click="replaceAll"
+            >
+              <ReplaceAll class="size-3" />
+            </button>
+          </div>
         </div>
       </div>
 
       <!-- 搜索结果 -->
       <div v-if="isSearching && searchQuery.trim()" class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
+        <!-- 匹配统计 -->
+        <div v-if="totalMatches > 0" class="px-2 py-1 text-xs text-muted-foreground/60">
+          共 {{ totalMatches }} 处匹配，{{ searchResults.length }} 篇内容
+        </div>
         <template v-if="searchResults.length">
           <a
             v-for="result in searchResults"
@@ -612,11 +812,7 @@ function handleDragEnd() {
             handleDrop,
             handleDragEnd,
           }"
-          :select="{
-            isSelectMode,
-            selectedIds: selectedPostIds,
-            onToggleSelect: toggleSelectPost,
-          }"
+          :select="selectProps"
         />
 
         <!-- 空状态 -->
@@ -703,7 +899,7 @@ function handleDragEnd() {
               class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : '删除'"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
-              @click="isOpenBatchDelConfirmDialog = true"
+              @click="openBatchDelConfirm()"
             >
               <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <polyline points="3 6 5 6 21 6" /><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /><path d="M10 11v6" /><path d="M14 11v6" /><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
@@ -757,6 +953,20 @@ function handleDragEnd() {
         <AlertDialogTitle>提示</AlertDialogTitle>
         <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
       </AlertDialogHeader>
+      <div v-if="hasSubPosts" class="flex items-center gap-2 mt-2">
+        <input
+          id="del-recursive"
+          v-model="delRecursive"
+          type="checkbox"
+          class="size-3.5 rounded border-border accent-primary cursor-pointer"
+        >
+        <label
+          for="del-recursive"
+          class="text-xs text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
+        >
+          同时删除所有子内容
+        </label>
+      </div>
       <AlertDialogFooter>
         <AlertDialogCancel>取消</AlertDialogCancel>
         <AlertDialogAction @click="delPost">
@@ -784,25 +994,6 @@ function handleDragEnd() {
       </DialogFooter>
     </DialogContent>
   </Dialog>
-
-  <!-- 批量删除确认 -->
-  <AlertDialog v-model:open="isOpenBatchDelConfirmDialog">
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>提示</AlertDialogTitle>
-        <AlertDialogDescription>{{ batchDelConfirmText }}</AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel>取消</AlertDialogCancel>
-        <AlertDialogAction
-          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-          @click="batchDeleteSelected"
-        >
-          确定删除
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
 
   <!-- 历史记录 -->
   <Dialog v-model:open="isOpenHistoryDialog">
@@ -880,23 +1071,9 @@ function handleDragEnd() {
       </div>
 
       <DialogFooter>
-        <AlertDialog>
-          <AlertDialogTrigger><Button>恢 复</Button></AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>提示</AlertDialogTitle>
-              <AlertDialogDescription>
-                此操作将用该记录替换当前文章内容，是否继续？
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>取消</AlertDialogCancel>
-              <AlertDialogAction @click="recoverHistory">
-                恢 复
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
+        <Button @click="confirmRestoreHistory">
+          恢 复
+        </Button>
       </DialogFooter>
     </DialogContent>
   </Dialog>

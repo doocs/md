@@ -349,7 +349,7 @@ async function minioFileUpload(file: File) {
       'Content-Type': file.type,
     },
     data: file,
-  }).catch((err) => { console.log(err) })
+  }).catch((err) => { console.error(err) })
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
 
@@ -543,7 +543,7 @@ async function r2Upload(file: File) {
       'Content-Type': file.type,
     },
     data: file,
-  }).catch((err) => { console.log(err) })
+  }).catch((err) => { console.error(err) })
   return `${domain}/${filename}`
 }
 
@@ -743,7 +743,7 @@ async function formCustomUpload(content: string, file: File) {
     }
     // Use Function constructor instead of eval
     // eslint-disable-next-line no-new-func
-    const fn = new Function(`return ${str}`)()
+    const fn = new Function(`return (${str})`)()
     fn(exportObj).catch((err: any) => {
       console.error(err)
       reject(err)

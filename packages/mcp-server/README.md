@@ -54,7 +54,7 @@ Add to `.vscode/mcp.json` in the project root (already included in this repo):
     "md": {
       "type": "stdio",
       "command": "node",
-      "args": ["--import", "tsx/esm", "${workspaceFolder}/packages/mcp-server/src/index.ts"],
+      "args": ["--import", "tsx/esm", "${workspaceFolder}/packages/mcp-server/run.mjs"],
       "cwd": "${workspaceFolder}/packages/mcp-server"
     }
   }
@@ -75,7 +75,7 @@ Edit `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) o
       "args": [
         "--import",
         "tsx/esm",
-        "C:/path/to/md/packages/mcp-server/src/index.ts"
+        "C:/path/to/md/packages/mcp-server/run.mjs"
       ],
       "cwd": "C:/path/to/md/packages/mcp-server"
     }
@@ -94,7 +94,7 @@ Add to `.cursor/mcp.json` at the project root:
   "mcpServers": {
     "md": {
       "command": "node",
-      "args": ["--import", "tsx/esm", "packages/mcp-server/src/index.ts"],
+      "args": ["--import", "tsx/esm", "packages/mcp-server/run.mjs"],
       "cwd": "packages/mcp-server"
     }
   }
@@ -108,7 +108,7 @@ Use the same stdio pattern:
 ```json
 {
   "command": "node",
-  "args": ["--import", "tsx/esm", "/absolute/path/to/packages/mcp-server/src/index.ts"],
+  "args": ["--import", "tsx/esm", "/absolute/path/to/packages/mcp-server/run.mjs"],
   "cwd": "/absolute/path/to/packages/mcp-server"
 }
 ```
@@ -147,5 +147,5 @@ pnpm --filter @md/mcp-server dev
 To test manually, pipe a valid JSON-RPC `initialize` message to stdin or use [MCP Inspector](https://github.com/modelcontextprotocol/inspector):
 
 ```bash
-npx @modelcontextprotocol/inspector node --import tsx/esm src/index.ts
+npx @modelcontextprotocol/inspector node --import tsx/esm run.mjs
 ```

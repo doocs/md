@@ -12,7 +12,7 @@ jobs:
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success' && github.repository == 'doocs/md'
     steps:
       - name: Download PR artifact
-        uses: dawidd6/action-download-artifact@v20
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -29,7 +29,7 @@ jobs:
           echo "id=$pr_id" >> $GITHUB_OUTPUT
 
       - name: Download dist artifact
-        uses: dawidd6/action-download-artifact@v20
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -43,40 +43,91 @@ jobs:
           npx surge --project ./ --domain $DEPLOY_DOMAIN --token ${{ secrets.SURGE_TOKEN }}
 
       - name: Comment PR with preview link
-        uses: actions-cool/maintain-one-comment@v3
+        uses: actions/github-script@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            🚀 Surge Preview has been successfully deployed!
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.pr.outputs.id }};
+            const deployUrl = 'https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh';
+            const commitSha = '${{ github.event.workflow_run.head_sha }}';
+            const body = [
+              '🚀 Surge Preview has been successfully deployed!',
+              '',
+              `**Preview URL:** ${deployUrl}`,
+              '',
+              `<sub>Built with commit ${commitSha}</sub>`,
+              '',
+              '<!-- Surge Preview Comment -->',
+            ].join('\n');
 
-            **Preview URL:** https://doocs-md-preview-pr-${{ steps.pr.outputs.id }}.surge.sh
-
-            <sub>Built with commit ${{ github.event.workflow_run.head_sha }}</sub>
-
-            <!-- Surge Preview Comment -->
-          body-include: '<!-- Surge Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
+            // Upsert: find existing comment and update, or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body.includes('<!-- Surge Preview Comment -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
 
       - name: Deploy failed
         if: ${{ failure() }}
-        uses: actions-cool/maintain-one-comment@v3
+        uses: actions/github-script@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            😭 Surge Preview deployment failed.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.pr.outputs.id }};
+            const workflowRunUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}';
+            const body = [
+              '😭 Surge Preview deployment failed.',
+              '',
+              `Please check the [workflow run](${workflowRunUrl}) for details.`,
+              '',
+              '<!-- Surge Preview Comment -->',
+            ].join('\n');
 
-            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) for details.
-
-            <!-- Surge Preview Comment -->
-          body-include: '<!-- Surge Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
+            // Upsert: find existing comment and update, or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body.includes('<!-- Surge Preview Comment -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }
 
   failed:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure' && github.repository == 'doocs/md'
     steps:
       - name: Download PR artifact
-        uses: dawidd6/action-download-artifact@v20
+        uses: dawidd6/action-download-artifact@v21
         with:
           workflow: ${{ github.event.workflow_run.workflow_id }}
           run_id: ${{ github.event.workflow_run.id }}
@@ -93,14 +144,39 @@ jobs:
           echo "id=$pr_id" >> $GITHUB_OUTPUT
 
       - name: Comment PR with build failure
-        uses: actions-cool/maintain-one-comment@v3
+        uses: actions/github-script@v9
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          body: |
-            😭 Surge Preview build failed.
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = ${{ steps.pr.outputs.id }};
+            const workflowRunUrl = '${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}';
+            const body = [
+              '😭 Surge Preview build failed.',
+              '',
+              `Please check the [workflow run](${workflowRunUrl}) for details.`,
+              '',
+              '<!-- Surge Preview Comment -->',
+            ].join('\n');
 
-            Please check the [workflow run](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}) for details.
-
-            <!-- Surge Preview Comment -->
-          body-include: '<!-- Surge Preview Comment -->'
-          number: ${{ steps.pr.outputs.id }}
+            // Upsert: find existing comment and update, or create new
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+            });
+            const existing = comments.find(c => c.body.includes('<!-- Surge Preview Comment -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: prNumber,
+                body,
+              });
+            }

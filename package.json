@@ -13,7 +13,7 @@
     "url": "https://github.com/doocs/md/issues"
   },
   "engines": {
-    "node": ">=22.16.0"
+    "node": ">=22.22.2"
   },
   "scripts": {
     "start": "pnpm web dev",
@@ -24,23 +24,23 @@
     "build:cli": "pnpm web build && npx shx rm -rf packages/md-cli/dist && npx shx rm -rf dist/**/*.map && npx shx cp -r apps/web/dist packages/md-cli/ && cd packages/md-cli && npm pack",
     "release:cli": "node ./scripts/release.js",
     "lint": "eslint . --fix",
-    "type-check": "vue-tsc --build --force",
+    "type-check": "pnpm --filter @md/web exec vue-tsc --noEmit",
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector",
     "utools:package": "node ./scripts/package-utools.mjs"
   },
   "dependencies": {
     "@codemirror/state": "6.6.0",
-    "@codemirror/view": "6.41.0"
+    "@codemirror/view": "6.43.0"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "8.2.0",
-    "@types/node": "^25.6.0",
-    "archiver": "^7.0.1",
+    "@antfu/eslint-config": "9.0.0",
+    "@types/node": "^25.9.1",
+    "archiver": "^8.0.0",
     "cross-env": "^10.1.0",
-    "eslint": "^10.2.1",
+    "eslint": "^10.4.0",
     "eslint-plugin-format": "^2.0.1",
-    "npm-run-all2": "^8.0.4",
+    "npm-run-all2": "^9.0.1",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
