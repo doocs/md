@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import EditorPanel from '@/components/editor/EditorPanel.vue'
+import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
 import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
@@ -250,6 +251,8 @@ onUnmounted(() => {
       <InsertMpCardDialog />
 
       <ImportMarkdownDialog />
+
+      <FormulaEditorDialog />
 
       <TemplateDialog />
     </main>

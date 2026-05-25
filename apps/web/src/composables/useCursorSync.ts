@@ -1,5 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { EditorView } from '@codemirror/view'
+import { useUIStore } from '@/stores/ui'
 
 /**
  * 点击预览区元素时，定位回编辑器对应位置。
@@ -8,6 +9,7 @@ export function useCursorSync(
   codeMirrorViewRef: MaybeRefOrGetter<EditorView | null>,
 ) {
   const getEditorView = () => toValue(codeMirrorViewRef)
+  const uiStore = useUIStore()
 
   function normalizeText(text: string) {
     return text
@@ -124,6 +126,14 @@ export function useCursorSync(
     const target = event.target as HTMLElement | null
     if (!target)
       return
+
+    const formulaEl = target.closest(`[data-math-raw]`) as HTMLElement | null
+    if (formulaEl) {
+      const raw = formulaEl.getAttribute(`data-math-raw`) ?? ``
+      const display = formulaEl.getAttribute(`data-math-display`) === `true`
+      uiStore.openFormulaEditor({ value: raw, displayMode: display, sourceRaw: raw })
+      return
+    }
 
     const block = target.closest(`h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,td,th,img`) as HTMLElement | null
     if (!block)

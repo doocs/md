@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { Contact, Image, Table } from 'lucide-vue-next'
+import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
+import { normalizeFormulaInput } from '@/utils/formula'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -10,8 +12,17 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 const uiStore = useUIStore()
+const editorStore = useEditorStore()
 
 const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog } = uiStore
+
+function openFormulaEditor() {
+  const selection = normalizeFormulaInput(editorStore.getSelection())
+  uiStore.openFormulaEditor({
+    value: selection.latex,
+    displayMode: selection.displayMode,
+  })
+}
 </script>
 
 <template>
@@ -24,6 +35,10 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
         图片
+      </MenubarItem>
+      <MenubarItem @click="openFormulaEditor()">
+        <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
+        公式
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
@@ -45,6 +60,10 @@ const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertM
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
         图片
+      </MenubarItem>
+      <MenubarItem @click="openFormulaEditor()">
+        <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
+        公式
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
