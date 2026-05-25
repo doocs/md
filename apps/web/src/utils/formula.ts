@@ -58,7 +58,7 @@ export function normalizeFormulaInput(text: string): FormulaInput {
   }
 
   const unwrapped = unwrapFormula(trimmed)
-  const isWrapped = unwrapped.latex !== trimmed || unwrapped.displayMode || /^(\$\$|\\\[|\\\(|\$)/.test(trimmed)
+  const isWrapped = unwrapped.latex !== trimmed
 
   return {
     latex: unwrapped.latex,

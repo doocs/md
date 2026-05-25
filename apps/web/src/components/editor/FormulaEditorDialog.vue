@@ -184,6 +184,16 @@ function renderWithMathJax(latex: string, display: boolean): string {
   }
 }
 
+const snippetPreviewCache = new Map<string, string>()
+function renderSnippet(snippet: string): string {
+  const cached = snippetPreviewCache.get(snippet)
+  if (cached)
+    return cached
+  const html = renderWithMathJax(snippet, false)
+  snippetPreviewCache.set(snippet, html)
+  return html
+}
+
 const previewHtml = computed(() => {
   const content = latexText.value.trim()
   if (!content) {
@@ -346,7 +356,7 @@ function setSelectedGroup(groupName: string) {
                 class="rounded-lg border bg-background px-3 py-2 text-left text-sm hover:border-primary hover:bg-primary/5 transition-colors"
                 @click="insertSnippet(snippet)"
               >
-                <span class="flex items-center overflow-x-auto whitespace-nowrap font-mono h-15" v-html="renderWithMathJax(snippet, false)" />
+                <span class="flex items-center overflow-x-auto whitespace-nowrap font-mono h-15" v-html="renderSnippet(snippet)" />
               </button>
             </div>
           </div>

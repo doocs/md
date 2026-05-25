@@ -69,12 +69,28 @@ export const useEditorStore = defineStore(`editor`, () => {
       return false
 
     const content = editor.value.state.doc.toString()
-    const from = content.indexOf(oldText)
-    if (from === -1)
+    const cursor = editor.value.state.selection.main.head
+
+    let bestFrom = -1
+    let bestDist = Infinity
+    let pos = 0
+    while (true) {
+      const idx = content.indexOf(oldText, pos)
+      if (idx === -1)
+        break
+      const dist = Math.abs(idx - cursor)
+      if (dist < bestDist) {
+        bestDist = dist
+        bestFrom = idx
+      }
+      pos = idx + 1
+    }
+
+    if (bestFrom === -1)
       return false
 
     editor.value.dispatch({
-      changes: { from, to: from + oldText.length, insert: newText },
+      changes: { from: bestFrom, to: bestFrom + oldText.length, insert: newText },
     })
     editor.value.focus()
     return true

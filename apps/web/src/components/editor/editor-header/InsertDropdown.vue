@@ -21,7 +21,6 @@ function openFormulaEditor() {
   uiStore.openFormulaEditor({
     value: selection.latex,
     displayMode: selection.displayMode,
-    sourceRaw: selection.sourceRaw,
   })
 }
 </script>
