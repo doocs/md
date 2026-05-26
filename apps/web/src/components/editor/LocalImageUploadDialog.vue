@@ -43,6 +43,12 @@ const matchedCount = computed(() => {
   return count
 })
 
+// 是否全部上传成功（选中的图片都有结果且无报错）
+const isAllUploaded = computed(() => {
+  const paths = Array.from(selectedPaths.value)
+  return paths.length > 0 && paths.every(p => uploadResults.value[p] && !uploadErrors.value[p])
+})
+
 watch(() => uiStore.localImageUploadData, (data) => {
   if (data) {
     selectedPaths.value = new Set(data.detectedPaths)
@@ -247,7 +253,12 @@ function onOpenChange(val: boolean) {
         </label>
 
         <!-- 底部操作区 -->
-        <div class="flex items-center justify-between gap-2 pt-2">
+        <div v-if="isAllUploaded" class="flex justify-end pt-2">
+          <Button @click="handleApply">
+            完成
+          </Button>
+        </div>
+        <div v-else class="flex items-center justify-between gap-2 pt-2">
           <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
             跳过
           </Button>
