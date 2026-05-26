@@ -5,7 +5,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
@@ -232,43 +231,42 @@ function onOpenChange(val: boolean) {
         <Progress v-if="isUploading || progressValue > 0" :model-value="progressValue" class="h-1.5" />
 
         <!-- 选择文件夹按钮 -->
-        <div class="flex items-center gap-2">
-          <label class="flex-1">
-            <input
-              id="local-image-folder-input"
-              type="file"
-              webkitdirectory
-              multiple
-              accept="image/*"
-              class="hidden"
-              @change="handleFolderSelect"
-            >
-            <Button variant="outline" class="w-full" as="span">
-              <FolderOpen class="mr-2 h-4 w-4" />
-              {{ folderFiles.length > 0 ? `已选择文件夹 (${folderFiles.length} 个文件)` : '选择包含图片的文件夹' }}
-            </Button>
-          </label>
-        </div>
+        <label class="block">
+          <input
+            type="file"
+            webkitdirectory
+            multiple
+            accept="image/*"
+            class="hidden"
+            @change="handleFolderSelect"
+          >
+          <Button variant="outline" class="w-full" as="span">
+            <FolderOpen class="mr-2 h-4 w-4" />
+            {{ folderFiles.length > 0 ? `已选择文件夹 (${folderFiles.length} 个文件)` : '选择包含图片的文件夹' }}
+          </Button>
+        </label>
 
-        <!-- 操作按钮 -->
-        <DialogFooter class="gap-2 sm:gap-0">
-          <Button variant="outline" @click="handleSkip">
-            跳过，按原样导入
+        <!-- 底部操作区 -->
+        <div class="flex items-center justify-between gap-2 pt-2">
+          <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
+            跳过
           </Button>
-          <Button
-            :disabled="isUploading || selectedPaths.size === 0 || matchedCount === 0"
-            @click="handleUpload"
-          >
-            <Loader2 v-if="isUploading" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isUploading ? '上传中...' : '上传选中的图片' }}
-          </Button>
-          <Button
-            v-if="Object.keys(uploadResults).length > 0"
-            @click="handleApply"
-          >
-            应用并导入
-          </Button>
-        </DialogFooter>
+          <div class="flex gap-2">
+            <Button
+              v-if="Object.keys(uploadResults).length > 0"
+              @click="handleApply"
+            >
+              完成
+            </Button>
+            <Button
+              :disabled="isUploading || selectedPaths.size === 0 || matchedCount === 0"
+              @click="handleUpload"
+            >
+              <Loader2 v-if="isUploading" class="mr-2 h-4 w-4 animate-spin" />
+              {{ isUploading ? '上传中...' : '上传图片' }}
+            </Button>
+          </div>
+        </div>
       </div>
     </DialogContent>
   </Dialog>
