@@ -237,7 +237,7 @@ function onOpenChange(val: boolean) {
         <Progress v-if="isUploading || progressValue > 0" :model-value="progressValue" class="h-1.5" />
 
         <!-- 选择文件夹按钮 -->
-        <label class="block">
+        <label v-if="!isAllUploaded" class="block">
           <input
             type="file"
             webkitdirectory
