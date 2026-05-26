@@ -13,7 +13,10 @@ import { useImageUploader } from '@/composables/useImageUploader'
 import { useUIStore } from '@/stores/ui'
 
 const uiStore = useUIStore()
-const { upload, isUploading } = useImageUploader()
+const { upload } = useImageUploader()
+
+// 批次上传状态（覆盖整个上传循环）
+const isUploading = ref(false)
 
 const isDialogOpen = computed({
   get: () => uiStore.isShowLocalImageUpload,
@@ -127,6 +130,7 @@ async function handleUpload() {
   progressValue.value = 0
   uploadResults.value = {}
   uploadErrors.value = {}
+  isUploading.value = true
 
   for (let i = 0; i < pathsToUpload.length; i++) {
     const path = pathsToUpload[i]!
@@ -140,6 +144,7 @@ async function handleUpload() {
     }
     progressValue.value = Math.round(((i + 1) / total) * 100)
   }
+  isUploading.value = false
 }
 
 // 关闭并应用
