@@ -132,11 +132,18 @@ async function handleUpload() {
   uploadErrors.value = {}
   isUploading.value = true
 
+  // 文件 → URL 缓存，避免同文件重复上传
+  const fileUrlMap = new WeakMap<File, string>()
+
   for (let i = 0; i < pathsToUpload.length; i++) {
     const path = pathsToUpload[i]!
     try {
       const file = findMatchedFile(path)!
-      const url = await upload(file)
+      let url = fileUrlMap.get(file)
+      if (!url) {
+        url = await upload(file)
+        fileUrlMap.set(file, url)
+      }
       uploadResults.value[path] = url
     }
     catch (err: unknown) {
@@ -152,13 +159,13 @@ function handleApply() {
   if (!uiStore.localImageUploadData)
     return
 
-  // 替换 Markdown 中的路径
+  // 仅替换图片语法 `![alt](path)`，避免误改普通链接
   let content = uiStore.localImageUploadData.markdownContent
   for (const [path, url] of Object.entries(uploadResults.value)) {
     const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     content = content
-      .replace(new RegExp(`\\]\\(${escaped}\\)`, 'g'), `](${url})`)
-      .replace(new RegExp(`\\]\\(\\.\\/${escaped}\\)`, 'g'), `](${url})`)
+      .replace(new RegExp(`!\\]\\(${escaped}\\)`, 'g'), `!](${url})`)
+      .replace(new RegExp(`!\\]\\(\\.\\/${escaped}\\)`, 'g'), `!](${url})`)
   }
 
   uiStore.localImageUploadData = {
@@ -223,6 +230,7 @@ function onOpenChange(val: boolean) {
               <input
                 type="checkbox"
                 :checked="selectedPaths.has(path)"
+                :aria-label="path"
                 class="h-3.5 w-3.5 shrink-0 accent-primary"
                 @change="selectedPaths.has(path) ? selectedPaths.delete(path) : selectedPaths.add(path)"
               >
