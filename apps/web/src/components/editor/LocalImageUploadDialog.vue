@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, FileImage, Loader2, Upload, X } from 'lucide-vue-next'
+import { Check, FileImage, FolderOpen, Loader2, X } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -14,7 +14,7 @@ import { useImageUploader } from '@/composables/useImageUploader'
 import { useUIStore } from '@/stores/ui'
 
 const uiStore = useUIStore()
-const { upload } = useImageUploader()
+const { upload, isUploading } = useImageUploader()
 
 const isDialogOpen = computed({
   get: () => uiStore.isShowLocalImageUpload,
@@ -30,10 +30,19 @@ const selectedPaths = ref<Set<string>>(new Set())
 const progressValue = ref(0)
 const uploadResults = ref<Record<string, string>>({})
 const uploadErrors = ref<Record<string, string>>({})
-const isUploadingBatch = ref(false)
 
-// 用户选择的文件列表（按选择顺序，与勾选的路径一一对应）
-const selectedFiles = ref<File[]>([])
+// 用户选择的文件夹中的文件列表
+const folderFiles = ref<File[]>([])
+
+// 匹配状态
+const matchedCount = computed(() => {
+  let count = 0
+  for (const path of selectedPaths.value) {
+    if (findMatchedFile(path))
+      count++
+  }
+  return count
+})
 
 watch(() => uiStore.localImageUploadData, (data) => {
   if (data) {
@@ -41,80 +50,54 @@ watch(() => uiStore.localImageUploadData, (data) => {
     progressValue.value = 0
     uploadResults.value = {}
     uploadErrors.value = {}
-    isUploadingBatch.value = false
-    selectedFiles.value = []
+    folderFiles.value = []
   }
 }, { immediate: true })
 
-/**
- * 根据文件名自动匹配路径
- * 将匹配到的文件自动关联到对应的路径上
- */
-function autoMatchFiles() {
-  if (!uiStore.localImageUploadData || selectedFiles.value.length === 0)
-    return
-
-  const fileArray = selectedFiles.value
-  const paths = uiStore.localImageUploadData.detectedPaths
-  const pathIndexMap = new Map<string, number>()
-
-  // 第一轮：精确匹配（文件名相同）
-  const usedFileIndices = new Set<number>()
-  for (const path of paths) {
-    if (pathIndexMap.has(path))
-      continue
-    const pathFileName = path.split(/[/\\]/).pop()!.toLowerCase()
-    for (let fi = 0; fi < fileArray.length; fi++) {
-      if (usedFileIndices.has(fi))
-        continue
-      if (fileArray[fi]!.name.toLowerCase() === pathFileName) {
-        pathIndexMap.set(path, fi)
-        usedFileIndices.add(fi)
-        break
-      }
-    }
-  }
-
-  // 第二轮：模糊匹配（文件名包含或去掉扩展名匹配）
-  for (const path of paths) {
-    if (pathIndexMap.has(path))
-      continue
-    const pathFileName = path.split(/[/\\]/).pop()!.toLowerCase().replace(/\.[^.]+$/, '')
-    for (let fi = 0; fi < fileArray.length; fi++) {
-      if (usedFileIndices.has(fi))
-        continue
-      const fileBase = fileArray[fi]!.name.toLowerCase().replace(/\.[^.]+$/, '')
-      if (pathFileName === fileBase) {
-        pathIndexMap.set(path, fi)
-        usedFileIndices.add(fi)
-        break
-      }
-    }
-  }
-
-  // 将匹配到的路径自动选中
-  for (const path of pathIndexMap.keys()) {
-    selectedPaths.value.add(path)
-  }
-
-  // 重置 input
-  const input = document.getElementById('local-image-file-input') as HTMLInputElement
-  if (input)
-    input.value = ''
-}
-
-// 选择文件
-function handleFileSelect(event: Event) {
+// 选择包含图片的文件夹
+function handleFolderSelect(event: Event) {
   const files = (event.target as HTMLInputElement).files
   if (!files || files.length === 0)
     return
 
-  // 追加新选择的文件
-  const existing = Array.from(selectedFiles.value)
-  selectedFiles.value = [...existing, ...Array.from(files)]
+  folderFiles.value = Array.from(files)
 
-  // 自动匹配
-  autoMatchFiles()
+  // 自动选中已匹配的路径
+  for (const path of selectedPaths.value) {
+    if (!findMatchedFile(path)) {
+      selectedPaths.value.delete(path)
+    }
+  }
+  for (const path of uiStore.localImageUploadData?.detectedPaths || []) {
+    if (findMatchedFile(path)) {
+      selectedPaths.value.add(path)
+    }
+  }
+
+  // 重置 input
+  ;(event.target as HTMLInputElement).value = ''
+}
+
+/**
+ * 根据路径从文件夹文件中查找匹配的文件
+ */
+function findMatchedFile(path: string): File | undefined {
+  const pathFileName = path.split(/[/\\]/).pop()!.toLowerCase()
+  const fileArray = folderFiles.value
+
+  // 第一轮：精确匹配文件名
+  for (const file of fileArray) {
+    if (file.name.toLowerCase() === pathFileName)
+      return file
+  }
+  // 第二轮：去扩展名匹配
+  const pathBase = pathFileName.replace(/\.[^.]+$/, '')
+  for (const file of fileArray) {
+    const fileBase = file.name.toLowerCase().replace(/\.[^.]+$/, '')
+    if (fileBase === pathBase)
+      return file
+  }
+  return undefined
 }
 
 // 开始上传
@@ -129,7 +112,13 @@ async function handleUpload() {
     return
   }
 
-  isUploadingBatch.value = true
+  // 检查未匹配的
+  const unmatched = pathsToUpload.filter(p => !findMatchedFile(p))
+  if (unmatched.length > 0) {
+    toast.error(`以下图片未在文件夹中找到：${unmatched.join(', ')}`)
+    return
+  }
+
   progressValue.value = 0
   uploadResults.value = {}
   uploadErrors.value = {}
@@ -137,19 +126,8 @@ async function handleUpload() {
   for (let i = 0; i < pathsToUpload.length; i++) {
     const path = pathsToUpload[i]!
     try {
-      let url: string
-      const matchedFile = findMatchedFile(path)
-      if (matchedFile) {
-        // 有匹配的文件，直接上传
-        url = await upload(matchedFile)
-      }
-      else {
-        // 没有匹配的文件，但用户勾选了，说明用户想自己上传
-        toast.error(`路径 "${path}" 未找到对应文件`)
-        uploadErrors.value[path] = '未选择对应文件'
-        progressValue.value = Math.round(((i + 1) / total) * 100)
-        continue
-      }
+      const file = findMatchedFile(path)!
+      const url = await upload(file)
       uploadResults.value[path] = url
     }
     catch (err: unknown) {
@@ -157,26 +135,6 @@ async function handleUpload() {
     }
     progressValue.value = Math.round(((i + 1) / total) * 100)
   }
-
-  isUploadingBatch.value = false
-}
-
-function findMatchedFile(path: string): File | undefined {
-  const pathFileName = path.split(/[/\\]/).pop()!.toLowerCase()
-  const fileArray = selectedFiles.value
-  // 精确匹配
-  for (const file of fileArray) {
-    if (file.name.toLowerCase() === pathFileName)
-      return file
-  }
-  // 模糊匹配（去扩展名）
-  const pathBase = pathFileName.replace(/\.[^.]+$/, '')
-  for (const file of fileArray) {
-    const fileBase = file.name.toLowerCase().replace(/\.[^.]+$/, '')
-    if (fileBase === pathBase)
-      return file
-  }
-  return undefined
 }
 
 // 关闭并应用
@@ -187,14 +145,12 @@ function handleApply() {
   // 替换 Markdown 中的路径
   let content = uiStore.localImageUploadData.markdownContent
   for (const [path, url] of Object.entries(uploadResults.value)) {
-    // 替换 ](path) 和 ](./path) 两种形式
     const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     content = content
       .replace(new RegExp(`\\]\\(${escaped}\\)`, 'g'), `](${url})`)
       .replace(new RegExp(`\\]\\(\\.\\/${escaped}\\)`, 'g'), `](${url})`)
   }
 
-  // 触发后续处理（设置内容等）
   uiStore.localImageUploadData = {
     markdownContent: content,
     detectedPaths: [],
@@ -229,7 +185,7 @@ function onOpenChange(val: boolean) {
       <DialogHeader>
         <DialogTitle>检测到本地图片</DialogTitle>
         <DialogDescription>
-          文档中包含本地图片路径，请选择对应文件并上传到图床。
+          文档中包含本地图片路径，请选择包含这些图片的文件夹，系统将自动匹配并上传。
         </DialogDescription>
       </DialogHeader>
 
@@ -240,8 +196,8 @@ function onOpenChange(val: boolean) {
             <span class="text-sm font-medium">
               检测到 {{ uiStore.localImageUploadData.detectedPaths.length }} 张本地图片
             </span>
-            <span class="text-xs text-muted-foreground">
-              已选择 {{ selectedFiles.length }} 个文件
+            <span v-if="folderFiles.length > 0" class="text-xs text-muted-foreground">
+              已匹配 {{ matchedCount }} / {{ selectedPaths.size }}
             </span>
           </div>
           <div class="max-h-48 overflow-auto p-2">
@@ -273,32 +229,25 @@ function onOpenChange(val: boolean) {
         </div>
 
         <!-- 进度条 -->
-        <Progress v-if="isUploadingBatch || progressValue > 0" :model-value="progressValue" class="h-1.5" />
+        <Progress v-if="isUploading || progressValue > 0" :model-value="progressValue" class="h-1.5" />
 
-        <!-- 选择文件按钮 -->
+        <!-- 选择文件夹按钮 -->
         <div class="flex items-center gap-2">
           <label class="flex-1">
             <input
-              id="local-image-file-input"
+              id="local-image-folder-input"
               type="file"
+              webkitdirectory
               multiple
               accept="image/*"
               class="hidden"
-              @change="handleFileSelect"
+              @change="handleFolderSelect"
             >
             <Button variant="outline" class="w-full" as="span">
-              <Upload class="mr-2 h-4 w-4" />
-              选择图片文件{{ selectedFiles.length > 0 ? `（已选 ${selectedFiles.length} 个）` : '' }}
+              <FolderOpen class="mr-2 h-4 w-4" />
+              {{ folderFiles.length > 0 ? `已选择文件夹 (${folderFiles.length} 个文件)` : '选择包含图片的文件夹' }}
             </Button>
           </label>
-        </div>
-
-        <!-- 已选文件列表 -->
-        <div v-if="selectedFiles.length > 0" class="text-xs text-muted-foreground space-y-1">
-          <div v-for="(file, i) in selectedFiles" :key="i" class="flex items-center gap-1">
-            <span>{{ file.name }}</span>
-            <span class="text-muted-foreground/50">({{ (file.size / 1024).toFixed(1) }} KB)</span>
-          </div>
         </div>
 
         <!-- 操作按钮 -->
@@ -307,11 +256,11 @@ function onOpenChange(val: boolean) {
             跳过，按原样导入
           </Button>
           <Button
-            :disabled="isUploadingBatch || selectedPaths.size === 0"
+            :disabled="isUploading || selectedPaths.size === 0 || matchedCount === 0"
             @click="handleUpload"
           >
-            <Loader2 v-if="isUploadingBatch" class="mr-2 h-4 w-4 animate-spin" />
-            {{ isUploadingBatch ? '上传中...' : '上传选中的图片' }}
+            <Loader2 v-if="isUploading" class="mr-2 h-4 w-4 animate-spin" />
+            {{ isUploading ? '上传中...' : '上传选中的图片' }}
           </Button>
           <Button
             v-if="Object.keys(uploadResults).length > 0"
