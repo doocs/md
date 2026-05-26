@@ -6,8 +6,10 @@ import { EditorView } from '@codemirror/view'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
 import { SidebarAIToolbar } from '@/components/ai'
+import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
 import { useImageUploader } from '@/composables/useImageUploader'
+import { useSlashCommand } from '@/composables/useSlashCommand'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
@@ -23,6 +25,8 @@ const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
+
+const slashCommand = useSlashCommand()
 
 const { editor } = storeToRefs(editorStore)
 const { isDark } = storeToRefs(uiStore)
@@ -455,6 +459,7 @@ function createFormTextArea(dom: HTMLDivElement) {
       EditorView.domEventHandlers({
         paste: createPasteHandler(),
       }),
+      ...slashCommand.createExtension(() => codeMirrorView.value),
     ],
   })
 
@@ -564,6 +569,17 @@ defineExpose({
     class="codeMirror-wrapper relative h-full"
   >
     <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
+    <SlashCommandMenu
+      :visible="slashCommand.visible.value"
+      :position="slashCommand.position.value"
+      :active-index="slashCommand.activeIndex.value"
+      :basic-commands="slashCommand.basicCommands.value"
+      :common-commands="slashCommand.commonCommands.value"
+      :filtered-commands="slashCommand.filteredCommands.value"
+      :editor-view="codeMirrorView"
+      @execute="(cmd) => codeMirrorView && slashCommand.executeCommand(codeMirrorView, cmd)"
+      @close="slashCommand.closeMenu()"
+    />
     <SidebarAIToolbar
       :is-mobile="isMobile"
       :show-editor="showEditor"

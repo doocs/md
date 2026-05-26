@@ -132,6 +132,6 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
     EditorView.lineWrapping,
     EditorState.allowMultipleSelections.of(true),
 
-    placeholder(`开始写作...`),
+    placeholder(`输入 "/" 快速添加内容`),
   ]
 }
