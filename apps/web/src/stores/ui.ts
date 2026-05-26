@@ -107,6 +107,19 @@ export const useUIStore = defineStore(`ui`, () => {
   /** 通过 URL 参数 open 打开时传入的待导入链接，对话框打开后会据此自动执行导入 */
   const importMdOpenUrl = ref<string | null>(null)
 
+  // 是否展示本地图片上传对话框
+  const isShowLocalImageUpload = ref(false)
+  const toggleShowLocalImageUpload = useToggle(isShowLocalImageUpload)
+  /** 待处理的本地图片上传数据 */
+  const localImageUploadData = ref<{
+    markdownContent: string
+    detectedPaths: string[]
+    processed?: boolean
+    skipUpload?: boolean
+    successCount?: number
+    failCount?: number
+  } | null>(null)
+
   // 是否展示模板管理对话框
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
@@ -196,6 +209,9 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowImportMdDialog,
     toggleShowImportMdDialog,
     importMdOpenUrl,
+    isShowLocalImageUpload,
+    toggleShowLocalImageUpload,
+    localImageUploadData,
     isShowTemplateDialog,
     toggleShowTemplateDialog,
     aiDialogVisible,

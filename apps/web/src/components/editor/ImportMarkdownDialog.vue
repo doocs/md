@@ -11,6 +11,73 @@ const { isShowImportMdDialog } = storeToRefs(uiStore)
 // 当前选中的 tab
 const activeTab = ref<'url' | 'file'>(`file`)
 
+// ==================== 检测本地图片路径 ====================
+/**
+ * 从 Markdown 内容中检测本地图片路径
+ * 排除 http/https URL、data URI 和空路径
+ */
+function detectLocalImagePaths(content: string): string[] {
+  const regex = /!\[[^\]]*\]\((?!https?:\/\/|data:)([^)]+)\)/g
+  const paths = new Set<string>()
+  let match = regex.exec(content)
+  while (match != null) {
+    const path = match[1]!.trim()
+    if (path) {
+      paths.add(path)
+    }
+    match = regex.exec(content)
+  }
+  return Array.from(paths)
+}
+
+/**
+ * 导入内容，如果包含本地图片则弹出上传对话框
+ */
+async function importContent(title: string, content: string) {
+  const localPaths = detectLocalImagePaths(content)
+  if (localPaths.length === 0) {
+    // 没有本地图片，直接导入
+    postStore.addPost(title)
+    postStore.updatePostContent(postStore.currentPostId, content)
+    closeDialog()
+    return
+  }
+
+  // 有本地图片，弹出上传对话框
+  uiStore.localImageUploadData = {
+    markdownContent: content,
+    detectedPaths: localPaths,
+  }
+  uiStore.isShowLocalImageUpload = true
+
+  // 等待上传对话框处理完成
+  await new Promise<void>((resolve) => {
+    const unwatch = watch(
+      () => uiStore.localImageUploadData,
+      (data) => {
+        if (data && data.processed) {
+          unwatch()
+          if (data.skipUpload) {
+            // 用户选择跳过，按原样导入
+            postStore.addPost(title)
+            postStore.updatePostContent(postStore.currentPostId, content)
+          }
+          else {
+            // 用户已上传并应用，使用替换后的内容
+            postStore.addPost(title)
+            postStore.updatePostContent(postStore.currentPostId, data!.markdownContent)
+          }
+          closeDialog()
+          resolve()
+        }
+      },
+    )
+  })
+
+  // 清理
+  uiStore.localImageUploadData = null
+}
+
 // ==================== 网络链接导入 ====================
 const url = ref(``)
 const isUrlLoading = ref(false)
@@ -105,9 +172,7 @@ async function importFromUrl() {
         return `untitled`
       }
     })()
-    postStore.addPost(urlTitle)
-    postStore.updatePostContent(postStore.currentPostId, content)
-    closeDialog()
+    await importContent(urlTitle, content)
   }
   catch (err) {
     if ((err as Error).name === `AbortError`)
@@ -175,11 +240,11 @@ async function readAndImportFiles(files: File[]) {
     return
   for (const { file, content } of validResults) {
     const title = file.name.replace(/\.(md|markdown|txt)$/i, ``)
-    postStore.addPost(title)
-    postStore.updatePostContent(postStore.currentPostId, content)
+    await importContent(title, content)
   }
-  toast.success(validResults.length === 1 ? `已导入 1 篇文章` : `已批量导入 ${validResults.length} 篇文章`)
-  closeDialog()
+  if (validResults.length > 0) {
+    toast.success(validResults.length === 1 ? `已导入 1 篇文章` : `已批量导入 ${validResults.length} 篇文章`)
+  }
 }
 
 // ==================== 对话框控制 ====================

@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import EditorPanel from '@/components/editor/EditorPanel.vue'
-import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
 import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
+import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
+import LocalImageUploadDialog from '@/components/editor/LocalImageUploadDialog.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
   ResizableHandle,
@@ -251,6 +252,8 @@ onUnmounted(() => {
       <InsertMpCardDialog />
 
       <ImportMarkdownDialog />
+
+      <LocalImageUploadDialog />
 
       <FormulaEditorDialog />
 
