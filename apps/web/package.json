@@ -44,7 +44,7 @@
     "codemirror": "^6.0.2",
     "crypto-js": "^4.2.0",
     "diff-match-patch": "^1.0.5",
-    "es-toolkit": "^1.46.1",
+    "es-toolkit": "^1.47.0",
     "html-to-image": "^1.11.13",
     "jszip": "^3.10.1",
     "juice": "^11.1.1",
@@ -65,7 +65,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.38.0",
-    "@cloudflare/workers-types": "^4.20260524.1",
+    "@cloudflare/workers-types": "^4.20260526.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/vite": "^4.3.0",
@@ -87,7 +87,7 @@
     "vite": "^8.0.14",
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.2",
-    "vue-tsc": "^3.3.1",
+    "vue-tsc": "^3.3.2",
     "wrangler": "^4.94.0",
     "wxt": "^0.20.26"
   }
