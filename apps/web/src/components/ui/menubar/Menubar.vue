@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { MenubarRootEmits, MenubarRootProps } from 'radix-vue'
+import type { MenubarRootEmits, MenubarRootProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import {
   MenubarRoot,
 
   useForwardPropsEmits,
-} from 'radix-vue'
+} from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<MenubarRootProps & { class?: HTMLAttributes[`class`] }>()

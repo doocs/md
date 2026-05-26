@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import type { DropdownMenuSeparatorProps } from 'radix-vue'
+import type { DropdownMenuSeparatorProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import {
   DropdownMenuSeparator,
 
-} from 'radix-vue'
+} from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<DropdownMenuSeparatorProps & {

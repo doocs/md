@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import type { ContextMenuSubTriggerProps } from 'radix-vue'
+import type { ContextMenuSubTriggerProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import { ChevronRight } from 'lucide-vue-next'
 import {
   ContextMenuSubTrigger,
 
   useForwardProps,
-} from 'radix-vue'
+} from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<ContextMenuSubTriggerProps & { class?: HTMLAttributes[`class`], inset?: boolean }>()

@@ -38,7 +38,7 @@ export default defineConfig(({ mode }) => {
       }),
       isCfWorkers && cloudflare(),
       tailwindcss(),
-      vueDevTools({
+      mode === `development` && vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
       }),
       VitePluginRadar({

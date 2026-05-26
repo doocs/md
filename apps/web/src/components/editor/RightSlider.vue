@@ -106,7 +106,9 @@ function colorChanged(newColor: string) {
   editorRefresh()
 }
 
-function codeBlockThemeChanged(newTheme: string) {
+function codeBlockThemeChanged(newTheme: any) {
+  if (!newTheme)
+    return
   themeStore.codeBlockTheme = newTheme
   editorRefresh()
 }

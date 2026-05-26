@@ -28,7 +28,6 @@ export { hljs }
 marked.setOptions({
   breaks: true,
 })
-marked.use(markedSlider())
 
 const AMPERSAND_REGEX = /&/g
 const LESS_THAN_REGEX = /</g

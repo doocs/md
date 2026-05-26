@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ContextMenuRadioItemEmits, ContextMenuRadioItemProps } from 'radix-vue'
+import type { ContextMenuRadioItemEmits, ContextMenuRadioItemProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import { Circle } from 'lucide-vue-next'
 import {
@@ -7,7 +7,7 @@ import {
   ContextMenuRadioItem,
 
   useForwardPropsEmits,
-} from 'radix-vue'
+} from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<ContextMenuRadioItemProps & { class?: HTMLAttributes[`class`] }>()

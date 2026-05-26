@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ProgressRootProps } from 'radix-vue'
-import { ProgressIndicator, ProgressRoot } from 'radix-vue'
+import type { ProgressRootProps } from 'reka-ui'
+import { ProgressIndicator, ProgressRoot } from 'reka-ui'
 
 const props = defineProps<ProgressRootProps>()
 
