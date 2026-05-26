@@ -164,13 +164,13 @@ function handleApply() {
   if (!uiStore.localImageUploadData)
     return
 
-  // 仅替换图片语法 `![alt](path)`，避免误改普通链接
+  // 仅替换图片语法 `![alt](path)` 中的路径为上传后的 URL
   let content = uiStore.localImageUploadData.markdownContent
   for (const [path, url] of Object.entries(uploadResults.value)) {
     const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     content = content
-      .replace(new RegExp(`!\\[[^\\]]*\\]\\(${escaped}\\)`, 'g'), `!](${url})`)
-      .replace(new RegExp(`!\\[[^\\]]*\\]\\(\\.\\/${escaped}\\)`, 'g'), `!](${url})`)
+      .replace(new RegExp(`(!\\[[^\\]]*\\]\\()${escaped}\\)`, 'g'), `$1${url})`)
+      .replace(new RegExp(`(!\\[[^\\]]*\\]\\(\\.\\/)${escaped}\\)`, 'g'), `$1${url})`)
   }
 
   uiStore.localImageUploadData = {
