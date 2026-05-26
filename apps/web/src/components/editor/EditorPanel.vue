@@ -576,7 +576,6 @@ defineExpose({
       :basic-commands="slashCommand.basicCommands.value"
       :common-commands="slashCommand.commonCommands.value"
       :filtered-commands="slashCommand.filteredCommands.value"
-      :editor-view="codeMirrorView"
       @execute="(cmd) => codeMirrorView && slashCommand.executeCommand(codeMirrorView, cmd)"
       @close="slashCommand.closeMenu()"
     />

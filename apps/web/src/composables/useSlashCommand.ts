@@ -172,7 +172,7 @@ export function useSlashCommand() {
         const cursor = view.state.selection.main.head
         view.dispatch({
           changes: { from: cursor, to: cursor, insert: text },
-          selection: { anchor: cursor + 11 },
+          selection: { anchor: cursor + 12 },
         })
         view.focus()
       },

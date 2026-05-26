@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type { EditorView } from '@codemirror/view'
 import type { SlashCommandItem } from '@/composables/useSlashCommand'
 import {
   Braces,
@@ -26,7 +25,6 @@ const props = defineProps<{
   basicCommands: SlashCommandItem[]
   commonCommands: SlashCommandItem[]
   filteredCommands: SlashCommandItem[]
-  editorView: EditorView | null
 }>()
 
 const emit = defineEmits<{
@@ -194,19 +192,10 @@ function getGlobalIndex(command: SlashCommandItem): number {
             @mousedown.prevent="emit('execute', cmd)"
           >
             <span class="slash-common-icon">
-              <!-- Special icons for markdown and callout -->
+              <!-- Special icon for markdown -->
               <template v-if="cmd.id === 'markdown'">
                 <svg viewBox="0 0 24 24" class="w-4 h-4" fill="currentColor" aria-hidden="true">
                   <path d="M20.56 18H3.44C2.65 18 2 17.37 2 16.59V7.41C2 6.63 2.65 6 3.44 6h17.12C21.35 6 22 6.63 22 7.41v9.18c0 .78-.65 1.41-1.44 1.41zM7 15V9l2 2 2-2v6h2V9l2 2 2-2v6h1V9h-1l-2 2-2-2H9L7 9v6H6V9H5v6h2z" />
-                </svg>
-              </template>
-              <template v-else-if="cmd.id === 'callout'">
-                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
-                  <polyline points="14 2 14 8 20 8" />
-                  <line x1="16" y1="13" x2="8" y2="13" />
-                  <line x1="16" y1="17" x2="8" y2="17" />
-                  <polyline points="10 9 9 9 8 9" />
                 </svg>
               </template>
               <component :is="iconMap[cmd.icon]" v-else-if="iconMap[cmd.icon]" class="w-4 h-4" />
