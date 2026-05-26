@@ -5,7 +5,7 @@ import {
   AlertDialogOverlay,
   AlertDialogPortal,
   AlertDialogRoot,
-} from 'radix-vue'
+} from 'reka-ui'
 import {
   AlertDialogAction,
   AlertDialogCancel,

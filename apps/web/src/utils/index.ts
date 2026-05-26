@@ -11,7 +11,6 @@ import {
   toBase64,
 } from '@md/shared/utils'
 
-import juice from 'juice'
 import { Marked } from 'marked'
 
 export {
@@ -270,7 +269,8 @@ function getThemeStyles(): string {
   return styleContent
 }
 
-function mergeCss(html: string): string {
+async function mergeCss(html: string): Promise<string> {
+  const { default: juice } = await import(`juice`)
   return juice(html, {
     inlinePseudoElements: true,
     preserveImportant: true,
@@ -321,7 +321,7 @@ export async function processClipboardContent(primaryColor: string) {
   }
 
   // 先合并 CSS 和修改 HTML 结构
-  clipboardDiv.innerHTML = modifyHtmlStructure(mergeCss(clipboardDiv.innerHTML))
+  clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
   // 处理样式和颜色变量
   clipboardDiv.innerHTML = clipboardDiv.innerHTML

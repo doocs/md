@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import type { MenubarTriggerProps } from 'radix-vue'
+import type { MenubarTriggerProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-import { MenubarTrigger, useForwardProps } from 'radix-vue'
+import { MenubarTrigger, useForwardProps } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<MenubarTriggerProps & { class?: HTMLAttributes[`class`] }>()
