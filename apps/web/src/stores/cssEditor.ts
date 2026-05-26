@@ -81,7 +81,21 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   const getCurrentTab = () => {
     const tab = cssContentConfig.value.tabs.find(tab => tab.id === cssContentConfig.value.active)
     if (!tab) {
-      // Fallback: ensure active points to a valid tab
+      // Fallback: if tabs are empty or corrupted, create a default tab
+      if (cssContentConfig.value.tabs.length === 0) {
+        const defaultId = uuidv4()
+        const now = new Date()
+        cssContentConfig.value.tabs = [{
+          id: defaultId,
+          title: `方案1`,
+          name: `方案1`,
+          content: DEFAULT_CSS_CONTENT,
+          createDatetime: now,
+          updateDatetime: now,
+        }]
+        cssContentConfig.value.active = defaultId
+        return cssContentConfig.value.tabs[0]
+      }
       cssContentConfig.value.active = cssContentConfig.value.tabs[0].id
       return cssContentConfig.value.tabs[0]
     }

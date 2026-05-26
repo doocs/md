@@ -19,6 +19,24 @@ interface RuntimeFolderInfo {
 }
 
 /**
+ * Safely extract a message from an unknown error value.
+ */
+function getErrorMessage(error: unknown): string {
+  if (error instanceof Error)
+    return error.message
+  return String(error)
+}
+
+/**
+ * Safely extract the error name from an unknown error value.
+ */
+function getErrorName(error: unknown): string {
+  if (error instanceof Error)
+    return error.name
+  return `UnknownError`
+}
+
+/**
  * 本地文件夹源 Store
  * 负责管理本地文件夹的访问、文件树结构和文件读写
  */
@@ -130,12 +148,11 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       toast.success(`文件夹「${handle.name}」已打开`)
     }
     catch (error: unknown) {
-      const errName = (error as { name?: string })?.name
-      if (errName === `AbortError`) {
+      if (getErrorName(error) === `AbortError`) {
         // 用户取消了选择
         return
       }
-      const msg = (error as { message?: string })?.message || `打开文件夹失败`
+      const msg = getErrorMessage(error)
       loadError.value = msg
       toast.error(`打开文件夹失败: ${msg}`)
     }
@@ -174,7 +191,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       fileTree.value = [tree]
     }
     catch (error: unknown) {
-      loadError.value = (error as { message?: string })?.message || `加载文件树失败`
+      loadError.value = getErrorMessage(error)
       throw error
     }
   }
@@ -224,7 +241,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       })
     }
     catch (error: unknown) {
-      console.error(`读取目录失败: ${path}`, error)
+      console.error(`读取目录失败: ${path}`, getErrorMessage(error))
     }
 
     return node
@@ -255,7 +272,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       return await file.text()
     }
     catch (error: unknown) {
-      toast.error(`读取文件失败: ${(error as { message?: string })?.message || String(error)}`)
+      toast.error(`读取文件失败: ${getErrorMessage(error)}`)
       throw error
     }
   }
@@ -295,7 +312,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       await writable.close()
     }
     catch (error: unknown) {
-      console.error(`保存文件失败: ${(error as { message?: string })?.message || String(error)}`)
+      console.error(`保存文件失败: ${getErrorMessage(error)}`)
       throw error
     }
   }
