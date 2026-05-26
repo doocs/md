@@ -149,7 +149,7 @@ function goToLine() {
   })
   view.focus()
   isGoToLineActive.value = false
-  updateCursorInfo(view)
+  updateCursorInfo(view as EditorView)
 }
 
 function cancelGoToLine() {
@@ -167,7 +167,7 @@ watch(editor, (view) => {
   attachedViews.add(view)
 
   // 初始化一次
-  updateCursorInfo(view)
+  updateCursorInfo(view as EditorView)
 
   const extension = EditorView.updateListener.of((update) => {
     // 只在光标或文档变化时更新
@@ -185,7 +185,7 @@ watch(editor, (view) => {
 watch(currentPost, () => {
   nextTick(() => {
     if (editor.value) {
-      updateCursorInfo(editor.value)
+      updateCursorInfo(editor.value as EditorView)
     }
   })
 })
@@ -306,7 +306,7 @@ function jumpToHeading(line: number) {
     scrollIntoView: true,
   })
   view.focus()
-  updateCursorInfo(view)
+  updateCursorInfo(view as EditorView)
 }
 
 // 上次保存时间（复用 formatRelativeTime）

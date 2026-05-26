@@ -130,12 +130,14 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       toast.success(`文件夹「${handle.name}」已打开`)
     }
     catch (error: unknown) {
-      if (error.name === `AbortError`) {
+      const errName = (error as { name?: string })?.name
+      if (errName === `AbortError`) {
         // 用户取消了选择
         return
       }
-      loadError.value = error.message || `打开文件夹失败`
-      toast.error(`打开文件夹失败: ${error.message}`)
+      const msg = (error as { message?: string })?.message || `打开文件夹失败`
+      loadError.value = msg
+      toast.error(`打开文件夹失败: ${msg}`)
     }
     finally {
       isLoading.value = false
@@ -172,7 +174,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       fileTree.value = [tree]
     }
     catch (error: unknown) {
-      loadError.value = error.message || `加载文件树失败`
+      loadError.value = (error as { message?: string })?.message || `加载文件树失败`
       throw error
     }
   }
@@ -253,7 +255,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       return await file.text()
     }
     catch (error: unknown) {
-      toast.error(`读取文件失败: ${error.message}`)
+      toast.error(`读取文件失败: ${(error as { message?: string })?.message || String(error)}`)
       throw error
     }
   }
@@ -293,7 +295,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       await writable.close()
     }
     catch (error: unknown) {
-      console.error(`保存文件失败: ${error.message}`)
+      console.error(`保存文件失败: ${(error as { message?: string })?.message || String(error)}`)
       throw error
     }
   }
