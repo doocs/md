@@ -8,10 +8,32 @@ import { checkImage } from '@/utils'
 import { store } from '@/utils/storage'
 
 const emit = defineEmits([`uploadImage`])
+// Track active intervals for cleanup on unmount
+const activeIntervals = new Set<ReturnType<typeof setInterval>>()
+onUnmounted(() => {
+  activeIntervals.forEach(clearInterval)
+  activeIntervals.clear()
+})
 
 const uiStore = useUIStore()
 const { enableImageReupload } = storeToRefs(uiStore)
 const { toggleImageReupload } = uiStore
+
+// -----------------------------------------------------------------------
+// Form value type definitions
+// -----------------------------------------------------------------------
+
+interface GithubConfigForm { repo: string, branch?: string, accessToken: string, useCDN: boolean }
+interface AliOSSConfigForm { accessKeyId: string, accessKeySecret: string, bucket: string, region: string, useSSL: boolean, cdnHost?: string, path?: string }
+interface TxCOSConfigForm { secretId: string, secretKey: string, bucket: string, region: string, cdnHost?: string, path?: string }
+interface QiniuConfigForm { accessKey: string, secretKey: string, bucket: string, domain: string, region?: string, path?: string }
+interface MinioConfigForm { endpoint: string, port?: string, useSSL: boolean, bucket: string, accessKey: string, secretKey: string }
+interface S3ConfigForm { endpoint?: string, region: string, bucket: string, accessKeyId: string, accessKeySecret: string, path?: string, cdnHost?: string, pathStyle?: boolean }
+interface MpConfigForm { proxyOrigin?: string, appID: string, appsecret: string }
+interface R2ConfigForm { accountId: string, accessKey: string, secretKey: string, bucket: string, domain: string, path?: string }
+interface UpyunConfigForm { bucket: string, operator: string, password: string, domain: string, path?: string }
+interface TelegramConfigForm { token: string, chatId: string }
+interface CloudinaryConfigForm { cloudName: string, apiKey: string, apiSecret?: string, uploadPreset?: string, folder?: string, domain?: string }
 
 // github
 const githubSchema = toTypedSchema(yup.object({
@@ -23,7 +45,7 @@ const githubSchema = toTypedSchema(yup.object({
 
 const githubConfig = store.reactive(`githubConfig`, { repo: ``, branch: ``, accessToken: ``, useCDN: false })
 
-async function githubSubmit(formValues: any) {
+async function githubSubmit(formValues: GithubConfigForm) {
   Object.assign(githubConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -49,7 +71,7 @@ const aliOSSConfig = store.reactive(`aliOSSConfig`, {
   path: ``,
 })
 
-async function aliOSSSubmit(formValues: any) {
+async function aliOSSSubmit(formValues: AliOSSConfigForm) {
   Object.assign(aliOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -73,7 +95,7 @@ const txCOSConfig = store.reactive(`txCOSConfig`, {
   path: ``,
 })
 
-async function txCOSSubmit(formValues: any) {
+async function txCOSSubmit(formValues: TxCOSConfigForm) {
   Object.assign(txCOSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -97,7 +119,7 @@ const qiniuConfig = store.reactive(`qiniuConfig`, {
   path: ``,
 })
 
-async function qiniuSubmit(formValues: any) {
+async function qiniuSubmit(formValues: QiniuConfigForm) {
   Object.assign(qiniuConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -121,7 +143,7 @@ const minioOSSConfig = store.reactive(`minioConfig`, {
   secretKey: ``,
 })
 
-async function minioOSSSubmit(formValues: any) {
+async function minioOSSSubmit(formValues: MinioConfigForm) {
   Object.assign(minioOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -149,7 +171,7 @@ const s3Config = store.reactive(`s3Config`, {
   pathStyle: false,
 })
 
-async function s3Submit(formValues: any) {
+async function s3Submit(formValues: S3ConfigForm) {
   Object.assign(s3Config.value, formValues)
   toast.success(`保存成功`)
 }
@@ -164,7 +186,7 @@ const telegramSchema = toTypedSchema(
 
 const telegramConfig = store.reactive(`telegramConfig`, { token: ``, chatId: `` })
 
-async function telegramSubmit(values: any) {
+async function telegramSubmit(values: TelegramConfigForm) {
   Object.assign(telegramConfig.value, values)
   toast.success(`保存成功`)
 }
@@ -206,7 +228,7 @@ const mpConfig = store.reactive(`mpConfig`, {
   appsecret: ``,
 })
 
-async function mpSubmit(formValues: any) {
+async function mpSubmit(formValues: MpConfigForm) {
   Object.assign(mpConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -230,7 +252,7 @@ const r2Config = store.reactive(`r2Config`, {
   path: ``,
 })
 
-async function r2Submit(formValues: any) {
+async function r2Submit(formValues: R2ConfigForm) {
   Object.assign(r2Config.value, formValues)
   toast.success(`保存成功`)
 }
@@ -254,7 +276,7 @@ const upyunConfig = store.reactive(`upyunConfig`, {
   path: ``,
 })
 
-async function upyunSubmit(formValues: any) {
+async function upyunSubmit(formValues: UpyunConfigForm) {
   Object.assign(upyunConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -284,7 +306,7 @@ const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
   domain: ``,
 })
 
-async function cloudinarySubmit(formValues: any) {
+async function cloudinarySubmit(formValues: CloudinaryConfigForm) {
   Object.assign(cloudinaryConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -402,6 +424,7 @@ async function onDrop(e: DragEvent) {
 }
 const progressValue = ref(0)
 const imageUrl = ref(``)
+const PROGRESS_INTERVAL_MS = 100
 function emitUploads(file: File) {
   progressValue.value = 0
   const intervalId = setInterval(() => {
@@ -410,11 +433,13 @@ function emitUploads(file: File) {
       return
     }
     progressValue.value = newProgress
-  }, 100)
+  }, PROGRESS_INTERVAL_MS)
+  activeIntervals.add(intervalId)
 
   // 监听上传完成事件，在真正完成后清除定时器和设置100%
   const cleanup = (_url: string, data: string) => {
     clearInterval(intervalId)
+    activeIntervals.delete(intervalId)
     progressValue.value = 100 // 设置完成状态
     if (data) {
       imageUrl.value = `data:image/png;base64,${data}`

@@ -114,7 +114,7 @@ async function prePost() {
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
       title: [1, 2, 3, 4, 5, 6]
-        .map(h => document.querySelector(`#output h${h}`)!)
+        .map(h => document.querySelector(`#output h${h}`))
         .find(h => h)
         ?.textContent ?? ``,
       desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
@@ -143,6 +143,7 @@ watch(dialogVisible, (newVal) => {
 declare global {
   interface Window {
     syncPost: (data: { thumb: string, title: string, desc: string, content: string }) => void
+
     $cose: any
   }
 }
@@ -175,12 +176,13 @@ function startLoginDetection() {
   let hasReceivedAny = false
 
   // 设置超时机制：如果 15 秒内没有任何响应，则停止检测
+  const LOGIN_CHECK_TIMEOUT_MS = 15000
   const timeoutId = setTimeout(() => {
     if (!hasReceivedAny) {
       allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
       isCheckingLogin.value = false
     }
-  }, 15000)
+  }, LOGIN_CHECK_TIMEOUT_MS)
 
   // 检查是否支持渐进式 API
   if (typeof window.$cose.getAccountsProgressive === 'function') {
@@ -287,6 +289,8 @@ function checkExtension() {
   }
 
   // 如果插件还没加载，5秒内每 500ms 检查一次
+  const EXTENSION_CHECK_INTERVAL_MS = 500
+  const MAX_EXTENSION_CHECKS = 10
   let count = 0
   const timer = setInterval(async () => {
     if (window.$cose !== undefined) {
@@ -297,10 +301,10 @@ function checkExtension() {
     }
 
     count++
-    if (count > 10) {
+    if (count > MAX_EXTENSION_CHECKS) {
       clearInterval(timer)
     }
-  }, 500)
+  }, EXTENSION_CHECK_INTERVAL_MS)
 }
 
 onBeforeMount(() => {

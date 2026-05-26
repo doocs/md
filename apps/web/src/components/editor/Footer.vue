@@ -70,7 +70,9 @@ function buildTree(posts: typeof postStore.posts): TreeNode[] {
   }
   const roots: TreeNode[] = []
   for (const p of posts) {
-    const node = map.get(p.id)!
+    const node = map.get(p.id)
+    if (!node)
+      continue
     if (p.parentId && map.has(p.parentId)) {
       map.get(p.parentId)!.children.push(node)
     }
@@ -188,7 +190,7 @@ watch(currentPost, () => {
   })
 })
 
-function updateCursorInfo(view: any) {
+function updateCursorInfo(view: EditorView) {
   const state = view.state
   const main = state.selection.main
   const line = state.doc.lineAt(main.head)
@@ -211,7 +213,7 @@ const allHeadings = ref<BreadcrumbItem[]>([])
 const isOutlineOpen = ref(false)
 const outlineScrollRef = ref<HTMLElement | null>(null)
 
-function updateHeadingsAndBreadcrumb(doc: any, currentLine: number) {
+function updateHeadingsAndBreadcrumb(doc: { lines: number, line: (n: number) => { text: string } }, currentLine: number) {
   const items: BreadcrumbItem[] = []
   const stack: BreadcrumbItem[] = []
   let codeFenceChar = ``
@@ -314,10 +316,24 @@ const savedTimeAgo = computed(() => {
   return formatRelativeTime(currentPost.value.updateDatetime)
 })
 
-// 每 10 秒刷新一次相对时间
+// 每 10 秒刷新一次相对时间（页面不可见时暂停）
 const refreshKey = ref(0)
-const refreshTimer = setInterval(() => refreshKey.value++, 10_000)
-onUnmounted(() => clearInterval(refreshTimer))
+const REFRESH_INTERVAL_MS = 10_000
+let refreshTimer: ReturnType<typeof setInterval> | null = null
+
+function startRefreshTimer() {
+  refreshTimer = setInterval(() => {
+    if (!document.hidden) {
+      refreshKey.value++
+    }
+  }, REFRESH_INTERVAL_MS)
+}
+
+startRefreshTimer()
+onUnmounted(() => {
+  if (refreshTimer)
+    clearInterval(refreshTimer)
+})
 
 // 强制 computed 依赖 refreshKey
 const displaySavedTime = computed(() => {

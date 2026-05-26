@@ -79,7 +79,13 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
   // 获取当前激活的 Tab
   const getCurrentTab = () => {
-    return cssContentConfig.value.tabs.find(tab => tab.id === cssContentConfig.value.active)!
+    const tab = cssContentConfig.value.tabs.find(tab => tab.id === cssContentConfig.value.active)
+    if (!tab) {
+      // Fallback: ensure active points to a valid tab
+      cssContentConfig.value.active = cssContentConfig.value.tabs[0].id
+      return cssContentConfig.value.tabs[0]
+    }
+    return tab
   }
 
   // 获取当前 Tab 的内容
@@ -107,12 +113,14 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   // 切换 Tab
   const tabChanged = (id: string) => {
     cssContentConfig.value.active = id
-    const content = cssContentConfig.value.tabs.find(tab => tab.id === id)!.content
-    setCssEditorValue(content)
+    const tab = cssContentConfig.value.tabs.find(tab => tab.id === id)
+    if (!tab)
+      return
+    setCssEditorValue(tab.content)
 
     // 触发回调以刷新渲染
     if (onTabChangedCallback) {
-      onTabChangedCallback(content)
+      onTabChangedCallback(tab.content)
     }
   }
 

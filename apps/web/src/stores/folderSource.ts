@@ -129,7 +129,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
 
       toast.success(`文件夹「${handle.name}」已打开`)
     }
-    catch (error: any) {
+    catch (error: unknown) {
       if (error.name === `AbortError`) {
         // 用户取消了选择
         return
@@ -171,7 +171,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       const tree = await buildFileTree(handle, handle.name)
       fileTree.value = [tree]
     }
-    catch (error: any) {
+    catch (error: unknown) {
       loadError.value = error.message || `加载文件树失败`
       throw error
     }
@@ -221,7 +221,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
         return a.name.localeCompare(b.name, `zh-CN`)
       })
     }
-    catch (error: any) {
+    catch (error: unknown) {
       console.error(`读取目录失败: ${path}`, error)
     }
 
@@ -252,7 +252,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       const file = await fileHandle.getFile()
       return await file.text()
     }
-    catch (error: any) {
+    catch (error: unknown) {
       toast.error(`读取文件失败: ${error.message}`)
       throw error
     }
@@ -292,7 +292,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       await writable.write(content)
       await writable.close()
     }
-    catch (error: any) {
+    catch (error: unknown) {
       console.error(`保存文件失败: ${error.message}`)
       throw error
     }

@@ -24,7 +24,10 @@ export const useExportStore = defineStore(`export`, () => {
   // 将编辑器内容转换为 HTML
   const editorContent2HTML = () => {
     const temp = getHtmlContent()
-    document.querySelector(`#output`)!.innerHTML = renderStore.output
+    const outputEl = document.querySelector(`#output`)
+    if (outputEl) {
+      outputEl.innerHTML = renderStore.output
+    }
     return temp
   }
 
@@ -35,7 +38,10 @@ export const useExportStore = defineStore(`export`, () => {
       return
 
     await exportHTML(currentPost.title)
-    document.querySelector(`#output`)!.innerHTML = renderStore.output
+    const outputEl = document.querySelector(`#output`)
+    if (outputEl) {
+      outputEl.innerHTML = renderStore.output
+    }
   }
 
   // 导出编辑器内容为无样式 HTML
@@ -81,7 +87,7 @@ export const useExportStore = defineStore(`export`, () => {
     document.head.appendChild(style)
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 100))
+      await new Promise(resolve => setTimeout(resolve, 100)) // brief delay for style application
       const url = await toPng(el, {
         backgroundColor: uiStore.isDark ? `` : `#fff`,
         skipFonts: true,
@@ -102,7 +108,10 @@ export const useExportStore = defineStore(`export`, () => {
       return
 
     await exportPDF(currentPost.title)
-    document.querySelector(`#output`)!.innerHTML = renderStore.output
+    const outputEl = document.querySelector(`#output`)
+    if (outputEl) {
+      outputEl.innerHTML = renderStore.output
+    }
   }
 
   // 导出编辑器内容到本地（Markdown）
