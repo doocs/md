@@ -46,6 +46,11 @@ const matchedCount = computed(() => {
   return count
 })
 
+// 是否已有上传结果（成功或失败）
+const hasUploadAttempt = computed(() =>
+  Object.keys(uploadResults.value).length > 0 || Object.keys(uploadErrors.value).length > 0,
+)
+
 // 是否全部上传成功（选中的图片都有结果且无报错）
 const isAllUploaded = computed(() => {
   const paths = Array.from(selectedPaths.value)
@@ -164,8 +169,8 @@ function handleApply() {
   for (const [path, url] of Object.entries(uploadResults.value)) {
     const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
     content = content
-      .replace(new RegExp(`!\\]\\(${escaped}\\)`, 'g'), `!](${url})`)
-      .replace(new RegExp(`!\\]\\(\\.\\/${escaped}\\)`, 'g'), `!](${url})`)
+      .replace(new RegExp(`!\\[[^\\]]*\\]\\(${escaped}\\)`, 'g'), `!](${url})`)
+      .replace(new RegExp(`!\\[[^\\]]*\\]\\(\\.\\/${escaped}\\)`, 'g'), `!](${url})`)
   }
 
   uiStore.localImageUploadData = {
@@ -271,7 +276,7 @@ function onOpenChange(val: boolean) {
             完成
           </Button>
         </div>
-        <div v-else class="flex items-center justify-between gap-2 pt-2">
+        <div v-else-if="hasUploadAttempt" class="flex items-center justify-between gap-2 pt-2">
           <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
             跳过
           </Button>
@@ -282,6 +287,16 @@ function onOpenChange(val: boolean) {
             >
               完成
             </Button>
+            <Button variant="outline" @click="handleUpload">
+              重新上传
+            </Button>
+          </div>
+        </div>
+        <div v-else class="flex items-center justify-between gap-2 pt-2">
+          <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
+            跳过
+          </Button>
+          <div class="flex gap-2">
             <Button
               :disabled="isUploading || selectedPaths.size === 0 || matchedCount === 0"
               @click="handleUpload"
