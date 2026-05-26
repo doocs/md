@@ -79,7 +79,9 @@ export async function exportPostsAsZip(posts: Array<{ title: string, content: st
  * @returns {string} HTML 字符串
  */
 export function getHtmlContent(): string {
-  const element = document.querySelector(`#output`)!
+  const element = document.querySelector(`#output`)
+  if (!element)
+    return ``
   // Clone to avoid mutating the live DOM, then strip injected UI overlays
   // (e.g. diagram download bars) that must not appear in exported content.
   const clone = element.cloneNode(true) as HTMLElement
@@ -208,7 +210,9 @@ export async function exportPDF(title: string = `untitled`) {
 }
 
 export function solveWeChatImage() {
-  const clipboardDiv = document.getElementById(`output`)!
+  const clipboardDiv = document.getElementById(`output`)
+  if (!clipboardDiv)
+    return
   const images = clipboardDiv.getElementsByTagName(`img`)
 
   Array.from(images).forEach((image) => {
@@ -286,7 +290,7 @@ function modifyHtmlStructure(htmlString: string): string {
 
   // 移动 `li > ul` 和 `li > ol` 到 `li` 后面
   tempDiv.querySelectorAll(`li > ul, li > ol`).forEach((originalItem) => {
-    originalItem.parentElement!.insertAdjacentElement(`afterend`, originalItem)
+    originalItem.parentElement?.insertAdjacentElement(`afterend`, originalItem)
   })
 
   return tempDiv.innerHTML
@@ -312,7 +316,9 @@ async function getStylesToAdd(): Promise<string> {
 }
 
 export async function processClipboardContent(primaryColor: string) {
-  const clipboardDiv = document.getElementById(`output`)!
+  const clipboardDiv = document.getElementById(`output`)
+  if (!clipboardDiv)
+    return
 
   const stylesToAdd = await getStylesToAdd()
 
@@ -353,15 +359,21 @@ export async function processClipboardContent(primaryColor: string) {
   // 兼容 Mermaid
   const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
   nodes.forEach((node) => {
-    const parent = node.parentElement!
-    const xmlns = parent.getAttribute(`xmlns`)!
-    const style = parent.getAttribute(`style`)!
+    const parent = node.parentElement
+    if (!parent)
+      return
+    const xmlns = parent.getAttribute(`xmlns`)
+    const style = parent.getAttribute(`style`)
+    if (!xmlns || !style)
+      return
     const section = document.createElement(`section`)
     section.setAttribute(`xmlns`, xmlns)
     section.setAttribute(`style`, style)
     section.innerHTML = parent.innerHTML
 
-    const grand = parent.parentElement!
+    const grand = parent.parentElement
+    if (!grand)
+      return
     // 清空父元素
     grand.innerHTML = ``
     grand.appendChild(section)

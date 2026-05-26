@@ -1,3 +1,4 @@
+import type { S3ClientConfig } from '@aws-sdk/client-s3'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { giteeConfig, githubConfig } from '@md/shared/configs'
@@ -10,6 +11,21 @@ import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
 import { store } from './storage'
+
+/**
+ * Safely parse JSON string, returns parsed result or throws a descriptive error
+ */
+function safeJsonParse<T>(str: string | null | undefined, context: string = `configuration`): T {
+  if (!str) {
+    throw new Error(`${context} is missing or empty`)
+  }
+  try {
+    return JSON.parse(str) as T
+  }
+  catch {
+    throw new Error(`Failed to parse ${context}: corrupted data`)
+  }
+}
 
 async function getConfig(useDefault: boolean, platform: string) {
   if (useDefault) {
@@ -119,7 +135,7 @@ async function ghFileUpload(content: string, filename: string) {
 // Gitee File Upload
 // -----------------------------------------------------------------------
 
-async function giteeUpload(content: any, filename: string) {
+async function giteeUpload(content: string, filename: string) {
   const useDefault = await store.get(`imgHost`) === `default`
   const { username, repo, branch, accessToken } = await getConfig(useDefault, `gitee`)
   const dir = getDir()
@@ -167,19 +183,17 @@ function getQiniuToken(accessKey: string, secretKey: string, putPolicy: {
 
 async function qiniuUpload(file: File) {
   const configStr = await store.get(`qiniuConfig`)
-  const { accessKey, secretKey, bucket, region, path, domain } = JSON.parse(configStr!)
+  const { accessKey, secretKey, bucket, region, path, domain } = safeJsonParse<{ accessKey: string, secretKey: string, bucket: string, region?: string, path: string, domain: string }>(configStr, `qiniu config`)
   const token = getQiniuToken(accessKey, secretKey, {
     scope: bucket,
     deadline: Math.trunc(Date.now() / 1000) + 3600,
   })
   const dir = path ? `${path}/` : ``
   const dateFilename = dir + getDateFilename(file.name)
-  const observable = qiniu.upload(file, dateFilename, token, {}, { region })
+  const observable = qiniu.upload(file, dateFilename, token, {}, { region: region as any })
   return new Promise<string>((resolve, reject) => {
     observable.subscribe({
-      next: (result) => {
-        console.log(result)
-      },
+      next: () => {},
       error: (err) => {
         reject(err.message)
       },
@@ -206,14 +220,14 @@ async function aliOSSFileUpload(file: File) {
   const protocol = secure ? `https` : `http`
   const endpoint = `${protocol}://${region}.aliyuncs.com`
 
-  const clientConfig: any = {
+  const clientConfig: S3ClientConfig = {
     region,
     credentials: {
       accessKeyId,
       secretAccessKey: accessKeySecret,
     },
     endpoint,
-    forcePathStyle: false, // OSS recommends virtual-hosted style
+    forcePathStyle: false,
   }
 
   const s3Client = new S3Client(clientConfig)
@@ -261,20 +275,20 @@ async function aliOSSFileUpload(file: File) {
 async function txCOSFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const configStr = await store.get(`txCOSConfig`)
-  const { secretId, secretKey, bucket, region, path, cdnHost } = JSON.parse(configStr!)
+  const { secretId, secretKey, bucket, region, path, cdnHost } = safeJsonParse<{ secretId: string, secretKey: string, bucket: string, region: string, path: string, cdnHost: string }>(configStr, `txCOS config`)
 
   // Transform txCOSConfig to S3 format
   // Tencent Cloud COS S3 endpoint: https://cos.<Region>.myqcloud.com
   const endpoint = `https://cos.${region}.myqcloud.com`
 
-  const clientConfig: any = {
+  const clientConfig: S3ClientConfig = {
     region,
     credentials: {
       accessKeyId: secretId,
       secretAccessKey: secretKey,
     },
     endpoint,
-    forcePathStyle: false, // COS supports virtual-hosted style
+    forcePathStyle: false,
   }
 
   const s3Client = new S3Client(clientConfig)
@@ -326,7 +340,7 @@ async function txCOSFileUpload(file: File) {
 async function minioFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const configStr = await store.get(`minioConfig`)
-  const { endpoint, port, useSSL, bucket, accessKey, secretKey } = JSON.parse(configStr!)
+  const { endpoint, port, useSSL, bucket, accessKey, secretKey } = safeJsonParse<{ endpoint: string, port: string, useSSL: boolean, bucket: string, accessKey: string, secretKey: string }>(configStr, `minio config`)
   const s3Client = new S3Client({
     endpoint: `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}`,
     credentials: {
@@ -349,7 +363,7 @@ async function minioFileUpload(file: File) {
       'Content-Type': file.type,
     },
     data: file,
-  }).catch((err) => { console.error(err) })
+  })
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
 
@@ -373,17 +387,18 @@ async function s3Upload(file: File) {
   })
   const { endpoint, region, bucket, accessKeyId, accessKeySecret, path, cdnHost, pathStyle } = config
 
-  const clientConfig: any = {
+  const resolvedEndpoint = endpoint
+    ? endpoint.startsWith('http') ? endpoint : `https://${endpoint}`
+    : undefined
+
+  const clientConfig: S3ClientConfig = {
     region,
     credentials: {
       accessKeyId,
       secretAccessKey: accessKeySecret,
     },
     forcePathStyle: pathStyle,
-  }
-
-  if (endpoint) {
-    clientConfig.endpoint = endpoint.startsWith('http') ? endpoint : `https://${endpoint}`
+    endpoint: resolvedEndpoint,
   }
 
   const s3Client = new S3Client(clientConfig)
@@ -397,42 +412,36 @@ async function s3Upload(file: File) {
     ContentType: file.type,
   })
 
-  try {
-    const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
-    const response = await window.fetch(presignedUrl, {
-      method: `PUT`,
-      headers: {
-        'Content-Type': file.type,
-      },
-      body: file,
-    })
+  const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
+  const response = await window.fetch(presignedUrl, {
+    method: `PUT`,
+    headers: {
+      'Content-Type': file.type,
+    },
+    body: file,
+  })
 
-    if (!response.ok) {
-      throw new Error(`Upload failed: ${response.statusText}`)
-    }
-
-    if (cdnHost) {
-      const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
-      return `${host}/${key}`
-    }
-
-    if (endpoint) {
-      const proto = clientConfig.endpoint.startsWith('https') ? 'https' : 'http'
-      const host = clientConfig.endpoint.replace(PROTOCOL_REGEX, '')
-      if (pathStyle) {
-        return `${proto}://${host}/${bucket}/${key}`
-      }
-      else {
-        return `${proto}://${bucket}.${host}/${key}`
-      }
-    }
-
-    return `https://${bucket}.s3.${region}.amazonaws.com/${key}`
+  if (!response.ok) {
+    throw new Error(`Upload failed: ${response.statusText}`)
   }
-  catch (err) {
-    console.error(err)
-    throw err
+
+  if (cdnHost) {
+    const host = cdnHost.endsWith('/') ? cdnHost.slice(0, -1) : cdnHost
+    return `${host}/${key}`
   }
+
+  if (endpoint && resolvedEndpoint) {
+    const proto = resolvedEndpoint.startsWith('https') ? 'https' : 'http'
+    const host = resolvedEndpoint.replace(PROTOCOL_REGEX, '')
+    if (pathStyle) {
+      return `${proto}://${host}/${bucket}/${key}`
+    }
+    else {
+      return `${proto}://${bucket}.${host}/${key}`
+    }
+  }
+
+  return `https://${bucket}.s3.${region}.amazonaws.com/${key}`
 }
 
 // -----------------------------------------------------------------------
@@ -444,12 +453,17 @@ interface MpResponse {
   errcode: number
   errmsg: string
 }
-async function getMpToken(appID: string, appsecret: string, proxyOrigin: string) {
+async function getMpToken(appID: string, appsecret: string, proxyOrigin?: string) {
   const data = await store.get(`mpToken:${appID}`)
   if (data) {
-    const token = JSON.parse(data)
-    if (token.expire && token.expire > Date.now()) {
-      return token.access_token
+    try {
+      const token = JSON.parse(data)
+      if (token.expire && token.expire > Date.now()) {
+        return token.access_token
+      }
+    }
+    catch {
+      // Corrupted token data, ignore and request a new one
     }
   }
   const requestOptions = {
@@ -480,7 +494,7 @@ const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 
 async function mpFileUpload(file: File) {
   const configStr = await store.get(`mpConfig`)
-  let { appID, appsecret, proxyOrigin } = JSON.parse(configStr!)
+  let { appID, appsecret, proxyOrigin } = safeJsonParse<{ appID: string, appsecret: string, proxyOrigin?: string }>(configStr, `mp config`)
   // 未填写代理域名且是 Cloudflare Workers 环境时，使用当前域名作为代理域名
   if (!proxyOrigin && isCfWorkers) {
     proxyOrigin = window.location.origin
@@ -528,7 +542,7 @@ async function mpFileUpload(file: File) {
 
 async function r2Upload(file: File) {
   const configStr = await store.get(`r2Config`)
-  const { accountId, accessKey, secretKey, bucket, path, domain } = JSON.parse(configStr!)
+  const { accountId, accessKey, secretKey, bucket, path, domain } = safeJsonParse<{ accountId: string, accessKey: string, secretKey: string, bucket: string, path: string, domain: string }>(configStr, `r2 config`)
   const dir = path ? `${path}/` : ``
   const filename = dir + getDateFilename(file.name)
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
@@ -543,7 +557,7 @@ async function r2Upload(file: File) {
       'Content-Type': file.type,
     },
     data: file,
-  }).catch((err) => { console.error(err) })
+  })
   return `${domain}/${filename}`
 }
 
@@ -553,7 +567,7 @@ async function r2Upload(file: File) {
 
 async function upyunUpload(file: File) {
   const configStr = await store.get(`upyunConfig`)
-  const { bucket, operator, password, path, domain } = JSON.parse(configStr!)
+  const { bucket, operator, password, path, domain } = safeJsonParse<{ bucket: string, operator: string, password: string, path: string, domain: string }>(configStr, `upyun config`)
   const filename = `${path}/${getDateFilename(file.name)}`
   const uri = `/${bucket}/${filename}`
   const arrayBuffer = await file.arrayBuffer()
@@ -744,8 +758,7 @@ async function formCustomUpload(content: string, file: File) {
     // Use Function constructor instead of eval
     // eslint-disable-next-line no-new-func
     const fn = new Function(`return (${str})`)()
-    fn(exportObj).catch((err: any) => {
-      console.error(err)
+    fn(exportObj).catch((err: unknown) => {
       reject(err)
     })
   })

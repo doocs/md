@@ -10,6 +10,8 @@ defineProps<{
   isMobile: boolean
   showEditor: boolean
 }>()
+const SELECTION_HINT_TIMEOUT_MS = 3000
+const SELECTION_CHECK_INTERVAL_MS = 300
 
 const uiStore = useUIStore()
 const { aiDialogVisible, aiImageDialogVisible } = storeToRefs(uiStore)
@@ -74,7 +76,7 @@ function checkSelectionAndUpdateHint() {
       // 3秒后自动隐藏提示
       selectionHintTimer = setTimeout(() => {
         showSelectionHint.value = false
-      }, 3000)
+      }, SELECTION_HINT_TIMEOUT_MS)
     }
     else {
       showSelectionHint.value = false
@@ -128,7 +130,7 @@ onMounted(() => {
   // 启动定时检查选中文本
   selectionCheckInterval = setInterval(() => {
     checkSelectionAndUpdateHint()
-  }, 300) // 每300ms检查一次
+  }, SELECTION_CHECK_INTERVAL_MS) // 定期检查选中文本
 
   const handleInteraction = (e: Event) => {
     // 只有在展开状态才需要处理

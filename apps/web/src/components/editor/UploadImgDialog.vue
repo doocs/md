@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { GenericObject } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/yup'
 import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
@@ -8,6 +9,12 @@ import { checkImage } from '@/utils'
 import { store } from '@/utils/storage'
 
 const emit = defineEmits([`uploadImage`])
+// Track active intervals for cleanup on unmount
+const activeIntervals = new Set<ReturnType<typeof setInterval>>()
+onUnmounted(() => {
+  activeIntervals.forEach(clearInterval)
+  activeIntervals.clear()
+})
 
 const uiStore = useUIStore()
 const { enableImageReupload } = storeToRefs(uiStore)
@@ -23,7 +30,7 @@ const githubSchema = toTypedSchema(yup.object({
 
 const githubConfig = store.reactive(`githubConfig`, { repo: ``, branch: ``, accessToken: ``, useCDN: false })
 
-async function githubSubmit(formValues: any) {
+async function githubSubmit(formValues: GenericObject) {
   Object.assign(githubConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -49,7 +56,7 @@ const aliOSSConfig = store.reactive(`aliOSSConfig`, {
   path: ``,
 })
 
-async function aliOSSSubmit(formValues: any) {
+async function aliOSSSubmit(formValues: GenericObject) {
   Object.assign(aliOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -73,7 +80,7 @@ const txCOSConfig = store.reactive(`txCOSConfig`, {
   path: ``,
 })
 
-async function txCOSSubmit(formValues: any) {
+async function txCOSSubmit(formValues: GenericObject) {
   Object.assign(txCOSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -97,7 +104,7 @@ const qiniuConfig = store.reactive(`qiniuConfig`, {
   path: ``,
 })
 
-async function qiniuSubmit(formValues: any) {
+async function qiniuSubmit(formValues: GenericObject) {
   Object.assign(qiniuConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -121,7 +128,7 @@ const minioOSSConfig = store.reactive(`minioConfig`, {
   secretKey: ``,
 })
 
-async function minioOSSSubmit(formValues: any) {
+async function minioOSSSubmit(formValues: GenericObject) {
   Object.assign(minioOSSConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -149,7 +156,7 @@ const s3Config = store.reactive(`s3Config`, {
   pathStyle: false,
 })
 
-async function s3Submit(formValues: any) {
+async function s3Submit(formValues: GenericObject) {
   Object.assign(s3Config.value, formValues)
   toast.success(`保存成功`)
 }
@@ -164,7 +171,7 @@ const telegramSchema = toTypedSchema(
 
 const telegramConfig = store.reactive(`telegramConfig`, { token: ``, chatId: `` })
 
-async function telegramSubmit(values: any) {
+async function telegramSubmit(values: GenericObject) {
   Object.assign(telegramConfig.value, values)
   toast.success(`保存成功`)
 }
@@ -206,7 +213,7 @@ const mpConfig = store.reactive(`mpConfig`, {
   appsecret: ``,
 })
 
-async function mpSubmit(formValues: any) {
+async function mpSubmit(formValues: GenericObject) {
   Object.assign(mpConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -230,7 +237,7 @@ const r2Config = store.reactive(`r2Config`, {
   path: ``,
 })
 
-async function r2Submit(formValues: any) {
+async function r2Submit(formValues: GenericObject) {
   Object.assign(r2Config.value, formValues)
   toast.success(`保存成功`)
 }
@@ -254,7 +261,7 @@ const upyunConfig = store.reactive(`upyunConfig`, {
   path: ``,
 })
 
-async function upyunSubmit(formValues: any) {
+async function upyunSubmit(formValues: GenericObject) {
   Object.assign(upyunConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -284,7 +291,7 @@ const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
   domain: ``,
 })
 
-async function cloudinarySubmit(formValues: any) {
+async function cloudinarySubmit(formValues: GenericObject) {
   Object.assign(cloudinaryConfig.value, formValues)
   toast.success(`保存成功`)
 }
@@ -402,6 +409,7 @@ async function onDrop(e: DragEvent) {
 }
 const progressValue = ref(0)
 const imageUrl = ref(``)
+const PROGRESS_INTERVAL_MS = 100
 function emitUploads(file: File) {
   progressValue.value = 0
   const intervalId = setInterval(() => {
@@ -410,11 +418,13 @@ function emitUploads(file: File) {
       return
     }
     progressValue.value = newProgress
-  }, 100)
+  }, PROGRESS_INTERVAL_MS)
+  activeIntervals.add(intervalId)
 
   // 监听上传完成事件，在真正完成后清除定时器和设置100%
   const cleanup = (_url: string, data: string) => {
     clearInterval(intervalId)
+    activeIntervals.delete(intervalId)
     progressValue.value = 100 // 设置完成状态
     if (data) {
       imageUrl.value = `data:image/png;base64,${data}`

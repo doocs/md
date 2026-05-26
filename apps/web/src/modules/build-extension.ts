@@ -103,23 +103,20 @@ export function htmlScriptToVirtual(
           // Extension CSP blocks inline scripts, so that's why we're pulling them out.
           const promises: Promise<void>[] = []
           const inlineScripts = document.querySelectorAll(`script[src^=http]`)
-          inlineScripts.forEach(async (script) => {
-            promises.push(new Promise<void>((resolve) => {
-              const url = script.getAttribute(`src`) ?? ``
-              if (url?.startsWith(`http://localhost`)) {
-                resolve()
-                return
+          inlineScripts.forEach((script) => {
+            const url = script.getAttribute(`src`) ?? ``
+            if (url?.startsWith(`http://localhost`)) {
+              return
+            }
+            const p = doFetch(url).then((textContent) => {
+              const key = hash(textContent)
+              inlineScriptContents[key] = textContent
+              script.setAttribute(`src`, `${server.origin}/@id/${virtualInlineScript}?${key}`)
+              if (script.hasAttribute(`id`)) {
+                script.setAttribute(`type`, `module`)
               }
-              doFetch(url).then((textContent) => {
-                const key = hash(textContent)
-                inlineScriptContents[key] = textContent
-                script.setAttribute(`src`, `${server.origin}/@id/${virtualInlineScript}?${key}`)
-                if (script.hasAttribute(`id`)) {
-                  script.setAttribute(`type`, `module`)
-                }
-                resolve()
-              })
-            }))
+            })
+            promises.push(p)
           })
           await Promise.all(promises)
           const newHtml = document.toString()
@@ -173,14 +170,12 @@ export function htmlScriptToLocal(
         const promises: Promise<void>[] = []
         const httpScripts = document.querySelectorAll(`script[src^=http]`)
         if (httpScripts.length > 0) {
-          httpScripts.forEach(async (script) => {
-            /* eslint-disable no-async-promise-executor */
-            promises.push(new Promise<void>(async (resolve) => {
-              const url = script.getAttribute(`src`) ?? ``
-              if (url?.startsWith(`http://localhost`)) {
-                resolve()
-                return
-              }
+          httpScripts.forEach((script) => {
+            const url = script.getAttribute(`src`) ?? ``
+            if (url?.startsWith(`http://localhost`)) {
+              return
+            }
+            const p = (async () => {
               const textContent = await doFetch(url)
               const key = hash(textContent)
               let jsName = url.match(SCRIPT_FILE_NAME_REGEX)?.[1] ?? `.js`
@@ -192,9 +187,8 @@ export function htmlScriptToLocal(
               const outFile = path.resolve(wxt.config.outDir, `./${fileName}`)
               await writeFile(outFile, textContent, `utf8`)
               script.setAttribute(`src`, `/${fileName}`)
-              // script.setAttribute(`type`, `module`)
-              resolve()
-            }))
+            })()
+            promises.push(p)
           })
         }
 
@@ -203,9 +197,9 @@ export function htmlScriptToLocal(
         // out.
         const inlineScripts = document.querySelectorAll(`script:not([src])`)
         if (inlineScripts.length > 0) {
-          inlineScripts.forEach(async (script) => {
-            promises.push(new Promise<void>(async (resolve) => {
-              // Save the text content for later
+          inlineScripts.forEach((script) => {
+            const p = (async () => {
+              // Save the textContent for later
               const textContent = script.textContent ?? ``
               const key = hash(textContent)
               const fileName = `md-inline-${key}.js`
@@ -217,9 +211,8 @@ export function htmlScriptToLocal(
               // virtualScript.type = `module`
               virtualScript.src = `/${fileName}`
               script.replaceWith(virtualScript)
-              resolve()
-            }),
-            )
+            })()
+            promises.push(p)
           })
         }
         await Promise.all(promises)

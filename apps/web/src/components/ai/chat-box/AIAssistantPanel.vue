@@ -39,7 +39,10 @@ import { copyPlain } from '@/utils/clipboard'
 import { store } from '@/utils/storage'
 
 const props = defineProps<{ open: boolean }>()
+
 const emit = defineEmits([`update:open`])
+
+const FEEDBACK_INDICATOR_TIMEOUT_MS = 1500
 
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
@@ -93,8 +96,8 @@ function getSelectedText(): string {
       return cm.getSelection() || ``
     return ``
   }
-  catch (e) {
-    console.warn(`获取选中文本失败`, e)
+  catch {
+    console.warn(`获取选中文本失败`)
     return ``
   }
 }
@@ -263,13 +266,13 @@ function handleKeydown(e: KeyboardEvent) {
 async function copyToClipboard(text: string, index: number) {
   copyPlain(text)
   copiedIndex.value = index
-  setTimeout(() => (copiedIndex.value = null), 1500)
+  setTimeout(() => (copiedIndex.value = null), FEEDBACK_INDICATOR_TIMEOUT_MS)
 }
 
 function insertToDocument(text: string, index: number) {
   editorStore.insertAtCursor(text)
   insertedIndex.value = index
-  setTimeout(() => (insertedIndex.value = null), 1500)
+  setTimeout(() => (insertedIndex.value = null), FEEDBACK_INDICATOR_TIMEOUT_MS)
   toast.success(`已插入文档`)
 }
 

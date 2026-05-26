@@ -140,7 +140,6 @@ onMounted(async () => {
 
   if (imagesLength < maxLength) {
     // 如果图片少于其他数组，说明数据不一致，清除所有数据
-    console.warn(`⚠️ 数据不一致，清除所有数据`)
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
@@ -277,7 +276,7 @@ async function doGenerateImage(promptText: string, clearInput = false) {
   }
   catch (e) {
     if ((e as Error).name !== `AbortError`) {
-      console.error(`图像生成失败:`, e)
+      toast.error(`图像生成失败: ${(e as Error).message}`)
     }
   }
   finally {
@@ -337,8 +336,8 @@ async function downloadImage(imageUrl: string, index: number) {
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
   }
-  catch (error) {
-    console.error(`下载图像失败:`, error)
+  catch {
+    // Silently fail - user already sees the download button
   }
 }
 
@@ -350,8 +349,7 @@ async function copyImageUrl(imageUrl: string) {
       toast.success(`图片链接已复制到剪贴板`)
     }
   }
-  catch (error) {
-    console.error(`❌ 复制失败:`, error)
+  catch {
     if (typeof toast !== `undefined`) {
       toast.error(`复制失败，请重试`)
     }
@@ -367,7 +365,7 @@ function regenerateImage() {
     regenerateWithPrompt(currentPrompt)
   }
   else {
-    console.warn(`⚠️ 没有找到当前图片的prompt`)
+    // No prompt available, silently skip
   }
 }
 
@@ -391,10 +389,8 @@ function nextImage() {
 
 /* ---------- 插入图像到光标位置 ---------- */
 function insertImageToCursor(imageUrl: string) {
-  if (!editor.value) {
-    console.warn(`编辑器未初始化`)
+  if (!editor.value)
     return
-  }
 
   try {
     // 获取当前图片对应的prompt
@@ -421,29 +417,26 @@ function insertImageToCursor(imageUrl: string) {
     // 关闭弹窗
     dialogVisible.value = false
   }
-  catch (error) {
-    console.error(`❌ 插入图像到光标位置失败:`, error)
+  catch {
+    // Silently fail - likely user cancelled or DOM not available
   }
 }
 
 /* ---------- 查看大图 ---------- */
 function viewFullImage(imageUrl: string) {
-  if (!imageUrl) {
-    console.error(`❌ 图片URL为空`)
+  if (!imageUrl)
     return
-  }
 
   try {
     // 在新窗口中打开图片
     const newWindow = window.open(imageUrl, `_blank`, `width=800,height=600,scrollbars=yes,resizable=yes`)
     if (!newWindow) {
-      console.error(`❌ 无法打开新窗口，可能被浏览器阻止`)
       // 备用方案：在当前标签页打开
       window.open(imageUrl, `_blank`)
     }
   }
-  catch (error) {
-    console.error(`❌ 打开图片失败:`, error)
+  catch {
+    // Silently fail - likely network issue or invalid URL
   }
 }
 
