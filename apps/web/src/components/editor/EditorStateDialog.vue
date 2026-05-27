@@ -346,7 +346,7 @@ function applyImportedConfig() {
         </TabsList>
 
         <TabsContent value="export">
-          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
+          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 grid-rows-[1fr_auto] text-center">
             <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 请选择需要导出的配置
@@ -392,7 +392,7 @@ function applyImportedConfig() {
         </TabsContent>
 
         <TabsContent value="import">
-          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 text-center">
+          <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 grid-rows-[1fr_auto] text-center">
             <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
               <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
                 <span>导入 JSON 配置文件</span>
@@ -452,7 +452,7 @@ function applyImportedConfig() {
                 </div>
               </div>
             </div>
-            <div class="flex-1 col-span-1 lg:col-span-2 flex justify-end">
+            <div class="col-span-1 lg:col-span-2 flex justify-end">
               <input
                 id="json-import-input"
                 ref="fileInputRef"
