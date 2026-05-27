@@ -154,12 +154,15 @@ function renderTemplate(def: CustomComponentDef, rawProps: Record<string, string
   let html = def.template
 
   // 3. 处理 {{#if prop}}...{{/if}} 条件块
-  html = html.replace(/\{\{#if\s+(\w+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_, key, content) => {
+  html = html.replace(/\{\{#if\s+([\w-]+)\}\}([\s\S]*?)\{\{\/if\}\}/g, (_, key, content) => {
     return finalProps[key] ? content : ``
   })
 
-  // 4. 替换 {{propName}} 占位符（转义值）
-  html = html.replace(/\{\{(\w+)\}\}/g, (_, key) => {
+  // 4. 替换 {{propName}} 占位符（转义值）；{{children}} 保留原始 HTML 不转义
+  html = html.replace(/\{\{([\w-]+)\}\}/g, (_, key) => {
+    if (key === `children`) {
+      return finalProps[key] ?? ``
+    }
     return finalProps[key] !== undefined ? escapeAttr(finalProps[key]) : ``
   })
 
@@ -199,7 +202,10 @@ export function getBuiltInRegistry(): ComponentRegistry {
  *
  * 组件名必须以大写字母开头（PascalCase）以与普通 HTML 标签区分。
  */
-export function markedComponent(): MarkedExtension {
+export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedExtension {
+  function resolveRegistry(): ComponentRegistry {
+    return getRegistry ? getRegistry() : _registry
+  }
   /**
    * 简单的非正则标签解析器，避免复杂 regex 的回溯问题。
    * 返回 raw（完整原始文本）、name（组件名）、propsStr（属性串）。
@@ -272,13 +278,17 @@ export function markedComponent(): MarkedExtension {
         },
 
         renderer(token) {
-          const { name, propsStr } = token as unknown as { name: string, propsStr: string }
-          const def = _registry[name]
+          const { name, propsStr, children } = token as unknown as { name: string, propsStr: string, children: string }
+          const def = resolveRegistry()[name]
           if (!def) {
             // 未知组件，保留原始文本并给出提示
             return `<p style="color:#f00;font-size:12px;">[未知组件: ${name}]</p>\n`
           }
           const props = parseProps(propsStr)
+          // 将内部子内容作为保留的 children prop 传入（原始 HTML，不转义）
+          if (children && props.children === undefined) {
+            props.children = children
+          }
           return `${renderTemplate(def, props)}\n`
         },
       },

@@ -6,6 +6,7 @@ import frontMatter from 'front-matter'
 import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
 import {
+  getBuiltInRegistry,
   markedAlert,
   markedComponent,
   markedFootnotes,
@@ -17,7 +18,6 @@ import {
   markedSlider,
   markedToc,
   MDKatex,
-  setComponentRegistry,
 } from '../extensions'
 import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
@@ -133,32 +133,32 @@ function renderDiffCode(text: string, baseLang: string): string {
   const lang = isLangRegistered ? baseLang : `plaintext`
 
   const lines = text.split(`\n`)
+  const prefixes = lines.map(line => line[0])
+  // 将每行去掉前缀（+/-/ ）后拼接，整体高亮一次以避免逐行调用 hljs
+  const strippedLines = lines.map((line, i) => {
+    const p = prefixes[i]
+    return (p === `+` || p === `-`) ? line.slice(1) : line
+  })
+  const highlightedLines = isLangRegistered
+    ? hljs.highlight(strippedLines.join(`\n`), { language: lang }).value.split(`\n`)
+    : strippedLines.map(escapeHtml)
+
   const rendered = lines
-    .map((line) => {
-      const prefix = line[0]
-      const rest = line.slice(1)
-      let highlighted: string
+    .map((_, i) => {
+      const prefix = prefixes[i]
+      const highlighted = highlightedLines[i] ?? ``
       let bg: string
       let sign: string
 
       if (prefix === `+`) {
-        highlighted = isLangRegistered
-          ? hljs.highlight(rest, { language: lang }).value
-          : escapeHtml(rest)
         bg = `background:rgba(80,200,80,.18);`
         sign = `<span style="color:#52c41a;user-select:none;">+</span>`
       }
       else if (prefix === `-`) {
-        highlighted = isLangRegistered
-          ? hljs.highlight(rest, { language: lang }).value
-          : escapeHtml(rest)
         bg = `background:rgba(255,80,80,.18);`
         sign = `<span style="color:#ff4d4f;user-select:none;">-</span>`
       }
       else {
-        highlighted = isLangRegistered
-          ? hljs.highlight(line, { language: lang }).value
-          : escapeHtml(line)
         bg = ``
         sign = `<span style="user-select:none;"> </span>`
       }
@@ -241,9 +241,6 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   function reset(newOpts: Partial<IOpts>): void {
     footnotes.length = 0
     footnoteIndex = 0
-    if (newOpts.components !== undefined) {
-      setComponentRegistry(newOpts.components)
-    }
     setOptions(newOpts)
   }
 
@@ -463,7 +460,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
   marked.use({ renderer })
   // 新主题系统：扩展不再需要 styles 参数
-  marked.use(markedComponent())
+  // 通过闭包传入注册表 getter，避免直接依赖全局状态
+  marked.use(markedComponent(() => opts.components ?? getBuiltInRegistry()))
   marked.use(markedMarkup())
   marked.use(markedToc())
   marked.use(markedSlider())

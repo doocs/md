@@ -189,9 +189,14 @@ const copiedId = ref<string | null>(null)
 
 async function copySnippet(def: CustomComponentDef) {
   const text = def.example || componentStore.buildSnippet(def)
-  await navigator.clipboard.writeText(text)
-  copiedId.value = def.id
-  setTimeout(() => { copiedId.value = null }, 1500)
+  try {
+    await navigator.clipboard.writeText(text)
+    copiedId.value = def.id
+    setTimeout(() => { copiedId.value = null }, 1500)
+  }
+  catch {
+    toast.error(`复制失败，请手动复制`)
+  }
 }
 
 // 类型颜色标签
