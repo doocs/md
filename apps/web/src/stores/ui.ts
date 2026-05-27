@@ -124,6 +124,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
 
+  // 是否展示自定义组件对话框
+  const isShowComponentDialog = ref(false)
+  const toggleShowComponentDialog = useToggle(isShowComponentDialog)
+
   // AI 对话框
   const aiDialogVisible = ref(false)
   const aiImageDialogVisible = ref(false)
@@ -214,6 +218,8 @@ export const useUIStore = defineStore(`ui`, () => {
     localImageUploadData,
     isShowTemplateDialog,
     toggleShowTemplateDialog,
+    isShowComponentDialog,
+    toggleShowComponentDialog,
     aiDialogVisible,
     toggleAIDialog,
     aiImageDialogVisible,

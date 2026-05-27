@@ -7,6 +7,7 @@ import hljs from 'highlight.js/lib/core'
 import { marked } from 'marked'
 import {
   markedAlert,
+  markedComponent,
   markedFootnotes,
   markedInfographic,
   markedMarkup,
@@ -16,6 +17,7 @@ import {
   markedSlider,
   markedToc,
   MDKatex,
+  setComponentRegistry,
 } from '../extensions'
 import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
@@ -121,6 +123,54 @@ const macCodeSvg = `
   </svg>
 `.trim()
 
+/**
+ * 渲染 diff-{lang} 代码块。
+ * 以 `+` 开头的行显示绿色底色（新增），`-` 开头的行显示红色底色（删除），
+ * 其余行正常高亮显示。
+ */
+function renderDiffCode(text: string, baseLang: string): string {
+  const isLangRegistered = hljs.getLanguage(baseLang)
+  const lang = isLangRegistered ? baseLang : `plaintext`
+
+  const lines = text.split(`\n`)
+  const rendered = lines
+    .map((line) => {
+      const prefix = line[0]
+      const rest = line.slice(1)
+      let highlighted: string
+      let bg: string
+      let sign: string
+
+      if (prefix === `+`) {
+        highlighted = isLangRegistered
+          ? hljs.highlight(rest, { language: lang }).value
+          : escapeHtml(rest)
+        bg = `background:rgba(80,200,80,.18);`
+        sign = `<span style="color:#52c41a;user-select:none;">+</span>`
+      }
+      else if (prefix === `-`) {
+        highlighted = isLangRegistered
+          ? hljs.highlight(rest, { language: lang }).value
+          : escapeHtml(rest)
+        bg = `background:rgba(255,80,80,.18);`
+        sign = `<span style="color:#ff4d4f;user-select:none;">-</span>`
+      }
+      else {
+        highlighted = isLangRegistered
+          ? hljs.highlight(line, { language: lang }).value
+          : escapeHtml(line)
+        bg = ``
+        sign = `<span style="user-select:none;"> </span>`
+      }
+
+      return `<span style="display:block;${bg}">${sign}${highlighted}</span>`
+    })
+    .join(``)
+
+  const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
+  return `<pre class="hljs code__pre">${span}<code class="language-diff-${baseLang}">${rendered}</code></pre>`
+}
+
 interface ParseResult {
   yamlData: Record<string, any>
   markdownContent: string
@@ -191,6 +241,9 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   function reset(newOpts: Partial<IOpts>): void {
     footnotes.length = 0
     footnoteIndex = 0
+    if (newOpts.components !== undefined) {
+      setComponentRegistry(newOpts.components)
+    }
     setOptions(newOpts)
   }
 
@@ -249,6 +302,12 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
     code({ text, lang = `` }: Tokens.Code): string {
       const langText = lang.split(` `)[0]
+
+      // diff-{lang} 语法：将代码渲染为 diff 对比视图（+/- 行着色）
+      if (langText.startsWith(`diff-`)) {
+        return renderDiffCode(text, langText.slice(5))
+      }
+
       const isLanguageRegistered = hljs.getLanguage(langText)
       const language = isLanguageRegistered ? langText : `plaintext`
 
@@ -404,6 +463,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
   marked.use({ renderer })
   // 新主题系统：扩展不再需要 styles 参数
+  marked.use(markedComponent())
   marked.use(markedMarkup())
   marked.use(markedToc())
   marked.use(markedSlider())
