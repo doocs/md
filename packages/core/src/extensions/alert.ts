@@ -2,6 +2,10 @@ import type { AlertOptions, AlertVariantItem } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
 import { ucfirst } from '../utils'
 
+const ALERT_CONTAINER_START_RE = /^:::/
+// eslint-disable-next-line regexp/no-super-linear-backtracking
+const ALERT_CONTAINER_RE = /^:::\s*(?:(\w+)\s*)?\n([\s\S]*?)\n:::/
+
 /**
  * https://github.com/bent10/marked-extensions/tree/main/packages/alert
  * To support theme, we need to modify the source code.
@@ -94,14 +98,13 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
         name: `alertContainer`,
         level: `block`,
         start(src) {
-          return src.match(/^:::/)?.index
+          return src.match(ALERT_CONTAINER_START_RE)?.index
         },
         tokenizer(src, _tokens) {
-          // eslint-disable-next-line regexp/no-super-linear-backtracking
-          const match = /^:::\s*(\w+)\s*\n([\s\S]*?)\n:::/.exec(src)
+          const match = ALERT_CONTAINER_RE.exec(src)
 
           if (match) {
-            const [raw, variant, content] = match
+            const [raw, variant = `info`, content] = match
             const matchedVariant = resolvedVariants.find(v => v.type === variant)
             if (!matchedVariant)
               return

@@ -16,6 +16,7 @@
     "node": ">=22.16.0"
   },
   "scripts": {
+    "dev": "pnpm web dev",
     "start": "pnpm web dev",
     "web": "pnpm --filter @md/web",
     "vscode": "pnpm --prefix ./apps/vscode",
