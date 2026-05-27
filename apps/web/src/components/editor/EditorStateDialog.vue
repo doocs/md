@@ -160,7 +160,10 @@ function exportSelectedConfig() {
     return acc
   }, {} as Record<string, any>)
 
-  downloadFile(JSON.stringify(selectedConfig, null, 2), `exported_config.json`, `application/json`)
+  const now = new Date()
+  const pad = (n: number) => String(n).padStart(2, `0`)
+  const filename = `doocs-md-config-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.json`
+  downloadFile(JSON.stringify(selectedConfig, null, 2), filename, `application/json`)
   toast.success(`配置文件导出成功`)
   emit(`close`)
 }
