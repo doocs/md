@@ -141,6 +141,16 @@ docker run -d -p 8080:80 doocs/md:latest
 
 Then open http://localhost:8080 in your browser. For more details on the Docker image, see https://github.com/doocs/docker-md.
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=doocs%2Fmd&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
+ </picture>
+</a>
+
 ## Who's Using It
 
 See [USERS.md](USERS.md) for a list of WeChat Official Accounts using this project.
