@@ -1,5 +1,6 @@
 import { initRenderer } from '@md/core'
 import { postProcessHtml, renderMarkdown } from '@/utils'
+import { useCustomComponentStore } from './customComponent'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
 
@@ -71,6 +72,7 @@ export const useRenderStore = defineStore(`render`, () => {
 
     const themeStore = useThemeStore()
     const uiStore = useUIStore()
+    const componentStore = useCustomComponentStore()
 
     // 重置渲染器配置
     // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
@@ -81,6 +83,7 @@ export const useRenderStore = defineStore(`render`, () => {
       isMacCodeBlock: themeStore.isMacCodeBlock,
       isShowLineNumber: themeStore.isShowLineNumber,
       themeMode: uiStore.isDark ? 'dark' : 'light',
+      components: componentStore.registry,
     })
 
     // 渲染 Markdown

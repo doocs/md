@@ -1,4 +1,5 @@
 import type { Token } from 'marked'
+import type { ComponentRegistry } from './component'
 
 /**
  * 渲染器选项（新主题系统）
@@ -12,6 +13,8 @@ export interface IOpts {
   isMacCodeBlock?: boolean
   isShowLineNumber?: boolean
   themeMode?: 'light' | 'dark'
+  /** 自定义组件注册表 */
+  components?: ComponentRegistry
 }
 
 export interface IConfigOption<VT = string> {

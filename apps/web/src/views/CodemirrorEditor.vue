@@ -260,6 +260,8 @@ onUnmounted(() => {
       <FormulaEditorDialog />
 
       <TemplateDialog />
+
+      <CustomComponentDialog />
     </main>
 
     <Footer />
