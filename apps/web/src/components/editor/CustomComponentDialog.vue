@@ -342,22 +342,16 @@ function propTypeBadge(prop: ComponentPropDef) {
 
         <!-- ─── 组件列表 ─── -->
         <div v-if="!isShowForm">
-          <div class="flex items-center justify-between mb-4">
-            <p class="text-xs text-muted-foreground">
-              共 {{ componentStore.allComponents.length }} 个组件
-            </p>
-            <Button size="sm" @click="openCreateForm">
-              <Plus class="mr-1.5 size-3.5" />
-              新建组件
-            </Button>
-          </div>
-
           <!-- 空状态 -->
           <div v-if="componentStore.allComponents.length === 0" class="text-center py-16">
             <Blocks class="mx-auto size-12 text-muted-foreground/40 mb-3" />
-            <p class="text-sm text-muted-foreground">
-              暂无组件，点击右上角新建
+            <p class="text-sm text-muted-foreground mb-4">
+              暂无组件，点击新建
             </p>
+            <Button variant="outline" size="sm" @click="openCreateForm">
+              <Plus class="mr-1.5 size-3.5" />
+              新建组件
+            </Button>
           </div>
 
           <!-- ── 内置组件 ── -->
@@ -533,14 +527,28 @@ function propTypeBadge(prop: ComponentPropDef) {
           </section>
 
           <!-- ── 自定义组件 ── -->
-          <section v-if="componentStore.userComponents.length > 0">
-            <div class="flex items-center gap-1.5 mb-3">
-              <Blocks class="size-3.5 text-muted-foreground" />
-              <h4 class="text-sm font-medium text-muted-foreground">
-                自定义组件
-              </h4>
+          <section>
+            <div class="flex items-center justify-between mb-3">
+              <div class="flex items-center gap-1.5">
+                <Blocks class="size-3.5 text-muted-foreground" />
+                <h4 class="text-sm font-medium text-muted-foreground">
+                  自定义组件
+                </h4>
+                <span class="text-xs text-muted-foreground/60">
+                  {{ componentStore.userComponents.length }} 个
+                </span>
+              </div>
+              <Button variant="outline" size="sm" class="h-6 px-2 text-xs" @click="openCreateForm">
+                <Plus class="mr-1 size-3" />
+                新建
+              </Button>
             </div>
-            <div class="space-y-2">
+            <div v-if="componentStore.userComponents.length === 0" class="text-center py-8">
+              <p class="text-xs text-muted-foreground">
+                暂无自定义组件，点击上方"新建"按钮创建
+              </p>
+            </div>
+            <div v-else class="space-y-2">
               <div
                 v-for="def in componentStore.userComponents"
                 :key="def.id"
