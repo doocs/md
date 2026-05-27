@@ -60,30 +60,54 @@ export function useScrollSync(
   }
 
   // ============================================================
-  // 预览块元素提取（缓存以 #output 的 innerHTML 为 key）
+  // 预览块元素提取（用 MutationObserver + 版本号代替 innerHTML 缓存 key）
   // ============================================================
-  let cachedPreviewContent: string | null = null
-  let cachedPreviewBlocks: HTMLElement[] | null = null
+  let previewVersion = 0
+  let cachedPreviewVersion = -1
+  let cachedPreviewBlocks: HTMLElement[] = []
+  let cachedPreviewOffsetTops: number[] = []
+  let mutationObserver: MutationObserver | null = null
 
-  function getPreviewBlockElements(preview: HTMLElement): HTMLElement[] {
+  function setupMutationObserver(preview: HTMLElement) {
+    if (mutationObserver)
+      return
     const output = preview.querySelector('#output')
     if (!output)
-      return []
+      return
+    mutationObserver = new MutationObserver(() => { previewVersion++ })
+    mutationObserver.observe(output, { childList: true, subtree: true })
+  }
 
-    // 使用 innerHTML 作为缓存 key
-    const content = output.innerHTML
-    if (cachedPreviewContent === content && cachedPreviewBlocks)
-      return cachedPreviewBlocks
+  function teardownMutationObserver() {
+    mutationObserver?.disconnect()
+    mutationObserver = null
+  }
+
+  function getPreviewBlockElements(preview: HTMLElement): { blocks: HTMLElement[], offsetTops: number[] } {
+    // 懒初始化：若 watchEffect 首次运行时 #output 尚未就绪，在此补偿
+    if (!mutationObserver)
+      setupMutationObserver(preview)
+
+    if (cachedPreviewVersion === previewVersion)
+      return { blocks: cachedPreviewBlocks, offsetTops: cachedPreviewOffsetTops }
+
+    const output = preview.querySelector('#output')
+    if (!output) {
+      cachedPreviewVersion = previewVersion
+      cachedPreviewBlocks = []
+      cachedPreviewOffsetTops = []
+      return { blocks: [], offsetTops: [] }
+    }
 
     const container = output.firstElementChild
     if (!container) {
-      cachedPreviewContent = content
+      cachedPreviewVersion = previewVersion
       cachedPreviewBlocks = []
-      return []
+      cachedPreviewOffsetTops = []
+      return { blocks: [], offsetTops: [] }
     }
 
     const blocks: HTMLElement[] = []
-    let skippedReadingTimeBlockquote = false
 
     for (const child of container.children) {
       const tag = child.tagName
@@ -91,25 +115,32 @@ export function useScrollSync(
       if (tag === 'STYLE')
         continue
 
-      // 跳过阅读时间 blockquote（第一个 blockquote）
-      if (tag === 'BLOCKQUOTE' && !skippedReadingTimeBlockquote) {
-        skippedReadingTimeBlockquote = true
+      // 仅跳过阅读时间 blockquote（通过 class 判断，避免误删用户正文首个引用块）
+      if (tag === 'BLOCKQUOTE' && (child as HTMLElement).classList.contains('md-blockquote'))
         continue
-      }
 
-      // 遇到「引用链接」标题说明进入脚注区域，停止收集
-      if (tag === 'H4') {
-        const text = (child as HTMLElement).textContent?.trim()
-        if (text === '引用链接')
+      // 遇到脚注区域停止收集（结构特征判断，不依赖文本，避免与用户自定义 H4 冲突）
+      if (tag === 'H4' && (child as HTMLElement).dataset.heading === 'true') {
+        const next = child.nextElementSibling
+        if (next && (next as HTMLElement).classList.contains('footnotes'))
           break
       }
+      if ((child as HTMLElement).classList.contains('footnotes'))
+        break
 
       blocks.push(child as HTMLElement)
     }
 
-    cachedPreviewContent = content
+    // 批量计算各块相对 preview 容器的偏移量，仅在内容变化时执行（非每次滚动）
+    const previewRect = preview.getBoundingClientRect()
+    const offsetTops = blocks.map(el =>
+      el.getBoundingClientRect().top - previewRect.top + preview.scrollTop,
+    )
+
+    cachedPreviewVersion = previewVersion
     cachedPreviewBlocks = blocks
-    return blocks
+    cachedPreviewOffsetTops = offsetTops
+    return { blocks, offsetTops }
   }
 
   // ============================================================
@@ -163,12 +194,29 @@ export function useScrollSync(
       return
 
     const scroller = view.scrollDOM
-    if (scroller.scrollHeight - scroller.clientHeight <= 0)
+    const scrollable = scroller.scrollHeight - scroller.clientHeight
+    if (scrollable <= 0)
       return
 
-    const sourceBlocks = getSourceBlocks(view.state.doc)
-    if (sourceBlocks.length === 0)
+    isSyncingFromEditor = true
+
+    // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
+    if (scroller.scrollTop <= 0) {
+      preview.scrollTop = 0
+      requestAnimationFrame(() => { isSyncingFromEditor = false })
       return
+    }
+    if (scroller.scrollTop >= scrollable) {
+      preview.scrollTop = preview.scrollHeight
+      requestAnimationFrame(() => { isSyncingFromEditor = false })
+      return
+    }
+
+    const sourceBlocks = getSourceBlocks(view.state.doc)
+    if (sourceBlocks.length === 0) {
+      isSyncingFromEditor = false
+      return
+    }
 
     // 找到编辑器顶部可见行号
     const lineBlock = view.lineBlockAtHeight(scroller.scrollTop)
@@ -177,17 +225,15 @@ export function useScrollSync(
     const srcIndex = sourceBlockIndexForLine(sourceBlocks, lineNo)
 
     // 获取预览块并映射
-    const previewBlocks = getPreviewBlockElements(preview)
-    if (previewBlocks.length === 0)
+    const { blocks: previewBlocks, offsetTops: previewOffsetTops } = getPreviewBlockElements(preview)
+    if (previewBlocks.length === 0) {
+      isSyncingFromEditor = false
       return
+    }
 
     const previewIndex = mapBlockIndex(srcIndex, sourceBlocks.length, previewBlocks.length)
-    const targetEl = previewBlocks[Math.min(previewIndex, previewBlocks.length - 1)]
-
-    isSyncingFromEditor = true
-    const previewRect = preview.getBoundingClientRect()
-    const targetRect = targetEl.getBoundingClientRect()
-    preview.scrollTop += targetRect.top - previewRect.top
+    const targetIndex = Math.min(previewIndex, previewBlocks.length - 1)
+    preview.scrollTop = previewOffsetTops[targetIndex]
     requestAnimationFrame(() => {
       isSyncingFromEditor = false
     })
@@ -205,35 +251,53 @@ export function useScrollSync(
     if (!view || !preview)
       return
 
-    if (preview.scrollHeight - preview.clientHeight <= 0)
+    const previewScrollable = preview.scrollHeight - preview.clientHeight
+    if (previewScrollable <= 0)
       return
 
-    const previewBlocks = getPreviewBlockElements(preview)
-    if (previewBlocks.length === 0)
-      return
+    isSyncingFromPreview = true
 
-    // 找到预览区顶部第一个可见的块
-    const previewRect = preview.getBoundingClientRect()
-    let visibleBlockIndex = -1
-    for (let i = 0; i < previewBlocks.length; i++) {
-      const rect = previewBlocks[i].getBoundingClientRect()
-      if (rect.bottom > previewRect.top) {
-        visibleBlockIndex = i
-        break
-      }
+    // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
+    if (preview.scrollTop <= 0) {
+      view.scrollDOM.scrollTop = 0
+      requestAnimationFrame(() => { isSyncingFromPreview = false })
+      return
     }
-    if (visibleBlockIndex === -1)
-      visibleBlockIndex = previewBlocks.length - 1
+    if (preview.scrollTop >= previewScrollable) {
+      view.scrollDOM.scrollTop = view.scrollDOM.scrollHeight
+      requestAnimationFrame(() => { isSyncingFromPreview = false })
+      return
+    }
+
+    const { blocks: previewBlocks, offsetTops: previewOffsetTops } = getPreviewBlockElements(preview)
+    if (previewBlocks.length === 0) {
+      isSyncingFromPreview = false
+      return
+    }
+
+    // 二分查找：找最后一个 offsetTop ≤ scrollTop 的块（顶部可见块），避免 O(n) 强制布局
+    const scrollTop = preview.scrollTop
+    let lo = 0
+    let hi = previewOffsetTops.length - 1
+    while (lo < hi) {
+      const mid = (lo + hi + 1) >> 1
+      if (previewOffsetTops[mid] <= scrollTop)
+        lo = mid
+      else
+        hi = mid - 1
+    }
+    const visibleBlockIndex = lo
 
     const sourceBlocks = getSourceBlocks(view.state.doc)
-    if (sourceBlocks.length === 0)
+    if (sourceBlocks.length === 0) {
+      isSyncingFromPreview = false
       return
+    }
 
     const srcIndex = mapBlockIndex(visibleBlockIndex, previewBlocks.length, sourceBlocks.length)
     const lineNo = sourceLineForBlockIndex(sourceBlocks, srcIndex)
     const line = view.state.doc.line(lineNo)
 
-    isSyncingFromPreview = true
     const blockInfo = view.lineBlockAt(line.from)
     if (blockInfo) {
       view.scrollDOM.scrollTop = blockInfo.top
@@ -255,6 +319,7 @@ export function useScrollSync(
     if (!view || !preview)
       return
 
+    setupMutationObserver(preview)
     const scroller = view.scrollDOM
     scroller.addEventListener(`scroll`, onEditorScroll, { passive: true })
     preview.addEventListener(`scroll`, onPreviewScroll, { passive: true })
@@ -262,6 +327,7 @@ export function useScrollSync(
     onCleanup(() => {
       scroller.removeEventListener(`scroll`, onEditorScroll)
       preview.removeEventListener(`scroll`, onPreviewScroll)
+      teardownMutationObserver()
     })
   })
 }
