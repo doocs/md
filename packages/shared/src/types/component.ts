@@ -34,6 +34,8 @@ export interface CustomComponentDef {
   props: ComponentPropDef[]
   /** 是否为内置组件（内置组件不可删除，但可覆盖） */
   builtIn?: boolean
+  /** 使用示例（用于 UI 展示，优先于自动生成的 snippet） */
+  example?: string
   /** 创建时间戳 */
   createdAt?: number
   /** 最后更新时间戳 */

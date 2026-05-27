@@ -105,12 +105,11 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   }
 
   /**
-   * 生成该组件的 Markdown 使用示例字符串
+   * 生成该组件的 Markdown 使用示例字符串（包含所有 props）
    */
   function buildSnippet(def: CustomComponentDef): string {
     const propsStr = def.props
-      .filter(p => p.required || p.default !== undefined)
-      .map(p => `${p.name}="${p.default || ``}"`)
+      .map(p => `${p.name}="${p.default ?? ``}"`)
       .join(` `)
     return `<${def.name}${propsStr ? ` ${propsStr}` : ``} />`
   }

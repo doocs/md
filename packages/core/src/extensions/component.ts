@@ -24,6 +24,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
   />
   <p style="text-align: center; font-size: 14px; color: #888; margin-top: 8px; margin-bottom: 0;">{{text}}</p>
 </section>`,
+    example: `<QRCodeBlock url="https://md.doocs.org" text="扫码访问" size="150" />`,
   },
   {
     id: `builtin-card`,
@@ -44,6 +45,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
     {{#if url}}<a href="{{url}}" style="display: inline-block; margin-top: 12px; font-size: 13px; color: #07c160; text-decoration: none;">阅读全文 →</a>{{/if}}
   </section>
 </section>`,
+    example: `<CardBlock title="Doocs 开源社区" description="低门槛、高质量的互联网技术社区" url="https://doocs.github.io" />`,
   },
   {
     id: `builtin-author`,
@@ -55,7 +57,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
       { name: `avatar`, description: `头像图片 URL` },
       { name: `bio`, description: `作者简介` },
     ],
-    template: `<section style="display: table; width: 100%; border-top: 1px solid #f0f0f0; padding: 16px 0; margin: 16px 0; box-sizing: border-box;">
+    template: `<section style="display: table; width: 100%; padding: 16px 0; margin: 16px 0; box-sizing: border-box;">
   <section style="display: table-cell; vertical-align: middle; width: 64px;">
     <img src="{{avatar}}" alt="{{name}}" style="width: 56px; height: 56px; border-radius: 50%; display: block;" />
   </section>
@@ -64,6 +66,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
     <p style="margin: 0; font-size: 13px; color: #888; line-height: 1.5;">{{bio}}</p>
   </section>
 </section>`,
+    example: `<AuthorBlock name="yanglbme" avatar="https://avatars.githubusercontent.com/u/21008209?v=4" bio="Creator of Doocs" />`,
   },
   {
     id: `builtin-tip`,
@@ -79,6 +82,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
   {{#if title}}<p style="margin: 0 0 6px; font-size: 14px; font-weight: bold; color: {{textColor}};">{{title}}</p>{{/if}}
   <p style="margin: 0; font-size: 14px; color: {{textColor}}; line-height: 1.6;">{{content}}</p>
 </section>`,
+    example: `<TipBlock type="info" title="提示" content="这是一条提示信息" />`,
   },
 ]
 
