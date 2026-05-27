@@ -140,6 +140,16 @@ docker run -d -p 8080:80 doocs/md:latest
 
 启动后访问 http://localhost:8080 即可。Docker 镜像的更多信息，请参考 https://github.com/doocs/docker-md
 
+## Star 趋势
+
+<a href="https://www.star-history.com/?repos=doocs%2Fmd&type=date&legend=top-left">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
+ </picture>
+</a>
+
 ## 谁在使用
 
 请查看 [USERS.md](USERS.md)，了解使用本项目的公众号列表。
