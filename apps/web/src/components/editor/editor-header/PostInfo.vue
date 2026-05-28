@@ -381,7 +381,7 @@ onBeforeMount(() => {
                   </div>
                   <div class="flex items-center gap-1 ml-2">
                     <CheckboxRoot
-                      :checked="isCategoryAllSelected(category.accounts) ? true : isCategoryIndeterminate(category.accounts) ? 'indeterminate' : false"
+                      :model-value="isCategoryAllSelected(category.accounts) ? true : isCategoryIndeterminate(category.accounts) ? 'indeterminate' : false"
                       class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden"
                       @click.stop="toggleCategorySelectAll(category.accounts)"
                     >
@@ -400,7 +400,7 @@ onBeforeMount(() => {
                     class="flex items-center gap-2 whitespace-nowrap"
                   >
                     <CheckboxRoot
-                      v-model:checked="account.checked"
+                      v-model="account.checked"
                       :disabled="!account.loggedIn"
                       class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                     >
