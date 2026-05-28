@@ -1,23 +1,20 @@
 <script setup lang="ts">
-import type { AccordionItemEmits, AccordionItemProps } from 'reka-ui'
+import type { AccordionItemProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-import { AccordionItem, useForwardPropsEmits } from 'reka-ui'
+import { reactiveOmit } from '@vueuse/core'
+import { AccordionItem, useForwardProps } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<AccordionItemProps & { class?: HTMLAttributes[`class`] }>()
-const emits = defineEmits<AccordionItemEmits>()
+const props = defineProps<AccordionItemProps & { class?: HTMLAttributes['class'] }>()
 
-const delegatedProps = computed(() => {
-  const { class: _, ...delegated } = props
-  return delegated
-})
+const delegatedProps = reactiveOmit(props, 'class')
 
-const forwarded = useForwardPropsEmits(delegatedProps, emits)
+const forwardedProps = useForwardProps(delegatedProps)
 </script>
 
 <template>
   <AccordionItem
-    v-bind="forwarded"
+    v-bind="forwardedProps"
     :class="cn('border-b', props.class)"
   >
     <slot />

@@ -1,22 +1,22 @@
 <script setup lang="ts">
+import type { AccordionContentProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-import { AccordionContent, AccordionPortal } from 'reka-ui'
+import { reactiveOmit } from '@vueuse/core'
+import { AccordionContent } from 'reka-ui'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<{ class?: HTMLAttributes[`class`] }>()
+const props = defineProps<AccordionContentProps & { class?: HTMLAttributes['class'] }>()
+
+const delegatedProps = reactiveOmit(props, 'class')
 </script>
 
 <template>
-  <AccordionPortal>
-    <AccordionContent
-      :class="cn(
-        'overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down',
-        props.class,
-      )"
-    >
-      <div class="pb-4 pt-0">
-        <slot />
-      </div>
-    </AccordionContent>
-  </AccordionPortal>
+  <AccordionContent
+    v-bind="delegatedProps"
+    class="overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down"
+  >
+    <div :class="cn('pb-4 pt-0', props.class)">
+      <slot />
+    </div>
+  </AccordionContent>
 </template>
