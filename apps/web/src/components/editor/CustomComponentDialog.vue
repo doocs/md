@@ -2,7 +2,8 @@
 import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { escapeHtml } from '@md/core'
-import { Blocks, Check, ChevronDown, Copy, Lock, Pencil, Plus, Rss, Trash2, Zap } from 'lucide-vue-next'
+import { Blocks, Check, Copy, Lock, Pencil, Plus, Rss, Trash2, Zap } from 'lucide-vue-next'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
@@ -178,15 +179,6 @@ function onUpdate(val: boolean) {
 }
 
 // ──────────────────────────────────────────────
-// 展开/折叠详情
-// ──────────────────────────────────────────────
-const expandedId = ref<string | null>(null)
-
-function toggleExpand(id: string) {
-  expandedId.value = expandedId.value === id ? null : id
-}
-
-// ──────────────────────────────────────────────
 // 复制代码片段
 // ──────────────────────────────────────────────
 const copiedId = ref<string | null>(null)
@@ -265,6 +257,8 @@ function deleteMpAccount(account: MpAccount) {
 }
 
 // 当对话框打开且携带 target 时，自动展开对应的内置组件
+const expandedValues = ref<string[]>([])
+
 watch(() => uiStore.isShowComponentDialog, (val) => {
   if (val && uiStore.componentDialogTarget) {
     const target = uiStore.componentDialogTarget
@@ -272,11 +266,11 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
     nextTick(() => {
       const def = componentStore.builtInComponents.find(c => c.name === target)
       if (def)
-        expandedId.value = def.id
+        expandedValues.value = [def.id]
     })
   }
   if (!val) {
-    expandedId.value = null
+    expandedValues.value = []
   }
 })
 </script>
@@ -440,247 +434,224 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               </h4>
               <span class="text-xs text-muted-foreground/60">（只读，不可删除）</span>
             </div>
-            <div class="space-y-2">
-              <div
+            <Accordion v-model="expandedValues" type="single" collapsible class="space-y-2">
+              <AccordionItem
                 v-for="def in componentStore.builtInComponents"
                 :key="def.id"
-                class="border rounded-xl overflow-hidden transition-all"
-                :class="expandedId === def.id ? 'border-primary/30 bg-primary/[0.02]' : 'hover:border-border/80 bg-card'"
+                :value="def.id"
+                class="border rounded-xl overflow-hidden data-[state=open]:border-primary/30 data-[state=open]:bg-primary/[0.02] hover:border-border/80 bg-card"
               >
-                <!-- 卡片头部：始终可见 -->
-                <div
-                  class="flex items-start sm:items-center gap-3 p-3 sm:p-4 cursor-pointer select-none"
-                  @click="toggleExpand(def.id)"
-                >
+                <div class="flex items-start sm:items-center gap-3 p-3 sm:p-4">
                   <!-- 图标区 -->
                   <div class="size-8 sm:size-9 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Blocks class="size-4 text-primary" />
                   </div>
-                  <!-- 名称 & 描述 -->
-                  <div class="flex-1 min-w-0">
-                    <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
-                      <code class="text-sm font-semibold text-primary">{{ def.name }}</code>
-                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">内置</span>
-                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
-                        {{ def.props.length }} 个属性
-                      </span>
+                  <!-- 名称 & 描述 (AccordionTrigger) -->
+                  <AccordionTrigger class="flex-1 min-w-0 py-0 px-0 hover:no-underline [&>svg]:size-3.5">
+                    <div class="text-left">
+                      <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
+                        <code class="text-sm font-semibold text-primary">{{ def.name }}</code>
+                        <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">内置</span>
+                        <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
+                          {{ def.props.length }} 个属性
+                        </span>
+                      </div>
+                      <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
+                        {{ def.description }}
+                      </p>
                     </div>
-                    <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
-                      {{ def.description }}
-                    </p>
-                  </div>
+                  </AccordionTrigger>
                   <!-- 操作按钮 -->
-                  <div class="flex items-center gap-1 shrink-0" @click.stop>
+                  <div class="flex items-center gap-1 shrink-0">
                     <Button
                       variant="default"
                       size="sm"
                       class="h-7 px-2.5 text-xs gap-1"
-                      @click="insertSnippet(def)"
+                      @click.stop="insertSnippet(def)"
                     >
                       <Zap class="size-3" />
                       插入
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-7 text-muted-foreground"
-                      @click="toggleExpand(def.id)"
-                    >
-                      <ChevronDown
-                        class="size-3.5 transition-transform duration-200"
-                        :class="{ 'rotate-180': expandedId === def.id }"
-                      />
-                    </Button>
                   </div>
                 </div>
 
-                <!-- 展开详情 -->
-                <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
-                  enter-from-class="opacity-0 -translate-y-1"
-                  enter-to-class="opacity-100 translate-y-0"
-                  leave-active-class="transition-all duration-150 ease-in"
-                  leave-from-class="opacity-100 translate-y-0"
-                  leave-to-class="opacity-0 -translate-y-1"
-                >
-                  <div v-if="expandedId === def.id" class="border-t px-3 sm:px-4 py-3 space-y-3 bg-muted/20">
-                    <!-- Props 表格 -->
-                    <div v-if="def.props.length > 0">
-                      <p class="text-xs font-medium text-muted-foreground mb-2">
-                        属性说明
-                      </p>
-                      <!-- 桌面端表格 -->
-                      <div class="hidden sm:block rounded-lg border overflow-hidden">
-                        <table class="w-full text-xs">
-                          <thead class="bg-muted/50">
-                            <tr>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
-                                属性名
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
-                                状态
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground">
-                                描述
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
-                                默认值
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              v-for="prop in def.props"
-                              :key="prop.name"
-                              class="border-t border-border/50"
-                            >
-                              <td class="px-3 py-2">
-                                <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
-                              </td>
-                              <td class="px-3 py-2">
-                                <span
-                                  class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
-                                  :class="propTypeBadge(prop).class"
-                                >{{ propTypeBadge(prop).label }}</span>
-                              </td>
-                              <td class="px-3 py-2 text-muted-foreground">
-                                {{ prop.description || '—' }}
-                              </td>
-                              <td class="px-3 py-2">
-                                <code v-if="prop.default" class="text-[11px] bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
-                                <span v-else class="text-muted-foreground/50">—</span>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- 移动端卡片列表 -->
-                      <div class="sm:hidden space-y-2">
-                        <div
-                          v-for="prop in def.props"
-                          :key="prop.name"
-                          class="rounded-lg border bg-card p-3 space-y-1"
-                        >
-                          <div class="flex items-center gap-2">
-                            <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
-                            <span
-                              class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
-                              :class="propTypeBadge(prop).class"
-                            >{{ propTypeBadge(prop).label }}</span>
-                          </div>
-                          <p v-if="prop.description" class="text-xs text-muted-foreground">
-                            {{ prop.description }}
-                          </p>
-                          <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
-                            <span>默认：</span>
-                            <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- 使用示例 -->
-                    <div>
-                      <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        使用示例
-                      </p>
-                      <div class="relative group">
-                        <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          @click="copySnippet(def)"
-                        >
-                          <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
-                          <Copy v-else class="size-3 text-muted-foreground" />
-                        </Button>
-                      </div>
-                    </div>
-
-                    <!-- MpProfile: 已保存的公众号账号 -->
-                    <div v-if="isMpProfile(def)" class="border-t pt-3 space-y-2">
-                      <div class="flex items-center justify-between">
-                        <p class="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
-                          <Rss class="size-3.5" />
-                          已保存的公众号
-                        </p>
-                        <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="openAddMpAccount">
-                          <Plus class="size-3" />
-                          新增
-                        </Button>
-                      </div>
-                      <div v-if="mpAccountsStore.accounts.length === 0" class="text-center py-4">
-                        <p class="text-xs text-muted-foreground">
-                          暂无保存的公众号，点击「新增」添加
-                        </p>
-                      </div>
-                      <div v-else class="space-y-1.5">
-                        <div
-                          v-for="account in mpAccountsStore.accounts"
-                          :key="account.id"
-                          class="flex items-center gap-2 p-2 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
-                        >
-                          <img
-                            v-if="account.logo"
-                            :src="account.logo"
-                            class="size-7 rounded-full object-cover shrink-0"
-                            :alt="account.name"
+                <AccordionContent class="px-3 sm:px-4 pb-3 pt-0 space-y-3 bg-muted/20">
+                  <!-- Props 表格 -->
+                  <div v-if="def.props.length > 0">
+                    <p class="text-xs font-medium text-muted-foreground mb-2">
+                      属性说明
+                    </p>
+                    <!-- 桌面端表格 -->
+                    <div class="hidden sm:block rounded-lg border overflow-hidden">
+                      <table class="w-full text-xs">
+                        <thead class="bg-muted/50">
+                          <tr>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
+                              属性名
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                              状态
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground">
+                              描述
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
+                              默认值
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            v-for="prop in def.props"
+                            :key="prop.name"
+                            class="border-t border-border/50"
                           >
-                          <div v-else class="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
-                            <Rss class="size-3.5 text-muted-foreground" />
-                          </div>
-                          <div class="flex-1 min-w-0">
-                            <p class="text-xs font-medium truncate">
-                              {{ account.name }}
-                            </p>
-                            <p v-if="account.desc" class="text-[10px] text-muted-foreground truncate">
-                              {{ account.desc }}
-                            </p>
-                          </div>
-                          <TooltipProvider :delay-duration="300">
-                            <Tooltip>
-                              <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-primary hover:text-primary" @click="insertMpAccount(account)">
-                                  <Zap class="size-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" class="z-[250]">
-                                插入
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <TooltipProvider :delay-duration="300">
-                            <Tooltip>
-                              <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-muted-foreground" @click="openEditMpAccount(account.id)">
-                                  <Pencil class="size-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" class="z-[250]">
-                                编辑
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          <TooltipProvider :delay-duration="300">
-                            <Tooltip>
-                              <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-destructive hover:text-destructive" @click="deleteMpAccount(account)">
-                                  <Trash2 class="size-3" />
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent side="top" class="z-[250]">
-                                删除
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                            <td class="px-3 py-2">
+                              <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
+                            </td>
+                            <td class="px-3 py-2">
+                              <span
+                                class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
+                                :class="propTypeBadge(prop).class"
+                              >{{ propTypeBadge(prop).label }}</span>
+                            </td>
+                            <td class="px-3 py-2 text-muted-foreground">
+                              {{ prop.description || '—' }}
+                            </td>
+                            <td class="px-3 py-2">
+                              <code v-if="prop.default" class="text-[11px] bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
+                              <span v-else class="text-muted-foreground/50">—</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- 移动端卡片列表 -->
+                    <div class="sm:hidden space-y-2">
+                      <div
+                        v-for="prop in def.props"
+                        :key="prop.name"
+                        class="rounded-lg border bg-card p-3 space-y-1"
+                      >
+                        <div class="flex items-center gap-2">
+                          <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
+                          <span
+                            class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
+                            :class="propTypeBadge(prop).class"
+                          >{{ propTypeBadge(prop).label }}</span>
+                        </div>
+                        <p v-if="prop.description" class="text-xs text-muted-foreground">
+                          {{ prop.description }}
+                        </p>
+                        <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
+                          <span>默认：</span>
+                          <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
                         </div>
                       </div>
                     </div>
                   </div>
-                </Transition>
-              </div>
-            </div>
+
+                  <!-- 使用示例 -->
+                  <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-1.5">
+                      使用示例
+                    </p>
+                    <div class="relative group">
+                      <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        @click="copySnippet(def)"
+                      >
+                        <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
+                        <Copy v-else class="size-3 text-muted-foreground" />
+                      </Button>
+                    </div>
+                  </div>
+
+                  <!-- MpProfile: 已保存的公众号账号 -->
+                  <div v-if="isMpProfile(def)" class="border-t pt-3 space-y-2">
+                    <div class="flex items-center justify-between">
+                      <p class="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                        <Rss class="size-3.5" />
+                        已保存的公众号
+                      </p>
+                      <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="openAddMpAccount">
+                        <Plus class="size-3" />
+                        新增
+                      </Button>
+                    </div>
+                    <div v-if="mpAccountsStore.accounts.length === 0" class="text-center py-4">
+                      <p class="text-xs text-muted-foreground">
+                        暂无保存的公众号，点击「新增」添加
+                      </p>
+                    </div>
+                    <div v-else class="space-y-1.5">
+                      <div
+                        v-for="account in mpAccountsStore.accounts"
+                        :key="account.id"
+                        class="flex items-center gap-2 p-2 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                      >
+                        <img
+                          v-if="account.logo"
+                          :src="account.logo"
+                          class="size-7 rounded-full object-cover shrink-0"
+                          :alt="account.name"
+                        >
+                        <div v-else class="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+                          <Rss class="size-3.5 text-muted-foreground" />
+                        </div>
+                        <div class="flex-1 min-w-0">
+                          <p class="text-xs font-medium truncate">
+                            {{ account.name }}
+                          </p>
+                          <p v-if="account.desc" class="text-[10px] text-muted-foreground truncate">
+                            {{ account.desc }}
+                          </p>
+                        </div>
+                        <TooltipProvider :delay-duration="300">
+                          <Tooltip>
+                            <TooltipTrigger as-child>
+                              <Button variant="ghost" size="icon" class="size-6 shrink-0 text-primary hover:text-primary" @click="insertMpAccount(account)">
+                                <Zap class="size-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" class="z-[250]">
+                              插入
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider :delay-duration="300">
+                          <Tooltip>
+                            <TooltipTrigger as-child>
+                              <Button variant="ghost" size="icon" class="size-6 shrink-0 text-muted-foreground" @click="openEditMpAccount(account.id)">
+                                <Pencil class="size-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" class="z-[250]">
+                              编辑
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                        <TooltipProvider :delay-duration="300">
+                          <Tooltip>
+                            <TooltipTrigger as-child>
+                              <Button variant="ghost" size="icon" class="size-6 shrink-0 text-destructive hover:text-destructive" @click="deleteMpAccount(account)">
+                                <Trash2 class="size-3" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="top" class="z-[250]">
+                              删除
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </section>
 
           <!-- ── 自定义组件 ── -->
@@ -705,189 +676,166 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                 暂无自定义组件，点击上方"新建"按钮创建
               </p>
             </div>
-            <div v-else class="space-y-2">
-              <div
+            <Accordion v-else v-model="expandedValues" type="single" collapsible class="space-y-2">
+              <AccordionItem
                 v-for="def in componentStore.userComponents"
                 :key="def.id"
-                class="border rounded-xl overflow-hidden transition-all"
-                :class="expandedId === def.id ? 'border-primary/30 bg-primary/[0.02]' : 'hover:border-border/80 bg-card'"
+                :value="def.id"
+                class="border rounded-xl overflow-hidden data-[state=open]:border-primary/30 data-[state=open]:bg-primary/[0.02] hover:border-border/80 bg-card"
               >
-                <!-- 卡片头部 -->
-                <div
-                  class="flex items-start sm:items-center gap-3 p-3 sm:p-4 cursor-pointer select-none"
-                  @click="toggleExpand(def.id)"
-                >
+                <div class="flex items-start sm:items-center gap-3 p-3 sm:p-4">
                   <div class="size-8 sm:size-9 shrink-0 rounded-lg bg-primary/10 flex items-center justify-center">
                     <Blocks class="size-4 text-primary" />
                   </div>
-                  <div class="flex-1 min-w-0">
-                    <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
-                      <code class="text-sm font-semibold text-foreground">{{ def.name }}</code>
-                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
-                        {{ def.props.length }} 个属性
-                      </span>
+                  <AccordionTrigger class="flex-1 min-w-0 py-0 px-0 hover:no-underline [&>svg]:size-3.5">
+                    <div class="text-left">
+                      <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
+                        <code class="text-sm font-semibold text-foreground">{{ def.name }}</code>
+                        <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
+                          {{ def.props.length }} 个属性
+                        </span>
+                      </div>
+                      <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
+                        {{ def.description }}
+                      </p>
                     </div>
-                    <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
-                      {{ def.description }}
-                    </p>
-                  </div>
-                  <div class="flex items-center gap-1 shrink-0" @click.stop>
+                  </AccordionTrigger>
+                  <div class="flex items-center gap-1 shrink-0">
                     <Button
                       variant="default"
                       size="sm"
                       class="h-7 px-2.5 text-xs gap-1"
-                      @click="insertSnippet(def)"
+                      @click.stop="insertSnippet(def)"
                     >
                       <Zap class="size-3" />
                       插入
                     </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="size-7 text-muted-foreground"
-                      @click="toggleExpand(def.id)"
-                    >
-                      <ChevronDown
-                        class="size-3.5 transition-transform duration-200"
-                        :class="{ 'rotate-180': expandedId === def.id }"
-                      />
-                    </Button>
                   </div>
                 </div>
 
-                <!-- 展开详情 -->
-                <Transition
-                  enter-active-class="transition-all duration-200 ease-out"
-                  enter-from-class="opacity-0 -translate-y-1"
-                  enter-to-class="opacity-100 translate-y-0"
-                  leave-active-class="transition-all duration-150 ease-in"
-                  leave-from-class="opacity-100 translate-y-0"
-                  leave-to-class="opacity-0 -translate-y-1"
-                >
-                  <div v-if="expandedId === def.id" class="border-t px-3 sm:px-4 py-3 space-y-3 bg-muted/20">
-                    <!-- Props 表格 -->
-                    <div v-if="def.props.length > 0">
-                      <p class="text-xs font-medium text-muted-foreground mb-2">
-                        属性说明
-                      </p>
-                      <!-- 桌面端表格 -->
-                      <div class="hidden sm:block rounded-lg border overflow-hidden">
-                        <table class="w-full text-xs">
-                          <thead class="bg-muted/50">
-                            <tr>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
-                                属性名
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
-                                状态
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground">
-                                描述
-                              </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
-                                默认值
-                              </th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr
-                              v-for="prop in def.props"
-                              :key="prop.name"
-                              class="border-t border-border/50"
-                            >
-                              <td class="px-3 py-2">
-                                <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
-                              </td>
-                              <td class="px-3 py-2">
-                                <span
-                                  class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
-                                  :class="propTypeBadge(prop).class"
-                                >{{ propTypeBadge(prop).label }}</span>
-                              </td>
-                              <td class="px-3 py-2 text-muted-foreground">
-                                {{ prop.description || '—' }}
-                              </td>
-                              <td class="px-3 py-2">
-                                <code v-if="prop.default" class="text-[11px] bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
-                                <span v-else class="text-muted-foreground/50">—</span>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
-                      </div>
-                      <!-- 移动端卡片列表 -->
-                      <div class="sm:hidden space-y-2">
-                        <div
-                          v-for="prop in def.props"
-                          :key="prop.name"
-                          class="rounded-lg border bg-card p-3 space-y-1"
-                        >
-                          <div class="flex items-center gap-2">
-                            <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
-                            <span
-                              class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
-                              :class="propTypeBadge(prop).class"
-                            >{{ propTypeBadge(prop).label }}</span>
-                          </div>
-                          <p v-if="prop.description" class="text-xs text-muted-foreground">
-                            {{ prop.description }}
-                          </p>
-                          <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
-                            <span>默认：</span>
-                            <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
-                          </div>
+                <AccordionContent class="px-3 sm:px-4 pb-3 pt-0 space-y-3 bg-muted/20">
+                  <!-- Props 表格 -->
+                  <div v-if="def.props.length > 0">
+                    <p class="text-xs font-medium text-muted-foreground mb-2">
+                      属性说明
+                    </p>
+                    <!-- 桌面端表格 -->
+                    <div class="hidden sm:block rounded-lg border overflow-hidden">
+                      <table class="w-full text-xs">
+                        <thead class="bg-muted/50">
+                          <tr>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
+                              属性名
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                              状态
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground">
+                              描述
+                            </th>
+                            <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
+                              默认值
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr
+                            v-for="prop in def.props"
+                            :key="prop.name"
+                            class="border-t border-border/50"
+                          >
+                            <td class="px-3 py-2">
+                              <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
+                            </td>
+                            <td class="px-3 py-2">
+                              <span
+                                class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
+                                :class="propTypeBadge(prop).class"
+                              >{{ propTypeBadge(prop).label }}</span>
+                            </td>
+                            <td class="px-3 py-2 text-muted-foreground">
+                              {{ prop.description || '—' }}
+                            </td>
+                            <td class="px-3 py-2">
+                              <code v-if="prop.default" class="text-[11px] bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
+                              <span v-else class="text-muted-foreground/50">—</span>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- 移动端卡片列表 -->
+                    <div class="sm:hidden space-y-2">
+                      <div
+                        v-for="prop in def.props"
+                        :key="prop.name"
+                        class="rounded-lg border bg-card p-3 space-y-1"
+                      >
+                        <div class="flex items-center gap-2">
+                          <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
+                          <span
+                            class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
+                            :class="propTypeBadge(prop).class"
+                          >{{ propTypeBadge(prop).label }}</span>
+                        </div>
+                        <p v-if="prop.description" class="text-xs text-muted-foreground">
+                          {{ prop.description }}
+                        </p>
+                        <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
+                          <span>默认：</span>
+                          <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
                         </div>
                       </div>
                     </div>
-                    <div v-else>
-                      <p class="text-xs text-muted-foreground italic">
-                        该组件无属性定义
-                      </p>
-                    </div>
+                  </div>
+                  <div v-else>
+                    <p class="text-xs text-muted-foreground italic">
+                      该组件无属性定义
+                    </p>
+                  </div>
 
-                    <!-- 使用示例 -->
-                    <div>
-                      <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        使用示例
-                      </p>
-                      <div class="relative group">
-                        <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          @click="copySnippet(def)"
-                        >
-                          <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
-                          <Copy v-else class="size-3 text-muted-foreground" />
-                        </Button>
-                      </div>
-                    </div>
-                    <!-- 编辑 / 删除 -->
-                    <div class="flex items-center gap-2 pt-1 border-t">
+                  <!-- 使用示例 -->
+                  <div>
+                    <p class="text-xs font-medium text-muted-foreground mb-1.5">
+                      使用示例
+                    </p>
+                    <div class="relative group">
+                      <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
                       <Button
-                        variant="outline"
-                        size="sm"
-                        class="h-7 px-2.5 text-xs gap-1"
-                        @click="openEditForm(def)"
+                        variant="ghost"
+                        size="icon"
+                        class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                        @click="copySnippet(def)"
                       >
-                        <Pencil class="size-3" />
-                        编辑
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        class="h-7 px-2.5 text-xs gap-1 text-red-500 hover:text-red-600 hover:border-red-300"
-                        @click="openDeleteConfirm(def)"
-                      >
-                        <Trash2 class="size-3" />
-                        删除
+                        <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
+                        <Copy v-else class="size-3 text-muted-foreground" />
                       </Button>
                     </div>
                   </div>
-                </Transition>
-              </div>
-            </div>
+                  <!-- 编辑 / 删除 -->
+                  <div class="flex items-center gap-2 pt-1 border-t">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      class="h-7 px-2.5 text-xs gap-1"
+                      @click="openEditForm(def)"
+                    >
+                      <Pencil class="size-3" />
+                      编辑
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      class="h-7 px-2.5 text-xs gap-1 text-red-500 hover:text-red-600 hover:border-red-300"
+                      @click="openDeleteConfirm(def)"
+                    >
+                      <Trash2 class="size-3" />
+                      删除
+                    </Button>
+                  </div>
+                </AccordionContent>
+              </AccordionItem>
+            </Accordion>
           </section>
         </div>
       </div>
