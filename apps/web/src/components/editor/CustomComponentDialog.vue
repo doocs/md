@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
 import type { MpAccount } from '@/stores/mpAccounts'
+import { escapeHtml } from '@md/core'
 import { Blocks, Check, ChevronDown, Copy, Lock, Pencil, Plus, Rss, Trash2, Zap } from 'lucide-vue-next'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
@@ -224,12 +225,12 @@ function isMpProfile(def: CustomComponentDef): boolean {
 function buildMpAccountSnippet(account: MpAccount): string {
   const logo = account.logo || 'https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/mp-logo.png'
   const parts = [
-    `mpId="${account.mpId}"`,
-    `nickname="${account.name}"`,
-    `headimg="${logo}"`,
+    `mpId="${escapeHtml(account.mpId)}"`,
+    `nickname="${escapeHtml(account.name)}"`,
+    `headimg="${escapeHtml(logo)}"`,
   ]
   if (account.desc)
-    parts.push(`signature="${account.desc}"`)
+    parts.push(`signature="${escapeHtml(account.desc)}"`)
   parts.push(`serviceType="${account.serviceType || '1'}"`)
   parts.push(`verifyStatus="${account.verify || '0'}"`)
   return `<MpProfile ${parts.join(' ')} />`

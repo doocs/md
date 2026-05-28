@@ -1,5 +1,6 @@
 import type { ComponentRegistry, CustomComponentDef } from '@md/shared/types'
 import type { MarkedExtension } from 'marked'
+import { escapeHtml, unescapeHtml } from '../utils/basicHelpers'
 
 // ────────────────────────────────────────────────────────────────────────────
 // 内置组件定义
@@ -114,19 +115,9 @@ function parseProps(propsStr: string): Record<string, string> {
   const result: Record<string, string> = {}
   // 支持 key="value" 和 key='value'
   for (const m of propsStr.matchAll(/(\w[\w-]*)=(?:"([^"]*)"|'([^']*)')/g)) {
-    result[m[1]] = m[2] !== undefined ? m[2] : (m[3] ?? ``)
+    result[m[1]] = unescapeHtml(m[2] !== undefined ? m[2] : (m[3] ?? ``))
   }
   return result
-}
-
-/** HTML 属性值转义（防 XSS） */
-function escapeAttr(val: string): string {
-  return val
-    .replace(/&/g, `&amp;`)
-    .replace(/"/g, `&quot;`)
-    .replace(/'/g, `&#39;`)
-    .replace(/</g, `&lt;`)
-    .replace(/>/g, `&gt;`)
 }
 
 // ────────────────────────────────────────────────────────────────────────────
@@ -182,7 +173,7 @@ function renderTemplate(def: CustomComponentDef, rawProps: Record<string, string
     if (key === `children`) {
       return finalProps[key] ?? ``
     }
-    return finalProps[key] !== undefined ? escapeAttr(finalProps[key]) : ``
+    return finalProps[key] !== undefined ? escapeHtml(finalProps[key]) : ``
   })
 
   return html

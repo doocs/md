@@ -19,6 +19,7 @@ import {
   markedToc,
   MDKatex,
 } from '../extensions'
+import { escapeHtml } from '../utils/basicHelpers'
 import { COMMON_LANGUAGES, highlightAndFormatCode } from '../utils/languages'
 
 Object.entries(COMMON_LANGUAGES).forEach(([name, lang]) => {
@@ -31,26 +32,11 @@ marked.setOptions({
   breaks: true,
 })
 
-const AMPERSAND_REGEX = /&/g
-const LESS_THAN_REGEX = /</g
-const GREATER_THAN_REGEX = />/g
 const DOUBLE_QUOTE_REGEX = /"/g
-const SINGLE_QUOTE_REGEX = /'/g
-const BACKTICK_REGEX = /`/g
 const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(AMPERSAND_REGEX, `&amp;`) // 转义 &
-    .replace(LESS_THAN_REGEX, `&lt;`) // 转义 <
-    .replace(GREATER_THAN_REGEX, `&gt;`) // 转义 >
-    .replace(DOUBLE_QUOTE_REGEX, `&quot;`) // 转义 "
-    .replace(SINGLE_QUOTE_REGEX, `&#39;`) // 转义 '
-    .replace(BACKTICK_REGEX, `&#96;`) // 转义 `
-}
 
 function buildAddition(): string {
   return `
