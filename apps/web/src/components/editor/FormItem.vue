@@ -17,6 +17,9 @@ const props = defineProps<{
         <div class="min-h-[40px] flex items-center w-full">
           <slot />
         </div>
+        <div v-if="$slots.hint" class="mt-1">
+          <slot name="hint" />
+        </div>
         <p v-if="error" class="mt-1 min-h-[20px] md:min-h-[24px] flex items-center text-[12px] text-red-500">
           {{ error }}
         </p>

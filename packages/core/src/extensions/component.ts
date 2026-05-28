@@ -7,6 +7,25 @@ import type { MarkedExtension } from 'marked'
 
 export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
   {
+    id: `builtin-mp-profile`,
+    name: `MpProfile`,
+    description: `公众号名片组件，展示微信公众号名片`,
+    builtIn: true,
+    props: [
+      { name: `mpId`, description: `公众号 ID`, required: true },
+      { name: `nickname`, description: `公众号名称`, required: true },
+      { name: `headimg`, description: `公众号头像 URL` },
+      { name: `signature`, description: `公众号简介` },
+      { name: `serviceType`, description: `账号类型（1=公众号，2=服务号）`, default: `1` },
+      { name: `verifyStatus`, description: `认证状态（0=无，1=个人，2=企业）`, default: `0` },
+    ],
+    template: `<section class="mp_profile_iframe_wrp custom_select_card_wrp" nodeleaf="">
+  <mp-common-profile class="mpprofile js_uneditable custom_select_card mp_profile_iframe" data-pluginname="mpprofile" data-id="{{mpId}}" data-nickname="{{nickname}}" data-headimg="{{headimg}}" data-signature="{{signature}}" data-service_type="{{serviceType}}" data-verify_status="{{verifyStatus}}"></mp-common-profile>
+  <br class="ProseMirror-trailingBreak">
+</section>`,
+    example: `<MpProfile mpId="MzIxNjA5ODQ0OQ==" nickname="Doocs" headimg="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/mp-logo.png" signature="GitHub 开源组织" serviceType="1" verifyStatus="1" />`,
+  },
+  {
     id: `builtin-qrcode`,
     name: `QRCodeBlock`,
     description: `二维码组件，将 URL 渲染为可扫描的二维码图片`,
