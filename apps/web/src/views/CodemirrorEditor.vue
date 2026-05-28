@@ -247,8 +247,6 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
 
       <InsertFormDialog />
 
-      <InsertMpCardDialog />
-
       <ImportMarkdownDialog />
 
       <LocalImageUploadDialog />

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Blocks, Contact, Image, Table } from 'lucide-vue-next'
+import { Blocks, Image, Table } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 import { normalizeFormulaInput } from '@/utils/formula'
@@ -14,7 +14,7 @@ const { asSub } = toRefs(props)
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowInsertMpCardDialog, toggleShowComponentDialog } = uiStore
+const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowComponentDialog } = uiStore
 
 function openFormulaEditor() {
   const selection = normalizeFormulaInput(editorStore.getSelection())
@@ -44,11 +44,6 @@ function openFormulaEditor() {
         <Table class="mr-2 h-4 w-4" />
         表格
       </MenubarItem>
-      <MenubarItem @click="toggleShowInsertMpCardDialog()">
-        <Contact class="mr-2 h-4 w-4" />
-        公众号名片
-      </MenubarItem>
-      <MenubarSeparator />
       <MenubarItem @click="toggleShowComponentDialog()">
         <Blocks class="mr-2 h-4 w-4" />
         自定义组件
@@ -74,11 +69,6 @@ function openFormulaEditor() {
         <Table class="mr-2 h-4 w-4" />
         表格
       </MenubarItem>
-      <MenubarItem @click="toggleShowInsertMpCardDialog()">
-        <Contact class="mr-2 h-4 w-4" />
-        公众号名片
-      </MenubarItem>
-      <MenubarSeparator />
       <MenubarItem @click="toggleShowComponentDialog()">
         <Blocks class="mr-2 h-4 w-4" />
         自定义组件

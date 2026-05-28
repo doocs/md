@@ -14,6 +14,15 @@ export function escapeHtml(text: string): string {
     .replace(/'/g, `&#39;`)
 }
 
+export function unescapeHtml(text: string): string {
+  return text
+    .replace(/&quot;/g, `"`)
+    .replace(/&#39;/g, `'`)
+    .replace(/&lt;/g, `<`)
+    .replace(/&gt;/g, `>`)
+    .replace(/&amp;/g, `&`)
+}
+
 export function simpleHash(str: string): string {
   let hash = 0
   for (let i = 0; i < str.length; i++) {

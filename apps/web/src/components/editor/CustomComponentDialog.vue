@@ -1,14 +1,18 @@
 <script setup lang="ts">
 import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
-import { Blocks, Check, ChevronDown, Copy, Lock, Pencil, Plus, Trash2, Zap } from 'lucide-vue-next'
+import type { MpAccount } from '@/stores/mpAccounts'
+import { escapeHtml } from '@md/core'
+import { Blocks, Check, ChevronDown, Copy, Lock, Pencil, Plus, Rss, Trash2, Zap } from 'lucide-vue-next'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
+import { useMpAccountsStore } from '@/stores/mpAccounts'
 import { useUIStore } from '@/stores/ui'
 
 const confirmStore = useConfirmStore()
 const editorStore = useEditorStore()
 const componentStore = useCustomComponentStore()
+const mpAccountsStore = useMpAccountsStore()
 const uiStore = useUIStore()
 
 const { toggleShowComponentDialog } = uiStore
@@ -207,6 +211,74 @@ function propTypeBadge(prop: ComponentPropDef) {
     return { label: '可选', class: 'bg-blue-50 text-blue-600 border-blue-200' }
   return { label: '可选', class: 'bg-muted text-muted-foreground border-border' }
 }
+
+// ──────────────────────────────────────────────
+// MpProfile 公众号名片集成
+// ──────────────────────────────────────────────
+const isShowMpAccountConfig = ref(false)
+const editingMpAccountId = ref<string | null>(null)
+
+function isMpProfile(def: CustomComponentDef): boolean {
+  return def.name === 'MpProfile'
+}
+
+function buildMpAccountSnippet(account: MpAccount): string {
+  const logo = account.logo || 'https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/mp-logo.png'
+  const parts = [
+    `mpId="${escapeHtml(account.mpId)}"`,
+    `nickname="${escapeHtml(account.name)}"`,
+    `headimg="${escapeHtml(logo)}"`,
+  ]
+  if (account.desc)
+    parts.push(`signature="${escapeHtml(account.desc)}"`)
+  parts.push(`serviceType="${account.serviceType || '1'}"`)
+  parts.push(`verifyStatus="${account.verify || '0'}"`)
+  return `<MpProfile ${parts.join(' ')} />`
+}
+
+function insertMpAccount(account: MpAccount) {
+  const snippet = buildMpAccountSnippet(account)
+  editorStore.insertAtCursor(snippet)
+  toast.success(`已插入公众号名片「${account.name}」`)
+  toggleShowComponentDialog(false)
+}
+
+function openAddMpAccount() {
+  editingMpAccountId.value = null
+  isShowMpAccountConfig.value = true
+}
+
+function openEditMpAccount(id: string) {
+  editingMpAccountId.value = id
+  isShowMpAccountConfig.value = true
+}
+
+function deleteMpAccount(account: MpAccount) {
+  confirmStore.confirm({
+    title: '确认删除',
+    description: `确定要删除公众号「${account.name}」吗？此操作不可恢复。`,
+    onConfirm: () => {
+      mpAccountsStore.deleteAccount(account.id)
+      toast.success('已删除')
+    },
+  })
+}
+
+// 当对话框打开且携带 target 时，自动展开对应的内置组件
+watch(() => uiStore.isShowComponentDialog, (val) => {
+  if (val && uiStore.componentDialogTarget) {
+    const target = uiStore.componentDialogTarget
+    uiStore.componentDialogTarget = null
+    nextTick(() => {
+      const def = componentStore.builtInComponents.find(c => c.name === target)
+      if (def)
+        expandedId.value = def.id
+    })
+  }
+  if (!val) {
+    expandedId.value = null
+  }
+})
 </script>
 
 <template>
@@ -525,6 +597,86 @@ function propTypeBadge(prop: ComponentPropDef) {
                         </Button>
                       </div>
                     </div>
+
+                    <!-- MpProfile: 已保存的公众号账号 -->
+                    <div v-if="isMpProfile(def)" class="border-t pt-3 space-y-2">
+                      <div class="flex items-center justify-between">
+                        <p class="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                          <Rss class="size-3.5" />
+                          已保存的公众号
+                        </p>
+                        <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="openAddMpAccount">
+                          <Plus class="size-3" />
+                          新增
+                        </Button>
+                      </div>
+                      <div v-if="mpAccountsStore.accounts.length === 0" class="text-center py-4">
+                        <p class="text-xs text-muted-foreground">
+                          暂无保存的公众号，点击「新增」添加
+                        </p>
+                      </div>
+                      <div v-else class="space-y-1.5">
+                        <div
+                          v-for="account in mpAccountsStore.accounts"
+                          :key="account.id"
+                          class="flex items-center gap-2 p-2 rounded-lg border bg-card hover:bg-muted/50 transition-colors"
+                        >
+                          <img
+                            v-if="account.logo"
+                            :src="account.logo"
+                            class="size-7 rounded-full object-cover shrink-0"
+                            :alt="account.name"
+                          >
+                          <div v-else class="size-7 rounded-full bg-muted flex items-center justify-center shrink-0">
+                            <Rss class="size-3.5 text-muted-foreground" />
+                          </div>
+                          <div class="flex-1 min-w-0">
+                            <p class="text-xs font-medium truncate">
+                              {{ account.name }}
+                            </p>
+                            <p v-if="account.desc" class="text-[10px] text-muted-foreground truncate">
+                              {{ account.desc }}
+                            </p>
+                          </div>
+                          <TooltipProvider :delay-duration="300">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-primary hover:text-primary" @click="insertMpAccount(account)">
+                                  <Zap class="size-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" class="z-[250]">
+                                插入
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider :delay-duration="300">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-muted-foreground" @click="openEditMpAccount(account.id)">
+                                  <Pencil class="size-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" class="z-[250]">
+                                编辑
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          <TooltipProvider :delay-duration="300">
+                            <Tooltip>
+                              <TooltipTrigger as-child>
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-destructive hover:text-destructive" @click="deleteMpAccount(account)">
+                                  <Trash2 class="size-3" />
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent side="top" class="z-[250]">
+                                删除
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </Transition>
               </div>
@@ -741,4 +893,9 @@ function propTypeBadge(prop: ComponentPropDef) {
       </div>
     </DialogContent>
   </Dialog>
+
+  <MpAccountConfigDialog
+    v-model:open="isShowMpAccountConfig"
+    :account-id="editingMpAccountId"
+  />
 </template>

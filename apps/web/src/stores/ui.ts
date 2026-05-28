@@ -69,10 +69,6 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowInsertFormDialog = ref(false)
   const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
 
-  // 是否展示插入公众号名片对话框
-  const isShowInsertMpCardDialog = ref(false)
-  const toggleShowInsertMpCardDialog = useToggle(isShowInsertMpCardDialog)
-
   // 是否展示上传图片对话框
   const isShowUploadImgDialog = ref(false)
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
@@ -127,6 +123,14 @@ export const useUIStore = defineStore(`ui`, () => {
   // 是否展示自定义组件对话框
   const isShowComponentDialog = ref(false)
   const toggleShowComponentDialog = useToggle(isShowComponentDialog)
+
+  // 自定义组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
+  const componentDialogTarget = ref<string | null>(null)
+
+  function openComponentDialogWithTarget(target: string) {
+    componentDialogTarget.value = target
+    isShowComponentDialog.value = true
+  }
 
   // AI 对话框
   const aiDialogVisible = ref(false)
@@ -200,8 +204,6 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowCssEditor,
     isShowInsertFormDialog,
     toggleShowInsertFormDialog,
-    isShowInsertMpCardDialog,
-    toggleShowInsertMpCardDialog,
     isShowUploadImgDialog,
     toggleShowUploadImgDialog,
     isShowFormulaEditorDialog,
@@ -220,6 +222,8 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowTemplateDialog,
     isShowComponentDialog,
     toggleShowComponentDialog,
+    componentDialogTarget,
+    openComponentDialogWithTarget,
     aiDialogVisible,
     toggleAIDialog,
     aiImageDialogVisible,

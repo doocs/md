@@ -102,6 +102,13 @@ function submit(formValues: any) {
                 v-model.trim="field.value"
                 placeholder="例：MzIxNjA5ODQ0OQ=="
               />
+              <template #hint>
+                <a
+                  href="https://github.com/doocs/md/blob/main/docs/mp-card.md"
+                  target="_blank"
+                  class="text-xs text-muted-foreground hover:text-primary underline-offset-2 hover:underline"
+                >如何获取公众号 ID？</a>
+              </template>
             </FormItem>
           </Field>
 
@@ -170,18 +177,6 @@ function submit(formValues: any) {
               </RadioGroup>
             </FormItem>
           </Field>
-
-          <FormItem :width="50">
-            <Button
-              variant="link"
-              class="p-0 h-auto text-left whitespace-normal"
-              as="a"
-              href="https://github.com/doocs/md/blob/main/docs/mp-card.md"
-              target="_blank"
-            >
-              如何获取公众号 ID？
-            </Button>
-          </FormItem>
         </div>
 
         <DialogFooter class="p-1">

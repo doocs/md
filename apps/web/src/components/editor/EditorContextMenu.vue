@@ -53,7 +53,6 @@ const uiStore = useUIStore()
 
 const {
   toggleShowInsertFormDialog,
-  toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
   toggleShowImportMdDialog,
   toggleShowComponentDialog,
@@ -173,11 +172,6 @@ function downloadAsCardImage() {
             <Table class="mr-2 h-4 w-4" />
             表格
           </ContextMenuItem>
-          <ContextMenuItem @click="toggleShowInsertMpCardDialog()">
-            <FileText class="mr-2 h-4 w-4" />
-            公众号名片
-          </ContextMenuItem>
-          <ContextMenuSeparator />
           <ContextMenuItem @click="toggleShowComponentDialog()">
             <Blocks class="mr-2 h-4 w-4" />
             自定义组件
