@@ -497,9 +497,9 @@ function onTabScroll(e: WheelEvent) {
                 开启图片压缩
               </span>
               <Switch
-                v-model:checked="useCompression"
+                v-model="useCompression"
                 name="UseCompression"
-                @update:checked="changeCompression"
+                @update:model-value="changeCompression"
               />
             </div>
 
@@ -508,9 +508,9 @@ function onTabScroll(e: WheelEvent) {
                 粘贴图片时自动转存
               </span>
               <Switch
-                v-model:checked="enableImageReupload"
+                v-model="enableImageReupload"
                 name="EnableImageReupload"
-                @update:checked="toggleImageReupload"
+                @update:model-value="toggleImageReupload"
               />
             </div>
             <p class="text-xs text-muted-foreground mt-1.5">
@@ -577,9 +577,9 @@ function onTabScroll(e: WheelEvent) {
               <Field v-slot="{ field, errorMessage }" name="useCDN" type="boolean">
                 <FormItem label="CDN 加速" :error="errorMessage">
                   <Switch
-                    :checked="field.value"
+                    :model-value="field.value"
                     :name="field.name"
-                    @update:checked="field.onChange"
+                    @update:model-value="field.onChange"
                     @blur="field.onBlur"
                   />
                 </FormItem>
@@ -653,9 +653,9 @@ function onTabScroll(e: WheelEvent) {
               <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
                 <FormItem label="UseSSL" required :error="errorMessage">
                   <Switch
-                    :checked="field.value"
+                    :model-value="field.value"
                     :name="field.name"
-                    @update:checked="field.onChange"
+                    @update:model-value="field.onChange"
                     @blur="field.onBlur"
                   />
                 </FormItem>
@@ -899,9 +899,9 @@ function onTabScroll(e: WheelEvent) {
               <Field v-slot="{ field, errorMessage }" name="useSSL" type="boolean">
                 <FormItem label="UseSSL" required :error="errorMessage">
                   <Switch
-                    :checked="field.value"
+                    :model-value="field.value"
                     :name="field.name"
-                    @update:checked="field.onChange"
+                    @update:model-value="field.onChange"
                     @blur="field.onBlur"
                   />
                 </FormItem>
@@ -1027,9 +1027,9 @@ function onTabScroll(e: WheelEvent) {
               <Field v-slot="{ field, errorMessage }" name="pathStyle" type="boolean">
                 <FormItem label="Force Path Style" :error="errorMessage">
                   <Switch
-                    :checked="field.value"
+                    :model-value="field.value"
                     :name="field.name"
-                    @update:checked="field.onChange"
+                    @update:model-value="field.onChange"
                     @blur="field.onBlur"
                   />
                 </FormItem>
