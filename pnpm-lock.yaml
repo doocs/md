@@ -30,11 +30,12 @@ overrides:
   minimatch@^9: ^10.2.5
   prettier: 2.8.8
   qs: ^6.15.1
-  tinyexec: 1.1.2
   querystring: npm:qs@^6.15.1
   semver: ^7.8.0
   serialize-javascript@<7.0.3: ^7.0.5
   source-map@0.8.0-beta.0: 0.7.4
+  tinyexec: 1.1.2
+  tmp: '>=0.2.6'
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.1.0
   undici@^7: ^8.1.0
@@ -6873,10 +6874,6 @@ packages:
   tldts@7.4.0:
     resolution: {integrity: sha512-yHBe+zVfzNZ3QfTPW/Z6KK1G2t340gFjMHqI/4KKSt/abzYydzuCnpqdaF5gCCABby+9Yfbj59oR5F2Fd5CBzg==}
     hasBin: true
-
-  tmp@0.2.5:
-    resolution: {integrity: sha512-voyz6MApa1rQGUxT3E+BK7/ROe8itEx7vD8/HEvt4xwXucvQ5G5oeEiHkmHZJuBO21RpOf+YYm9MOivj709jow==}
-    engines: {node: '>=14.14'}
 
   tmp@0.2.6:
     resolution: {integrity: sha512-5sJPdPjfI5Kx+qbrDesxkglRBxW//g7hCsqspEjwkewGvBMGIKMOTKzLt1hFVJzyadba3lDUN20O9qhvbQUSTA==}
@@ -14642,8 +14639,6 @@ snapshots:
     dependencies:
       tldts-core: 7.4.0
 
-  tmp@0.2.5: {}
-
   tmp@0.2.6: {}
 
   to-regex-range@5.0.1:
@@ -15099,7 +15094,7 @@ snapshots:
       source-map-support: 0.5.21
       strip-bom: 5.0.0
       strip-json-comments: 5.0.2
-      tmp: 0.2.5
+      tmp: 0.2.6
       update-notifier: 7.3.1
       watchpack: 2.4.4
       zip-dir: 2.0.0
