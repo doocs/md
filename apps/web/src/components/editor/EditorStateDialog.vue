@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeLabels } from '@md/shared/configs'
-import { Expand, UploadCloud } from 'lucide-vue-next'
+import { Check, Copy, Expand, UploadCloud } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
@@ -180,9 +180,14 @@ const currentMaximizedJSON = computed(() => {
   return {}
 })
 
+const isCopied = ref(false)
+
 function copyToClipboard(text: string) {
   copyPlain(text)
-  toast.success(`复制成功`)
+  isCopied.value = true
+  setTimeout(() => {
+    isCopied.value = false
+  }, 1500)
 }
 
 // 处理文件导入
@@ -350,8 +355,8 @@ function applyImportedConfig() {
 
         <TabsContent value="export">
           <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 grid-rows-[1fr_auto] text-center">
-            <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
+            <div class="flex flex-col overflow-hidden rounded-lg border border-border">
+              <p class="relative bg-muted/50 p-2 border-b border-border text-sm font-medium text-muted-foreground">
                 请选择需要导出的配置
               </p>
               <ul v-if="storeStates.data" class="space-y-2 overflow-auto px-3 py-2">
@@ -360,26 +365,26 @@ function applyImportedConfig() {
                     :id="`export-${key}`"
                     v-model="storeStates.selected[key]"
                     type="checkbox"
-                    class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                    class="h-4 w-4 rounded accent-primary"
                   >
-                  <label :for="`export-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
+                  <label :for="`export-${key}`" class="text-sm text-foreground">
                     {{ storeLabels[key] || key }}
                   </label>
                 </li>
               </ul>
               <div v-else>
-                <p class="text-sm text-gray-500 dark:text-gray-400">
+                <p class="text-sm text-muted-foreground">
                   加载中...
                 </p>
               </div>
             </div>
-            <div class="flex flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
+            <div class="flex flex-col overflow-hidden rounded-lg border border-border">
+              <p class="relative bg-muted/50 p-2 border-b border-border text-sm font-medium text-muted-foreground">
                 <span>当前 JSON 预览</span>
-                <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
+                <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-muted-foreground" @click="isMaximized = true" />
               </p>
-              <div class="w-full overflow-auto border border-gray-200 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:border-gray-700">
-                <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
+              <div class="flex-1 overflow-auto p-2">
+                <pre class="text-left text-sm text-muted-foreground">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
               </div>
             </div>
             <div class="col-span-1 lg:col-span-2 flex justify-end">
@@ -396,13 +401,13 @@ function applyImportedConfig() {
 
         <TabsContent value="import">
           <div class="grid grid-cols-1 lg:grid-cols-2 my-5 h-[60vh] lg:h-96 gap-4 grid-rows-[1fr_auto] text-center">
-            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <p class="relative bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
+            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border">
+              <p class="relative bg-muted/50 p-2 border-b border-border text-sm font-medium text-muted-foreground">
                 <span>导入 JSON 配置文件</span>
-                <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-gray-500 dark:text-gray-400" @click="isMaximized = true" />
+                <Expand class="absolute right-2 top-2 cursor-pointer p-1 text-muted-foreground" @click="isMaximized = true" />
               </p>
               <div class="flex-1 min-h-0 p-2">
-                <div v-if="!originalImportData" class="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+                <div v-if="!originalImportData" class="flex h-full flex-col items-center justify-center rounded-lg border-2 border-dashed border-border">
                   <input
                     id="json-import-input"
                     ref="fileInputRef"
@@ -413,25 +418,25 @@ function applyImportedConfig() {
                   >
                   <label
                     for="json-import-input"
-                    class="flex h-full w-full flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800"
+                    class="flex h-full w-full flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-muted"
                   >
-                    <UploadCloud class="mb-2 size-16 text-gray-500 dark:text-gray-400" />
-                    <span class="text-sm text-gray-500 dark:text-gray-400">
+                    <UploadCloud class="mb-2 size-16 text-muted-foreground" />
+                    <span class="text-sm text-muted-foreground">
                       点击或拖拽 JSON 文件到此处
                     </span>
-                    <span class="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                    <span class="mt-1 text-xs text-muted-foreground/60">
                       支持格式: .json
                     </span>
                   </label>
                 </div>
-                <div v-else class="h-full overflow-auto border border-gray-200 rounded-md bg-gray-50 p-2 dark:bg-gray-800 dark:border-gray-700">
-                  <pre class="text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(filteredImportJSON, null, 2) }}</pre>
+                <div v-else class="h-full overflow-auto p-2">
+                  <pre class="text-left text-sm text-muted-foreground">{{ JSON.stringify(filteredImportJSON, null, 2) }}</pre>
                 </div>
               </div>
             </div>
 
-            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
-              <p class="bg-gray-50 p-2 border-b border-gray-200 dark:bg-gray-900 dark:border-gray-700 text-sm font-medium text-gray-600 dark:text-gray-300">
+            <div class="flex h-full min-h-0 flex-col overflow-hidden rounded-lg border border-border">
+              <p class="bg-muted/50 p-2 border-b border-border text-sm font-medium text-muted-foreground">
                 选择要导入的配置项
               </p>
               <div class="flex-1 min-h-0 overflow-auto">
@@ -442,15 +447,15 @@ function applyImportedConfig() {
                         :id="`import-${key}`"
                         v-model="importStates.selected[key]"
                         type="checkbox"
-                        class="h-4 w-4 border-gray-300 rounded text-indigo-600 focus:ring-indigo-500"
+                        class="h-4 w-4 rounded accent-primary"
                       >
-                      <label :for="`import-${key}`" class="text-sm text-gray-700 dark:text-gray-300">
+                      <label :for="`import-${key}`" class="text-sm text-foreground">
                         {{ storeLabels[key] || key }}
                       </label>
                     </li>
                   </ul>
                 </div>
-                <div v-else class="flex h-full items-center justify-center text-gray-500 dark:text-gray-400">
+                <div v-else class="flex h-full items-center justify-center text-muted-foreground">
                   请先导入JSON文件
                 </div>
               </div>
@@ -495,18 +500,19 @@ function applyImportedConfig() {
         </DialogDescription>
       </DialogHeader>
       <div class="max-h-[70vh] overflow-hidden">
-        <div class="h-full overflow-auto border rounded-md bg-gray-50 p-4 dark:bg-gray-800">
-          <pre class="break-all text-left text-sm text-gray-500 dark:text-gray-400">{{ JSON.stringify(currentMaximizedJSON, null, 2) }}</pre>
+        <div class="relative h-full overflow-auto border border-border rounded-md bg-muted p-4">
+          <Check
+            v-if="isCopied"
+            class="absolute right-2 top-2 size-4 text-green-500"
+          />
+          <Copy
+            v-else
+            class="absolute right-2 top-2 size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+            @click="copyToClipboard(JSON.stringify(currentMaximizedJSON, null, 2))"
+          />
+          <pre class="break-all text-left text-sm text-muted-foreground">{{ JSON.stringify(currentMaximizedJSON, null, 2) }}</pre>
         </div>
       </div>
-      <DialogFooter>
-        <Button
-          variant="outline"
-          @click="copyToClipboard(JSON.stringify(currentMaximizedJSON, null, 2))"
-        >
-          复制 JSON 到剪贴板
-        </Button>
-      </DialogFooter>
     </DialogContent>
   </Dialog>
 </template>
