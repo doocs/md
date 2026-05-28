@@ -1,6 +1,7 @@
 <script setup lang='ts'>
 import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import {
+  Blocks,
   Bold,
   ClipboardPaste,
   Copy,
@@ -55,6 +56,7 @@ const {
   toggleShowInsertMpCardDialog,
   toggleShowUploadImgDialog,
   toggleShowImportMdDialog,
+  toggleShowComponentDialog,
 } = uiStore
 
 const { editor } = storeToRefs(editorStore)
@@ -174,6 +176,11 @@ function downloadAsCardImage() {
           <ContextMenuItem @click="toggleShowInsertMpCardDialog()">
             <FileText class="mr-2 h-4 w-4" />
             公众号名片
+          </ContextMenuItem>
+          <ContextMenuSeparator />
+          <ContextMenuItem @click="toggleShowComponentDialog()">
+            <Blocks class="mr-2 h-4 w-4" />
+            自定义组件
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
