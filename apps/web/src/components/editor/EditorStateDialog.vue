@@ -182,12 +182,17 @@ const currentMaximizedJSON = computed(() => {
 
 const isCopied = ref(false)
 
-function copyToClipboard(text: string) {
-  copyPlain(text)
-  isCopied.value = true
-  setTimeout(() => {
-    isCopied.value = false
-  }, 1500)
+async function copyToClipboard(text: string) {
+  try {
+    await copyPlain(text)
+    isCopied.value = true
+    setTimeout(() => {
+      isCopied.value = false
+    }, 1500)
+  }
+  catch {
+    toast.error(`复制失败，请重试`)
+  }
 }
 
 // 处理文件导入
@@ -501,15 +506,26 @@ function applyImportedConfig() {
       </DialogHeader>
       <div class="max-h-[70vh] overflow-hidden">
         <div class="relative h-full overflow-auto border border-border rounded-md bg-muted p-4">
-          <Check
+          <Button
             v-if="isCopied"
-            class="absolute right-2 top-2 size-4 text-green-500"
-          />
-          <Copy
+            variant="ghost"
+            size="icon"
+            class="absolute right-2 top-2 size-8 cursor-default"
+            disabled
+            aria-label="已复制"
+          >
+            <Check class="size-4 text-green-500" />
+          </Button>
+          <Button
             v-else
-            class="absolute right-2 top-2 size-4 cursor-pointer text-muted-foreground hover:text-foreground"
+            variant="ghost"
+            size="icon"
+            class="absolute right-2 top-2 size-8 text-muted-foreground hover:text-foreground"
+            aria-label="复制 JSON"
             @click="copyToClipboard(JSON.stringify(currentMaximizedJSON, null, 2))"
-          />
+          >
+            <Copy class="size-4" />
+          </Button>
           <pre class="break-all text-left text-sm text-muted-foreground">{{ JSON.stringify(currentMaximizedJSON, null, 2) }}</pre>
         </div>
       </div>
