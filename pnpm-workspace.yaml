@@ -40,6 +40,7 @@ overrides:
   semver: ^7.8.0
   serialize-javascript@<7.0.3: ^7.0.5
   source-map@0.8.0-beta.0: 0.7.4
+  tinyexec: 1.1.2
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.1.0
   undici@^7: ^8.1.0
