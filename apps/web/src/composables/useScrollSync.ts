@@ -25,6 +25,32 @@ export function useScrollSync(
   let isSyncingFromEditor = false
   let isSyncingFromPreview = false
 
+  // ── Echo-prevention: two complementary guards ────────────────────────────
+  //
+  // When we programmatically change scrollTop on one side to mirror the other,
+  // the browser fires a "echo" scroll event on that element which must not
+  // trigger a reverse sync (that would cause an infinite feedback loop).
+  //
+  // Guard 1 – boolean flag + double-RAF reset
+  //   Chrome fires the echo synchronously (same call-stack), so the flag is
+  //   still true when the echo fires → blocked.  Firefox follows the spec and
+  //   queues the echo as a task.  The browser's rendering step (double-RAF)
+  //   runs *before* that task queue entry, so we need two frames to keep the
+  //   flag raised long enough.
+  //
+  // Guard 2 – last-set position tracker
+  //   Some Firefox versions also emit a secondary "layout-adjustment" scroll
+  //   event from CodeMirror's virtual-rendering pass that can arrive after
+  //   the double-RAF resets the flag.  We record the exact scrollTop we wrote
+  //   and reject any incoming scroll event within ±1.5 px of that value.
+  // ─────────────────────────────────────────────────────────────────────────
+  let lastSetPreviewScrollTop: number | null = null
+  let lastSetEditorScrollTop: number | null = null
+
+  function resetAfterTwoFrames(fn: () => void) {
+    requestAnimationFrame(() => requestAnimationFrame(fn))
+  }
+
   // ============================================================
   // 源文档块解析（缓存以文档对象为 key）
   // ============================================================
@@ -194,6 +220,15 @@ export function useScrollSync(
       return
 
     const scroller = view.scrollDOM
+
+    // Guard 2: catch delayed echo / CodeMirror adjustment events (Firefox)
+    if (lastSetEditorScrollTop !== null) {
+      if (Math.abs(scroller.scrollTop - lastSetEditorScrollTop) < 1.5)
+        return
+      // User scrolled to a genuinely different position — clear stale tracker.
+      lastSetEditorScrollTop = null
+    }
+
     const scrollable = scroller.scrollHeight - scroller.clientHeight
     if (scrollable <= 0)
       return
@@ -202,13 +237,16 @@ export function useScrollSync(
 
     // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
     if (scroller.scrollTop <= 0) {
+      lastSetPreviewScrollTop = 0
       preview.scrollTop = 0
-      requestAnimationFrame(() => { isSyncingFromEditor = false })
+      resetAfterTwoFrames(() => { isSyncingFromEditor = false; lastSetPreviewScrollTop = null })
       return
     }
     if (scroller.scrollTop >= scrollable) {
-      preview.scrollTop = preview.scrollHeight
-      requestAnimationFrame(() => { isSyncingFromEditor = false })
+      const t = preview.scrollHeight
+      lastSetPreviewScrollTop = t
+      preview.scrollTop = t
+      resetAfterTwoFrames(() => { isSyncingFromEditor = false; lastSetPreviewScrollTop = null })
       return
     }
 
@@ -233,10 +271,10 @@ export function useScrollSync(
 
     const previewIndex = mapBlockIndex(srcIndex, sourceBlocks.length, previewBlocks.length)
     const targetIndex = Math.min(previewIndex, previewBlocks.length - 1)
-    preview.scrollTop = previewOffsetTops[targetIndex]
-    requestAnimationFrame(() => {
-      isSyncingFromEditor = false
-    })
+    const targetScrollTop = previewOffsetTops[targetIndex]
+    lastSetPreviewScrollTop = targetScrollTop
+    preview.scrollTop = targetScrollTop
+    resetAfterTwoFrames(() => { isSyncingFromEditor = false; lastSetPreviewScrollTop = null })
   }
 
   // ============================================================
@@ -251,6 +289,13 @@ export function useScrollSync(
     if (!view || !preview)
       return
 
+    // Guard 2: catch delayed echo / CodeMirror adjustment events (Firefox)
+    if (lastSetPreviewScrollTop !== null) {
+      if (Math.abs(preview.scrollTop - lastSetPreviewScrollTop) < 1.5)
+        return
+      lastSetPreviewScrollTop = null
+    }
+
     const previewScrollable = preview.scrollHeight - preview.clientHeight
     if (previewScrollable <= 0)
       return
@@ -259,13 +304,16 @@ export function useScrollSync(
 
     // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
     if (preview.scrollTop <= 0) {
+      lastSetEditorScrollTop = 0
       view.scrollDOM.scrollTop = 0
-      requestAnimationFrame(() => { isSyncingFromPreview = false })
+      resetAfterTwoFrames(() => { isSyncingFromPreview = false; lastSetEditorScrollTop = null })
       return
     }
     if (preview.scrollTop >= previewScrollable) {
-      view.scrollDOM.scrollTop = view.scrollDOM.scrollHeight
-      requestAnimationFrame(() => { isSyncingFromPreview = false })
+      const t = view.scrollDOM.scrollHeight
+      lastSetEditorScrollTop = t
+      view.scrollDOM.scrollTop = t
+      resetAfterTwoFrames(() => { isSyncingFromPreview = false; lastSetEditorScrollTop = null })
       return
     }
 
@@ -300,11 +348,10 @@ export function useScrollSync(
 
     const blockInfo = view.lineBlockAt(line.from)
     if (blockInfo) {
+      lastSetEditorScrollTop = blockInfo.top
       view.scrollDOM.scrollTop = blockInfo.top
     }
-    requestAnimationFrame(() => {
-      isSyncingFromPreview = false
-    })
+    resetAfterTwoFrames(() => { isSyncingFromPreview = false; lastSetEditorScrollTop = null })
   }
 
   // ============================================================
