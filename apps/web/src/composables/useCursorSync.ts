@@ -127,6 +127,33 @@ export function useCursorSync(
     if (!target)
       return
 
+    // 拦截预览区角标 a 标签（以及其他内部锚点链接，如脚注），手动平滑滚动
+    const linkEl = target.closest(`a`) as HTMLAnchorElement | null
+    if (linkEl) {
+      const href = linkEl.getAttribute(`href`)
+      if (href && href.startsWith(`#`)) {
+        const targetId = decodeURIComponent(href.slice(1))
+        if (targetId) {
+          const targetEl = document.getElementById(targetId)
+          if (targetEl) {
+            event.preventDefault()
+            event.stopPropagation()
+            const container = target.closest(`.preview-wrapper`) || document.getElementById(`preview`)
+            if (container) {
+              const containerRect = container.getBoundingClientRect()
+              const elementRect = targetEl.getBoundingClientRect()
+              const targetScrollTop = elementRect.top - containerRect.top + container.scrollTop
+              container.scrollTo({
+                top: targetScrollTop,
+                behavior: `smooth`,
+              })
+              return
+            }
+          }
+        }
+      }
+    }
+
     const formulaEl = target.closest(`[data-math-raw]`) as HTMLElement | null
     if (formulaEl) {
       const raw = formulaEl.getAttribute(`data-math-raw`) ?? ``

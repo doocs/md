@@ -24,6 +24,11 @@ export function useScrollSync(
 ) {
   let isSyncingFromEditor = false
   let isSyncingFromPreview = false
+  // 用程序性目标值过滤"回弹 scroll 事件"，而非依赖时间窗口：
+  // Chrome / Firefox 都会把 scrollTop 赋值产生的 scroll 事件推迟到下一帧，
+  // 届时 rAF 已清除 flag，直接比对位置即可精准拦截，不误伤用户真实滚动。
+  let pendingPreviewScrollTop = -1
+  let pendingEditorScrollTop = -1
 
   // ============================================================
   // 源文档块解析（缓存以文档对象为 key）
@@ -198,15 +203,24 @@ export function useScrollSync(
     if (scrollable <= 0)
       return
 
+    // 过滤由 onPreviewScroll 程序性设置 editor.scrollTop 产生的回弹事件
+    if (pendingEditorScrollTop >= 0 && Math.abs(scroller.scrollTop - pendingEditorScrollTop) < 2) {
+      pendingEditorScrollTop = -1
+      return
+    }
+    pendingEditorScrollTop = -1
+
     isSyncingFromEditor = true
 
     // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
     if (scroller.scrollTop <= 0) {
+      pendingPreviewScrollTop = 0
       preview.scrollTop = 0
       requestAnimationFrame(() => { isSyncingFromEditor = false })
       return
     }
     if (scroller.scrollTop >= scrollable) {
+      pendingPreviewScrollTop = preview.scrollHeight - preview.clientHeight
       preview.scrollTop = preview.scrollHeight
       requestAnimationFrame(() => { isSyncingFromEditor = false })
       return
@@ -233,10 +247,9 @@ export function useScrollSync(
 
     const previewIndex = mapBlockIndex(srcIndex, sourceBlocks.length, previewBlocks.length)
     const targetIndex = Math.min(previewIndex, previewBlocks.length - 1)
+    pendingPreviewScrollTop = previewOffsetTops[targetIndex]
     preview.scrollTop = previewOffsetTops[targetIndex]
-    requestAnimationFrame(() => {
-      isSyncingFromEditor = false
-    })
+    requestAnimationFrame(() => { isSyncingFromEditor = false })
   }
 
   // ============================================================
@@ -251,6 +264,13 @@ export function useScrollSync(
     if (!view || !preview)
       return
 
+    // 过滤由 onEditorScroll 程序性设置 preview.scrollTop 产生的回弹事件
+    if (pendingPreviewScrollTop >= 0 && Math.abs(preview.scrollTop - pendingPreviewScrollTop) < 2) {
+      pendingPreviewScrollTop = -1
+      return
+    }
+    pendingPreviewScrollTop = -1
+
     const previewScrollable = preview.scrollHeight - preview.clientHeight
     if (previewScrollable <= 0)
       return
@@ -259,11 +279,13 @@ export function useScrollSync(
 
     // 边缘吸附：滚到顶 / 底时直接强制对齐，避免块映射偏差
     if (preview.scrollTop <= 0) {
+      pendingEditorScrollTop = 0
       view.scrollDOM.scrollTop = 0
       requestAnimationFrame(() => { isSyncingFromPreview = false })
       return
     }
     if (preview.scrollTop >= previewScrollable) {
+      pendingEditorScrollTop = view.scrollDOM.scrollHeight - view.scrollDOM.clientHeight
       view.scrollDOM.scrollTop = view.scrollDOM.scrollHeight
       requestAnimationFrame(() => { isSyncingFromPreview = false })
       return
@@ -300,11 +322,10 @@ export function useScrollSync(
 
     const blockInfo = view.lineBlockAt(line.from)
     if (blockInfo) {
+      pendingEditorScrollTop = blockInfo.top
       view.scrollDOM.scrollTop = blockInfo.top
     }
-    requestAnimationFrame(() => {
-      isSyncingFromPreview = false
-    })
+    requestAnimationFrame(() => { isSyncingFromPreview = false })
   }
 
   // ============================================================
