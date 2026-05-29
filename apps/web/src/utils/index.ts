@@ -329,6 +329,9 @@ export async function processClipboardContent(primaryColor: string) {
   // 先合并 CSS 和修改 HTML 结构
   clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
+  // 移除 fragment 锚点的 href（微信公众号后台不支持页面内跳转，保留会导致保存报错）
+  clipboardDiv.querySelectorAll(`a[href^="#"]`).forEach(a => a.removeAttribute(`href`))
+
   // 处理样式和颜色变量
   clipboardDiv.innerHTML = clipboardDiv.innerHTML
     .replace(/([^-])top:(.*?)em/g, `$1transform: translateY($2em)`)
