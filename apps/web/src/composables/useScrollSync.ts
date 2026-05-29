@@ -220,8 +220,9 @@ export function useScrollSync(
       return
     }
     if (scroller.scrollTop >= scrollable) {
-      pendingPreviewScrollTop = preview.scrollHeight - preview.clientHeight
-      preview.scrollTop = preview.scrollHeight
+      const maxPreviewScrollTop = preview.scrollHeight - preview.clientHeight
+      pendingPreviewScrollTop = maxPreviewScrollTop
+      preview.scrollTop = maxPreviewScrollTop
       requestAnimationFrame(() => { isSyncingFromEditor = false })
       return
     }
@@ -247,8 +248,10 @@ export function useScrollSync(
 
     const previewIndex = mapBlockIndex(srcIndex, sourceBlocks.length, previewBlocks.length)
     const targetIndex = Math.min(previewIndex, previewBlocks.length - 1)
-    pendingPreviewScrollTop = previewOffsetTops[targetIndex]
-    preview.scrollTop = previewOffsetTops[targetIndex]
+    const maxPreviewScrollTop = preview.scrollHeight - preview.clientHeight
+    const targetScrollTop = Math.min(previewOffsetTops[targetIndex], maxPreviewScrollTop)
+    pendingPreviewScrollTop = targetScrollTop
+    preview.scrollTop = targetScrollTop
     requestAnimationFrame(() => { isSyncingFromEditor = false })
   }
 
@@ -285,8 +288,9 @@ export function useScrollSync(
       return
     }
     if (preview.scrollTop >= previewScrollable) {
-      pendingEditorScrollTop = view.scrollDOM.scrollHeight - view.scrollDOM.clientHeight
-      view.scrollDOM.scrollTop = view.scrollDOM.scrollHeight
+      const maxEditorScrollTop = view.scrollDOM.scrollHeight - view.scrollDOM.clientHeight
+      pendingEditorScrollTop = maxEditorScrollTop
+      view.scrollDOM.scrollTop = maxEditorScrollTop
       requestAnimationFrame(() => { isSyncingFromPreview = false })
       return
     }
@@ -322,8 +326,10 @@ export function useScrollSync(
 
     const blockInfo = view.lineBlockAt(line.from)
     if (blockInfo) {
-      pendingEditorScrollTop = blockInfo.top
-      view.scrollDOM.scrollTop = blockInfo.top
+      const maxEditorScrollTop = view.scrollDOM.scrollHeight - view.scrollDOM.clientHeight
+      const targetScrollTop = Math.min(blockInfo.top, maxEditorScrollTop)
+      pendingEditorScrollTop = targetScrollTop
+      view.scrollDOM.scrollTop = targetScrollTop
     }
     requestAnimationFrame(() => { isSyncingFromPreview = false })
   }

@@ -132,14 +132,18 @@ export function useCursorSync(
     if (linkEl) {
       const href = linkEl.getAttribute(`href`)
       if (href && href.startsWith(`#`)) {
-        const targetId = decodeURIComponent(href.slice(1))
+        let targetId = ``
+        try {
+          targetId = decodeURIComponent(href.slice(1))
+        }
+        catch {}
         if (targetId) {
           const targetEl = document.getElementById(targetId)
           if (targetEl) {
-            event.preventDefault()
-            event.stopPropagation()
             const container = target.closest(`.preview-wrapper`) || document.getElementById(`preview`)
-            if (container) {
+            if (container && container.contains(targetEl)) {
+              event.preventDefault()
+              event.stopPropagation()
               const containerRect = container.getBoundingClientRect()
               const elementRect = targetEl.getBoundingClientRect()
               const targetScrollTop = elementRect.top - containerRect.top + container.scrollTop
