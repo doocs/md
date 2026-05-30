@@ -316,7 +316,7 @@ figure {
 figcaption,
 .md-figcaption {
   text-align: center;
-  color: #888;
+  color: color-mix(in srgb, hsl(var(--foreground)) 50%, transparent);
   font-size: 0.8em;
 }
 
@@ -386,15 +386,15 @@ thead {
 }
 
 th {
-  border: 1px solid #dfdfdf;
+  border: 1px solid color-mix(in srgb, hsl(var(--foreground)) 15%, transparent);
   padding: 0.25em 0.5em;
   color: hsl(var(--foreground));
   word-break: keep-all;
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, hsl(var(--foreground)) 5%, transparent);
 }
 
 td {
-  border: 1px solid #dfdfdf;
+  border: 1px solid color-mix(in srgb, hsl(var(--foreground)) 15%, transparent);
   padding: 0.25em 0.5em;
   color: hsl(var(--foreground));
   word-break: keep-all;
