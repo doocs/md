@@ -52,6 +52,12 @@ blockquote {
   font-style: italic;
 }
 
+/* ==================== 行内代码 ==================== */
+.codespan {
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
 /* ==================== 代码块 ==================== */
 pre.code__pre,
 .hljs.code__pre {

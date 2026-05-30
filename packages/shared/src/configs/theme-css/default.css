@@ -316,7 +316,7 @@ figure {
 figcaption,
 .md-figcaption {
   text-align: center;
-  color: #888;
+  color: color-mix(in srgb, hsl(var(--foreground)) 50%, transparent);
   font-size: 0.8em;
 }
 
@@ -334,12 +334,13 @@ hr {
 }
 
 /* ==================== 行内代码 ==================== */
-code {
+.codespan {
   font-size: 90%;
-  color: #d14;
-  background: rgba(27, 31, 35, 0.05);
+  color: var(--md-primary-color);
+  background: color-mix(in srgb, var(--md-primary-color) 8%, transparent);
   padding: 3px 5px;
   border-radius: 4px;
+  border: 1px solid color-mix(in srgb, var(--md-primary-color) 20%, transparent);
 }
 
 /* 代码块内的 code 标签需要特殊处理（覆盖行内 code 样式） */
@@ -385,15 +386,15 @@ thead {
 }
 
 th {
-  border: 1px solid #dfdfdf;
+  border: 1px solid color-mix(in srgb, hsl(var(--foreground)) 15%, transparent);
   padding: 0.25em 0.5em;
   color: hsl(var(--foreground));
   word-break: keep-all;
-  background: rgba(0, 0, 0, 0.05);
+  background: color-mix(in srgb, hsl(var(--foreground)) 5%, transparent);
 }
 
 td {
-  border: 1px solid #dfdfdf;
+  border: 1px solid color-mix(in srgb, hsl(var(--foreground)) 15%, transparent);
   padding: 0.25em 0.5em;
   color: hsl(var(--foreground));
   word-break: keep-all;

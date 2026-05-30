@@ -54,7 +54,7 @@ blockquote > p {
 
 /* 代码 */
 /* 行内代码 */
-code {
+.codespan {
 }
 
 /* 代码块容器 */
