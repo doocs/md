@@ -489,7 +489,7 @@ function applyImportedConfig() {
   </Dialog>
 
   <!-- 最大化弹窗 -->
-  <Dialog :open="isMaximized" @update:open="(val) => isMaximized = val">
+  <Dialog v-model:open="isMaximized">
     <DialogContent class="max-h-[90vh] max-w-[90vw]! overflow-auto">
       <DialogHeader>
         <DialogTitle>JSON 全屏预览</DialogTitle>
