@@ -49,6 +49,7 @@ const formErrors = reactive({
 // ──────────────────────────────────────────────
 function openCreateForm() {
   formMode.value = 'create'
+  editingId.value = ''
   formData.name = ''
   formData.description = ''
   formData.template = ''
@@ -91,13 +92,19 @@ function removePropRow(idx: number) {
 function validate(): boolean {
   formErrors.name = ''
   formErrors.template = ''
+  const name = formData.name.trim()
 
-  if (!formData.name.trim()) {
+  if (!name) {
     formErrors.name = '组件名称不能为空'
     return false
   }
-  if (!/^[A-Z][a-zA-Z0-9]*$/.test(formData.name.trim())) {
+  if (!/^[A-Z][a-zA-Z0-9]*$/.test(name)) {
     formErrors.name = '组件名称必须以大写字母开头，只含字母和数字（PascalCase）'
+    return false
+  }
+  const duplicate = componentStore.userComponents.find(c => c.name === name && (formMode.value === 'create' || c.id !== editingId.value))
+  if (duplicate) {
+    formErrors.name = '组件名称已存在，请更换名称'
     return false
   }
   if (!formData.template.trim()) {
