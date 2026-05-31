@@ -216,12 +216,89 @@ export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedEx
   function resolveRegistry(): ComponentRegistry {
     return getRegistry ? getRegistry() : _registry
   }
+
+  function findLineEnd(src: string, from: number): number {
+    const newlineIdx = src.indexOf(`\n`, from)
+    return newlineIdx >= 0 ? newlineIdx : src.length
+  }
+
+  function hasOnlyWhitespaceToLineEnd(src: string, from: number): boolean {
+    return src.slice(from, findLineEnd(src, from)).trim() === ``
+  }
+
+  function findComponentStart(src: string): number | undefined {
+    let offset = 0
+    let fenceChar = ``
+    let fenceLength = 0
+
+    for (const line of src.split(`\n`)) {
+      const fenceMatch = line.match(/^ {0,3}([`~]{3,})/)
+
+      if (fenceChar) {
+        if (fenceMatch && fenceMatch[1][0] === fenceChar && fenceMatch[1].length >= fenceLength) {
+          fenceChar = ``
+          fenceLength = 0
+        }
+      }
+      else if (fenceMatch) {
+        fenceChar = fenceMatch[1][0]
+        fenceLength = fenceMatch[1].length
+      }
+      else if (line[0] === `<` && line[1] >= `A` && line[1] <= `Z`) {
+        return offset
+      }
+
+      offset += line.length + 1
+    }
+
+    return undefined
+  }
+
   /**
    * 简单的非正则标签解析器，避免复杂 regex 的回溯问题。
    * 返回 raw（完整原始文本）、name（组件名）、propsStr（属性串）。
    */
   function parseTag(src: string) {
     // 必须以 <UppercaseLetter 开头
+
+    function findClosingTag(src: string, name: string, from: number): number {
+      const closeTag = `</${name}>`
+      let lineStart = from
+      let fenceChar = ``
+      let fenceLength = 0
+
+      while (lineStart <= src.length) {
+        const lineEnd = findLineEnd(src, lineStart)
+        const line = src.slice(lineStart, lineEnd)
+        const fenceMatch = line.match(/^ {0,3}([`~]{3,})/)
+
+        if (fenceChar) {
+          if (fenceMatch && fenceMatch[1][0] === fenceChar && fenceMatch[1].length >= fenceLength) {
+            fenceChar = ``
+            fenceLength = 0
+          }
+        }
+        else if (fenceMatch) {
+          fenceChar = fenceMatch[1][0]
+          fenceLength = fenceMatch[1].length
+        }
+        else {
+          const leadingWhitespace = line.match(/^\s*/)?.[0].length ?? 0
+          if (line.slice(leadingWhitespace).startsWith(closeTag)
+            && line.slice(leadingWhitespace + closeTag.length).trim() === ``) {
+            return lineStart + leadingWhitespace
+          }
+        }
+
+        if (lineEnd === src.length)
+          break
+
+        lineStart = lineEnd + 1
+      }
+
+      return -1
+    }
+
     if (src[0] !== `<` || src[1] < `A` || src[1] > `Z`)
       return null
 
@@ -246,12 +323,29 @@ export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedEx
       }
       else if (ch === `/` && src[j + 1] === `>`) {
         // 自闭合标签结束
+        if (!hasOnlyWhitespaceToLineEnd(src, j + 2))
+          return null
         return { raw: src.slice(0, j + 2), name, propsStr: src.slice(i, j).trim(), children: `` }
       }
       else if (ch === `>`) {
-        // 开放标签结束，找对应的关闭标签
+        const lineEnd = findLineEnd(src, j + 1)
         const closeTag = `</${name}>`
-        const closeIdx = src.indexOf(closeTag, j + 1)
+
+        // 支持同一行内自洽的开闭合标签，但不接受标签后混入其他 Markdown 语法。
+        const inlineCloseIdx = src.indexOf(closeTag, j + 1)
+        if (inlineCloseIdx >= 0 && inlineCloseIdx < lineEnd) {
+          if (src.slice(inlineCloseIdx + closeTag.length, lineEnd).trim() !== ``)
+            return null
+
+          const children = src.slice(j + 1, inlineCloseIdx)
+          return { raw: src.slice(0, inlineCloseIdx + closeTag.length), name, propsStr: src.slice(i, j).trim(), children }
+        }
+
+        if (!hasOnlyWhitespaceToLineEnd(src, j + 1))
+          return null
+
+        // 多行组件要求关闭标签位于独立行，且跳过 fenced code 中的同名文本。
+        const closeIdx = findClosingTag(src, name, lineEnd === src.length ? lineEnd : lineEnd + 1)
         if (closeIdx < 0)
           return null
         const children = src.slice(j + 1, closeIdx)
@@ -269,9 +363,7 @@ export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedEx
         level: `block`,
 
         start(src: string) {
-          // 快速定位到第一个大写字母开头的 '<'
-          const idx = src.search(/<[A-Z]/)
-          return idx >= 0 ? idx : undefined
+          return findComponentStart(src)
         },
 
         tokenizer(src: string) {
