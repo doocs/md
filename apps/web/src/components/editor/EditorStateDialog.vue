@@ -363,12 +363,10 @@ function applyImportedConfig() {
               </p>
               <ul v-if="storeStates.data" class="space-y-2 overflow-auto px-3 py-2">
                 <li v-for="(_, key) in storeStates.data" :key="key" class="space-x-2 flex items-center">
-                  <input
+                  <Checkbox
                     :id="`export-${key}`"
                     v-model="storeStates.selected[key]"
-                    type="checkbox"
-                    class="h-4 w-4 rounded accent-primary"
-                  >
+                  />
                   <label :for="`export-${key}`" class="text-sm text-foreground">
                     {{ storeLabels[key] || key }}
                   </label>
@@ -445,12 +443,10 @@ function applyImportedConfig() {
                 <div v-if="originalImportData">
                   <ul class="space-y-2 px-3 py-2">
                     <li v-for="(_, key) in importStates.data" :key="key" class="space-x-2 flex items-center">
-                      <input
+                      <Checkbox
                         :id="`import-${key}`"
                         v-model="importStates.selected[key]"
-                        type="checkbox"
-                        class="h-4 w-4 rounded accent-primary"
-                      >
+                      />
                       <label :for="`import-${key}`" class="text-sm text-foreground">
                         {{ storeLabels[key] || key }}
                       </label>
