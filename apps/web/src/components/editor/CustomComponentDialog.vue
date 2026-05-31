@@ -49,6 +49,7 @@ const formErrors = reactive({
 // ──────────────────────────────────────────────
 function openCreateForm() {
   formMode.value = 'create'
+  editingId.value = ''
   formData.name = ''
   formData.description = ''
   formData.template = ''
@@ -101,7 +102,7 @@ function validate(): boolean {
     formErrors.name = '组件名称必须以大写字母开头，只含字母和数字（PascalCase）'
     return false
   }
-  const duplicate = componentStore.userComponents.find(c => c.name === name && c.id !== editingId.value)
+  const duplicate = componentStore.userComponents.find(c => c.name === name && (formMode.value === 'create' || c.id !== editingId.value))
   if (duplicate) {
     formErrors.name = '组件名称已存在，请更换名称'
     return false
