@@ -13,6 +13,7 @@ export interface RendererAPI {
     markdownContent: string
     readingTime: ReadTimeResults
   }
+  renderMarkdownToHtml: (markdown: string) => string
 
   /* —— HTML 拼装 —— */
   buildReadingTime: (reading: ReadTimeResults) => string

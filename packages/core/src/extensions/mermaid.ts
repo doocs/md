@@ -19,8 +19,6 @@ function getMermaid() {
 
 // key -> svg
 const svgCache = new Map<string, string>()
-// 上一次渲染的结果（用于在新渲染完成前显示旧图片）
-let lastRenderedSvg: string | null = null
 
 function renderMermaid(id: string, code: string, cacheKey: string) {
   if (typeof window === 'undefined')
@@ -28,7 +26,6 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
 
   const handleResult = (svg: string) => {
     svgCache.set(cacheKey, svg)
-    lastRenderedSvg = svg
 
     const el = document.getElementById(id)
     if (el) {
@@ -84,11 +81,6 @@ export function markedMermaid(): MarkedExtension {
           // 没有缓存，触发渲染
           const id = `mermaid-${cacheKey}`
           renderMermaid(id, code, cacheKey)
-
-          // 如果有上一次渲染的结果，显示旧图片；否则显示占位符
-          if (lastRenderedSvg) {
-            return `<!--mermaid-start--><div id="${id}" class="${className}">${lastRenderedSvg}</div><!--mermaid-end-->`
-          }
 
           return `<!--mermaid-start--><div id="${id}" class="${className}">正在加载 Mermaid...</div><!--mermaid-end-->`
         },

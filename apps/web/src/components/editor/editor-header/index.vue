@@ -95,16 +95,9 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
   tempContainer.style.setProperty(`color`, `#000000`, `important`)
 
   document.body.appendChild(tempContainer)
-
-  const htmlElement = document.documentElement
-  const wasDark = htmlElement.classList.contains(`dark`)
   let successful = false
 
   try {
-    if (wasDark) {
-      htmlElement.classList.remove(`dark`)
-    }
-
     const range = document.createRange()
     range.selectNodeContents(tempContainer)
     selection.removeAllRanges()
@@ -118,10 +111,6 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
   finally {
     selection.removeAllRanges()
     tempContainer.remove()
-
-    if (wasDark) {
-      htmlElement.classList.add(`dark`)
-    }
   }
 
   return successful

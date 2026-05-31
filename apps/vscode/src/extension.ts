@@ -8,6 +8,8 @@ import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
 
 let activePanel: vscode.WebviewPanel | undefined
+let activePreviewEditor: vscode.TextEditor | undefined
+let refreshActivePanel: (() => void) | undefined
 
 export function activate(context: vscode.ExtensionContext) {
   // Register TreeDataProvider
@@ -44,6 +46,9 @@ export function activate(context: vscode.ExtensionContext) {
 
     // 如果已有面板且未关闭，则直接显示
     if (activePanel) {
+      activePreviewEditor = editor
+      activePanel.title = `Markdown Preview - ${editor.document.fileName}`
+      refreshActivePanel?.()
       activePanel.reveal(vscode.ViewColumn.Two)
       return
     }
@@ -60,15 +65,26 @@ export function activate(context: vscode.ExtensionContext) {
     )
 
     activePanel = panel
+    activePreviewEditor = editor
 
     panel.onDidDispose(() => {
-      activePanel = undefined
+      if (activePanel === panel) {
+        activePanel = undefined
+        activePreviewEditor = undefined
+        refreshActivePanel = undefined
+      }
     })
 
-    treeDataProvider.onDidChangeTreeData(updateWebview)
+    const treeDataSubscription = treeDataProvider.onDidChangeTreeData(() => {
+      refreshActivePanel?.()
+    })
+
     function updateWebview() {
-      if (!editor)
+      const previewEditor = activePreviewEditor
+      if (!previewEditor || previewEditor.document.languageId !== `markdown`)
         return
+
+      panel.title = `Markdown Preview - ${previewEditor.document.fileName}`
 
       // 使用新主题系统
       const renderer = initRenderer({
@@ -77,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
         legend: `none`,
       })
 
-      const markdownContent = editor.document.getText()
+      const markdownContent = previewEditor.document.getText()
       const html = modifyHtmlContent(markdownContent, renderer)
 
       // 生成主题 CSS
@@ -95,12 +111,14 @@ export function activate(context: vscode.ExtensionContext) {
       panel.webview.html = wrapHtmlTag(html, completeCss)
     }
 
+    refreshActivePanel = updateWebview
+
     // render first webview
     updateWebview()
 
     // Monitor the changes of documents
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
-      if (e.document === editor.document) {
+      if (activePreviewEditor && e.document === activePreviewEditor.document) {
         updateWebview()
       }
     })
@@ -108,6 +126,7 @@ export function activate(context: vscode.ExtensionContext) {
     // Cancel the subscription when the panel is closed
     panel.onDidDispose(() => {
       changeSubscription.dispose()
+      treeDataSubscription.dispose()
     })
   })
 

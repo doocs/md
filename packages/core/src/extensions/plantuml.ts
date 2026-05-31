@@ -4,8 +4,6 @@ import { simpleHash } from '../utils/basicHelpers'
 
 // key -> svg
 const svgCache = new Map<string, string>()
-// 上一次渲染的结果（用于在新渲染完成前显示旧图片）
-let lastRenderedSvg: string | null = null
 
 export interface PlantUMLOptions {
   /**
@@ -175,7 +173,6 @@ function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOpt
         const html = createPlantUMLHTML(imageUrl, options, svgContent)
         placeholderElement.outerHTML = html
         svgCache.set(cacheKey, html)
-        lastRenderedSvg = svgContent
       }
     })
 
@@ -184,11 +181,6 @@ function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOpt
           .map(([key, value]) => `${key.replace(/([A-Z])/g, `-$1`).toLowerCase()}: ${value}`)
           .join(`; `)
       : ``
-
-    // 如果有上一次渲染的结果，显示旧图片；否则显示占位符
-    if (lastRenderedSvg) {
-      return `<div class="${options.className}" style="${containerStyles}" data-placeholder="${placeholder}">${lastRenderedSvg}</div>`
-    }
 
     return `<div class="${options.className}" style="${containerStyles}" data-placeholder="${placeholder}">
       <div style="color: #666; font-style: italic;">正在加载PlantUML图表...</div>

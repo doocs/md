@@ -109,7 +109,7 @@ export async function loadAndRegisterLanguage(language: string, hljs: any): Prom
   // 开始加载
   const loadPromise = (async () => {
     try {
-      const module = await import(/* @vite-ignore */ grammarUrlFor(language))
+      const module = await import(/* webpackIgnore: true */ /* @vite-ignore */ grammarUrlFor(language))
       hljs.registerLanguage(language, module.default)
     }
     catch (error) {
