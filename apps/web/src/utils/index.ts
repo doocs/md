@@ -209,8 +209,8 @@ export async function exportPDF(title: string = `untitled`) {
   }
 }
 
-export function solveWeChatImage() {
-  const clipboardDiv = document.getElementById(`output`)
+export function solveWeChatImage(container?: HTMLElement) {
+  const clipboardDiv = container ?? document.getElementById(`output`)
   if (!clipboardDiv)
     return
   const images = clipboardDiv.getElementsByTagName(`img`)
@@ -316,9 +316,15 @@ async function getStylesToAdd(): Promise<string> {
 }
 
 export async function processClipboardContent(primaryColor: string) {
-  const clipboardDiv = document.getElementById(`output`)
-  if (!clipboardDiv)
-    return
+  const outputElement = document.getElementById(`output`)
+  if (!outputElement) {
+    return {
+      html: ``,
+      plainText: ``,
+    }
+  }
+
+  const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
 
   const stylesToAdd = await getStylesToAdd()
 
@@ -351,7 +357,7 @@ export async function processClipboardContent(primaryColor: string) {
     )
 
   // 处理图片大小
-  solveWeChatImage()
+  solveWeChatImage(clipboardDiv)
 
   // 添加空白节点用于兼容 SVG 复制
   const beforeNode = createEmptyNode()
@@ -412,4 +418,9 @@ export async function processClipboardContent(primaryColor: string) {
       }
     })
   })
+
+  return {
+    html: clipboardDiv.innerHTML,
+    plainText: clipboardDiv.textContent || ``,
+  }
 }

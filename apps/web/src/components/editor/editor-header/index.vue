@@ -95,16 +95,9 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
   tempContainer.style.setProperty(`color`, `#000000`, `important`)
 
   document.body.appendChild(tempContainer)
-
-  const htmlElement = document.documentElement
-  const wasDark = htmlElement.classList.contains(`dark`)
   let successful = false
 
   try {
-    if (wasDark) {
-      htmlElement.classList.remove(`dark`)
-    }
-
     const range = document.createRange()
     range.selectNodeContents(tempContainer)
     selection.removeAllRanges()
@@ -118,10 +111,6 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
   finally {
     selection.removeAllRanges()
     tempContainer.remove()
-
-    if (wasDark) {
-      htmlElement.classList.add(`dark`)
-    }
   }
 
   return successful
@@ -142,8 +131,13 @@ async function copy() {
 
   setTimeout(() => {
     nextTick(async () => {
+      let processedClipboardContent: {
+        html: string
+        plainText: string
+      }
+
       try {
-        await processClipboardContent(primaryColor.value)
+        processedClipboardContent = await processClipboardContent(primaryColor.value)
       }
       catch (error) {
         toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
@@ -164,7 +158,7 @@ async function copy() {
       clipboardDiv.focus()
       window.getSelection()?.removeAllRanges()
 
-      const temp = clipboardDiv.innerHTML
+      const temp = processedClipboardContent.html
 
       if (copyMode.value === `txt`) {
         try {
@@ -172,10 +166,9 @@ async function copy() {
             throw new TypeError(`ClipboardItem is not supported in this browser.`)
           }
 
-          const plainText = clipboardDiv.textContent || ``
           const clipboardItem = new ClipboardItem({
             'text/html': new Blob([temp], { type: `text/html` }),
-            'text/plain': new Blob([plainText], { type: `text/plain` }),
+            'text/plain': new Blob([processedClipboardContent.plainText], { type: `text/plain` }),
           })
 
           await writeClipboardItems([clipboardItem])
@@ -183,7 +176,6 @@ async function copy() {
         catch (error) {
           const fallbackSucceeded = fallbackCopyUsingExecCommand(temp)
           if (!fallbackSucceeded) {
-            clipboardDiv.innerHTML = output.value
             window.getSelection()?.removeAllRanges()
             editorRefresh()
             toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
@@ -192,8 +184,6 @@ async function copy() {
           }
         }
       }
-
-      clipboardDiv.innerHTML = output.value
 
       if (copyMode.value === `html`) {
         await copyContent(temp)

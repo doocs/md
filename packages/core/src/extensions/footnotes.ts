@@ -12,16 +12,22 @@ interface MapContent {
   index: number
   text: string
 }
-const fnMap = new Map<string, MapContent>()
 
 export function markedFootnotes(): MarkedExtension {
+  const fnMap = new Map<string, MapContent>()
+
   return {
+    hooks: {
+      preprocess(markdown) {
+        fnMap.clear()
+        return markdown
+      },
+    },
     extensions: [
       {
         name: `footnoteDef`,
         level: `block`,
         start(src: string) {
-          fnMap.clear()
           return src.match(/^\[\^/)?.index
         },
         tokenizer(src: string) {
@@ -67,18 +73,21 @@ export function markedFootnotes(): MarkedExtension {
           const match = src.match(/^\[\^(.*?)\]/)
           if (match) {
             const [raw, fnId] = match
-            if (fnMap.has(fnId)) {
-              return {
-                type: `footnoteRef`,
-                raw,
-                fnId,
-              }
+            return {
+              type: `footnoteRef`,
+              raw,
+              fnId,
             }
           }
         },
         renderer(token: Tokens.Generic) {
           const { fnId } = token
-          const { index } = fnMap.get(fnId) as MapContent
+          const reference = fnMap.get(fnId)
+          if (!reference) {
+            return token.raw
+          }
+
+          const { index } = reference
           return `<sup style="color: var(--md-primary-color);">
                     <a href="#fnDef-${fnId}" id="fnRef-${fnId}">\[${index}\]</a>
                 </sup>`

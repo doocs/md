@@ -5,10 +5,10 @@ interface InfographicOptions {
   themeMode?: 'dark' | 'light'
 }
 
+type InfographicOptionsSource = InfographicOptions | (() => InfographicOptions | undefined)
+
 // key -> svg
 const svgCache = new Map<string, string>()
-// 上一次渲染的结果（用于在新渲染完成前显示旧图片）
-let lastRenderedSvg: string | null = null
 
 const RE_INFOGRAPHIC_START = /^```infographic/m
 const RE_INFOGRAPHIC_BLOCK = /^```infographic\r?\n([\s\S]*?)\r?\n```/
@@ -65,7 +65,6 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
           exportToSVG(node, { removeIds: true }).then((svg) => {
             container.replaceChildren(svg)
             svgCache.set(cacheKey, container.innerHTML)
-            lastRenderedSvg = container.innerHTML
           })
         })
 
@@ -90,7 +89,11 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
   }
 }
 
-export function markedInfographic(options?: InfographicOptions): MarkedExtension {
+function resolveOptions(options?: InfographicOptionsSource): InfographicOptions | undefined {
+  return typeof options === 'function' ? options() : options
+}
+
+export function markedInfographic(options?: InfographicOptionsSource): MarkedExtension {
   const className = 'infographic-diagram'
 
   return {
@@ -113,7 +116,8 @@ export function markedInfographic(options?: InfographicOptions): MarkedExtension
         },
         renderer(token: any) {
           const code = token.text
-          const cacheKey = simpleHash(`${code}-${options?.themeMode || 'light'}`)
+          const currentOptions = resolveOptions(options)
+          const cacheKey = simpleHash(`${code}-${currentOptions?.themeMode || 'light'}`)
 
           // 有缓存直接返回
           const cached = svgCache.get(cacheKey)
@@ -123,12 +127,7 @@ export function markedInfographic(options?: InfographicOptions): MarkedExtension
 
           // 没有缓存，触发渲染
           const id = `infographic-${cacheKey}`
-          renderInfographic(id, code, cacheKey, options)
-
-          // 如果有上一次渲染的结果，显示旧图片；否则显示占位符
-          if (lastRenderedSvg) {
-            return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">${lastRenderedSvg}</div><!--infographic-end-->`
-          }
+          renderInfographic(id, code, cacheKey, currentOptions)
 
           return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div><!--infographic-end-->`
         },
