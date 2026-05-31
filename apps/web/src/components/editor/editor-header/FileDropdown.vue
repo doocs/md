@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Upload } from 'lucide-vue-next'
+import { CloudCog, Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Upload } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
@@ -23,6 +23,10 @@ const { toggleShowTemplateDialog, toggleShowImportMdDialog } = uiStore
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
+}
+
+function openSyncSettingsDialog() {
+  uiStore.isShowSyncSettingsDialog = true
 }
 
 function openTemplateDialog() {
@@ -128,6 +132,14 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
+      <!-- 同步存储 -->
+      <MenubarItem @click="openSyncSettingsDialog()">
+        <CloudCog class="mr-2 size-4" />
+        同步存储
+      </MenubarItem>
+
+      <MenubarSeparator />
+
       <!-- 项目配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
@@ -208,6 +220,14 @@ function exportEditorContent2PDF() {
       <MenubarItem @click="isOpenPostSlider = !isOpenPostSlider">
         <FolderKanban class="mr-2 size-4" />
         内容管理
+      </MenubarItem>
+
+      <MenubarSeparator />
+
+      <!-- 同步存储 -->
+      <MenubarItem @click="openSyncSettingsDialog()">
+        <CloudCog class="mr-2 size-4" />
+        同步存储
       </MenubarItem>
 
       <MenubarSeparator />

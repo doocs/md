@@ -4,6 +4,7 @@ import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
 import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
 import LocalImageUploadDialog from '@/components/editor/LocalImageUploadDialog.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
+import SyncSettingsDialog from '@/components/editor/SyncSettingsDialog.vue'
 import {
   ResizableHandle,
   ResizablePanel,
@@ -256,6 +257,8 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
       <TemplateDialog />
 
       <CustomComponentDialog />
+
+      <SyncSettingsDialog />
     </main>
 
     <Footer />

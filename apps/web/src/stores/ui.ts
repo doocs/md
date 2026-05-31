@@ -124,6 +124,9 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowComponentDialog = ref(false)
   const toggleShowComponentDialog = useToggle(isShowComponentDialog)
 
+  // 是否展示同步存储对话框
+  const isShowSyncSettingsDialog = ref(false)
+
   // 自定义组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
   const componentDialogTarget = ref<string | null>(null)
 
@@ -224,6 +227,7 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowComponentDialog,
     componentDialogTarget,
     openComponentDialogWithTarget,
+    isShowSyncSettingsDialog,
     aiDialogVisible,
     toggleAIDialog,
     aiImageDialogVisible,

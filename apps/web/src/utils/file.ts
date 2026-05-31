@@ -4,6 +4,7 @@ import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import { giteeConfig, githubConfig } from '@md/shared/configs'
 
 import fetch from '@md/shared/utils/fetch'
+
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import Buffer from 'buffer-from'
@@ -11,6 +12,62 @@ import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
 import { store } from './storage'
+
+// ──────────────────────────────────────────────────
+// Provider capability registry
+// ──────────────────────────────────────────────────
+
+/**
+ * `image` – provider only accepts image files (JPEG/PNG/GIF/WebP…).
+ * `file`  – provider can store any file type.
+ *
+ * Providers marked `file` are also suitable as a sync backend
+ * for the SyncProvider layer (apps/web/src/services/sync/).
+ */
+export type UploadPurpose = `image` | `file`
+
+export interface UploadProviderMeta {
+  /** The value stored in the `imgHost` localStorage key */
+  value: string
+  /** Human-readable label shown in UI */
+  label: string
+  /** Which file purposes this provider supports */
+  capabilities: UploadPurpose[]
+  /**
+   * Whether this provider can also serve as a _sync_ backend
+   * (i.e. supports read / list / delete in addition to write).
+   */
+  syncCapable: boolean
+}
+
+export const UPLOAD_PROVIDER_META: UploadProviderMeta[] = [
+  { value: `default`, label: `默认 (GitHub)`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `github`, label: `GitHub`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `gitee`, label: `Gitee`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `aliOSS`, label: `阿里云 OSS`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `txCOS`, label: `腾讯云 COS`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `qiniu`, label: `七牛云`, capabilities: [`image`, `file`], syncCapable: false },
+  { value: `minio`, label: `MinIO`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `s3`, label: `S3 兼容`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `r2`, label: `Cloudflare R2`, capabilities: [`image`, `file`], syncCapable: true },
+  { value: `upyun`, label: `又拍云`, capabilities: [`image`, `file`], syncCapable: false },
+  // WeChat MP: image-only (sendPhoto / add_material?type=image API)
+  { value: `mp`, label: `公众号图床`, capabilities: [`image`], syncCapable: false },
+  // Telegram: image-only (sendPhoto API)
+  { value: `telegram`, label: `Telegram`, capabilities: [`image`], syncCapable: false },
+  // Cloudinary: current implementation uses /image/upload endpoint
+  { value: `cloudinary`, label: `Cloudinary`, capabilities: [`image`], syncCapable: false },
+  { value: `formCustom`, label: `自定义代码`, capabilities: [`image`, `file`], syncCapable: false },
+]
+
+/**
+ * Return all providers that support the given purpose.
+ * Use `getUploadProviders('file')` to filter out image-only providers
+ * when building a non-image upload selector.
+ */
+export function getUploadProviders(purpose: UploadPurpose = `image`): UploadProviderMeta[] {
+  return UPLOAD_PROVIDER_META.filter(p => p.capabilities.includes(purpose))
+}
 
 /**
  * Safely parse JSON string, returns parsed result or throws a descriptive error
