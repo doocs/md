@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import ConfirmDialog from '@/components/confirm-dialog/ConfirmDialog.vue'
+import CodemirrorEditor from '@/components/editor/CodemirrorEditor.vue'
 import { Toaster } from '@/components/ui/sonner'
 import { useUIStore } from '@/stores/ui'
-import CodemirrorEditor from '@/views/CodemirrorEditor.vue'
 
 const uiStore = useUIStore()
 const { isDark } = storeToRefs(uiStore)
