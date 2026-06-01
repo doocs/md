@@ -31,7 +31,7 @@ const DEFAULT_COMMANDS: QuickCommandPersisted[] = [
   { id: `summary`, label: `总结`, template: `请对以下内容进行总结：\n\n{{sel}}` },
 ]
 
-export const useQuickCommands = defineStore(`quickCommands`, () => {
+export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
   // ---------- state ----------
   const commands = ref<QuickCommandRuntime[]>([])
 

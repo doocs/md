@@ -33,7 +33,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
 import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
-import { useQuickCommands } from '@/stores/quickCommands'
+import { useQuickCommandsStore } from '@/stores/quickCommands'
 import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 import { store } from '@/utils/storage'
@@ -85,7 +85,7 @@ const messages = ref<ChatMessage[]>([])
 const AIConfigStore = useAIConfigStore()
 const { apiKey, endpoint, model, temperature, maxToken, type } = storeToRefs(AIConfigStore)
 
-const quickCmdStore = useQuickCommands()
+const quickCmdStore = useQuickCommandsStore()
 
 function getSelectedText(): string {
   try {

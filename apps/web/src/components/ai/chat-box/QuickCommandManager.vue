@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { useQuickCommands } from '@/stores/quickCommands'
+import { useQuickCommandsStore } from '@/stores/quickCommands'
 
 /* ---------- 弹窗开关 ---------- */
 const props = defineProps<{ open: boolean }>()
@@ -15,7 +15,7 @@ watch(() => props.open, v => (dialogOpen.value = v))
 watch(dialogOpen, v => emit(`update:open`, v))
 
 /* ---------- store & 新增 ---------- */
-const store = useQuickCommands()
+const store = useQuickCommandsStore()
 const label = ref(``)
 const template = ref(``)
 
