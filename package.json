@@ -38,7 +38,7 @@
     "@types/node": "^25.9.1",
     "archiver": "^8.0.0",
     "cross-env": "^10.1.0",
-    "eslint": "^10.4.0",
+    "eslint": "^10.4.1",
     "eslint-plugin-format": "^2.0.1",
     "npm-run-all2": "^9.0.1",
     "prettier": "2.8.8",
