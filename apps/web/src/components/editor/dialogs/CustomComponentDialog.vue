@@ -83,10 +83,9 @@ function addPropRow() {
 }
 
 function removePropRow(idx: number) {
+  if (propRows.value.length <= 1)
+    return
   propRows.value.splice(idx, 1)
-  if (propRows.value.length === 0) {
-    propRows.value.push({ name: '', description: '', default: '', required: false })
-  }
 }
 
 function validate(): boolean {
@@ -384,7 +383,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   <Button
                     variant="ghost"
                     size="icon"
-                    class="size-7 text-muted-foreground hover:text-red-500"
+                    class="size-7 text-muted-foreground"
+                    :class="propRows.length <= 1 ? 'opacity-40 cursor-not-allowed' : 'hover:text-red-500'"
+                    :disabled="propRows.length <= 1"
                     @click="removePropRow(idx)"
                   >
                     <Trash2 class="size-3.5" />
