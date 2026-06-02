@@ -10,7 +10,7 @@ import {
   Trash2,
   X,
 } from 'lucide-vue-next'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -320,6 +320,9 @@ async function clearImages() {
 async function downloadImage(imageUrl: string, index: number) {
   try {
     const response = await fetch(imageUrl)
+    if (!response.ok) {
+      throw new Error(`Failed to download image: ${response.status}`)
+    }
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement(`a`)
@@ -428,6 +431,15 @@ function insertImageToCursor(imageUrl: string) {
 
 /* ---------- 查看大图 ---------- */
 const previewImageUrl = ref('')
+const previewOverlayRef = ref<HTMLDivElement | null>(null)
+
+watch(previewImageUrl, async (imageUrl) => {
+  if (!imageUrl)
+    return
+
+  await nextTick()
+  previewOverlayRef.value?.focus()
+})
 
 function viewFullImage(imageUrl: string) {
   if (!imageUrl)
@@ -723,6 +735,11 @@ function getTimeRemainingClass(index: number): string {
   <Teleport to="body">
     <div
       v-if="previewImageUrl"
+      ref="previewOverlayRef"
+      tabindex="-1"
+      role="dialog"
+      aria-modal="true"
+      aria-label="图片预览"
       class="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center"
       @click.self="closePreview"
       @click.stop
@@ -732,6 +749,8 @@ function getTimeRemainingClass(index: number): string {
       <Button
         variant="ghost"
         size="icon"
+        aria-label="关闭预览"
+        title="关闭预览"
         class="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
         @click.stop="closePreview"
       >
