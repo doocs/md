@@ -37,7 +37,7 @@ const formData = reactive({
   template: '',
 })
 
-const propRows = ref<PropRow[]>([{ name: '', description: '', default: '', required: false }])
+const propRows = ref<PropRow[]>([])
 
 const formErrors = reactive({
   name: '',
@@ -53,7 +53,7 @@ function openCreateForm() {
   formData.name = ''
   formData.description = ''
   formData.template = ''
-  propRows.value = [{ name: '', description: '', default: '', required: false }]
+  propRows.value = []
   formErrors.name = ''
   formErrors.template = ''
   isShowForm.value = true
@@ -72,7 +72,7 @@ function openEditForm(def: CustomComponentDef) {
         default: p.default || '',
         required: !!p.required,
       }))
-    : [{ name: '', description: '', default: '', required: false }]
+    : []
   formErrors.name = ''
   formErrors.template = ''
   isShowForm.value = true
@@ -83,7 +83,7 @@ function addPropRow() {
 }
 
 function removePropRow(idx: number) {
-  if (propRows.value.length <= 1)
+  if (idx < 0 || idx >= propRows.value.length)
     return
   propRows.value.splice(idx, 1)
 }
@@ -350,48 +350,51 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                 添加 Prop
               </Button>
             </div>
-            <!-- 桌面端：网格表头 -->
-            <div class="hidden sm:grid grid-cols-12 gap-2 px-1">
-              <span class="col-span-3 text-xs text-muted-foreground">名称</span>
-              <span class="col-span-4 text-xs text-muted-foreground">描述</span>
-              <span class="col-span-3 text-xs text-muted-foreground">默认值</span>
-              <span class="col-span-2" />
-            </div>
-            <div class="space-y-2">
-              <div
-                v-for="(row, idx) in propRows"
-                :key="idx"
-                class="flex flex-col sm:grid sm:grid-cols-12 gap-2 items-start sm:items-center p-3 sm:p-0 border sm:border-0 rounded-lg sm:rounded-none bg-muted/20 sm:bg-transparent"
-              >
-                <div class="w-full sm:col-span-3 flex gap-1 items-center">
-                  <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">名称</span>
-                  <Input v-model="row.name" placeholder="propName" class="h-8 text-sm flex-1" />
-                </div>
-                <div class="w-full sm:col-span-4 flex gap-1 items-center">
-                  <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">描述</span>
-                  <Input v-model="row.description" placeholder="描述" class="h-8 text-sm flex-1" />
-                </div>
-                <div class="w-full sm:col-span-3 flex gap-1 items-center">
-                  <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">默认值</span>
-                  <Input v-model="row.default" placeholder="默认值" class="h-8 text-sm flex-1" />
-                </div>
-                <div class="flex items-center gap-2 sm:col-span-2 sm:justify-center">
-                  <label class="flex items-center gap-1 text-xs cursor-pointer select-none">
-                    <input v-model="row.required" type="checkbox" class="cursor-pointer">
-                    必填
-                  </label>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    class="size-7 text-muted-foreground"
-                    :class="propRows.length <= 1 ? 'opacity-40 cursor-not-allowed' : 'hover:text-red-500'"
-                    :disabled="propRows.length <= 1"
-                    @click="removePropRow(idx)"
-                  >
-                    <Trash2 class="size-3.5" />
-                  </Button>
+            <template v-if="propRows.length > 0">
+              <!-- 桌面端：网格表头 -->
+              <div class="hidden sm:grid grid-cols-12 gap-2 px-1">
+                <span class="col-span-3 text-xs text-muted-foreground">名称</span>
+                <span class="col-span-4 text-xs text-muted-foreground">描述</span>
+                <span class="col-span-3 text-xs text-muted-foreground">默认值</span>
+                <span class="col-span-2" />
+              </div>
+              <div class="space-y-2">
+                <div
+                  v-for="(row, idx) in propRows"
+                  :key="idx"
+                  class="flex flex-col sm:grid sm:grid-cols-12 gap-2 items-start sm:items-center p-3 sm:p-0 border sm:border-0 rounded-lg sm:rounded-none bg-muted/20 sm:bg-transparent"
+                >
+                  <div class="w-full sm:col-span-3 flex gap-1 items-center">
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">名称</span>
+                    <Input v-model="row.name" placeholder="propName" class="h-8 text-sm flex-1" />
+                  </div>
+                  <div class="w-full sm:col-span-4 flex gap-1 items-center">
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">描述</span>
+                    <Input v-model="row.description" placeholder="描述" class="h-8 text-sm flex-1" />
+                  </div>
+                  <div class="w-full sm:col-span-3 flex gap-1 items-center">
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">默认值</span>
+                    <Input v-model="row.default" placeholder="默认值" class="h-8 text-sm flex-1" />
+                  </div>
+                  <div class="flex items-center gap-2 sm:col-span-2 sm:justify-center">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer select-none">
+                      <input v-model="row.required" type="checkbox" class="cursor-pointer">
+                      必填
+                    </label>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      class="size-7 text-muted-foreground hover:text-red-500"
+                      @click="removePropRow(idx)"
+                    >
+                      <Trash2 class="size-3.5" />
+                    </Button>
+                  </div>
                 </div>
               </div>
+            </template>
+            <div v-else class="rounded-lg border border-dashed bg-muted/20 px-3 py-4 text-xs text-muted-foreground">
+              当前组件没有 Props。需要时可点击“添加 Prop”新增。
             </div>
             <p class="text-xs text-muted-foreground">
               在模板中使用 <code class="bg-muted px-1 rounded">&#123;&#123;propName&#125;&#125;</code> 引用 prop 值
