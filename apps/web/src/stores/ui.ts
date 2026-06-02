@@ -120,11 +120,11 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowTemplateDialog = ref(false)
   const toggleShowTemplateDialog = useToggle(isShowTemplateDialog)
 
-  // 是否展示自定义组件对话框
+  // 是否展示组件对话框
   const isShowComponentDialog = ref(false)
   const toggleShowComponentDialog = useToggle(isShowComponentDialog)
 
-  // 自定义组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
+  // 组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
   const componentDialogTarget = ref<string | null>(null)
 
   function openComponentDialogWithTarget(target: string) {
