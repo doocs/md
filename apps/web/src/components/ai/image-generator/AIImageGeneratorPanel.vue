@@ -30,7 +30,11 @@ import AIImageConfig from './AIImageConfig.vue'
 
 /* ---------- 组件属性 ---------- */
 const props = defineProps<{ open: boolean }>()
+
 const emit = defineEmits([`update:open`])
+
+/** 图片链接有效期：1小时（毫秒） */
+const EXPIRY_TIME = 60 * 60 * 1000
 
 /* ---------- 编辑器引用 ---------- */
 const editorStore = useEditorStore()
@@ -53,13 +57,13 @@ watch(dialogVisible, val => emit(`update:open`, val))
 const configVisible = ref(false)
 const loading = ref(false)
 const prompt = ref<string>(``)
-const lastUsedPrompt = ref<string>(``) // 存储最后一次使用的提示词，用于重新生成
 const generatedImages = ref<string[]>([])
 const imagePrompts = ref<string[]>([]) // 存储每张图片对应的prompt
 const imageTimestamps = ref<number[]>([]) // 存储每张图片的生成时间戳
 const abortController = ref<AbortController | null>(null)
 const currentImageIndex = ref(0)
-const timeUpdateInterval = ref<NodeJS.Timeout | null>(null)
+const currentTime = ref(Date.now()) // 用于实时显示图片剩余有效期
+let timerIntervalId: ReturnType<typeof setInterval> | null = null
 
 /* ---------- AI 配置 ---------- */
 const AIImageConfigStore = useAIImageConfigStore()
@@ -67,25 +71,22 @@ const { apiKey, endpoint, model, type, size, quality, style } = storeToRefs(AIIm
 
 /* ---------- 过期检查函数 ---------- */
 function isImageExpired(timestamp: number): boolean {
-  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时，单位毫秒
-  const now = Date.now()
-  return now - timestamp > EXPIRY_TIME
+  return Date.now() - timestamp > EXPIRY_TIME
 }
 
 async function cleanExpiredImages() {
-  const savedImages = await store.get(`ai_generated_images`)
-  const savedTimestamps = await store.get(`ai_image_timestamps`)
+  const images = await store.getJSON<string[]>(`ai_generated_images`, [])
+  const timestamps = await store.getJSON<number[]>(`ai_image_timestamps`, [])
 
-  if (!savedImages) {
+  // 没有数据则无需清理
+  if (images.length === 0) {
     return
   }
 
-  const images = await store.getJSON(`ai_generated_images`, [])
-  const prompts = await store.getJSON(`ai_image_prompts`, [])
-  const timestamps = await store.getJSON(`ai_image_timestamps`, [])
+  const prompts = await store.getJSON<string[]>(`ai_image_prompts`, [])
 
   // 如果没有时间戳数据，说明是旧版本，默认清除所有数据
-  if (!savedTimestamps || timestamps.length === 0) {
+  if (timestamps.length === 0) {
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
@@ -127,7 +128,7 @@ async function cleanExpiredImages() {
   }
 }
 
-/* ---------- 初始数据 ---------- */
+/* ---------- 初始数据 & 定时器 ---------- */
 onMounted(async () => {
   // 先进行过期检查和清理
   await cleanExpiredImages()
@@ -158,20 +159,22 @@ onMounted(async () => {
     }
   }
 
-  // 启动定时器，每30秒检查一次过期图片并更新时间显示
-  timeUpdateInterval.value = setInterval(() => {
-    // 检查并清理过期图片
-    if (generatedImages.value.length > 0) {
+  // 每秒更新当前时间（用于实时显示剩余有效期）
+  // 每30秒顺带清理一次已过期的图片
+  let tick = 0
+  timerIntervalId = setInterval(() => {
+    currentTime.value = Date.now()
+    tick++
+    if (tick % 30 === 0 && generatedImages.value.length > 0) {
       cleanExpiredImages()
     }
-  }, 30000) // 30秒
+  }, 1000)
 })
 
 onBeforeUnmount(() => {
-  // 清除定时器
-  if (timeUpdateInterval.value) {
-    clearInterval(timeUpdateInterval.value)
-    timeUpdateInterval.value = null
+  if (timerIntervalId !== null) {
+    clearInterval(timerIntervalId)
+    timerIntervalId = null
   }
 })
 
@@ -291,8 +294,6 @@ async function generateImage() {
   if (!prompt.value.trim() || loading.value)
     return
 
-  // 保存当前提示词用于重新生成
-  lastUsedPrompt.value = prompt.value.trim()
   await doGenerateImage(prompt.value, true)
 }
 
@@ -350,14 +351,10 @@ async function downloadImage(imageUrl: string, index: number) {
 async function copyImageUrl(imageUrl: string) {
   try {
     await copyPlain(imageUrl)
-    if (typeof toast !== `undefined`) {
-      toast.success(`图片链接已复制到剪贴板`)
-    }
+    toast.success(`图片链接已复制到剪贴板`)
   }
   catch {
-    if (typeof toast !== `undefined`) {
-      toast.error(`复制失败，请重试`)
-    }
+    toast.error(`复制失败，请重试`)
   }
 }
 
@@ -452,29 +449,12 @@ function closePreview() {
 }
 
 /* ---------- 时间相关函数 ---------- */
-const currentTime = ref(Date.now())
-
-// 每秒更新当前时间，用于实时显示剩余时间
-onMounted(() => {
-  const updateTime = () => {
-    currentTime.value = Date.now()
-  }
-
-  // 启动定时器更新时间显示
-  const timeDisplayInterval = setInterval(updateTime, 1000)
-
-  // 组件卸载时清理定时器
-  onBeforeUnmount(() => {
-    clearInterval(timeDisplayInterval)
-  })
-})
-
 function getTimeRemaining(index: number): string {
   if (!imageTimestamps.value[index]) {
     return `未知`
   }
 
-  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时
+  // EXPIRY_TIME 来自模块顶层常量
   const timestamp = imageTimestamps.value[index]
   const elapsed = currentTime.value - timestamp
   const remaining = EXPIRY_TIME - elapsed
@@ -499,7 +479,7 @@ function getTimeRemainingClass(index: number): string {
     return `text-muted-foreground`
   }
 
-  const EXPIRY_TIME = 60 * 60 * 1000 // 1小时
+  // EXPIRY_TIME 来自模块顶层常量
   const timestamp = imageTimestamps.value[index]
   const elapsed = currentTime.value - timestamp
   const remaining = EXPIRY_TIME - elapsed
