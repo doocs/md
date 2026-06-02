@@ -298,7 +298,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
       <DialogHeader class="px-4 sm:px-6 pt-5 pb-4 border-b shrink-0">
         <DialogTitle class="flex items-center gap-2 text-base">
           <Blocks class="size-4.5" />
-          自定义组件
+          组件
         </DialogTitle>
         <DialogDescription class="text-xs leading-relaxed mt-1">
           在 Markdown 中插入 JSX 风格组件，如
@@ -701,7 +701,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               </div>
               <div v-if="componentStore.userComponents.length === 0" class="text-center py-8 border rounded-xl bg-card/50">
                 <p class="text-xs text-muted-foreground">
-                  暂无自定义组件，点击上方“新建”按钮创建
+                  暂无组件，点击上方”新建”按钮创建
                 </p>
               </div>
               <div v-else class="space-y-2">
