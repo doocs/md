@@ -701,7 +701,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               </div>
               <div v-if="componentStore.userComponents.length === 0" class="text-center py-8 border rounded-xl bg-card/50">
                 <p class="text-xs text-muted-foreground">
-                  暂无组件，点击上方”新建”按钮创建
+                  暂无自定义组件，点击上方”新建”按钮创建
                 </p>
               </div>
               <div v-else class="space-y-2">
