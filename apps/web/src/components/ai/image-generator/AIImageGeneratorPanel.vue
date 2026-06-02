@@ -28,10 +28,15 @@ import { copyPlain } from '@/utils/clipboard'
 import { store } from '@/utils/storage'
 import AIImageConfig from './AIImageConfig.vue'
 
-// 图片链接有效期：1小时（毫秒）
-
 /* ---------- 组件属性 ---------- */
-const props = defineProps<{ open: boolean }>(); const emit = defineEmits([`update:open`]); const EXPIRY_TIME = 60 * 60 * 1000/* ---------- 编辑器引用 ---------- */
+const props = defineProps<{ open: boolean }>()
+
+const emit = defineEmits([`update:open`])
+
+/** 图片链接有效期：1小时（毫秒） */
+const EXPIRY_TIME = 60 * 60 * 1000
+
+/* ---------- 编辑器引用 ---------- */
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 const uiStore = useUIStore()
