@@ -8,8 +8,9 @@ import {
   RefreshCcw,
   Settings,
   Trash2,
+  X,
 } from 'lucide-vue-next'
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
@@ -319,6 +320,9 @@ async function clearImages() {
 async function downloadImage(imageUrl: string, index: number) {
   try {
     const response = await fetch(imageUrl)
+    if (!response.ok) {
+      throw new Error(`Failed to download image: ${response.status}`)
+    }
     const blob = await response.blob()
     const url = window.URL.createObjectURL(blob)
     const a = document.createElement(`a`)
@@ -335,9 +339,10 @@ async function downloadImage(imageUrl: string, index: number) {
     a.click()
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
+    toast.success(`图片已开始下载`)
   }
   catch {
-    // Silently fail - user already sees the download button
+    toast.error(`下载失败，请重试`)
   }
 }
 
@@ -414,30 +419,36 @@ function insertImageToCursor(imageUrl: string) {
     // 聚焦编辑器
     editor.value.focus()
 
+    toast.success(`图片已插入到编辑器`)
+
     // 关闭弹窗
     dialogVisible.value = false
   }
   catch {
-    // Silently fail - likely user cancelled or DOM not available
+    toast.error(`插入失败，请重试`)
   }
 }
 
 /* ---------- 查看大图 ---------- */
-function viewFullImage(imageUrl: string) {
+const previewImageUrl = ref('')
+const previewOverlayRef = ref<HTMLDivElement | null>(null)
+
+watch(previewImageUrl, async (imageUrl) => {
   if (!imageUrl)
     return
 
-  try {
-    // 在新窗口中打开图片
-    const newWindow = window.open(imageUrl, `_blank`, `width=800,height=600,scrollbars=yes,resizable=yes`)
-    if (!newWindow) {
-      // 备用方案：在当前标签页打开
-      window.open(imageUrl, `_blank`)
-    }
-  }
-  catch {
-    // Silently fail - likely network issue or invalid URL
-  }
+  await nextTick()
+  previewOverlayRef.value?.focus()
+})
+
+function viewFullImage(imageUrl: string) {
+  if (!imageUrl)
+    return
+  previewImageUrl.value = imageUrl
+}
+
+function closePreview() {
+  previewImageUrl.value = ''
 }
 
 /* ---------- 时间相关函数 ---------- */
@@ -609,11 +620,11 @@ function getTimeRemainingClass(index: number): string {
 
             <!-- 图像显示 -->
             <div class="flex items-center justify-center p-2 sm:p-4">
-              <div class="relative group cursor-pointer w-full max-w-sm" @click="viewFullImage(generatedImages[currentImageIndex])">
+              <div class="relative group cursor-pointer max-w-lg inline-flex justify-center" @click="viewFullImage(generatedImages[currentImageIndex])">
                 <img
                   :src="generatedImages[currentImageIndex]"
                   :alt="`生成的图像 ${currentImageIndex + 1}`"
-                  class="w-full h-auto max-h-[300px] sm:max-h-[350px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
+                  class="max-w-full h-[300px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
                 >
                 <!-- 点击查看大图提示 -->
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
@@ -719,6 +730,40 @@ function getTimeRemainingClass(index: number): string {
       </div>
     </DialogContent>
   </Dialog>
+
+  <!-- ============ 图片预览遮罩 ============ -->
+  <Teleport to="body">
+    <div
+      v-if="previewImageUrl"
+      ref="previewOverlayRef"
+      tabindex="-1"
+      role="dialog"
+      aria-modal="true"
+      aria-label="图片预览"
+      class="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center"
+      @click.self="closePreview"
+      @click.stop
+      @pointerdown.stop
+      @keydown.escape.stop="closePreview"
+    >
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label="关闭预览"
+        title="关闭预览"
+        class="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
+        @click.stop="closePreview"
+      >
+        <X class="h-6 w-6" />
+      </Button>
+      <img
+        :src="previewImageUrl"
+        alt="预览大图"
+        class="max-w-[95vw] max-h-[95vh] object-contain"
+        @click.stop="closePreview"
+      >
+    </div>
+  </Teleport>
 </template>
 
 <style scoped>
