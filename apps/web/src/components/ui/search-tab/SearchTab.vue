@@ -281,7 +281,7 @@ function handleSearchInputKeyDown(e: KeyboardEvent) {
 }
 
 function handleReplaceInputKeyDown(e: KeyboardEvent) {
-  if (e.key === `Enter` && !e.shiftKey) {
+  if (e.key === `Enter` && !e.shiftKey && !e.isComposing) {
     e.preventDefault()
     handleReplace()
   }
@@ -289,13 +289,8 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 
 function autoResizeTextarea(e: Event) {
   const el = e.target as HTMLTextAreaElement
-  if (!el.value || !el.value.includes(`\n`)) {
-    el.style.height = `28px`
-  }
-  else {
-    el.style.height = `auto`
-    el.style.height = `${el.scrollHeight}px`
-  }
+  el.style.height = `auto`
+  el.style.height = `${el.scrollHeight}px`
 }
 
 function handleReplace() {
