@@ -281,11 +281,20 @@ function handleSearchInputKeyDown(e: KeyboardEvent) {
 }
 
 function handleReplaceInputKeyDown(e: KeyboardEvent) {
-  switch (e.key) {
-    case `Enter`:
-      handleReplace()
-      e.preventDefault()
+  if (e.key === `Enter` && !e.shiftKey && !e.isComposing) {
+    e.preventDefault()
+    handleReplace()
   }
+}
+
+function autoResizeTextarea(e: Event) {
+  const el = e.target as HTMLTextAreaElement
+  if (!el.value.includes(`\n`)) {
+    el.style.height = `28px`
+    return
+  }
+  el.style.height = `auto`
+  el.style.height = `${Math.min(150, el.scrollHeight)}px`
 }
 
 function handleReplace() {
@@ -515,13 +524,15 @@ defineExpose({
 
         <!-- 替换行（可折叠） -->
         <template v-if="showReplace">
-          <Input
+          <textarea
             v-model="replaceWord"
-            placeholder="替换"
-            class="h-7 min-w-0 text-sm mt-0.5"
+            placeholder="替换 (Shift+Enter 换行)"
+            class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none leading-none overflow-hidden max-h-[150px]"
+            style="height: 28px; min-height: 28px"
             @keydown="handleReplaceInputKeyDown"
+            @input="autoResizeTextarea($event)"
           />
-          <div class="flex items-center gap-1 mt-0.5">
+          <div class="flex items-start gap-1 mt-0.5 self-start">
             <Button
               variant="ghost"
               size="xs"
