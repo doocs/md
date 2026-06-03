@@ -2,6 +2,7 @@
 import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@md/shared'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { escapeHtml, previewComponent } from '@md/core'
+import DOMPurify from 'isomorphic-dompurify'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from 'lucide-vue-next'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
@@ -189,7 +190,8 @@ const previewHtml = computed(() => {
       propValues[p.name] = '0'
   }
   try {
-    return previewComponent(tmpDef, propValues)
+    const raw = previewComponent(tmpDef, propValues)
+    return DOMPurify.sanitize(raw, { ADD_TAGS: [`mp-common-profile`] })
   }
   catch {
     return ''
@@ -555,7 +557,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               <p><code class="bg-muted px-1 rounded">&#123;&#123;propName&#125;&#125;</code> — 替换为 prop 值（自动 HTML 转义）</p>
               <p><code class="bg-muted px-1 rounded">&#123;&#123;#if prop&#125;&#125;...&#123;&#123;#else&#125;&#125;...&#123;&#123;/if&#125;&#125;</code> — 条件块（支持 else）</p>
               <p><code class="bg-muted px-1 rounded">&#123;&#123;#unless prop&#125;&#125;...&#123;&#123;/unless&#125;&#125;</code> — 反向条件</p>
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;#each arrayProp&#125;&#125;...&#123;&#123;item&#125;&#125;/&#123;&#123;item.key&#125;&#125;...&#123;&#123;/each&#125;&#125;</code> — 数组循环</p>
+              <p><code class="bg-muted px-1 rounded">&#123;&#123;#each arrayProp&#125;&#125;...&#123;&#123;item&#125;&#125;...&#123;&#123;item.key&#125;&#125;...&#123;&#123;/each&#125;&#125;</code> — 数组循环</p>
             </div>
           </div>
 

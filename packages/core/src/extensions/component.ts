@@ -285,7 +285,7 @@ function injectTipColors(props: Record<string, string>): Record<string, string> 
  *   - `{{children}}` 保留原始 HTML 不转义
  */
 function processTemplate(html: string, props: Record<string, string>): string {
-  // 1. {{#each}} 循环（非贪婪，支持嵌套通过递归实现）
+  // 1. {{#each}} 循环（非贪婪；循环体内部通过递归支持嵌套的 #if/#unless，但不支持 #each 嵌套）
   html = html.replace(/\{\{#each\s+([\w-]+)\}\}([\s\S]*?)\{\{\/each\}\}/g, (_, propKey, body) => {
     let items: unknown[]
     try { items = JSON.parse(props[propKey] || `[]`) }
@@ -349,7 +349,7 @@ function renderTemplate(def: CustomComponentDef, rawProps: Record<string, string
   }
   Object.assign(props, rawProps)
 
-  // 2. 特殊渲染器（TableBlock / Timeline / InfoGrid / Callout）
+  // 2. 特殊渲染器（TableBlock / InfoGrid）
   const specialRenderer = SPECIAL_RENDERERS[def.name]
   if (specialRenderer) {
     return specialRenderer(props)
