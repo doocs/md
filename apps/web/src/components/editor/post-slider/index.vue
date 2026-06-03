@@ -303,7 +303,9 @@ function replaceInText(text: string, search: string, replace: string): string {
 function autoResizeReplace(e: Event) {
   const el = e.target as HTMLTextAreaElement
   el.style.height = `auto`
-  el.style.height = `${Math.min(150, el.scrollHeight)}px`
+  const h = Math.min(150, el.scrollHeight)
+  el.style.height = `${h}px`
+  el.style.overflowY = h >= 150 ? `auto` : `hidden`
 }
 
 function replaceFirst() {
@@ -728,7 +730,7 @@ function handleDragEnd() {
         <div class="relative">
           <textarea
             v-model="replaceQuery"
-            class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] overflow-y-auto max-h-[150px]"
+            class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] max-h-[150px]"
             style="height: 32px; min-height: 32px"
             placeholder="替换为…"
             @input="autoResizeReplace($event)"
