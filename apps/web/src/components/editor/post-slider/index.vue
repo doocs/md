@@ -302,8 +302,13 @@ function replaceInText(text: string, search: string, replace: string): string {
 
 function autoResizeReplace(e: Event) {
   const el = e.target as HTMLTextAreaElement
-  el.style.height = `auto`
-  el.style.height = `${el.scrollHeight}px`
+  if (!el.value || !el.value.includes(`\n`)) {
+    el.style.height = `32px`
+  }
+  else {
+    el.style.height = `auto`
+    el.style.height = `${el.scrollHeight}px`
+  }
 }
 
 function replaceFirst() {
