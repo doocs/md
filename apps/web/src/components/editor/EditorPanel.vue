@@ -35,6 +35,7 @@ const {
   isMobile,
   enableImageReupload,
   viewMode,
+  editorWidthMode,
 } = storeToRefs(uiStore)
 
 const { toggleShowUploadImgDialog } = uiStore
@@ -567,6 +568,7 @@ defineExpose({
     v-show="viewMode !== 'preview'"
     ref="codeMirrorWrapper"
     class="codeMirror-wrapper relative h-full"
+    :class="{ 'editor-limited-width': editorWidthMode === 'limited' && viewMode === 'edit' }"
   >
     <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
     <SlashCommandMenu
@@ -603,5 +605,16 @@ defineExpose({
   overflow-x: hidden;
   height: 100%;
   position: relative;
+}
+
+.codeMirror-wrapper.editor-limited-width {
+  overflow-x: hidden;
+}
+
+.codeMirror-wrapper.editor-limited-width :deep(.cm-content) {
+  width: 100%;
+  max-width: 960px;
+  margin-left: auto;
+  margin-right: auto;
 }
 </style>

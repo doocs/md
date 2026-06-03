@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
+import { AlignCenter, ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Maximize, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
 import {
   Popover,
   PopoverContent,
@@ -26,7 +26,7 @@ const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark } = storeToRefs(uiStore)
-const { isMobile, viewMode, previewDevice, enableScrollSync } = storeToRefs(uiStore)
+const { isMobile, viewMode, previewDevice, enableScrollSync, editorWidthMode } = storeToRefs(uiStore)
 
 // 相对时间格式化（复用）
 function formatRelativeTime(date: Date | string) {
@@ -542,6 +542,26 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             </TooltipContent>
           </Tooltip>
         </div>
+
+        <!-- 编辑区宽度模式切换（编辑模式下可用） -->
+        <Tooltip v-if="!isMobile && viewMode === 'edit'">
+          <TooltipTrigger as-child>
+            <button
+              :aria-label="editorWidthMode === 'limited' ? '全屏宽编辑' : '限宽居中编辑'"
+              class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
+              :class="editorWidthMode === 'limited'
+                ? 'bg-accent text-foreground'
+                : 'text-muted-foreground hover:bg-accent hover:text-foreground'"
+              @click="uiStore.toggleEditorWidthMode()"
+            >
+              <AlignCenter v-if="editorWidthMode === 'limited'" class="size-3" />
+              <Maximize v-else class="size-3" />
+            </button>
+          </TooltipTrigger>
+          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+            <p>{{ editorWidthMode === 'limited' ? '限宽居中' : '全屏宽' }}</p>
+          </TooltipContent>
+        </Tooltip>
 
         <!-- 设备切换（双屏/预览下可用，真实移动端隐藏） -->
         <Tooltip v-if="!isMobile">

@@ -52,6 +52,13 @@ export const useUIStore = defineStore(`ui`, () => {
     previewDevice.value = previewDevice.value === `desktop` ? `mobile` : `desktop`
   }
 
+  // 编辑区宽度模式：limited（限宽居中）| full（全屏宽）
+  const editorWidthMode = store.reactive<'limited' | 'full'>(`editorWidthMode`, `limited`)
+
+  function toggleEditorWidthMode() {
+    editorWidthMode.value = editorWidthMode.value === `limited` ? `full` : `limited`
+  }
+
   // 是否启用图片转存（默认关闭）
   const enableImageReupload = store.reactive(addPrefix(`enableImageReupload`), false)
   const toggleImageReupload = useToggle(enableImageReupload)
@@ -243,5 +250,7 @@ export const useUIStore = defineStore(`ui`, () => {
     setViewMode,
     setPreviewDevice,
     togglePreviewDevice,
+    editorWidthMode,
+    toggleEditorWidthMode,
   }
 })
