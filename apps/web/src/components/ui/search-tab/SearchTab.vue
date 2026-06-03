@@ -290,10 +290,7 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 function autoResizeTextarea(e: Event) {
   const el = e.target as HTMLTextAreaElement
   el.style.height = `auto`
-  const h = Math.min(150, el.scrollHeight)
-  el.style.height = `${h}px`
-  // Only enable scrolling when content actually exceeds 150px
-  el.style.overflowY = h >= 150 ? `auto` : `hidden`
+  el.style.height = `${Math.min(150, el.scrollHeight)}px`
 }
 
 function handleReplace() {
@@ -526,7 +523,7 @@ defineExpose({
           <textarea
             v-model="replaceWord"
             placeholder="替换 (Shift+Enter 换行)"
-            class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none leading-none max-h-[150px]"
+            class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none leading-none overflow-hidden max-h-[150px]"
             style="height: 28px; min-height: 28px"
             @keydown="handleReplaceInputKeyDown"
             @input="autoResizeTextarea($event)"
