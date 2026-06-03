@@ -1,3 +1,4 @@
+export * from './componentDarkVars'
 export * from './cssProcessor'
 export * from './cssScopeWrapper'
 export * from './cssVariables'
