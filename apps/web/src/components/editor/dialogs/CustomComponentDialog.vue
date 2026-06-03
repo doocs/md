@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
+import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@md/shared'
 import type { MpAccount } from '@/stores/mpAccounts'
-import { escapeHtml } from '@md/core'
-import { Blocks, Check, ChevronDown, Copy, Lock, Pencil, Plus, Rss, Trash2, Zap } from 'lucide-vue-next'
+import { escapeHtml, previewComponent } from '@md/core'
+import DOMPurify from 'isomorphic-dompurify'
+import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from 'lucide-vue-next'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
@@ -29,6 +30,7 @@ interface PropRow {
   description: string
   default: string
   required: boolean
+  type: ComponentPropType
 }
 
 const formData = reactive({
@@ -71,6 +73,7 @@ function openEditForm(def: CustomComponentDef) {
         description: p.description || '',
         default: p.default || '',
         required: !!p.required,
+        type: (p.type || 'string') as ComponentPropType,
       }))
     : []
   formErrors.name = ''
@@ -79,7 +82,7 @@ function openEditForm(def: CustomComponentDef) {
 }
 
 function addPropRow() {
-  propRows.value.push({ name: '', description: '', default: '', required: false })
+  propRows.value.push({ name: '', description: '', default: '', required: false, type: 'string' })
 }
 
 function removePropRow(idx: number) {
@@ -121,6 +124,7 @@ function buildProps(): ComponentPropDef[] {
       description: r.description.trim() || undefined,
       default: r.default || undefined,
       required: r.required || undefined,
+      type: r.type !== 'string' ? r.type : undefined,
     }))
 }
 
@@ -159,6 +163,108 @@ const TEMPLATE_PLACEHOLDER = `<section style="text-align:center;">
 </section>`
 
 // ──────────────────────────────────────────────
+// 实时预览
+// ──────────────────────────────────────────────
+const isShowPreview = ref(false)
+
+const previewHtml = computed(() => {
+  if (!formData.template.trim())
+    return ''
+  const props = buildProps()
+  const tmpDef: CustomComponentDef = {
+    id: '__preview__',
+    name: formData.name.trim() || 'Preview',
+    template: formData.template,
+    props,
+  }
+  // 用每个 prop 的默认值（或占位）渲染预览
+  const propValues: Record<string, string> = {}
+  for (const p of props) {
+    if (p.default !== undefined && p.default !== '')
+      propValues[p.name] = p.default
+    else if (p.type === 'array')
+      propValues[p.name] = '[]'
+    else if (p.type === 'boolean')
+      propValues[p.name] = 'true'
+    else if (p.type === 'number')
+      propValues[p.name] = '0'
+  }
+  try {
+    const raw = previewComponent(tmpDef, propValues)
+    return DOMPurify.sanitize(raw, { ADD_TAGS: [`mp-common-profile`] })
+  }
+  catch {
+    return ''
+  }
+})
+
+// ──────────────────────────────────────────────
+// 导入 / 导出
+// ──────────────────────────────────────────────
+function exportComponents() {
+  const data = JSON.stringify(componentStore.userComponents, null, 2)
+  const blob = new Blob([data], { type: 'application/json' })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `md-components-${Date.now()}.json`
+  a.click()
+  URL.revokeObjectURL(url)
+  toast.success('已导出自定义组件')
+}
+
+const importFileRef = ref<HTMLInputElement | null>(null)
+
+function triggerImport() {
+  importFileRef.value?.click()
+}
+
+function onImportFile(event: Event) {
+  const file = (event.target as HTMLInputElement).files?.[0]
+  if (!file)
+    return
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    try {
+      const parsed: CustomComponentDef[] = JSON.parse(e.target?.result as string)
+      if (!Array.isArray(parsed))
+        throw new Error('格式错误')
+      let imported = 0
+      for (const def of parsed) {
+        if (!def.name || !def.template)
+          continue
+        const existing = componentStore.userComponents.find(c => c.name === def.name)
+        if (existing) {
+          componentStore.updateComponent(existing.id, {
+            name: def.name,
+            description: def.description,
+            template: def.template,
+            props: def.props || [],
+          })
+        }
+        else {
+          componentStore.createComponent({
+            name: def.name,
+            description: def.description,
+            template: def.template,
+            props: def.props || [],
+          })
+        }
+        imported++
+      }
+      toast.success(`成功导入 ${imported} 个组件`)
+    }
+    catch {
+      toast.error('导入失败，请确认文件格式正确')
+    }
+    // reset input so the same file can be re-imported
+    if (importFileRef.value)
+      importFileRef.value.value = ''
+  }
+  reader.readAsText(file)
+}
+
+// ──────────────────────────────────────────────
 // 列表操作
 // ──────────────────────────────────────────────
 function insertSnippet(def: CustomComponentDef) {
@@ -181,6 +287,12 @@ function onUpdate(val: boolean) {
     toggleShowComponentDialog(false)
     isShowForm.value = false
   }
+}
+
+const PREVIEW_FALLBACK_HTML = `<span style="color:#aaa;font-size:12px;">（无内容）</span>`
+
+function getPropDefaultPlaceholder(type: string): string {
+  return type === 'array' ? '["item1","item2"]' : '默认值'
 }
 
 // ──────────────────────────────────────────────
@@ -352,21 +464,42 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
             </div>
             <template v-if="propRows.length > 0">
               <!-- 桌面端：网格表头 -->
-              <div class="hidden sm:grid grid-cols-12 gap-2 px-1">
+              <div class="hidden sm:grid grid-cols-13 gap-2 px-1">
                 <span class="col-span-3 text-xs text-muted-foreground">名称</span>
+                <span class="col-span-2 text-xs text-muted-foreground">类型</span>
                 <span class="col-span-4 text-xs text-muted-foreground">描述</span>
                 <span class="col-span-3 text-xs text-muted-foreground">默认值</span>
-                <span class="col-span-2" />
+                <span class="col-span-1" />
               </div>
               <div class="space-y-2">
                 <div
                   v-for="(row, idx) in propRows"
                   :key="idx"
-                  class="flex flex-col sm:grid sm:grid-cols-12 gap-2 items-start sm:items-center p-3 sm:p-0 border sm:border-0 rounded-lg sm:rounded-none bg-muted/20 sm:bg-transparent"
+                  class="flex flex-col sm:grid sm:grid-cols-13 gap-2 items-start sm:items-center p-3 sm:p-0 border sm:border-0 rounded-lg sm:rounded-none bg-muted/20 sm:bg-transparent"
                 >
                   <div class="w-full sm:col-span-3 flex gap-1 items-center">
                     <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">名称</span>
                     <Input v-model="row.name" placeholder="propName" class="h-8 text-sm flex-1" />
+                  </div>
+                  <div class="w-full sm:col-span-2 flex gap-1 items-center">
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">类型</span>
+                    <select
+                      v-model="row.type"
+                      class="h-8 w-full rounded-md border bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
+                    >
+                      <option value="string">
+                        string
+                      </option>
+                      <option value="number">
+                        number
+                      </option>
+                      <option value="boolean">
+                        boolean
+                      </option>
+                      <option value="array">
+                        array
+                      </option>
+                    </select>
                   </div>
                   <div class="w-full sm:col-span-4 flex gap-1 items-center">
                     <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">描述</span>
@@ -374,12 +507,15 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   </div>
                   <div class="w-full sm:col-span-3 flex gap-1 items-center">
                     <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">默认值</span>
-                    <Input v-model="row.default" placeholder="默认值" class="h-8 text-sm flex-1" />
+                    <Input
+                      v-model="row.default"
+                      :placeholder="getPropDefaultPlaceholder(row.type)"
+                      class="h-8 text-sm flex-1"
+                    />
                   </div>
-                  <div class="flex items-center gap-2 sm:col-span-2 sm:justify-center">
-                    <label class="flex items-center gap-1 text-xs cursor-pointer select-none">
+                  <div class="flex items-center gap-2 sm:col-span-1 sm:justify-center">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer select-none" title="必填">
                       <input v-model="row.required" type="checkbox" class="cursor-pointer">
-                      必填
                     </label>
                     <Button
                       variant="ghost"
@@ -419,8 +555,25 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
             </p>
             <div class="text-xs text-muted-foreground space-y-0.5">
               <p><code class="bg-muted px-1 rounded">&#123;&#123;propName&#125;&#125;</code> — 替换为 prop 值（自动 HTML 转义）</p>
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;#if propName&#125;&#125;...&#123;&#123;/if&#125;&#125;</code> — prop 非空时显示该块</p>
+              <p><code class="bg-muted px-1 rounded">&#123;&#123;#if prop&#125;&#125;...&#123;&#123;#else&#125;&#125;...&#123;&#123;/if&#125;&#125;</code> — 条件块（支持 else）</p>
+              <p><code class="bg-muted px-1 rounded">&#123;&#123;#unless prop&#125;&#125;...&#123;&#123;/unless&#125;&#125;</code> — 反向条件</p>
+              <p><code class="bg-muted px-1 rounded">&#123;&#123;#each arrayProp&#125;&#125;...&#123;&#123;item&#125;&#125;...&#123;&#123;item.key&#125;&#125;...&#123;&#123;/each&#125;&#125;</code> — 数组循环</p>
             </div>
+          </div>
+
+          <!-- 实时预览 -->
+          <div v-if="formData.template.trim()" class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <Label class="text-muted-foreground">预览（使用默认 prop 值）</Label>
+              <Button variant="ghost" size="sm" class="h-6 px-2 text-xs" @click="isShowPreview = !isShowPreview">
+                {{ isShowPreview ? '收起' : '展开' }}
+              </Button>
+            </div>
+            <div
+              v-if="isShowPreview"
+              class="rounded-lg border bg-white dark:bg-card p-3 text-sm overflow-x-auto"
+              v-html="previewHtml || PREVIEW_FALLBACK_HTML"
+            />
           </div>
 
           <div class="flex gap-2 justify-end">
@@ -522,6 +675,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                                 属性名
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                                类型
+                              </th>
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-14">
                                 状态
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground">
@@ -540,6 +696,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                             >
                               <td class="px-3 py-2">
                                 <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
+                              </td>
+                              <td class="px-3 py-2">
+                                <code class="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded text-muted-foreground">{{ prop.type || 'string' }}</code>
                               </td>
                               <td class="px-3 py-2">
                                 <span
@@ -566,6 +725,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         >
                           <div class="flex items-center gap-2">
                             <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
+                            <code class="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded text-muted-foreground">{{ prop.type || 'string' }}</code>
                             <span
                               class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
                               :class="propTypeBadge(prop).class"
@@ -684,6 +844,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
             </TabsContent>
 
             <TabsContent value="custom" class="mt-4 space-y-4">
+              <input ref="importFileRef" type="file" accept=".json" class="hidden" @change="onImportFile">
               <div class="flex items-center justify-between">
                 <div class="flex items-center gap-1.5">
                   <Blocks class="size-3.5 text-muted-foreground" />
@@ -694,10 +855,20 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                     {{ componentStore.userComponents.length }} 个
                   </span>
                 </div>
-                <Button variant="outline" size="sm" class="h-6 px-2 text-xs" @click="openCreateForm">
-                  <Plus class="mr-1 size-3" />
-                  新建
-                </Button>
+                <div class="flex items-center gap-1.5">
+                  <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" :disabled="componentStore.userComponents.length === 0" @click="exportComponents">
+                    <Download class="size-3" />
+                    导出
+                  </Button>
+                  <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="triggerImport">
+                    <Upload class="size-3" />
+                    导入
+                  </Button>
+                  <Button variant="outline" size="sm" class="h-6 px-2 text-xs" @click="openCreateForm">
+                    <Plus class="mr-1 size-3" />
+                    新建
+                  </Button>
+                </div>
               </div>
               <div v-if="componentStore.userComponents.length === 0" class="text-center py-8 border rounded-xl bg-card/50">
                 <p class="text-xs text-muted-foreground">
@@ -774,6 +945,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                                   属性名
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                                  类型
+                                </th>
+                                <th class="text-left px-3 py-2 font-medium text-muted-foreground w-14">
                                   状态
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground">
@@ -792,6 +966,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                               >
                                 <td class="px-3 py-2">
                                   <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
+                                </td>
+                                <td class="px-3 py-2">
+                                  <code class="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded text-muted-foreground">{{ prop.type || 'string' }}</code>
                                 </td>
                                 <td class="px-3 py-2">
                                   <span
@@ -818,6 +995,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           >
                             <div class="flex items-center gap-2">
                               <code class="font-mono text-sm font-semibold text-primary">{{ prop.name }}</code>
+                              <code class="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded text-muted-foreground">{{ prop.type || 'string' }}</code>
                               <span
                                 class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
                                 :class="propTypeBadge(prop).class"

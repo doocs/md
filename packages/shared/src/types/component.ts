@@ -5,6 +5,9 @@
  *   <QRCodeBlock url="https://example.com" text="扫码访问" />
  */
 
+/** 组件 Prop 类型 */
+export type ComponentPropType = 'string' | 'number' | 'boolean' | 'array'
+
 /** 组件 Prop 定义 */
 export interface ComponentPropDef {
   /** Prop 名称 */
@@ -15,6 +18,8 @@ export interface ComponentPropDef {
   default?: string
   /** 是否必填 */
   required?: boolean
+  /** Prop 类型（默认 string） */
+  type?: ComponentPropType
 }
 
 /** 组件定义 */
