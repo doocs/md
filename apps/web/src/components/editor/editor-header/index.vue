@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Copy, Menu, Palette } from 'lucide-vue-next'
+import { Copy, Loader2, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
@@ -59,6 +59,7 @@ function handleOpenMarkdownHelp() {
 }
 
 const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
+const isCopying = ref(false)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,
@@ -118,11 +119,14 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
 
 // 复制到微信公众号
 async function copy() {
+  isCopying.value = true
+
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
     const mdContent = editor.value?.state.doc.toString() || ``
     await copyContent(mdContent)
     toast.success(`已复制 Markdown 源码到剪贴板。`)
+    isCopying.value = false
     return
   }
 
@@ -143,6 +147,7 @@ async function copy() {
         toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
         editorRefresh()
         emit(`endCopy`)
+        isCopying.value = false
         return
       }
 
@@ -152,6 +157,7 @@ async function copy() {
         toast.error(`未找到复制输出区域，请刷新页面后重试。`)
         editorRefresh()
         emit(`endCopy`)
+        isCopying.value = false
         return
       }
 
@@ -180,6 +186,7 @@ async function copy() {
             editorRefresh()
             toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
             emit(`endCopy`)
+            isCopying.value = false
             return
           }
         }
@@ -210,6 +217,7 @@ async function copy() {
       )
       editorRefresh()
       emit(`endCopy`)
+      isCopying.value = false
     })
   }, 350)
 }
@@ -268,9 +276,11 @@ function copyToWeChat() {
       <Button
         variant="outline"
         class="h-9"
+        :disabled="isCopying"
         @click="copyToWeChat"
       >
-        <Copy class="mr-2 h-4 w-4" />
+        <Loader2 v-if="isCopying" class="mr-2 h-4 w-4 animate-spin" />
+        <Copy v-else class="mr-2 h-4 w-4" />
         <span>复制</span>
       </Button>
 
