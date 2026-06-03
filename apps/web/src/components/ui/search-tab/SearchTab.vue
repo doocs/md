@@ -290,7 +290,10 @@ function handleReplaceInputKeyDown(e: KeyboardEvent) {
 function autoResizeTextarea(e: Event) {
   const el = e.target as HTMLTextAreaElement
   el.style.height = `auto`
-  el.style.height = `${Math.min(150, el.scrollHeight)}px`
+  // scrollHeight for single line can be slightly larger than 28px due to
+  // font rendering / line-height rounding — cap it to avoid unnecessary expansion
+  const h = Math.min(150, el.scrollHeight)
+  el.style.height = h <= 28 ? `28px` : `${h}px`
 }
 
 function handleReplace() {
