@@ -733,7 +733,7 @@ function handleDragEnd() {
         <div class="relative">
           <textarea
             v-model="replaceQuery"
-            class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] overflow-hidden"
+            class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] overflow-y-auto max-h-[150px]"
             style="height: 32px; min-height: 32px"
             placeholder="替换为…"
             @input="autoResizeReplace($event)"
