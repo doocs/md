@@ -45,8 +45,12 @@ overrides:
   yauzl: ^3.3.0
 
 patchedDependencies:
-  '@codemirror/view@6.43.0': 57e68d979309f5b8fe1e0feeb48eebdd7b795ba743cb4ae887bd0b8aca17001f
-  juice@11.1.1: 64286af9d3913b3ffbee649d634de8ec5a603857ce1185030d8bb6e4a384c92c
+  '@codemirror/view@6.43.0':
+    hash: 57e68d979309f5b8fe1e0feeb48eebdd7b795ba743cb4ae887bd0b8aca17001f
+    path: patches/@codemirror__view@6.43.0.patch
+  juice@11.1.1:
+    hash: 64286af9d3913b3ffbee649d634de8ec5a603857ce1185030d8bb6e4a384c92c
+    path: patches/juice@11.1.1.patch
 
 importers:
 
@@ -135,8 +139,8 @@ importers:
         specifier: ^3.1061.0
         version: 3.1061.0
       '@aws-sdk/s3-request-presigner':
-        specifier: ^3.1060.0
-        version: 3.1060.0
+        specifier: ^3.1061.0
+        version: 3.1061.0
       '@exercism/highlightjs-gdscript':
         specifier: ^0.0.1
         version: 0.0.1
@@ -668,8 +672,8 @@ packages:
     resolution: {integrity: sha512-Fpri1/PXKMKveORZ7E00VLTlWS5DkfZkW70PUE+bOnpWpAeHAQLoiDHhkzN3kNWbbSsGg64+IZYiq/EZgME3Mg==}
     engines: {node: '>=20.0.0'}
 
-  '@aws-sdk/s3-request-presigner@3.1060.0':
-    resolution: {integrity: sha512-20lX+iQNrEinYavfSgZuo9YlLn4U+o0xFl4Fw4oMZ2T2UHEh0dGDcDQkbpydtnzUAlzCQE0WRnDKO65daFC4Sg==}
+  '@aws-sdk/s3-request-presigner@3.1061.0':
+    resolution: {integrity: sha512-unGsJZSKQWD4KjokNs5QATLPaNt3u0YoIch7KIomfNy1UB6YaRngsAeArDGAnbrrx2LMOb9l2+4sa+yRn8rkbw==}
     engines: {node: '>=20.0.0'}
 
   '@aws-sdk/signature-v4-multi-region@3.996.31':
@@ -8064,7 +8068,7 @@ snapshots:
       '@smithy/types': 4.14.3
       tslib: 2.8.1
 
-  '@aws-sdk/s3-request-presigner@3.1060.0':
+  '@aws-sdk/s3-request-presigner@3.1061.0':
     dependencies:
       '@aws-sdk/core': 3.974.17
       '@aws-sdk/signature-v4-multi-region': 3.996.31

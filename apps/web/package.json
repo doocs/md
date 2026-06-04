@@ -30,7 +30,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1061.0",
-    "@aws-sdk/s3-request-presigner": "^3.1060.0",
+    "@aws-sdk/s3-request-presigner": "^3.1061.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
