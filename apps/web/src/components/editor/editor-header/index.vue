@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Copy, Menu, Palette } from 'lucide-vue-next'
+import { Copy, Loader2, Menu, Palette } from 'lucide-vue-next'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
@@ -59,6 +59,7 @@ function handleOpenMarkdownHelp() {
 }
 
 const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
+const isCopying = ref(false)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,
@@ -118,11 +119,21 @@ function fallbackCopyUsingExecCommand(htmlContent: string) {
 
 // 复制到微信公众号
 async function copy() {
+  isCopying.value = true
+
   // 如果是 Markdown 源码，直接复制并返回
   if (copyMode.value === `md`) {
-    const mdContent = editor.value?.state.doc.toString() || ``
-    await copyContent(mdContent)
-    toast.success(`已复制 Markdown 源码到剪贴板。`)
+    try {
+      const mdContent = editor.value?.state.doc.toString() || ``
+      await copyContent(mdContent)
+      toast.success(`已复制 Markdown 源码到剪贴板。`)
+    }
+    catch (error) {
+      toast.error(`复制失败：${normalizeErrorMessage(error)}`)
+    }
+    finally {
+      isCopying.value = false
+    }
     return
   }
 
@@ -131,85 +142,91 @@ async function copy() {
 
   setTimeout(() => {
     nextTick(async () => {
-      let processedClipboardContent: {
-        html: string
-        plainText: string
-      }
-
       try {
-        processedClipboardContent = await processClipboardContent(primaryColor.value)
-      }
-      catch (error) {
-        toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
-        editorRefresh()
-        emit(`endCopy`)
-        return
-      }
+        let processedClipboardContent: {
+          html: string
+          plainText: string
+        }
 
-      const clipboardDiv = document.getElementById(`output`)
-
-      if (!clipboardDiv) {
-        toast.error(`未找到复制输出区域，请刷新页面后重试。`)
-        editorRefresh()
-        emit(`endCopy`)
-        return
-      }
-
-      clipboardDiv.focus()
-      window.getSelection()?.removeAllRanges()
-
-      const temp = processedClipboardContent.html
-
-      if (copyMode.value === `txt`) {
         try {
-          if (typeof ClipboardItem === `undefined`) {
-            throw new TypeError(`ClipboardItem is not supported in this browser.`)
-          }
-
-          const clipboardItem = new ClipboardItem({
-            'text/html': new Blob([temp], { type: `text/html` }),
-            'text/plain': new Blob([processedClipboardContent.plainText], { type: `text/plain` }),
-          })
-
-          await writeClipboardItems([clipboardItem])
+          processedClipboardContent = await processClipboardContent(primaryColor.value)
         }
         catch (error) {
-          const fallbackSucceeded = fallbackCopyUsingExecCommand(temp)
-          if (!fallbackSucceeded) {
-            window.getSelection()?.removeAllRanges()
-            editorRefresh()
-            toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
-            emit(`endCopy`)
-            return
+          toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
+          editorRefresh()
+          return
+        }
+
+        const clipboardDiv = document.getElementById(`output`)
+
+        if (!clipboardDiv) {
+          toast.error(`未找到复制输出区域，请刷新页面后重试。`)
+          editorRefresh()
+          return
+        }
+
+        clipboardDiv.focus()
+        window.getSelection()?.removeAllRanges()
+
+        const temp = processedClipboardContent.html
+
+        if (copyMode.value === `txt`) {
+          try {
+            if (typeof ClipboardItem === `undefined`) {
+              throw new TypeError(`ClipboardItem is not supported in this browser.`)
+            }
+
+            const clipboardItem = new ClipboardItem({
+              'text/html': new Blob([temp], { type: `text/html` }),
+              'text/plain': new Blob([processedClipboardContent.plainText], { type: `text/plain` }),
+            })
+
+            await writeClipboardItems([clipboardItem])
+          }
+          catch (error) {
+            const fallbackSucceeded = fallbackCopyUsingExecCommand(temp)
+            if (!fallbackSucceeded) {
+              window.getSelection()?.removeAllRanges()
+              editorRefresh()
+              toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
+              return
+            }
           }
         }
-      }
 
-      if (copyMode.value === `html`) {
-        await copyContent(temp)
-      }
-      else if (copyMode.value === `html-without-style`) {
-        await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
-      }
-      else if (copyMode.value === `html-and-style`) {
-        await copyContent(exportStore.editorContent2HTML())
-      }
+        if (copyMode.value === `html`) {
+          await copyContent(temp)
+        }
+        else if (copyMode.value === `html-without-style`) {
+          await copyContent(await generatePureHTML(editor.value!.state.doc.toString()))
+        }
+        else if (copyMode.value === `html-and-style`) {
+          await copyContent(exportStore.editorContent2HTML())
+        }
 
-      // 输出提示
-      toast.success(
-        copyMode.value === `html`
-          ? `已复制 HTML 源码，请进行下一步操作。`
-          : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
-      )
-      window.dispatchEvent(
-        new CustomEvent(`copyToMp`, {
-          detail: {
-            content: output.value,
-          },
-        }),
-      )
-      editorRefresh()
-      emit(`endCopy`)
+        // 输出提示
+        toast.success(
+          copyMode.value === `html`
+            ? `已复制 HTML 源码，请进行下一步操作。`
+            : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
+        )
+        window.dispatchEvent(
+          new CustomEvent(`copyToMp`, {
+            detail: {
+              content: output.value,
+            },
+          }),
+        )
+        editorRefresh()
+      }
+      catch (error) {
+        toast.error(`复制失败：${normalizeErrorMessage(error)}`)
+        editorRefresh()
+      }
+      finally {
+        emit(`endCopy`)
+        isCopying.value = false
+      }
     })
   }, 350)
 }
@@ -268,9 +285,11 @@ function copyToWeChat() {
       <Button
         variant="outline"
         class="h-9"
+        :disabled="isCopying"
         @click="copyToWeChat"
       >
-        <Copy class="mr-2 h-4 w-4" />
+        <Loader2 v-if="isCopying" class="mr-2 h-4 w-4 animate-spin" />
+        <Copy v-else class="mr-2 h-4 w-4" />
         <span>复制</span>
       </Button>
 
