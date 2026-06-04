@@ -333,7 +333,7 @@ onBeforeMount(() => {
             <Info class="h-4 w-4" />
             <AlertTitle>未检测到插件</AlertTitle>
             <AlertDescription>
-              请安装 <a href="https://chromewebstore.google.com/detail/ilhikcdphhpjofhlnbojifbihhfmmhfk" target="_blank" rel="noopener noreferrer" class="underline text-primary">cose 文章同步助手</a> 浏览器扩展
+              请安装 <a href="https://chromewebstore.google.com/detail/ilhikcdphhpjofhlnbojifbihhfmmhfk" target="_blank" rel="noopener noreferrer" class="underline text-primary">COSE 文章同步助手</a> 浏览器扩展
             </AlertDescription>
           </Alert>
 
