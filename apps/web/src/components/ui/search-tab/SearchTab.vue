@@ -213,7 +213,7 @@ function findAllMatches() {
             { line: actualLineNumber, ch: index },
             { line: actualLineNumber, ch: index + searchTerm.length },
           ])
-          startIndex = index + 1
+          startIndex = index + searchTerm.length
           index = lineForCompare.indexOf(searchTermForCompare, startIndex)
         }
       })
