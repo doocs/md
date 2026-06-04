@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import FormulaEditorDialog from '@/components/editor/dialogs/FormulaEditorDialog.vue'
+import LocalImageUploadDialog from '@/components/editor/dialogs/LocalImageUploadDialog.vue'
 import EditorPanel from '@/components/editor/EditorPanel.vue'
-import FolderSourcePanel from '@/components/editor/FolderSourcePanel.vue'
-import FormulaEditorDialog from '@/components/editor/FormulaEditorDialog.vue'
-import LocalImageUploadDialog from '@/components/editor/LocalImageUploadDialog.vue'
+import FolderSourcePanel from '@/components/editor/folder-source-panel/index.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
   ResizableHandle,
@@ -263,7 +263,7 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
 </template>
 
 <style lang="less" scoped>
-@import url('../assets/less/app.less');
+@import url('../../assets/less/app.less');
 </style>
 
 <style lang="less" scoped>

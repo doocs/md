@@ -34,8 +34,7 @@ const HEADING_TAG_REGEX = /^h\d$/
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
 
-function buildAddition(): string {
-  return `
+const ADDITION_STYLE = `
     <style>
       .preview-wrapper pre::before {
         position: absolute;
@@ -51,7 +50,6 @@ function buildAddition(): string {
       }
     </style>
   `
-}
 
 function buildFootnoteArray(footnotes: [number, string, string][]): string {
   return footnotes
@@ -464,7 +462,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   markdownParser.use(markedRuby())
 
   return {
-    buildAddition,
+    buildAddition: () => ADDITION_STYLE,
     buildFootnotes,
     setOptions,
     reset,

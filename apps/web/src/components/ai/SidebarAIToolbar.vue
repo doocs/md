@@ -194,9 +194,11 @@ onMounted(() => {
 
 <template>
   <!-- 编辑区内侧AI工具栏 -->
+  <!-- @mousedown.prevent 防止点击工具栏时编辑器失去焦点，从而保持选区高亮 -->
   <div
     v-if="(!isMobile || (isMobile && showEditor))"
     class="editor-ai-toolbar absolute top-1/2 -translate-y-1/2 right-0 z-30 transition-all duration-300 ease-out"
+    @mousedown.prevent
   >
     <!-- 默认状态：贴边栏 -->
     <div

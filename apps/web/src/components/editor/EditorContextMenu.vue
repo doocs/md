@@ -174,7 +174,7 @@ function downloadAsCardImage() {
           </ContextMenuItem>
           <ContextMenuItem @click="toggleShowComponentDialog()">
             <Blocks class="mr-2 h-4 w-4" />
-            自定义组件
+            组件
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>

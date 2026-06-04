@@ -300,6 +300,13 @@ function replaceInText(text: string, search: string, replace: string): string {
   return text.replace(regex, replace)
 }
 
+function autoResizeReplace(e: Event) {
+  const el = e.target as HTMLTextAreaElement
+  el.style.height = `auto`
+  const h = Math.min(150, el.scrollHeight)
+  el.style.height = h <= 32 ? `32px` : `${h}px`
+}
+
 function replaceFirst() {
   const q = searchQuery.value.trim()
   if (!q)
@@ -720,12 +727,14 @@ function handleDragEnd() {
 
         <!-- 替换栏 -->
         <div class="relative">
-          <input
+          <textarea
             v-model="replaceQuery"
-            class="w-full h-8 rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
+            class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] overflow-hidden max-h-[150px]"
+            style="height: 32px; min-height: 32px"
             placeholder="替换为…"
-          >
-          <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
+            @input="autoResizeReplace($event)"
+          />
+          <div class="absolute right-1.5 top-1.5 flex items-center gap-0.5">
             <button
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
               title="替换一处"
