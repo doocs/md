@@ -6,6 +6,7 @@ import { marked } from 'marked'
 const INFOGRAPHIC_PLACEHOLDER_REGEX = /<!--infographic-start-->[\s\S]*?<!--infographic-end-->/g
 const MERMAID_PLACEHOLDER_REGEX = /<!--mermaid-start-->[\s\S]*?<!--mermaid-end-->/g
 const PROTECTED_SPAN_REGEX = /<span data-md-protected="(\d+)"><\/span>/g
+const CJK_STRONG_BOUNDARY_REGEX = /(\*\*[^\n*]*[。！？；：，、]\*\*)(?=[\u3040-\u30FF\u3400-\u9FFF\uF900-\uFAFF\uAC00-\uD7AFA-Z0-9])/gi
 
 /**
  * DOMPurify v3.1.7+ 会强制移除 foreignObject 内容
@@ -48,6 +49,18 @@ function sanitizeHtml(html: string): string {
 }
 
 /**
+ * 修复 CJK 语境下的强调边界：
+ * 当 `**...。**` 后面紧跟文字时，部分规则会将 `**` 误判为不可闭合。
+ * 通过插入注释占位打断边界，后续 sanitize 会自动移除注释，不影响最终输出。
+ */
+function normalizeCjkStrongBoundary(markdown: string): string {
+  return markdown.replace(
+    CJK_STRONG_BOUNDARY_REGEX,
+    `$1<!--md-cjk-strong-boundary-->`,
+  )
+}
+
+/**
  * 渲染 Markdown 内容
  * @param raw - 原始 markdown 字符串
  * @param renderer - 渲染器 API
@@ -59,7 +72,8 @@ export function renderMarkdown(raw: string, renderer: RendererAPI) {
     = renderer.parseFrontMatterAndContent(raw)
 
   // marked -> html
-  let html = marked.parse(markdownContent) as string
+  const normalizedContent = normalizeCjkStrongBoundary(markdownContent)
+  let html = marked.parse(normalizedContent) as string
   html = sanitizeHtml(html)
   return { html, readingTime }
 }
@@ -111,7 +125,8 @@ export function modifyHtmlContent(content: string, renderer: RendererAPI): strin
     readingTime: readingTimeResult,
   } = renderer.parseFrontMatterAndContent(content)
 
-  let html = marked.parse(markdownContent) as string
+  const normalizedContent = normalizeCjkStrongBoundary(markdownContent)
+  let html = marked.parse(normalizedContent) as string
   html = sanitizeHtml(html)
   return postProcessHtml(html, readingTimeResult, renderer)
 }
