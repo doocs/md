@@ -19,7 +19,7 @@
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "^3.15.0",
-    "marked": "^18.0.4",
+    "marked": "^18.0.5",
     "mermaid": "^11.15.0"
   },
   "devDependencies": {

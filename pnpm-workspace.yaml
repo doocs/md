@@ -1,5 +1,5 @@
 minimumReleaseAgeExclude:
-  - '@cloudflare/workers-types@4.20260527.1'
+  - '@cloudflare/workers-types@4.20260605.1'
   - '@vue/language-core@3.3.2'
   - vue-tsc@3.3.2
 shellEmulator: true
@@ -63,4 +63,4 @@ allowBuilds:
 
 patchedDependencies:
   '@codemirror/view@6.43.0': patches/@codemirror__view@6.43.0.patch
-  juice@11.1.1: patches/juice@11.1.1.patch
+  juice@12.1.0: patches/juice@12.1.0.patch
