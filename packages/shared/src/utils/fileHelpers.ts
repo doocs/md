@@ -21,9 +21,10 @@ export function downloadFile(content: string, filename: string, mimeType: string
   const downLink = document.createElement(`a`)
   downLink.download = filename
   downLink.style.display = `none`
+  let objectUrl: string | null = null
 
   // 检查是否是 base64 data URL
-  if (content.startsWith(`data:`)) {
+  if (content.startsWith(`data:`) || content.startsWith(`blob:`)) {
     downLink.href = content
   }
   else if (mimeType === `text/html`) {
@@ -31,7 +32,8 @@ export function downloadFile(content: string, filename: string, mimeType: string
   }
   else {
     const blob = new Blob([content], { type: mimeType })
-    downLink.href = URL.createObjectURL(blob)
+    objectUrl = URL.createObjectURL(blob)
+    downLink.href = objectUrl
   }
 
   document.body.appendChild(downLink)
@@ -39,8 +41,8 @@ export function downloadFile(content: string, filename: string, mimeType: string
   document.body.removeChild(downLink)
 
   // 如果是 blob URL，释放内存
-  if (!content.startsWith(`data:`) && mimeType !== `text/html`) {
-    URL.revokeObjectURL(downLink.href)
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl)
   }
 }
 
