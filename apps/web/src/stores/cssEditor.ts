@@ -352,7 +352,9 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
         }
       })
       const blob = await zip.generateAsync({ type: `blob` })
-      downloadFile(URL.createObjectURL(blob), `css-schemes.zip`)
+      const url = URL.createObjectURL(blob)
+      downloadFile(url, `css-schemes.zip`)
+      URL.revokeObjectURL(url)
     }
 
     cssContentConfig.value.selectedIds = []
