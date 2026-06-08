@@ -47,7 +47,6 @@ import { indentationMarkers } from '@replit/codemirror-indentation-markers'
 /// and an array literal), copy it into your own code, and adjust it
 /// as desired.
 export const basicSetup: Extension = (() => [
-  // lineNumbers(), // 移除行号显示
   highlightActiveLineGutter(),
   highlightSpecialChars(),
   history(),

@@ -208,7 +208,6 @@ export function htmlScriptToLocal(
               await writeFile(outFile, textContent, `utf8`)
               // Replace unsafe inline script
               const virtualScript = document.createElement(`script`)
-              // virtualScript.type = `module`
               virtualScript.src = `/${fileName}`
               script.replaceWith(virtualScript)
             })()
