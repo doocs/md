@@ -27,8 +27,6 @@ function colors() {
     },
   })
 
-  // 取消下行注释, 查看所有的颜色和名字:
-  // Object.keys(returnValue).forEach((color) => console.log(returnValue[color](color)))
   return colorTable
 }
 

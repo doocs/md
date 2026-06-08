@@ -61,6 +61,7 @@ function editorRefresh() {
 // --- Search tab integration ---
 const searchTabRef = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
 const pendingSearchRequest = ref<{ selected: string } | null>(null)
+const activeEditorView = computed(() => codeMirrorView.value)
 
 function openSearchWithSelection(view: EditorView) {
   const selection = view.state.selection.main
@@ -179,7 +180,7 @@ async function compressImage(file: File) {
 
 async function uploadImage(
   file: File,
-  cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
+  cb?: (url: string, data: string) => void,
   applyUrl?: boolean,
 ) {
   try {
@@ -201,7 +202,7 @@ async function uploadImage(
     }
   }
   catch (err) {
-    toast.error((err as any).message)
+    toast.error(err instanceof Error ? err.message : String(err))
   }
   finally {
     isImgLoading.value = false
@@ -210,45 +211,56 @@ async function uploadImage(
 
 // --- Drag & drop folder ---
 async function getMd({ list }: { list: { path: string, file: File }[] }) {
-  return new Promise<{ str: string, file: File, path: string }>((resolve) => {
-    const { path, file } = list.find(item => item.path.match(/\.md$/))!
+  return new Promise<{ str: string, file: File, path: string }>((resolve, reject) => {
+    const match = list.find(item => item.path.match(/\.md$/))
+    if (!match) {
+      reject(new Error('文件夹中未找到 .md 文件'))
+      return
+    }
+    const { path, file } = match
+    if (!file) {
+      reject(new Error('无法读取 .md 文件'))
+      return
+    }
     const reader = new FileReader()
-    reader.readAsText(file!, `UTF-8`)
+    reader.readAsText(file, `UTF-8`)
     reader.onload = (evt) => {
+      if (!evt.target?.result || typeof evt.target.result !== 'string') {
+        reject(new Error('读取 .md 文件失败'))
+        return
+      }
       resolve({
-        str: evt.target!.result as string,
+        str: evt.target.result,
         file,
         path,
       })
+    }
+    reader.onerror = () => {
+      reject(new Error('读取 .md 文件失败'))
     }
   })
 }
 
 async function showFileStructure(root: any) {
-  const result = []
+  const result: { path: string, file?: File }[] = []
   let cwd = ``
-  try {
-    const dirs = [root]
-    for (const dir of dirs) {
-      cwd += `${dir.name}/`
-      for await (const [, handle] of dir) {
-        if (handle.kind === `file`) {
-          result.push({
-            path: cwd + handle.name,
-            file: await handle.getFile(),
-          })
-        }
-        else {
-          result.push({
-            path: `${cwd + handle.name}/`,
-          })
-          dirs.push(handle)
-        }
+  const dirs = [root]
+  for (const dir of dirs) {
+    cwd += `${dir.name}/`
+    for await (const [, handle] of dir) {
+      if (handle.kind === `file`) {
+        result.push({
+          path: cwd + handle.name,
+          file: await handle.getFile(),
+        })
+      }
+      else {
+        result.push({
+          path: `${cwd + handle.name}/`,
+        })
+        dirs.push(handle)
       }
     }
-  }
-  catch (err) {
-    console.error(err)
   }
   return result
 }
@@ -261,23 +273,45 @@ async function uploadMdImg({
   list: { path: string, file: File }[]
 }) {
   const mdImgList = [...(md.str.matchAll(/!\[(.*?)\]\((.*?)\)/g) || [])].filter(item => item)
-  const root = md.path.match(/.+?\//)![0]
+
+  // 如果没有图片引用，直接替换编辑器内容
+  if (mdImgList.length === 0) {
+    if (codeMirrorView.value) {
+      codeMirrorView.value.dispatch({
+        changes: { from: 0, to: codeMirrorView.value.state.doc.length, insert: md.str },
+      })
+    }
+    return
+  }
+
+  const rootMatch = md.path.match(/.+?\//)
+  if (!rootMatch) {
+    throw new Error('无法解析 Markdown 文件路径')
+  }
+  const root = rootMatch[0]
+
   const resList = await Promise.all<{ matchStr: string, url: string }>(
     mdImgList.map((item) => {
-      return new Promise((resolve) => {
+      return new Promise<{ matchStr: string, url: string }>((resolve) => {
         let [, , matchStr] = item
         matchStr = matchStr.replace(/^.\//, ``)
-        const { file }
-          = list.find(f => f.path === `${root}${matchStr}`) || {}
-        uploadImage(file!, url => resolve({ matchStr, url }))
+        const found = list.find(f => f.path === `${root}${matchStr}`)
+        if (!found?.file) {
+          console.warn(`未找到图片文件: ${root}${matchStr}`)
+          resolve({ matchStr, url: matchStr }) // 保留原路径
+          return
+        }
+        uploadImage(found.file, url => resolve({ matchStr, url }))
       })
     }),
   )
+
   resList.forEach((item) => {
     md.str = md.str
       .replace(`](./${item.matchStr})`, `](${item.url})`)
       .replace(`](${item.matchStr})`, `](${item.url})`)
   })
+
   if (codeMirrorView.value) {
     codeMirrorView.value.dispatch({
       changes: { from: 0, to: codeMirrorView.value.state.doc.length, insert: md.str },
@@ -286,7 +320,10 @@ async function uploadMdImg({
 }
 
 function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value!
+  const dom = codeMirrorWrapper.value
+  if (!dom) {
+    return
+  }
 
   dom.ondragover = evt => evt.preventDefault()
   dom.ondrop = async (evt) => {
@@ -296,24 +333,29 @@ function mdLocalToRemote() {
     }
 
     for (const item of evt.dataTransfer.items.filter(item => item.kind === `file`)) {
-      item
-        .getAsFileSystemHandle()
-        .then(async (handle: { kind: string, getFile: () => any }) => {
-          if (handle.kind === `directory`) {
-            const list = (await showFileStructure(handle)) as {
-              path: string
-              file: File
-            }[]
-            const md = await getMd({ list })
-            uploadMdImg({ md, list })
+      try {
+        const handle = await item.getAsFileSystemHandle()
+        if (handle.kind === `directory`) {
+          const list = (await showFileStructure(handle)) as {
+            path: string
+            file: File
+          }[]
+          const md = await getMd({ list })
+          await uploadMdImg({ md, list })
+          toast.success('Markdown 文件导入成功')
+        }
+        else {
+          const file = await handle.getFile()
+          if (await beforeImageUpload(file)) {
+            uploadImage(file)
           }
-          else {
-            const file = await handle.getFile()
-            if (await beforeImageUpload(file)) {
-              uploadImage(file)
-            }
-          }
-        })
+        }
+      }
+      catch (err) {
+        const message = err instanceof Error ? err.message : String(err)
+        console.error('拖拽处理失败:', err)
+        toast.error(`导入失败: ${message}`)
+      }
     }
   }
 }
@@ -328,10 +370,10 @@ function createPasteHandler() {
       }
       Promise.all(
         Array.from(event.clipboardData.items, item => item.getAsFile())
-          .filter(item => item != null)
-          .map(async item => (await beforeImageUpload(item!)) ? item : null),
+          .filter((item): item is File => item != null)
+          .map(async item => (await beforeImageUpload(item)) ? item : null),
       ).then((items) => {
-        const validItems = items.filter(item => item != null) as File[]
+        const validItems = items.filter((item): item is File => item != null)
         if (validItems.length === 0) {
           return
         }
@@ -568,7 +610,7 @@ defineExpose({
     ref="codeMirrorWrapper"
     class="codeMirror-wrapper relative h-full"
   >
-    <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
+    <SearchTab v-if="activeEditorView" ref="searchTabRef" :editor-view="activeEditorView" />
     <SlashCommandMenu
       :visible="slashCommand.visible.value"
       :position="slashCommand.position.value"
