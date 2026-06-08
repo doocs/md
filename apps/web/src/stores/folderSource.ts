@@ -162,9 +162,13 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
   }
 
   /**
-   * 关闭当前文件夹
+   * 关闭当前文件夹，同时释放内存中的句柄引用
    */
   function closeFolder() {
+    // 释放当前文件夹的句柄引用，避免内存泄漏
+    if (currentFolderId.value) {
+      runtimeFolderMap.delete(currentFolderId.value)
+    }
     currentFolderId.value = null
     fileTree.value = []
     selectedFilePath.value = ``

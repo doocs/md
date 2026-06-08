@@ -1,5 +1,6 @@
 import type { MarkedExtension } from 'marked'
 import { simpleHash } from '../utils/basicHelpers'
+import { createSVGCache } from '../utils/svgCache'
 
 let initPromise: Promise<typeof import('mermaid')['default']> | null = null
 
@@ -17,8 +18,8 @@ function getMermaid() {
   return initPromise
 }
 
-// key -> svg
-const svgCache = new Map<string, string>()
+// key -> svg（LRU 缓存，上限 50 条）
+const svgCache = createSVGCache(50)
 
 function renderMermaid(id: string, code: string, cacheKey: string) {
   if (typeof window === 'undefined')
