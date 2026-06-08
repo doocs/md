@@ -175,13 +175,13 @@ function splitHighlightedHtmlByLines(html: string): string[] {
 
       currentLine += tag
 
-      // 跟踪标签的开闭状态
-      if (tag.startsWith(`</`)) {
-        // 关闭标签，从栈中移除
+      // 只跟踪 highlight.js 产出的 <span> 标签
+      if (tag.startsWith(`</span`)) {
+        // 关闭 span，从栈中移除
         openTags.pop()
       }
-      else if (tag.startsWith(`<`) && !tag.endsWith(`/>`)) {
-        // 打开标签，加入栈
+      else if (tag.startsWith(`<span`)) {
+        // 打开 span，加入栈
         openTags.push(tag)
       }
     }
