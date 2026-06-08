@@ -477,7 +477,8 @@ onBeforeMount(() => {
             :src="form.thumb"
             alt="封面预览"
             class="max-h-[70vh] max-w-full rounded-md object-contain"
-            @error="(e: Event) => { (e.target as HTMLImageElement).style.display = 'none' }"
+            @load="($event.target as HTMLImageElement).style.removeProperty('display')"
+            @error="($event.target as HTMLImageElement).style.display = 'none'"
           >
         </div>
       </DialogContent>
