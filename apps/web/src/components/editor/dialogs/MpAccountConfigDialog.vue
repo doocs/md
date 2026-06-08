@@ -105,7 +105,7 @@ function submit(formValues: any) {
               <template #hint>
                 <a
                   href="https://github.com/doocs/md/blob/main/docs/mp-card.md"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                   class="text-xs text-muted-foreground hover:text-primary underline-offset-2 hover:underline"
                 >如何获取公众号 ID？</a>
               </template>

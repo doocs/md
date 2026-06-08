@@ -29,11 +29,11 @@ function onOpenOption() {
         1.开启公众号开发者模式
         <span><a
           href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
-          target="_blank"
+          target="_blank" rel="noopener noreferrer"
         >查看文档</a></span>
       </div>
       <div>
-        2.配置IP白名单<span><a href="https://md-pages.doocs.org/tutorial" target="_blank">使用教程</a></span>
+        2.配置IP白名单<span><a href="https://md-pages.doocs.org/tutorial" target="_blank" rel="noopener noreferrer">使用教程</a></span>
       </div>
       <div>
         <button class="button" @click="onOpenOption">

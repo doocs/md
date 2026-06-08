@@ -591,7 +591,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何获取 GitHub Token？
                 </Button>
@@ -687,7 +687,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://help.aliyun.com/document_detail/31883.html"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用阿里云 OSS？
                 </Button>
@@ -772,7 +772,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://cloud.tencent.com/document/product/436/38484"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用腾讯云 COS？
                 </Button>
@@ -857,7 +857,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://developer.qiniu.com/kodo"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用七牛云 Kodo？
                 </Button>
@@ -935,7 +935,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用 MinIO？
                 </Button>
@@ -1089,7 +1089,7 @@ function onTabScroll(e: WheelEvent) {
                     class="p-0 h-auto text-left whitespace-normal"
                     as="a"
                     href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                   >
                     如何开启公众号开发者模式并获取应用账号密钥？
                   </Button>
@@ -1098,7 +1098,7 @@ function onTabScroll(e: WheelEvent) {
                     class="p-0 h-auto text-left whitespace-normal"
                     as="a"
                     href="https://md-pages.doocs.org/tutorial/"
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                   >
                     如何在浏览器插件中使用公众号图床？
                   </Button>
@@ -1160,7 +1160,7 @@ function onTabScroll(e: WheelEvent) {
                     class="p-0 h-auto text-left whitespace-normal"
                     as="a"
                     href="https://developers.cloudflare.com/r2/api/s3/api/"
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                   >
                     如何使用 S3 API 操作 Cloudflare R2？
                   </Button>
@@ -1169,7 +1169,7 @@ function onTabScroll(e: WheelEvent) {
                     class="p-0 h-auto text-left whitespace-normal"
                     as="a"
                     href="https://developers.cloudflare.com/r2/buckets/cors/"
-                    target="_blank"
+                    target="_blank" rel="noopener noreferrer"
                   >
                     如何设置跨域(CORS)？
                   </Button>
@@ -1224,7 +1224,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://help.upyun.com/"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用 又拍云？
                 </Button>
@@ -1258,7 +1258,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://github.com/doocs/md/blob/main/docs/telegram-usage.md"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   如何使用 Telegram？
                 </Button>
@@ -1340,7 +1340,7 @@ function onTabScroll(e: WheelEvent) {
                   class="p-0 h-auto text-left whitespace-normal"
                   as="a"
                   href="https://cloudinary.com/documentation/upload_images"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >
                   Cloudinary 使用文档
                 </Button>

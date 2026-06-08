@@ -109,7 +109,7 @@ watch(() => props.open, (newVal) => {
                   :href="account.editResp.draftLink"
                   class="ml-2 text-blue-500 hover:underline"
                   referrerPolicy="no-referrer"
-                  target="_blank"
+                  target="_blank" rel="noopener noreferrer"
                 >查看草稿</a>
               </template>
             </div>
