@@ -20,6 +20,7 @@ const uiStore = useUIStore()
 const { isMobile } = storeToRefs(uiStore)
 
 const dialogVisible = ref(false)
+const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
@@ -349,7 +350,12 @@ onBeforeMount(() => {
               <Label for="thumb" class="w-10 text-end">
                 封面
               </Label>
-              <Input id="thumb" v-model="form.thumb" placeholder="自动提取第一张图" />
+              <div class="flex-1 flex items-center gap-2">
+                <Input id="thumb" v-model="form.thumb" placeholder="自动提取第一张图" class="flex-1" />
+                <Button v-if="form.thumb" variant="outline" size="sm" class="shrink-0" @click="thumbPreviewVisible = true">
+                  查看
+                </Button>
+              </div>
             </div>
             <div class="w-full flex items-center gap-4">
               <Label for="title" class="w-10 text-end">
@@ -458,6 +464,23 @@ onBeforeMount(() => {
             确 定
           </Button>
         </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="thumbPreviewVisible">
+      <DialogContent class="!max-w-[80vw] !w-fit">
+        <DialogHeader>
+          <DialogTitle>封面预览</DialogTitle>
+        </DialogHeader>
+        <div class="flex items-center justify-center p-2">
+          <img
+            :src="form.thumb"
+            alt="封面预览"
+            class="max-h-[70vh] max-w-full rounded-md object-contain"
+            @load="($event.target as HTMLImageElement).style.removeProperty('display')"
+            @error="($event.target as HTMLImageElement).style.display = 'none'"
+          >
+        </div>
       </DialogContent>
     </Dialog>
 
