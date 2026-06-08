@@ -20,12 +20,13 @@ export class LRUMap<V> {
 
   /** 读取缓存，命中时刷新为最近使用 */
   get(key: string): V | undefined {
-    const value = this.map.get(key)
-    if (value !== undefined) {
-      // 移至末尾（最近使用）
-      this.map.delete(key)
-      this.map.set(key, value)
+    if (!this.map.has(key)) {
+      return undefined
     }
+    const value = this.map.get(key)!
+    // 移至末尾（最近使用）
+    this.map.delete(key)
+    this.map.set(key, value)
     return value
   }
 
