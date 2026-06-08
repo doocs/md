@@ -1,9 +1,10 @@
 import type { MarkedExtension, Tokens } from 'marked'
 import { deflateSync } from 'fflate'
 import { simpleHash } from '../utils/basicHelpers'
+import { createSVGCache } from '../utils/svgCache'
 
-// key -> svg
-const svgCache = new Map<string, string>()
+// key -> svg（LRU 缓存，上限 50 条）
+const svgCache = createSVGCache(50)
 
 export interface PlantUMLOptions {
   /**

@@ -551,7 +551,7 @@ onMounted(() => {
 onUnmounted(() => {
   clearTimeout(historyTimer.value)
   clearTimeout(changeTimer.value)
-  document.removeEventListener(`keydown`, handleGlobalKeydown)
+  document.removeEventListener(`keydown`, handleGlobalKeydown, { capture: false })
 })
 
 defineExpose({

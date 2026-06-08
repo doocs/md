@@ -1,5 +1,6 @@
 import type { MarkedExtension } from 'marked'
 import { simpleHash } from '../utils/basicHelpers'
+import { createSVGCache } from '../utils/svgCache'
 
 interface InfographicOptions {
   themeMode?: 'dark' | 'light'
@@ -7,8 +8,8 @@ interface InfographicOptions {
 
 type InfographicOptionsSource = InfographicOptions | (() => InfographicOptions | undefined)
 
-// key -> svg
-const svgCache = new Map<string, string>()
+// key -> svg（LRU 缓存，上限 50 条）
+const svgCache = createSVGCache(50)
 
 const RE_INFOGRAPHIC_START = /^```infographic/m
 const RE_INFOGRAPHIC_BLOCK = /^```infographic\r?\n([\s\S]*?)\r?\n```/

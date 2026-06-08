@@ -199,14 +199,25 @@ export async function exportPDF(title: string = `untitled`) {
   iframe.srcdoc = printHtml
   document.body.appendChild(iframe)
 
+  const removeIframe = () => {
+    if (iframe.parentNode) {
+      document.body.removeChild(iframe)
+    }
+  }
+
   iframe.onload = () => {
     iframe.contentWindow?.focus()
     iframe.contentWindow?.print()
     // 延迟移除，确保打印完成
-    setTimeout(() => {
-      document.body.removeChild(iframe)
-    }, 500)
+    setTimeout(removeIframe, 500)
   }
+
+  iframe.onerror = () => {
+    removeIframe()
+  }
+
+  // 兜底：如果 onload/onerror 都未触发，5 秒后强制清理
+  setTimeout(removeIframe, 5000)
 }
 
 export function solveWeChatImage(container?: HTMLElement) {
