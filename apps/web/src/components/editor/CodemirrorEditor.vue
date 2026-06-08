@@ -41,6 +41,7 @@ useScrollSync(getEditorView, getPreviewContainer, enableScrollSync)
 // --- 复制状态 ---
 const backLight = ref(false)
 const isCoping = ref(false)
+let copyEndTimer: ReturnType<typeof setTimeout> | null = null
 
 function startCopy() {
   backLight.value = true
@@ -49,10 +50,21 @@ function startCopy() {
 
 function endCopy() {
   backLight.value = false
-  setTimeout(() => {
+  if (copyEndTimer) {
+    clearTimeout(copyEndTimer)
+  }
+  copyEndTimer = setTimeout(() => {
     isCoping.value = false
+    copyEndTimer = null
   }, 800)
 }
+
+onUnmounted(() => {
+  if (copyEndTimer) {
+    clearTimeout(copyEndTimer)
+    copyEndTimer = null
+  }
+})
 
 // --- 上传图片透传 ---
 function handleUploadImage(file: File, cb?: any, applyUrl?: boolean) {

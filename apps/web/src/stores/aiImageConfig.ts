@@ -27,34 +27,16 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // ==================== 服务相关字段 ====================
 
   // 服务端点（支持自定义服务）
-  const endpoint = customRef<string>((track, trigger) => {
-    let cachedEndpoint = ``
+  const endpoint = ref<string>(``)
 
-    // 异步加载初始值
-    const loadEndpoint = async () => {
-      if (type.value === `custom`) {
-        cachedEndpoint = await store.get(`openai_image_endpoint_${type.value}`) || ``
-      }
-      else {
-        const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
-        cachedEndpoint = svc.endpoint
-      }
+  // 异步加载初始端点（延迟到微任务中，避免与 immediate watcher 竞争）
+  Promise.resolve().then(async () => {
+    if (type.value === `custom`) {
+      endpoint.value = await store.get(`openai_image_endpoint_${type.value}`) || ``
     }
-    loadEndpoint()
-
-    return {
-      get() {
-        track()
-        return cachedEndpoint
-      },
-      set(val: string) {
-        cachedEndpoint = val
-        trigger()
-
-        if (type.value === `custom`) {
-          store.set(`openai_image_endpoint_${type.value}`, val)
-        }
-      },
+    else {
+      const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
+      endpoint.value = svc.endpoint
     }
   })
 
@@ -64,28 +46,12 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // ==================== API Key 管理 ====================
 
   // API Key（按服务类型分别持久化）
-  const apiKey = customRef<string>((track, trigger) => {
-    let cachedKey = ``
+  const apiKey = ref<string>(DEFAULT_SERVICE_KEY)
 
-    // 异步加载初始值
-    store.get(`openai_image_key_${type.value}`).then((value) => {
-      cachedKey = value || DEFAULT_SERVICE_KEY
-    })
-
-    return {
-      get() {
-        track()
-        return cachedKey
-      },
-      set(val: string) {
-        cachedKey = val
-        trigger()
-
-        if (type.value !== DEFAULT_SERVICE_TYPE) {
-          store.set(`openai_image_key_${type.value}`, val)
-        }
-      },
-    }
+  // 异步加载初始值（延迟到微任务中，避免与 immediate watcher 竞争）
+  Promise.resolve().then(async () => {
+    const value = await store.get(`openai_image_key_${type.value}`)
+    apiKey.value = value || DEFAULT_SERVICE_KEY
   })
 
   // ==================== 响应式逻辑 ====================

@@ -34,28 +34,12 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
   // ==================== API Key 管理 ====================
 
   // API Key（按服务类型分别持久化）
-  const apiKey = customRef<string>((track, trigger) => {
-    let cachedKey = ``
+  const apiKey = ref<string>(DEFAULT_SERVICE_KEY)
 
-    // 异步加载初始值
-    store.get(`openai_key_${type.value}`).then((value) => {
-      cachedKey = value || DEFAULT_SERVICE_KEY
-    })
-
-    return {
-      get() {
-        track()
-        return cachedKey
-      },
-      set(val: string) {
-        cachedKey = val
-        trigger()
-
-        if (type.value !== DEFAULT_SERVICE_TYPE) {
-          store.set(`openai_key_${type.value}`, val)
-        }
-      },
-    }
+  // 异步加载初始值（延迟到微任务中，避免与 immediate watcher 竞争）
+  Promise.resolve().then(async () => {
+    const value = await store.get(`openai_key_${type.value}`)
+    apiKey.value = value || DEFAULT_SERVICE_KEY
   })
 
   // ==================== 响应式逻辑 ====================

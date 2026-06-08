@@ -149,6 +149,60 @@ function formatHighlightedCode(html: string, preserveNewlines = false): string {
 }
 
 /**
+ * 分割高亮后的 HTML 为多行，保持 span 上下文
+ * highlight.js 输出的 HTML 中，span 标签不会跨行，但换行符可能在 span 内部
+ * 此函数将 HTML 按换行符分割，并在每行前后添加必要的开闭标签
+ */
+function splitHighlightedHtmlByLines(html: string): string[] {
+  const lines: string[] = []
+  let currentLine = ``
+  const openTags: string[] = [] // 记录打开的标签，如 '<span class="...">'
+
+  let i = 0
+  while (i < html.length) {
+    if (html[i] === `<`) {
+      // 读取完整标签
+      let tag = `<`
+      i++
+      while (i < html.length && html[i] !== `>`) {
+        tag += html[i]
+        i++
+      }
+      if (i < html.length) {
+        tag += `>`
+        i++
+      }
+
+      currentLine += tag
+
+      // 跟踪标签的开闭状态
+      if (tag.startsWith(`</`)) {
+        // 关闭标签，从栈中移除
+        openTags.pop()
+      }
+      else if (tag.startsWith(`<`) && !tag.endsWith(`/>`)) {
+        // 打开标签，加入栈
+        openTags.push(tag)
+      }
+    }
+    else if (html[i] === `\n`) {
+      // 遇到换行，关闭当前行的所有标签，下一行重新打开
+      lines.push(currentLine)
+      currentLine = openTags.join(``)
+      i++
+    }
+    else {
+      currentLine += html[i]
+      i++
+    }
+  }
+
+  // 最后一行
+  lines.push(currentLine)
+  return lines
+}
+
+/**
  * 高亮代码并格式化（支持行号）
  * @param text 原始代码文本
  * @param language 语言名称
@@ -160,10 +214,11 @@ export function highlightAndFormatCode(text: string, language: string, hljs: any
   let highlighted = ``
 
   if (showLineNumber) {
-    const rawLines = text.replace(/\r\n/g, `\n`).split(`\n`)
+    // 先对整个代码块进行高亮，保持跨行上下文
+    const fullHighlighted = hljs.highlight(text, { language }).value
 
-    const highlightedLines = rawLines.map((lineRaw) => {
-      const lineHtml = hljs.highlight(lineRaw, { language }).value
+    // 分割为多行，保持 span 上下文
+    const highlightedLines = splitHighlightedHtmlByLines(fullHighlighted).map((lineHtml) => {
       const formatted = formatHighlightedCode(lineHtml, false)
       return formatted === `` ? `&nbsp;` : formatted
     })
