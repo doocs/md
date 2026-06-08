@@ -186,8 +186,10 @@ function splitHighlightedHtmlByLines(html: string): string[] {
       }
     }
     else if (html[i] === `\n`) {
-      // 遇到换行，关闭当前行的所有标签，下一行重新打开
-      lines.push(currentLine)
+      // 为当前行补齐所有闭合标签
+      const closingTags = `</span>`.repeat(openTags.length)
+      lines.push(currentLine + closingTags)
+      // 下一行重新打开这些标签
       currentLine = openTags.join(``)
       i++
     }
@@ -214,8 +216,10 @@ export function highlightAndFormatCode(text: string, language: string, hljs: any
   let highlighted = ``
 
   if (showLineNumber) {
-    // 先对整个代码块进行高亮，保持跨行上下文
-    const fullHighlighted = hljs.highlight(text, { language }).value
+    // 先归一化换行符，确保分割逻辑一致
+    const normalizedText = text.replace(/\r\n/g, `\n`)
+    // 对整个代码块进行高亮，保持跨行上下文
+    const fullHighlighted = hljs.highlight(normalizedText, { language }).value
 
     // 分割为多行，保持 span 上下文
     const highlightedLines = splitHighlightedHtmlByLines(fullHighlighted).map((lineHtml) => {

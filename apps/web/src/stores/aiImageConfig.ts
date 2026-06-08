@@ -29,14 +29,20 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // 服务端点（支持自定义服务）
   const endpoint = ref<string>(``)
 
-  // 异步加载初始端点（延迟到微任务中，避免与 immediate watcher 竞争）
+  // 异步加载初始端点（捕获 type 防止竞态覆盖）
   Promise.resolve().then(async () => {
-    if (type.value === `custom`) {
-      endpoint.value = await store.get(`openai_image_endpoint_${type.value}`) || ``
+    const capturedType = type.value
+    if (capturedType === `custom`) {
+      const value = await store.get(`openai_image_endpoint_${capturedType}`)
+      if (type.value === capturedType) {
+        endpoint.value = value || ``
+      }
     }
     else {
-      const svc = imageServiceOptions.find(s => s.value === type.value) ?? imageServiceOptions[0]
-      endpoint.value = svc.endpoint
+      const svc = imageServiceOptions.find(s => s.value === capturedType) ?? imageServiceOptions[0]
+      if (type.value === capturedType) {
+        endpoint.value = svc.endpoint
+      }
     }
   })
 
@@ -48,19 +54,31 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // API Key（按服务类型分别持久化）
   const apiKey = ref<string>(DEFAULT_SERVICE_KEY)
 
-  // 异步加载初始值（延迟到微任务中，避免与 immediate watcher 竞争）
+  // 异步加载初始值（捕获 type 防止竞态覆盖）
   Promise.resolve().then(async () => {
-    const value = await store.get(`openai_image_key_${type.value}`)
-    apiKey.value = value || DEFAULT_SERVICE_KEY
+    const capturedType = type.value
+    const value = await store.get(`openai_image_key_${capturedType}`)
+    if (type.value === capturedType) {
+      apiKey.value = value || DEFAULT_SERVICE_KEY
+    }
   })
 
   // ==================== 响应式逻辑 ====================
 
-  // 监听服务类型变化，自动同步模型
+  // 监听服务类型变化，自动同步端点、模型和 API Key
   watch(
     type,
     async (newType) => {
       const svc = imageServiceOptions.find(s => s.value === newType) ?? imageServiceOptions[0]
+
+      // 同步端点
+      if (newType === `custom`) {
+        const endpointValue = await store.get(`openai_image_endpoint_${newType}`)
+        endpoint.value = endpointValue || ``
+      }
+      else {
+        endpoint.value = svc.endpoint
+      }
 
       if (newType === `custom`) {
         // 自定义服务：从存储读取模型
@@ -77,6 +95,10 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
           await store.set(`openai_image_model_${newType}`, svc.models[0])
         }
       }
+
+      // 加载对应服务的 API Key
+      const keyValue = await store.get(`openai_image_key_${newType}`)
+      apiKey.value = keyValue || DEFAULT_SERVICE_KEY
     },
     { immediate: true }, // 首次加载时也执行
   )
@@ -84,6 +106,20 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
   // 监听模型变化，持久化存储
   watch(model, async (val) => {
     await store.set(`openai_image_model_${type.value}`, val)
+  })
+
+  // 监听 API Key 变化，持久化存储（仅非默认服务类型）
+  watch(apiKey, async (val) => {
+    if (type.value !== DEFAULT_SERVICE_TYPE) {
+      await store.set(`openai_image_key_${type.value}`, val)
+    }
+  })
+
+  // 监听端点变化，持久化存储（仅自定义服务类型）
+  watch(endpoint, async (val) => {
+    if (type.value === `custom`) {
+      await store.set(`openai_image_endpoint_${type.value}`, val)
+    }
   })
 
   // ==================== Actions ====================
