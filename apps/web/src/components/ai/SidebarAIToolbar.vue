@@ -11,7 +11,6 @@ defineProps<{
   showEditor: boolean
 }>()
 const SELECTION_HINT_TIMEOUT_MS = 3000
-const SELECTION_CHECK_INTERVAL_MS = 300
 
 const uiStore = useUIStore()
 const { aiDialogVisible, aiImageDialogVisible } = storeToRefs(uiStore)
@@ -31,7 +30,6 @@ const toolBoxVisible = ref(false)
 // 是否显示选中文本提示动画
 const showSelectionHint = ref(false)
 let selectionHintTimer: NodeJS.Timeout | null = null
-let selectionCheckInterval: NodeJS.Timeout | null = null
 let lastSelectedText = ``
 
 // 检查选中文本的函数
@@ -127,10 +125,11 @@ function openAIToolBox() {
 
 // 监听编辑区点击，自动收起工具栏
 onMounted(() => {
-  // 启动定时检查选中文本
-  selectionCheckInterval = setInterval(() => {
+  // 使用 selectionchange 事件替代轮询，检测选中文本变化
+  const handleSelectionChange = () => {
     checkSelectionAndUpdateHint()
-  }, SELECTION_CHECK_INTERVAL_MS) // 定期检查选中文本
+  }
+  document.addEventListener(`selectionchange`, handleSelectionChange)
 
   const handleInteraction = (e: Event) => {
     // 只有在展开状态才需要处理
@@ -176,17 +175,12 @@ onMounted(() => {
   onUnmounted(() => {
     document.removeEventListener(`click`, handleInteraction, true)
     document.removeEventListener(`touchstart`, handleInteraction, true)
+    document.removeEventListener(`selectionchange`, handleSelectionChange)
 
     // 清理定时器
     if (selectionHintTimer) {
       clearTimeout(selectionHintTimer)
       selectionHintTimer = null
-    }
-
-    // 清理轮询
-    if (selectionCheckInterval) {
-      clearInterval(selectionCheckInterval)
-      selectionCheckInterval = null
     }
   })
 })

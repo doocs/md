@@ -149,6 +149,62 @@ function formatHighlightedCode(html: string, preserveNewlines = false): string {
 }
 
 /**
+ * 分割高亮后的 HTML 为多行，保持 span 上下文
+ * highlight.js 输出的 HTML 中，span 标签不会跨行，但换行符可能在 span 内部
+ * 此函数将 HTML 按换行符分割，并在每行前后添加必要的开闭标签
+ */
+function splitHighlightedHtmlByLines(html: string): string[] {
+  const lines: string[] = []
+  let currentLine = ``
+  const openTags: string[] = [] // 记录打开的标签，如 '<span class="...">'
+
+  let i = 0
+  while (i < html.length) {
+    if (html[i] === `<`) {
+      // 读取完整标签
+      let tag = `<`
+      i++
+      while (i < html.length && html[i] !== `>`) {
+        tag += html[i]
+        i++
+      }
+      if (i < html.length) {
+        tag += `>`
+        i++
+      }
+
+      currentLine += tag
+
+      // 只跟踪 highlight.js 产出的 <span> 标签
+      if (tag.startsWith(`</span`)) {
+        // 关闭 span，从栈中移除
+        openTags.pop()
+      }
+      else if (tag.startsWith(`<span`)) {
+        // 打开 span，加入栈
+        openTags.push(tag)
+      }
+    }
+    else if (html[i] === `\n`) {
+      // 为当前行补齐所有闭合标签
+      const closingTags = `</span>`.repeat(openTags.length)
+      lines.push(currentLine + closingTags)
+      // 下一行重新打开这些标签
+      currentLine = openTags.join(``)
+      i++
+    }
+    else {
+      currentLine += html[i]
+      i++
+    }
+  }
+
+  // 最后一行
+  lines.push(currentLine)
+  return lines
+}
+
+/**
  * 高亮代码并格式化（支持行号）
  * @param text 原始代码文本
  * @param language 语言名称
@@ -160,10 +216,13 @@ export function highlightAndFormatCode(text: string, language: string, hljs: any
   let highlighted = ``
 
   if (showLineNumber) {
-    const rawLines = text.replace(/\r\n/g, `\n`).split(`\n`)
+    // 先归一化换行符，确保分割逻辑一致
+    const normalizedText = text.replace(/\r\n/g, `\n`)
+    // 对整个代码块进行高亮，保持跨行上下文
+    const fullHighlighted = hljs.highlight(normalizedText, { language }).value
 
-    const highlightedLines = rawLines.map((lineRaw) => {
-      const lineHtml = hljs.highlight(lineRaw, { language }).value
+    // 分割为多行，保持 span 上下文
+    const highlightedLines = splitHighlightedHtmlByLines(fullHighlighted).map((lineHtml) => {
       const formatted = formatHighlightedCode(lineHtml, false)
       return formatted === `` ? `&nbsp;` : formatted
     })

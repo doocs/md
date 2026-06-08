@@ -34,33 +34,20 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
   // ==================== API Key 管理 ====================
 
   // API Key（按服务类型分别持久化）
-  const apiKey = customRef<string>((track, trigger) => {
-    let cachedKey = ``
+  const apiKey = ref<string>(DEFAULT_SERVICE_KEY)
 
-    // 异步加载初始值
-    store.get(`openai_key_${type.value}`).then((value) => {
-      cachedKey = value || DEFAULT_SERVICE_KEY
-    })
-
-    return {
-      get() {
-        track()
-        return cachedKey
-      },
-      set(val: string) {
-        cachedKey = val
-        trigger()
-
-        if (type.value !== DEFAULT_SERVICE_TYPE) {
-          store.set(`openai_key_${type.value}`, val)
-        }
-      },
+  // 异步加载初始值（捕获 type 防止竞态覆盖）
+  Promise.resolve().then(async () => {
+    const capturedType = type.value
+    const value = await store.get(`openai_key_${capturedType}`)
+    if (type.value === capturedType) {
+      apiKey.value = value || DEFAULT_SERVICE_KEY
     }
   })
 
   // ==================== 响应式逻辑 ====================
 
-  // 监听服务类型变化，自动同步端点和模型
+  // 监听服务类型变化，自动同步端点、模型和 API Key
   watch(
     type,
     async (newType) => {
@@ -75,9 +62,20 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
 
       // 保存当前模型
       await store.set(`openai_model_${newType}`, model.value)
+
+      // 加载对应服务的 API Key
+      const keyValue = await store.get(`openai_key_${newType}`)
+      apiKey.value = keyValue || DEFAULT_SERVICE_KEY
     },
     { immediate: true }, // 首次加载时也执行
   )
+
+  // 监听 API Key 变化，持久化存储（仅非默认服务类型）
+  watch(apiKey, async (val) => {
+    if (type.value !== DEFAULT_SERVICE_TYPE) {
+      await store.set(`openai_key_${type.value}`, val)
+    }
+  })
 
   // 监听模型变化，持久化存储
   watch(model, async (val) => {
