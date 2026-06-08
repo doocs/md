@@ -169,9 +169,7 @@ const selectedGroup = computed(() => {
 
 function renderWithMathJax(latex: string, display: boolean): string {
   try {
-    // @ts-expect-error MathJax is a global variable
     window.MathJax.texReset()
-    // @ts-expect-error MathJax is a global variable
     const mjxContainer = window.MathJax.tex2svg(latex, { display })
     const svg = mjxContainer.firstChild as SVGElement
     svg.style.display = display ? `block` : `initial`

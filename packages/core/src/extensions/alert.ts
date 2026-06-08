@@ -24,9 +24,8 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   }
 
   // 提取公共的渲染逻辑
-  function renderAlert(token: any) {
+  function renderAlert(this: any, token: any) {
     const { meta, tokens = [] } = token
-    // @ts-expect-error marked renderer context has parser property
     const text = this.parser.parse(tokens)
     // 新主题系统：使用 CSS 选择器而非内联样式
     let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}">\n`

@@ -1,7 +1,7 @@
 {
   "name": "@md/shared",
   "type": "module",
-  "version": "1.0.0",
+  "version": "2.1.0",
   "private": true,
   "exports": {
     ".": "./src/index.ts",

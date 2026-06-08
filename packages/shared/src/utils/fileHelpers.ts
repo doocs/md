@@ -1,10 +1,7 @@
-// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
+/// <reference path="../types/prettier.d.ts" />
 import parserBabel from 'prettier/parser-babel'
-// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
 import parserMarkdown from 'prettier/parser-markdown'
-// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
 import parserPostcss from 'prettier/parser-postcss'
-// @ts-expect-error - prettier v2.8.8 doesn't have proper TypeScript declarations
 import * as prettier from 'prettier/standalone'
 
 /**

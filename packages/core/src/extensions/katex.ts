@@ -1,3 +1,4 @@
+/// <reference path="../mathjax.d.ts" />
 import type { MarkedExtension } from 'marked'
 import { escapeHtml } from '../utils/basicHelpers'
 
@@ -18,9 +19,7 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
   return (token: any) => {
     const display = token.displayMode ?? defaultDisplay
 
-    // @ts-expect-error MathJax is a global variable
     window.MathJax.texReset()
-    // @ts-expect-error MathJax is a global variable
     const mjxContainer = window.MathJax.tex2svg(token.text, { display })
     const svg = mjxContainer.firstChild
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
@@ -34,7 +33,7 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
       svg.style.display = `initial`
       svg.style.setProperty(`max-width`, `300vw`, `important`)
       svg.style.flexShrink = `0`
-      svg.style.width = width
+      svg.style.width = width || ``
     }
 
     if (!display) {
