@@ -74,8 +74,6 @@ export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, rend
   // 阅读时间及字数统计
   let html = baseHtml
   html = renderer.buildReadingTime(reading) + html
-  // 新主题系统：通过 CSS 去除第一行的 margin-top
-  // html = html.replace(/(style=".*?)"/, `$1;margin-top: 0"`)
   // 引用脚注
   html += renderer.buildFootnotes()
   // 附加的一些 style

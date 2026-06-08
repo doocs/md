@@ -26,7 +26,7 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
     svg.removeAttribute(`width`)
 
     // 行内公式对齐 https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
-    // 直接覆盖 style 会覆盖 MathJax 的样式，需要手动设置
+    // 直接覆盖 style 会覆盖 MathJax 的样式，需要逐个属性设置
     // svg.style = `max-width: 300vw !important; display: initial; flex-shrink: 0;`
 
     if (withStyle) {
