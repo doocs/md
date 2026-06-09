@@ -22,7 +22,7 @@ minimumReleaseAgeExclude:
   - '@aws-sdk/token-providers@3.1064.0'
   - '@aws-sdk/types@3.973.12'
   - '@aws-sdk/xml-builder@3.972.29'
-  - '@cloudflare/workers-types@4.20260608.1'
+  - '@cloudflare/workers-types@4.20260609.1'
   - '@vue/language-core@3.3.4'
   - semver@7.8.3
   - undici@8.4.1
