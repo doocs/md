@@ -89,15 +89,12 @@ If any critical information is missing, use `ask_followup_question` to ask the u
 
 ### Required Information
 
-1. **Related Issue Number**: Look for patterns like `#123`, `fixes #123`, or `closes #123` in commit messages
+1. **Related Issue Number** (optional): Look for patterns like `#123`, `fixes #123`, or `closes #123` in commit messages. If none is found, **omit the Related Issue section** from the PR body — do not use placeholders like `#XXXX`.
 2. **Description**: What problem does this solve? Why were these changes made?
 3. **Type of Change**: Bug fix, new feature, breaking change, refactor, cosmetic, documentation, or workflow
 4. **Test Procedure**: How was this tested? What could break?
 
-### Example clarifying question
-
-If the issue number is not found:
-> I couldn't find a related issue number in the commit messages or branch name. What GitHub issue does this PR address? (Enter the issue number, e.g., "123" or "N/A" for small fixes)
+Only ask about a related issue when the change clearly looks like it should close one (e.g. branch name `fix/issue-123`). For small or self-contained changes, skip the question and leave the section out.
 
 ## Git Best Practices
 
@@ -137,11 +134,11 @@ git push origin HEAD --force-with-lease
 
 ## Create the Pull Request
 
-**IMPORTANT**: Read and use the PR template at `.github/pull_request_template.md`. The PR body format must **strictly match** the template structure. Do not deviate from the template format.
+**IMPORTANT**: Read and use the PR template at `.github/pull_request_template.md` when it exists. The PR body format must **strictly match** the template structure. If the repo has no template, use the sections below.
 
-When filling out the template:
-- Replace `#XXXX` with the actual issue number, or keep as `#XXXX` if no issue exists (for small fixes)
-- Fill in all sections with relevant information gathered from commits and context
+When filling out the PR body:
+- Include **Related Issue** only when a real issue number is known (e.g. `Closes #123`). **Do not** add a Related Issue section or `#XXXX` placeholder when there is no linked issue.
+- Fill in all other sections with relevant information gathered from commits and context
 - Mark the appropriate "Type of Change" checkbox(es)
 - Complete the "Pre-flight Checklist" items that apply
 
@@ -205,7 +202,7 @@ Before finalizing, ensure:
 - [ ] Working directory is clean
 - [ ] All commits are pushed
 - [ ] Branch is up-to-date with base branch
-- [ ] Related issue number is identified, or placeholder is used
-- [ ] PR description follows the template exactly
+- [ ] Related Issue section included only when a real issue is linked (no `#XXXX` placeholder)
+- [ ] PR description follows the template or project conventions
 - [ ] Appropriate type of change is selected
 - [ ] Pre-flight checklist items are addressed
