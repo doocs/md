@@ -1,6 +1,6 @@
 ---
 name: git-commit
-description: 'Execute git commit with conventional commit message analysis, intelligent staging, and message generation. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Generating conventional commit messages from diff, (3) Interactive commit with optional type/scope/description overrides, (4) Intelligent file staging for logical grouping'
+description: 'Execute git commit with conventional commit message analysis, intelligent staging, and message generation. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Creating a feature branch when on main/master before committing, (3) Generating conventional commit messages from diff, (4) Interactive commit with optional type/scope/description overrides, (5) Intelligent file staging for logical grouping'
 license: MIT
 allowed-tools: Bash
 ---
@@ -64,7 +64,43 @@ git diff
 git status --porcelain
 ```
 
-### 2. Stage Files (if needed)
+From the diff, determine the commit **type** and a short **description** (needed for branch naming in step 2).
+
+### 2. Ensure Feature Branch
+
+If the current branch is `main` or `master`, create a feature branch **before** staging or committing.
+
+```bash
+git branch --show-current
+```
+
+**Branch naming** (see `AGENTS.md`, `CONTRIBUTING.md`):
+
+```
+<type>/<kebab-case-description>
+```
+
+| Commit type | Branch prefix | Example |
+| ----------- | ------------- | ------- |
+| `feat`      | `feat/`       | `feat/custom-shortcuts` |
+| `fix`       | `fix/`        | `fix/upload-timeout` |
+| `docs`      | `docs/`       | `docs/contributing-guide` |
+| other types | `<type>/`     | `chore/add-create-pr-skill` |
+
+Rules for `<kebab-case-description>`:
+
+- Lowercase, words separated by hyphens
+- Derived from the commit description (drop scope, articles, punctuation)
+- Keep it short (2–5 words), e.g. `add create pr skill` → `add-create-pr-skill`
+
+```bash
+# Example: chore commit about adding create-pr skill
+git checkout -b chore/add-create-pr-skill
+```
+
+Do **not** commit directly on `main` or `master`. If the user explicitly asks to commit on the default branch, confirm before proceeding.
+
+### 3. Stage Files (if needed)
 
 If nothing is staged or you want to group changes differently:
 
@@ -82,7 +118,7 @@ git add -p
 
 **Never commit secrets** (.env, credentials.json, private keys).
 
-### 3. Generate Commit Message
+### 4. Generate Commit Message
 
 Analyze the diff to determine:
 
@@ -90,7 +126,7 @@ Analyze the diff to determine:
 - **Scope**: What area/module is affected?
 - **Description**: One-line summary of what changed (present tense, imperative mood, <72 chars)
 
-### 4. Execute Commit
+### 5. Execute Commit
 
 ```bash
 # Single line
@@ -126,5 +162,5 @@ EOF
 ## Project Notes (doocs/md)
 
 - Commit messages must be in **English** (see `AGENTS.md`)
-- Branch naming: `feat/description`, `fix/description`
+- Branch naming: `feat/`, `fix/`, `docs/` (plus `<type>/` for other commit types); never commit on `main`/`master` — create a branch first (step 2)
 - Pre-commit runs `eslint --fix` via lint-staged; if the hook modifies files, fix and create a new commit instead of amending
