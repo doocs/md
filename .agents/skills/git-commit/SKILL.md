@@ -74,7 +74,7 @@ If the current branch is `main` or `master`, create a feature branch **before** 
 git branch --show-current
 ```
 
-**Branch naming** (see `AGENTS.md`, `CONTRIBUTING.md`):
+**Branch naming** — documented prefixes in `CONTRIBUTING.md`: `feat/`, `fix/`, `docs/`. For other commit types, use the commit type as prefix (e.g. `chore/`):
 
 ```
 <type>/<kebab-case-description>
@@ -85,7 +85,7 @@ git branch --show-current
 | `feat`      | `feat/`       | `feat/custom-shortcuts` |
 | `fix`       | `fix/`        | `fix/upload-timeout` |
 | `docs`      | `docs/`       | `docs/contributing-guide` |
-| other types | `<type>/`     | `chore/add-create-pr-skill` |
+| other types | `<type>/`     | `chore/add-create-pr-skill` (aligns with commit type; not listed in CONTRIBUTING.md) |
 
 Rules for `<kebab-case-description>`:
 
@@ -162,5 +162,5 @@ EOF
 ## Project Notes (doocs/md)
 
 - Commit messages must be in **English** (see `AGENTS.md`)
-- Branch naming: `feat/`, `fix/`, `docs/` (plus `<type>/` for other commit types); never commit on `main`/`master` — create a branch first (step 2)
+- Branch naming: `feat/`, `fix/`, `docs/` per `CONTRIBUTING.md`; for other commit types use `<type>/` prefix; never commit on `main`/`master` — create a branch first (step 2)
 - Pre-commit runs `eslint --fix` via lint-staged; if the hook modifies files, fix and create a new commit instead of amending

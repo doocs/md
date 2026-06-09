@@ -53,16 +53,23 @@ Ensure you're not on `main` or `master`. If so, ask the user to create or switch
 
 ### 2. Find the base branch
 
+Determine the default branch once and reuse it as `BASE_BRANCH` in all later commands:
+
 ```bash
-git remote show origin | grep "HEAD branch"
+BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+# Fallback when origin/HEAD is not configured
+if [ -z "$BASE_BRANCH" ]; then
+  BASE_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
+fi
 ```
 
-This is typically `main` or `master`.
+This is typically `main` or `master`, but may differ per repo.
 
 ### 3. Analyze recent commits relevant to this PR
 
 ```bash
-git log origin/main..HEAD --oneline --no-decorate
+git log "origin/${BASE_BRANCH}..HEAD" --oneline --no-decorate
 ```
 
 Review these commits to understand:
@@ -73,7 +80,7 @@ Review these commits to understand:
 ### 4. Review the diff
 
 ```bash
-git diff origin/main..HEAD --stat
+git diff "origin/${BASE_BRANCH}..HEAD" --stat
 ```
 
 This shows which files changed and helps identify the type of change.
@@ -82,10 +89,10 @@ This shows which files changed and helps identify the type of change.
 
 Before creating the PR, you need the following information. Check if it can be inferred from:
 - Commit messages
-- Branch name (e.g., `fix/issue-123`, `feature/new-login`)
+- Branch name (e.g., `fix/upload-timeout`, `feat/custom-shortcuts`)
 - Changed files and their content
 
-If any critical information is missing, use `ask_followup_question` to ask the user:
+If any critical information is missing, ask the user directly:
 
 ### Required Information
 
@@ -108,15 +115,15 @@ Before creating the PR, consider these best practices:
 
 ### Branch Management
 
-1. **Rebase on latest main** (if needed):
+1. **Rebase on latest base branch** (if needed):
    ```bash
    git fetch origin
-   git rebase origin/main
+   git rebase "origin/${BASE_BRANCH}"
    ```
 
 2. **Squash if appropriate**: If there are many small "WIP" commits, consider interactive rebase:
    ```bash
-   git rebase -i origin/main
+   git rebase -i "origin/${BASE_BRANCH}"
    ```
    Only suggest this if commits appear messy and the user is comfortable with rebasing.
 
@@ -134,7 +141,13 @@ git push origin HEAD --force-with-lease
 
 ## Create the Pull Request
 
-**IMPORTANT**: Read and use the PR template at `.github/pull_request_template.md` when it exists. The PR body format must **strictly match** the template structure. If the repo has no template, use the sections below.
+Use `CONTRIBUTING.md` (Pull Request 流程) as the source of truth for PR content. If `.github/pull_request_template.md` exists, follow that template exactly. Otherwise, use this structure:
+
+- **Summary** — what changed and why
+- **Related Issue** — only when a real issue is linked (e.g. `Closes #123`); omit entirely if none
+- **Type of Change** — check applicable boxes
+- **Test Procedure** — how you verified the change
+- **Pre-flight Checklist** — mark items that apply
 
 When filling out the PR body:
 - Include **Related Issue** only when a real issue number is known (e.g. `Closes #123`). **Do not** add a Related Issue section or `#XXXX` placeholder when there is no linked issue.
@@ -146,24 +159,18 @@ When filling out the PR body:
 
 **Use a temporary file for the PR body** to avoid shell escaping issues, newline problems, and other command-line flakiness:
 
-1. Write the PR body to a temporary file:
-   ```
-   /tmp/pr-body.md
-   ```
+1. Write the PR body to a temporary file (e.g. `$env:TEMP/pr-body.md` on Windows, `/tmp/pr-body.md` on macOS/Linux).
 
 2. Create the PR using the file:
    ```bash
-   gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base main
+   gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base "$BASE_BRANCH"
    ```
 
-3. Clean up the temporary file:
-   ```bash
-   rm /tmp/pr-body.md
-   ```
+3. Clean up the temporary file after the PR is created.
 
 For draft PRs:
 ```bash
-gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base main --draft
+gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base "$BASE_BRANCH" --draft
 ```
 
 **Why use a file?** Passing complex markdown with newlines, special characters, and checkboxes directly via `--body` is error-prone. The `--body-file` flag handles all content reliably.
@@ -182,7 +189,7 @@ After creating the PR:
 
 ### Common Issues
 
-1. **No commits ahead of main**: The branch has no changes to submit
+1. **No commits ahead of base branch**: The branch has no changes to submit
    - Ask if the user meant to work on a different branch
 
 2. **Branch not pushed**: Remote doesn't have the branch
