@@ -1,4 +1,5 @@
 import type { IOpts, RendererAPI } from '@md/shared/types'
+import type { FrontMatterData } from '@md/shared/types/front-matter'
 import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import type { RendererObject, Tokens } from 'marked'
 import readingTime from '@md/shared/utils/readingTime'
@@ -152,7 +153,7 @@ function renderDiffCode(text: string, baseLang: string): string {
 }
 
 interface ParseResult {
-  yamlData: Record<string, any>
+  yamlData: FrontMatterData
   markdownContent: string
   readingTime: ReadTimeResults
 }
@@ -160,13 +161,13 @@ interface ParseResult {
 function parseFrontMatterAndContent(markdownText: string): ParseResult {
   try {
     const parsed = frontMatter(markdownText)
-    const yamlData = parsed.attributes
+    const yamlData = parsed.attributes as FrontMatterData
     const markdownContent = parsed.body
 
     const readingTimeResult = readingTime(markdownContent)
 
     return {
-      yamlData: yamlData as Record<string, any>,
+      yamlData,
       markdownContent,
       readingTime: readingTimeResult,
     }

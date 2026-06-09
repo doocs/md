@@ -1,4 +1,6 @@
-import type { MarkedExtension } from 'marked'
+import type { MarkedExtension, Token } from 'marked'
+import type { MermaidToken } from '../types/marked-tokens'
+import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
 
@@ -69,7 +71,7 @@ export function markedMermaid(): MarkedExtension {
             }
           }
         },
-        renderer(token: any) {
+        renderer: asTextTokenRenderer((token: MermaidToken) => {
           const code = token.text
           const cacheKey = simpleHash(code)
 
@@ -84,12 +86,12 @@ export function markedMermaid(): MarkedExtension {
           renderMermaid(id, code, cacheKey)
 
           return `<!--mermaid-start--><div id="${id}" class="${className}">正在加载 Mermaid...</div><!--mermaid-end-->`
-        },
+        }),
       },
     ],
-    walkTokens(token: any) {
-      if (token.type === 'code' && token.lang === 'mermaid') {
-        token.type = 'mermaid'
+    walkTokens(token: Token) {
+      if (isCodeToken(token) && token.lang === 'mermaid') {
+        asDiagramToken<MermaidToken>(token, 'mermaid')
       }
     },
   }

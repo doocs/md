@@ -69,8 +69,11 @@ pnpm vscode package   # vsce 打包
 
 ```bash
 pnpm cli <cmd>        # 在 @doocs/md-cli 中执行命令
-pnpm mcp <cmd>        # 在 @md/mcp-server 中执行命令
+pnpm mcp <cmd>        # 在 @md/mcp-server 中执行命令（render_markdown 等 MCP 工具）
+pnpm mcp dev          # MCP Server 监听模式
 ```
+
+`@md/mcp-server` 通过 stdio 暴露 `render_markdown`、`list_themes`、`list_colors` 等工具，配置见 [packages/mcp-server/README.md](./packages/mcp-server/README.md) 与 `.vscode/mcp.json`。
 
 ## 架构
 
@@ -147,5 +150,6 @@ After clone, create the link once:
 | Skill        | When to use                                                                     |
 | ------------ | ------------------------------------------------------------------------------- |
 | `git-commit` | Commit changes with Conventional Commits (`/git-commit` or "commit my changes") |
+| `create-pr`  | Create a GitHub pull request (`/create-pr` or "open a PR")                      |
 
 Invoke manually: `/skill-name` in Cursor or Claude Code; OpenCode uses the `skill` tool.

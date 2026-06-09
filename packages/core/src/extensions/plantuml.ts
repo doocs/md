@@ -1,5 +1,7 @@
-import type { MarkedExtension, Tokens } from 'marked'
+import type { MarkedExtension, Token } from 'marked'
+import type { PlantUMLToken } from '../types/marked-tokens'
 import { deflateSync } from 'fflate'
+import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
 
@@ -153,7 +155,7 @@ function generatePlantUMLUrl(code: string, options: Required<PlantUMLOptions>): 
 /**
  * 渲染 PlantUML 图表
  */
-function renderPlantUMLDiagram(token: Tokens.Code, options: Required<PlantUMLOptions>, cacheKey: string): string {
+function renderPlantUMLDiagram(token: Pick<PlantUMLToken, 'text'>, options: Required<PlantUMLOptions>, cacheKey: string): string {
   const { text: code } = token
 
   // 检查代码是否包含 PlantUML 标记
@@ -280,7 +282,7 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
             }
           }
         },
-        renderer(token: any) {
+        renderer: asTextTokenRenderer((token: PlantUMLToken) => {
           const cacheKey = simpleHash(token.text)
 
           // 有缓存直接返回
@@ -290,13 +292,12 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
           }
 
           return renderPlantUMLDiagram(token, resolvedOptions, cacheKey)
-        },
+        }),
       },
     ],
-    walkTokens(token: any) {
-      // 处理现有的代码块，如果语言是 plantuml 就转换类型
-      if (token.type === `code` && token.lang === `plantuml`) {
-        token.type = `plantuml`
+    walkTokens(token: Token) {
+      if (isCodeToken(token) && token.lang === `plantuml`) {
+        asDiagramToken<PlantUMLToken>(token, `plantuml`)
       }
     },
   }

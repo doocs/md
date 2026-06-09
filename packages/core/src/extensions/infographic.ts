@@ -1,4 +1,6 @@
-import type { MarkedExtension } from 'marked'
+import type { MarkedExtension, Token } from 'marked'
+import type { InfographicToken } from '../types/marked-tokens'
+import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
 
@@ -115,7 +117,7 @@ export function markedInfographic(options?: InfographicOptionsSource): MarkedExt
             }
           }
         },
-        renderer(token: any) {
+        renderer: asTextTokenRenderer((token: InfographicToken) => {
           const code = token.text
           const currentOptions = resolveOptions(options)
           const cacheKey = simpleHash(`${code}-${currentOptions?.themeMode || 'light'}`)
@@ -131,12 +133,12 @@ export function markedInfographic(options?: InfographicOptionsSource): MarkedExt
           renderInfographic(id, code, cacheKey, currentOptions)
 
           return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div><!--infographic-end-->`
-        },
+        }),
       },
     ],
-    walkTokens(token: any) {
-      if (token.type === 'code' && token.lang === 'infographic') {
-        token.type = 'infographic'
+    walkTokens(token: Token) {
+      if (isCodeToken(token) && token.lang === 'infographic') {
+        asDiagramToken<InfographicToken>(token, 'infographic')
       }
     },
   }

@@ -1,4 +1,6 @@
 import type { MarkedExtension } from 'marked'
+import type { MarkupHighlightToken, MarkupUnderlineToken, MarkupWavylineToken } from '../types/marked-tokens'
+import { asTextTokenRenderer } from '../types/marked-tokens'
 
 /**
  * 扩展标记语法：
@@ -27,10 +29,9 @@ export function markedMarkup(): MarkedExtension {
             }
           }
         },
-        renderer(token: any) {
-          // 新主题系统：使用 class 而非内联样式
+        renderer: asTextTokenRenderer((token: MarkupHighlightToken) => {
           return `<span class="markup-highlight">${token.text}</span>`
-        },
+        }),
       },
 
       // 下划线语法 ++文本++
@@ -51,10 +52,9 @@ export function markedMarkup(): MarkedExtension {
             }
           }
         },
-        renderer(token: any) {
-          // 新主题系统：使用 class 而非内联样式
+        renderer: asTextTokenRenderer((token: MarkupUnderlineToken) => {
           return `<span class="markup-underline">${token.text}</span>`
-        },
+        }),
       },
 
       // 波浪线语法 ~文本~
@@ -62,11 +62,9 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_wavyline`,
         level: `inline`,
         start(src: string) {
-          // 查找单个 ~ 但不是连续的 ~~
           return src.match(/~(?!~)/)?.index
         },
         tokenizer(src: string) {
-          // 匹配 ~文本~ 但确保不是 ~~文本~~
           const rule = /^~([^~\n]+)~(?!~)/
           const match = rule.exec(src)
           if (match) {
@@ -77,10 +75,9 @@ export function markedMarkup(): MarkedExtension {
             }
           }
         },
-        renderer(token: any) {
-          // 新主题系统：使用 class 而非内联样式
+        renderer: asTextTokenRenderer((token: MarkupWavylineToken) => {
           return `<span class="markup-wavyline">${token.text}</span>`
-        },
+        }),
       },
     ],
   }
