@@ -27,7 +27,8 @@
     "type-check": "pnpm --filter @md/web exec vue-tsc --noEmit",
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector",
-    "utools:package": "node ./scripts/package-utools.mjs"
+    "utools:package": "node ./scripts/package-utools.mjs",
+    "link-claude-skills": "node ./scripts/link-claude-skills.mjs"
   },
   "dependencies": {
     "@codemirror/state": "6.6.0",
