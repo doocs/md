@@ -13,11 +13,19 @@ if [[ ! -d "$TARGET" ]]; then
 fi
 
 if [[ -L "$LINK" ]]; then
-  echo "Already linked: $LINK -> $(readlink "$LINK")"
-  exit 0
-fi
-
-if [[ -e "$LINK" ]]; then
+  link_target="$(readlink "$LINK")"
+  if [[ "$link_target" != /* ]]; then
+    link_resolved="$(cd "$(dirname "$LINK")" && cd "$link_target" && pwd)"
+  else
+    link_resolved="$(cd "$link_target" && pwd)"
+  fi
+  target_resolved="$(cd "$TARGET" && pwd)"
+  if [[ "$link_resolved" == "$target_resolved" ]]; then
+    echo "Already linked: $LINK -> $TARGET"
+    exit 0
+  fi
+  rm -rf "$LINK"
+elif [[ -e "$LINK" ]]; then
   rm -rf "$LINK"
 fi
 

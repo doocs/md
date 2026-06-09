@@ -113,7 +113,7 @@ pnpm mcp <cmd>        # 在 @md/mcp-server 中执行命令
 1. **Prettier 必须固定在 `2.8.8`** — 通过 `pnpm-workspace.yaml` 的 `overrides.prettier` 强制
 2. **Patch 文件：** 如果打了 patch 的依赖升级了，必须同步更新 `patches/` 中对应的 patch 文件：
    - `@codemirror/view` → `patches/@codemirror__view@6.43.0.patch`（导出 `MeasureRequest` 接口，修复 macOS 上 Alt+Shift 快捷键处理）
-   - `juice` → `patches/juice@11.1.1.patch`（为 `parseCSS` 返回值增加空值检查）
+   - `juice` → `patches/juice@12.1.0.patch`（为 `parseCSS` 返回值增加空值检查）
 3. 更新 `pnpm-workspace.yaml` 中的 `patchedDependencies` 以匹配新版本
 4. 运行 `pnpm install` 重新生成 `pnpm-lock.yaml`
 
