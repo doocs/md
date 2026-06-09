@@ -1,4 +1,4 @@
-import type { LanguageFn } from 'highlight.js'
+import type { HLJSApi, LanguageFn } from 'highlight.js'
 import bash from 'highlight.js/lib/languages/bash'
 import c from 'highlight.js/lib/languages/c'
 import cpp from 'highlight.js/lib/languages/cpp'
@@ -94,7 +94,7 @@ function grammarUrlFor(language: string): string {
  * @param language 语言名称
  * @param hljs highlight.js 实例
  */
-export async function loadAndRegisterLanguage(language: string, hljs: any): Promise<void> {
+export async function loadAndRegisterLanguage(language: string, hljs: HLJSApi): Promise<void> {
   // 如果已经注册，直接返回
   if (hljs.getLanguage(language)) {
     return
@@ -212,7 +212,7 @@ function splitHighlightedHtmlByLines(html: string): string[] {
  * @param showLineNumber 是否显示行号
  * @returns 格式化后的 HTML
  */
-export function highlightAndFormatCode(text: string, language: string, hljs: any, showLineNumber: boolean): string {
+export function highlightAndFormatCode(text: string, language: string, hljs: HLJSApi, showLineNumber: boolean): string {
   let highlighted = ``
 
   if (showLineNumber) {
@@ -247,7 +247,7 @@ export function highlightAndFormatCode(text: string, language: string, hljs: any
   return highlighted
 }
 
-export function highlightCodeBlock(codeBlock: Element, language: string, hljs: any): void {
+export function highlightCodeBlock(codeBlock: Element, language: string, hljs: HLJSApi): void {
   const rawCode = codeBlock.getAttribute(`data-raw-code`)
   const showLineNumber = codeBlock.getAttribute(`data-show-line-number`) === `true`
 
@@ -270,7 +270,7 @@ export function highlightCodeBlock(codeBlock: Element, language: string, hljs: a
  * @param hljs highlight.js 实例
  * @param container 容器元素（可选，默认为 document）
  */
-export function highlightPendingBlocks(hljs: any, container: Document | Element = document): void {
+export function highlightPendingBlocks(hljs: HLJSApi, container: Document | Element = document): void {
   const pendingBlocks = container.querySelectorAll(`code[data-language-pending]`)
 
   pendingBlocks.forEach((codeBlock) => {

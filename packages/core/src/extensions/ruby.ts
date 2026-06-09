@@ -1,4 +1,6 @@
 import type { MarkedExtension } from 'marked'
+import type { RubyToken } from '../types/marked-tokens'
+import { asTextTokenRenderer } from '../types/marked-tokens'
 
 /**
  * 注音/拼音标注扩展
@@ -54,7 +56,7 @@ export function markedRuby(): MarkedExtension {
 
           return undefined
         },
-        renderer(token: any) {
+        renderer: asTextTokenRenderer((token: RubyToken) => {
           const { text, ruby, format } = token
 
           // 检查是否有分隔符
@@ -118,7 +120,7 @@ export function markedRuby(): MarkedExtension {
           }
 
           return `<ruby data-text="${text}" data-ruby="${ruby}" data-format="${format}">${text}<rp>(</rp><rt>${ruby}</rt><rp>)</rp></ruby>`
-        },
+        }),
       },
     ],
   }

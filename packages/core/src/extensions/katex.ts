@@ -1,5 +1,7 @@
 /// <reference path="../mathjax.d.ts" />
 import type { MarkedExtension } from 'marked'
+import type { KatexRenderFn, KatexToken } from '../types/marked-tokens'
+import { asKatexRenderer } from '../types/marked-tokens'
 import { escapeHtml } from '../utils/basicHelpers'
 
 export interface MarkedKatexOptions {
@@ -15,8 +17,8 @@ const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
 const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 
-function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
-  return (token: any) => {
+function createRenderer(defaultDisplay: boolean, withStyle: boolean = true): KatexRenderFn {
+  return (token: KatexToken) => {
     const display = token.displayMode ?? defaultDisplay
 
     window.MathJax.texReset()
@@ -44,12 +46,12 @@ function createRenderer(defaultDisplay: boolean, withStyle: boolean = true) {
   }
 }
 
-function inlineKatex(options: MarkedKatexOptions | undefined, renderer: any) {
+function inlineKatex(options: MarkedKatexOptions | undefined, renderer: KatexRenderFn) {
   const nonStandard = options && options.nonStandard
   const ruleReg = nonStandard ? inlineRuleNonStandard : inlineRule
   return {
     name: `inlineKatex`,
-    level: `inline`,
+    level: `inline` as const,
     start(src: string) {
       let index
       let indexSrc = src
@@ -82,14 +84,14 @@ function inlineKatex(options: MarkedKatexOptions | undefined, renderer: any) {
         }
       }
     },
-    renderer,
+    renderer: asKatexRenderer(renderer),
   }
 }
 
-function blockKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
+function blockKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRenderFn) {
   return {
     name: `blockKatex`,
-    level: `block`,
+    level: `block` as const,
     tokenizer(src: string) {
       const match = src.match(blockRule)
       if (match) {
@@ -101,14 +103,14 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
         }
       }
     },
-    renderer,
+    renderer: asKatexRenderer(renderer),
   }
 }
 
-function inlineLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
+function inlineLatexKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRenderFn) {
   return {
     name: `inlineLatexKatex`,
-    level: `inline`,
+    level: `inline` as const,
     start(src: string) {
       const index = src.indexOf(`\\(`)
       return index !== -1 ? index : undefined
@@ -124,14 +126,14 @@ function inlineLatexKatex(_options: MarkedKatexOptions | undefined, renderer: an
         }
       }
     },
-    renderer,
+    renderer: asKatexRenderer(renderer),
   }
 }
 
-function blockLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any) {
+function blockLatexKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRenderFn) {
   return {
     name: `blockLatexKatex`,
-    level: `block`,
+    level: `block` as const,
     start(src: string) {
       const index = src.indexOf(`\\[`)
       return index !== -1 ? index : undefined
@@ -147,7 +149,7 @@ function blockLatexKatex(_options: MarkedKatexOptions | undefined, renderer: any
         }
       }
     },
-    renderer,
+    renderer: asKatexRenderer(renderer),
   }
 }
 

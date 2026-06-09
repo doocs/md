@@ -1,5 +1,7 @@
 import type { AlertOptions, AlertVariantItem } from '@md/shared/types'
 import type { MarkedExtension, Tokens } from 'marked'
+import type { AlertRendererFn, AlertRendererThis, AlertToken } from '../types/marked-tokens'
+import { asAlertRenderer } from '../types/marked-tokens'
 import { ucfirst } from '../utils'
 
 /**
@@ -24,7 +26,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   }
 
   // 提取公共的渲染逻辑
-  function renderAlert(this: any, token: any) {
+  const renderAlert: AlertRendererFn = function (this: AlertRendererThis, token: AlertToken) {
     const { meta, tokens = [] } = token
     const text = this.parser.parse(tokens)
     // 新主题系统：使用 CSS 选择器而非内联样式
@@ -87,7 +89,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
       {
         name: `alert`,
         level: `block`,
-        renderer: renderAlert,
+        renderer: asAlertRenderer(renderAlert),
       },
       {
         name: `alertContainer`,
@@ -114,7 +116,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
             }
           }
         },
-        renderer: renderAlert,
+        renderer: asAlertRenderer(renderAlert),
       },
     ],
   }

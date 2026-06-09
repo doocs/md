@@ -6,8 +6,8 @@ Exposes the `doocs/md` markdown rendering engine and AI service configuration to
 
 ## Prerequisites
 
-- **Node.js** ≥ 18
-- **pnpm** ≥ 9 (for monorepo workspace)
+- **Node.js** ≥ 22.22.2（与 monorepo 根目录 `.nvmrc` 一致）
+- **pnpm** ≥ 9（monorepo workspace）
 - Clone the monorepo and install dependencies:
 
 ```bash
@@ -26,10 +26,12 @@ Convert Markdown text to styled HTML using the full doocs/md rendering pipeline.
 | ------------------ | ---------------------------------- | ----------- | ----------------------------------------------- |
 | `markdown`         | `string`                           | —           | Markdown source text                            |
 | `theme`            | `"default" \| "grace" \| "simple"` | `"default"` | Visual theme (经典 / 优雅 / 简洁)               |
+| `primaryColor`     | `string (hex)`                     | `"#0F4C81"` | Primary accent color (see `list_colors`)        |
 | `isMacCodeBlock`   | `boolean`                          | `false`     | Render code blocks with a macOS-style title bar |
 | `isShowLineNumber` | `boolean`                          | `false`     | Show line numbers in code blocks                |
 | `citeStatus`       | `boolean`                          | `false`     | Convert links to footnote-style citations       |
 | `countStatus`      | `boolean`                          | `false`     | Prepend a reading-time estimate                 |
+| `themeMode`        | `"light" \| "dark"`                | `"light"`   | Color mode for diagram extensions               |
 
 Returns `{ html, frontMatter, readingTime: { words, minutes } }`.
 
@@ -38,6 +40,7 @@ Returns `{ html, frontMatter, readingTime: { words, minutes } }`.
 | Tool                   | Description                                                                       |
 | ---------------------- | --------------------------------------------------------------------------------- |
 | `list_themes`          | List all available visual themes with labels and authors                          |
+| `list_colors`          | List all available primary accent colors                                          |
 | `list_ai_services`     | List all built-in AI service providers with endpoints and models                  |
 | `explain_extensions`   | Describe every Markdown extension beyond CommonMark (KaTeX, Mermaid, PlantUML, …) |
 | `get_renderer_options` | Describe all renderer configuration options                                       |
