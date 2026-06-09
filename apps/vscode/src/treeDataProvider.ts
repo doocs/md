@@ -11,6 +11,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
   private currentFontFamily: string
   private countStatus: boolean
   private isMacCodeBlock: boolean
+  private citeStatus: boolean
   private context: vscode.ExtensionContext
 
   constructor(context: vscode.ExtensionContext) {
@@ -21,6 +22,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this.currentFontFamily = this.context.workspaceState.get(`markdownPreview.fontFamily`, fontFamilyOptions[0].value)
     this.countStatus = this.context.workspaceState.get(`markdownPreview.countStatus`, false)
     this.isMacCodeBlock = this.context.workspaceState.get(`markdownPreview.isMacCodeBlock`, false)
+    this.citeStatus = this.context.workspaceState.get(`markdownPreview.citeStatus`, false)
   }
 
   getTreeItem(element: vscode.TreeItem): vscode.TreeItem {
@@ -39,12 +41,22 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
     this._onDidChangeTreeData.fire(undefined)
   }
 
+  updateCiteStatus(status: boolean): void {
+    this.citeStatus = status
+    this.context.workspaceState.update(`markdownPreview.citeStatus`, status)
+    this._onDidChangeTreeData.fire(undefined)
+  }
+
   getCurrentMacCodeBlock(): boolean {
     return this.isMacCodeBlock
   }
 
   getCurrentCountStatus(): boolean {
     return this.countStatus
+  }
+
+  getCurrentCiteStatus(): boolean {
+    return this.citeStatus
   }
 
   getChildren(element?: vscode.TreeItem): Thenable<vscode.TreeItem[]> {
@@ -56,6 +68,7 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
         new vscode.TreeItem(`主题色`, vscode.TreeItemCollapsibleState.Expanded),
         new vscode.TreeItem(`计数状态`, vscode.TreeItemCollapsibleState.None),
         new vscode.TreeItem(`Mac代码块`, vscode.TreeItemCollapsibleState.None),
+        new vscode.TreeItem(`微信外链转引用`, vscode.TreeItemCollapsibleState.None),
       ].map((item) => {
         if (item.label === `计数状态`) {
           item.command = {
@@ -74,6 +87,16 @@ export class MarkdownTreeDataProvider implements vscode.TreeDataProvider<vscode.
             arguments: [],
           }
           if (this.isMacCodeBlock) {
+            item.iconPath = new vscode.ThemeIcon(`check`)
+          }
+        }
+        else if (item.label === `微信外链转引用`) {
+          item.command = {
+            command: `markdown.toggleCiteStatus`,
+            title: `Toggle Cite Status`,
+            arguments: [],
+          }
+          if (this.citeStatus) {
             item.iconPath = new vscode.ThemeIcon(`check`)
           }
         }

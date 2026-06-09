@@ -58,6 +58,11 @@
         "command": "markdown.toggleMacCodeBlock",
         "title": "Toggle Mac Code Block",
         "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.toggleCiteStatus",
+        "title": "Toggle Cite Status",
+        "category": "Markdown Preview"
       }
     ],
     "menus": {

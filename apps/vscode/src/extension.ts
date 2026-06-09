@@ -36,6 +36,9 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(`markdown.toggleMacCodeBlock`, () => {
       treeDataProvider.updateMacCodeBlock(!treeDataProvider.getCurrentMacCodeBlock())
     }),
+    vscode.commands.registerCommand(`markdown.toggleCiteStatus`, () => {
+      treeDataProvider.updateCiteStatus(!treeDataProvider.getCurrentCiteStatus())
+    }),
   )
 
   const disposable = vscode.commands.registerCommand(`markdown.preview`, () => {
@@ -90,6 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
       const renderer = initRenderer({
         countStatus: treeDataProvider.getCurrentCountStatus(),
         isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
+        citeStatus: treeDataProvider.getCurrentCiteStatus(),
         legend: `none`,
       })
 
