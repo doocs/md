@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookOpen, Code2, FileText, FunctionSquare, PieChart } from 'lucide-vue-next'
+import { BookOpen, Code2, FileText, FunctionSquare, PieChart } from '@lucide/vue'
 
 const props = defineProps({
   visible: {

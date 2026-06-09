@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { Info } from '@lucide/vue'
 import { serviceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
-import { Info } from 'lucide-vue-next'
 import { PasswordInput } from '@/components/ui/password-input'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
 import useAIConfigStore from '@/stores/aiConfig'

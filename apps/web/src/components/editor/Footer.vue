@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
-import { ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from 'lucide-vue-next'
+import { ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Eye, FileText, Keyboard, ListTree, Monitor, Moon, PenLine, Pilcrow, Search, Smartphone, Sun, Type } from '@lucide/vue'
 import {
   Popover,
   PopoverContent,

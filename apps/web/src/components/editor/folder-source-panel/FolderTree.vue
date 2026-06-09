@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { FileSystemNode } from '@/stores/folderSource'
-import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from 'lucide-vue-next'
+import { ChevronDown, ChevronRight, File, Folder, FolderOpen } from '@lucide/vue'
 
 interface Props {
   nodes: FileSystemNode[]

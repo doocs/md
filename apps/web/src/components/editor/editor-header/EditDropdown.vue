@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
-import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
-import { redoAction, undoAction } from '@md/shared/editor'
 import {
   ClipboardPaste,
   Copy,
@@ -10,7 +8,9 @@ import {
   Search,
   Undo2,
   WandSparkles,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
+import { redoAction, undoAction } from '@md/shared/editor'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'

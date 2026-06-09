@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Template } from '@md/shared'
-import { Calendar, Clock, FileDown, FileInput, FileText, Package, Pencil, Plus, Search, Trash2 } from 'lucide-vue-next'
+import { Calendar, Clock, FileDown, FileInput, FileText, Package, Pencil, Plus, Search, Trash2 } from '@lucide/vue'
 import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'

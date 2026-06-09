@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BookText, Heart, HelpCircle, MessageSquare, Tag } from 'lucide-vue-next'
+import { BookText, Heart, HelpCircle, MessageSquare, Tag } from '@lucide/vue'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean

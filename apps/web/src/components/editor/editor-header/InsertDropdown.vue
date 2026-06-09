@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Blocks, Image, Table } from 'lucide-vue-next'
+import { Blocks, Image, Table } from '@lucide/vue'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 import { normalizeFormulaInput } from '@/utils/formula'

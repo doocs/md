@@ -2,7 +2,7 @@
 import type { DecorationSet } from '@codemirror/view'
 import { StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
-import { CaseSensitive, ChevronDown, ChevronRight, ChevronUp, Regex, Replace, ReplaceAll, WholeWord, X } from 'lucide-vue-next'
+import { CaseSensitive, ChevronDown, ChevronRight, ChevronUp, Regex, Replace, ReplaceAll, WholeWord, X } from '@lucide/vue'
 
 const props = defineProps<{
   editorView: EditorView

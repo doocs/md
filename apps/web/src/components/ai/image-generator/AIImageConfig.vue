@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { Info } from '@lucide/vue'
 import { imageServiceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
-import { Info } from 'lucide-vue-next'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'

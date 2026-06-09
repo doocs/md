@@ -1,5 +1,4 @@
 <script setup lang='ts'>
-import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import {
   Blocks,
   Bold,
@@ -28,7 +27,8 @@ import {
   Table,
   Trash2,
   Wand2,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import { useEditorFormat } from '@/composables/useEditorFormat'
 import { useConfirmStore } from '@/stores/confirm'

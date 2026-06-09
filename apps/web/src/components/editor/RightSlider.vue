@@ -5,6 +5,7 @@ import type {
   themeMap,
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
+import { X } from '@lucide/vue'
 import {
   codeBlockThemeOptions,
   colorOptions,
@@ -15,7 +16,6 @@ import {
   legendOptions,
   themeOptions,
 } from '@md/shared/configs'
-import { X } from 'lucide-vue-next'
 import PickColors from 'vue-pick-colors'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { ArrowUpFromLine } from '@lucide/vue'
 import { throttle } from 'es-toolkit'
-import { ArrowUpFromLine } from 'lucide-vue-next'
 
 type Target = HTMLElement | Window | null
 

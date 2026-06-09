@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Upload } from 'lucide-vue-next'
+import { Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Upload } from '@lucide/vue'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'

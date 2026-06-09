@@ -9,7 +9,7 @@ import {
   Settings,
   Trash2,
   X,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import {

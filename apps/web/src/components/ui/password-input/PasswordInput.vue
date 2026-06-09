@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { HTMLAttributes } from 'vue'
+import { Eye, EyeOff } from '@lucide/vue'
 import { useVModel } from '@vueuse/core'
-import { Eye, EyeOff } from 'lucide-vue-next'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<{

@@ -11,7 +11,7 @@ import {
   Package,
   PlusSquare,
   Trash2,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { usePostStore } from '@/stores/post'
 import { useTemplateStore } from '@/stores/template'
 import { useUIStore } from '@/stores/ui'

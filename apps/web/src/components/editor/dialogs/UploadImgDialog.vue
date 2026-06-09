@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { GenericObject } from 'vee-validate'
+import { UploadCloud } from '@lucide/vue'
 import { toTypedSchema } from '@vee-validate/yup'
-import { UploadCloud } from 'lucide-vue-next'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useUIStore } from '@/stores/ui'

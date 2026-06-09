@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@md/shared'
 import type { MpAccount } from '@/stores/mpAccounts'
+import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
 import { escapeHtml, previewComponent } from '@md/core'
 import DOMPurify from 'isomorphic-dompurify'
-import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from 'lucide-vue-next'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
