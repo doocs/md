@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { MenubarRadioItemEmits, MenubarRadioItemProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-import { Circle } from 'lucide-vue-next'
+import { Circle } from '@lucide/vue'
 import {
   MenubarItemIndicator,
   MenubarRadioItem,

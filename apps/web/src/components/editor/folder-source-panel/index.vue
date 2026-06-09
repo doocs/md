@@ -7,7 +7,7 @@ import {
   Loader2,
   RefreshCw,
   X,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
 import { useFolderFileSync } from '@/composables/useFolderFileSync'
 import { useFolderSourceStore } from '@/stores/folderSource'
 import { usePostStore } from '@/stores/post'

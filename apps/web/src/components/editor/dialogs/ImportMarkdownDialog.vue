@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { FileText, Globe, Loader2, Upload } from 'lucide-vue-next'
+import { FileText, Globe, Loader2, Upload } from '@lucide/vue'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 

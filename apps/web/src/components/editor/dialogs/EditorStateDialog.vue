@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { Check, Copy, Expand, UploadCloud } from '@lucide/vue'
 import { storeLabels } from '@md/shared/configs'
-import { Check, Copy, Expand, UploadCloud } from 'lucide-vue-next'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'

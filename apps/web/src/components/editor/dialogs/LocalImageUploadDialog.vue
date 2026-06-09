@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Check, FileImage, FolderOpen, Loader2, X } from 'lucide-vue-next'
+import { Check, FileImage, FolderOpen, Loader2, X } from '@lucide/vue'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

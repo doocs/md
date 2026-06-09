@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Copy, Loader2, Menu, Palette } from 'lucide-vue-next'
+import { Copy, Loader2, Menu, Palette } from '@lucide/vue'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'

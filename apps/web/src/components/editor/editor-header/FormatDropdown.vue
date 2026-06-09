@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import type { EditorView } from '@codemirror/view'
 import type { Format } from 'vue-pick-colors'
-import { headingLevels as baseHeadingLevels, ctrlKey, ctrlSign } from '@md/shared/configs'
-import {
-  formatColor,
-} from '@md/shared/editor'
 import {
   Bold,
   Clock,
@@ -22,7 +18,11 @@ import {
   ListOrdered,
   Paintbrush,
   Strikethrough,
-} from 'lucide-vue-next'
+} from '@lucide/vue'
+import { headingLevels as baseHeadingLevels, ctrlKey, ctrlSign } from '@md/shared/configs'
+import {
+  formatColor,
+} from '@md/shared/editor'
 import PickColors from 'vue-pick-colors'
 import { useEditorFormat } from '@/composables/useEditorFormat'
 import { useEditorStore } from '@/stores/editor'
