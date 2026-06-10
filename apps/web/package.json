@@ -29,8 +29,8 @@
     "package:extension": "pnpm --prefix ./src/extension run package"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1064.0",
-    "@aws-sdk/s3-request-presigner": "^3.1064.0",
+    "@aws-sdk/client-s3": "^3.1065.0",
+    "@aws-sdk/s3-request-presigner": "^3.1065.0",
     "@exercism/highlightjs-gdscript": "^0.0.1",
     "@lucide/vue": "^1.17.0",
     "@md/core": "workspace:*",
@@ -65,8 +65,8 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.40.0",
-    "@cloudflare/workers-types": "^4.20260609.1",
+    "@cloudflare/vite-plugin": "1.40.1",
+    "@cloudflare/workers-types": "^4.20260610.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.0",
     "@tailwindcss/vite": "^4.3.0",
@@ -89,7 +89,7 @@
     "vite-plugin-radar": "^0.10.1",
     "vite-plugin-vue-devtools": "^8.1.2",
     "vue-tsc": "^3.3.4",
-    "wrangler": "^4.98.0",
+    "wrangler": "^4.99.0",
     "wxt": "^0.20.26"
   }
 }

@@ -22,7 +22,7 @@ minimumReleaseAgeExclude:
   - '@aws-sdk/token-providers@3.1064.0'
   - '@aws-sdk/types@3.973.12'
   - '@aws-sdk/xml-builder@3.972.29'
-  - '@cloudflare/workers-types@4.20260609.1'
+  - '@cloudflare/workers-types@4.20260610.1'
   - '@vue/language-core@3.3.4'
   - semver@7.8.3
   - undici@8.4.1
@@ -36,7 +36,7 @@ packages:
   - packages/*
 
 overrides:
-  '@codemirror/view': 6.43.0
+  '@codemirror/view': 6.43.1
   '@webext-core/isolated-element': 1.1.4
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
@@ -64,6 +64,7 @@ overrides:
   querystring: npm:qs@^6.15.2
   semver: ^7.8.3
   serialize-javascript@<7.0.3: ^7.0.5
+  shell-quote: ^1.8.4
   source-map@0.8.0-beta.0: 0.7.4
   tinyexec: 1.2.4
   tmp: '>=0.2.6'
@@ -87,5 +88,5 @@ allowBuilds:
   workerd: true
 
 patchedDependencies:
-  '@codemirror/view@6.43.0': patches/@codemirror__view@6.43.0.patch
+  '@codemirror/view@6.43.1': patches/@codemirror__view@6.43.1.patch
   juice@12.1.0: patches/juice@12.1.0.patch
