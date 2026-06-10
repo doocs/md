@@ -92,7 +92,7 @@
   "scripts": {
     "vscode:prepublish": "npm run build",
     "compile": "webpack && node scripts/copy-runtime-deps.mjs",
-    "watch": "webpack --watch",
+    "watch": "node scripts/copy-runtime-deps.mjs && webpack --watch",
     "build": "webpack --mode production --devtool hidden-source-map && node scripts/copy-runtime-deps.mjs",
     "package": "vsce package --no-dependencies --allow-package-secrets github",
     "test": "npm run build && node --import tsx/esm scripts/smoke-test.mjs && node scripts/verify-preview.mjs && node scripts/verify-activate.mjs && node scripts/verify-vsix-deps.mjs"
@@ -102,7 +102,6 @@
     "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
     "isomorphic-dompurify": "^3.16.0",
-    "jsdom": "^29.1.1",
     "postcss": "^8.5.15",
     "ts-loader": "^9.6.0",
     "tsconfig-paths-webpack-plugin": "^4.2.0"

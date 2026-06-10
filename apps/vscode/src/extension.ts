@@ -29,9 +29,9 @@ function updateMarkdownFileContext(editor: vscode.TextEditor | undefined) {
 export function activate(context: vscode.ExtensionContext) {
   // Register sidebar FIRST — must complete before any heavy renderer import.
   const treeDataProvider = new MarkdownTreeDataProvider(context)
-  vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider)
 
   context.subscriptions.push(
+    vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider),
     treeDataProvider.onDidChangeTreeData(() => {
       refreshActivePanel?.()
     }),
