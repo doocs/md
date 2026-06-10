@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, X } from '@lucide/vue'
+import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Download, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, Upload, X } from '@lucide/vue'
 import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
@@ -10,6 +10,7 @@ import { store } from '@/utils/storage'
 const confirmStore = useConfirmStore()
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
+const { toggleShowImportMdDialog } = uiStore
 
 const postStore = usePostStore()
 const { posts } = storeToRefs(postStore)
@@ -452,6 +453,24 @@ async function exportSelected() {
   selectedPostIds.value = []
 }
 
+/* ============ 批量导入 / 导出全部 ============ */
+function openImportDialog() {
+  toggleShowImportMdDialog(true)
+}
+
+async function exportAll() {
+  if (!posts.value.length)
+    return
+  const toExport = posts.value.map(p => ({ title: p.title, content: p.content }))
+  if (toExport.length === 1) {
+    downloadMD(toExport[0].content, toExport[0].title)
+  }
+  else {
+    await exportPostsAsZip(toExport)
+  }
+  toast.success(`已导出 ${toExport.length} 篇内容`)
+}
+
 function openBatchDelConfirm() {
   const n = selectedPostIds.value.length
   const description = n === 1
@@ -628,6 +647,15 @@ function handleDragEnd() {
           <CheckSquare class="size-4" />
         </button>
 
+        <!-- 批量导入 -->
+        <button
+          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          title="导入 Markdown（支持批量）"
+          @click="openImportDialog"
+        >
+          <Upload class="size-4" />
+        </button>
+
         <!-- 新增 -->
         <button
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
@@ -667,6 +695,15 @@ function handleDragEnd() {
                 创建时间（旧→新）
               </DropdownMenuRadioItem>
             </DropdownMenuRadioGroup>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="openImportDialog">
+              <Upload class="mr-2 size-4" />
+              批量导入
+            </DropdownMenuItem>
+            <DropdownMenuItem :disabled="!posts.length" @click="exportAll">
+              <Download class="mr-2 size-4" />
+              导出全部
+            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem @click="postStore.collapseAllPosts">
               <ChevronsDownUp class="mr-2 size-4" />
