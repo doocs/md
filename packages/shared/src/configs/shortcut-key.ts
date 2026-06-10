@@ -1,4 +1,4 @@
-const isMac = /Mac/i.test(navigator.userAgent)
+const isMac = typeof navigator !== `undefined` && /Mac/i.test(navigator.userAgent)
 
 export const ctrlKey = `Mod`
 export const altKey = `Alt`

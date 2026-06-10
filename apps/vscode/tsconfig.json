@@ -7,7 +7,7 @@
     "paths": {
       "@/*": ["../*"]
     },
-    "types": ["vscode"],
+    "types": ["vscode", "node"],
     "strict": true,
     "sourceMap": true,
     "esModuleInterop": true

@@ -9,19 +9,23 @@ const currentDir = import.meta.dirname
 /** @typedef {import('webpack').Configuration} WebpackConfig */
 
 /** @type WebpackConfig */
-
 export default function config() {
   return {
     target: `node`,
     mode: `none`,
-    entry: `./src/extension.ts`,
+    entry: {
+      extension: `./src/extension.ts`,
+      previewRenderer: `./src/previewRenderer.ts`,
+    },
     output: {
       path: path.resolve(currentDir, `dist`),
-      filename: `extension.js`,
+      filename: `[name].js`,
       libraryTarget: `commonjs2`,
     },
     externals: {
-      vscode: `commonjs vscode`,
+      'vscode': `commonjs vscode`,
+      // Shipped in runtime/node_modules for --no-dependencies vsix packaging.
+      'isomorphic-dompurify': `commonjs ../runtime/node_modules/isomorphic-dompurify`,
     },
     resolve: {
       extensions: [`.ts`, `.js`],
@@ -56,6 +60,8 @@ export default function config() {
     optimization: {
       usedExports: true,
       sideEffects: true,
+      splitChunks: false,
+      runtimeChunk: false,
     },
   }
 }
