@@ -73,7 +73,7 @@ pnpm mcp <cmd>        # 在 @md/mcp-server 中执行命令（render_markdown 等
 pnpm mcp dev          # MCP Server 监听模式
 ```
 
-`@md/mcp-server` 通过 stdio 暴露 `render_markdown`、`list_themes`、`list_colors` 等工具，配置见 [packages/mcp-server/README.md](./packages/mcp-server/README.md) 与 `.vscode/mcp.json`。
+`@md/mcp-server` 通过 stdio 暴露 `render_markdown`、`list_themes`、`list_colors` 等工具，配置见 [packages/mcp-server/README.md](./packages/mcp-server/README.md)、[`.vscode/mcp.json`](./.vscode/mcp.json) 与 [`.cursor/mcp.json`](./.cursor/mcp.json)。
 
 ## 架构
 

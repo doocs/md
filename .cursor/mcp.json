@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "md": {
+      "command": "node",
+      "args": [
+        "--import",
+        "tsx/esm",
+        "${workspaceFolder}/packages/mcp-server/run.mjs"
+      ],
+      "cwd": "${workspaceFolder}/packages/mcp-server"
+    }
+  }
+}
