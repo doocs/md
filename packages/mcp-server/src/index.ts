@@ -96,12 +96,11 @@ export const renderMarkdownInputSchema = {
     .optional()
     .describe(`Per-level heading style presets. Use list_heading_styles for options.`),
   codeBlockTheme: z
-    .string()
-    .url()
+    .enum(codeBlockThemeOptions.map(option => option.value) as [string, ...string[]])
     .optional()
     .describe(
-      `URL of a highlight.js theme stylesheet for code blocks. `
-      + `Use list_code_block_themes for presets. Defaults to the GitHub theme.`,
+      `Preset highlight.js theme URL for code blocks. `
+      + `Use list_code_block_themes for allowed values. Defaults to the GitHub theme.`,
     ),
   customCSS: z
     .string()
@@ -344,7 +343,7 @@ server.registerTool(
       { name: `isUseIndent`, type: `boolean`, default: false, description: `Paragraph first-line indent.` },
       { name: `isUseJustify`, type: `boolean`, default: false, description: `Justified paragraph text.` },
       { name: `headingStyles`, type: `object`, default: `{}`, description: `Per-level heading styles. See list_heading_styles.` },
-      { name: `codeBlockTheme`, type: `string (url)`, default: `github.min.css`, description: `highlight.js theme URL.` },
+      { name: `codeBlockTheme`, type: `preset url enum`, default: `github.min.css`, description: `highlight.js preset from list_code_block_themes.` },
       { name: `customCSS`, type: `string`, default: `''`, description: `User custom CSS appended last.` },
     ],
   }),

@@ -8,9 +8,11 @@ import { processCSS } from '@md/core/theme/cssProcessor'
 import { generateCSSVariables, generateHeadingStyles } from '@md/core/theme/cssVariables'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import {
+  assertAllowedCodeBlockThemeUrl,
   defaultRenderOptions,
-
 } from './config-options'
+
+const CODE_BLOCK_FETCH_TIMEOUT_MS = 10_000
 
 export interface RenderMarkdownInput {
   markdown: string
@@ -33,8 +35,20 @@ export interface RenderMarkdownInput {
 
 const themeDir = path.resolve(import.meta.dirname, `../../shared/src/configs/theme-css`)
 
+function escapeStyleContent(css: string): string {
+  return css.replace(/<\/style/gi, `<\\/style`)
+}
+
 function loadCSSFile(filename: string): string {
-  return fs.readFileSync(path.join(themeDir, filename), `utf-8`)
+  try {
+    return fs.readFileSync(path.join(themeDir, filename), `utf-8`)
+  }
+  catch (err) {
+    throw new Error(
+      `[md-mcp-server] Failed to load CSS file: ${filename}. Ensure the monorepo source structure is intact.`,
+      { cause: err },
+    )
+  }
 }
 
 const baseCSSContent = loadCSSFile(`base.css`)
@@ -47,17 +61,32 @@ const themeMap: Record<string, string> = {
 const hljsCssCache = new Map<string, string>()
 
 export async function fetchCodeBlockCSS(url: string): Promise<string> {
+  assertAllowedCodeBlockThemeUrl(url)
+
   const cached = hljsCssCache.get(url)
   if (cached)
     return cached
 
-  const response = await fetch(url)
-  if (!response.ok)
-    throw new Error(`Failed to fetch code block theme CSS (${response.status}): ${url}`)
+  try {
+    const response = await fetch(url, {
+      signal: AbortSignal.timeout(CODE_BLOCK_FETCH_TIMEOUT_MS),
+    })
+    if (!response.ok)
+      throw new Error(`Failed to fetch code block theme CSS (${response.status}): ${url}`)
 
-  const css = await response.text()
-  hljsCssCache.set(url, css)
-  return css
+    const css = escapeStyleContent(await response.text())
+    hljsCssCache.set(url, css)
+    return css
+  }
+  catch (err) {
+    if (err instanceof Error && err.name === `TimeoutError`) {
+      throw new Error(
+        `Timed out fetching code block theme CSS after ${CODE_BLOCK_FETCH_TIMEOUT_MS}ms: ${url}`,
+        { cause: err },
+      )
+    }
+    throw err
+  }
 }
 
 function normalizeHeadingStyles(input?: HeadingStylesInput): HeadingStyles | undefined {
@@ -107,7 +136,7 @@ export async function buildRenderedOutput(input: RenderMarkdownInput) {
   const headingStylesCSS = generateHeadingStyles(cssConfig)
   const themeCSS = themeMap[theme] || themeMap.default
   const hljsCSS = codeBlockTheme ? await fetchCodeBlockCSS(codeBlockTheme) : ``
-  const customCSS = input.customCSS?.trim() ?? ``
+  const customCSS = escapeStyleContent(input.customCSS?.trim() ?? ``)
 
   let mergedCSS = [
     variablesCSS,

@@ -95,6 +95,18 @@ export const codeBlockThemeOptions = codeBlockThemeList.map(name => ({
   desc: ``,
 }))
 
+export const allowedCodeBlockThemeUrls = new Set(
+  codeBlockThemeOptions.map(option => option.value),
+)
+
+export function assertAllowedCodeBlockThemeUrl(url: string): void {
+  if (!allowedCodeBlockThemeUrls.has(url)) {
+    throw new Error(
+      `codeBlockTheme must be a preset URL from list_code_block_themes. Received: ${url}`,
+    )
+  }
+}
+
 export const defaultRenderOptions = {
   theme: `default` as const,
   primaryColor: colorOptions[0].value,
