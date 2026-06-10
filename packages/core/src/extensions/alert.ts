@@ -84,27 +84,40 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
         meta: buildMeta(name, matchedVariant, customTitle),
       })
 
-      // 从正文首行移除「[!名称] 自定义标题」
+      // 从正文首段移除「[!名称] 自定义标题」所在的首个物理行。
+      // 标题可能含行内 Markdown（如 *强调*），会被拆成多个 inline token；首行结束于
+      // 硬换行（br token）或软换行（文本 token 内的 \n），需要兼顾两种情况，
+      // 否则会把标题内容泄漏到正文，或误删正文。
       const firstLine = token.tokens?.[0] as Tokens.Paragraph | undefined
-      const patternToken = firstLine?.tokens?.[0] as Tokens.Text | undefined
-      if (firstLine && patternToken) {
-        const lineRegexp = /^\[![^\]\n]+\][^\n]*/
-        const stripped = patternToken.raw.replace(lineRegexp, ``)
-
-        if (stripped.trim() === ``) {
-          // 首行仅含标记与标题：删除该文本 token 及紧随的换行
-          firstLine.tokens.shift()
-          if (firstLine.tokens[0]?.type === `br`)
-            firstLine.tokens.shift()
-          if (firstLine.tokens.length === 0)
-            token.tokens?.shift()
+      const inlineTokens = firstLine?.tokens
+      if (inlineTokens?.length) {
+        let stripped = false
+        for (let i = 0; i < inlineTokens.length; i++) {
+          const t = inlineTokens[i]
+          if (t.type === `br`) {
+            // 硬换行：删除首行全部 token（含 br）
+            inlineTokens.splice(0, i + 1)
+            stripped = true
+            break
+          }
+          if (t.type === `text` && t.raw.includes(`\n`)) {
+            // 软换行：该文本 token 跨越行边界，删除其前的 token 并裁掉首行部分
+            const textToken = t as Tokens.Text
+            const restRaw = textToken.raw.slice(textToken.raw.indexOf(`\n`) + 1)
+            const nlInText = textToken.text.indexOf(`\n`)
+            const restText = nlInText >= 0 ? textToken.text.slice(nlInText + 1) : restRaw
+            inlineTokens.splice(0, i)
+            if (restRaw === ``)
+              inlineTokens.shift()
+            else
+              Object.assign(inlineTokens[0], { raw: restRaw, text: restText })
+            stripped = true
+            break
+          }
         }
-        else {
-          Object.assign(patternToken, {
-            raw: stripped,
-            text: patternToken.text.replace(lineRegexp, ``),
-          })
-        }
+        // 未发现换行：整段即首行（仅标记与标题，无正文），整段删除
+        if (!stripped || inlineTokens.length === 0)
+          token.tokens?.shift()
       }
     },
     extensions: [
