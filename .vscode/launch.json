@@ -10,7 +10,7 @@
       "cwd": "${workspaceFolder}/apps/vscode",
       "args": ["--extensionDevelopmentPath=${workspaceFolder}/apps/vscode", "--enable-proposed-api=vscode.vscode-js-debug"],
       "runtimeExecutable": "${execPath}",
-      "outFiles": ["${workspaceFolder}/apps/vscode/dist/*.js"],
+      "outFiles": ["${workspaceFolder}/apps/vscode/dist/**/*.js"],
       "preLaunchTask": "compile extension"
     }
   ]

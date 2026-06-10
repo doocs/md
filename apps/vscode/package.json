@@ -3,7 +3,7 @@
   "name": "doocs-md",
   "displayName": "doocs-md",
   "version": "0.0.1",
-  "description": "",
+  "description": "Preview WeChat-formatted Markdown with doocs/md renderer",
   "repository": {
     "type": "git",
     "url": "https://github.com/doocs/md"
@@ -13,9 +13,8 @@
   ],
   "main": "./dist/extension.js",
   "engines": {
-    "vscode": "^1.91.0"
+    "vscode": "^1.120.0"
   },
-  "activationEvents": [],
   "contributes": {
     "viewsContainers": {
       "activitybar": [
@@ -43,6 +42,21 @@
           "light": "./public/icon-256-gray.png",
           "dark": "./public/icon-256-gray.png"
         }
+      },
+      {
+        "command": "markdown.setFontSize",
+        "title": "Set Font Size",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.setTheme",
+        "title": "Set Theme",
+        "category": "Markdown Preview"
+      },
+      {
+        "command": "markdown.setPrimaryColor",
+        "title": "Set Primary Color",
+        "category": "Markdown Preview"
       },
       {
         "command": "markdown.setFontFamily",
@@ -77,23 +91,28 @@
   },
   "scripts": {
     "vscode:prepublish": "npm run build",
-    "compile": "webpack",
+    "compile": "webpack && node scripts/copy-runtime-deps.mjs",
     "watch": "webpack --watch",
-    "build": "webpack --mode production --devtool hidden-source-map",
-    "package": "vsce package --no-dependencies --allow-package-secrets github"
+    "build": "webpack --mode production --devtool hidden-source-map && node scripts/copy-runtime-deps.mjs",
+    "package": "vsce package --no-dependencies --allow-package-secrets github",
+    "test": "npm run build && node --import tsx/esm scripts/smoke-test.mjs && node scripts/verify-preview.mjs && node scripts/verify-activate.mjs && node scripts/verify-vsix-deps.mjs"
   },
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@types/webpack": "^5.28.5",
     "isomorphic-dompurify": "^3.16.0",
+    "jsdom": "^29.1.1",
     "postcss": "^8.5.15",
     "ts-loader": "^9.6.0",
     "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
   "devDependencies": {
+    "@types/node": "^25.9.2",
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.9.2",
+    "tsx": "^4.22.4",
+    "webpack": "^5.107.2",
     "webpack-cli": "^7.0.3"
   }
 }

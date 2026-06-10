@@ -1,6 +1,7 @@
 out
 dist
 node_modules
+runtime/node_modules
 .vscode-test/
 *.vsix
 src/**/*.js.map

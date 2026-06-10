@@ -1,22 +1,44 @@
-import type { ThemeName } from '@md/shared'
-import { initRenderer } from '@md/core/renderer'
-import { generateCSSVariables } from '@md/core/theme'
-import { modifyHtmlContent } from '@md/core/utils'
-import { baseCSSContent, themeMap } from '@md/shared'
+import type { ThemeName } from '@md/shared/configs'
+import type { PreviewOptions } from './previewRenderer'
+import { createRequire } from 'node:module'
 import * as vscode from 'vscode'
-import { css } from './css'
 import { MarkdownTreeDataProvider } from './treeDataProvider'
+
+const requirePreview = createRequire(__filename)
+
+type PreviewRendererModule = typeof import('./previewRenderer')
 
 let activePanel: vscode.WebviewPanel | undefined
 let activePreviewEditor: vscode.TextEditor | undefined
 let refreshActivePanel: (() => void) | undefined
+let previewModule: PreviewRendererModule | undefined
+
+function loadPreviewRenderer(): PreviewRendererModule {
+  if (!previewModule) {
+    // Separate webpack entry — loaded only when preview opens.
+    previewModule = requirePreview(`./previewRenderer`) as PreviewRendererModule
+  }
+  return previewModule
+}
+
+function updateMarkdownFileContext(editor: vscode.TextEditor | undefined) {
+  const isMarkdown = editor?.document.languageId === `markdown`
+  vscode.commands.executeCommand(`setContext`, `markdownFileActive`, Boolean(isMarkdown))
+}
 
 export function activate(context: vscode.ExtensionContext) {
-  // Register TreeDataProvider
+  // Register sidebar FIRST — must complete before any heavy renderer import.
   const treeDataProvider = new MarkdownTreeDataProvider(context)
   vscode.window.registerTreeDataProvider(`markdown.preview.view`, treeDataProvider)
 
-  // Command for registering style settings
+  context.subscriptions.push(
+    treeDataProvider.onDidChangeTreeData(() => {
+      refreshActivePanel?.()
+    }),
+  )
+
+  updateMarkdownFileContext(vscode.window.activeTextEditor)
+
   context.subscriptions.push(
     vscode.commands.registerCommand(`markdown.setFontSize`, (size: string) => {
       treeDataProvider.updateFontSize(size)
@@ -47,7 +69,6 @@ export function activate(context: vscode.ExtensionContext) {
       return
     }
 
-    // 如果已有面板且未关闭，则直接显示
     if (activePanel) {
       activePreviewEditor = editor
       activePanel.title = `Markdown Preview - ${editor.document.fileName}`
@@ -56,14 +77,13 @@ export function activate(context: vscode.ExtensionContext) {
       return
     }
 
-    // Create and display a new webview panel
     const panel = vscode.window.createWebviewPanel(
-      `markdownPreview`, // 视图类型
-      `Markdown Preview - ${editor.document.fileName}`, // 面板标题
-      vscode.ViewColumn.Two, // 在第二栏显示
+      `markdownPreview`,
+      `Markdown Preview - ${editor.document.fileName}`,
+      vscode.ViewColumn.Two,
       {
-        enableScripts: true, // 启用JS
-        retainContextWhenHidden: true, // 保持状态
+        enableScripts: true,
+        retainContextWhenHidden: true,
       },
     )
 
@@ -78,75 +98,51 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })
 
-    const treeDataSubscription = treeDataProvider.onDidChangeTreeData(() => {
-      refreshActivePanel?.()
-    })
-
-    function updateWebview() {
+    async function updateWebview() {
       const previewEditor = activePreviewEditor
       if (!previewEditor || previewEditor.document.languageId !== `markdown`)
         return
 
-      panel.title = `Markdown Preview - ${previewEditor.document.fileName}`
+      try {
+        panel.title = `Markdown Preview - ${previewEditor.document.fileName}`
 
-      // 使用新主题系统
-      const renderer = initRenderer({
-        countStatus: treeDataProvider.getCurrentCountStatus(),
-        isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
-        citeStatus: treeDataProvider.getCurrentCiteStatus(),
-        legend: `none`,
-      })
-
-      const markdownContent = previewEditor.document.getText()
-      const html = modifyHtmlContent(markdownContent, renderer)
-
-      // 生成主题 CSS
-      const variables = generateCSSVariables({
-        primaryColor: treeDataProvider.getCurrentPrimaryColor(),
-        fontFamily: treeDataProvider.getCurrentFontFamily(),
-        fontSize: treeDataProvider.getCurrentFontSize(),
-        isUseIndent: false,
-        isUseJustify: false,
-      })
-
-      const themeCSS = themeMap[treeDataProvider.getCurrentTheme() as ThemeName]
-      const completeCss = `${variables}\n\n${baseCSSContent}\n\n${themeCSS}\n\n${css}`
-
-      panel.webview.html = wrapHtmlTag(html, completeCss)
+        const { buildPreviewHtml } = loadPreviewRenderer()
+        panel.webview.html = buildPreviewHtml({
+          markdown: previewEditor.document.getText(),
+          primaryColor: treeDataProvider.getCurrentPrimaryColor(),
+          fontFamily: treeDataProvider.getCurrentFontFamily(),
+          fontSize: treeDataProvider.getCurrentFontSize(),
+          theme: treeDataProvider.getCurrentTheme(),
+          countStatus: treeDataProvider.getCurrentCountStatus(),
+          isMacCodeBlock: treeDataProvider.getCurrentMacCodeBlock(),
+          citeStatus: treeDataProvider.getCurrentCiteStatus(),
+        } satisfies PreviewOptions)
+      }
+      catch (error) {
+        const message = error instanceof Error ? error.message : String(error)
+        vscode.window.showErrorMessage(`Markdown preview failed: ${message}`)
+        console.error(`[doocs-md] preview error:`, error)
+      }
     }
 
-    refreshActivePanel = updateWebview
+    refreshActivePanel = () => { void updateWebview() }
 
-    // render first webview
-    updateWebview()
+    void updateWebview()
 
-    // Monitor the changes of documents
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (activePreviewEditor && e.document === activePreviewEditor.document) {
-        updateWebview()
+        void updateWebview()
       }
     })
 
-    // Cancel the subscription when the panel is closed
     panel.onDidDispose(() => {
       changeSubscription.dispose()
-      treeDataSubscription.dispose()
     })
   })
 
   context.subscriptions.push(disposable)
 
-  // When the Markdown file is opened, the preview button is displayed in the status bar.
-  vscode.window.onDidChangeActiveTextEditor((editor: vscode.TextEditor | undefined) => {
-    if (editor && editor.document.languageId === `markdown`) {
-      vscode.commands.executeCommand(`setContext`, `markdownFileActive`, true)
-    }
-    else {
-      vscode.commands.executeCommand(`setContext`, `markdownFileActive`, false)
-    }
-  })
-}
-
-function wrapHtmlTag(html: string, css: string) {
-  return `<html><head><meta charset="utf-8" /><style>${css}</style></head><body><div style="width: 375px; margin: auto;padding:20px;background:white;position: relative;min-height: 100%;margin: 0 auto;padding: 20px;font-size: 14px;box-sizing: border-box;outline: none;transition: all 300ms ease-in-out;word-wrap: break-word;">${html}</div></body></html>`
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor(updateMarkdownFileContext),
+  )
 }
