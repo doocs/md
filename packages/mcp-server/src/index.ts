@@ -284,8 +284,14 @@ server.registerTool(
       },
       {
         name: `Callout Alerts`,
-        description: `Styled alert/callout blocks. Supported types: note, tip, warning, caution, important.`,
-        example: `> [!NOTE]\n> This is a note.`,
+        description: `Styled alert/callout blocks via blockquote ([!TYPE]) or container (::: type) syntax. `
+          + `An optional custom title can follow the type on the same line, e.g. "::: theorem Pythagorean Theorem" or "> [!IMPORTANT] 必读". `
+          + `Built-in types carry their own color/icon — GFM: note, tip, info, important, warning, caution; `
+          + `Obsidian-style: abstract, summary, tldr, todo, success, done, question, help, faq, failure, fail, missing, danger, error, bug, example, quote, cite; `
+          + `Academic: theorem, lemma, corollary, proposition, definition, axiom, postulate, assumption, proof, remark. `
+          + `Any other name (including non-ASCII, e.g. "::: 推论") renders with a neutral fallback style using the name as the title. `
+          + `Bodies support full Markdown and KaTeX math.`,
+        example: `> [!NOTE] 自定义标题\n> This is a note.\n\n::: theorem 勾股定理\n$a^2 + b^2 = c^2$\n:::\n\n::: 推论\n任意名称都会渲染为方框。\n:::`,
       },
       {
         name: `Footnotes`,
