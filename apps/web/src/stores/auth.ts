@@ -1,7 +1,7 @@
 import type { AccountUser } from '@/services/account/types'
 import { ApiError, MdApiClient } from '@/services/account/client'
 import { gotoLogin, isAccountConfigured } from '@/services/account/config'
-import { ACCOUNT_TOKEN_KEY, captureOAuthToken, migrateLegacyToken } from '@/services/account/oauth'
+import { ACCOUNT_TOKEN_KEY, captureOAuthToken } from '@/services/account/oauth'
 import { SyncClient } from '@/services/sync/client'
 import { store } from '@/utils/storage'
 
@@ -20,13 +20,12 @@ export const useAuthStore = defineStore(`auth`, () => {
   const api = new MdApiClient(() => token.value || null)
   const syncClient = new SyncClient(() => token.value || null)
 
-  /** 启动时迁移旧 token、捕获 OAuth 回跳、拉取用户信息 */
+  /** 启动时捕获 OAuth 回跳并拉取用户信息 */
   async function bootstrap(): Promise<void> {
     if (!isConfigured.value || bootstrapped)
       return
     bootstrapped = true
 
-    await migrateLegacyToken()
     captureOAuthToken((t) => {
       token.value = t
     })

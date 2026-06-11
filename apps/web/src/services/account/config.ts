@@ -8,9 +8,6 @@ export const MD_API_URL = (
 /** OAuth 回跳 fragment 参数名 */
 export const OAUTH_TOKEN_HASH_KEY = `account_token`
 
-/** 旧版回跳参数名，兼容已部署后端 */
-export const LEGACY_OAUTH_TOKEN_HASH_KEY = `sync_token`
-
 export function isAccountConfigured(): boolean {
   return Boolean(MD_API_URL)
 }
