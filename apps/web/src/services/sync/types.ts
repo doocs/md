@@ -1,7 +1,11 @@
 /**
- * 云同步前后端共享契约（与 @md/sync-worker 保持一致）。
+ * 云同步前后端共享契约（与 @md/api 保持一致）。
  * 时间字段统一为 epoch 毫秒。
  */
+
+import type { UserPlan } from '@/services/account/types'
+
+export type { UserPlan as SyncPlan, AccountUser as SyncUser } from '@/services/account/types'
 
 export interface SyncDocument {
   id: string
@@ -21,19 +25,8 @@ export interface SyncSetting {
   updatedAt: number
 }
 
-export type SyncPlan = `free` | `pro`
-
-export interface SyncUser {
-  id: string
-  login: string
-  name: string | null
-  avatar: string | null
-  plan: SyncPlan
-  planExpiresAt: number | null
-}
-
 export interface ActivateProResponse {
-  plan: SyncPlan
+  plan: UserPlan
   planExpiresAt: number
 }
 

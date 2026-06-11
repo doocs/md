@@ -128,6 +128,10 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowSyncDialog = ref(false)
   const toggleShowSyncDialog = useToggle(isShowSyncDialog)
 
+  // 是否展示账户对话框
+  const isShowAccountDialog = ref(false)
+  const toggleShowAccountDialog = useToggle(isShowAccountDialog)
+
   // 组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
   const componentDialogTarget = ref<string | null>(null)
 
@@ -228,6 +232,8 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowComponentDialog,
     isShowSyncDialog,
     toggleShowSyncDialog,
+    isShowAccountDialog,
+    toggleShowAccountDialog,
     componentDialogTarget,
     openComponentDialogWithTarget,
     aiDialogVisible,

@@ -1,9 +1,9 @@
 {
-  "name": "@md/sync-worker",
+  "name": "@md/api",
   "type": "module",
   "version": "0.1.0",
   "private": true,
-  "description": "Cloud sync backend for doocs/md – Cloudflare Worker (Hono + D1) with GitHub OAuth",
+  "description": "Backend API for doocs/md – Cloudflare Worker (Hono + D1): GitHub OAuth account, cloud sync, and billing",
   "scripts": {
     "dev": "wrangler dev",
     "deploy": "wrangler deploy --minify",
