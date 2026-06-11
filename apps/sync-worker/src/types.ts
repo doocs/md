@@ -13,6 +13,12 @@ export interface Env {
   AFDIAN_API_BASE?: string
   /** 可开通 Pro 的方案 plan_id，逗号分隔；留空则接受所有已付款方案 */
   AFDIAN_PRO_PLAN_IDS?: string
+  /**
+   * 爱发电 Webhook 路径密钥，通过 wrangler secret 注入。
+   * 配置后回调地址须为 `/webhooks/afdian/<token>`，缺失或不匹配则拒绝。
+   * 用于防止公开端点被任意调用 / 刷量（验单仍以爱发电 API 为准）。
+   */
+  AFDIAN_WEBHOOK_TOKEN?: string
 }
 
 export interface JwtPayload {
