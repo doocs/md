@@ -129,7 +129,7 @@ authRoutes.get(`/github/callback`, async (c) => {
   // 回跳到发起登录的前端来源（再次校验），token 放在 fragment，避免进入服务端日志
   const target = resolveRedirect(c.env, savedRedirect)
   const redirect = new URL(target || defaultOrigin(c.env))
-  redirect.hash = `sync_token=${token}`
+  redirect.hash = `account_token=${token}`
   return c.redirect(redirect.toString())
 })
 

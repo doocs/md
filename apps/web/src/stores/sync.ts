@@ -1,7 +1,8 @@
 import type { SyncDocument } from '@/services/sync/types'
-import { isSyncConfigured, SyncApiError } from '@/services/sync/client'
+import { ApiError } from '@/services/account/client'
+import { isSyncConfigured } from '@/services/sync/client'
 import { mergeRemoteIntoLocal, postToDoc, toMs } from '@/services/sync/merge'
-import { isProPlan, SYNC_DEBOUNCE_MS } from '@/services/sync/plan'
+import { isProPlan, SYNC_DEBOUNCE_MS_PRO, SYNC_PRO_ENABLED } from '@/services/sync/plan'
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
@@ -49,7 +50,7 @@ export const useSyncStore = defineStore(`sync`, () => {
   const isAvailable = computed(() => isSyncConfigured() && authStore.isLoggedIn)
   const isSyncing = computed(() => status.value === `syncing`)
   const isPro = computed(() => isProPlan(authStore.user?.plan))
-  const syncDebounceMs = computed(() => SYNC_DEBOUNCE_MS[authStore.user?.plan ?? `free`])
+  const syncDebounceMs = computed(() => SYNC_DEBOUNCE_MS_PRO)
 
   const lastLocalEditAt = computed(() => {
     let max = 0
@@ -99,9 +100,9 @@ export const useSyncStore = defineStore(`sync`, () => {
   }
 
   function formatSyncError(e: unknown): string {
-    if (e instanceof SyncApiError) {
+    if (e instanceof ApiError) {
       if (e.status === 429)
-        return isPro.value ? `同步过于频繁，请稍后再试` : `免费版同步次数已达上限，请升级 Pro 或稍后再试`
+        return `同步次数已达上限，请稍后再试`
       return e.message
     }
     return e instanceof Error ? e.message : String(e)
@@ -115,7 +116,7 @@ export const useSyncStore = defineStore(`sync`, () => {
     lastError.value = ``
 
     try {
-      const pulled = await authStore.client.pull(cursor)
+      const pulled = await authStore.syncClient.pull(cursor)
 
       if (pulled.documents.length) {
         const { posts, changed } = mergeRemoteIntoLocal(postStore.posts, pulled.documents)
@@ -134,7 +135,7 @@ export const useSyncStore = defineStore(`sync`, () => {
       const documents = collectLocalDocuments()
       const settings = collectChangedSettings()
       if (documents.length || settings.length) {
-        const pushed = await authStore.client.push({ documents, settings })
+        const pushed = await authStore.syncClient.push({ documents, settings })
         cursor = Math.max(cursor, pushed.cursor)
       }
 
@@ -149,7 +150,7 @@ export const useSyncStore = defineStore(`sync`, () => {
   }
 
   function scheduleAutoSync(): void {
-    if (!autoSyncEnabled.value || !isAvailable.value)
+    if (!isPro.value || !autoSyncEnabled.value || !isAvailable.value)
       return
     if (debounceTimer)
       clearTimeout(debounceTimer)
@@ -160,6 +161,8 @@ export const useSyncStore = defineStore(`sync`, () => {
   }
 
   function startAutoSyncWatcher(): void {
+    if (!SYNC_PRO_ENABLED)
+      return
     watch(
       () => postStore.posts,
       () => scheduleAutoSync(),

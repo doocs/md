@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import ConfirmDialog from '@/components/confirm-dialog/ConfirmDialog.vue'
 import CodemirrorEditor from '@/components/editor/CodemirrorEditor.vue'
 import { Toaster } from '@/components/ui/sonner'
+import { isAccountConfigured } from '@/services/account/config'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
@@ -16,20 +17,16 @@ const syncStore = useSyncStore()
 
 const isUtools = ref(false)
 
-/** 初始化云同步：捕获回跳 token、拉取用户、首次同步、开启自动同步监听 */
-async function bootstrapSync() {
-  if (!isSyncUiEnabled())
+/** 初始化账户与云同步 */
+async function bootstrapApp() {
+  if (isAccountConfigured())
+    await authStore.bootstrap()
+
+  if (!isSyncUiEnabled() || !authStore.isLoggedIn)
     return
 
-  authStore.captureRedirectToken()
   syncStore.startAutoSyncWatcher()
-
-  if (!authStore.isLoggedIn)
-    return
-
-  await authStore.fetchMe()
-  if (authStore.isLoggedIn)
-    syncStore.sync()
+  await syncStore.sync()
 }
 
 onMounted(() => {
@@ -39,7 +36,7 @@ onMounted(() => {
     document.documentElement.classList.add(`is-utools`)
   }
 
-  bootstrapSync()
+  bootstrapApp()
 
   // 若 URL 带有 open 参数（Markdown 链接），打开导入对话框并自动导入
   const params = new URLSearchParams(window.location.search)
