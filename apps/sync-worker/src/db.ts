@@ -40,9 +40,15 @@ function rowToDocument(row: DocumentRow): SyncDocument {
 }
 
 function rowToSetting(row: SettingRow): SyncSetting {
-  let value: unknown = null
+  // 与前端契约一致：value 仅可能是 string | null。
+  // DB 存的是 JSON.stringify 后的字符串，非字符串结果（异常数据）一律回退。
+  let value: string | null = null
   try {
-    value = JSON.parse(row.value)
+    const parsed = JSON.parse(row.value)
+    if (typeof parsed === `string`)
+      value = parsed
+    else if (parsed != null)
+      value = JSON.stringify(parsed)
   }
   catch {
     value = null

@@ -29,6 +29,8 @@ export const authMiddleware: MiddlewareHandler<{ Bindings: Env, Variables: { use
 
   try {
     const payload = (await verify(token, c.env.JWT_SECRET, `HS256`)) as unknown as JwtPayload
+    if (!payload || typeof payload.sub !== `string` || !payload.sub)
+      return c.json({ error: `invalid_token` }, 401)
     c.set(`userId`, payload.sub)
     await next()
   }

@@ -7,9 +7,11 @@ export function isSyncConfigured(): boolean {
   return Boolean(SYNC_API_URL)
 }
 
-/** 发起 GitHub 登录：跳转到后端 OAuth 入口，并带上当前来源用于登录后回跳 */
+/** 发起 GitHub 登录：跳转到后端 OAuth 入口，并带上当前应用入口 URL 用于登录后回跳 */
 export function gotoLogin(): void {
-  const redirect = encodeURIComponent(window.location.origin)
+  // 携带完整入口（含 base path，如 `/md/`），避免回跳到站点根路径导致 404
+  const entry = `${window.location.origin}${window.location.pathname}`
+  const redirect = encodeURIComponent(entry)
   window.location.href = `${SYNC_API_URL}/auth/github?redirect=${redirect}`
 }
 

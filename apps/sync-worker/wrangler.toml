@@ -9,9 +9,9 @@ pattern = "md-api.doocs.org"
 custom_domain = true
 
 # D1 数据库绑定。
-# 首次使用前执行：
-#   wrangler d1 create md-sync
-# 然后把返回的 database_id 填入下方占位符。
+# database_id 为 doocs/md 官方部署所用实例（资源标识符，非密钥）。
+# 自行部署（fork）时请执行 `wrangler d1 create md-sync`，
+# 并把返回的 database_id 替换为你自己的实例 ID。
 [[d1_databases]]
 binding = "DB"
 database_name = "md-sync"

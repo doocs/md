@@ -1,6 +1,6 @@
 import type { SyncDocument } from '@/services/sync/types'
 import { isSyncConfigured } from '@/services/sync/client'
-import { mergeRemoteIntoLocal, postToDoc } from '@/services/sync/merge'
+import { mergeRemoteIntoLocal, postToDoc, toMs } from '@/services/sync/merge'
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
@@ -84,13 +84,18 @@ export const useSyncStore = defineStore(`sync`, () => {
     return `pending`
   })
 
-  /** 收集本地待推送的文档（含本地删除的墓碑） */
+  /** 收集本地待推送的文档（仅增量 + 本地删除的墓碑） */
   function collectLocalDocuments(): SyncDocument[] {
     const now = Date.now()
-    const currentDocs = postStore.posts.map(postToDoc)
+    const since = lastSyncAt.value
     const currentIds = new Set(postStore.posts.map(p => p.id))
 
-    // 上次同步存在、本地已不存在 ➜ 视为本地删除，下发墓碑
+    // 仅推送自上次成功同步以来发生过变更的文档（首次同步则全量）
+    const changedDocs = postStore.posts
+      .filter(p => since === 0 || toMs(p.updateDatetime) > since)
+      .map(postToDoc)
+
+    // 上次同步存在、本地已不存在 ➜ 视为本地删除，下发墓碑（仍需全量比对）
     const tombstones: SyncDocument[] = readSyncedIds()
       .filter(id => !currentIds.has(id))
       .map(id => ({
@@ -104,7 +109,7 @@ export const useSyncStore = defineStore(`sync`, () => {
         deleted: true,
       }))
 
-    return [...currentDocs, ...tombstones]
+    return [...changedDocs, ...tombstones]
   }
 
   /** 执行一次完整同步：pull ➜ 合并 ➜ push */

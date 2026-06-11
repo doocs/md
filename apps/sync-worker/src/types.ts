@@ -34,10 +34,10 @@ export interface SyncDocument {
   deleted: boolean
 }
 
-/** 同步用设置项 */
+/** 同步用设置项（前后端共享契约，value 为 localStorage 原始字符串） */
 export interface SyncSetting {
   key: string
-  value: unknown
+  value: string | null
   updatedAt: number
 }
 

@@ -39,9 +39,19 @@ export function defaultOrigin(env: Env): string {
   return patterns.find(p => !p.includes(`*`)) ?? patterns[0] ?? ``
 }
 
-/** 校验请求的回跳地址，合法则返回它，否则回退到默认地址 */
+/**
+ * 校验请求的回跳地址：解析其 origin 是否在白名单内，
+ * 合法则返回完整 URL（含 path），否则回退到默认地址。
+ * 兼容仅传 origin 的旧形式。
+ */
 export function resolveRedirect(env: Env, requested: string | undefined | null): string {
-  if (requested && isAllowedOrigin(env, requested))
-    return requested
+  if (requested) {
+    try {
+      const url = new URL(requested)
+      if (isAllowedOrigin(env, url.origin))
+        return url.toString()
+    }
+    catch { /* 非法 URL，回退默认 */ }
+  }
   return defaultOrigin(env)
 }
