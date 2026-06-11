@@ -1,0 +1,31 @@
+name = "md-sync"
+main = "./src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = [ "nodejs_compat" ]
+
+# 自定义域名（zone doocs.org 需在同一 Cloudflare 账号下，部署时自动创建 DNS）
+[[routes]]
+pattern = "md-api.doocs.org"
+custom_domain = true
+
+# D1 数据库绑定。
+# 首次使用前执行：
+#   wrangler d1 create md-sync
+# 然后把返回的 database_id 填入下方占位符。
+[[d1_databases]]
+binding = "DB"
+database_name = "md-sync"
+database_id = "d7659e81-8fda-4abc-b128-f7a5975f7a7d"
+migrations_dir = "migrations"
+
+# 非敏感变量（可直接提交）。生产部署时按需覆盖。
+[vars]
+# 前端来源白名单，用于 CORS 与「登录后回跳到发起方」。
+# 支持通配符 `*`（匹配单个主机标签）。第一个非通配项作为默认回跳地址。
+# - 生产站、本地开发、Cloudflare PR 预览、Surge PR 预览
+APP_URL = "https://md.doocs.org,http://localhost:5173,https://md-pr-*.doocs.workers.dev,https://doocs-md-preview-pr-*.surge.sh"
+
+# 以下为敏感变量，请勿写入此文件，使用 `wrangler secret put` 设置：
+#   wrangler secret put GITHUB_CLIENT_ID
+#   wrangler secret put GITHUB_CLIENT_SECRET
+#   wrangler secret put JWT_SECRET

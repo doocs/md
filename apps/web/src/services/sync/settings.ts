@@ -1,0 +1,128 @@
+import type { SyncSetting } from './types'
+import { addPrefix } from '@/utils'
+
+/**
+ * 允许同步的偏好设置 key 白名单（显式枚举，避免泄露密钥）。
+ * 刻意不包含：图床配置（githubConfig/aliOSSConfig/s3Config 等）、
+ * AI 密钥（openai_key_*）、运行时/临时状态。
+ */
+export const SYNC_SETTING_KEYS: string[] = [
+  // 主题与样式
+  addPrefix(`theme`),
+  addPrefix(`themeSettings`),
+  addPrefix(`use_indent`),
+  addPrefix(`use_justify`),
+  `isCiteStatus`,
+  `isCountStatus`,
+  `legend`,
+  `previewWidth`,
+  // 编辑器 / UI 偏好
+  `isEditOnLeft`,
+  `showAIToolbox`,
+  `viewMode`,
+  `previewDevice`,
+  addPrefix(`copyMode`),
+  addPrefix(`sort_mode`),
+  addPrefix(`enableImageReupload`),
+  addPrefix(`enableScrollSync`),
+  // AI 非敏感参数（不含 key、不含 model）
+  `openai_type`,
+  `openai_temperature`,
+  `openai_max_token`,
+  // 自定义内容
+  addPrefix(`css_content_config`),
+  addPrefix(`templates`),
+  addPrefix(`custom_components`),
+  `quick_commands`,
+]
+
+const META_KEY = addPrefix(`sync_settings_meta`)
+
+interface SettingMeta {
+  value: string | null
+  updatedAt: number
+}
+
+type MetaMap = Record<string, SettingMeta>
+
+function readMeta(): MetaMap {
+  try {
+    const raw = localStorage.getItem(META_KEY)
+    return raw ? JSON.parse(raw) as MetaMap : {}
+  }
+  catch {
+    return {}
+  }
+}
+
+function writeMeta(meta: MetaMap): void {
+  try {
+    localStorage.setItem(META_KEY, JSON.stringify(meta))
+  }
+  catch { /* 配额错误，非致命 */ }
+}
+
+function readLocal(key: string): string | null {
+  try {
+    return localStorage.getItem(key)
+  }
+  catch {
+    return null
+  }
+}
+
+/**
+ * 收集本地发生变化的设置项（与上次同步快照比对），并刷新元数据时间戳。
+ * 返回需要推送的设置列表。
+ */
+export function collectChangedSettings(): SyncSetting[] {
+  const meta = readMeta()
+  const now = Date.now()
+  const changed: SyncSetting[] = []
+
+  for (const key of SYNC_SETTING_KEYS) {
+    const current = readLocal(key)
+    const prev = meta[key]
+    if (!prev || prev.value !== current) {
+      meta[key] = { value: current, updatedAt: now }
+      changed.push({ key, value: current, updatedAt: now })
+    }
+  }
+
+  writeMeta(meta)
+  return changed
+}
+
+/**
+ * 应用远端设置到本地（LWW，仅当远端更新时间较新时写入）。
+ * 返回实际应用的数量（>0 表示建议刷新页面以生效）。
+ */
+export function applyRemoteSettings(remote: SyncSetting[]): number {
+  const meta = readMeta()
+  let applied = 0
+
+  for (const setting of remote) {
+    if (!SYNC_SETTING_KEYS.includes(setting.key))
+      continue
+
+    const local = meta[setting.key]
+    if (local && local.updatedAt >= setting.updatedAt)
+      continue
+
+    try {
+      if (setting.value === null)
+        localStorage.removeItem(setting.key)
+      else
+        localStorage.setItem(setting.key, setting.value)
+    }
+    catch {
+      continue
+    }
+
+    meta[setting.key] = { value: setting.value, updatedAt: setting.updatedAt }
+    applied++
+  }
+
+  writeMeta(meta)
+  return applied
+}
