@@ -5,6 +5,14 @@ export interface Env {
   JWT_SECRET: string
   /** 前端地址，用于 OAuth 回跳与 CORS 白名单，多个用英文逗号分隔 */
   APP_URL: string
+  /** 爱发电创作者 user_id（开发者后台） */
+  AFDIAN_USER_ID?: string
+  /** 爱发电 API Token，通过 wrangler secret 注入 */
+  AFDIAN_API_TOKEN?: string
+  /** 爱发电 API 基址，默认 https://afdian.com/api/open */
+  AFDIAN_API_BASE?: string
+  /** 可开通 Pro 的方案 plan_id，逗号分隔；留空则接受所有已付款方案 */
+  AFDIAN_PRO_PLAN_IDS?: string
 }
 
 export interface JwtPayload {
@@ -20,6 +28,8 @@ export interface UserRow {
   name: string | null
   avatar: string | null
   created_at: number
+  plan: string
+  plan_expires_at: number | null
 }
 
 /** 同步用文档（前后端共享契约），时间字段统一为 epoch ms */

@@ -1,6 +1,7 @@
 import type { SyncDocument } from '@/services/sync/types'
-import { isSyncConfigured } from '@/services/sync/client'
+import { isSyncConfigured, SyncApiError } from '@/services/sync/client'
 import { mergeRemoteIntoLocal, postToDoc, toMs } from '@/services/sync/merge'
+import { isProPlan, SYNC_DEBOUNCE_MS } from '@/services/sync/plan'
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
@@ -10,7 +11,6 @@ import { store } from '@/utils/storage'
 export type SyncStatus = 'idle' | 'syncing' | 'error'
 
 const SYNCED_IDS_KEY = addPrefix(`sync_post_ids`)
-const AUTO_SYNC_DEBOUNCE = 3000
 
 function readSyncedIds(): string[] {
   try {
@@ -39,21 +39,18 @@ export const useSyncStore = defineStore(`sync`, () => {
 
   const status = ref<SyncStatus>(`idle`)
   const lastError = ref<string>(``)
-  // 上次同步成功时间（持久化展示）
   const lastSyncAt = store.reactive<number>(addPrefix(`sync_last_at`), 0)
-  // 是否开启自动同步
-  const autoSyncEnabled = store.reactive(addPrefix(`sync_auto`), true)
-  // 应用了远端设置、建议刷新生效
+  const autoSyncEnabled = store.reactive(addPrefix(`sync_auto`), false)
   const needsRefresh = ref(false)
 
-  // 会话内增量游标（每次启动从 0 全量拉取，避免账号切换错乱）
   let cursor = 0
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
 
   const isAvailable = computed(() => isSyncConfigured() && authStore.isLoggedIn)
   const isSyncing = computed(() => status.value === `syncing`)
+  const isPro = computed(() => isProPlan(authStore.user?.plan))
+  const syncDebounceMs = computed(() => SYNC_DEBOUNCE_MS[authStore.user?.plan ?? `free`])
 
-  // 本地最近一次编辑时间（取所有文章 updateDatetime 的最大值）
   const lastLocalEditAt = computed(() => {
     let max = 0
     for (const p of postStore.posts) {
@@ -64,16 +61,8 @@ export const useSyncStore = defineStore(`sync`, () => {
     return max
   })
 
-  // 是否存在尚未同步到云端的本地改动
   const hasPendingChanges = computed(() => lastSyncAt.value === 0 || lastLocalEditAt.value > lastSyncAt.value)
 
-  /**
-   * 同步图标状态：
-   * - syncing：正在同步（loading）
-   * - synced：已与云端一致（绿色对勾）
-   * - error：上次同步失败
-   * - pending：有本地改动待同步（普通云朵）
-   */
   const syncState = computed<'syncing' | 'synced' | 'error' | 'pending'>(() => {
     if (status.value === `syncing`)
       return `syncing`
@@ -84,18 +73,15 @@ export const useSyncStore = defineStore(`sync`, () => {
     return `pending`
   })
 
-  /** 收集本地待推送的文档（仅增量 + 本地删除的墓碑） */
   function collectLocalDocuments(): SyncDocument[] {
     const now = Date.now()
     const since = lastSyncAt.value
     const currentIds = new Set(postStore.posts.map(p => p.id))
 
-    // 仅推送自上次成功同步以来发生过变更的文档（首次同步则全量）
     const changedDocs = postStore.posts
       .filter(p => since === 0 || toMs(p.updateDatetime) > since)
       .map(postToDoc)
 
-    // 上次同步存在、本地已不存在 ➜ 视为本地删除，下发墓碑（仍需全量比对）
     const tombstones: SyncDocument[] = readSyncedIds()
       .filter(id => !currentIds.has(id))
       .map(id => ({
@@ -112,7 +98,15 @@ export const useSyncStore = defineStore(`sync`, () => {
     return [...changedDocs, ...tombstones]
   }
 
-  /** 执行一次完整同步：pull ➜ 合并 ➜ push */
+  function formatSyncError(e: unknown): string {
+    if (e instanceof SyncApiError) {
+      if (e.status === 429)
+        return isPro.value ? `同步过于频繁，请稍后再试` : `免费版同步次数已达上限，请升级 Pro 或稍后再试`
+      return e.message
+    }
+    return e instanceof Error ? e.message : String(e)
+  }
+
   async function sync(): Promise<void> {
     if (!isAvailable.value || status.value === `syncing`)
       return
@@ -121,17 +115,14 @@ export const useSyncStore = defineStore(`sync`, () => {
     lastError.value = ``
 
     try {
-      // 1. 拉取远端变更
       const pulled = await authStore.client.pull(cursor)
 
-      // 2. 合并文档（LWW，败方进 history）
       if (pulled.documents.length) {
         const { posts, changed } = mergeRemoteIntoLocal(postStore.posts, pulled.documents)
         if (changed)
           postStore.posts = posts
       }
 
-      // 3. 应用远端设置
       if (pulled.settings.length) {
         const applied = applyRemoteSettings(pulled.settings)
         if (applied > 0)
@@ -140,7 +131,6 @@ export const useSyncStore = defineStore(`sync`, () => {
 
       cursor = Math.max(cursor, pulled.cursor)
 
-      // 4. 收集并推送本地变更
       const documents = collectLocalDocuments()
       const settings = collectChangedSettings()
       if (documents.length || settings.length) {
@@ -148,18 +138,16 @@ export const useSyncStore = defineStore(`sync`, () => {
         cursor = Math.max(cursor, pushed.cursor)
       }
 
-      // 5. 记录已同步快照
       writeSyncedIds(postStore.posts.map(p => p.id))
       lastSyncAt.value = Date.now()
       status.value = `idle`
     }
     catch (e) {
       status.value = `error`
-      lastError.value = e instanceof Error ? e.message : String(e)
+      lastError.value = formatSyncError(e)
     }
   }
 
-  /** 自动同步（防抖触发） */
   function scheduleAutoSync(): void {
     if (!autoSyncEnabled.value || !isAvailable.value)
       return
@@ -168,19 +156,21 @@ export const useSyncStore = defineStore(`sync`, () => {
     debounceTimer = setTimeout(() => {
       debounceTimer = null
       sync()
-    }, AUTO_SYNC_DEBOUNCE)
+    }, syncDebounceMs.value)
   }
 
-  /** 监听本地文章变化，触发防抖自动同步 */
   function startAutoSyncWatcher(): void {
     watch(
       () => postStore.posts,
       () => scheduleAutoSync(),
       { deep: true },
     )
+    watch(syncDebounceMs, () => {
+      if (autoSyncEnabled.value)
+        scheduleAutoSync()
+    })
   }
 
-  /** 登出时清理同步本地痕迹，防止账号间数据串味 */
   function reset(): void {
     cursor = 0
     lastSyncAt.value = 0
@@ -201,6 +191,8 @@ export const useSyncStore = defineStore(`sync`, () => {
     needsRefresh,
     isAvailable,
     isSyncing,
+    isPro,
+    syncDebounceMs,
     hasPendingChanges,
     syncState,
     sync,

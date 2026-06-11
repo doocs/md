@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue'
 import ConfirmDialog from '@/components/confirm-dialog/ConfirmDialog.vue'
 import CodemirrorEditor from '@/components/editor/CodemirrorEditor.vue'
 import { Toaster } from '@/components/ui/sonner'
+import { isSyncUiEnabled } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
 import { useUIStore } from '@/stores/ui'
@@ -17,7 +18,7 @@ const isUtools = ref(false)
 
 /** 初始化云同步：捕获回跳 token、拉取用户、首次同步、开启自动同步监听 */
 async function bootstrapSync() {
-  if (!authStore.isConfigured)
+  if (!isSyncUiEnabled())
     return
 
   authStore.captureRedirectToken()

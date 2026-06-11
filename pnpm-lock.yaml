@@ -103,6 +103,9 @@ importers:
       '@cloudflare/workers-types':
         specifier: 4.20260610.1
         version: 4.20260610.1
+      '@types/node':
+        specifier: ^25.9.2
+        version: 25.9.2
       typescript:
         specifier: ~6.0.3
         version: 6.0.3

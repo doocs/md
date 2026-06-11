@@ -52,7 +52,12 @@ export const useAuthStore = defineStore(`auth`, () => {
     if (!token.value)
       return
     try {
-      user.value = await client.me()
+      const me = await client.me()
+      user.value = {
+        ...me,
+        plan: me.plan ?? `free`,
+        planExpiresAt: me.planExpiresAt ?? null,
+      }
     }
     catch (e) {
       // 仅当鉴权失败时登出；网络/临时错误不应清除登录态

@@ -13,6 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
+import { isSyncUiEnabled } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
@@ -31,7 +32,8 @@ const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark } = storeToRefs(uiStore)
 const { isMobile, viewMode, previewDevice, enableScrollSync } = storeToRefs(uiStore)
-const { isConfigured: isSyncConfigured, isLoggedIn: isSyncLoggedIn } = storeToRefs(authStore)
+const { isLoggedIn: isSyncLoggedIn } = storeToRefs(authStore)
+const showSyncUi = isSyncUiEnabled()
 const { isSyncing, syncState } = storeToRefs(syncStore)
 
 // 云同步图标的提示文案
@@ -637,7 +639,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         <span class="hidden text-border sm:block">·</span>
 
         <!-- 云同步 -->
-        <template v-if="isSyncConfigured">
+        <template v-if="showSyncUi">
           <Tooltip>
             <TooltipTrigger as-child>
               <button

@@ -1,10 +1,35 @@
 import type { Context } from 'hono'
 import type { Env, PushRequest } from './types'
-import { pullChanges, pushChanges } from './db'
+import { getUserById, pullChanges, pushChanges } from './db'
+import { checkSyncRateLimit, getEffectivePlan } from './plan'
 
 type SyncContext = Context<{ Bindings: Env, Variables: { userId: string } }>
 
+async function enforceSyncRateLimit(c: SyncContext): Promise<Response | null> {
+  const userId = c.get(`userId`)
+  const user = await getUserById(c.env.DB, userId)
+  if (!user)
+    return c.json({ error: `not_found` }, 404)
+
+  const plan = getEffectivePlan(user.plan, user.plan_expires_at)
+  const rate = await checkSyncRateLimit(c.env.DB, userId, plan)
+  if (!rate.allowed) {
+    return c.json({
+      error: `rate_limit_exceeded`,
+      plan,
+      limit: rate.limit,
+      retryAfterSec: rate.retryAfterSec,
+      upgradeRequired: plan === `free`,
+    }, 429)
+  }
+  return null
+}
+
 export async function pullHandler(c: SyncContext) {
+  const blocked = await enforceSyncRateLimit(c)
+  if (blocked)
+    return blocked
+
   const userId = c.get(`userId`)
   const sinceRaw = c.req.query(`since`)
   const since = Number.parseInt(sinceRaw ?? `0`, 10)
@@ -15,6 +40,10 @@ export async function pullHandler(c: SyncContext) {
 }
 
 export async function pushHandler(c: SyncContext) {
+  const blocked = await enforceSyncRateLimit(c)
+  if (blocked)
+    return blocked
+
   const userId = c.get(`userId`)
 
   let body: PushRequest

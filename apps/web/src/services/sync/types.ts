@@ -21,11 +21,20 @@ export interface SyncSetting {
   updatedAt: number
 }
 
+export type SyncPlan = `free` | `pro`
+
 export interface SyncUser {
   id: string
   login: string
   name: string | null
   avatar: string | null
+  plan: SyncPlan
+  planExpiresAt: number | null
+}
+
+export interface ActivateProResponse {
+  plan: SyncPlan
+  planExpiresAt: number
 }
 
 export interface PullResponse {

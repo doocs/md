@@ -5,6 +5,7 @@ import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { sign, verify } from 'hono/jwt'
 import { getUserById, upsertUser } from './db'
 import { defaultOrigin, resolveRedirect } from './origin'
+import { getEffectivePlan } from './plan'
 
 const STATE_COOKIE = `md_oauth_state`
 const REDIRECT_COOKIE = `md_oauth_redirect`
@@ -137,10 +138,13 @@ export async function meHandler(c: Context<{ Bindings: Env, Variables: { userId:
   const user = await getUserById(c.env.DB, c.get(`userId`))
   if (!user)
     return c.json({ error: `not_found` }, 404)
+  const plan = getEffectivePlan(user.plan ?? `free`, user.plan_expires_at ?? null)
   return c.json({
     id: user.id,
     login: user.login,
     name: user.name,
     avatar: user.avatar,
+    plan,
+    planExpiresAt: user.plan_expires_at ?? null,
   })
 }

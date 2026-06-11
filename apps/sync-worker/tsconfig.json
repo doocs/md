@@ -6,7 +6,7 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
-    "types": ["@cloudflare/workers-types"],
+    "types": ["@cloudflare/workers-types", "node"],
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,

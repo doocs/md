@@ -15,6 +15,7 @@ dist
 # misc
 .DS_Store
 .env.local
+.dev.vars
 .env.development.local
 .env.test.local
 .env.production.local
