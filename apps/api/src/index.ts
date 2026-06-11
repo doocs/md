@@ -21,7 +21,7 @@ app.use(`*`, async (c, next) => {
   return handler(c, next)
 })
 
-app.get(`/`, c => c.json({ name: `md-sync`, ok: true }))
+app.get(`/`, c => c.json({ name: `md-api`, ok: true }))
 
 app.route(`/auth`, authRoutes)
 // 爱发电 Webhook：无密钥与带路径密钥两种形式共用同一处理器。

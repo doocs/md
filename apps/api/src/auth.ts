@@ -100,7 +100,7 @@ authRoutes.get(`/github/callback`, async (c) => {
   const userRes = await fetch(`https://api.github.com/user`, {
     headers: {
       'Authorization': `Bearer ${accessToken}`,
-      'User-Agent': `md-sync-worker`,
+      'User-Agent': `md-api`,
       'Accept': `application/vnd.github+json`,
     },
   })
