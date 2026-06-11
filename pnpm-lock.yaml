@@ -94,6 +94,22 @@ importers:
         specifier: ~6.0.3
         version: 6.0.3
 
+  apps/sync-worker:
+    dependencies:
+      hono:
+        specifier: ^4.6.14
+        version: 4.12.25
+    devDependencies:
+      '@cloudflare/workers-types':
+        specifier: 4.20260610.1
+        version: 4.20260610.1
+      typescript:
+        specifier: ~6.0.3
+        version: 6.0.3
+      wrangler:
+        specifier: ^4.99.0
+        version: 4.99.0(@cloudflare/workers-types@4.20260610.1)
+
   apps/utools: {}
 
   apps/vscode:

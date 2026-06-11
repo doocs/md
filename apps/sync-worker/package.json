@@ -1,0 +1,22 @@
+{
+  "name": "@md/sync-worker",
+  "type": "module",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Cloud sync backend for doocs/md – Cloudflare Worker (Hono + D1) with GitHub OAuth",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy --minify",
+    "db:migrate:local": "wrangler d1 migrations apply md-sync --local",
+    "db:migrate:remote": "wrangler d1 migrations apply md-sync --remote",
+    "type-check": "tsc --noEmit"
+  },
+  "dependencies": {
+    "hono": "^4.6.14"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "4.20260610.1",
+    "typescript": "~6.0.3",
+    "wrangler": "^4.99.0"
+  }
+}

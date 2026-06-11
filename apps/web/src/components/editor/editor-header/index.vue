@@ -14,6 +14,7 @@ import HelpDropdown from './HelpDropdown.vue'
 import InsertDropdown from './InsertDropdown.vue'
 import MarkdownHelpDialog from './MarkdownHelpDialog.vue'
 import StyleDropdown from './StyleDropdown.vue'
+import SyncDialog from './SyncDialog.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
 
@@ -26,7 +27,7 @@ const exportStore = useExportStore()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog } = storeToRefs(uiStore)
 
 // Editor refresh function
 function editorRefresh() {
@@ -314,6 +315,7 @@ function copyToWeChat() {
   <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
   <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
   <MarkdownHelpDialog :visible="markdownHelpDialogVisible" @close="markdownHelpDialogVisible = false" />
+  <SyncDialog :visible="isShowSyncDialog" @close="isShowSyncDialog = false" />
 </template>
 
 <style lang="less" scoped>

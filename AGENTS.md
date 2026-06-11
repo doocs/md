@@ -13,17 +13,18 @@
 
 ## Monorepo 结构
 
-| 工作区           | 路径                  | 说明                                              |
-| ---------------- | --------------------- | ------------------------------------------------- |
-| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox） |
-| (无名)           | `apps/vscode`         | VSCode 扩展（webpack 构建）                       |
-| (无名)           | `apps/utools`         | uTools 插件打包                                   |
-| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）     |
-| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置              |
-| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                           |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）              |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                    |
-| (无名)           | `packages/example`    | Cloudflare Workers 示例                           |
+| 工作区            | 路径                  | 说明                                              |
+| ----------------- | --------------------- | ------------------------------------------------- |
+| `@md/web`         | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox） |
+| (无名)            | `apps/vscode`         | VSCode 扩展（webpack 构建）                       |
+| (无名)            | `apps/utools`         | uTools 插件打包                                   |
+| `@md/core`        | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）     |
+| `@md/shared`      | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置              |
+| `@md/config`      | `packages/config`     | TypeScript 配置基础文件                           |
+| `@doocs/md-cli`   | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）              |
+| `@md/mcp-server`  | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                    |
+| `@md/sync-worker` | `apps/sync-worker`    | 云同步后端（Cloudflare Workers + Hono + D1）      |
+| (无名)            | `packages/example`    | Cloudflare Workers 示例                           |
 
 ## 常用命令
 
