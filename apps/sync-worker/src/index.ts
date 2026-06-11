@@ -1,9 +1,11 @@
 import type { Env } from './types'
 import { Hono } from 'hono'
 import { cors } from 'hono/cors'
+import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
 import { isAllowedOrigin } from './origin'
 import { pullHandler, pushHandler } from './sync'
+import { afdianWebhookHandler } from './webhook'
 
 const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 
@@ -22,12 +24,14 @@ app.use(`*`, async (c, next) => {
 app.get(`/`, c => c.json({ name: `md-sync`, ok: true }))
 
 app.route(`/auth`, authRoutes)
+app.post(`/webhooks/afdian`, afdianWebhookHandler)
 
 const api = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 api.use(`*`, authMiddleware)
 api.get(`/me`, meHandler)
 api.get(`/sync/pull`, pullHandler)
 api.post(`/sync/push`, pushHandler)
+api.post(`/sync/activate`, activateHandler)
 
 app.route(`/`, api)
 

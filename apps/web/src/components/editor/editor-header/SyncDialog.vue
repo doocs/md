@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import { Cloud, Loader2, LogIn, LogOut, RefreshCw } from '@lucide/vue'
+import { Cloud, Crown, ExternalLink, Loader2, LogIn, LogOut, RefreshCw } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+import { AFDIAN_PRO_PLANS, buildAfdianOrderUrl } from '@/services/sync/afdian'
+import { AFDIAN_PAGE_URL, SyncApiError } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
 
@@ -18,12 +20,38 @@ const authStore = useAuthStore()
 const syncStore = useSyncStore()
 
 const { user, isConfigured, isLoggedIn } = storeToRefs(authStore)
-const { status, lastError, lastSyncAt, autoSyncEnabled, needsRefresh, isSyncing } = storeToRefs(syncStore)
+const { status, lastError, lastSyncAt, autoSyncEnabled, needsRefresh, isSyncing, isPro, syncDebounceMs } = storeToRefs(syncStore)
+
+const orderNo = ref(``)
+const activating = ref(false)
 
 const lastSyncText = computed(() => {
   if (!lastSyncAt.value)
     return `从未同步`
   return new Date(lastSyncAt.value).toLocaleString(`zh-cn`)
+})
+
+const planExpiresText = computed(() => {
+  const expires = user.value?.planExpiresAt
+  if (!expires || !isPro.value)
+    return ``
+  return new Date(expires).toLocaleString(`zh-cn`)
+})
+
+const autoSyncHint = computed(() => {
+  if (isPro.value)
+    return `Pro：编辑后约 ${Math.round(syncDebounceMs.value / 1000)} 秒自动同步`
+  return `免费：每 ${Math.round(syncDebounceMs.value / 60000)} 分钟自动同步（升级 Pro 可实时同步）`
+})
+
+const proPlanLinks = computed(() => {
+  const login = user.value?.login
+  if (!login)
+    return []
+  return AFDIAN_PRO_PLANS.map(plan => ({
+    ...plan,
+    url: buildAfdianOrderUrl(plan.planId, login),
+  }))
 })
 
 function onUpdate(val: boolean) {
@@ -48,6 +76,29 @@ async function handleSync() {
     toast.success(`同步完成`)
 }
 
+async function handleActivate() {
+  const no = orderNo.value.trim()
+  if (!no) {
+    toast.error(`请输入爱发电订单号`)
+    return
+  }
+
+  activating.value = true
+  try {
+    await authStore.client.activatePro(no)
+    await authStore.fetchMe()
+    orderNo.value = ``
+    toast.success(`Pro 已开通`)
+  }
+  catch (e) {
+    const msg = e instanceof SyncApiError ? e.message : String(e)
+    toast.error(`激活失败：${msg}`)
+  }
+  finally {
+    activating.value = false
+  }
+}
+
 function handleReload() {
   window.location.reload()
 }
@@ -66,12 +117,10 @@ function handleReload() {
         </DialogDescription>
       </DialogHeader>
 
-      <!-- 未配置后端 -->
       <div v-if="!isConfigured" class="text-muted-foreground py-6 text-center text-sm">
         云同步服务未配置（缺少 <code>VITE_SYNC_API_URL</code>），请联系部署方启用。
       </div>
 
-      <!-- 未登录 -->
       <div v-else-if="!isLoggedIn" class="flex flex-col items-center gap-4 py-6">
         <p class="text-muted-foreground text-sm">
           登录后即可开启云同步
@@ -82,7 +131,6 @@ function handleReload() {
         </Button>
       </div>
 
-      <!-- 已登录 -->
       <div v-else class="space-y-4 py-2">
         <div class="flex items-center gap-3">
           <img
@@ -92,11 +140,24 @@ function handleReload() {
             class="size-10 rounded-full"
           >
           <div class="flex-1">
-            <div class="text-sm font-medium">
-              {{ user?.name || user?.login }}
+            <div class="flex items-center gap-2 text-sm font-medium">
+              <span>{{ user?.name || user?.login }}</span>
+              <span
+                v-if="isPro"
+                class="bg-primary text-primary-foreground inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
+              >
+                <Crown class="size-3" />
+                Pro
+              </span>
+              <span v-else class="bg-muted text-muted-foreground rounded px-1.5 py-0.5 text-xs">
+                免费
+              </span>
             </div>
             <div class="text-muted-foreground text-xs">
               上次同步：{{ lastSyncText }}
+            </div>
+            <div v-if="planExpiresText" class="text-muted-foreground text-xs">
+              Pro 到期：{{ planExpiresText }}
             </div>
           </div>
           <Button variant="ghost" size="icon" title="退出登录" @click="handleLogout">
@@ -104,9 +165,68 @@ function handleReload() {
           </Button>
         </div>
 
-        <div class="flex items-center justify-between">
-          <Label for="auto-sync" class="text-sm">自动同步</Label>
-          <Switch id="auto-sync" v-model="autoSyncEnabled" />
+        <div class="space-y-2">
+          <div class="flex items-center justify-between">
+            <Label for="auto-sync" class="text-sm">自动同步</Label>
+            <Switch id="auto-sync" v-model="autoSyncEnabled" />
+          </div>
+          <p class="text-muted-foreground text-xs">
+            {{ autoSyncHint }}
+          </p>
+        </div>
+
+        <div v-if="!isPro" class="bg-muted space-y-3 rounded-md p-3 text-sm">
+          <div class="font-medium">
+            升级 Pro · 实时云同步
+          </div>
+          <ul class="text-muted-foreground list-inside list-disc space-y-1 text-xs">
+            <li>编辑后约 3 秒自动同步</li>
+            <li>更高同步频率上限</li>
+            <li>付款备注请填写 GitHub 用户名：<code>{{ user?.login }}</code></li>
+          </ul>
+          <div v-if="proPlanLinks.length" class="grid grid-cols-3 gap-2">
+            <Button
+              v-for="plan in proPlanLinks"
+              :key="plan.planId"
+              as="a"
+              :href="plan.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              size="sm"
+              class="gap-1"
+            >
+              <ExternalLink class="size-3.5" />
+              {{ plan.label }}
+            </Button>
+          </div>
+          <Button
+            v-if="AFDIAN_PAGE_URL"
+            as="a"
+            :href="AFDIAN_PAGE_URL"
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="outline"
+            size="sm"
+            class="w-full gap-2"
+          >
+            查看爱发电主页
+          </Button>
+
+          <div class="space-y-2 border-t pt-3">
+            <Label for="order-no" class="text-xs">已付款？输入爱发电订单号激活</Label>
+            <div class="flex gap-2">
+              <Input
+                id="order-no"
+                v-model="orderNo"
+                placeholder="例如 202106232138371083454010626"
+                class="text-xs"
+              />
+              <Button size="sm" :disabled="activating" @click="handleActivate">
+                <Loader2 v-if="activating" class="size-4 animate-spin" />
+                <span v-else>激活</span>
+              </Button>
+            </div>
+          </div>
         </div>
 
         <div v-if="needsRefresh" class="bg-muted text-muted-foreground flex items-center justify-between gap-2 rounded-md p-2 text-xs">

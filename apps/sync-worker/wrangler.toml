@@ -25,7 +25,13 @@ migrations_dir = "migrations"
 # - 生产站、本地开发、Cloudflare PR 预览、Surge PR 预览
 APP_URL = "https://md.doocs.org,http://localhost:5173,https://md-pr-*.doocs.workers.dev,https://doocs-md-preview-pr-*.surge.sh"
 
+# 爱发电创作者 user_id（开发者后台可见，非密钥）
+AFDIAN_USER_ID = "f001c5a8655111f18f5e52540025c377"
+# 可开通 Pro 的爱发电方案 plan_id（月 / 季 / 年）
+AFDIAN_PRO_PLAN_IDS = "81efdc48655711f18b6d52540025c377,ced9acca655a11f1a7cc52540025c377,df5084a2655a11f1bea45254001e7c00"
+
 # 以下为敏感变量，请勿写入此文件，使用 `wrangler secret put` 设置：
 #   wrangler secret put GITHUB_CLIENT_ID
 #   wrangler secret put GITHUB_CLIENT_SECRET
 #   wrangler secret put JWT_SECRET
+#   wrangler secret put AFDIAN_API_TOKEN

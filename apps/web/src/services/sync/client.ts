@@ -1,10 +1,21 @@
-import type { PullResponse, PushRequest, PushResponse, SyncUser } from './types'
+import type { ActivateProResponse, PullResponse, PushRequest, PushResponse, SyncUser } from './types'
 
 /** 云同步后端地址，通过 VITE_SYNC_API_URL 注入，未配置则视为关闭云同步 */
 export const SYNC_API_URL = (import.meta.env.VITE_SYNC_API_URL ?? ``).replace(/\/$/, ``)
 
+/** 爱发电创作者主页，用于 Pro 升级跳转 */
+export const AFDIAN_PAGE_URL = (import.meta.env.VITE_AFDIAN_PAGE_URL ?? ``).replace(/\/$/, ``)
+
 export function isSyncConfigured(): boolean {
   return Boolean(SYNC_API_URL)
+}
+
+/** 是否在 UI 中展示云同步入口（可与后端配置解耦，用于上线前隐藏） */
+export function isSyncUiEnabled(): boolean {
+  const flag = import.meta.env.VITE_SYNC_UI_ENABLED
+  if (flag === `false` || flag === `0`)
+    return false
+  return isSyncConfigured()
 }
 
 /** 发起 GitHub 登录：跳转到后端 OAuth 入口，并带上当前应用入口 URL 用于登录后回跳 */
@@ -63,5 +74,9 @@ export class SyncClient {
 
   push(payload: PushRequest): Promise<PushResponse> {
     return this.request<PushResponse>(`POST`, `/sync/push`, payload)
+  }
+
+  activatePro(orderNo: string): Promise<ActivateProResponse> {
+    return this.request<ActivateProResponse>(`POST`, `/sync/activate`, { orderNo })
   }
 }
