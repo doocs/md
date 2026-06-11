@@ -24,7 +24,10 @@ app.use(`*`, async (c, next) => {
 app.get(`/`, c => c.json({ name: `md-sync`, ok: true }))
 
 app.route(`/auth`, authRoutes)
+// 爱发电 Webhook：无密钥与带路径密钥两种形式共用同一处理器。
+// 设置 AFDIAN_WEBHOOK_TOKEN 后，仅 `/webhooks/afdian/<token>` 可通过校验。
 app.post(`/webhooks/afdian`, afdianWebhookHandler)
+app.post(`/webhooks/afdian/:token`, afdianWebhookHandler)
 
 const api = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 api.use(`*`, authMiddleware)
