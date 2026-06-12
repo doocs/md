@@ -106,7 +106,6 @@ Markdown 支持简单的表格，用 `|` 和 `-` 分隔单元格和表头。
 | ------------------------------------------- | ---------------------- | ------------ |
 | [yanglbme](https://github.com/yanglbme)     | contact@yanglibin.info | YLB0109      |
 | [YangFong](https://github.com/YangFong)     | yangfong2022@gmail.com | yq2419731931 |
-| [thinkasany](https://github.com/thinkasany) | thinkasany@gmail.com   | thinkasany   |
 
 这样的表格让数据展示更为清爽！
 
@@ -340,7 +339,7 @@ data
 :::
 
 ::: proof
-由上述定义直接可得，证毕。$\blacksquare$
+由上述定义直接可得，证毕。
 :::
 
 类型名称可以是**任意文字**（包括中文），未匹配到内置样式时会使用统一的默认样式，并以名称作为标题：
