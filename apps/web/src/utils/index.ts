@@ -42,6 +42,17 @@ export function addPrefix(str: string) {
 }
 
 /**
+ * 导出 / 分享 / 独立预览的 shell 变量。
+ * 这些变量原本由 Web App 的全局样式（index.css 的 :root）提供，主题 CSS 通过
+ * hsl(var(--foreground)) / var(--blockquote-background) 引用它们。脱离 App 后
+ * 需手动补上，否则表格边框、引用块背景等会因变量未定义而失效。
+ */
+const SHARE_SHELL_VARS_CSS = `:root {
+  --foreground: 0 0% 3.9%;
+  --blockquote-background: #f7f7f7;
+}`
+
+/**
  * 导出原始 Markdown 文档
  * @param {string} doc - 文档内容
  * @param {string} title - 文档标题
@@ -101,6 +112,7 @@ export async function exportHTML(title: string = `untitled`) {
 <head>
   <meta charset="utf-8">
   <title>${sanitizeTitle(title)}</title>
+  <style>${SHARE_SHELL_VARS_CSS}</style>
   ${stylesToAdd}
 </head>
 <body>
@@ -155,6 +167,7 @@ export async function exportPDF(title: string = `untitled`) {
 <head>
   <meta charset="utf-8">
   <title>${safeTitle}</title>
+  <style>${SHARE_SHELL_VARS_CSS}</style>
   ${stylesToAdd}
   <style>
     /* 强制打印背景颜色和图片 */
@@ -276,12 +289,6 @@ function stripOutputScope(cssContent: string): string {
   css = css.replace(/^#output\s*/gm, ``)
   return css
 }
-
-/** 分享页 shell 变量（主题 CSS 中的 hsl(var(--foreground)) 等依赖） */
-const SHARE_SHELL_VARS_CSS = `:root {
-  --foreground: 0 0% 3.9%;
-  --blockquote-background: #f7f7f7;
-}`
 
 function getThemeStyles(): string {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
