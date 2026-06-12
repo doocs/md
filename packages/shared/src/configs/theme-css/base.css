@@ -5,7 +5,7 @@
 
 /* ==================== 容器样式 ==================== */
 section,
-container {
+#output .container {
   font-family: var(--md-font-family);
   font-size: var(--md-font-size);
   line-height: 1.75;

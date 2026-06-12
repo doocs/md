@@ -554,9 +554,9 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
       <div class="hidden min-w-0 flex-1 sm:block" />
 
       <!-- 右侧：统计信息 -->
-      <div class="ml-auto flex shrink-0 items-center gap-2 sm:gap-3">
+      <div class="ml-auto flex shrink-0 items-center gap-2.5 sm:gap-3.5">
         <!-- 视图模式切换 -->
-        <div class="flex items-center rounded-md border border-border/60 p-0.5">
+        <div class="flex items-center gap-0.5 rounded-md border border-border/60 p-0.5">
           <Tooltip v-for="mode in viewModes" :key="mode.key">
             <TooltipTrigger as-child>
               <button
@@ -647,72 +647,70 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
 
         <span class="hidden text-border sm:block">·</span>
 
-        <!-- 账户 -->
-        <template v-if="showAccountUi">
-          <Tooltip>
-            <TooltipTrigger as-child>
-              <button
-                aria-label="账户"
-                class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
-                :class="isLoggedIn ? 'text-primary' : ''"
-                @click="uiStore.toggleShowAccountDialog(true)"
-              >
-                <img
-                  v-if="isLoggedIn && authStore.user?.avatar"
-                  :src="authStore.user.avatar"
-                  :alt="authStore.user.login"
-                  class="size-3.5 rounded-full"
+        <!-- 账户 & 同步 & 主题 -->
+        <div class="flex items-center gap-1">
+          <template v-if="showAccountUi">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  aria-label="账户"
+                  class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  :class="isLoggedIn ? 'text-primary' : ''"
+                  @click="uiStore.toggleShowAccountDialog(true)"
                 >
-                <User v-else-if="isLoggedIn" class="size-3" />
-                <LogIn v-else class="size-3" />
-              </button>
-            </TooltipTrigger>
-            <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-              <p>{{ accountTooltip }}</p>
-            </TooltipContent>
-          </Tooltip>
-          <span class="hidden text-border sm:block">·</span>
-        </template>
+                  <img
+                    v-if="isLoggedIn && authStore.user?.avatar"
+                    :src="authStore.user.avatar"
+                    :alt="authStore.user.login"
+                    class="size-3.5 rounded-full"
+                  >
+                  <User v-else-if="isLoggedIn" class="size-3" />
+                  <LogIn v-else class="size-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>{{ accountTooltip }}</p>
+              </TooltipContent>
+            </Tooltip>
+          </template>
 
-        <!-- 云同步 -->
-        <template v-if="showSyncUi">
+          <template v-if="showSyncUi">
+            <Tooltip>
+              <TooltipTrigger as-child>
+                <button
+                  aria-label="云同步"
+                  class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
+                  :class="isLoggedIn ? 'text-primary' : ''"
+                  @click="uiStore.toggleShowSyncDialog(true)"
+                >
+                  <Loader2 v-if="isSyncing" class="size-3 animate-spin" />
+                  <CloudCheck v-else-if="isLoggedIn && syncState === 'synced'" class="size-3 text-green-500" />
+                  <CloudAlert v-else-if="isLoggedIn && syncState === 'error'" class="size-3 text-destructive" />
+                  <Cloud v-else class="size-3" />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+                <p>{{ syncTooltip }}</p>
+              </TooltipContent>
+            </Tooltip>
+          </template>
+
           <Tooltip>
             <TooltipTrigger as-child>
               <button
-                aria-label="云同步"
                 class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
-                :class="isLoggedIn ? 'text-primary' : ''"
-                @click="uiStore.toggleShowSyncDialog(true)"
+                :class="isDark ? 'text-foreground' : ''"
+                @click="uiStore.toggleDark()"
               >
-                <Loader2 v-if="isSyncing" class="size-3 animate-spin" />
-                <CloudCheck v-else-if="isLoggedIn && syncState === 'synced'" class="size-3 text-green-500" />
-                <CloudAlert v-else-if="isLoggedIn && syncState === 'error'" class="size-3 text-destructive" />
-                <Cloud v-else class="size-3" />
+                <Moon v-if="isDark" class="size-3" />
+                <Sun v-else class="size-3" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-              <p>{{ syncTooltip }}</p>
+              <p>{{ isDark ? '浅色模式' : '深色模式' }}</p>
             </TooltipContent>
           </Tooltip>
-          <span class="hidden text-border sm:block">·</span>
-        </template>
-
-        <!-- 深浅色切换 -->
-        <Tooltip>
-          <TooltipTrigger as-child>
-            <button
-              class="flex cursor-pointer items-center rounded p-0.5 transition-colors hover:bg-accent hover:text-foreground"
-              :class="isDark ? 'text-foreground' : ''"
-              @click="uiStore.toggleDark()"
-            >
-              <Moon v-if="isDark" class="size-3" />
-              <Sun v-else class="size-3" />
-            </button>
-          </TooltipTrigger>
-          <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-            <p>{{ isDark ? '浅色模式' : '深色模式' }}</p>
-          </TooltipContent>
-        </Tooltip>
+        </div>
       </div>
     </TooltipProvider>
   </footer>
