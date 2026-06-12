@@ -20,6 +20,24 @@ export interface Env {
    * 用于防止公开端点被任意调用 / 刷量（验单仍以爱发电 API 为准）。
    */
   AFDIAN_WEBHOOK_TOKEN?: string
+  /** 是否开启图床上传 API（`true` / `1`） */
+  UPLOAD_ENABLED?: string
+  /** 上传后端：`github`（默认）或 `r2` */
+  UPLOAD_BACKEND?: string
+  /** GitHub 图床用户名 */
+  UPLOAD_GITHUB_USERNAME?: string
+  /** GitHub 仓库列表，逗号分隔，如 `img0,img1`；留空则使用 img0–img19 */
+  UPLOAD_GITHUB_REPO_LIST?: string
+  /** GitHub 分支，默认 `main` */
+  UPLOAD_GITHUB_BRANCH?: string
+  /** 是否将 GitHub 链接替换为 jsDelivr CDN，默认 true */
+  UPLOAD_GITHUB_USE_CDN?: string
+  /** GitHub PAT 列表，逗号分隔（wrangler secret） */
+  UPLOAD_GITHUB_TOKENS?: string
+  /** R2 公开访问 URL 前缀，如 `https://images.example.com` */
+  UPLOAD_R2_PUBLIC_URL?: string
+  /** R2 图床 bucket 绑定（UPLOAD_BACKEND=r2 时需要） */
+  UPLOAD_IMAGES?: R2Bucket
 }
 
 export interface JwtPayload {
