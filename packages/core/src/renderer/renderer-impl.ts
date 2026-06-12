@@ -473,7 +473,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
     buildReadingTime,
     createContainer(content: string) {
-      return styledContent(`container mx-auto`, content, `section`)
+      return styledContent(`container`, content, `section`)
     },
     getOpts,
   }

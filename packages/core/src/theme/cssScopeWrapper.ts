@@ -38,6 +38,9 @@ export function wrapCSSWithScope(css: string, scope: string = `#output`): string
             return trimmed
           }
 
+          // 旧根容器类名兼容
+          trimmed = trimmed.replace(/\.md-container\b/g, `.container`)
+
           // 获取选择器的第一部分（基础选择器）
           const baseSelector = trimmed.split(/[\s>+~:[]/, 1)[0].trim()
 

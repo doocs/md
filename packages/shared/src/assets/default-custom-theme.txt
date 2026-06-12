@@ -13,7 +13,7 @@
 }
 
 /* 根容器 */
-.md-container {
+.container {
 }
 
 /* 标题样式 */
