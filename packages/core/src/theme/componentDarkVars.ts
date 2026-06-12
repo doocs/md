@@ -12,7 +12,7 @@
  *   - 复制到微信（不含此样式元素）：变量未定义 → 使用浅色回退值 ✓
  */
 
-const COMP_DARK_VARS_CSS = `.dark {
+export const COMP_DARK_VARS_CSS = `.dark {
   --md-comp-bg: #1e1e1e;
   --md-comp-bg-secondary: #2d2d2d;
   --md-comp-bg-stripe: #2a2a2a;
@@ -21,6 +21,18 @@ const COMP_DARK_VARS_CSS = `.dark {
   --md-comp-text-tertiary: #888;
   --md-comp-border-default: #404040;
   --md-comp-border-light: #333;
+}`
+
+/** 分享页暗色模式需注入的 CSS 变量（与 apps/web index.css 保持一致） */
+export const SHARE_SHELL_DARK_VARS_CSS = `.dark {
+  color-scheme: dark;
+  --foreground: 0 0% 98%;
+  --blockquote-background: #212121;
+}`
+
+export const SHARE_SHELL_LIGHT_VARS_CSS = `:root {
+  --foreground: 0 0% 3.9%;
+  --blockquote-background: #f7f7f7;
 }`
 
 /**

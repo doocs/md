@@ -12,10 +12,8 @@ export function buildSharePageHtml(
   title: string,
   bodyHtml: string,
   stylesHtml: string,
-  themeMode: 'light' | 'dark' = `light`,
 ): string {
   const safeTitle = escapeHtml(title || `Markdown 分享`)
-  const isDark = themeMode === `dark`
 
   return `<!DOCTYPE html>
 <html lang="zh-CN">
@@ -29,15 +27,18 @@ export function buildSharePageHtml(
   <style>
     body {
       margin: 0;
-      background: ${isDark ? `#1a1a1a` : `#f5f5f5`};
+      background: #f5f5f5;
     }
     .share-page {
       max-width: 750px;
       margin: 0 auto;
       padding: 20px;
-      background: ${isDark ? `#242424` : `#ffffff`};
+      background: #ffffff;
       box-sizing: border-box;
       min-height: 100vh;
+    }
+    .share-content {
+      background: #ffffff;
     }
     .share-page .diagram-download-bar {
       display: none !important;
@@ -45,9 +46,9 @@ export function buildSharePageHtml(
     .share-footer {
       margin-top: 48px;
       padding-top: 16px;
-      border-top: 1px solid ${isDark ? `#444` : `#eee`};
+      border-top: 1px solid #eee;
       font-size: 12px;
-      color: ${isDark ? `#999` : `#888`};
+      color: #888;
       text-align: center;
     }
     .share-footer a {
@@ -60,7 +61,9 @@ export function buildSharePageHtml(
 </head>
 <body>
   <div class="share-page">
+    <div class="share-content">
     ${bodyHtml}
+    </div>
     <div class="share-footer">
       <p class="share-view-count">阅读 {{SHARE_VIEW_COUNT}} 次</p>
       由 <a href="https://md.doocs.org" target="_blank" rel="noopener noreferrer">doocs/md</a> 渲染

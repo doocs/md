@@ -21,7 +21,6 @@ export interface CreateShareRequest {
   /** 前端文章 id，同一用户同一篇文章重复分享时链接不变 */
   postId: string
   title?: string
-  themeMode?: 'light' | 'dark'
   htmlSnapshot: ShareHtmlSnapshot
   /** 无密码 / 自定义密码 / 系统随机生成 */
   passwordMode?: SharePasswordMode

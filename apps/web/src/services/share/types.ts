@@ -8,7 +8,6 @@ export type SharePasswordMode = `none` | `custom` | `auto`
 export interface CreateShareRequest {
   postId: string
   title?: string
-  themeMode?: 'light' | 'dark'
   htmlSnapshot: ShareHtmlSnapshot
   passwordMode?: SharePasswordMode
   password?: string

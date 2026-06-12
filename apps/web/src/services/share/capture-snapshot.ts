@@ -1,4 +1,7 @@
-import { getExportStyles, getHtmlContent } from '@/utils'
+import { useEditorStore } from '@/stores/editor'
+import { useRenderStore } from '@/stores/render'
+import { useUIStore } from '@/stores/ui'
+import { getHtmlContent, getShareExportStyles } from '@/utils'
 
 const PREVIEW_READY_TIMEOUT_MS = 20_000
 const PREVIEW_POLL_INTERVAL_MS = 250
@@ -49,11 +52,30 @@ export async function waitForPreviewReady(timeoutMs = PREVIEW_READY_TIMEOUT_MS):
   }
 }
 
-/** 捕获当前预览 HTML 与样式（与编辑器预览一致） */
+/** 捕获浅色模式分享快照（编辑器处于深色模式时会临时按浅色重渲染） */
 export async function captureShareSnapshot(): Promise<{ bodyHtml: string, stylesHtml: string }> {
-  await waitForPreviewReady()
-  return {
-    bodyHtml: getHtmlContent(),
-    stylesHtml: await getExportStyles(),
+  const renderStore = useRenderStore()
+  const editorStore = useEditorStore()
+  const uiStore = useUIStore()
+  const content = editorStore.getContent()
+  const rerenderForLight = uiStore.isDark
+
+  if (rerenderForLight) {
+    renderStore.render(content, { themeMode: `light` })
+    await waitForPreviewReady()
+  }
+  else {
+    await waitForPreviewReady()
+  }
+
+  try {
+    return {
+      bodyHtml: getHtmlContent(),
+      stylesHtml: await getShareExportStyles(),
+    }
+  }
+  finally {
+    if (rerenderForLight)
+      renderStore.render(content, { themeMode: `dark` })
   }
 }

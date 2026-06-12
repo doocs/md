@@ -159,7 +159,6 @@ async function createShare() {
     const result = await shareClient.create({
       postId: currentPost.id,
       title: currentPost.title ?? ``,
-      themeMode: uiStore.isDark ? `dark` : `light`,
       htmlSnapshot,
       passwordMode: passwordMode.value,
       ...(passwordMode.value === `custom` ? { password: customPassword.value.trim() } : {}),

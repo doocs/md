@@ -80,10 +80,6 @@ function parsePostId(value: unknown): string | null {
   return postId
 }
 
-function parseThemeMode(value: unknown): 'light' | 'dark' {
-  return value === `dark` ? `dark` : `light`
-}
-
 function buildShareUrl(c: Context<{ Bindings: Env, Variables: { userId: string } }>, id: string): string {
   const url = new URL(c.req.url)
   return `${url.origin}/s/${id}`
@@ -232,12 +228,11 @@ export async function createShareHandler(c: Context<{ Bindings: Env, Variables: 
   const now = Date.now()
   const expiresAt = now + SHARE_EXPIRE_MS
   const title = typeof body.title === `string` ? body.title.trim().slice(0, 200) : ``
-  const themeMode = parseThemeMode(body.themeMode)
   const id = existing?.id ?? await deriveShareId(userId, postId)
 
   let html: string
   try {
-    html = buildSharePageHtml(title, htmlSnapshot.bodyHtml, htmlSnapshot.stylesHtml, themeMode)
+    html = buildSharePageHtml(title, htmlSnapshot.bodyHtml, htmlSnapshot.stylesHtml)
   }
   catch (err) {
     console.error(`[share] build page failed:`, err)
