@@ -65,7 +65,7 @@ export const useRenderStore = defineStore(`render`, () => {
   }
 
   // 渲染内容
-  const render = (content: string) => {
+  const render = (content: string, options?: { themeMode?: 'light' | 'dark' }) => {
     if (!renderer) {
       throw new Error(`Renderer not initialized. Call initRendererInstance first.`)
     }
@@ -73,6 +73,7 @@ export const useRenderStore = defineStore(`render`, () => {
     const themeStore = useThemeStore()
     const uiStore = useUIStore()
     const componentStore = useCustomComponentStore()
+    const themeMode = options?.themeMode ?? (uiStore.isDark ? `dark` : `light`)
 
     // 重置渲染器配置
     // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
@@ -82,7 +83,7 @@ export const useRenderStore = defineStore(`render`, () => {
       countStatus: themeStore.isCountStatus,
       isMacCodeBlock: themeStore.isMacCodeBlock,
       isShowLineNumber: themeStore.isShowLineNumber,
-      themeMode: uiStore.isDark ? 'dark' : 'light',
+      themeMode,
       components: componentStore.registry,
     })
 

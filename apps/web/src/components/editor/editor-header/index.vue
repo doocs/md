@@ -14,6 +14,7 @@ import FormatDropdown from './FormatDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
 import InsertDropdown from './InsertDropdown.vue'
 import MarkdownHelpDialog from './MarkdownHelpDialog.vue'
+import ShareDialog from './ShareDialog.vue'
 import StyleDropdown from './StyleDropdown.vue'
 import SyncDialog from './SyncDialog.vue'
 
@@ -62,6 +63,7 @@ function handleOpenMarkdownHelp() {
 
 const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
 const isCopying = ref(false)
+const shareDialogVisible = ref(false)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,
@@ -251,7 +253,7 @@ function copyToWeChat() {
     <!-- 桌面端左侧菜单 -->
     <div class="space-x-1 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown @open-editor-state="handleOpenEditorState" />
+        <FileDropdown @open-editor-state="handleOpenEditorState" @open-share="shareDialogVisible = true" />
         <EditDropdown @copy="handleCopy" />
         <FormatDropdown />
         <InsertDropdown />
@@ -270,7 +272,7 @@ function copyToWeChat() {
             </Button>
           </MenubarTrigger>
           <MenubarContent align="start">
-            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" />
+            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" @open-share="shareDialogVisible = true" />
             <EditDropdown :as-sub="true" @copy="handleCopy" />
             <FormatDropdown :as-sub="true" />
             <InsertDropdown :as-sub="true" />
@@ -318,6 +320,7 @@ function copyToWeChat() {
   <MarkdownHelpDialog :visible="markdownHelpDialogVisible" @close="markdownHelpDialogVisible = false" />
   <AccountDialog :visible="isShowAccountDialog" @close="isShowAccountDialog = false" />
   <SyncDialog :visible="isShowSyncDialog" @close="isShowSyncDialog = false" />
+  <ShareDialog v-model:open="shareDialogVisible" />
 </template>
 
 <style lang="less" scoped>

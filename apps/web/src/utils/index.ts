@@ -260,6 +260,20 @@ async function getHljsStyles(): Promise<string> {
   }
 }
 
+function scopeThemeCss(cssContent: string, scope: string): string {
+  let css = cssContent
+  css = css.replace(/#output\s*\{/g, `${scope} {`)
+  css = css.replace(/#output\s+/g, `${scope} `)
+  css = css.replace(/^#output\s*/gm, `${scope} `)
+  return css
+}
+
+/** 分享页 shell 变量（主题 CSS 中的 hsl(var(--foreground)) 等依赖） */
+const SHARE_SHELL_VARS_CSS = `:root {
+  --foreground: 0 0% 3.9%;
+  --blockquote-background: #f7f7f7;
+}`
+
 function getThemeStyles(): string {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
 
@@ -269,19 +283,30 @@ function getThemeStyles(): string {
   }
 
   // 移除 #output 作用域前缀，因为复制后的 HTML 不在 #output 容器中
-  let cssContent = themeStyle.textContent
-
-  // 处理 #output {} 为 body {}，避免出现 {} 无效样式
-  cssContent = cssContent.replace(/#output\s*\{/g, 'body {')
-
-  // 将 "#output h1" 替换为 "h1"，"#output .class" 替换为 ".class" 等
-  // 同时处理换行和多个空格的情况
-  cssContent = cssContent.replace(/#output\s+/g, '')
-  // 处理选择器开头的 #output（如果没有后续内容）
-  cssContent = cssContent.replace(/^#output\s*/gm, '')
+  const cssContent = scopeThemeCss(themeStyle.textContent, `body`)
 
   const styleContent = `<style>${cssContent}</style>`
   return styleContent
+}
+
+/** 分享页专用样式（固定浅色，作用域到 .share-content） */
+export async function getShareExportStyles(): Promise<string> {
+  const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
+  if (!themeStyle?.textContent) {
+    console.warn('[getShareExportStyles] 未找到主题样式')
+    return ``
+  }
+
+  const parts: string[] = [
+    `<style>${SHARE_SHELL_VARS_CSS}</style>`,
+    `<style>${scopeThemeCss(themeStyle.textContent, `.share-content`)}</style>`,
+  ]
+
+  const hljsStyles = await getHljsStyles()
+  if (hljsStyles)
+    parts.push(hljsStyles)
+
+  return parts.join(``)
 }
 
 async function mergeCss(html: string): Promise<string> {
@@ -314,6 +339,13 @@ function createEmptyNode(): HTMLElement {
   node.style.margin = `0`
   node.innerHTML = `&nbsp;`
   return node
+}
+
+/**
+ * 获取需要添加的样式（导出 / 分享页使用）
+ */
+export async function getExportStyles(): Promise<string> {
+  return getStylesToAdd()
 }
 
 /**

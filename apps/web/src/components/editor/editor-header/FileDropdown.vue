@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Cloud, Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Upload } from '@lucide/vue'
+import { Cloud, Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Share2, Upload } from '@lucide/vue'
+import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
@@ -11,7 +12,7 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openEditorState`])
+const emit = defineEmits([`openEditorState`, `openShare`])
 
 const { asSub } = toRefs(props)
 
@@ -22,6 +23,7 @@ const uiStore = useUIStore()
 const { isOpenPostSlider, isOpenFolderPanel } = storeToRefs(uiStore)
 const { toggleShowTemplateDialog, toggleShowImportMdDialog, toggleShowSyncDialog } = uiStore
 const showSyncUi = isSyncUiEnabled()
+const showShareUi = isShareUiEnabled()
 
 function openEditorStateDialog() {
   emit(`openEditorState`)
@@ -128,12 +130,17 @@ function exportEditorContent2PDF() {
         内容管理
       </MenubarItem>
 
-      <template v-if="showSyncUi">
+      <template v-if="showSyncUi || showShareUi">
         <MenubarSeparator />
         <!-- 云同步 -->
-        <MenubarItem @click="toggleShowSyncDialog(true)">
+        <MenubarItem v-if="showSyncUi" @click="toggleShowSyncDialog(true)">
           <Cloud class="mr-2 size-4" />
           云同步
+        </MenubarItem>
+        <!-- 分享预览 -->
+        <MenubarItem v-if="showShareUi" @click="emit('openShare')">
+          <Share2 class="mr-2 size-4" />
+          分享预览
         </MenubarItem>
       </template>
 
@@ -221,12 +228,17 @@ function exportEditorContent2PDF() {
         内容管理
       </MenubarItem>
 
-      <template v-if="showSyncUi">
+      <template v-if="showSyncUi || showShareUi">
         <MenubarSeparator />
         <!-- 云同步 -->
-        <MenubarItem @click="toggleShowSyncDialog(true)">
+        <MenubarItem v-if="showSyncUi" @click="toggleShowSyncDialog(true)">
           <Cloud class="mr-2 size-4" />
           云同步
+        </MenubarItem>
+        <!-- 分享预览 -->
+        <MenubarItem v-if="showShareUi" @click="emit('openShare')">
+          <Share2 class="mr-2 size-4" />
+          分享预览
         </MenubarItem>
       </template>
 

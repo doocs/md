@@ -2,7 +2,11 @@ import type { AccountUser } from './types'
 import { MD_API_URL } from './config'
 
 export class ApiError extends Error {
-  constructor(public status: number, message: string) {
+  constructor(
+    public status: number,
+    message: string,
+    public body?: Record<string, unknown>,
+  ) {
     super(message)
     this.name = `ApiError`
   }
@@ -28,13 +32,14 @@ export class MdApiClient {
 
     if (!res.ok) {
       let message = res.statusText
+      let body: Record<string, unknown> | undefined
       try {
-        const data = await res.json() as { error?: string }
-        if (data?.error)
-          message = data.error
+        body = await res.json() as Record<string, unknown>
+        if (typeof body?.error === `string`)
+          message = body.error
       }
       catch { /* ignore */ }
-      throw new ApiError(res.status, message)
+      throw new ApiError(res.status, message, body)
     }
 
     return res.json() as Promise<T>
