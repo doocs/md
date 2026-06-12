@@ -268,6 +268,15 @@ function scopeThemeCss(cssContent: string, scope: string): string {
   return css
 }
 
+/** 复制/导出：剥离 #output 前缀，使 juice 能匹配片段内元素（无 body/#output 祖先） */
+function stripOutputScope(cssContent: string): string {
+  let css = cssContent
+  css = css.replace(/#output\s*\{/g, `body {`)
+  css = css.replace(/#output\s+/g, ``)
+  css = css.replace(/^#output\s*/gm, ``)
+  return css
+}
+
 /** 分享页 shell 变量（主题 CSS 中的 hsl(var(--foreground)) 等依赖） */
 const SHARE_SHELL_VARS_CSS = `:root {
   --foreground: 0 0% 3.9%;
@@ -283,7 +292,7 @@ function getThemeStyles(): string {
   }
 
   // 移除 #output 作用域前缀，因为复制后的 HTML 不在 #output 容器中
-  const cssContent = scopeThemeCss(themeStyle.textContent, `body`)
+  const cssContent = stripOutputScope(themeStyle.textContent)
 
   const styleContent = `<style>${cssContent}</style>`
   return styleContent
