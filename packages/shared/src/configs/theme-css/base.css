@@ -25,6 +25,21 @@ section,
   margin-top: 0 !important;
 }
 
+/*
+ * 兜底重置：导出 HTML / 分享页 / 独立预览等脱离 Web App 的场景
+ * 没有 Tailwind preflight，浏览器 UA 默认样式会冒出来（如
+ * blockquote 默认左右各 40px margin、table 默认 border-collapse: separate）。
+ * 这里统一重置，保证导出结果与预览一致。各主题可在其后覆盖（如 margin-bottom）。
+ */
+#output blockquote {
+  margin: 0;
+}
+
+#output table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+
 .mermaid-diagram .nodeLabel p {
   color: unset !important;
   letter-spacing: unset !important;
