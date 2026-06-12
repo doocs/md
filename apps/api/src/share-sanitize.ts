@@ -1,9 +1,9 @@
 /** CSP for read-only share pages (no scripts, inline styles only). */
 export const SHARE_PAGE_CSP = [
-  `default-src 'none'`,
+  `default-src 'self'`,
   `script-src 'none'`,
   `style-src 'unsafe-inline'`,
-  `img-src https: data: blob:`,
+  `img-src 'self' https: data: blob:`,
   `font-src https: data:`,
   `connect-src 'none'`,
   `frame-src 'none'`,

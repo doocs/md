@@ -217,7 +217,6 @@ export async function createShareHandler(c: Context<{ Bindings: Env, Variables: 
         period: rate.period,
         limit: rate.limit,
         retryAfterSec: rate.retryAfterSec,
-        upgradeRequired: plan === `free`,
       },
       429,
     )

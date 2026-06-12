@@ -1,3 +1,4 @@
+import { sharePageFaviconLink } from './share-head'
 import { sharePageCspMeta } from './share-sanitize'
 
 function escapeHtml(text: string): string {
@@ -27,6 +28,7 @@ export function buildShareGateHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   ${sharePageCspMeta()}
+  ${sharePageFaviconLink()}
   <title>${safeTitle} - 需要密码</title>
   <style>
     * { box-sizing: border-box; }

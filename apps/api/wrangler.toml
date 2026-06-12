@@ -18,6 +18,11 @@ database_name = "md-sync"
 database_id = "d7659e81-8fda-4abc-b128-f7a5975f7a7d"
 migrations_dir = "migrations"
 
+# 分享页静态资源（favicon 等）
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
 # 非敏感变量（可直接提交）。生产部署时按需覆盖。
 [vars]
 # 前端来源白名单，用于 CORS 与「登录后回跳到发起方」。

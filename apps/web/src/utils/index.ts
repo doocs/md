@@ -1,4 +1,4 @@
-import { markedAlert, MDKatex, SHARE_SHELL_LIGHT_VARS_CSS } from '@md/core'
+import { markedAlert, MDKatex } from '@md/core'
 import { prefix } from '@md/shared/configs'
 // 直接导入供本文件内部使用
 import {
@@ -268,6 +268,12 @@ function scopeThemeCss(cssContent: string, scope: string): string {
   return css
 }
 
+/** 分享页 shell 变量（主题 CSS 中的 hsl(var(--foreground)) 等依赖） */
+const SHARE_SHELL_VARS_CSS = `:root {
+  --foreground: 0 0% 3.9%;
+  --blockquote-background: #f7f7f7;
+}`
+
 function getThemeStyles(): string {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
 
@@ -292,7 +298,7 @@ export async function getShareExportStyles(): Promise<string> {
   }
 
   const parts: string[] = [
-    `<style>${SHARE_SHELL_LIGHT_VARS_CSS}</style>`,
+    `<style>${SHARE_SHELL_VARS_CSS}</style>`,
     `<style>${scopeThemeCss(themeStyle.textContent, `.share-content`)}</style>`,
   ]
 

@@ -5,6 +5,7 @@ import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
 import { isAllowedOrigin } from './origin'
 import { createShareHandler, unlockShareHandler, viewShareHandler } from './share'
+import { SHARE_FAVICON_PATH } from './share-head'
 import { pullHandler, pushHandler } from './sync'
 import { afdianWebhookHandler } from './webhook'
 
@@ -23,6 +24,8 @@ app.use(`*`, async (c, next) => {
 })
 
 app.get(`/`, c => c.json({ name: `md-api`, ok: true }))
+
+app.get(SHARE_FAVICON_PATH, c => c.env.ASSETS.fetch(c.req.raw))
 
 app.route(`/auth`, authRoutes)
 // 爱发电 Webhook：无密钥与带路径密钥两种形式共用同一处理器。

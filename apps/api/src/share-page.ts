@@ -1,3 +1,4 @@
+import { sharePageFaviconLink } from './share-head'
 import { sharePageCspMeta } from './share-sanitize'
 
 function escapeHtml(text: string): string {
@@ -6,6 +7,60 @@ function escapeHtml(text: string): string {
     .replace(/</g, `&lt;`)
     .replace(/>/g, `&gt;`)
     .replace(/"/g, `&quot;`)
+}
+
+export const SHARE_VIEW_COUNT_PLACEHOLDER = `{{SHARE_VIEW_COUNT}}`
+
+const SHARE_DOOCS_URL = `https://github.com/doocs/md`
+
+const SHARE_FOOTER_STYLES = `
+    .share-footer {
+      margin-top: 56px;
+      padding: 24px 16px 16px;
+      border-top: 1px solid #ebebeb;
+      text-align: center;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+    .share-footer-inner {
+      margin: 0;
+      display: inline-flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 6px 10px;
+      max-width: 100%;
+      font-size: 12px;
+      line-height: 1.6;
+      color: #888;
+    }
+    .share-footer-copy a {
+      color: #555;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .share-footer-divider {
+      color: #d4d4d4;
+      user-select: none;
+      font-weight: 300;
+    }
+    .share-footer-meta {
+      color: #aaa;
+      font-size: 11px;
+      letter-spacing: 0.02em;
+    }`
+
+function buildShareFooterHtml(viewCount: number | string): string {
+  const count = typeof viewCount === `string`
+    ? viewCount
+    : String(Math.max(0, Math.floor(viewCount)))
+
+  return `<div class="share-footer">
+      <p class="share-footer-inner">
+        <span class="share-footer-copy">Copyright © <a href="${SHARE_DOOCS_URL}" target="_blank" rel="noopener noreferrer">Doocs</a>. All rights reserved.</span>
+        <span class="share-footer-divider" aria-hidden="true">·</span>
+        <span class="share-footer-meta">阅读 ${count} 次</span>
+      </p>
+    </div>`
 }
 
 export function buildSharePageHtml(
@@ -22,6 +77,7 @@ export function buildSharePageHtml(
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
   ${sharePageCspMeta()}
+  ${sharePageFaviconLink()}
   <title>${safeTitle}</title>
   ${stylesHtml}
   <style>
@@ -43,20 +99,7 @@ export function buildSharePageHtml(
     .share-page .diagram-download-bar {
       display: none !important;
     }
-    .share-footer {
-      margin-top: 48px;
-      padding-top: 16px;
-      border-top: 1px solid #eee;
-      font-size: 12px;
-      color: #888;
-      text-align: center;
-    }
-    .share-footer a {
-      color: inherit;
-    }
-    .share-view-count {
-      margin: 0 0 8px;
-    }
+    ${SHARE_FOOTER_STYLES}
   </style>
 </head>
 <body>
@@ -64,30 +107,31 @@ export function buildSharePageHtml(
     <div class="share-content">
     ${bodyHtml}
     </div>
-    <div class="share-footer">
-      <p class="share-view-count">阅读 {{SHARE_VIEW_COUNT}} 次</p>
-      由 <a href="https://md.doocs.org" target="_blank" rel="noopener noreferrer">doocs/md</a> 渲染
-    </div>
+    ${buildShareFooterHtml(SHARE_VIEW_COUNT_PLACEHOLDER)}
   </div>
 </body>
 </html>`
 }
 
-const SHARE_VIEW_COUNT_PLACEHOLDER = `{{SHARE_VIEW_COUNT}}`
+const LEGACY_FOOTER_RE = /<div class="share-footer">[\s\S]*?<\/div>/
 
-/** 将快照 HTML 中的阅读数占位符替换为当前值（兼容旧版无占位符的快照） */
+/** 将快照 HTML 中的阅读数占位符替换为当前值（兼容旧版 footer） */
 export function injectShareViewCount(html: string, viewCount: number): string {
   const safeCount = Math.max(0, Math.floor(viewCount))
-  if (html.includes(SHARE_VIEW_COUNT_PLACEHOLDER))
-    return html.replaceAll(SHARE_VIEW_COUNT_PLACEHOLDER, String(safeCount))
+  const countText = String(safeCount)
 
-  const legacyFooter = `<div class="share-footer">\n      由 <a href="https://md.doocs.org"`
-  if (html.includes(legacyFooter)) {
-    return html.replace(
-      legacyFooter,
-      `<div class="share-footer">\n      <p class="share-view-count">阅读 ${safeCount} 次</p>\n      由 <a href="https://md.doocs.org"`,
-    )
-  }
+  let next = html.includes(SHARE_VIEW_COUNT_PLACEHOLDER)
+    ? html.replaceAll(SHARE_VIEW_COUNT_PLACEHOLDER, countText)
+    : html
 
-  return html
+  if (next.includes(`share-footer-inner`))
+    return next
+
+  if (!LEGACY_FOOTER_RE.test(next))
+    return next
+
+  next = next.replace(LEGACY_FOOTER_RE, buildShareFooterHtml(safeCount))
+  if (!next.includes(`.share-footer-inner {`))
+    next = next.replace(`</style>`, `${SHARE_FOOTER_STYLES}\n  </style>`)
+  return next
 }
