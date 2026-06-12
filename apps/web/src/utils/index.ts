@@ -317,6 +317,13 @@ function createEmptyNode(): HTMLElement {
 }
 
 /**
+ * 获取需要添加的样式（导出 / 分享页使用）
+ */
+export async function getExportStyles(): Promise<string> {
+  return getStylesToAdd()
+}
+
+/**
  * 获取需要添加的样式
  * @returns {Promise<string>} 样式字符串
  */

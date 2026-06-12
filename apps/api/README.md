@@ -6,6 +6,7 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 
 - GitHub OAuth 登录，签发自有 JWT（HS256，有效期 30 天）
 - 文章与偏好设置的增量同步（`/sync/pull`、`/sync/push`）
+- **预览分享**：登录用户可将编辑器预览快照发布为只读链接（`/share` → `GET /s/:id`），支持访问密码，默认 1 天过期
 - **免费 / Pro 套餐**：Pro 支持更高同步频率；免费版限 30 次/小时，Pro 限 300 次/小时
 - **爱发电 Pro 开通**：Webhook 自动激活 + 订单号手动激活
 - 冲突策略：**last-write-wins**（按 `updateDatetime`），软删除墓碑保证删除可传播
@@ -24,6 +25,9 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 - `GET  /sync/pull?since=<ms>` 拉取游标之后的变更
 - `POST /sync/push` 推送本地变更（LWW 合并）
 - `POST /sync/activate` 用爱发电订单号激活 Pro（需登录）
+- `POST /share` 创建/更新预览分享（需登录；按 `user_id + post_id` 去重）
+- `GET  /s/:shareId` 只读分享页（有密码时需先解锁）
+- `POST /s/:shareId/unlock` 校验分享密码并写入访问 Cookie
 - `POST /webhooks/afdian` 爱发电订单 Webhook
 
 ## 部署步骤
@@ -109,11 +113,12 @@ VITE_AFDIAN_ORDER_BASE=https://ifdian.net
 
 ## 套餐说明
 
-| 能力         | 免费       | Pro           |
-| ------------ | ---------- | ------------- |
-| 手动同步     | ✅         | ✅            |
-| 自动同步     | —          | 编辑后约 3 秒 |
-| 同步频率上限 | 30 次/小时 | 300 次/小时   |
+| 能力              | 免费       | Pro           |
+| ----------------- | ---------- | ------------- |
+| 手动同步          | ✅         | ✅            |
+| 自动同步          | —          | 编辑后约 3 秒 |
+| 同步频率上限      | 30 次/小时 | 300 次/小时   |
+| 分享（新建/更新） | 2 次/天    | 不限          |
 
 爱发电每赞助 1 个月 = **31 天** Pro 有效期。
 

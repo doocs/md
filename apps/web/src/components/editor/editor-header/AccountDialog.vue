@@ -46,7 +46,7 @@ function handleLogout() {
           账户
         </DialogTitle>
         <DialogDescription>
-          登录后可使用云同步等云端能力，后续将支持更多高级功能。
+          登录后可使用云同步等云端能力。
         </DialogDescription>
       </DialogHeader>
 
@@ -54,10 +54,7 @@ function handleLogout() {
         账户服务未配置（缺少 <code>VITE_MD_API_URL</code> 或 <code>VITE_SYNC_API_URL</code>）。
       </div>
 
-      <div v-else-if="!isLoggedIn" class="flex flex-col items-center gap-4 px-6 py-8">
-        <p class="text-muted-foreground text-center text-sm">
-          使用 GitHub 登录，在多设备间同步数据
-        </p>
+      <div v-else-if="!isLoggedIn" class="flex flex-col items-center px-6 py-8">
         <Button class="gap-2" @click="handleLogin">
           <LogIn class="size-4" />
           使用 GitHub 登录

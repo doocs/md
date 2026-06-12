@@ -11,6 +11,12 @@ export const SYNC_RATE_LIMIT = {
   pro: 300,
 } as const
 
+/** 每天分享（新建或更新）次数上限；`pro: null` 表示不限 */
+export const SHARE_CREATE_LIMIT: Record<UserPlan, number | null> = {
+  free: 2,
+  pro: null,
+}
+
 export function normalizeGithubLogin(value: string): string {
   return value.trim().toLowerCase()
 }
@@ -48,6 +54,17 @@ function utcHourKey(): string {
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, `0`)}-${String(d.getUTCDate()).padStart(2, `0`)}T${String(d.getUTCHours()).padStart(2, `0`)}`
 }
 
+function utcDayKey(): string {
+  const d = new Date()
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, `0`)}-${String(d.getUTCDate()).padStart(2, `0`)}`
+}
+
+export function sharePublishRetryAfterSec(): number {
+  const d = new Date()
+  const nextDayUtc = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + 1)
+  return Math.max(1, Math.floor((nextDayUtc - d.getTime()) / 1000))
+}
+
 export async function checkSyncRateLimit(
   db: D1Database,
   userId: string,
@@ -77,6 +94,53 @@ export async function checkSyncRateLimit(
     .run()
 
   return { allowed: true, limit }
+}
+
+export async function peekShareCreateRateLimit(
+  db: D1Database,
+  userId: string,
+  plan: UserPlan,
+): Promise<{ allowed: boolean, limit: number | null, period: `day`, retryAfterSec?: number }> {
+  const limit = SHARE_CREATE_LIMIT[plan]
+  if (limit == null)
+    return { allowed: true, limit: null, period: `day` }
+
+  const scopeKey = `share:publish:${userId}`
+  const dayKey = utcDayKey()
+
+  const row = await db
+    .prepare(`SELECT count FROM share_rate_limits WHERE scope_key = ? AND hour_key = ?`)
+    .bind(scopeKey, dayKey)
+    .first<{ count: number }>()
+
+  const count = row?.count ?? 0
+  if (count >= limit) {
+    return { allowed: false, limit, period: `day`, retryAfterSec: sharePublishRetryAfterSec() }
+  }
+
+  return { allowed: true, limit, period: `day` }
+}
+
+/** Increment daily share publish quota; call only after a successful create/update. */
+export async function consumeShareCreateRateLimit(
+  db: D1Database,
+  userId: string,
+  plan: UserPlan,
+): Promise<void> {
+  const limit = SHARE_CREATE_LIMIT[plan]
+  if (limit == null)
+    return
+
+  const scopeKey = `share:publish:${userId}`
+  const dayKey = utcDayKey()
+
+  await db
+    .prepare(
+      `INSERT INTO share_rate_limits (scope_key, hour_key, count) VALUES (?, ?, 1)
+       ON CONFLICT(scope_key, hour_key) DO UPDATE SET count = count + 1`,
+    )
+    .bind(scopeKey, dayKey)
+    .run()
 }
 
 export async function getUserByGithubLogin(db: D1Database, login: string) {

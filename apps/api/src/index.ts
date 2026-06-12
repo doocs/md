@@ -4,6 +4,7 @@ import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
 import { isAllowedOrigin } from './origin'
+import { createShareHandler, unlockShareHandler, viewShareHandler } from './share'
 import { pullHandler, pushHandler } from './sync'
 import { afdianWebhookHandler } from './webhook'
 
@@ -29,12 +30,17 @@ app.route(`/auth`, authRoutes)
 app.post(`/webhooks/afdian`, afdianWebhookHandler)
 app.post(`/webhooks/afdian/:token`, afdianWebhookHandler)
 
+// 公开分享：只读 HTML 预览页 + 密码解锁
+app.get(`/s/:shareId`, viewShareHandler)
+app.post(`/s/:shareId/unlock`, unlockShareHandler)
+
 const api = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 api.use(`*`, authMiddleware)
 api.get(`/me`, meHandler)
 api.get(`/sync/pull`, pullHandler)
 api.post(`/sync/push`, pushHandler)
 api.post(`/sync/activate`, activateHandler)
+api.post(`/share`, createShareHandler)
 
 app.route(`/`, api)
 
