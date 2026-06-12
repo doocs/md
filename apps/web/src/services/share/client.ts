@@ -1,4 +1,4 @@
-import type { CreateShareRequest, CreateShareResponse } from './types'
+import type { CreateShareRequest, CreateShareResponse, ListSharesResponse } from './types'
 import { ApiError, MdApiClient } from '@/services/account/client'
 import { isAccountConfigured, MD_API_URL } from '@/services/account/config'
 
@@ -19,8 +19,16 @@ export function getSharePageUrl(id: string): string {
 }
 
 export class ShareClient extends MdApiClient {
+  list(): Promise<ListSharesResponse> {
+    return this.request<ListSharesResponse>(`GET`, `/share`)
+  }
+
   create(payload: CreateShareRequest): Promise<CreateShareResponse> {
     return this.request<CreateShareResponse>(`POST`, `/share`, payload)
+  }
+
+  revoke(id: string): Promise<{ ok: true }> {
+    return this.request<{ ok: true }>(`DELETE`, `/share/${id}`)
   }
 }
 

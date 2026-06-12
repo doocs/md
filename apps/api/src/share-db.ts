@@ -15,6 +15,43 @@ export async function getShareById(db: D1Database, id: string): Promise<ShareRow
   return db.prepare(`SELECT * FROM shares WHERE id = ?`).bind(id).first<ShareRow>()
 }
 
+export interface ShareListRow {
+  id: string
+  post_id: string
+  title: string
+  password_hash: string | null
+  created_at: number
+  expires_at: number | null
+  view_count: number
+}
+
+export async function listSharesByUserId(db: D1Database, userId: string): Promise<ShareListRow[]> {
+  const result = await db
+    .prepare(
+      `SELECT id, post_id, title, password_hash, created_at, expires_at, view_count
+       FROM shares
+       WHERE user_id = ?
+       ORDER BY created_at DESC`,
+    )
+    .bind(userId)
+    .all<ShareListRow>()
+
+  return result.results ?? []
+}
+
+export async function deleteShareByUserAndId(
+  db: D1Database,
+  userId: string,
+  id: string,
+): Promise<boolean> {
+  const result = await db
+    .prepare(`DELETE FROM shares WHERE user_id = ? AND id = ?`)
+    .bind(userId, id)
+    .run()
+
+  return (result.meta.changes ?? 0) > 0
+}
+
 export async function insertShare(
   db: D1Database,
   row: {

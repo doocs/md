@@ -4,7 +4,7 @@ import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
 import { isAllowedOrigin } from './origin'
-import { createShareHandler, unlockShareHandler, viewShareHandler } from './share'
+import { createShareHandler, deleteShareHandler, listSharesHandler, unlockShareHandler, viewShareHandler } from './share'
 import { SHARE_FAVICON_PATH } from './share-head'
 import { pullHandler, pushHandler } from './sync'
 import { afdianWebhookHandler } from './webhook'
@@ -15,7 +15,7 @@ const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 app.use(`*`, async (c, next) => {
   const handler = cors({
     origin: origin => (isAllowedOrigin(c.env, origin) ? origin : null),
-    allowMethods: [`GET`, `POST`, `OPTIONS`],
+    allowMethods: [`GET`, `POST`, `DELETE`, `OPTIONS`],
     allowHeaders: [`Authorization`, `Content-Type`],
     credentials: true,
     maxAge: 86400,
@@ -43,7 +43,9 @@ api.get(`/me`, meHandler)
 api.get(`/sync/pull`, pullHandler)
 api.post(`/sync/push`, pushHandler)
 api.post(`/sync/activate`, activateHandler)
+api.get(`/share`, listSharesHandler)
 api.post(`/share`, createShareHandler)
+api.delete(`/share/:id`, deleteShareHandler)
 
 app.route(`/`, api)
 
