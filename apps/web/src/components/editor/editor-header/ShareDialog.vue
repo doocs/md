@@ -6,10 +6,8 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { SYNC_PRO_ENABLED } from '@/services/account/features'
 import { captureShareSnapshot } from '@/services/share/capture-snapshot'
 import { isShareConfigured, ShareApiError, ShareClient } from '@/services/share/client'
-import { AFDIAN_PAGE_URL } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
@@ -111,20 +109,12 @@ function formatShareError(err: unknown): string {
   if (err instanceof ShareApiError && err.status === 429 && err.body?.error === `rate_limited`) {
     const limit = typeof err.body.limit === `number` ? err.body.limit : null
     const retryAfterSec = typeof err.body.retryAfterSec === `number` ? err.body.retryAfterSec : null
-    const upgradeRequired = err.body.upgradeRequired === true
     const limitText = limit != null ? `每天最多分享 ${limit} 次` : `分享过于频繁`
     const retryHint = retryAfterSec != null
       ? retryAfterSec >= 3600
         ? `，请 ${Math.ceil(retryAfterSec / 3600)} 小时后再试`
         : `，请 ${Math.max(1, Math.ceil(retryAfterSec / 60))} 分钟后再试`
       : `，请明天再试`
-
-    if (upgradeRequired) {
-      const proHint = SYNC_PRO_ENABLED && AFDIAN_PAGE_URL
-        ? `，或升级 Pro 解除限制`
-        : `。Pro 会员上线后将不受此限制`
-      return `免费版${limitText}${retryHint}${proHint}`
-    }
 
     return `${limitText}${retryHint}`
   }
@@ -268,7 +258,7 @@ watch(() => props.open, (visible) => {
               v-if="!isProUser"
               class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground"
             >
-              免费版 2 次/天
+              2 次/天
             </span>
           </div>
 
