@@ -39,3 +39,19 @@ export interface CreateShareResponse {
   /** 仅 passwordMode=auto 时返回系统生成的明文密码 */
   password?: string
 }
+
+export interface ShareListItem {
+  id: string
+  postId: string
+  title: string
+  url: string
+  createdAt: number
+  expiresAt: number | null
+  viewCount: number
+  protected: boolean
+  expired: boolean
+}
+
+export interface ListSharesResponse {
+  shares: ShareListItem[]
+}

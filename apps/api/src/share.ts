@@ -9,12 +9,14 @@ import {
   peekShareCreateRateLimit,
 } from './plan'
 import {
+  deleteShareByUserAndId,
   getShareById,
   getShareByUserAndPostId,
   getShareRateLimitCount,
   incrementShareRateLimit,
   incrementShareViewCount,
   insertShare,
+  listSharesByUserId,
   shareRateLimitRetryAfterSec,
   updateShareContent,
 } from './share-db'
@@ -177,6 +179,65 @@ async function parseUnlockPassword(c: Context<{ Bindings: Env }>): Promise<strin
   }
 }
 
+const SHARE_ID_RE = /^[a-f0-9]{12}$/i
+
+type ShareManageAccess = { ok: true } | { ok: false, error: `not_found` | `pro_required` }
+
+async function requireProForShareManage(
+  c: Context<{ Bindings: Env, Variables: { userId: string } }>,
+): Promise<ShareManageAccess> {
+  const user = await getUserById(c.env.DB, c.get(`userId`))
+  if (!user)
+    return { ok: false, error: `not_found` }
+
+  const plan = getEffectivePlan(user.plan ?? `free`, user.plan_expires_at ?? null)
+  if (plan !== `pro`)
+    return { ok: false, error: `pro_required` }
+
+  return { ok: true }
+}
+
+export async function listSharesHandler(c: Context<{ Bindings: Env, Variables: { userId: string } }>) {
+  const access = await requireProForShareManage(c)
+  if (!access.ok)
+    return c.json({ error: access.error }, access.error === `pro_required` ? 403 : 404)
+
+  const userId = c.get(`userId`)
+  const rows = await listSharesByUserId(c.env.DB, userId)
+  const now = Date.now()
+
+  return c.json({
+    shares: rows.map(row => ({
+      id: row.id,
+      postId: row.post_id,
+      title: row.title,
+      url: buildShareUrl(c, row.id),
+      createdAt: row.created_at,
+      expiresAt: row.expires_at,
+      viewCount: row.view_count,
+      protected: row.password_hash != null,
+      expired: row.expires_at != null && row.expires_at <= now,
+    })),
+  })
+}
+
+export async function deleteShareHandler(c: Context<{ Bindings: Env, Variables: { userId: string } }>) {
+  const access = await requireProForShareManage(c)
+  if (!access.ok)
+    return c.json({ error: access.error }, access.error === `pro_required` ? 403 : 404)
+
+  const id = c.req.param(`id`)
+  if (!id || !SHARE_ID_RE.test(id))
+    return c.json({ error: `invalid_id` }, 400)
+
+  const userId = c.get(`userId`)
+  const deleted = await deleteShareByUserAndId(c.env.DB, userId, id)
+  if (!deleted)
+    return c.json({ error: `not_found` }, 404)
+
+  return c.json({ ok: true })
+}
+
 export async function createShareHandler(c: Context<{ Bindings: Env, Variables: { userId: string } }>) {
   let body: CreateShareRequest
   try {
@@ -277,7 +338,7 @@ export async function createShareHandler(c: Context<{ Bindings: Env, Variables: 
 
 export async function viewShareHandler(c: Context<{ Bindings: Env }>) {
   const id = c.req.param(`shareId`)
-  if (!id || !/^[a-f0-9]{12}$/i.test(id))
+  if (!id || !SHARE_ID_RE.test(id))
     return c.text(`Not Found`, 404)
 
   const share = await getShareById(c.env.DB, id)

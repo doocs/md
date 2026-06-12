@@ -21,3 +21,19 @@ export interface CreateShareResponse {
   protected: boolean
   password?: string
 }
+
+export interface ShareListItem {
+  id: string
+  postId: string
+  title: string
+  url: string
+  createdAt: number
+  expiresAt: number | null
+  viewCount: number
+  protected: boolean
+  expired: boolean
+}
+
+export interface ListSharesResponse {
+  shares: ShareListItem[]
+}
