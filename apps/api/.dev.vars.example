@@ -5,4 +5,4 @@ AFDIAN_API_TOKEN=
 # 可选：爱发电 Webhook 路径密钥。配置后回调地址为 /webhooks/afdian/<token>
 AFDIAN_WEBHOOK_TOKEN=
 # 默认图床 GitHub PAT，逗号分隔
-UPLOAD_GITHUB_TOKENS=
+UPLOAD_GITHUB_TOKENS_BUCKETIO=

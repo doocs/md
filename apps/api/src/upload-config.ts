@@ -27,7 +27,7 @@ export function getUploadBackend(env: Env): UploadBackend {
 }
 
 export function parseGithubUploadConfig(env: Env): UploadGithubConfig | null {
-  const tokensRaw = env.UPLOAD_GITHUB_TOKENS
+  const tokensRaw = env.UPLOAD_GITHUB_TOKENS_BUCKETIO
   if (!tokensRaw)
     return null
 
@@ -35,7 +35,7 @@ export function parseGithubUploadConfig(env: Env): UploadGithubConfig | null {
   if (!tokens.length)
     return null
 
-  const username = env.UPLOAD_GITHUB_USERNAME?.trim() || `doocsio`
+  const username = env.UPLOAD_GITHUB_USERNAME?.trim() || `bucketio`
   const repoList = (env.UPLOAD_GITHUB_REPO_LIST ?? ``)
     .split(`,`)
     .map(s => s.trim())
