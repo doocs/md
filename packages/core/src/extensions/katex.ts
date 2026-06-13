@@ -61,7 +61,10 @@ function inlineKatex(options: MarkedKatexOptions | undefined, renderer: KatexRen
         if (index === -1) {
           return
         }
-        const f = nonStandard ? index > -1 : index === 0 || indexSrc.charAt(index - 1) === ` `
+        const prevChar = index === 0 ? `` : indexSrc.charAt(index - 1)
+        const f = nonStandard
+          ? !/\d/.test(prevChar)
+          : index === 0 || prevChar === ` `
         if (f) {
           const possibleKatex = indexSrc.substring(index)
 
