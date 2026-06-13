@@ -26,16 +26,12 @@ export function getUploadBackend(env: Env): UploadBackend {
   return env.UPLOAD_BACKEND === `r2` ? `r2` : `github`
 }
 
-function deobfuscateToken(token: string): string {
-  return token.trim().replace(/doocsmd/g, ``)
-}
-
 export function parseGithubUploadConfig(env: Env): UploadGithubConfig | null {
   const tokensRaw = env.UPLOAD_GITHUB_TOKENS
   if (!tokensRaw)
     return null
 
-  const tokens = tokensRaw.split(`,`).map(deobfuscateToken).filter(Boolean)
+  const tokens = tokensRaw.split(`,`).map(s => s.trim()).filter(Boolean)
   if (!tokens.length)
     return null
 
