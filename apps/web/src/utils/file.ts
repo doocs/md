@@ -303,13 +303,16 @@ async function minioFileUpload(file: File) {
     ContentType: file.type,
   })
   const presignedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 })
-  await fetch(presignedUrl, {
+  const minioResponse = await window.fetch(presignedUrl, {
     method: `PUT`,
     headers: {
       'Content-Type': file.type,
     },
-    data: file,
+    body: file,
   })
+  if (!minioResponse.ok) {
+    throw new Error(`MinIO upload failed: ${minioResponse.status} ${minioResponse.statusText}`)
+  }
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
 
@@ -497,13 +500,16 @@ async function r2Upload(file: File) {
     new PutObjectCommand({ Bucket: bucket, Key: filename, ContentType: file.type }),
     { expiresIn: 300 },
   )
-  await fetch(signedUrl, {
+  const r2Response = await window.fetch(signedUrl, {
     method: `PUT`,
     headers: {
       'Content-Type': file.type,
     },
-    data: file,
+    body: file,
   })
+  if (!r2Response.ok) {
+    throw new Error(`R2 upload failed: ${r2Response.status} ${r2Response.statusText}`)
+  }
   return `${domain}/${filename}`
 }
 
