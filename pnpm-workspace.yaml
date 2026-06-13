@@ -46,6 +46,7 @@ overrides:
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
   dompurify@<3.4.0: ^3.4.8
+  esbuild: '>=0.28.1'
   flatted@<3.4.0: ^3.4.2
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6

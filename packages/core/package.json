@@ -14,7 +14,7 @@
   "dependencies": {
     "@antv/infographic": "^0.2.19",
     "@md/shared": "workspace:*",
-    "es-toolkit": "^1.47.0",
+    "es-toolkit": "^1.47.1",
     "fflate": "^0.8.3",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
