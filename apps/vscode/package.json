@@ -107,7 +107,7 @@
     "tsconfig-paths-webpack-plugin": "^4.2.0"
   },
   "devDependencies": {
-    "@types/node": "^25.9.2",
+    "@types/node": "^25.9.3",
     "@types/vscode": "^1.120.0",
     "@vscode/vsce": "^3.9.2",
     "tsx": "^4.22.4",
