@@ -74,19 +74,6 @@ function isImageFile(file: File): boolean {
   return file.type.startsWith(`image/`)
 }
 
-export async function uploadConfigHandler(c: UploadContext) {
-  const enabled = isUploadEnabled(c.env) && isUploadBackendReady(c.env)
-  if (!enabled) {
-    return c.json({ enabled: false })
-  }
-
-  return c.json({
-    enabled: true,
-    backend: getUploadBackend(c.env),
-    maxBytes: UPLOAD_MAX_BYTES,
-  })
-}
-
 export async function uploadHandler(c: UploadContext) {
   if (!isUploadEnabled(c.env))
     return c.json({ error: `upload_disabled` }, 404)

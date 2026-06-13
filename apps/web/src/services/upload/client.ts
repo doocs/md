@@ -1,6 +1,8 @@
 import { isAccountConfigured, MD_API_URL } from '@/services/account/config'
+import { ACCOUNT_TOKEN_KEY } from '@/services/account/oauth'
+import { store } from '@/utils/storage'
 
-export class UploadApiError extends Error {
+class UploadApiError extends Error {
   constructor(
     public status: number,
     message: string,
@@ -11,8 +13,7 @@ export class UploadApiError extends Error {
   }
 }
 
-/** 构建时开关：与 md-api 的 UPLOAD_ENABLED 同步，开启时默认图床走 Worker 上传 */
-export function isUploadViaApiEnabled(): boolean {
+function isUploadViaApiEnabled(): boolean {
   if (!isAccountConfigured())
     return false
   const flag = import.meta.env.VITE_UPLOAD_VIA_API
@@ -39,7 +40,7 @@ function uploadFilename(file: File): string {
   return `image.png`
 }
 
-export async function uploadImageViaApi(file: File, token?: string | null): Promise<string> {
+async function uploadImageViaApi(file: File, token?: string | null): Promise<string> {
   const formData = new FormData()
   formData.append(`file`, file, uploadFilename(file))
 
@@ -74,7 +75,10 @@ export async function uploadImageViaApi(file: File, token?: string | null): Prom
   return data.url
 }
 
-export function isUploadDisabledError(err: unknown): boolean {
-  return err instanceof UploadApiError
-    && (err.status === 404 || err.body?.error === `upload_disabled`)
+/** 默认图床：经 md-api 上传，登录可选（登录后享更高限流） */
+export async function uploadDefaultImage(file: File): Promise<string> {
+  if (!isUploadViaApiEnabled())
+    throw new Error(`默认图床需要配置 md-api 上传服务`)
+  const token = await store.get(ACCOUNT_TOKEN_KEY)
+  return await uploadImageViaApi(file, token || undefined)
 }

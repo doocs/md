@@ -1,8 +1,6 @@
 import type { S3ClientConfig } from '@aws-sdk/client-s3'
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
-import { giteeConfig, githubConfig } from '@md/shared/configs'
-
 import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
@@ -10,8 +8,7 @@ import Buffer from 'buffer-from'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
-import { ACCOUNT_TOKEN_KEY } from '@/services/account/oauth'
-import { isUploadDisabledError, isUploadViaApiEnabled, uploadImageViaApi } from '@/services/upload/client'
+import { uploadDefaultImage } from '@/services/upload/client'
 import { store } from './storage'
 
 /**
@@ -29,27 +26,9 @@ function safeJsonParse<T>(str: string | null | undefined, context: string = `con
   }
 }
 
-async function getConfig(useDefault: boolean, platform: string) {
-  if (useDefault) {
-    // load default config file
-    const config = platform === `github` ? githubConfig : giteeConfig
-    const { username, repoList, branch, accessTokenList } = config
-
-    // choose random token from access_token list
-    const tokenIndex = Math.floor(Math.random() * accessTokenList.length)
-    const accessToken = accessTokenList[tokenIndex].replace(`doocsmd`, ``)
-
-    // choose random repo from repo list
-    const repoIndex = Math.floor(Math.random() * repoList.length)
-    const repo = repoList[repoIndex]
-
-    return { username, repo, branch, accessToken }
-  }
-
-  // load configuration from storage
+async function getConfig(platform: string) {
   const customConfig = await store.getJSON<any>(`${platform}Config`, {}) || {}
 
-  // split username/repo
   const repoUrl = customConfig.repo
     .replace(`https://${platform}.com/`, ``)
     .replace(`http://${platform}.com/`, ``)
@@ -88,23 +67,8 @@ function getDateFilename(filename: string) {
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
 }
 
-// -----------------------------------------------------------------------
-// Default image host (API proxy or direct GitHub)
-// -----------------------------------------------------------------------
-
-async function defaultImageUpload(content: string, file: File): Promise<string> {
-  if (!isUploadViaApiEnabled())
-    return ghFileUpload(content, file.name)
-
-  try {
-    const token = await store.get(ACCOUNT_TOKEN_KEY)
-    return await uploadImageViaApi(file, token || undefined)
-  }
-  catch (err) {
-    if (isUploadDisabledError(err))
-      return ghFileUpload(content, file.name)
-    throw err
-  }
+async function defaultImageUpload(_content: string, file: File): Promise<string> {
+  return await uploadDefaultImage(file)
 }
 
 // -----------------------------------------------------------------------
@@ -112,11 +76,7 @@ async function defaultImageUpload(content: string, file: File): Promise<string> 
 // -----------------------------------------------------------------------
 
 async function ghFileUpload(content: string, filename: string) {
-  const useDefault = await store.get(`imgHost`) === `default`
-  const { username, repo, branch, accessToken, useCDN } = await getConfig(
-    useDefault,
-    `github`,
-  )
+  const { username, repo, branch, accessToken, useCDN } = await getConfig(`github`)
   const dir = getDir()
   const url = `https://api.github.com/repos/${username}/${repo}/contents/${dir}/`
   const dateFilename = getDateFilename(filename)
@@ -146,45 +106,10 @@ async function ghFileUpload(content: string, filename: string) {
   const githubResourceUrl = `raw.githubusercontent.com/${username}/${repo}/${branch}/`
   const cdnResourceUrl = `fastly.jsdelivr.net/gh/${username}/${repo}@${branch}/`
   res.content = res.data?.content || res.content
-  const shouldUseCDN = useDefault || useCDN
+  const shouldUseCDN = useCDN
   return shouldUseCDN
     ? res.content.download_url.replace(githubResourceUrl, cdnResourceUrl)
     : res.content.download_url
-}
-
-// -----------------------------------------------------------------------
-// Gitee File Upload
-// -----------------------------------------------------------------------
-
-async function giteeUpload(content: string, filename: string) {
-  const useDefault = await store.get(`imgHost`) === `default`
-  const { username, repo, branch, accessToken } = await getConfig(useDefault, `gitee`)
-  const dir = getDir()
-  const dateFilename = getDateFilename(filename)
-  const url = `https://gitee.com/api/v5/repos/${username}/${repo}/contents/${dir}/${dateFilename}`
-  const res = await fetch<{ content: {
-    download_url: string
-  } }, {
-    content: {
-      download_url: string
-    }
-    data: {
-      content: {
-        download_url: string
-      }
-    }
-  }>({
-    url,
-    method: `POST`,
-    data: {
-      content,
-      branch,
-      access_token: accessToken,
-      message: `Upload by ${window.location.href}`,
-    },
-  })
-  res.content = res.data?.content || res.content
-  return encodeURI(res.content.download_url)
 }
 
 // -----------------------------------------------------------------------
@@ -801,8 +726,6 @@ export async function fileUpload(content: string, file: File) {
       return txCOSFileUpload(file)
     case `qiniu`:
       return qiniuUpload(file)
-    case `gitee`:
-      return giteeUpload(content, file.name)
     case `github`:
       return ghFileUpload(content, file.name)
     case `mp`:

@@ -7,7 +7,7 @@ import { isAllowedOrigin } from './origin'
 import { createShareHandler, deleteShareHandler, listSharesHandler, unlockShareHandler, viewShareHandler } from './share'
 import { SHARE_FAVICON_PATH } from './share-head'
 import { pullHandler, pushHandler } from './sync'
-import { uploadConfigHandler, uploadHandler } from './upload'
+import { uploadHandler } from './upload'
 import { afdianWebhookHandler } from './webhook'
 
 const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
@@ -26,8 +26,7 @@ app.use(`*`, async (c, next) => {
 
 app.get(`/`, c => c.json({ name: `md-api`, ok: true }))
 
-// 默认图床备用上传（公开，由 UPLOAD_ENABLED 控制）
-app.get(`/upload/config`, uploadConfigHandler)
+// 默认图床上传（公开，由 UPLOAD_ENABLED 控制）
 app.post(`/upload`, uploadHandler)
 
 app.get(SHARE_FAVICON_PATH, c => c.env.ASSETS.fetch(c.req.raw))
