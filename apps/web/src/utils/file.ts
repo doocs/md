@@ -10,6 +10,8 @@ import Buffer from 'buffer-from'
 import CryptoJS from 'crypto-js'
 import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
+import { ACCOUNT_TOKEN_KEY } from '@/services/account/oauth'
+import { isUploadDisabledError, isUploadViaApiEnabled, uploadImageViaApi } from '@/services/upload/client'
 import { store } from './storage'
 
 /**
@@ -84,6 +86,25 @@ function getDateFilename(filename: string) {
   // 获取最后一个点号后的内容作为文件扩展名
   const fileSuffix = filename.split(`.`).pop()
   return `${currentTimestamp}-${uuidv4()}.${fileSuffix}`
+}
+
+// -----------------------------------------------------------------------
+// Default image host (API proxy or direct GitHub)
+// -----------------------------------------------------------------------
+
+async function defaultImageUpload(content: string, file: File): Promise<string> {
+  if (!isUploadViaApiEnabled())
+    return ghFileUpload(content, file.name)
+
+  try {
+    const token = await store.get(ACCOUNT_TOKEN_KEY)
+    return await uploadImageViaApi(file, token || undefined)
+  }
+  catch (err) {
+    if (isUploadDisabledError(err))
+      return ghFileUpload(content, file.name)
+    throw err
+  }
 }
 
 // -----------------------------------------------------------------------
@@ -797,6 +818,6 @@ export async function fileUpload(content: string, file: File) {
     case `formCustom`:
       return formCustomUpload(content, file)
     default:
-      return ghFileUpload(content, file.name)
+      return defaultImageUpload(content, file)
   }
 }
