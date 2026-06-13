@@ -9,7 +9,45 @@ export interface MarkedKatexOptions {
 }
 
 const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1(?=[\s?!.,:？！。，：]|$)/
-const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/ // Non-standard, even if there are no spaces before and after $ or $$, try to parse
+// Non-standard: allow tight `$...$`; amount-like `$` is filtered in findInlineKatexStart
+const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/
+
+/** nonStandard 模式下，跳过更像金额后缀的 `$` */
+function isAmountDollarSign(src: string, index: number): boolean {
+  if (index <= 0)
+    return false
+  const prev = src.charAt(index - 1)
+  if (/[\d,.]/.test(prev))
+    return true
+  return prev === ` ` && index >= 2 && /\d/.test(src.charAt(index - 2))
+}
+
+function isInlineKatexStart(src: string, index: number, nonStandard: boolean): boolean {
+  if (nonStandard)
+    return !isAmountDollarSign(src, index)
+  return index === 0 || src.charAt(index - 1) === ` `
+}
+
+function findInlineKatexStart(src: string, nonStandard: boolean, ruleReg: RegExp): number | undefined {
+  let indexSrc = src
+  let offset = 0
+
+  while (indexSrc) {
+    const index = indexSrc.indexOf(`$`)
+    if (index === -1)
+      return
+
+    if (isInlineKatexStart(indexSrc, index, nonStandard)) {
+      const possibleKatex = indexSrc.substring(index)
+      if (possibleKatex.match(ruleReg))
+        return offset + index
+    }
+
+    const next = indexSrc.substring(index + 1).replace(/^\$+/, ``)
+    offset += indexSrc.length - next.length
+    indexSrc = next
+  }
+}
 
 const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
 
@@ -53,25 +91,7 @@ function inlineKatex(options: MarkedKatexOptions | undefined, renderer: KatexRen
     name: `inlineKatex`,
     level: `inline` as const,
     start(src: string) {
-      let index
-      let indexSrc = src
-
-      while (indexSrc) {
-        index = indexSrc.indexOf(`$`)
-        if (index === -1) {
-          return
-        }
-        const f = nonStandard ? index > -1 : index === 0 || indexSrc.charAt(index - 1) === ` `
-        if (f) {
-          const possibleKatex = indexSrc.substring(index)
-
-          if (possibleKatex.match(ruleReg)) {
-            return index
-          }
-        }
-
-        indexSrc = indexSrc.substring(index + 1).replace(/^\$+/, ``)
-      }
+      return findInlineKatexStart(src, !!nonStandard, ruleReg)
     },
     tokenizer(src: string) {
       const match = src.match(ruleReg)
