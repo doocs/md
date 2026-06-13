@@ -33,7 +33,7 @@ export interface Env {
   /** 是否将 GitHub 链接替换为 jsDelivr CDN，默认 true */
   UPLOAD_GITHUB_USE_CDN?: string
   /** GitHub PAT 列表，逗号分隔（wrangler secret） */
-  UPLOAD_GITHUB_TOKENS?: string
+  UPLOAD_GITHUB_TOKENS_BUCKETIO?: string
   /** R2 公开访问 URL 前缀，如 `https://images.example.com` */
   UPLOAD_R2_PUBLIC_URL?: string
   /** R2 图床 bucket 绑定（UPLOAD_BACKEND=r2 时需要） */
