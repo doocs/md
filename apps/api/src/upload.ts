@@ -28,44 +28,28 @@ function getClientIp(c: UploadContext): string {
     ?? `unknown`
 }
 
-async function resolveUploadPlan(c: UploadContext): Promise<UserPlan | null> {
+async function resolveUploadScope(c: UploadContext): Promise<{ scopeKey: string, plan: UserPlan | null }> {
+  const ip = getClientIp(c)
   const header = c.req.header(`Authorization`) ?? ``
   const token = header.startsWith(`Bearer `) ? header.slice(7) : ``
   if (!token)
-    return null
+    return { scopeKey: `upload:ip:${ip}`, plan: null }
 
   try {
     const payload = (await verify(token, c.env.JWT_SECRET, `HS256`)) as unknown as JwtPayload
-    if (!payload?.sub)
-      return null
+    if (typeof payload?.sub !== `string`)
+      return { scopeKey: `upload:ip:${ip}`, plan: null }
 
     const user = await getUserById(c.env.DB, payload.sub)
     if (!user)
-      return null
+      return { scopeKey: `upload:ip:${ip}`, plan: null }
 
-    return getEffectivePlan(user.plan, user.plan_expires_at)
+    const plan = getEffectivePlan(user.plan, user.plan_expires_at)
+    return { scopeKey: `upload:user:${payload.sub}`, plan }
   }
   catch {
-    return null
+    return { scopeKey: `upload:ip:${ip}`, plan: null }
   }
-}
-
-async function resolveUploadScope(c: UploadContext): Promise<{ scopeKey: string, plan: UserPlan | null }> {
-  const plan = await resolveUploadPlan(c)
-  const ip = getClientIp(c)
-
-  if (plan) {
-    const header = c.req.header(`Authorization`) ?? ``
-    const token = header.startsWith(`Bearer `) ? header.slice(7) : ``
-    try {
-      const payload = (await verify(token, c.env.JWT_SECRET, `HS256`)) as unknown as JwtPayload
-      if (typeof payload?.sub === `string`)
-        return { scopeKey: `upload:user:${payload.sub}`, plan }
-    }
-    catch { /* fall through to IP scope */ }
-  }
-
-  return { scopeKey: `upload:ip:${ip}`, plan }
 }
 
 async function checkUploadRateLimit(
@@ -110,11 +94,6 @@ export async function uploadHandler(c: UploadContext) {
   if (!isUploadBackendReady(c.env))
     return c.json({ error: `upload_not_configured` }, 503)
 
-  const { scopeKey, plan } = await resolveUploadScope(c)
-  const blocked = await checkUploadRateLimit(c, scopeKey, plan)
-  if (blocked)
-    return blocked
-
   let body: Record<string, string | File>
   try {
     body = await c.req.parseBody()
@@ -132,6 +111,11 @@ export async function uploadHandler(c: UploadContext) {
 
   if (file.size <= 0 || file.size > UPLOAD_MAX_BYTES)
     return c.json({ error: `file_too_large`, maxBytes: UPLOAD_MAX_BYTES }, 400)
+
+  const { scopeKey, plan } = await resolveUploadScope(c)
+  const blocked = await checkUploadRateLimit(c, scopeKey, plan)
+  if (blocked)
+    return blocked
 
   const referer = c.req.header(`Referer`) ?? c.req.header(`Origin`) ?? `md-api`
 

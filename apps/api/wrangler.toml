@@ -35,7 +35,7 @@ AFDIAN_USER_ID = "f001c5a8655111f18f5e52540025c377"
 # 可开通 Pro 的爱发电方案 plan_id（月 / 季 / 年）
 AFDIAN_PRO_PLAN_IDS = "81efdc48655711f18b6d52540025c377,ced9acca655a11f1a7cc52540025c377,df5084a2655a11f1bea45254001e7c00"
 
-# 默认图床备用上传 API（前端开关 + 服务端 UPLOAD_ENABLED 共同控制）
+# 默认图床备用上传 API（UPLOAD_ENABLED + 前端 VITE_UPLOAD_VIA_API 共同控制）
 UPLOAD_ENABLED = "false"
 # 上传后端：github | r2
 UPLOAD_BACKEND = "r2"

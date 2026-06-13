@@ -19,15 +19,21 @@ export function isUploadViaApiEnabled(): boolean {
   return flag === `true` || flag === `1`
 }
 
-function uploadFilename(file: File): string {
-  const name = file.name?.trim()
-  if (name && name.includes(`.`) && !name.endsWith(`.blob`))
-    return name
+const INVALID_UPLOAD_EXTENSIONS = new Set([`blob`, `bin`, `octet-stream`])
 
-  const subtype = file.type?.split(`/`)[1]?.split(`+`)[0]
-  if (subtype === `jpeg`)
+function uploadFilename(file: File): string {
+  const name = file.name?.trim() ?? ``
+  const dotIndex = name.lastIndexOf(`.`)
+  if (dotIndex > 0 && dotIndex < name.length - 1) {
+    const ext = name.slice(dotIndex + 1).toLowerCase()
+    if (ext && !INVALID_UPLOAD_EXTENSIONS.has(ext))
+      return name
+  }
+
+  const subtype = file.type?.split(`/`)[1]?.split(`+`)[0]?.toLowerCase()
+  if (subtype === `jpeg` || subtype === `jpg`)
     return `image.jpg`
-  if (subtype)
+  if (subtype && subtype !== `octet-stream`)
     return `image.${subtype}`
 
   return `image.png`
