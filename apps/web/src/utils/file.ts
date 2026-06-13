@@ -311,7 +311,7 @@ async function minioFileUpload(file: File) {
     body: file,
   })
   if (!minioResponse.ok) {
-    throw new Error(`MinIO upload failed: ${minioResponse.statusText}`)
+    throw new Error(`MinIO upload failed: ${minioResponse.status} ${minioResponse.statusText}`)
   }
   return `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}/${bucket}/${dateFilename}`
 }
@@ -508,7 +508,7 @@ async function r2Upload(file: File) {
     body: file,
   })
   if (!r2Response.ok) {
-    throw new Error(`R2 upload failed: ${r2Response.statusText}`)
+    throw new Error(`R2 upload failed: ${r2Response.status} ${r2Response.statusText}`)
   }
   return `${domain}/${filename}`
 }
