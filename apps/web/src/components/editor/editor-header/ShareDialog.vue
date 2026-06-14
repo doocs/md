@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
 import type { ShareListItem, SharePasswordMode } from '@/services/share/types'
-import { Check, Clock, Copy, ExternalLink, Eye, Globe, KeyRound, Loader2, LogIn, RefreshCw, Share2, Sparkles, Trash2 } from '@lucide/vue'
+import { Check, Clock, Copy, ExternalLink, Eye, Globe, Inbox, KeyRound, Loader2, LogIn, RefreshCw, Share2, Sparkles, Trash2 } from '@lucide/vue'
+import { storeToRefs } from 'pinia'
+import { computed, ref, watch } from 'vue'
+import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
+import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
+import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { captureShareSnapshot } from '@/services/share/capture-snapshot'
-import { isShareConfigured, ShareApiError, ShareClient } from '@/services/share/client'
+import { isShareConfigured, isShareProUser, ShareApiError, ShareClient } from '@/services/share/client'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
 import { usePostStore } from '@/stores/post'
@@ -18,7 +23,9 @@ const props = defineProps<{
   open: boolean
 }>()
 
-const emit = defineEmits([`update:open`])
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
 
 interface PasswordOption {
   value: SharePasswordMode
@@ -54,21 +61,22 @@ const uiStore = useUIStore()
 const confirmStore = useConfirmStore()
 
 const { isLoggedIn, user } = storeToRefs(authStore)
+const { shareDialogInitialTab } = storeToRefs(uiStore)
 
 const activeTab = ref<`create` | `manage`>(`create`)
 const shareList = ref<ShareListItem[]>([])
 const isLoadingList = ref(false)
 const revokingId = ref<string | null>(null)
 
-const isProUser = computed(() => {
-  if (!user.value || user.value.plan !== `pro`)
-    return false
-  return user.value.planExpiresAt != null && user.value.planExpiresAt > Date.now()
-})
+const isProUser = computed(() => isShareProUser(user.value))
 
-const dialogVisible = computed({
+const dialogOpen = computed({
   get: () => props.open,
-  set: value => emit(`update:open`, value),
+  set: (value) => {
+    if (!value)
+      shareDialogInitialTab.value = `create`
+    emit(`update:open`, value)
+  },
 })
 
 const shareClient = new ShareClient(() => authStore.token)
@@ -109,7 +117,9 @@ function resetForm() {
 }
 
 function resetDialog() {
-  activeTab.value = `create`
+  activeTab.value = shareDialogInitialTab.value === `manage` && isProUser.value
+    ? `manage`
+    : `create`
   resetForm()
 }
 
@@ -173,7 +183,7 @@ function confirmRevokeShare(share: ShareListItem) {
 }
 
 function openAccountDialog() {
-  dialogVisible.value = false
+  dialogOpen.value = false
   uiStore.toggleShowAccountDialog(true)
 }
 
@@ -307,251 +317,261 @@ watch(isProUser, (pro) => {
 </script>
 
 <template>
-  <Dialog v-model:open="dialogVisible">
-    <DialogContent class="gap-0 p-0 sm:max-w-md">
-      <DialogHeader class="space-y-1.5 border-b px-6 py-4">
-        <DialogTitle class="flex items-center gap-2">
-          <Share2 class="size-5" />
-          分享预览
-        </DialogTitle>
-        <DialogDescription>
-          生成与编辑器预览一致的只读链接，便于转发给他人查看。
-        </DialogDescription>
-      </DialogHeader>
+  <CloudPanelDialog
+    v-model:open="dialogOpen"
+    title="分享预览"
+    description="生成与编辑器预览一致的只读链接，便于转发给他人查看。"
+    :icon="Share2"
+  >
+    <CloudPanelState
+      v-if="!isShareConfigured()"
+      :icon="Share2"
+      title="分享服务未配置"
+      description="当前部署未配置分享服务，请联系部署方启用后再试。"
+      compact
+    />
 
-      <div v-if="!isShareConfigured()" class="px-6 py-8 text-center text-sm text-muted-foreground">
-        分享服务未配置，请联系部署方启用。
-      </div>
+    <CloudPanelState
+      v-else-if="!isLoggedIn"
+      :icon="Share2"
+      title="登录后分享预览"
+      description="登录账户后，可将当前文章生成与编辑器预览一致的只读链接。"
+      action-label="前往登录"
+      :action-icon="LogIn"
+      @action="openAccountDialog"
+    />
 
-      <div v-else-if="!isLoggedIn" class="flex flex-col items-center gap-4 px-6 py-8">
-        <p class="text-sm text-muted-foreground">
-          请先登录账户后再分享
-        </p>
-        <Button class="gap-2" @click="openAccountDialog">
-          <LogIn class="size-4" />
-          前往登录
-        </Button>
-      </div>
+    <Tabs v-else v-model="activeTab" class="gap-0">
+      <TabsList v-if="isProUser" class="mx-4 mt-4 grid w-auto grid-cols-2 sm:mx-6">
+        <TabsTrigger value="create">
+          生成分享
+        </TabsTrigger>
+        <TabsTrigger value="manage">
+          我的分享
+        </TabsTrigger>
+      </TabsList>
 
-      <Tabs v-else v-model="activeTab" class="gap-0">
-        <TabsList v-if="isProUser" class="mx-6 mt-4 grid w-auto grid-cols-2">
-          <TabsTrigger value="create">
-            生成分享
-          </TabsTrigger>
-          <TabsTrigger value="manage">
-            我的分享
-          </TabsTrigger>
-        </TabsList>
+      <TabsContent value="create" class="mt-0">
+        <template v-if="!shareUrl">
+          <div class="space-y-4 px-4 py-4 sm:px-6">
+            <div class="flex flex-wrap gap-2">
+              <span class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground">
+                <Clock class="size-3.5" />
+                1 天后过期
+              </span>
+              <span
+                v-if="!isProUser"
+                class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground"
+              >
+                2 次/天
+              </span>
+            </div>
 
-        <TabsContent value="create" class="mt-0">
-          <template v-if="!shareUrl">
-            <div class="space-y-4 px-6 py-4">
-              <div class="flex flex-wrap gap-2">
-                <span class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground">
-                  <Clock class="size-3.5" />
-                  1 天后过期
-                </span>
-                <span
-                  v-if="!isProUser"
-                  class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground"
+            <div class="space-y-2">
+              <Label class="text-sm">访问密码</Label>
+              <div class="grid gap-2">
+                <button
+                  v-for="option in passwordOptions"
+                  :key="option.value"
+                  type="button"
+                  class="flex w-full items-start gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors"
+                  :class="passwordMode === option.value
+                    ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
+                    : 'hover:bg-muted/50'"
+                  @click="passwordMode = option.value"
                 >
-                  2 次/天
-                </span>
+                  <component :is="option.icon" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                  <span class="min-w-0 flex-1">
+                    <span class="block text-sm font-medium">{{ option.label }}</span>
+                    <span class="block text-xs text-muted-foreground">{{ option.description }}</span>
+                  </span>
+                  <span
+                    class="mt-1 size-2 shrink-0 rounded-full"
+                    :class="passwordMode === option.value ? 'bg-primary' : 'bg-muted-foreground/30'"
+                  />
+                </button>
               </div>
+            </div>
 
-              <div class="space-y-2">
-                <Label class="text-sm">访问密码</Label>
-                <div class="grid gap-2">
-                  <button
-                    v-for="option in passwordOptions"
-                    :key="option.value"
-                    type="button"
-                    class="flex w-full items-start gap-3 rounded-lg border px-3 py-2.5 text-left transition-colors"
-                    :class="passwordMode === option.value
-                      ? 'border-primary bg-primary/5 ring-1 ring-primary/20'
-                      : 'hover:bg-muted/50'"
-                    @click="passwordMode = option.value"
-                  >
-                    <component :is="option.icon" class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-                    <span class="min-w-0 flex-1">
-                      <span class="block text-sm font-medium">{{ option.label }}</span>
-                      <span class="block text-xs text-muted-foreground">{{ option.description }}</span>
-                    </span>
-                    <span
-                      class="mt-1 size-2 shrink-0 rounded-full"
-                      :class="passwordMode === option.value ? 'bg-primary' : 'bg-muted-foreground/30'"
-                    />
-                  </button>
-                </div>
-              </div>
+            <div v-if="passwordMode === 'custom'" class="space-y-2 pl-1">
+              <Label for="share-custom-password" class="text-xs text-muted-foreground">
+                输入访问密码
+              </Label>
+              <Input
+                id="share-custom-password"
+                v-model="customPassword"
+                type="password"
+                autocomplete="new-password"
+                placeholder="4–64 个字符"
+              />
+            </div>
 
-              <div v-if="passwordMode === 'custom'" class="space-y-2 pl-1">
-                <Label for="share-custom-password" class="text-xs text-muted-foreground">
-                  输入访问密码
-                </Label>
+            <Alert v-if="errorMessage" variant="destructive" class="py-2.5">
+              <AlertDescription class="text-xs">
+                {{ errorMessage }}
+              </AlertDescription>
+            </Alert>
+          </div>
+        </template>
+
+        <template v-else>
+          <div class="space-y-4 px-4 py-4 sm:px-6">
+            <CloudPanelCard variant="success">
+              <p class="text-xs text-green-900 dark:text-green-100">
+                分享链接已就绪，可直接复制或打开预览。
+              </p>
+            </CloudPanelCard>
+
+            <div class="space-y-2">
+              <Label for="share-url" class="text-xs text-muted-foreground">分享链接</Label>
+              <div class="flex gap-2">
                 <Input
-                  id="share-custom-password"
-                  v-model="customPassword"
-                  type="password"
-                  autocomplete="new-password"
-                  placeholder="4–64 个字符"
+                  id="share-url"
+                  :model-value="shareUrl"
+                  readonly
+                  class="font-mono text-xs"
                 />
-              </div>
-
-              <Alert v-if="errorMessage" variant="destructive" class="py-2.5">
-                <AlertDescription class="text-xs">
-                  {{ errorMessage }}
-                </AlertDescription>
-              </Alert>
-            </div>
-
-            <div class="border-t px-6 py-4">
-              <Button class="w-full gap-2" :disabled="isSubmitting || !canSubmit" @click="createShare">
-                <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
-                <Share2 v-else class="size-4" />
-                {{ isSubmitting ? (submitStage || '正在生成…') : '生成分享链接' }}
-              </Button>
-            </div>
-          </template>
-
-          <template v-else>
-            <div class="space-y-4 px-6 py-4">
-              <Alert class="border-green-200 bg-green-50 py-2.5 text-green-900 dark:border-green-900/40 dark:bg-green-950/30 dark:text-green-100">
-                <AlertDescription class="text-xs">
-                  分享链接已就绪，可直接复制或打开预览。
-                </AlertDescription>
-              </Alert>
-
-              <div class="space-y-2">
-                <Label for="share-url" class="text-xs text-muted-foreground">分享链接</Label>
-                <div class="flex gap-2">
-                  <Input
-                    id="share-url"
-                    :model-value="shareUrl"
-                    readonly
-                    class="font-mono text-xs"
-                  />
-                  <Button variant="outline" size="icon" @click="copyText(shareUrl, 'link')">
-                    <Check v-if="copiedLink" class="size-4 text-green-600" />
-                    <Copy v-else class="size-4" />
-                  </Button>
-                  <Button variant="outline" size="icon" @click="openSharePage">
-                    <ExternalLink class="size-4" />
-                  </Button>
-                </div>
-              </div>
-
-              <div v-if="isProtected && sharePassword" class="space-y-2">
-                <Label for="share-password" class="text-xs text-muted-foreground">访问密码</Label>
-                <div class="flex gap-2">
-                  <Input
-                    id="share-password"
-                    :model-value="sharePassword"
-                    readonly
-                    class="font-mono text-xs"
-                  />
-                  <Button variant="outline" size="icon" @click="copyText(sharePassword, 'password')">
-                    <Check v-if="copiedPassword" class="size-4 text-green-600" />
-                    <Copy v-else class="size-4" />
-                  </Button>
-                </div>
-                <Button variant="outline" class="w-full" @click="copyShareBundle">
-                  复制链接与密码
+                <Button variant="outline" size="icon" @click="copyText(shareUrl, 'link')">
+                  <Check v-if="copiedLink" class="size-4 text-green-600" />
+                  <Copy v-else class="size-4" />
+                </Button>
+                <Button variant="outline" size="icon" @click="openSharePage">
+                  <ExternalLink class="size-4" />
                 </Button>
               </div>
+            </div>
 
-              <p v-else-if="isProtected && passwordMode === 'custom'" class="text-xs text-muted-foreground">
-                已启用密码保护，请妥善保管你设置的密码。
-              </p>
-
-              <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                <span v-if="expiresLabel">过期：{{ expiresLabel }}</span>
-                <span>预览与编辑器一致</span>
+            <div v-if="isProtected && sharePassword" class="space-y-2">
+              <Label for="share-password" class="text-xs text-muted-foreground">访问密码</Label>
+              <div class="flex gap-2">
+                <Input
+                  id="share-password"
+                  :model-value="sharePassword"
+                  readonly
+                  class="font-mono text-xs"
+                />
+                <Button variant="outline" size="icon" @click="copyText(sharePassword, 'password')">
+                  <Check v-if="copiedPassword" class="size-4 text-green-600" />
+                  <Copy v-else class="size-4" />
+                </Button>
               </div>
-            </div>
-
-            <div class="border-t px-6 py-4">
-              <Button variant="outline" class="w-full" @click="resetForm">
-                重新设置并生成
-              </Button>
-            </div>
-          </template>
-        </TabsContent>
-
-        <TabsContent v-if="isProUser" value="manage" class="mt-0">
-          <div class="space-y-3 px-6 py-4">
-            <div class="flex items-center justify-between gap-2">
-              <p class="text-xs text-muted-foreground">
-                管理已发布的分享链接，取消后链接立即失效。
-              </p>
-              <Button
-                variant="ghost"
-                size="icon"
-                class="shrink-0"
-                title="刷新列表"
-                :disabled="isLoadingList"
-                @click="loadShareList"
-              >
-                <Loader2 v-if="isLoadingList" class="size-4 animate-spin" />
-                <RefreshCw v-else class="size-4" />
+              <Button variant="outline" class="w-full" @click="copyShareBundle">
+                复制链接与密码
               </Button>
             </div>
 
-            <div v-if="isLoadingList && shareList.length === 0" class="flex items-center justify-center py-10 text-sm text-muted-foreground">
-              <Loader2 class="mr-2 size-4 animate-spin" />
-              加载中…
-            </div>
+            <p v-else-if="isProtected && passwordMode === 'custom'" class="text-xs text-muted-foreground">
+              已启用密码保护，请妥善保管你设置的密码。
+            </p>
 
-            <div v-else-if="shareList.length === 0" class="rounded-lg border border-dashed px-4 py-10 text-center text-sm text-muted-foreground">
-              暂无分享记录
+            <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+              <span v-if="expiresLabel">过期：{{ expiresLabel }}</span>
+              <span>预览与编辑器一致</span>
             </div>
+          </div>
+        </template>
+      </TabsContent>
 
-            <div v-else class="max-h-80 space-y-2 overflow-y-auto pr-1">
-              <div
-                v-for="share in shareList"
-                :key="share.id"
-                class="rounded-lg border p-3"
-                :class="share.expired ? 'opacity-70' : ''"
-              >
-                <div class="flex items-start justify-between gap-2">
-                  <div class="min-w-0 flex-1">
-                    <p class="truncate text-sm font-medium">
-                      {{ formatShareTitle(share.title) }}
-                    </p>
-                    <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                      <span class="inline-flex items-center gap-1">
-                        <Eye class="size-3" />
-                        {{ share.viewCount }} 次阅读
-                      </span>
-                      <span>{{ formatShareExpiry(share.expiresAt, share.expired) }}</span>
-                      <span v-if="share.protected">已设密码</span>
-                    </div>
+      <TabsContent v-if="isProUser" value="manage" class="mt-0">
+        <div class="space-y-3 px-4 py-4 sm:px-6">
+          <div class="flex items-center justify-between gap-2">
+            <p class="text-xs text-muted-foreground">
+              管理已发布的分享链接，取消后链接立即失效。
+            </p>
+            <Button
+              variant="ghost"
+              size="icon"
+              class="shrink-0"
+              title="刷新列表"
+              :disabled="isLoadingList"
+              @click="loadShareList"
+            >
+              <Loader2 v-if="isLoadingList" class="size-4 animate-spin" />
+              <RefreshCw v-else class="size-4" />
+            </Button>
+          </div>
+
+          <div v-if="isLoadingList && shareList.length === 0" class="flex items-center justify-center py-10 text-sm text-muted-foreground">
+            <Loader2 class="mr-2 size-4 animate-spin" />
+            加载中…
+          </div>
+
+          <CloudPanelState
+            v-else-if="shareList.length === 0"
+            :icon="Inbox"
+            title="暂无分享记录"
+            description="生成分享后，可在此统一管理链接。"
+            compact
+          />
+
+          <div v-else class="max-h-80 space-y-2 overflow-y-auto pr-1">
+            <div
+              v-for="share in shareList"
+              :key="share.id"
+              class="rounded-lg border p-3"
+              :class="share.expired ? 'opacity-70' : ''"
+            >
+              <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <p class="truncate text-sm font-medium">
+                    {{ formatShareTitle(share.title) }}
+                  </p>
+                  <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                    <span class="inline-flex items-center gap-1">
+                      <Eye class="size-3" />
+                      {{ share.viewCount }} 次阅读
+                    </span>
+                    <span>{{ formatShareExpiry(share.expiresAt, share.expired) }}</span>
+                    <span v-if="share.protected">已设密码</span>
                   </div>
-                  <div class="flex shrink-0 items-center gap-1">
-                    <Button variant="ghost" size="icon" title="复制链接" @click="copyText(share.url, 'link')">
-                      <Copy class="size-4" />
-                    </Button>
-                    <Button variant="ghost" size="icon" title="打开预览" @click="openShareUrl(share.url)">
-                      <ExternalLink class="size-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      class="text-destructive hover:text-destructive"
-                      title="取消分享"
-                      :disabled="revokingId === share.id"
-                      @click="confirmRevokeShare(share)"
-                    >
-                      <Loader2 v-if="revokingId === share.id" class="size-4 animate-spin" />
-                      <Trash2 v-else class="size-4" />
-                    </Button>
-                  </div>
+                </div>
+                <div class="flex shrink-0 items-center gap-1">
+                  <Button variant="ghost" size="icon" title="复制链接" @click="copyText(share.url, 'link')">
+                    <Copy class="size-4" />
+                  </Button>
+                  <Button variant="ghost" size="icon" title="打开预览" @click="openShareUrl(share.url)">
+                    <ExternalLink class="size-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    class="text-destructive hover:text-destructive"
+                    title="取消分享"
+                    :disabled="revokingId === share.id"
+                    @click="confirmRevokeShare(share)"
+                  >
+                    <Loader2 v-if="revokingId === share.id" class="size-4 animate-spin" />
+                    <Trash2 v-else class="size-4" />
+                  </Button>
                 </div>
               </div>
             </div>
           </div>
-        </TabsContent>
-      </Tabs>
-    </DialogContent>
-  </Dialog>
+        </div>
+      </TabsContent>
+    </Tabs>
+
+    <template v-if="isShareConfigured() && isLoggedIn && activeTab === 'create'" #footer>
+      <div class="border-t px-4 py-4 sm:px-6">
+        <Button
+          v-if="!shareUrl"
+          class="h-10 w-full gap-2"
+          :disabled="isSubmitting || !canSubmit"
+          @click="createShare"
+        >
+          <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
+          <Share2 v-else class="size-4" />
+          {{ isSubmitting ? (submitStage || '正在生成…') : '生成分享链接' }}
+        </Button>
+        <Button
+          v-else
+          variant="outline"
+          class="h-10 w-full"
+          @click="resetForm"
+        >
+          重新设置并生成
+        </Button>
+      </div>
+    </template>
+  </CloudPanelDialog>
 </template>

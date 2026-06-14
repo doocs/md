@@ -4,8 +4,6 @@ import { Prec } from '@codemirror/state'
 import { EditorView, keymap } from '@codemirror/view'
 import { buildSlashCommands } from '@/composables/slashCommands'
 
-export type { SlashCommandGroup, SlashCommandItem } from '@/composables/slashCommands'
-
 export function useSlashCommand() {
   const visible = ref(false)
   const position = ref({ x: 0, y: 0, top: 0 })

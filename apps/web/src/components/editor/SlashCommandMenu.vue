@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import type { SlashCommandItem } from '@/composables/useSlashCommand'
+import type { SlashCommandItem } from '@/composables/slashCommands'
 import {
   Blocks,
   Bold,

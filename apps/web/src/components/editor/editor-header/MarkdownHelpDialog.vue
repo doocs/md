@@ -1,22 +1,25 @@
 <script setup lang="ts">
 import { BookOpen, Code2, FileText, FunctionSquare, PieChart } from '@lucide/vue'
+import { computed, ref } from 'vue'
+import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
+const props = defineProps<{
+  open: boolean
+}>()
+
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
+
+const dialogOpen = computed({
+  get: () => props.open,
+  set: (val: boolean) => emit(`update:open`, val),
 })
 
-const emit = defineEmits([`close`])
-
 const activeTab = ref(`basic`)
-
-function onUpdate(val: boolean) {
-  if (!val) {
-    emit(`close`)
-  }
-}
+const copiedSyntax = ref<string | null>(null)
 
 interface SyntaxItem {
   name: string
@@ -198,29 +201,38 @@ const syntaxCategories: SyntaxCategory[] = [
   },
 ]
 
-function copySyntax(syntax: string) {
-  navigator.clipboard.writeText(syntax)
-  toast.success(`已复制到剪贴板`)
+async function copySyntax(syntax: string) {
+  try {
+    await navigator.clipboard.writeText(syntax)
+    copiedSyntax.value = syntax
+    window.setTimeout(() => {
+      if (copiedSyntax.value === syntax)
+        copiedSyntax.value = null
+    }, 1500)
+    toast.success(`已复制到剪贴板`)
+  }
+  catch {
+    toast.error(`复制失败，请手动复制`)
+  }
 }
 </script>
 
 <template>
-  <Dialog :open="props.visible" @update:open="onUpdate">
-    <DialogContent class="sm:max-w-2xl max-h-[80vh]">
-      <DialogHeader>
-        <DialogTitle>Markdown 语法帮助</DialogTitle>
-        <DialogDescription>
-          查看支持的 Markdown 语法，点击语法可直接复制
-        </DialogDescription>
-      </DialogHeader>
-
+  <CloudPanelDialog
+    v-model:open="dialogOpen"
+    title="Markdown 语法帮助"
+    description="查看支持的 Markdown 语法，点击语法可直接复制"
+    :icon="BookOpen"
+    size="2xl"
+  >
+    <div class="px-4 py-4 sm:px-6">
       <Tabs v-model="activeTab" class="w-full">
-        <TabsList class="grid w-full grid-cols-5">
+        <TabsList class="grid h-auto w-full grid-cols-5">
           <TabsTrigger
             v-for="cat in syntaxCategories"
             :key="cat.id"
             :value="cat.id"
-            class="!flex-col !items-center !justify-center gap-1 py-2 px-2 [&>span]:flex [&>span]:flex-col [&>span]:items-center [&>span]:justify-center"
+            class="!flex-col !items-center !justify-center gap-1 px-2 py-2 [&>span]:flex [&>span]:flex-col [&>span]:items-center [&>span]:justify-center"
           >
             <component :is="cat.icon" class="size-4" />
             <span class="text-xs whitespace-normal">{{ cat.label }}</span>
@@ -231,34 +243,39 @@ function copySyntax(syntax: string) {
           v-for="cat in syntaxCategories"
           :key="cat.id"
           :value="cat.id"
-          class="mt-4 overflow-y-auto max-h-[50vh] space-y-3"
+          class="mt-4 max-h-[min(50vh,24rem)] space-y-3 overflow-y-auto"
         >
           <div
             v-for="item in cat.items"
             :key="item.name"
-            class="rounded-lg border p-3 hover:bg-accent/50 transition-colors cursor-pointer"
+            class="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/50"
+            :class="copiedSyntax === item.syntax ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : ''"
             @click="copySyntax(item.syntax)"
           >
-            <div class="flex items-center justify-between mb-2">
-              <span class="font-medium text-sm">{{ item.name }}</span>
-              <span class="text-xs text-muted-foreground">点击复制</span>
+            <div class="mb-2 flex items-center justify-between">
+              <span class="text-sm font-medium">{{ item.name }}</span>
+              <span class="text-xs text-muted-foreground">
+                {{ copiedSyntax === item.syntax ? '已复制' : '点击复制' }}
+              </span>
             </div>
-            <pre class="text-xs bg-muted/50 p-2 rounded overflow-x-auto font-mono">{{ item.syntax }}</pre>
+            <pre class="overflow-x-auto rounded bg-muted/50 p-2 font-mono text-xs">{{ item.syntax }}</pre>
             <div v-if="item.tip" class="mt-2 text-xs text-muted-foreground">
-              💡 {{ item.tip }}
+              {{ item.tip }}
             </div>
           </div>
         </TabsContent>
       </Tabs>
+    </div>
 
-      <DialogFooter class="sm:justify-between">
-        <span class="text-xs text-muted-foreground hidden sm:inline">
+    <template #footer>
+      <div class="flex items-center justify-between gap-3 border-t px-4 py-4 sm:px-6">
+        <span class="hidden text-xs text-muted-foreground sm:inline">
           基于 CommonMark 规范，支持多种扩展语法
         </span>
-        <Button variant="outline" @click="emit(`close`)">
+        <Button variant="outline" class="h-10 w-full sm:w-auto" @click="dialogOpen = false">
           关闭
         </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      </div>
+    </template>
+  </CloudPanelDialog>
 </template>

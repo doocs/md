@@ -1,12 +1,21 @@
 <script setup lang="ts">
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-})
+import { Heart } from '@lucide/vue'
+import { computed } from 'vue'
+import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
+import { Button } from '@/components/ui/button'
 
-const emit = defineEmits([`close`])
+const props = defineProps<{
+  open: boolean
+}>()
+
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
+
+const dialogOpen = computed({
+  get: () => props.open,
+  set: (val: boolean) => emit(`update:open`, val),
+})
 
 const contributors = [
   {
@@ -20,39 +29,33 @@ const contributors = [
     altText: `赞赏二维码 2`,
   },
 ]
-
-function onUpdate(val: boolean) {
-  if (!val) {
-    emit(`close`)
-  }
-}
 </script>
 
 <template>
-  <Dialog :open="props.visible" @update:open="onUpdate">
-    <DialogContent>
-      <DialogHeader>
-        <DialogTitle>赞赏</DialogTitle>
-      </DialogHeader>
-      <div class="text-center">
-        <p>若觉得项目不错，可以通过以下方式支持我们～</p>
-        <div class="grid grid-cols-2 my-5 gap-4">
-          <div v-for="contributor in contributors" :key="contributor.name" class="text-center">
-            <img
-              :src="contributor.imageUrl"
-              :alt="contributor.altText"
-              class="mx-auto"
-              style="width: 90%; max-width: 200px;border-radius: 10%;"
-            >
-          </div>
+  <CloudPanelDialog
+    v-model:open="dialogOpen"
+    title="赞赏"
+    description="若觉得项目不错，可以通过以下方式支持我们～"
+    :icon="Heart"
+  >
+    <div class="px-4 py-6 sm:px-6">
+      <div class="grid grid-cols-2 gap-4">
+        <div v-for="contributor in contributors" :key="contributor.name" class="text-center">
+          <img
+            :src="contributor.imageUrl"
+            :alt="contributor.altText"
+            class="mx-auto w-full max-w-[200px] rounded-xl ring-1 ring-border"
+          >
         </div>
       </div>
+    </div>
 
-      <DialogFooter class="sm:justify-evenly">
-        <Button @click="emit('close')">
+    <template #footer>
+      <div class="border-t px-4 py-4 sm:px-6">
+        <Button variant="outline" class="h-10 w-full" @click="dialogOpen = false">
           关闭
         </Button>
-      </DialogFooter>
-    </DialogContent>
-  </Dialog>
+      </div>
+    </template>
+  </CloudPanelDialog>
 </template>

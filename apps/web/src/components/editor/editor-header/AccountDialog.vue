@@ -1,36 +1,44 @@
 <script setup lang="ts">
-import { Crown, LogIn, LogOut, Settings2, User } from '@lucide/vue'
+import { Cloud, Crown, List, LogIn, LogOut, Settings2, Share2, User } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
 import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
 import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
 import { Button } from '@/components/ui/button'
-import { isProPlan } from '@/services/account/features'
+import { isShareProUser, isShareUiEnabled } from '@/services/share/client'
+import { isSyncUiEnabled } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
+import { useUIStore } from '@/stores/ui'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-})
+const props = defineProps<{
+  open: boolean
+}>()
 
-const emit = defineEmits([`close`])
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
 
 const authStore = useAuthStore()
 const syncStore = useSyncStore()
+const uiStore = useUIStore()
 
 const { user, isConfigured, isLoggedIn } = storeToRefs(authStore)
 
-const isPro = computed(() => isProPlan(user.value?.plan))
+const isSharePro = computed(() => isShareProUser(user.value))
+const showSyncUi = isSyncUiEnabled()
+const showShareUi = isShareUiEnabled()
 
 const dialogOpen = computed({
-  get: () => props.visible,
-  set: (val: boolean) => {
-    if (!val)
-      emit(`close`)
-  },
+  get: () => props.open,
+  set: (val: boolean) => emit(`update:open`, val),
+})
+
+const dialogDescription = computed(() => {
+  if (isLoggedIn.value || !isConfigured.value)
+    return undefined
+  return `登录后可使用云同步、分享预览等云端能力。`
 })
 
 function handleLogin() {
@@ -41,13 +49,23 @@ function handleLogout() {
   authStore.logout()
   syncStore.reset()
 }
+
+function openSyncDialog() {
+  dialogOpen.value = false
+  uiStore.toggleShowSyncDialog(true)
+}
+
+function openShareDialog(tab: `create` | `manage` = `create`) {
+  dialogOpen.value = false
+  uiStore.openShareDialog({ tab })
+}
 </script>
 
 <template>
   <CloudPanelDialog
     v-model:open="dialogOpen"
     title="账户"
-    description="登录后可使用云同步、分享预览等云端能力。"
+    :description="dialogDescription"
     :icon="User"
   >
     <CloudPanelState
@@ -72,27 +90,29 @@ function handleLogout() {
     />
 
     <div v-else class="space-y-4 px-4 py-4 sm:px-6">
-      <div class="flex items-center gap-3 rounded-xl border bg-muted/20 p-3.5 sm:p-4">
-        <img
-          v-if="user?.avatar"
-          :src="user.avatar"
-          :alt="user?.login"
-          class="size-12 shrink-0 rounded-full ring-2 ring-background sm:size-11"
-        >
-        <div
-          v-else
-          class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted ring-2 ring-background sm:size-11"
-        >
-          <User class="size-5 text-muted-foreground" />
-        </div>
+      <CloudPanelCard align="center">
+        <template #leading>
+          <img
+            v-if="user?.avatar"
+            :src="user.avatar"
+            :alt="user?.login"
+            class="size-12 shrink-0 rounded-full ring-2 ring-background sm:size-11"
+          >
+          <div
+            v-else
+            class="flex size-12 shrink-0 items-center justify-center rounded-full bg-muted ring-2 ring-background sm:size-11"
+          >
+            <User class="size-5 text-muted-foreground" />
+          </div>
+        </template>
 
-        <div class="min-w-0 flex-1">
+        <div class="min-w-0 flex-1 text-left">
           <div class="flex flex-wrap items-center gap-x-2 gap-y-1">
             <span class="truncate text-sm font-medium">
               {{ user?.name || user?.login }}
             </span>
             <span
-              v-if="isPro"
+              v-if="isSharePro"
               class="inline-flex shrink-0 items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-medium text-primary-foreground"
             >
               <Crown class="size-3" />
@@ -109,10 +129,36 @@ function handleLogout() {
             @{{ user?.login }}
           </p>
         </div>
-      </div>
+      </CloudPanelCard>
 
-      <div class="rounded-xl border border-dashed px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
-        已登录。可在底部栏打开云同步，或使用分享预览将文章生成只读链接。
+      <div v-if="showSyncUi || showShareUi" class="grid gap-2 sm:grid-cols-2">
+        <Button
+          v-if="showSyncUi"
+          variant="outline"
+          class="h-10 justify-start gap-2"
+          @click="openSyncDialog"
+        >
+          <Cloud class="size-4 shrink-0" />
+          云同步
+        </Button>
+        <Button
+          v-if="showShareUi"
+          variant="outline"
+          class="h-10 justify-start gap-2"
+          @click="openShareDialog('create')"
+        >
+          <Share2 class="size-4 shrink-0" />
+          分享预览
+        </Button>
+        <Button
+          v-if="showShareUi && isSharePro"
+          variant="outline"
+          class="h-10 justify-start gap-2 sm:col-span-2"
+          @click="openShareDialog('manage')"
+        >
+          <List class="size-4 shrink-0" />
+          我的分享
+        </Button>
       </div>
     </div>
 

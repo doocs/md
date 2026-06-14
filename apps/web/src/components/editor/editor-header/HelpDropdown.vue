@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { BookText, Heart, HelpCircle, MessageSquare, Tag } from '@lucide/vue'
+import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean
@@ -7,28 +8,28 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits(['openAbout', 'openFund', 'openMarkdownHelp'])
-
 const { asSub } = toRefs(props)
+const uiStore = useUIStore()
+const { toggleShowAboutDialog, toggleShowFundDialog, toggleShowMarkdownHelpDialog } = uiStore
 
 function openAboutDialog() {
-  emit('openAbout')
+  toggleShowAboutDialog(true)
 }
 
 function openFundDialog() {
-  emit('openFund')
+  toggleShowFundDialog(true)
 }
 
 function openMarkdownHelp() {
-  emit('openMarkdownHelp')
+  toggleShowMarkdownHelpDialog(true)
 }
 
 function openFeedback() {
-  window.open('https://github.com/doocs/md/issues', '_blank')
+  window.open(`https://github.com/doocs/md/issues`, `_blank`)
 }
 
 function openReleases() {
-  window.open('https://github.com/doocs/md/releases', '_blank')
+  window.open(`https://github.com/doocs/md/releases`, `_blank`)
 }
 </script>
 

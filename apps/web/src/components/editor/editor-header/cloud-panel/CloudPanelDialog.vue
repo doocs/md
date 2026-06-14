@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
+import { computed } from 'vue'
 import {
   Dialog,
   DialogContent,
@@ -9,26 +10,37 @@ import {
 } from '@/components/ui/dialog'
 import { cn } from '@/lib/utils'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   open: boolean
   title: string
   description?: string
   icon?: Component
-}>()
+  size?: keyof typeof sizeClassMap
+}>(), {
+  size: `md`,
+})
 
 const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const dialogContentClass = cn(
+const sizeClassMap = {
+  'md': `sm:max-w-md`,
+  'lg': `sm:max-w-lg`,
+  'xl': `sm:max-w-xl`,
+  '2xl': `sm:max-w-2xl`,
+  '3xl': `sm:max-w-3xl`,
+} as const
+
+const dialogContentClass = computed(() => cn(
   `flex max-h-[min(90vh,100dvh)] flex-col gap-0 overflow-hidden p-0`,
   `max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:w-full max-sm:max-w-none`,
   `max-sm:max-h-[min(88dvh,100dvh)] max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-t-2xl max-sm:rounded-b-none`,
   `max-sm:border-x-0 max-sm:border-b-0 max-sm:shadow-2xl`,
   `max-sm:pb-[max(1rem,env(safe-area-inset-bottom,0px))]`,
   `max-sm:data-[state=open]:slide-in-from-bottom-4 max-sm:data-[state=closed]:slide-out-to-bottom-4`,
-  `sm:max-w-md`,
-)
+  sizeClassMap[props.size],
+))
 
 function onUpdate(val: boolean) {
   emit(`update:open`, val)

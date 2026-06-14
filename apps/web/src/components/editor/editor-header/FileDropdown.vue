@@ -12,8 +12,6 @@ const props = withDefaults(defineProps<{
   asSub: false,
 })
 
-const emit = defineEmits([`openEditorState`, `openShare`])
-
 const { asSub } = toRefs(props)
 
 const editorStore = useEditorStore()
@@ -21,12 +19,12 @@ const exportStore = useExportStore()
 const uiStore = useUIStore()
 
 const { isOpenPostSlider, isOpenFolderPanel } = storeToRefs(uiStore)
-const { toggleShowTemplateDialog, toggleShowImportMdDialog, toggleShowSyncDialog } = uiStore
+const { toggleShowTemplateDialog, toggleShowImportMdDialog, toggleShowSyncDialog, toggleShowEditorStateDialog, openShareDialog } = uiStore
 const showSyncUi = isSyncUiEnabled()
 const showShareUi = isShareUiEnabled()
 
 function openEditorStateDialog() {
-  emit(`openEditorState`)
+  toggleShowEditorStateDialog(true)
 }
 
 function openTemplateDialog() {
@@ -138,7 +136,7 @@ function exportEditorContent2PDF() {
           云同步
         </MenubarItem>
         <!-- 分享预览 -->
-        <MenubarItem v-if="showShareUi" @click="emit('openShare')">
+        <MenubarItem v-if="showShareUi" @click="openShareDialog()">
           <Share2 class="mr-2 size-4" />
           分享预览
         </MenubarItem>
@@ -236,7 +234,7 @@ function exportEditorContent2PDF() {
           云同步
         </MenubarItem>
         <!-- 分享预览 -->
-        <MenubarItem v-if="showShareUi" @click="emit('openShare')">
+        <MenubarItem v-if="showShareUi" @click="openShareDialog()">
           <Share2 class="mr-2 size-4" />
           分享预览
         </MenubarItem>

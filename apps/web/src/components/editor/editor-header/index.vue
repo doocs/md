@@ -29,7 +29,7 @@ const exportStore = useExportStore()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog } = storeToRefs(uiStore)
 
 // Editor refresh function
 function editorRefresh() {
@@ -39,31 +39,8 @@ function editorRefresh() {
   renderStore.render(raw)
 }
 
-// 对话框状态
-const aboutDialogVisible = ref(false)
-const fundDialogVisible = ref(false)
-const editorStateDialogVisible = ref(false)
-const markdownHelpDialogVisible = ref(false)
-
-function handleOpenAbout() {
-  aboutDialogVisible.value = true
-}
-
-function handleOpenFund() {
-  fundDialogVisible.value = true
-}
-
-function handleOpenEditorState() {
-  editorStateDialogVisible.value = true
-}
-
-function handleOpenMarkdownHelp() {
-  markdownHelpDialogVisible.value = true
-}
-
 const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
 const isCopying = ref(false)
-const shareDialogVisible = ref(false)
 
 const { copy: copyContent } = useClipboard({
   legacy: true,
@@ -253,12 +230,12 @@ function copyToWeChat() {
     <!-- 桌面端左侧菜单 -->
     <div class="space-x-1 hidden md:flex">
       <Menubar class="menubar border-0">
-        <FileDropdown @open-editor-state="handleOpenEditorState" @open-share="shareDialogVisible = true" />
+        <FileDropdown />
         <EditDropdown @copy="handleCopy" />
         <FormatDropdown />
         <InsertDropdown />
         <StyleDropdown />
-        <HelpDropdown @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-markdown-help="handleOpenMarkdownHelp" />
+        <HelpDropdown />
       </Menubar>
     </div>
 
@@ -272,12 +249,12 @@ function copyToWeChat() {
             </Button>
           </MenubarTrigger>
           <MenubarContent align="start">
-            <FileDropdown :as-sub="true" @open-editor-state="handleOpenEditorState" @open-share="shareDialogVisible = true" />
+            <FileDropdown :as-sub="true" />
             <EditDropdown :as-sub="true" @copy="handleCopy" />
             <FormatDropdown :as-sub="true" />
             <InsertDropdown :as-sub="true" />
             <StyleDropdown :as-sub="true" />
-            <HelpDropdown :as-sub="true" @open-about="handleOpenAbout" @open-fund="handleOpenFund" @open-markdown-help="handleOpenMarkdownHelp" />
+            <HelpDropdown :as-sub="true" />
           </MenubarContent>
         </MenubarMenu>
       </Menubar>
@@ -314,13 +291,13 @@ function copyToWeChat() {
   </header>
 
   <!-- 对话框组件，嵌套菜单无法正常挂载，需要提取层级 -->
-  <AboutDialog :visible="aboutDialogVisible" @close="aboutDialogVisible = false" />
-  <FundDialog :visible="fundDialogVisible" @close="fundDialogVisible = false" />
-  <EditorStateDialog :visible="editorStateDialogVisible" @close="editorStateDialogVisible = false" />
-  <MarkdownHelpDialog :visible="markdownHelpDialogVisible" @close="markdownHelpDialogVisible = false" />
-  <AccountDialog :visible="isShowAccountDialog" @close="isShowAccountDialog = false" />
-  <SyncDialog :visible="isShowSyncDialog" @close="isShowSyncDialog = false" />
-  <ShareDialog v-model:open="shareDialogVisible" />
+  <AboutDialog v-model:open="isShowAboutDialog" />
+  <FundDialog v-model:open="isShowFundDialog" />
+  <EditorStateDialog v-model:open="isShowEditorStateDialog" />
+  <MarkdownHelpDialog v-model:open="isShowMarkdownHelpDialog" />
+  <AccountDialog v-model:open="isShowAccountDialog" />
+  <SyncDialog v-model:open="isShowSyncDialog" />
+  <ShareDialog v-model:open="isShowShareDialog" />
 </template>
 
 <style lang="less" scoped>

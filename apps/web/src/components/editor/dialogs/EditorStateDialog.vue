@@ -9,13 +9,12 @@ import { useUIStore } from '@/stores/ui'
 import { downloadFile } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-})
-const emit = defineEmits([`close`])
+const props = defineProps<{
+  open: boolean
+}>()
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const postStore = usePostStore()
@@ -23,7 +22,7 @@ const cssEditorStore = useCssEditorStore()
 const renderStore = useRenderStore()
 
 watch(
-  () => props.visible,
+  () => props.open,
   (val) => {
     if (val)
       fetchStoreStates()
@@ -31,9 +30,8 @@ watch(
 )
 
 function onUpdate(val: boolean) {
-  if (!val) {
-    emit(`close`)
-  }
+  if (!val)
+    emit(`update:open`, false)
 }
 
 const activeName = ref(`import`)
@@ -164,7 +162,7 @@ function exportSelectedConfig() {
   const filename = `doocs-md-config-${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}_${pad(now.getHours())}-${pad(now.getMinutes())}-${pad(now.getSeconds())}.json`
   downloadFile(JSON.stringify(selectedConfig, null, 2), filename, `application/json`)
   toast.success(`配置文件导出成功`)
-  emit(`close`)
+  emit(`update:open`, false)
 }
 
 // 处理最大化弹窗预览代码
@@ -332,12 +330,12 @@ function applyImportedConfig() {
   })
 
   toast.success(`配置应用成功，请刷新页面查看效果`)
-  emit(`close`)
+  emit(`update:open`, false)
 }
 </script>
 
 <template>
-  <Dialog :open="props.visible" @update:open="onUpdate">
+  <Dialog :open="props.open" @update:open="onUpdate">
     <DialogContent class="md:max-w-2/3">
       <DialogHeader>
         <DialogTitle>导入/导出项目配置</DialogTitle>
