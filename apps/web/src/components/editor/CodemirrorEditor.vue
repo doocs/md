@@ -102,6 +102,7 @@ const previewPanelConfig = computed(() => {
 
 const editorResizablePanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const previewResizablePanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const postSliderPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const cssEditorPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const rightSliderPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 
@@ -141,8 +142,27 @@ watch(isOpenRightSlider, () => {
   nextTick(redistributePanelSizes)
 })
 
+watch(isOpenPostSlider, (open) => {
+  if (isMobile.value)
+    return
+  nextTick(() => {
+    postSliderPanelRef.value?.resize(open ? 20 : 0)
+  })
+})
+
+watch(isMobile, (mobile) => {
+  if (mobile)
+    postSliderPanelRef.value?.resize(0)
+  else if (isOpenPostSlider.value)
+    nextTick(() => postSliderPanelRef.value?.resize(20))
+})
+
 onMounted(() => {
-  nextTick(redistributePanelSizes)
+  nextTick(() => {
+    redistributePanelSizes()
+    if (!isMobile.value && isOpenPostSlider.value)
+      postSliderPanelRef.value?.resize(20)
+  })
 })
 
 // --- 进度条 ---
@@ -163,10 +183,11 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
       >
         <ResizablePanelGroup direction="horizontal">
           <ResizablePanel
+            ref="postSliderPanelRef"
             class="post-slider-panel"
-            :default-size="isMobile ? 0 : 15"
-            :max-size="!isMobile && isOpenPostSlider ? 20 : 0"
-            :min-size="!isMobile && isOpenPostSlider ? 10 : 0"
+            :default-size="!isMobile && isOpenPostSlider ? 20 : 0"
+            :max-size="!isMobile && isOpenPostSlider ? 30 : 0"
+            :min-size="!isMobile && isOpenPostSlider ? 18 : 0"
           >
             <PostSlider />
           </ResizablePanel>
