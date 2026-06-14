@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import type { ComponentPublicInstance } from 'vue'
-
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { markdownSetup, theme } from '@md/shared/editor'
@@ -26,7 +24,27 @@ const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
 
-const slashCommand = useSlashCommand()
+const {
+  visible: slashVisible,
+  position: slashPosition,
+  filter: slashFilter,
+  activeIndex: slashActiveIndex,
+  basicCommands: slashBasicCommands,
+  commonCommands: slashCommonCommands,
+  editCommands: slashEditCommands,
+  styleCommands: slashStyleCommands,
+  filteredCommands: slashFilteredCommands,
+  closeMenu: closeSlashMenu,
+  executeCommand: executeSlashCommand,
+  createExtension: createSlashExtension,
+} = useSlashCommand()
+
+function onWrapperContextMenuCapture(e: MouseEvent) {
+  if (!slashVisible.value)
+    return
+  e.preventDefault()
+  e.stopPropagation()
+}
 
 const { editor } = storeToRefs(editorStore)
 const { isDark } = storeToRefs(uiStore)
@@ -46,7 +64,7 @@ const themeCompartment = new Compartment()
 const changeTimer = ref<ReturnType<typeof setTimeout>>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
-const codeMirrorWrapper = useTemplateRef<ComponentPublicInstance<HTMLDivElement>>(`codeMirrorWrapper`)
+const codeMirrorWrapper = useTemplateRef<HTMLDivElement>(`codeMirrorWrapper`)
 
 const progressValue = ref(0)
 const isImgLoading = ref(false)
@@ -459,7 +477,7 @@ function createFormTextArea(dom: HTMLDivElement) {
       EditorView.domEventHandlers({
         paste: createPasteHandler(),
       }),
-      ...slashCommand.createExtension(() => codeMirrorView.value),
+      ...createSlashExtension(() => codeMirrorView.value),
     ],
   })
 
@@ -567,17 +585,22 @@ defineExpose({
     v-show="viewMode !== 'preview'"
     ref="codeMirrorWrapper"
     class="codeMirror-wrapper relative h-full"
+    @contextmenu.capture="onWrapperContextMenuCapture"
   >
     <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
     <SlashCommandMenu
-      :visible="slashCommand.visible.value"
-      :position="slashCommand.position.value"
-      :active-index="slashCommand.activeIndex.value"
-      :basic-commands="slashCommand.basicCommands.value"
-      :common-commands="slashCommand.commonCommands.value"
-      :filtered-commands="slashCommand.filteredCommands.value"
-      @execute="(cmd) => codeMirrorView && slashCommand.executeCommand(codeMirrorView, cmd)"
-      @close="slashCommand.closeMenu()"
+      :visible="slashVisible"
+      :position="slashPosition"
+      :active-index="slashActiveIndex"
+      :filter="slashFilter"
+      :container-el="codeMirrorWrapper"
+      :basic-commands="slashBasicCommands"
+      :common-commands="slashCommonCommands"
+      :edit-commands="slashEditCommands"
+      :style-commands="slashStyleCommands"
+      :filtered-commands="slashFilteredCommands"
+      @execute="(cmd) => codeMirrorView && executeSlashCommand(codeMirrorView, cmd)"
+      @close="closeSlashMenu()"
     />
     <SidebarAIToolbar
       :is-mobile="isMobile"
