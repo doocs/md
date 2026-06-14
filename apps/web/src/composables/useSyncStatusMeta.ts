@@ -1,7 +1,8 @@
 import type { Component } from 'vue'
-import { AlertCircle, CloudCheck, CloudOff, Loader2 } from '@lucide/vue'
+import { AlertCircle, Cloud, CloudCheck, CloudOff, Loader2 } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
 
 export type SyncUiState = `syncing` | `synced` | `error` | `pending`
@@ -89,6 +90,39 @@ export function useSyncStatusMeta(options?: { errorHint?: `detail` | `generic` }
     lastError,
     isSyncing,
     syncStatusMeta,
+    syncTooltip,
+  }
+}
+
+/** Footer 云同步图标：依赖登录态，与弹窗内 meta 分离 */
+export function useSyncFooterMeta() {
+  const authStore = useAuthStore()
+  const { isLoggedIn } = storeToRefs(authStore)
+  const { syncStatusMeta, syncState, isSyncing, syncTooltip } = useSyncStatusMeta()
+
+  const isActivelySyncing = computed(
+    () => isSyncing.value || syncState.value === `syncing`,
+  )
+
+  const syncFooterIcon = computed(() => {
+    if (!isLoggedIn.value)
+      return Cloud
+    if (isActivelySyncing.value)
+      return Loader2
+    return syncStatusMeta.value.icon
+  })
+
+  const syncFooterIconClass = computed(() => {
+    if (!isLoggedIn.value)
+      return ``
+    if (isActivelySyncing.value)
+      return `text-primary animate-spin`
+    return syncStatusMeta.value.footerIconClass
+  })
+
+  return {
+    syncFooterIcon,
+    syncFooterIconClass,
     syncTooltip,
   }
 }

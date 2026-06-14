@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
 import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
+import CloudPanelInfoRows from '@/components/editor/editor-header/cloud-panel/CloudPanelInfoRows.vue'
 import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -44,6 +45,11 @@ const lastSyncText = computed(() => {
     minute: `2-digit`,
   })
 })
+
+const syncInfoRows = computed(() => [
+  { label: `上次同步`, value: lastSyncText.value, numeric: true },
+  { label: `同步范围`, value: `文章、编辑器设置` },
+])
 
 function openAccountDialog() {
   dialogOpen.value = false
@@ -115,20 +121,11 @@ function handleReload() {
         </div>
       </CloudPanelCard>
 
-      <div class="grid gap-2 rounded-xl border px-3.5 py-3 text-xs sm:px-4">
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">上次同步</span>
-          <span class="font-medium tabular-nums">{{ lastSyncText }}</span>
-        </div>
-        <div class="flex items-center justify-between gap-3">
-          <span class="text-muted-foreground">同步范围</span>
-          <span class="text-right">文章、编辑器设置</span>
-        </div>
-      </div>
+      <CloudPanelInfoRows :rows="syncInfoRows" />
 
       <div
         v-if="needsRefresh"
-        class="flex flex-col gap-3 rounded-xl border bg-muted/30 p-3.5 sm:flex-row sm:items-center sm:justify-between sm:p-4"
+        class="flex flex-col gap-3 rounded-xl border border-dashed px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:py-4"
       >
         <div class="flex min-w-0 items-start gap-2.5">
           <Info class="mt-0.5 size-4 shrink-0 text-muted-foreground" />

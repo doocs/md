@@ -17,6 +17,8 @@ import {
   themeOptions,
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -147,6 +149,31 @@ function useJustifyChanged() {
   editorRefresh()
 }
 
+function setMacCodeBlock(checked: boolean) {
+  if (checked !== isMacCodeBlock.value)
+    macCodeBlockChanged()
+}
+
+function setShowLineNumber(checked: boolean) {
+  if (checked !== isShowLineNumber.value)
+    showLineNumberChanged()
+}
+
+function setCiteStatus(checked: boolean) {
+  if (checked !== isCiteStatus.value)
+    citeStatusChanged()
+}
+
+function setUseIndent(checked: boolean) {
+  if (checked !== isUseIndent.value)
+    useIndentChanged()
+}
+
+function setUseJustify(checked: boolean) {
+  if (checked !== isUseJustify.value)
+    useJustifyChanged()
+}
+
 function resetStyleConfirm() {
   confirmStore.confirm({
     title: '提示',
@@ -179,16 +206,6 @@ watch(isMobile, () => {
   enableAnimation.value = false
 })
 
-const isOpen = ref(false)
-
-const addPostInputVal = ref(``)
-
-watch(isOpen, () => {
-  if (isOpen.value) {
-    addPostInputVal.value = ``
-  }
-})
-
 const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
@@ -211,7 +228,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
     :style="isMobile ? { transform: isOpenRightSlider ? 'translateX(0)' : 'translateX(100%)' } : undefined"
   >
     <div
-      class="space-y-4 h-full overflow-auto p-4"
+      class="h-full space-y-4 overflow-auto p-4"
       :class="{ 'pt-0': isMobile }"
     >
       <!-- 移动端标题栏 -->
@@ -226,8 +243,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
           </Button>
         </div>
       </div>
+
       <div class="space-y-2">
-        <h2>主题</h2>
+        <h2 class="text-sm font-medium">
+          主题
+        </h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in themeOptions" :key="value" class="w-full" variant="outline" :class="{
@@ -239,7 +259,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>字体</h2>
+        <h2 class="text-sm font-medium">
+          字体
+        </h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
@@ -250,7 +272,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>字号</h2>
+        <h2 class="text-sm font-medium">
+          字号
+        </h2>
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             v-for="{ value, desc } in fontSizeOptions" :key="value" variant="outline" class="w-full" :class="{
@@ -262,7 +286,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>主题色</h2>
+        <h2 class="text-sm font-medium">
+          主题色
+        </h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in colorOptions" :key="value" class="w-full" variant="outline" :class="{
@@ -279,7 +305,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>自定义主题色</h2>
+        <h2 class="text-sm font-medium">
+          自定义主题色
+        </h2>
         <div ref="pickColorsContainer">
           <PickColors
             v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
@@ -289,7 +317,9 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>标题样式</h2>
+        <h2 class="text-sm font-medium">
+          标题样式
+        </h2>
         <div class="flex gap-2">
           <Select v-model="selectedHeadingLevel">
             <SelectTrigger class="w-[120px]">
@@ -314,22 +344,24 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="space-y-2">
-        <h2>代码块主题</h2>
-        <div>
-          <Select v-model="codeBlockTheme" @update:model-value="codeBlockThemeChanged">
-            <SelectTrigger>
-              <SelectValue placeholder="Select a code block theme" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
-                {{ label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        <h2 class="text-sm font-medium">
+          代码块主题
+        </h2>
+        <Select v-model="codeBlockTheme" @update:model-value="codeBlockThemeChanged">
+          <SelectTrigger>
+            <SelectValue placeholder="Select a code block theme" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
+              {{ label }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       <div class="space-y-2">
-        <h2>图注格式</h2>
+        <h2 class="text-sm font-medium">
+          图注格式
+        </h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in legendOptions" :key="value" class="w-full" variant="outline" :class="{
@@ -340,105 +372,30 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
           </Button>
         </div>
       </div>
-
-      <div class="space-y-2">
-        <h2>Mac 代码块</h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': isMacCodeBlock,
-            }" @click="!isMacCodeBlock && macCodeBlockChanged()"
-          >
-            开启
-          </Button>
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': !isMacCodeBlock,
-            }" @click="isMacCodeBlock && macCodeBlockChanged()"
-          >
-            关闭
-          </Button>
-        </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="mac-code-block" class="text-sm">Mac 代码块</Label>
+        <Switch id="mac-code-block" :model-value="isMacCodeBlock" @update:model-value="setMacCodeBlock" />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="show-line-number" class="text-sm">代码块行号</Label>
+        <Switch id="show-line-number" :model-value="isShowLineNumber" @update:model-value="setShowLineNumber" />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="cite-status" class="text-sm">微信外链转底部引用</Label>
+        <Switch id="cite-status" :model-value="isCiteStatus" @update:model-value="setCiteStatus" />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="use-indent" class="text-sm">段落首行缩进</Label>
+        <Switch id="use-indent" :model-value="isUseIndent" @update:model-value="setUseIndent" />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="use-justify" class="text-sm">段落两端对齐</Label>
+        <Switch id="use-justify" :model-value="isUseJustify" @update:model-value="setUseJustify" />
       </div>
       <div class="space-y-2">
-        <h2>代码块行号</h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': isShowLineNumber,
-            }" @click="!isShowLineNumber && showLineNumberChanged()"
-          >
-            开启
-          </Button>
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': !isShowLineNumber,
-            }" @click="isShowLineNumber && showLineNumberChanged()"
-          >
-            关闭
-          </Button>
-        </div>
-      </div>
-
-      <div class="space-y-2">
-        <h2>微信外链转底部引用</h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': isCiteStatus,
-            }" @click="!isCiteStatus && citeStatusChanged()"
-          >
-            开启
-          </Button>
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': !isCiteStatus,
-            }" @click="isCiteStatus && citeStatusChanged()"
-          >
-            关闭
-          </Button>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <h2>段落首行缩进</h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': isUseIndent,
-            }" @click="!isUseIndent && useIndentChanged()"
-          >
-            开启
-          </Button>
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': !isUseIndent,
-            }" @click="isUseIndent && useIndentChanged()"
-          >
-            关闭
-          </Button>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <h2>段落两端对齐</h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': isUseJustify,
-            }" @click="!isUseJustify && useJustifyChanged()"
-          >
-            开启
-          </Button>
-          <Button
-            class="w-full" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': !isUseJustify,
-            }" @click="isUseJustify && useJustifyChanged()"
-          >
-            关闭
-          </Button>
-        </div>
-      </div>
-      <div class="space-y-2">
-        <h2>样式配置</h2>
+        <h2 class="text-sm font-medium">
+          样式配置
+        </h2>
         <Button variant="destructive" @click="resetStyleConfirm">
           重置
         </Button>
