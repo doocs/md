@@ -1,5 +1,6 @@
 import { markedAlert, MDKatex } from '@md/core'
 import { Marked } from 'marked'
+import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from './preview-ready'
 import { downloadFile, sanitizeTitle } from './shared-helpers'
 
 /**
@@ -65,6 +66,7 @@ export function getHtmlContent(): string {
  * 导出 HTML 生成内容
  */
 export async function exportHTML(title: string = `untitled`) {
+  await waitForPreviewReady()
   const htmlStr = getHtmlContent()
   const stylesToAdd = await getStylesToAdd()
 
@@ -119,6 +121,7 @@ export async function exportPureHTML(raw: string, title: string = `untitled`) {
  * @param {string} title - 文档标题
  */
 export async function exportPDF(title: string = `untitled`) {
+  await waitForPreviewReady()
   const htmlStr = getHtmlContent()
   const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
@@ -341,10 +344,14 @@ export async function processClipboardContent(primaryColor: string) {
     return {
       html: ``,
       plainText: ``,
+      hasPendingAsyncContent: false,
     }
   }
 
+  const previewReady = await waitForPreviewReady()
+
   const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
+  stripUnresolvedAsyncPlaceholders(clipboardDiv)
 
   const stylesToAdd = await getStylesToAdd()
 
@@ -442,5 +449,6 @@ export async function processClipboardContent(primaryColor: string) {
   return {
     html: clipboardDiv.innerHTML,
     plainText: clipboardDiv.textContent || ``,
+    hasPendingAsyncContent: !previewReady,
   }
 }
