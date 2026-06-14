@@ -132,6 +132,7 @@ async function copy() {
         let processedClipboardContent: {
           html: string
           plainText: string
+          hasPendingAsyncContent: boolean
         }
 
         try {
@@ -141,6 +142,10 @@ async function copy() {
           toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
           editorRefresh()
           return
+        }
+
+        if (processedClipboardContent.hasPendingAsyncContent) {
+          toast.warning(`部分图表或公式尚未渲染完成，已跳过未加载内容。请稍后再试。`)
         }
 
         const clipboardDiv = document.getElementById(`output`)

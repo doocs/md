@@ -29,12 +29,15 @@ section,
  * 兜底重置：导出 HTML / 分享页 / VSCode 预览等脱离 Web App 的场景
  * 没有 Tailwind preflight，浏览器 UA 默认样式会冒出来（如
  * blockquote 默认左右各 40px margin、table 默认 border-collapse: separate）。
- * 这里统一重置，保证导出结果与预览一致。各主题可在其后覆盖（如 margin-bottom）。
+ * 这里统一重置左右（及顶部）外边距，保证导出结果与预览一致。
+ * 垂直间距由主题 blockquote { margin-bottom } 控制，勿在此处 margin: 0 覆盖。
  * section 选择器用于 VSCode 预览（无 #output 容器，内容在 section.container 内）。
  */
 #output blockquote,
 section blockquote {
-  margin: 0;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
 }
 
 #output table,
