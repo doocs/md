@@ -78,7 +78,7 @@ export function useSlashCommand() {
   function createExtension(getView: () => EditorViewType | null) {
     return [
       EditorView.updateListener.of((update) => {
-        if (update.scrollChanged && visible.value) {
+        if (visible.value && update.viewportChanged && !update.docChanged) {
           closeMenu()
           return
         }
