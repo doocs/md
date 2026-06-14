@@ -10,6 +10,9 @@ interface MathJaxDocument {
 interface MathJaxGlobal {
   texReset: () => void
   tex2svg: (tex: string, options?: { display?: boolean }) => MathJaxDocument
+  startup?: {
+    promise: Promise<void>
+  }
 }
 
 interface Window {

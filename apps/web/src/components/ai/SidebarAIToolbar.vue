@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { Bot, Image as ImageIcon, Settings2, Wand2 } from '@lucide/vue'
+import { defineAsyncComponent } from 'vue'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
-import AIAssistantPanel from './chat-box/AIAssistantPanel.vue'
-import AIImageGeneratorPanel from './image-generator/AIImageGeneratorPanel.vue'
 import { AIPolishPopover } from './tool-box'
 
 defineProps<{
   isMobile: boolean
   showEditor: boolean
 }>()
+const AIAssistantPanel = defineAsyncComponent(() => import('./chat-box/AIAssistantPanel.vue'))
+const AIImageGeneratorPanel = defineAsyncComponent(() => import('./image-generator/AIImageGeneratorPanel.vue'))
+
 const SELECTION_HINT_TIMEOUT_MS = 3000
 
 const uiStore = useUIStore()
@@ -290,8 +292,8 @@ onMounted(() => {
     </div>
 
     <!-- AI面板组件 -->
-    <AIAssistantPanel v-model:open="aiDialogVisible" />
-    <AIImageGeneratorPanel v-model:open="aiImageDialogVisible" />
+    <AIAssistantPanel v-if="aiDialogVisible" v-model:open="aiDialogVisible" />
+    <AIImageGeneratorPanel v-if="aiImageDialogVisible" v-model:open="aiImageDialogVisible" />
 
     <!-- AI工具箱弹窗 -->
     <AIPolishPopover

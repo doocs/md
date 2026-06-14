@@ -2,7 +2,7 @@ import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, P
 import { applyTheme } from '@md/core'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
 /** Legacy localStorage keys used before per-theme settings */

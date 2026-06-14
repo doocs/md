@@ -1,5 +1,5 @@
 import type { SyncSetting } from './types'
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 
 /**
  * 允许同步的偏好设置 key 白名单（显式枚举，避免泄露密钥）。

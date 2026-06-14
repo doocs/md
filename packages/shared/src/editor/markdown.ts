@@ -7,7 +7,6 @@ import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorSelection, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { indentationMarkers } from '@replit/codemirror-indentation-markers'
-import { formatDoc } from '../utils/fileHelpers'
 import { applyHeading, formatBold, formatCode, formatItalic, formatLink, formatOrderedList, formatStrikethrough, formatUnorderedList, redoAction, undoAction } from './format'
 
 /**
@@ -15,6 +14,7 @@ import { applyHeading, formatBold, formatCode, formatItalic, formatLink, formatO
  */
 async function formatMarkdown(view: EditorView) {
   const content = view.state.doc.toString()
+  const { formatDoc } = await import('../utils/formatDoc')
   const formatted = await formatDoc(content, `markdown`)
   view.dispatch({
     changes: { from: 0, to: view.state.doc.length, insert: formatted },

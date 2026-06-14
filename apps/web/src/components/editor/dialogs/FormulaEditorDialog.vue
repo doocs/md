@@ -2,11 +2,13 @@
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 import { escapeHtml, normalizeFormulaInput, wrapFormula } from '@/utils/formula'
+import { isMathJaxLoaded, loadMathJax } from '@/utils/mathjax'
 
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
 const latexText = ref(``)
+const mathJaxReady = ref(false)
 const latexInputRef = useTemplateRef<HTMLTextAreaElement>(`latexInputRef`)
 
 const formulaGroups = [
@@ -168,6 +170,9 @@ const selectedGroup = computed(() => {
 })
 
 function renderWithMathJax(latex: string, display: boolean): string {
+  if (!isMathJaxLoaded()) {
+    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+  }
   try {
     window.MathJax.texReset()
     const mjxContainer = window.MathJax.tex2svg(latex, { display })
@@ -184,15 +189,23 @@ function renderWithMathJax(latex: string, display: boolean): string {
 
 const snippetPreviewCache = new Map<string, string>()
 function renderSnippet(snippet: string): string {
+  if (!mathJaxReady.value) {
+    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+  }
+
   const cached = snippetPreviewCache.get(snippet)
   if (cached)
     return cached
+
   const html = renderWithMathJax(snippet, false)
   snippetPreviewCache.set(snippet, html)
   return html
 }
 
 const previewHtml = computed(() => {
+  if (!mathJaxReady.value) {
+    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+  }
   const content = latexText.value.trim()
   if (!content) {
     return `<div class="text-sm text-muted-foreground">输入公式后会在这里显示预览</div>`
@@ -203,8 +216,20 @@ const previewHtml = computed(() => {
 watch(
   () => uiStore.isShowFormulaEditorDialog,
   async (open) => {
-    if (!open)
+    if (!open) {
+      mathJaxReady.value = false
+      snippetPreviewCache.clear()
       return
+    }
+
+    try {
+      await loadMathJax()
+      snippetPreviewCache.clear()
+      mathJaxReady.value = true
+    }
+    catch {
+      mathJaxReady.value = false
+    }
 
     const parsed = normalizeFormulaInput(uiStore.formulaEditorValue)
     latexText.value = parsed.latex || uiStore.formulaEditorValue

@@ -1,9 +1,3 @@
-/// <reference path="../types/prettier.d.ts" />
-import parserBabel from 'prettier/parser-babel'
-import parserMarkdown from 'prettier/parser-markdown'
-import parserPostcss from 'prettier/parser-postcss'
-import * as prettier from 'prettier/standalone'
-
 /**
  * 通用文件下载函数
  * @param content - 文件内容
@@ -83,34 +77,4 @@ export function createTable({ data, rows, cols }: {
   }
 
   return table
-}
-
-/**
- * 格式化文档内容
- * @param content - 要格式化的内容
- * @param type - 内容类型，决定使用的解析器，默认为 'markdown'
- * @returns 格式化后的内容
- */
-export async function formatDoc(content: string, type: `markdown` | `css` | `javascript` = `markdown`): Promise<string> {
-  const parser = type === `css` ? `css` : type === `javascript` ? `babel` : `markdown`
-  const plugins = type === `css` ? [parserPostcss] : type === `javascript` ? [parserBabel] : [parserMarkdown, parserBabel]
-
-  return await prettier.format(content, {
-    parser,
-    plugins,
-    // prettier v2.8.8 配置选项
-    printWidth: 80,
-    tabWidth: 2,
-    useTabs: false,
-    semi: false,
-    singleQuote: true,
-    quoteProps: `as-needed`,
-    trailingComma: `es5`,
-    bracketSpacing: true,
-    bracketSameLine: false,
-    arrowParens: `avoid`,
-    proseWrap: `preserve`,
-    htmlWhitespaceSensitivity: `css`,
-    endOfLine: `lf`,
-  })
 }

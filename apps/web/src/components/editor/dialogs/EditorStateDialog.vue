@@ -6,8 +6,8 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { downloadFile } from '@/utils'
 import { copyPlain } from '@/utils/clipboard'
+import { downloadFile } from '@/utils/shared-helpers'
 
 const props = defineProps<{
   open: boolean

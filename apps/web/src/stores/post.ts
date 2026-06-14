@@ -1,7 +1,7 @@
 import type { Post } from '@/types/post'
 import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
 export type { Post } from '@/types/post'

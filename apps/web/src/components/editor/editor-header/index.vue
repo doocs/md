@@ -1,24 +1,29 @@
 <script setup lang="ts">
 import { Copy, Loader2, Menu, Palette } from '@lucide/vue'
+import { defineAsyncComponent } from 'vue'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, generatePureHTML, processClipboardContent } from '@/utils'
+import { generatePureHTML, processClipboardContent } from '@/utils/export-content'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
-import AccountDialog from './AccountDialog.vue'
 import EditDropdown from './EditDropdown.vue'
 import FileDropdown from './FileDropdown.vue'
 import FormatDropdown from './FormatDropdown.vue'
 import HelpDropdown from './HelpDropdown.vue'
 import InsertDropdown from './InsertDropdown.vue'
-import MarkdownHelpDialog from './MarkdownHelpDialog.vue'
-import ShareDialog from './ShareDialog.vue'
 import StyleDropdown from './StyleDropdown.vue'
-import SyncDialog from './SyncDialog.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
+const AboutDialog = defineAsyncComponent(() => import('./AboutDialog.vue'))
+const FundDialog = defineAsyncComponent(() => import('./FundDialog.vue'))
+const EditorStateDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/EditorStateDialog.vue'))
+const MarkdownHelpDialog = defineAsyncComponent(() => import('./MarkdownHelpDialog.vue'))
+const AccountDialog = defineAsyncComponent(() => import('./AccountDialog.vue'))
+const SyncDialog = defineAsyncComponent(() => import('./SyncDialog.vue'))
+const ShareDialog = defineAsyncComponent(() => import('./ShareDialog.vue'))
 
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
@@ -291,13 +296,13 @@ function copyToWeChat() {
   </header>
 
   <!-- 对话框组件，嵌套菜单无法正常挂载，需要提取层级 -->
-  <AboutDialog v-model:open="isShowAboutDialog" />
-  <FundDialog v-model:open="isShowFundDialog" />
-  <EditorStateDialog v-model:open="isShowEditorStateDialog" />
-  <MarkdownHelpDialog v-model:open="isShowMarkdownHelpDialog" />
-  <AccountDialog v-model:open="isShowAccountDialog" />
-  <SyncDialog v-model:open="isShowSyncDialog" />
-  <ShareDialog v-model:open="isShowShareDialog" />
+  <AboutDialog v-if="isShowAboutDialog" v-model:open="isShowAboutDialog" />
+  <FundDialog v-if="isShowFundDialog" v-model:open="isShowFundDialog" />
+  <EditorStateDialog v-if="isShowEditorStateDialog" v-model:open="isShowEditorStateDialog" />
+  <MarkdownHelpDialog v-if="isShowMarkdownHelpDialog" v-model:open="isShowMarkdownHelpDialog" />
+  <AccountDialog v-if="isShowAccountDialog" v-model:open="isShowAccountDialog" />
+  <SyncDialog v-if="isShowSyncDialog" v-model:open="isShowSyncDialog" />
+  <ShareDialog v-if="isShowShareDialog" v-model:open="isShowShareDialog" />
 </template>
 
 <style lang="less" scoped>

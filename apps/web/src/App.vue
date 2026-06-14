@@ -26,7 +26,7 @@ async function bootstrapApp() {
     return
 
   syncStore.startAutoSyncWatcher()
-  await syncStore.sync()
+  void syncStore.sync()
 }
 
 onMounted(() => {

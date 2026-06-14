@@ -1,13 +1,12 @@
 import { toPng } from 'html-to-image'
 import {
-  downloadFile,
   downloadMD,
   exportHTML,
   exportPDF,
   exportPureHTML,
   getHtmlContent,
-  sanitizeTitle,
-} from '@/utils'
+} from '@/utils/export-content'
+import { downloadFile, sanitizeTitle } from '@/utils/shared-helpers'
 import { usePostStore } from './post'
 import { useRenderStore } from './render'
 import { useUIStore } from './ui'

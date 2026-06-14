@@ -1,7 +1,7 @@
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { getHtmlContent, getShareExportStyles } from '@/utils'
+import { getHtmlContent, getShareExportStyles } from '@/utils/export-content'
 
 const PREVIEW_READY_TIMEOUT_MS = 20_000
 const PREVIEW_POLL_INTERVAL_MS = 250

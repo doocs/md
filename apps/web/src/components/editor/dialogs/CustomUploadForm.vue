@@ -3,7 +3,7 @@ import { Compartment } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { javascriptSetup, theme } from '@md/shared'
 import { useUIStore } from '@/stores/ui'
-import { removeLeft } from '@/utils'
+import { removeLeft } from '@/utils/shared-helpers'
 import { store } from '@/utils/storage'
 
 const code = store.reactive(`formCustomConfig`, removeLeft(`
