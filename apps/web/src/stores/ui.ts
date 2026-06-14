@@ -132,6 +132,28 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowAccountDialog = ref(false)
   const toggleShowAccountDialog = useToggle(isShowAccountDialog)
 
+  // 是否展示分享对话框
+  const isShowShareDialog = ref(false)
+  const shareDialogInitialTab = ref<`create` | `manage`>(`create`)
+
+  function openShareDialog(options?: { tab?: `create` | `manage` }) {
+    shareDialogInitialTab.value = options?.tab ?? `create`
+    isShowShareDialog.value = true
+  }
+
+  // 是否展示关于 / 赞赏 / 语法帮助 / 配置导入导出对话框
+  const isShowAboutDialog = ref(false)
+  const toggleShowAboutDialog = useToggle(isShowAboutDialog)
+
+  const isShowFundDialog = ref(false)
+  const toggleShowFundDialog = useToggle(isShowFundDialog)
+
+  const isShowMarkdownHelpDialog = ref(false)
+  const toggleShowMarkdownHelpDialog = useToggle(isShowMarkdownHelpDialog)
+
+  const isShowEditorStateDialog = ref(false)
+  const toggleShowEditorStateDialog = useToggle(isShowEditorStateDialog)
+
   // 组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
   const componentDialogTarget = ref<string | null>(null)
 
@@ -234,6 +256,17 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowSyncDialog,
     isShowAccountDialog,
     toggleShowAccountDialog,
+    isShowShareDialog,
+    shareDialogInitialTab,
+    openShareDialog,
+    isShowAboutDialog,
+    toggleShowAboutDialog,
+    isShowFundDialog,
+    toggleShowFundDialog,
+    isShowMarkdownHelpDialog,
+    toggleShowMarkdownHelpDialog,
+    isShowEditorStateDialog,
+    toggleShowEditorStateDialog,
     componentDialogTarget,
     openComponentDialogWithTarget,
     aiDialogVisible,

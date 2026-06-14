@@ -215,20 +215,23 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       :class="{ 'pt-0': isMobile }"
     >
       <!-- 移动端标题栏 -->
-      <div v-if="isMobile" class="sticky top-0 z-10 flex items-center justify-between -mx-4 px-4 py-3 border-b mb-4 bg-background">
-        <h2 class="text-lg font-semibold">
-          样式设置
-        </h2>
-        <Button variant="ghost" size="sm" @click="isOpenRightSlider = false">
-          <X class="h-4 w-4" />
-        </Button>
+      <div v-if="isMobile" class="sticky top-0 z-10 -mx-4 mb-4 border-b bg-background px-4 pb-3 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
+        <div aria-hidden="true" class="mx-auto mb-2 h-1 w-10 rounded-full bg-muted-foreground/25" />
+        <div class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold">
+            样式设置
+          </h2>
+          <Button variant="ghost" size="sm" @click="isOpenRightSlider = false">
+            <X class="h-4 w-4" />
+          </Button>
+        </div>
       </div>
       <div class="space-y-2">
         <h2>主题</h2>
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in themeOptions" :key="value" class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': theme === value,
+              'border-primary ring-1 ring-primary/20 border-2': theme === value,
             }" @click="themeChanged(value)"
           >
             {{ label }}
@@ -240,7 +243,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
-            :class="{ 'border-black dark:border-white border-2': fontFamily === value }" @click="fontChanged(value)"
+            :class="{ 'border-primary ring-1 ring-primary/20 border-2': fontFamily === value }" @click="fontChanged(value)"
           >
             {{ label }}
           </Button>
@@ -251,7 +254,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             v-for="{ value, desc } in fontSizeOptions" :key="value" variant="outline" class="w-full" :class="{
-              'border-black dark:border-white border-2': fontSize === value,
+              'border-primary ring-1 ring-primary/20 border-2': fontSize === value,
             }" @click="sizeChanged(value)"
           >
             {{ desc }}
@@ -263,7 +266,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in colorOptions" :key="value" class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': primaryColor === value,
+              'border-primary ring-1 ring-primary/20 border-2': primaryColor === value,
             }" @click="colorChanged(value)"
           >
             <span
@@ -330,7 +333,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 justify-items-center gap-2">
           <Button
             v-for="{ label, value } in legendOptions" :key="value" class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': legend === value,
+              'border-primary ring-1 ring-primary/20 border-2': legend === value,
             }" @click="legendChanged(value)"
           >
             {{ label }}
@@ -343,14 +346,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': isMacCodeBlock,
+              'border-primary ring-1 ring-primary/20 border-2': isMacCodeBlock,
             }" @click="!isMacCodeBlock && macCodeBlockChanged()"
           >
             开启
           </Button>
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': !isMacCodeBlock,
+              'border-primary ring-1 ring-primary/20 border-2': !isMacCodeBlock,
             }" @click="isMacCodeBlock && macCodeBlockChanged()"
           >
             关闭
@@ -362,14 +365,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': isShowLineNumber,
+              'border-primary ring-1 ring-primary/20 border-2': isShowLineNumber,
             }" @click="!isShowLineNumber && showLineNumberChanged()"
           >
             开启
           </Button>
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': !isShowLineNumber,
+              'border-primary ring-1 ring-primary/20 border-2': !isShowLineNumber,
             }" @click="isShowLineNumber && showLineNumberChanged()"
           >
             关闭
@@ -382,14 +385,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': isCiteStatus,
+              'border-primary ring-1 ring-primary/20 border-2': isCiteStatus,
             }" @click="!isCiteStatus && citeStatusChanged()"
           >
             开启
           </Button>
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': !isCiteStatus,
+              'border-primary ring-1 ring-primary/20 border-2': !isCiteStatus,
             }" @click="isCiteStatus && citeStatusChanged()"
           >
             关闭
@@ -401,14 +404,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': isUseIndent,
+              'border-primary ring-1 ring-primary/20 border-2': isUseIndent,
             }" @click="!isUseIndent && useIndentChanged()"
           >
             开启
           </Button>
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': !isUseIndent,
+              'border-primary ring-1 ring-primary/20 border-2': !isUseIndent,
             }" @click="isUseIndent && useIndentChanged()"
           >
             关闭
@@ -420,14 +423,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 justify-items-center gap-2">
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': isUseJustify,
+              'border-primary ring-1 ring-primary/20 border-2': isUseJustify,
             }" @click="!isUseJustify && useJustifyChanged()"
           >
             开启
           </Button>
           <Button
             class="w-full" variant="outline" :class="{
-              'border-black dark:border-white border-2': !isUseJustify,
+              'border-primary ring-1 ring-primary/20 border-2': !isUseJustify,
             }" @click="isUseJustify && useJustifyChanged()"
           >
             关闭

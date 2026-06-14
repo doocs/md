@@ -1,24 +1,25 @@
 <script setup lang="ts">
-import { AlertCircle, Cloud, CloudCheck, CloudOff, Info, Loader2, LogIn, RefreshCw } from '@lucide/vue'
+import { AlertCircle, Cloud, CloudOff, Info, Loader2, LogIn, RefreshCw } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
 import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
 import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
+import { useSyncStatusMeta } from '@/composables/useSyncStatusMeta'
 import { isSyncConfigured } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
 import { useUIStore } from '@/stores/ui'
 
-const props = defineProps({
-  visible: {
-    type: Boolean,
-    default: false,
-  },
-})
+const props = defineProps<{
+  open: boolean
+}>()
 
-const emit = defineEmits([`close`])
+const emit = defineEmits<{
+  'update:open': [value: boolean]
+}>()
 
 const authStore = useAuthStore()
 const syncStore = useSyncStore()
@@ -26,13 +27,11 @@ const uiStore = useUIStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { status, lastError, lastSyncAt, needsRefresh, isSyncing, syncState } = storeToRefs(syncStore)
+const { syncStatusMeta } = useSyncStatusMeta({ errorHint: `generic` })
 
 const dialogOpen = computed({
-  get: () => props.visible,
-  set: (val: boolean) => {
-    if (!val)
-      emit(`close`)
-  },
+  get: () => props.open,
+  set: (val: boolean) => emit(`update:open`, val),
 })
 
 const lastSyncText = computed(() => {
@@ -46,45 +45,8 @@ const lastSyncText = computed(() => {
   })
 })
 
-const syncStatusMeta = computed(() => {
-  switch (syncState.value) {
-    case `syncing`:
-      return {
-        label: `同步中`,
-        hint: `正在与云端交换数据…`,
-        dotClass: `bg-primary animate-pulse`,
-        icon: Loader2,
-        iconClass: `text-primary animate-spin`,
-      }
-    case `synced`:
-      return {
-        label: `已同步`,
-        hint: `本地内容与云端一致`,
-        dotClass: `bg-green-500`,
-        icon: CloudCheck,
-        iconClass: `text-green-600 dark:text-green-400`,
-      }
-    case `error`:
-      return {
-        label: `同步失败`,
-        hint: lastError.value || `请稍后重试`,
-        dotClass: `bg-destructive`,
-        icon: AlertCircle,
-        iconClass: `text-destructive`,
-      }
-    default:
-      return {
-        label: `待同步`,
-        hint: `本地有未上传的更改`,
-        dotClass: `bg-amber-500`,
-        icon: CloudOff,
-        iconClass: `text-amber-600 dark:text-amber-400`,
-      }
-  }
-})
-
 function openAccountDialog() {
-  emit(`close`)
+  dialogOpen.value = false
   uiStore.toggleShowAccountDialog(true)
 }
 
@@ -127,17 +89,20 @@ function handleReload() {
     />
 
     <div v-else class="space-y-4 px-4 py-4 sm:px-6">
-      <div class="flex items-start gap-3 rounded-xl border bg-muted/20 p-3.5 sm:p-4">
-        <div
-          class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-background ring-1 ring-border/60"
-        >
-          <component
-            :is="syncStatusMeta.icon"
-            class="size-4"
-            :class="syncStatusMeta.iconClass"
-          />
-        </div>
-        <div class="min-w-0 flex-1 space-y-1">
+      <CloudPanelCard>
+        <template #leading>
+          <div
+            class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-background ring-1 ring-border/60"
+          >
+            <component
+              :is="syncStatusMeta.icon"
+              class="size-4"
+              :class="syncStatusMeta.iconClass"
+            />
+          </div>
+        </template>
+
+        <div class="space-y-1">
           <div class="flex flex-wrap items-center gap-2">
             <span class="inline-flex items-center gap-1.5 text-sm font-medium">
               <span class="size-2 rounded-full" :class="syncStatusMeta.dotClass" />
@@ -148,7 +113,7 @@ function handleReload() {
             {{ syncStatusMeta.hint }}
           </p>
         </div>
-      </div>
+      </CloudPanelCard>
 
       <div class="grid gap-2 rounded-xl border px-3.5 py-3 text-xs sm:px-4">
         <div class="flex items-center justify-between gap-3">
