@@ -1,5 +1,5 @@
 import { initRenderer } from '@md/core'
-import { postProcessHtml, renderMarkdown } from '@/utils'
+import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { useCustomComponentStore } from './customComponent'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'

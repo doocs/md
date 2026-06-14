@@ -1,14 +1,12 @@
 import type { S3ClientConfig } from '@aws-sdk/client-s3'
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner'
 import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import Buffer from 'buffer-from'
 import CryptoJS from 'crypto-js'
-import * as qiniu from 'qiniu-js'
 import { v4 as uuidv4 } from 'uuid'
 import { uploadDefaultImage } from '@/services/upload/client'
+import { loadS3Sdk } from './s3-sdk'
 import { store } from './storage'
 
 /**
@@ -127,7 +125,12 @@ function getQiniuToken(accessKey: string, secretKey: string, putPolicy: {
   return `${accessKey}:${safe64(encodedSigned)}:${encoded}`
 }
 
+async function loadQiniu() {
+  return import(`qiniu-js`)
+}
+
 async function qiniuUpload(file: File) {
+  const qiniu = await loadQiniu()
   const configStr = await store.get(`qiniuConfig`)
   const { accessKey, secretKey, bucket, region, path, domain } = safeJsonParse<{ accessKey: string, secretKey: string, bucket: string, region?: string, path: string, domain: string }>(configStr, `qiniu config`)
   const token = getQiniuToken(accessKey, secretKey, {
@@ -175,6 +178,8 @@ async function aliOSSFileUpload(file: File) {
     endpoint,
     forcePathStyle: false,
   }
+
+  const { S3Client, PutObjectCommand, getSignedUrl } = await loadS3Sdk()
 
   const s3Client = new S3Client(clientConfig)
 
@@ -237,6 +242,8 @@ async function txCOSFileUpload(file: File) {
     forcePathStyle: false,
   }
 
+  const { S3Client, PutObjectCommand, getSignedUrl } = await loadS3Sdk()
+
   const s3Client = new S3Client(clientConfig)
 
   const dir = path ? `${path}/` : ``
@@ -287,6 +294,7 @@ async function minioFileUpload(file: File) {
   const dateFilename = getDateFilename(file.name)
   const configStr = await store.get(`minioConfig`)
   const { endpoint, port, useSSL, bucket, accessKey, secretKey } = safeJsonParse<{ endpoint: string, port: string, useSSL: boolean, bucket: string, accessKey: string, secretKey: string }>(configStr, `minio config`)
+  const { S3Client, PutObjectCommand, getSignedUrl } = await loadS3Sdk()
   const s3Client = new S3Client({
     endpoint: `${useSSL ? `https` : `http`}://${endpoint}${port ? `:${port}` : ``}`,
     credentials: {
@@ -349,6 +357,8 @@ async function s3Upload(file: File) {
     forcePathStyle: pathStyle,
     endpoint: resolvedEndpoint,
   }
+
+  const { S3Client, PutObjectCommand, getSignedUrl } = await loadS3Sdk()
 
   const s3Client = new S3Client(clientConfig)
 
@@ -494,6 +504,7 @@ async function r2Upload(file: File) {
   const { accountId, accessKey, secretKey, bucket, path, domain } = safeJsonParse<{ accountId: string, accessKey: string, secretKey: string, bucket: string, path: string, domain: string }>(configStr, `r2 config`)
   const dir = path ? `${path}/` : ``
   const filename = dir + getDateFilename(file.name)
+  const { S3Client, PutObjectCommand, getSignedUrl } = await loadS3Sdk()
   const client = new S3Client({ region: `auto`, endpoint: `https://${accountId}.r2.cloudflarestorage.com`, credentials: { accessKeyId: accessKey, secretAccessKey: secretKey } })
   const signedUrl = await getSignedUrl(
     client,
@@ -678,6 +689,10 @@ async function cloudinaryUpload(file: File): Promise<string> {
 
 async function formCustomUpload(content: string, file: File) {
   const customConfig = await store.get(`formCustomConfig`)
+  const [{ S3Client, PutObjectCommand, getSignedUrl }, qiniu] = await Promise.all([
+    loadS3Sdk(),
+    loadQiniu(),
+  ])
   const str = `
     async (CUSTOM_ARG) => {
       ${customConfig}

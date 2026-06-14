@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import FormulaEditorDialog from '@/components/editor/dialogs/FormulaEditorDialog.vue'
-import LocalImageUploadDialog from '@/components/editor/dialogs/LocalImageUploadDialog.vue'
+import { defineAsyncComponent } from 'vue'
 import EditorPanel from '@/components/editor/EditorPanel.vue'
-import FolderSourcePanel from '@/components/editor/folder-source-panel/index.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
   ResizableHandle,
@@ -13,6 +11,16 @@ import { useCursorSync } from '@/composables/useCursorSync'
 import { useScrollSync } from '@/composables/useScrollSync'
 import { useUIStore } from '@/stores/ui'
 
+const PostSlider = defineAsyncComponent(() => import('@/components/editor/post-slider/index.vue'))
+const FolderSourcePanel = defineAsyncComponent(() => import('@/components/editor/folder-source-panel/index.vue'))
+const UploadImgDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/UploadImgDialog.vue'))
+const InsertFormDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/InsertFormDialog.vue'))
+const ImportMarkdownDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/ImportMarkdownDialog.vue'))
+const LocalImageUploadDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/LocalImageUploadDialog.vue'))
+const FormulaEditorDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/FormulaEditorDialog.vue'))
+const TemplateDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/TemplateDialog.vue'))
+const CustomComponentDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/CustomComponentDialog.vue'))
+
 const uiStore = useUIStore()
 
 const {
@@ -22,6 +30,13 @@ const {
   isOpenRightSlider,
   viewMode,
   enableScrollSync,
+  isShowUploadImgDialog,
+  isShowInsertFormDialog,
+  isShowImportMdDialog,
+  isShowLocalImageUpload,
+  isShowFormulaEditorDialog,
+  isShowTemplateDialog,
+  isShowComponentDialog,
 } = storeToRefs(uiStore)
 
 // --- 子组件引用 ---
@@ -189,7 +204,7 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
             :max-size="!isMobile && isOpenPostSlider ? 30 : 0"
             :min-size="!isMobile && isOpenPostSlider ? 18 : 0"
           >
-            <PostSlider />
+            <PostSlider v-if="isOpenPostSlider" />
           </ResizablePanel>
           <ResizableHandle class="hidden md:block" />
           <ResizablePanel
@@ -198,7 +213,7 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
             :max-size="!isMobile && isOpenFolderPanel ? 25 : 0"
             :min-size="!isMobile && isOpenFolderPanel ? 10 : 0"
           >
-            <FolderSourcePanel />
+            <FolderSourcePanel v-if="isOpenFolderPanel" />
           </ResizablePanel>
           <ResizableHandle v-if="!isMobile && isOpenFolderPanel" class="hidden md:block" />
 
@@ -276,19 +291,19 @@ const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 
         </ResizablePanelGroup>
       </div>
 
-      <UploadImgDialog @upload-image="handleUploadImage" />
+      <UploadImgDialog v-if="isShowUploadImgDialog" @upload-image="handleUploadImage" />
 
-      <InsertFormDialog />
+      <InsertFormDialog v-if="isShowInsertFormDialog" />
 
-      <ImportMarkdownDialog />
+      <ImportMarkdownDialog v-if="isShowImportMdDialog" />
 
-      <LocalImageUploadDialog />
+      <LocalImageUploadDialog v-if="isShowLocalImageUpload" />
 
-      <FormulaEditorDialog />
+      <FormulaEditorDialog v-if="isShowFormulaEditorDialog" />
 
-      <TemplateDialog />
+      <TemplateDialog v-if="isShowTemplateDialog" />
 
-      <CustomComponentDialog />
+      <CustomComponentDialog v-if="isShowComponentDialog" />
     </main>
 
     <Footer />

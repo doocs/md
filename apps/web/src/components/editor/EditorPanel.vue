@@ -3,7 +3,7 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { markdownSetup, theme } from '@md/shared/editor'
 import imageCompression from 'browser-image-compression'
-import { SidebarAIToolbar } from '@/components/ai'
+import { defineAsyncComponent } from 'vue'
 import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
 import { useImageUploader } from '@/composables/useImageUploader'
@@ -13,9 +13,12 @@ import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { checkImage, toBase64 } from '@/utils'
-import { fileUpload } from '@/utils/file'
+import { fileUpload } from '@/utils/file-upload'
+import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/utils/mathjax'
+import { checkImage, toBase64 } from '@/utils/shared-helpers'
 import { store } from '@/utils/storage'
+
+const SidebarAIToolbar = defineAsyncComponent(() => import('@/components/ai/SidebarAIToolbar.vue'))
 
 const editorStore = useEditorStore()
 const postStore = usePostStore()
@@ -491,11 +494,31 @@ function createFormTextArea(dom: HTMLDivElement) {
 }
 
 // --- Lifecycle ---
+function handleMathJaxReady() {
+  editorRefresh()
+}
+
+async function preloadMathJaxIfNeeded(content: string) {
+  if (!contentHasMath(content))
+    return
+
+  try {
+    await loadMathJax()
+  }
+  catch (error) {
+    console.error(error)
+  }
+}
+
+let postSwitchGeneration = 0
+
 onMounted(() => {
   const editorDom = editorRef.value
   if (editorDom == null) {
     return
   }
+
+  window.addEventListener(MATHJAX_READY_EVENT, handleMathJaxReady)
 
   renderStore.initRendererInstance({
     isMacCodeBlock: themeStore.isMacCodeBlock,
@@ -504,9 +527,12 @@ onMounted(() => {
 
   themeStore.applyCurrentTheme()
 
-  nextTick(() => {
+  void nextTick(async () => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
+
+    const content = posts.value[currentPostIndex.value]?.content ?? ``
+    await preloadMathJaxIfNeeded(content)
 
     editorRefresh()
     mdLocalToRemote()
@@ -534,6 +560,7 @@ watch(currentPostIndex, () => {
 
   const currentContent = codeMirrorView.value.state.doc.toString()
   if (currentContent !== currentPost.content) {
+    const generation = ++postSwitchGeneration
     codeMirrorView.value.dispatch({
       changes: {
         from: 0,
@@ -541,7 +568,11 @@ watch(currentPostIndex, () => {
         insert: currentPost.content,
       },
     })
-    editorRefresh()
+    void preloadMathJaxIfNeeded(currentPost.content).then(() => {
+      if (generation !== postSwitchGeneration)
+        return
+      editorRefresh()
+    })
   }
 })
 
@@ -567,6 +598,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener(MATHJAX_READY_EVENT, handleMathJaxReady)
   clearTimeout(historyTimer.value)
   clearTimeout(changeTimer.value)
   document.removeEventListener(`keydown`, handleGlobalKeydown, { capture: false })

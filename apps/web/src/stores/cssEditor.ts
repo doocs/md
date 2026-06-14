@@ -3,7 +3,8 @@ import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
 import { v4 as uuidv4 } from 'uuid'
-import { addPrefix, downloadFile, sanitizeTitle } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
+import { downloadFile, sanitizeTitle } from '@/utils/shared-helpers'
 import { store } from '@/utils/storage'
 
 const DEFAULT_CSS_CONTENT = DEFAULT_CUSTOM_THEME

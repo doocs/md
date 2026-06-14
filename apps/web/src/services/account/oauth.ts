@@ -1,4 +1,4 @@
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 import { OAUTH_TOKEN_HASH_KEY } from './config'
 

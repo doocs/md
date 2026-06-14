@@ -5,7 +5,7 @@ import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
 import { useUIStore } from '@/stores/ui'
-import { checkImage } from '@/utils'
+import { checkImage } from '@/utils/shared-helpers'
 import { store } from '@/utils/storage'
 
 const emit = defineEmits([`uploadImage`])

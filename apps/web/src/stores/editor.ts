@@ -1,5 +1,4 @@
 import type { EditorView } from '@codemirror/view'
-import { formatDoc } from '@/utils'
 
 /**
  * 编辑器 Store
@@ -14,6 +13,7 @@ export const useEditorStore = defineStore(`editor`, () => {
     if (!editor.value)
       return
 
+    const { formatDoc } = await import('@md/shared/utils/formatDoc')
     const doc = await formatDoc(editor.value.state.doc.toString())
     editor.value.dispatch({
       changes: { from: 0, to: editor.value.state.doc.length, insert: doc },

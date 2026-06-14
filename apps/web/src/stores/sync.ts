@@ -6,7 +6,7 @@ import { isProPlan, SYNC_DEBOUNCE_MS_PRO, SYNC_PRO_ENABLED } from '@/services/sy
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
 export type SyncStatus = 'idle' | 'syncing' | 'error'

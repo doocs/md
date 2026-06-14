@@ -15,7 +15,7 @@ import {
 import { usePostStore } from '@/stores/post'
 import { useTemplateStore } from '@/stores/template'
 import { useUIStore } from '@/stores/ui'
-import { downloadMD } from '@/utils'
+import { downloadMD } from '@/utils/export-content'
 import {
   getPostSliderDropdownContentProps,
   updatePostSliderMenuOpen,

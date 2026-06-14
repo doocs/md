@@ -1,7 +1,7 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
 import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
 import { v4 as uuidv4 } from 'uuid'
-import { addPrefix } from '@/utils'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
 /**

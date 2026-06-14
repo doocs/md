@@ -1,6 +1,5 @@
 import { css } from '@codemirror/lang-css'
 import { EditorView, keymap } from '@codemirror/view'
-import { formatDoc } from '../utils/fileHelpers'
 import { basicSetup } from './basicSetup'
 
 /**
@@ -8,6 +7,7 @@ import { basicSetup } from './basicSetup'
  */
 async function formatCSS(view: EditorView) {
   const content = view.state.doc.toString()
+  const { formatDoc } = await import('../utils/formatDoc')
   const formatted = await formatDoc(content, `css`)
   view.dispatch({
     changes: { from: 0, to: view.state.doc.length, insert: formatted },

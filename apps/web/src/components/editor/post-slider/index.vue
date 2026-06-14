@@ -4,7 +4,8 @@ import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix, downloadMD, exportPostsAsZip } from '@/utils'
+import { downloadMD, exportPostsAsZip } from '@/utils/export-content'
+import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 import {
   getPostSliderDropdownContentProps,

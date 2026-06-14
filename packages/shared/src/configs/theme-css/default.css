@@ -530,6 +530,19 @@ td {
   text-align: center;
 }
 
+.katex-pending {
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+  font-size: 0.875em;
+}
+
+.katex-block.katex-pending {
+  padding: 0.75em 0;
+}
+
+.katex-inline.katex-pending {
+  opacity: 0.75;
+}
+
 /* ==================== 标记高亮 ==================== */
 .markup-highlight {
   background-color: var(--md-primary-color);

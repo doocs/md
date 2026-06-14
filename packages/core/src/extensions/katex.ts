@@ -3,61 +3,50 @@ import type { MarkedExtension } from 'marked'
 import type { KatexRenderFn, KatexToken } from '../types/marked-tokens'
 import { asKatexRenderer } from '../types/marked-tokens'
 import { escapeHtml } from '../utils/basicHelpers'
+import {
+  blockLatexRule,
+  blockRule,
+  findInlineKatexStart,
+  inlineLatexRule,
+  inlineRule,
+  inlineRuleNonStandard,
+} from '../utils/mathDetection'
+import { ensureMathJaxLoaded, isMathJaxReady } from '../utils/mathjax'
 
 export interface MarkedKatexOptions {
   nonStandard?: boolean
 }
 
-const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1(?=[\s?!.,:？！。，：]|$)/
-// Non-standard: allow tight `$...$`; amount-like `$` is filtered in findInlineKatexStart
-const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/
+let mathJaxLoadRequested = false
 
-/** nonStandard 模式下，跳过更像金额后缀的 `$` */
-function isAmountDollarSign(src: string, index: number): boolean {
-  if (index <= 0)
-    return false
-  const prev = src.charAt(index - 1)
-  if (/[\d,.]/.test(prev))
-    return true
-  return prev === ` ` && index >= 2 && /\d/.test(src.charAt(index - 2))
+function requestMathJaxLoad() {
+  if (isMathJaxReady())
+    return
+  if (mathJaxLoadRequested)
+    return
+
+  mathJaxLoadRequested = true
+  ensureMathJaxLoaded()
+    .catch((error) => {
+      mathJaxLoadRequested = false
+      console.error(error)
+    })
 }
-
-function isInlineKatexStart(src: string, index: number, nonStandard: boolean): boolean {
-  if (nonStandard)
-    return !isAmountDollarSign(src, index)
-  return index === 0 || src.charAt(index - 1) === ` `
-}
-
-function findInlineKatexStart(src: string, nonStandard: boolean, ruleReg: RegExp): number | undefined {
-  let indexSrc = src
-  let offset = 0
-
-  while (indexSrc) {
-    const index = indexSrc.indexOf(`$`)
-    if (index === -1)
-      return
-
-    if (isInlineKatexStart(indexSrc, index, nonStandard)) {
-      const possibleKatex = indexSrc.substring(index)
-      if (possibleKatex.match(ruleReg))
-        return offset + index
-    }
-
-    const next = indexSrc.substring(index + 1).replace(/^\$+/, ``)
-    offset += indexSrc.length - next.length
-    indexSrc = next
-  }
-}
-
-const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
-
-// LaTeX style rules for \( ... \) and \[ ... \]
-const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
-const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 
 function createRenderer(defaultDisplay: boolean, withStyle: boolean = true): KatexRenderFn {
   return (token: KatexToken) => {
     const display = token.displayMode ?? defaultDisplay
+    const rawAttr = escapeHtml(token.raw ?? token.text)
+
+    if (typeof window === `undefined` || !isMathJaxReady()) {
+      requestMathJaxLoad()
+
+      if (display) {
+        return `<section class="katex-block katex-pending" data-math-display="true" data-math-raw="${rawAttr}"><span>正在加载公式…</span></section>`
+      }
+
+      return `<span class="katex-inline katex-pending" data-math-display="false" data-math-raw="${rawAttr}"><span>…</span></span>`
+    }
 
     window.MathJax.texReset()
     const mjxContainer = window.MathJax.tex2svg(token.text, { display })
