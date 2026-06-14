@@ -668,10 +668,10 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                     v-if="isLoggedIn && authStore.user?.avatar"
                     :src="authStore.user.avatar"
                     :alt="authStore.user.login"
-                    class="size-4 rounded-full"
+                    class="size-3 rounded-full"
                   >
-                  <User v-else-if="isLoggedIn" class="size-4" />
-                  <LogIn v-else class="size-4" />
+                  <User v-else-if="isLoggedIn" class="size-3" />
+                  <LogIn v-else class="size-3" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
@@ -690,7 +690,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 >
                   <component
                     :is="syncFooterIcon"
-                    class="size-4"
+                    class="size-3"
                     :class="syncFooterIconClass"
                   />
                 </button>
@@ -709,7 +709,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                   class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                   @click="openShareDialog"
                 >
-                  <Share2 class="size-4" />
+                  <Share2 class="size-3" />
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
@@ -726,8 +726,8 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 :class="isDark ? 'text-foreground' : ''"
                 @click="toggleTheme"
               >
-                <Moon v-if="isDark" class="size-4" />
-                <Sun v-else class="size-4" />
+                <Moon v-if="isDark" class="size-3" />
+                <Sun v-else class="size-3" />
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
@@ -743,7 +743,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               aria-label="更多操作"
               class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground sm:hidden"
             >
-              <Ellipsis class="size-4" />
+              <Ellipsis class="size-3" />
             </button>
           </PopoverTriggerPrimitive>
           <PopoverContent side="top" :side-offset="8" align="end" class="w-48 p-1">
@@ -756,10 +756,10 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 v-if="isLoggedIn && authStore.user?.avatar"
                 :src="authStore.user.avatar"
                 :alt="authStore.user.login"
-                class="size-4 rounded-full"
+                class="size-3 rounded-full"
               >
-              <User v-else-if="isLoggedIn" class="size-4 shrink-0" />
-              <LogIn v-else class="size-4 shrink-0" />
+              <User v-else-if="isLoggedIn" class="size-3 shrink-0" />
+              <LogIn v-else class="size-3 shrink-0" />
               <span class="min-w-0 flex-1 truncate">{{ accountTooltip }}</span>
             </button>
             <button
@@ -769,7 +769,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             >
               <component
                 :is="syncFooterIcon"
-                class="size-4 shrink-0"
+                class="size-3 shrink-0"
                 :class="syncFooterIconClass"
               />
               <span>{{ isLoggedIn ? syncTooltip : '云同步' }}</span>
@@ -779,15 +779,15 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs transition-colors hover:bg-accent"
               @click="openShareDialog"
             >
-              <Share2 class="size-4 shrink-0" />
+              <Share2 class="size-3 shrink-0" />
               <span>分享预览</span>
             </button>
             <button
               class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs transition-colors hover:bg-accent"
               @click="toggleTheme"
             >
-              <Moon v-if="isDark" class="size-4 shrink-0" />
-              <Sun v-else class="size-4 shrink-0" />
+              <Moon v-if="isDark" class="size-3 shrink-0" />
+              <Sun v-else class="size-3 shrink-0" />
               <span>{{ isDark ? '浅色模式' : '深色模式' }}</span>
             </button>
           </PopoverContent>

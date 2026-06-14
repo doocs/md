@@ -88,8 +88,7 @@ function handleReload() {
       v-else-if="!isLoggedIn"
       :icon="Cloud"
       title="登录后开启云同步"
-      description="账户登录后，可将文章与编辑器设置安全同步到云端，并在多设备间保持一致。"
-      action-label="前往登录"
+      action-label="登录"
       :action-icon="LogIn"
       @action="openAccountDialog"
     />

@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { Cloud, Crown, LogIn, LogOut, Settings2, Share2, User } from '@lucide/vue'
+import { Cloud, Crown, LogOut, Settings2, Share2, User } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
 import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
 import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
+import GitHubIcon from '@/components/icons/GitHubIcon.vue'
 import { Button } from '@/components/ui/button'
 import { isShareProUser, isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
@@ -84,8 +85,8 @@ function openShareDialog() {
       v-else-if="!isLoggedIn"
       :icon="User"
       title="登录你的账户"
-      action-label="使用 GitHub 登录"
-      :action-icon="LogIn"
+      action-label="GitHub 登录"
+      :action-icon="GitHubIcon"
       @action="handleLogin"
     />
 
