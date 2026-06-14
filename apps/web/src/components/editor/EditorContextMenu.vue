@@ -29,13 +29,12 @@ import {
   Wand2,
 } from '@lucide/vue'
 import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
-import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { useEditorFormat } from '@/composables/useEditorFormat'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
-import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
@@ -46,7 +45,6 @@ const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
 const editorStore = useEditorStore()
 const exportStore = useExportStore()
-const postStore = usePostStore()
 const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
@@ -62,30 +60,13 @@ const { editor } = storeToRefs(editorStore)
 
 const { addFormat } = useEditorFormat(editor)
 
+const { formatContent, resetContent, clearContent } = useEditorDocumentActions()
+
 const headingIcons = [Heading1, Heading2, Heading3, Heading4, Heading5, Heading6]
 const headingLevels = baseHeadingLevels.map((item, index) => ({
   ...item,
   icon: headingIcons[index],
 }))
-
-// 格式化文档
-async function formatContent() {
-  const doc = await editorStore.formatContent()
-  if (doc && postStore.currentPost) {
-    postStore.updatePostContent(postStore.currentPostId, doc)
-  }
-}
-
-// 导入默认内容
-function importDefaultContent() {
-  editorStore.importContent(DEFAULT_CONTENT)
-  toast.success(`文档已重置`)
-}
-
-// 清空内容
-function clearContent() {
-  editorStore.clearContent()
-}
 
 function openFormulaEditor() {
   const selection = normalizeFormulaInput(editorStore.getSelection())
@@ -314,9 +295,9 @@ function downloadAsCardImage() {
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
         </ContextMenuShortcut>
       </ContextMenuItem>
-      <ContextMenuItem @click="importDefaultContent()">
+      <ContextMenuItem @click="resetContent()">
         <RefreshCw class="mr-2 h-4 w-4" />
-        重置文档
+        重置
       </ContextMenuItem>
       <ContextMenuItem @click="resetStyleConfirm()">
         <RotateCcw class="mr-2 h-4 w-4" />
@@ -324,7 +305,7 @@ function downloadAsCardImage() {
       </ContextMenuItem>
       <ContextMenuItem @click="clearContent()">
         <Trash2 class="mr-2 h-4 w-4" />
-        清空内容
+        清空
       </ContextMenuItem>
 
       <ContextMenuSeparator />

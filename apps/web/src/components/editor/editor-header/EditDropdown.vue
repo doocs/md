@@ -4,15 +4,17 @@ import {
   ClipboardPaste,
   Copy,
   Redo2,
+  RefreshCw,
   Replace,
   Search,
+  Trash2,
   Undo2,
   WandSparkles,
 } from '@lucide/vue'
 import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import { redoAction, undoAction } from '@md/shared/editor'
+import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { useEditorStore } from '@/stores/editor'
-import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import { copyPlain } from '@/utils/clipboard'
 
@@ -27,18 +29,11 @@ const emit = defineEmits(['copy'])
 const { asSub } = toRefs(props)
 
 const editorStore = useEditorStore()
-const postStore = usePostStore()
 const uiStore = useUIStore()
 
-const { editor } = storeToRefs(editorStore)
+const { formatContent, resetContent, clearContent } = useEditorDocumentActions()
 
-// Format content function
-async function formatContent() {
-  const doc = await editorStore.formatContent()
-  if (doc && postStore.currentPost) {
-    postStore.updatePostContent(postStore.currentPostId, doc)
-  }
-}
+const { editor } = storeToRefs(editorStore)
 
 // Clipboard operations
 async function copyToClipboard() {
@@ -179,15 +174,26 @@ function openReplace() {
 
       <MenubarSeparator />
 
-      <!-- 格式化文档 -->
+      <!-- 格式化 -->
       <MenubarItem @click="formatContent()">
         <WandSparkles class="mr-2 h-4 w-4" />
-        格式化文档
+        格式化
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ altSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ shiftSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
         </MenubarShortcut>
+      </MenubarItem>
+
+      <MenubarSeparator />
+
+      <MenubarItem @click="resetContent()">
+        <RefreshCw class="mr-2 h-4 w-4" />
+        重置
+      </MenubarItem>
+      <MenubarItem @click="clearContent()">
+        <Trash2 class="mr-2 h-4 w-4" />
+        清空
       </MenubarItem>
 
       <MenubarSeparator />
@@ -281,15 +287,26 @@ function openReplace() {
 
       <MenubarSeparator />
 
-      <!-- 格式化文档 -->
+      <!-- 格式化 -->
       <MenubarItem @click="formatContent()">
         <WandSparkles class="mr-2 h-4 w-4" />
-        格式化文档
+        格式化
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ altSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ shiftSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">F</kbd>
         </MenubarShortcut>
+      </MenubarItem>
+
+      <MenubarSeparator />
+
+      <MenubarItem @click="resetContent()">
+        <RefreshCw class="mr-2 h-4 w-4" />
+        重置
+      </MenubarItem>
+      <MenubarItem @click="clearContent()">
+        <Trash2 class="mr-2 h-4 w-4" />
+        清空
       </MenubarItem>
 
       <MenubarSeparator />

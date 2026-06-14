@@ -399,7 +399,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
 
 <template>
   <footer
-    class="flex select-none items-center overflow-hidden px-3 py-1 text-xs text-muted-foreground"
+    class="flex select-none items-center overflow-hidden px-3 py-1 text-xs text-muted-foreground max-md:px-4 max-md:py-1.5 max-md:pb-[max(0.375rem,env(safe-area-inset-bottom,0px))]"
   >
     <TooltipProvider :delay-duration="300">
       <!-- 左侧：光标位置 & 选区 -->
