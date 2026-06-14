@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Cloud, Crown, List, LogIn, LogOut, Settings2, Share2, User } from '@lucide/vue'
+import { Cloud, Crown, LogIn, LogOut, Settings2, Share2, User } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
@@ -55,9 +55,9 @@ function openSyncDialog() {
   uiStore.toggleShowSyncDialog(true)
 }
 
-function openShareDialog(tab: `create` | `manage` = `create`) {
+function openShareDialog() {
   dialogOpen.value = false
-  uiStore.openShareDialog({ tab })
+  uiStore.openShareDialog()
 }
 </script>
 
@@ -145,25 +145,16 @@ function openShareDialog(tab: `create` | `manage` = `create`) {
           v-if="showShareUi"
           variant="outline"
           class="h-10 justify-start gap-2"
-          @click="openShareDialog('create')"
+          @click="openShareDialog"
         >
           <Share2 class="size-4 shrink-0" />
           分享预览
-        </Button>
-        <Button
-          v-if="showShareUi && isSharePro"
-          variant="outline"
-          class="h-10 justify-start gap-2 sm:col-span-2"
-          @click="openShareDialog('manage')"
-        >
-          <List class="size-4 shrink-0" />
-          我的分享
         </Button>
       </div>
     </div>
 
     <template v-if="isConfigured && isLoggedIn" #footer>
-      <div class="border-t px-4 py-4 sm:px-6">
+      <div class="px-4 py-4 sm:px-6">
         <Button
           variant="outline"
           class="h-10 w-full gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"

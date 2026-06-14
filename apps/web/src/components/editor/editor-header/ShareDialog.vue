@@ -505,27 +505,25 @@ watch(isProUser, (pro) => {
           />
 
           <div v-else class="max-h-80 space-y-2 overflow-y-auto pr-1">
-            <div
+            <CloudPanelCard
               v-for="share in shareList"
               :key="share.id"
-              class="rounded-lg border p-3"
+              align="start"
               :class="share.expired ? 'opacity-70' : ''"
             >
-              <div class="flex items-start justify-between gap-2">
-                <div class="min-w-0 flex-1">
-                  <p class="truncate text-sm font-medium">
-                    {{ formatShareTitle(share.title) }}
-                  </p>
-                  <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
-                    <span class="inline-flex items-center gap-1">
-                      <Eye class="size-3" />
-                      {{ share.viewCount }} 次阅读
-                    </span>
-                    <span>{{ formatShareExpiry(share.expiresAt, share.expired) }}</span>
-                    <span v-if="share.protected">已设密码</span>
-                  </div>
-                </div>
-                <div class="flex shrink-0 items-center gap-1">
+              <p class="truncate text-sm font-medium">
+                {{ formatShareTitle(share.title) }}
+              </p>
+              <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                <span class="inline-flex items-center gap-1">
+                  <Eye class="size-3" />
+                  {{ share.viewCount }} 次阅读
+                </span>
+                <span>{{ formatShareExpiry(share.expiresAt, share.expired) }}</span>
+                <span v-if="share.protected">已设密码</span>
+              </div>
+              <template #trailing>
+                <div class="flex shrink-0 flex-wrap items-center justify-end gap-0.5">
                   <Button variant="ghost" size="icon" title="复制链接" @click="copyText(share.url, 'link')">
                     <Copy class="size-4" />
                   </Button>
@@ -544,8 +542,8 @@ watch(isProUser, (pro) => {
                     <Trash2 v-else class="size-4" />
                   </Button>
                 </div>
-              </div>
-            </div>
+              </template>
+            </CloudPanelCard>
           </div>
         </div>
       </TabsContent>
