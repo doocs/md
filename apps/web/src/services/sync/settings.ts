@@ -1,5 +1,6 @@
 import type { SyncSetting } from './types'
-import { safeGetItem, safeRemoveItem, safeSetItem } from '@/utils/localStorageSafe'
+import { store } from '@/storage/manager'
+import { safeGetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
 
 export interface ApplyRemoteSettingsResult {
@@ -62,8 +63,8 @@ function readMeta(): MetaMap {
   }
 }
 
-function writeMeta(meta: MetaMap): void {
-  safeSetItem(META_KEY, JSON.stringify(meta))
+async function writeMeta(meta: MetaMap): Promise<void> {
+  await store.set(META_KEY, JSON.stringify(meta))
 }
 
 function readLocal(key: string): string | null {
@@ -88,7 +89,7 @@ export function collectChangedSettings(): SyncSetting[] {
     }
   }
 
-  writeMeta(meta)
+  void writeMeta(meta)
   return changed
 }
 
@@ -96,7 +97,7 @@ export function collectChangedSettings(): SyncSetting[] {
  * 应用远端设置到本地（LWW，仅当远端更新时间较新时写入）。
  * 返回实际应用的 key 列表，供 hydrateSyncedSettings 热更新 Store。
  */
-export function applyRemoteSettings(remote: SyncSetting[]): ApplyRemoteSettingsResult {
+export async function applyRemoteSettings(remote: SyncSetting[]): Promise<ApplyRemoteSettingsResult> {
   const meta = readMeta()
   const appliedKeys: string[] = []
 
@@ -108,16 +109,20 @@ export function applyRemoteSettings(remote: SyncSetting[]): ApplyRemoteSettingsR
     if (local && local.updatedAt >= setting.updatedAt)
       continue
 
-    const saved = setting.value === null
-      ? safeRemoveItem(setting.key)
-      : safeSetItem(setting.key, setting.value)
-    if (!saved)
+    try {
+      if (setting.value === null)
+        await store.remove(setting.key)
+      else
+        await store.set(setting.key, setting.value)
+    }
+    catch {
       continue
+    }
 
     meta[setting.key] = { value: setting.value, updatedAt: setting.updatedAt }
     appliedKeys.push(setting.key)
   }
 
-  writeMeta(meta)
+  await writeMeta(meta)
   return { keys: appliedKeys }
 }

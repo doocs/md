@@ -1,74 +1,139 @@
 import type { Post } from '@/types/post'
+import { debounce } from 'es-toolkit'
 import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { documentRepo, getLoadedDocuments } from '@/storage'
 import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
 export type { Post } from '@/types/post'
+
+function createDefaultPost(): Post {
+  return {
+    id: uuidv4(),
+    title: `内容1`,
+    content: DEFAULT_CONTENT,
+    history: [
+      { datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT },
+    ],
+    createDatetime: new Date(),
+    updateDatetime: new Date(),
+  }
+}
+
+function normalizePosts(raw: Post[]): Post[] {
+  return raw.map((post, index) => {
+    const now = Date.now()
+    return {
+      ...post,
+      id: post.id ?? uuidv4(),
+      createDatetime: new Date(post.createDatetime ?? now + index),
+      updateDatetime: new Date(post.updateDatetime ?? now + index),
+      history: post.history ?? [],
+    }
+  })
+}
+
+function postSignature(post: Post): string {
+  return `${post.id}:${post.title}:${post.content.length}:${post.updateDatetime}:${post.parentId ?? ``}:${post.history?.length ?? 0}:${post.collapsed ? 1 : 0}`
+}
 
 /**
  * 文章管理 Store
  * 负责管理文章列表、当前文章、文章 CRUD 操作
  */
 export const usePostStore = defineStore(`post`, () => {
-  // 内容列表
-  const posts = store.reactive<Post[]>(addPrefix(`posts`), [
-    {
-      id: uuidv4(),
-      title: `内容1`,
-      content: DEFAULT_CONTENT,
-      history: [
-        { datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT },
-      ],
-      createDatetime: new Date(),
-      updateDatetime: new Date(),
-    },
-  ])
+  const loaded = getLoadedDocuments()
+  const posts = ref<Post[]>(
+    loaded?.length ? normalizePosts(loaded) : [createDefaultPost()],
+  )
 
-  // 当前文章 ID
   const currentPostId = store.reactive(addPrefix(`current_post_id`), ``)
-
-  // 文章列表排序方式
   const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
 
-  // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
-  onBeforeMount(() => {
-    posts.value = posts.value.map((post, index) => {
-      const now = Date.now()
-      return {
-        ...post,
-        id: post.id ?? uuidv4(),
-        createDatetime: post.createDatetime ?? new Date(now + index),
-        updateDatetime: post.updateDatetime ?? new Date(now + index),
-      }
-    })
+  let persistReady = false
 
-    // 兼容：如果本地没有 currentPostId，或指向的文章已不存在
-    if (!currentPostId.value || !posts.value.some(p => p.id === currentPostId.value)) {
+  const persistAll = debounce(async (snapshot: Post[]) => {
+    await documentRepo.saveAll(snapshot)
+  }, 500)
+
+  const persistOne = debounce(async (post: Post) => {
+    await documentRepo.savePost(post)
+  }, 500)
+
+  function flushPersist() {
+    persistAll.flush()
+    persistOne.flush()
+  }
+
+  watch(
+    posts,
+    (value, oldValue) => {
+      if (!persistReady)
+        return
+
+      if (!oldValue || value.length !== oldValue.length) {
+        persistAll([...value])
+        return
+      }
+
+      const changed: Post[] = []
+      for (const post of value) {
+        const prev = oldValue.find(p => p.id === post.id)
+        if (!prev || postSignature(prev) !== postSignature(post))
+          changed.push(post)
+      }
+
+      if (changed.length === 1)
+        persistOne(changed[0])
+      else if (changed.length > 0)
+        persistAll([...value])
+    },
+    { deep: true },
+  )
+
+  onBeforeMount(() => {
+    posts.value = normalizePosts(posts.value)
+
+    if (!currentPostId.value || !posts.value.some(p => p.id === currentPostId.value))
       currentPostId.value = posts.value[0]?.id ?? ``
-    }
+
+    if (!loaded?.length)
+      void documentRepo.saveAll(posts.value)
+
+    persistReady = true
   })
 
-  // 根据 id 找索引
+  onMounted(() => {
+    const flush = () => flushPersist()
+    window.addEventListener(`pagehide`, flush)
+    window.addEventListener(`beforeunload`, flush)
+    onUnmounted(() => {
+      window.removeEventListener(`pagehide`, flush)
+      window.removeEventListener(`beforeunload`, flush)
+    })
+  })
+
+  function replacePosts(nextPosts: Post[]) {
+    persistAll.cancel()
+    persistOne.cancel()
+    posts.value = normalizePosts(nextPosts)
+    void documentRepo.saveAll(posts.value)
+  }
+
   const findIndexById = (id: string) => posts.value.findIndex(p => p.id === id)
 
-  // computed: 让旧代码还能用 index，但底层映射 id
   const currentPostIndex = computed<number>({
     get: () => findIndexById(currentPostId.value),
     set: (idx) => {
-      if (idx >= 0 && idx < posts.value.length) {
+      if (idx >= 0 && idx < posts.value.length)
         currentPostId.value = posts.value[idx].id
-      }
     },
   })
 
-  // 获取 Post
   const getPostById = (id: string) => posts.value.find(p => p.id === id)
-
-  // 获取当前文章
   const currentPost = computed(() => getPostById(currentPostId.value))
 
-  // 添加文章
   const addPost = (title: string, parentId: string | null = null) => {
     const newPost: Post = {
       id: uuidv4(),
@@ -85,7 +150,6 @@ export const usePostStore = defineStore(`post`, () => {
     currentPostId.value = newPost.id
   }
 
-  // 重命名文章
   const renamePost = (id: string, title: string) => {
     const post = getPostById(id)
     if (post) {
@@ -94,7 +158,6 @@ export const usePostStore = defineStore(`post`, () => {
     }
   }
 
-  // 删除文章
   const delPost = (id: string, recursive: boolean = false) => {
     const post = getPostById(id)
     if (!post)
@@ -111,18 +174,16 @@ export const usePostStore = defineStore(`post`, () => {
       const allIdsToDelete = [id, ...getChildIds(id)]
       allIdsToDelete.forEach((toDelId) => {
         const idx = findIndexById(toDelId)
-        if (idx !== -1) {
+        if (idx !== -1)
           posts.value.splice(idx, 1)
-        }
       })
 
-      if (!posts.value.some(p => p.id === currentPostId.value)) {
+      if (!posts.value.some(p => p.id === currentPostId.value))
         currentPostId.value = posts.value[Math.max(0, posts.value.length - 1)]?.id ?? ``
-      }
+
       return
     }
 
-    // 子内容挂靠到父级的父级
     const newParentId = post.parentId ?? null
     posts.value.forEach((p) => {
       if (p.parentId === id) {
@@ -139,7 +200,6 @@ export const usePostStore = defineStore(`post`, () => {
     currentPostId.value = posts.value[Math.min(idx, posts.value.length - 1)]?.id ?? ``
   }
 
-  // 更新文章父 ID
   const updatePostParentId = (postId: string, parentId: string | null) => {
     const post = getPostById(postId)
     if (post) {
@@ -148,7 +208,6 @@ export const usePostStore = defineStore(`post`, () => {
     }
   }
 
-  // 更新文章内容
   const updatePostContent = (id: string, content: string) => {
     const post = getPostById(id)
     if (post) {
@@ -157,14 +216,12 @@ export const usePostStore = defineStore(`post`, () => {
     }
   }
 
-  // 收起所有文章
   const collapseAllPosts = () => {
     posts.value.forEach((post) => {
       post.collapsed = true
     })
   }
 
-  // 展开所有文章
   const expandAllPosts = () => {
     posts.value.forEach((post) => {
       post.collapsed = false
@@ -172,18 +229,13 @@ export const usePostStore = defineStore(`post`, () => {
   }
 
   return {
-    // State
     posts,
     currentPostId,
     sortMode,
     currentPostIndex,
     currentPost,
-
-    // Getters
     getPostById,
     findIndexById,
-
-    // Actions
     addPost,
     renamePost,
     delPost,
@@ -191,5 +243,6 @@ export const usePostStore = defineStore(`post`, () => {
     updatePostContent,
     collapseAllPosts,
     expandAllPosts,
+    replacePosts,
   }
 })

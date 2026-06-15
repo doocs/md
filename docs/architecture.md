@@ -50,8 +50,17 @@ Pinia stores 按领域划分：
 
 ## 本地存储
 
-- 通用偏好：`store.reactive()` / `LocalStorageEngine`（`utils/storage.ts`）
-- 同步与配额安全：`utils/localStorageSafe.ts`（配额满时 toast 提示）
+- **IndexedDB**（`apps/web/src/storage/`）：文章正文、偏好设置、图床/AI 密钥、缓存分层存储
+- **StorageEngine 抽象**（`storage/manager.ts`）：`store.reactive()` / `store.getJSON()` 统一入口
+- **文章持久化**：`documentRepo` 按篇读写，避免整包 JSON 写入
+- **云同步元数据**：`services/sync/settings.ts` 通过 `store` 读写设置白名单
+- **配额提示**：`storage/quota.ts`（IndexedDB 配额远大于 localStorage，保留 toast 兜底）
+
+### 启动顺序
+
+1. `main.ts` → `await initStorage()`（迁移 localStorage、预加载 KV 缓存、加载文档）
+2. `createApp` / Pinia 初始化
+3. `bootstrapApp()` 账户与云同步
 
 ## 构建
 
