@@ -66,6 +66,13 @@ export const usePostStore = defineStore(`post`, () => {
     persistOne.flush()
   }
 
+  /** 删除等关键操作立即落盘，避免防抖未完成时刷新导致数据回弹 */
+  function persistImmediately() {
+    persistAll.cancel()
+    persistOne.cancel()
+    void documentRepo.saveAll([...posts.value])
+  }
+
   watch(
     posts,
     (value, oldValue) => {
@@ -181,6 +188,7 @@ export const usePostStore = defineStore(`post`, () => {
       if (!posts.value.some(p => p.id === currentPostId.value))
         currentPostId.value = posts.value[Math.max(0, posts.value.length - 1)]?.id ?? ``
 
+      persistImmediately()
       return
     }
 
@@ -198,6 +206,7 @@ export const usePostStore = defineStore(`post`, () => {
 
     posts.value.splice(idx, 1)
     currentPostId.value = posts.value[Math.min(idx, posts.value.length - 1)]?.id ?? ``
+    persistImmediately()
   }
 
   const updatePostParentId = (postId: string, parentId: string | null) => {
