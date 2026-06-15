@@ -98,9 +98,7 @@ function resetStyleConfirm() {
       themeStore.resetStyle()
       cssEditorStore.resetCssConfig()
       themeStore.applyCurrentTheme()
-      themeStore.updateCodeTheme()
-      const raw = editorStore.getContent()
-      renderStore.render(raw)
+      editorRefresh()
       toast.success(`样式已重置`)
     },
   })

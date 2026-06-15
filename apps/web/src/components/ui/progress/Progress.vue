@@ -5,6 +5,10 @@ import { ProgressIndicator, ProgressRoot } from 'reka-ui'
 const props = defineProps<ProgressRootProps & { indeterminate?: boolean }>()
 
 const modelValue = computed(() => props.modelValue ?? 0)
+const progressRootProps = computed(() => {
+  const { indeterminate: _, ...rest } = props
+  return rest
+})
 </script>
 
 <template>
@@ -20,7 +24,7 @@ const modelValue = computed(() => props.modelValue ?? 0)
   </div>
   <ProgressRoot
     v-else
-    v-bind="props"
+    v-bind="progressRootProps"
     :model-value="modelValue"
     class="relative overflow-hidden bg-blackA9 rounded-full w-full h-4 sm:h-5"
     style="transform: translateZ(0)"

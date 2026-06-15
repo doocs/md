@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, unref } from 'vue'
 import EditorPanel from '@/components/editor/EditorPanel.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
@@ -181,7 +181,7 @@ onMounted(() => {
 })
 
 // --- 进度条 ---
-const isImgLoading = computed(() => editorPanelCompRef.value?.isImgLoading ?? false)
+const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading) ?? false)
 </script>
 
 <template>

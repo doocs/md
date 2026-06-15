@@ -31,8 +31,10 @@ export function useEditorRefresh(options?: { debounceMs?: number }) {
   }
 
   onUnmounted(() => {
-    if (debounceTimer)
+    if (debounceTimer) {
       clearTimeout(debounceTimer)
+      editorRefresh()
+    }
   })
 
   return { editorRefresh, scheduleEditorRefresh }
