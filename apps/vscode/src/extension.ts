@@ -26,6 +26,8 @@ function updateMarkdownFileContext(editor: vscode.TextEditor | undefined) {
   vscode.commands.executeCommand(`setContext`, `markdownFileActive`, Boolean(isMarkdown))
 }
 
+const PREVIEW_DEBOUNCE_MS = 300
+
 export function activate(context: vscode.ExtensionContext) {
   // Register sidebar FIRST — must complete before any heavy renderer import.
   const treeDataProvider = new MarkdownTreeDataProvider(context)
@@ -129,13 +131,25 @@ export function activate(context: vscode.ExtensionContext) {
 
     void updateWebview()
 
+    let previewDebounceTimer: ReturnType<typeof setTimeout> | undefined
+    const schedulePreviewUpdate = () => {
+      if (previewDebounceTimer)
+        clearTimeout(previewDebounceTimer)
+      previewDebounceTimer = setTimeout(() => {
+        previewDebounceTimer = undefined
+        void updateWebview()
+      }, PREVIEW_DEBOUNCE_MS)
+    }
+
     const changeSubscription = vscode.workspace.onDidChangeTextDocument((e: vscode.TextDocumentChangeEvent) => {
       if (activePreviewEditor && e.document === activePreviewEditor.document) {
-        void updateWebview()
+        schedulePreviewUpdate()
       }
     })
 
     panel.onDidDispose(() => {
+      if (previewDebounceTimer)
+        clearTimeout(previewDebounceTimer)
       changeSubscription.dispose()
     })
   })

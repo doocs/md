@@ -19,10 +19,9 @@ import {
 import PickColors from 'vue-pick-colors'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useEditorStore } from '@/stores/editor'
-import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
@@ -44,6 +43,8 @@ const {
   isUseJustify,
 } = storeToRefs(themeStore)
 
+const { scheduleEditorRefresh, editorRefresh } = useEditorRefresh()
+
 // 标题样式选择器状态
 const selectedHeadingLevel = ref<HeadingLevel>(`h2`)
 const selectedHeadingStyle = computed({
@@ -62,91 +63,80 @@ const selectedHeadingStyle = computed({
     }
     // 无论选择预设还是自定义，都立即应用主题，确保标题样式及时恢复/更新
     themeStore.applyCurrentTheme()
-    editorRefresh()
+    scheduleEditorRefresh()
   },
 })
 
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
-
-const editorStore = useEditorStore()
-const renderStore = useRenderStore()
-
-// Editor refresh function - triggers re-render with current theme settings
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
 
 // Theme change handlers
 function themeChanged(newTheme: keyof typeof themeMap) {
   themeStore.theme = newTheme
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function fontChanged(fonts: string) {
   themeStore.fontFamily = fonts
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function sizeChanged(size: string) {
   themeStore.fontSize = size
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function colorChanged(newColor: string) {
   themeStore.primaryColor = newColor
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function codeBlockThemeChanged(newTheme: unknown) {
   if (typeof newTheme !== 'string')
     return
   themeStore.codeBlockTheme = newTheme
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function legendChanged(newVal: string) {
   themeStore.legend = newVal
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function macCodeBlockChanged() {
   themeStore.isMacCodeBlock = !themeStore.isMacCodeBlock
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function showLineNumberChanged() {
   themeStore.isShowLineNumber = !themeStore.isShowLineNumber
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function citeStatusChanged() {
   themeStore.isCiteStatus = !themeStore.isCiteStatus
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function useIndentChanged() {
   themeStore.isUseIndent = !themeStore.isUseIndent
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function useJustifyChanged() {
   themeStore.isUseJustify = !themeStore.isUseJustify
   // 使用新主题系统
   themeStore.applyCurrentTheme()
-  editorRefresh()
+  scheduleEditorRefresh()
 }
 
 function setMacCodeBlock(checked: boolean) {
@@ -182,9 +172,7 @@ function resetStyleConfirm() {
       themeStore.resetStyle()
       cssEditorStore.resetCssConfig()
       themeStore.applyCurrentTheme()
-      themeStore.updateCodeTheme()
-      const raw = editorStore.getContent()
-      renderStore.render(raw)
+      editorRefresh()
       toast.success(`样式已重置`)
     },
   })

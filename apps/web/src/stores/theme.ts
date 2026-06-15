@@ -2,6 +2,7 @@ import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, P
 import { applyTheme } from '@md/core'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { useCssEditorStore } from '@/stores/cssEditor'
+import { parseStoredValue, safeGetItem, safeRemoveItem, safeSetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
@@ -13,72 +14,63 @@ const LEGACY_KEYS = [`fonts`, `size`, `color`, `codeBlockTheme`, `headingStyles`
  * Returns the migrated PerThemeSettingsMap (or {} if nothing to migrate).
  */
 function migrateLegacySettingsSync(currentTheme: ThemeName): PerThemeSettingsMap {
-  let hasAnyLegacyKey = false
-  try {
-    hasAnyLegacyKey = LEGACY_KEYS.some(key => localStorage.getItem(key) !== null)
-  }
-  catch { return {} }
+  const hasAnyLegacyKey = LEGACY_KEYS.some(key => safeGetItem(key) !== null)
   if (!hasAnyLegacyKey)
     return {}
 
   const migrationKey = addPrefix(`legacy_migrated`)
-  try {
-    if (localStorage.getItem(migrationKey) !== null)
-      return {}
-  }
-  catch { return {} }
+  if (safeGetItem(migrationKey) !== null)
+    return {}
 
-  const existingMapRaw = localStorage.getItem(addPrefix(`themeSettings`))
-  const existingMap: PerThemeSettingsMap = existingMapRaw ? JSON.parse(existingMapRaw) : {}
+  const existingMapRaw = safeGetItem(addPrefix(`themeSettings`))
+  const existingMap: PerThemeSettingsMap = existingMapRaw
+    ? parseStoredValue(existingMapRaw, {} as PerThemeSettingsMap)
+    : {}
 
   const defaults = defaultPerThemeSettings()
   const settings: PerThemeSettings = { ...existingMap[currentTheme] ?? defaults }
 
-  const legacyFont = localStorage.getItem(`fonts`)
+  const legacyFont = safeGetItem(`fonts`)
   if (legacyFont)
     settings.fontFamily = legacyFont
 
-  const legacySize = localStorage.getItem(`size`)
+  const legacySize = safeGetItem(`size`)
   if (legacySize)
     settings.fontSize = legacySize
 
-  const legacyColor = localStorage.getItem(`color`)
+  const legacyColor = safeGetItem(`color`)
   if (legacyColor)
     settings.primaryColor = legacyColor
 
-  const legacyCodeTheme = localStorage.getItem(`codeBlockTheme`)
+  const legacyCodeTheme = safeGetItem(`codeBlockTheme`)
   if (legacyCodeTheme)
     settings.codeBlockTheme = legacyCodeTheme
 
-  const legacyHeading = localStorage.getItem(`headingStyles`)
+  const legacyHeading = safeGetItem(`headingStyles`)
   if (legacyHeading) {
     try { settings.headingStyles = JSON.parse(legacyHeading) }
     catch { /* ignore parse error */ }
   }
 
-  const legacyMacBlock = localStorage.getItem(`isMacCodeBlock`)
+  const legacyMacBlock = safeGetItem(`isMacCodeBlock`)
   if (legacyMacBlock !== null)
     settings.isMacCodeBlock = legacyMacBlock === `true`
 
-  const legacyLineNum = localStorage.getItem(`isShowLineNumber`)
+  const legacyLineNum = safeGetItem(`isShowLineNumber`)
   if (legacyLineNum !== null)
     settings.isShowLineNumber = legacyLineNum === `true`
 
   const result: PerThemeSettingsMap = { ...existingMap, [currentTheme]: settings }
 
   // Persist the merged map so store.reactive will pick it up
-  try { localStorage.setItem(addPrefix(`themeSettings`), JSON.stringify(result)) }
-  catch { /* quota error — non-critical */ }
+  safeSetItem(addPrefix(`themeSettings`), JSON.stringify(result))
 
   // Mark migration as done
-  try { localStorage.setItem(migrationKey, `1`) }
-  catch { /* ignore */ }
+  safeSetItem(migrationKey, `1`)
 
   // Clean up legacy keys
-  for (const key of LEGACY_KEYS) {
-    try { localStorage.removeItem(key) }
-    catch { /* ignore */ }
-  }
+  for (const key of LEGACY_KEYS)
+    safeRemoveItem(key)
 
   return result
 }
@@ -92,10 +84,7 @@ function migrateLegacySettingsSync(currentTheme: ThemeName): PerThemeSettingsMap
  */
 export const useThemeStore = defineStore(`theme`, () => {
   // --- Legacy migration: run BEFORE reactive so initial value is correct ---
-  const initialTheme = (() => {
-    try { return localStorage.getItem(addPrefix(`theme`)) ?? defaultStyleConfig.theme }
-    catch { return defaultStyleConfig.theme }
-  })()
+  const initialTheme = safeGetItem(addPrefix(`theme`)) ?? defaultStyleConfig.theme
   const migratedSettings = migrateLegacySettingsSync(initialTheme as ThemeName)
 
   // 当前选中的主题

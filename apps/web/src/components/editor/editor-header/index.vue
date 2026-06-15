@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Copy, Loader2, Menu, Palette } from '@lucide/vue'
 import { defineAsyncComponent } from 'vue'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
@@ -28,19 +29,12 @@ const themeStore = useThemeStore()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
 const exportStore = useExportStore()
+const { editorRefresh } = useEditorRefresh()
 
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
 const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, copyMode } = storeToRefs(uiStore)
-
-// Editor refresh function
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
 
 const isCopying = ref(false)
 

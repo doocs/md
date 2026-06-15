@@ -9,12 +9,6 @@ import { checkImage } from '@/utils/shared-helpers'
 import { store } from '@/utils/storage'
 
 const emit = defineEmits([`uploadImage`])
-// Track active intervals for cleanup on unmount
-const activeIntervals = new Set<ReturnType<typeof setInterval>>()
-onUnmounted(() => {
-  activeIntervals.forEach(clearInterval)
-  activeIntervals.clear()
-})
 
 const uiStore = useUIStore()
 const { enableImageReupload } = storeToRefs(uiStore)
@@ -407,37 +401,20 @@ async function onDrop(e: DragEvent) {
     emitUploads(file)
   }
 }
-const progressValue = ref(0)
+const isUploading = ref(false)
 const imageUrl = ref(``)
-const PROGRESS_INTERVAL_MS = 100
-function emitUploads(file: File) {
-  progressValue.value = 0
-  const intervalId = setInterval(() => {
-    const newProgress = progressValue.value + 1
-    if (newProgress >= 100) {
-      return
-    }
-    progressValue.value = newProgress
-  }, PROGRESS_INTERVAL_MS)
-  activeIntervals.add(intervalId)
 
-  // 监听上传完成事件，在真正完成后清除定时器和设置100%
+function emitUploads(file: File) {
+  isUploading.value = true
   const cleanup = (_url: string, data: string) => {
-    clearInterval(intervalId)
-    activeIntervals.delete(intervalId)
-    progressValue.value = 100 // 设置完成状态
+    isUploading.value = false
     if (data) {
       imageUrl.value = `data:image/png;base64,${data}`
+      setTimeout(() => {
+        imageUrl.value = ``
+      }, 1000)
     }
-    // 可选：延迟一段时间后重置进度
-    setTimeout(() => {
-      progressValue.value = 0
-      imageUrl.value = ``
-    }, 1000)
   }
-
-  // 假设有一个上传完成的事件可以监听
-  // 或者需要修改 uploadImage 方法使其返回 Promise
   emit(`uploadImage`, file, cleanup, true)
 }
 
@@ -528,7 +505,7 @@ function onTabScroll(e: WheelEvent) {
             @dragover.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
           >
-            <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 2px;" />
+            <Progress v-if="isUploading" indeterminate class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 2px;" />
             <UploadCloud class="size-16 md:size-20" />
             <p class="text-center text-sm md:text-base px-4">
               将图片拖到此处，或

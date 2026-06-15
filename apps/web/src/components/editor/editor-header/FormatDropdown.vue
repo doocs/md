@@ -25,8 +25,8 @@ import {
 } from '@md/shared/editor'
 import PickColors from 'vue-pick-colors'
 import { useEditorFormat } from '@/composables/useEditorFormat'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useEditorStore } from '@/stores/editor'
-import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
@@ -40,19 +40,11 @@ const { asSub } = toRefs(props)
 
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
-const renderStore = useRenderStore()
 const uiStore = useUIStore()
+const { editorRefresh } = useEditorRefresh()
 const { editor } = storeToRefs(editorStore)
 
 const { addFormat } = useEditorFormat(editor)
-
-// Editor refresh function
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
 
 function citeStatusChanged() {
   themeStore.isCiteStatus = !themeStore.isCiteStatus

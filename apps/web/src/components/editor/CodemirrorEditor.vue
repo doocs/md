@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { defineAsyncComponent } from 'vue'
+import { defineAsyncComponent, unref } from 'vue'
 import EditorPanel from '@/components/editor/EditorPanel.vue'
 import PreviewPanel from '@/components/editor/PreviewPanel.vue'
 import {
@@ -181,12 +181,12 @@ onMounted(() => {
 })
 
 // --- 进度条 ---
-const progressValue = computed(() => editorPanelCompRef.value?.progressValue ?? 0)
+const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading) ?? false)
 </script>
 
 <template>
   <div class="container flex flex-col">
-    <Progress v-model="progressValue" class="absolute left-0 right-0 rounded-none" style="height: 2px;" />
+    <Progress v-if="isImgLoading" indeterminate class="absolute left-0 right-0 rounded-none" style="height: 2px;" />
     <EditorHeader
       @start-copy="startCopy"
       @end-copy="endCopy"
