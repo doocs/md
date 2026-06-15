@@ -43,7 +43,7 @@ export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
     await store.setJSON(STORAGE_KEY, toSave)
   }
 
-  async function load() {
+  async function reloadFromStorage() {
     const parsed = await store.getJSON<QuickCommandPersisted[]>(STORAGE_KEY)
 
     if (parsed && Array.isArray(parsed)) {
@@ -79,8 +79,8 @@ export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
   }
 
   // ---------- init ----------
-  load()
+  reloadFromStorage()
   watch(commands, save, { deep: true })
 
-  return { commands, add, update, remove }
+  return { commands, add, update, remove, reloadFromStorage }
 })

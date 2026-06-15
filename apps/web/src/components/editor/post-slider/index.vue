@@ -5,8 +5,6 @@ import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import { downloadMD, exportPostsAsZip } from '@/utils/export-content'
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
 import {
   getPostSliderDropdownContentProps,
   providePostSliderMenu,
@@ -29,7 +27,7 @@ function onHeaderMenuOpenChange(open: boolean) {
 const headerDropdownProps = computed(() => getPostSliderDropdownContentProps(isMobile.value, `w-48`))
 
 const postStore = usePostStore()
-const { posts } = storeToRefs(postStore)
+const { posts, sortMode } = storeToRefs(postStore)
 
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
@@ -399,7 +397,6 @@ function replaceAll() {
 }
 
 /* ============ 排序 ============ */
-const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
 const sortedPosts = computed(() => {
   return [...posts.value].sort((a, b) => {
     switch (sortMode.value) {

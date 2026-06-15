@@ -150,6 +150,6 @@ VITE_AFDIAN_ORDER_BASE=https://ifdian.net
 ## 说明与限制
 
 - 前端约定「先 pull 再 push」，`push` 仅返回本次被接受的记录与新游标。
-- 偏好设置应用到本地后需刷新页面生效（前端会给出提示），文章为即时生效。
+- 偏好设置同步后会自动应用到当前页面，文章为即时生效。
 - 同步白名单见 `apps/web/src/services/sync/settings.ts`，新增可同步项请在此维护，
   切勿加入任何密钥类字段。

@@ -60,6 +60,9 @@ export const useUIStore = defineStore(`ui`, () => {
   const enableScrollSync = store.reactive(addPrefix(`enableScrollSync`), true)
   const toggleScrollSync = useToggle(enableScrollSync)
 
+  // 复制到公众号时的格式模式
+  const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
+
   // ==================== 对话框状态 ====================
   // 是否展示 CSS 编辑器
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
@@ -228,6 +231,7 @@ export const useUIStore = defineStore(`ui`, () => {
     isOpenFolderPanel,
     enableImageReupload,
     enableScrollSync,
+    copyMode,
 
     // ==================== 对话框状态 ====================
     isShowCssEditor,

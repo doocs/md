@@ -1,9 +1,6 @@
 import type { ActivateProResponse, PullResponse, PushRequest, PushResponse } from './types'
-import { ApiError, MdApiClient } from '@/services/account/client'
-import { isAccountConfigured, MD_API_URL } from '@/services/account/config'
-
-/** @deprecated 使用 MD_API_URL */
-export const SYNC_API_URL = MD_API_URL
+import { MdApiClient } from '@/services/account/client'
+import { isAccountConfigured } from '@/services/account/config'
 
 /** 爱发电创作者主页，用于 Pro 升级跳转 */
 export const AFDIAN_PAGE_URL = (import.meta.env.VITE_AFDIAN_PAGE_URL ?? ``).replace(/\/$/, ``)
@@ -19,9 +16,6 @@ export function isSyncUiEnabled(): boolean {
     return false
   return isSyncConfigured()
 }
-
-/** @deprecated 使用 ApiError */
-export { ApiError as SyncApiError }
 
 export class SyncClient extends MdApiClient {
   pull(since: number): Promise<PullResponse> {

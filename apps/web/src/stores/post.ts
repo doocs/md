@@ -28,6 +28,9 @@ export const usePostStore = defineStore(`post`, () => {
   // 当前文章 ID
   const currentPostId = store.reactive(addPrefix(`current_post_id`), ``)
 
+  // 文章列表排序方式
+  const sortMode = store.reactive(addPrefix(`sort_mode`), `create-old-new`)
+
   // 在补齐 id 后，若 currentPostId 无效 ➜ 自动指向第一篇
   onBeforeMount(() => {
     posts.value = posts.value.map((post, index) => {
@@ -172,6 +175,7 @@ export const usePostStore = defineStore(`post`, () => {
     // State
     posts,
     currentPostId,
+    sortMode,
     currentPostIndex,
     currentPost,
 

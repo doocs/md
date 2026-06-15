@@ -1,5 +1,10 @@
 import type { SyncSetting } from './types'
+import { safeGetItem, safeRemoveItem, safeSetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
+
+export interface ApplyRemoteSettingsResult {
+  keys: string[]
+}
 
 /**
  * 允许同步的偏好设置 key 白名单（显式枚举，避免泄露密钥）。
@@ -46,9 +51,11 @@ interface SettingMeta {
 type MetaMap = Record<string, SettingMeta>
 
 function readMeta(): MetaMap {
+  const raw = safeGetItem(META_KEY)
+  if (!raw)
+    return {}
   try {
-    const raw = localStorage.getItem(META_KEY)
-    return raw ? JSON.parse(raw) as MetaMap : {}
+    return JSON.parse(raw) as MetaMap
   }
   catch {
     return {}
@@ -56,19 +63,11 @@ function readMeta(): MetaMap {
 }
 
 function writeMeta(meta: MetaMap): void {
-  try {
-    localStorage.setItem(META_KEY, JSON.stringify(meta))
-  }
-  catch { /* 配额错误，非致命 */ }
+  safeSetItem(META_KEY, JSON.stringify(meta))
 }
 
 function readLocal(key: string): string | null {
-  try {
-    return localStorage.getItem(key)
-  }
-  catch {
-    return null
-  }
+  return safeGetItem(key)
 }
 
 /**
@@ -95,11 +94,11 @@ export function collectChangedSettings(): SyncSetting[] {
 
 /**
  * 应用远端设置到本地（LWW，仅当远端更新时间较新时写入）。
- * 返回实际应用的数量（>0 表示建议刷新页面以生效）。
+ * 返回实际应用的 key 列表，供 hydrateSyncedSettings 热更新 Store。
  */
-export function applyRemoteSettings(remote: SyncSetting[]): number {
+export function applyRemoteSettings(remote: SyncSetting[]): ApplyRemoteSettingsResult {
   const meta = readMeta()
-  let applied = 0
+  const appliedKeys: string[] = []
 
   for (const setting of remote) {
     if (!SYNC_SETTING_KEYS.includes(setting.key))
@@ -109,20 +108,16 @@ export function applyRemoteSettings(remote: SyncSetting[]): number {
     if (local && local.updatedAt >= setting.updatedAt)
       continue
 
-    try {
-      if (setting.value === null)
-        localStorage.removeItem(setting.key)
-      else
-        localStorage.setItem(setting.key, setting.value)
-    }
-    catch {
+    const saved = setting.value === null
+      ? safeRemoveItem(setting.key)
+      : safeSetItem(setting.key, setting.value)
+    if (!saved)
       continue
-    }
 
     meta[setting.key] = { value: setting.value, updatedAt: setting.updatedAt }
-    applied++
+    appliedKeys.push(setting.key)
   }
 
   writeMeta(meta)
-  return applied
+  return { keys: appliedKeys }
 }

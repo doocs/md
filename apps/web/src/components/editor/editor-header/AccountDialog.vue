@@ -73,7 +73,7 @@ function openShareDialog() {
       v-if="!isConfigured"
       :icon="Settings2"
       title="账户服务未配置"
-      description="部署方需配置 VITE_MD_API_URL 或 VITE_SYNC_API_URL 后，方可使用登录与云同步。"
+      description="部署方需配置 VITE_MD_API_URL 后，方可使用登录与云同步。"
       compact
     >
       <code class="rounded-md border bg-muted/40 px-2 py-1 text-[11px] text-muted-foreground">

@@ -5,6 +5,7 @@
 
 import type { Ref } from 'vue'
 import { customRef, ref, watch } from 'vue'
+import { isStorageQuotaError, warnStorageQuota } from '@/utils/localStorageSafe'
 
 /**
  * 存储引擎接口 - 完全异步化
@@ -37,6 +38,8 @@ export class LocalStorageEngine implements StorageEngine {
       localStorage.setItem(key, value)
     }
     catch (error) {
+      if (isStorageQuotaError(error))
+        warnStorageQuota()
       console.error(`[Storage] Failed to set item:`, key, error)
       throw error
     }
@@ -294,6 +297,8 @@ class StorageManager {
             : this.setJSON(key, newValue)
 
           savePromise.catch((error) => {
+            if (isStorageQuotaError(error))
+              warnStorageQuota()
             console.error(`[Storage] Failed to save reactive data:`, key, error)
           })
         },
@@ -335,7 +340,9 @@ class StorageManager {
         trigger()
 
         // 异步保存
-        this.setJSON(key, valueToStore).catch((error: any) => {
+        this.setJSON(key, valueToStore).catch((error: unknown) => {
+          if (isStorageQuotaError(error))
+            warnStorageQuota()
           console.error(`[Storage] Failed to save custom reactive data:`, key, error)
         })
       },
