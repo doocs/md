@@ -1,9 +1,10 @@
 import SparkMD5 from 'spark-md5'
 import { ref } from 'vue'
 import { fileUpload } from '@/utils/file-upload'
+import { parseStoredValue, safeGetItem, safeSetItem } from '@/utils/localStorageSafe'
 import { toBase64 } from '@/utils/shared-helpers'
 
-const STORAGE_KEY = 'uploaded_image_map'
+const STORAGE_KEY = `uploaded_image_map`
 
 export function useImageUploader() {
   const isUploading = ref(false)
@@ -11,20 +12,15 @@ export function useImageUploader() {
 
   // 获取本地缓存
   const getStorageMap = (): Record<string, string> => {
-    try {
-      const str = localStorage.getItem(STORAGE_KEY)
-      return str ? JSON.parse(str) : {}
-    }
-    catch {
-      return {}
-    }
+    const str = safeGetItem(STORAGE_KEY)
+    return str ? parseStoredValue(str, {} as Record<string, string>) : {}
   }
 
   // 更新本地缓存
   const updateStorageMap = (hash: string, url: string) => {
     const map = getStorageMap()
     map[hash] = url
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(map))
+    safeSetItem(STORAGE_KEY, JSON.stringify(map))
   }
 
   // 计算 Blob/File 的 MD5

@@ -6,6 +6,7 @@ import imageCompression from 'browser-image-compression'
 import { defineAsyncComponent } from 'vue'
 import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useImageUploader } from '@/composables/useImageUploader'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { useEditorStore } from '@/stores/editor'
@@ -26,6 +27,7 @@ const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
+const { editorRefresh } = useEditorRefresh()
 
 const {
   visible: slashVisible,
@@ -69,15 +71,9 @@ const changeTimer = ref<ReturnType<typeof setTimeout>>()
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const codeMirrorWrapper = useTemplateRef<HTMLDivElement>(`codeMirrorWrapper`)
 
-const progressValue = ref(0)
 const isImgLoading = ref(false)
 
-// Editor refresh function
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
+// Editor refresh is provided by useEditorRefresh()
 
 // --- Search tab integration ---
 const searchTabRef = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
@@ -223,6 +219,8 @@ async function uploadImage(
   }
   catch (err) {
     toast.error((err as any).message)
+    if (cb)
+      cb(``, ``)
   }
   finally {
     isImgLoading.value = false
@@ -356,25 +354,11 @@ function createPasteHandler() {
         if (validItems.length === 0) {
           return
         }
-        const intervalId = setInterval(() => {
-          const newProgress = progressValue.value + 1
-          if (newProgress >= 100) {
-            return
-          }
-          progressValue.value = newProgress
-        }, 100)
-
         const processFiles = async () => {
-          for (const item of validItems) {
+          for (const item of validItems)
             await uploadImage(item)
-          }
-          clearInterval(intervalId)
-          progressValue.value = 100
-          setTimeout(() => {
-            progressValue.value = 0
-          }, 1000)
         }
-        processFiles()
+        void processFiles()
       })
       return true
     }
@@ -608,7 +592,7 @@ defineExpose({
   codeMirrorView,
   editorRefresh,
   uploadImage,
-  progressValue,
+  isImgLoading,
 })
 </script>
 

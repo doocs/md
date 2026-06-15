@@ -32,6 +32,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Run lint
+        run: pnpm run lint
+
       - name: Determine build command
         id: build-command
         run: |

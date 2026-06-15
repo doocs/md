@@ -13,10 +13,9 @@ import {
   themeOptions,
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { useEditorStore } from '@/stores/editor'
-import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
@@ -32,8 +31,7 @@ const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
-const editorStore = useEditorStore()
-const renderStore = useRenderStore()
+const { editorRefresh } = useEditorRefresh()
 
 const { toggleShowCssEditor } = uiStore
 
@@ -47,14 +45,6 @@ const {
 } = storeToRefs(themeStore)
 
 const { isDark } = storeToRefs(uiStore)
-
-// Editor refresh function - triggers re-render with current theme settings
-function editorRefresh() {
-  themeStore.updateCodeTheme()
-
-  const raw = editorStore.getContent()
-  renderStore.render(raw)
-}
 
 // Theme change handlers
 function themeChanged(newTheme: keyof typeof themeMap) {
