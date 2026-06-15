@@ -1,0 +1,50 @@
+html,
+body,
+#app {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+// 抵消下拉菜单开启时带来的样式
+body {
+  pointer-events: initial !important;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 6px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 6px;
+  background-color: #dadada;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background-color: #424242;
+}
+
+// Utools 模式下隐藏所有滚动条
+.is-utools {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  // Firefox
+  * {
+    scrollbar-width: none;
+  }
+
+  // IE and Edge
+  * {
+    -ms-overflow-style: none;
+  }
+}
