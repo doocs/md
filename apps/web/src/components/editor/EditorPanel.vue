@@ -53,7 +53,7 @@ function onWrapperContextMenuCapture(e: MouseEvent) {
 
 const { editor } = storeToRefs(editorStore)
 const { isDark } = storeToRefs(uiStore)
-const { posts, currentPostIndex } = storeToRefs(postStore)
+const { posts, currentPostIndex, currentPost } = storeToRefs(postStore)
 const {
   isMobile,
   enableImageReupload,
@@ -446,18 +446,10 @@ function createFormTextArea(dom: HTMLDivElement) {
       themeCompartment.of(theme(isDark.value)),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
-          const value = update.state.doc.toString()
           clearTimeout(changeTimer.value)
           changeTimer.value = setTimeout(() => {
             editorRefresh()
-
-            const currentPost = posts.value[currentPostIndex.value]
-            if (value === currentPost.content) {
-              return
-            }
-
-            currentPost.updateDatetime = new Date()
-            currentPost.content = value
+            commitEditorContentToPost()
           }, 300)
         }
       }),
@@ -496,6 +488,21 @@ async function preloadMathJaxIfNeeded(content: string) {
 
 let postSwitchGeneration = 0
 
+function commitEditorContentToPost() {
+  clearTimeout(changeTimer.value)
+  changeTimer.value = undefined
+  if (!codeMirrorView.value)
+    return
+
+  const value = codeMirrorView.value.state.doc.toString()
+  const post = posts.value[currentPostIndex.value]
+  if (!post || value === post.content)
+    return
+
+  post.updateDatetime = new Date()
+  post.content = value
+}
+
 onMounted(() => {
   const editorDom = editorRef.value
   if (editorDom == null) {
@@ -514,6 +521,7 @@ onMounted(() => {
   void nextTick(async () => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
+    editorStore.registerContentFlush(commitEditorContentToPost)
 
     const content = posts.value[currentPostIndex.value]?.content ?? ``
     await preloadMathJaxIfNeeded(content)
@@ -534,31 +542,45 @@ watch(isDark, () => {
   editorRefresh()
 })
 
-watch(currentPostIndex, () => {
+function syncEditorToPostContent(content: string) {
   if (!codeMirrorView.value)
     return
 
-  const currentPost = posts.value[currentPostIndex.value]
-  if (!currentPost)
+  const currentContent = codeMirrorView.value.state.doc.toString()
+  if (currentContent === content)
     return
 
-  const currentContent = codeMirrorView.value.state.doc.toString()
-  if (currentContent !== currentPost.content) {
-    const generation = ++postSwitchGeneration
-    codeMirrorView.value.dispatch({
-      changes: {
-        from: 0,
-        to: codeMirrorView.value.state.doc.length,
-        insert: currentPost.content,
-      },
-    })
-    void preloadMathJaxIfNeeded(currentPost.content).then(() => {
-      if (generation !== postSwitchGeneration)
-        return
-      editorRefresh()
-    })
-  }
+  const generation = ++postSwitchGeneration
+  codeMirrorView.value.dispatch({
+    changes: {
+      from: 0,
+      to: codeMirrorView.value.state.doc.length,
+      insert: content,
+    },
+  })
+  void preloadMathJaxIfNeeded(content).then(() => {
+    if (generation !== postSwitchGeneration)
+      return
+    editorRefresh()
+  })
+}
+
+watch(currentPostIndex, () => {
+  const post = posts.value[currentPostIndex.value]
+  if (!post)
+    return
+  syncEditorToPostContent(post.content)
 })
+
+/** 云端同步等外部写入 posts 时，当前文章 index 不变也需刷新编辑器 */
+watch(
+  () => currentPost.value?.content,
+  (content) => {
+    if (content == null)
+      return
+    syncEditorToPostContent(content)
+  },
+)
 
 // 历史记录的定时器
 const historyTimer = ref<ReturnType<typeof setTimeout>>()
@@ -582,6 +604,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  editorStore.unregisterContentFlush()
   window.removeEventListener(MATHJAX_READY_EVENT, handleMathJaxReady)
   clearTimeout(historyTimer.value)
   clearTimeout(changeTimer.value)

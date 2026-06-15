@@ -73,11 +73,7 @@ export default defineConfig({
       `dist/**`,
       `docker/**`,
       `docs/**`,
-      `example/**`,
-      `functions/**`,
-      `md-cli/**`,
       `scripts/**`,
-      `src/extension/**`,
     ],
   },
   analysis: {

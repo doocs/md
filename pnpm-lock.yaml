@@ -364,12 +364,6 @@ importers:
         specifier: workspace:*
         version: link:../config
 
-  packages/example:
-    devDependencies:
-      wrangler:
-        specifier: ^4.100.0
-        version: 4.100.0(@cloudflare/workers-types@4.20260615.1)
-
   packages/mcp-server:
     dependencies:
       '@md/core':

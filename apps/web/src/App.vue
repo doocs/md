@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import ConfirmDialog from '@/components/confirm-dialog/ConfirmDialog.vue'
 import CodemirrorEditor from '@/components/editor/CodemirrorEditor.vue'
+import ConfirmDialog from '@/components/shared/confirm-dialog/ConfirmDialog.vue'
 import { Toaster } from '@/components/ui/sonner'
 import { useUIStore } from '@/stores/ui'
 
