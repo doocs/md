@@ -34,13 +34,6 @@ export const useAuthStore = defineStore(`auth`, () => {
       await fetchMe()
   }
 
-  /** @deprecated 使用 bootstrap */
-  function captureRedirectToken(): boolean {
-    return captureOAuthToken((t) => {
-      token.value = t
-    })
-  }
-
   async function fetchMe(): Promise<void> {
     if (!token.value)
       return
@@ -75,10 +68,7 @@ export const useAuthStore = defineStore(`auth`, () => {
     isLoggedIn,
     api,
     syncClient,
-    /** @deprecated 使用 syncClient */
-    client: syncClient,
     bootstrap,
-    captureRedirectToken,
     fetchMe,
     login,
     logout,

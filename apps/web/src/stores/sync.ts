@@ -1,11 +1,13 @@
 import type { SyncDocument } from '@/services/sync/types'
 import { ApiError } from '@/services/account/client'
 import { isSyncConfigured } from '@/services/sync/client'
+import { hydrateSyncedSettings } from '@/services/sync/hydrate'
 import { mergeRemoteIntoLocal, postToDoc, toMs } from '@/services/sync/merge'
 import { isProPlan, SYNC_DEBOUNCE_MS_PRO, SYNC_PRO_ENABLED } from '@/services/sync/plan'
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { useAuthStore } from '@/stores/auth'
 import { usePostStore } from '@/stores/post'
+import { safeGetItem, safeRemoveItem, safeSetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
@@ -14,9 +16,11 @@ export type SyncStatus = 'idle' | 'syncing' | 'error'
 const SYNCED_IDS_KEY = addPrefix(`sync_post_ids`)
 
 function readSyncedIds(): string[] {
+  const raw = safeGetItem(SYNCED_IDS_KEY)
+  if (!raw)
+    return []
   try {
-    const raw = localStorage.getItem(SYNCED_IDS_KEY)
-    return raw ? JSON.parse(raw) as string[] : []
+    return JSON.parse(raw) as string[]
   }
   catch {
     return []
@@ -24,10 +28,7 @@ function readSyncedIds(): string[] {
 }
 
 function writeSyncedIds(ids: string[]): void {
-  try {
-    localStorage.setItem(SYNCED_IDS_KEY, JSON.stringify(ids))
-  }
-  catch { /* 配额错误，非致命 */ }
+  safeSetItem(SYNCED_IDS_KEY, JSON.stringify(ids))
 }
 
 /**
@@ -42,7 +43,6 @@ export const useSyncStore = defineStore(`sync`, () => {
   const lastError = ref<string>(``)
   const lastSyncAt = store.reactive<number>(addPrefix(`sync_last_at`), 0)
   const autoSyncEnabled = store.reactive(addPrefix(`sync_auto`), false)
-  const needsRefresh = ref(false)
 
   let cursor = 0
   let debounceTimer: ReturnType<typeof setTimeout> | null = null
@@ -125,9 +125,9 @@ export const useSyncStore = defineStore(`sync`, () => {
       }
 
       if (pulled.settings.length) {
-        const applied = applyRemoteSettings(pulled.settings)
-        if (applied > 0)
-          needsRefresh.value = true
+        const { keys } = applyRemoteSettings(pulled.settings)
+        if (keys.length)
+          await hydrateSyncedSettings(keys)
       }
 
       cursor = Math.max(cursor, pulled.cursor)
@@ -177,13 +177,9 @@ export const useSyncStore = defineStore(`sync`, () => {
   function reset(): void {
     cursor = 0
     lastSyncAt.value = 0
-    needsRefresh.value = false
     status.value = `idle`
-    try {
-      localStorage.removeItem(SYNCED_IDS_KEY)
-      localStorage.removeItem(addPrefix(`sync_settings_meta`))
-    }
-    catch { /* ignore */ }
+    safeRemoveItem(SYNCED_IDS_KEY)
+    safeRemoveItem(addPrefix(`sync_settings_meta`))
   }
 
   return {
@@ -191,7 +187,6 @@ export const useSyncStore = defineStore(`sync`, () => {
     lastError,
     lastSyncAt,
     autoSyncEnabled,
-    needsRefresh,
     isAvailable,
     isSyncing,
     isPro,

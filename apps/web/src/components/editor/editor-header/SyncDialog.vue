@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { AlertCircle, Cloud, CloudOff, Info, Loader2, LogIn, RefreshCw } from '@lucide/vue'
+import { AlertCircle, Cloud, CloudOff, Loader2, LogIn, RefreshCw } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
 import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
 import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import CloudPanelInfoRows from '@/components/editor/editor-header/cloud-panel/CloudPanelInfoRows.vue'
 import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -27,7 +26,7 @@ const syncStore = useSyncStore()
 const uiStore = useUIStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
-const { status, lastError, lastSyncAt, needsRefresh, isSyncing, syncState } = storeToRefs(syncStore)
+const { status, lastError, lastSyncAt, isSyncing, syncState } = storeToRefs(syncStore)
 const { syncStatusMeta } = useSyncStatusMeta({ errorHint: `generic` })
 
 const dialogOpen = computed({
@@ -46,11 +45,6 @@ const lastSyncText = computed(() => {
   })
 })
 
-const syncInfoRows = computed(() => [
-  { label: `上次同步`, value: lastSyncText.value, numeric: true },
-  { label: `同步范围`, value: `文章、编辑器设置` },
-])
-
 function openAccountDialog() {
   dialogOpen.value = false
   uiStore.toggleShowAccountDialog(true)
@@ -62,10 +56,6 @@ async function handleSync() {
     toast.error(`同步失败：${lastError.value}`)
   else
     toast.success(`同步完成`)
-}
-
-function handleReload() {
-  window.location.reload()
 }
 </script>
 
@@ -117,30 +107,11 @@ function handleReload() {
           <p class="text-xs leading-relaxed text-muted-foreground">
             {{ syncStatusMeta.hint }}
           </p>
-        </div>
-      </CloudPanelCard>
-
-      <CloudPanelInfoRows :rows="syncInfoRows" />
-
-      <div
-        v-if="needsRefresh"
-        class="flex flex-col gap-3 rounded-xl border border-dashed px-3.5 py-3 sm:flex-row sm:items-center sm:justify-between sm:px-4 sm:py-4"
-      >
-        <div class="flex min-w-0 items-start gap-2.5">
-          <Info class="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-          <p class="text-xs leading-relaxed text-muted-foreground">
-            部分设置已从云端更新，刷新页面后生效
+          <p class="text-xs tabular-nums text-muted-foreground/80">
+            上次同步：{{ lastSyncText }}
           </p>
         </div>
-        <Button
-          size="sm"
-          variant="outline"
-          class="h-8 w-full shrink-0 sm:w-auto"
-          @click="handleReload"
-        >
-          刷新页面
-        </Button>
-      </div>
+      </CloudPanelCard>
 
       <Alert v-if="syncState === 'error' && lastError" variant="destructive" class="py-3">
         <AlertCircle class="size-4" />

@@ -7,8 +7,6 @@ import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { generatePureHTML, processClipboardContent } from '@/utils/export-content'
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
 import EditDropdown from './EditDropdown.vue'
 import FileDropdown from './FileDropdown.vue'
 import FormatDropdown from './FormatDropdown.vue'
@@ -34,7 +32,7 @@ const exportStore = useExportStore()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, copyMode } = storeToRefs(uiStore)
 
 // Editor refresh function
 function editorRefresh() {
@@ -44,7 +42,6 @@ function editorRefresh() {
   renderStore.render(raw)
 }
 
-const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
 const isCopying = ref(false)
 
 const { copy: copyContent } = useClipboard({
