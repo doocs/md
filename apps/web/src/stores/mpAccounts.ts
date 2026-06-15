@@ -27,33 +27,6 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
   const accounts = store.reactive<MpAccount[]>(addPrefix(`mp-accounts`), [])
   const currentAccountId = store.reactive<string>(addPrefix(`mp-current-account-id`), ``)
 
-  // ── 迁移旧数据（MD__mp-profile → accounts 数组）──────────────────────────
-  if (accounts.value.length === 0) {
-    try {
-      const oldRaw = localStorage.getItem(addPrefix(`mp-profile`))
-      if (oldRaw) {
-        const old = JSON.parse(oldRaw)
-        if (old && (old.name || old.id)) {
-          const migrated: MpAccount = {
-            id: uuidv4(),
-            mpId: old.id ?? ``,
-            name: old.name ?? ``,
-            logo: old.logo ?? ``,
-            desc: old.desc ?? ``,
-            serviceType: old.serviceType ?? `1`,
-            verify: old.verify ?? `0`,
-          }
-          accounts.value.push(migrated)
-          currentAccountId.value = migrated.id
-        }
-      }
-    }
-    catch {
-      // ignore parse errors
-    }
-  }
-
-  // ── 计算属性 ─────────────────────────────────────────────────────────────
   const currentAccount = computed<MpAccount | null>(() => {
     return (
       accounts.value.find(a => a.id === currentAccountId.value)
@@ -62,7 +35,6 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
     )
   })
 
-  // ── 操作 ─────────────────────────────────────────────────────────────────
   function addAccount(data?: Partial<Omit<MpAccount, 'id'>>): MpAccount {
     const newAccount: MpAccount = {
       id: uuidv4(),
@@ -80,9 +52,8 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
 
   function updateAccount(id: string, data: Partial<Omit<MpAccount, 'id'>>) {
     const index = accounts.value.findIndex(a => a.id === id)
-    if (index !== -1) {
+    if (index !== -1)
       accounts.value[index] = { ...accounts.value[index], ...data }
-    }
   }
 
   function deleteAccount(id: string) {
@@ -90,9 +61,8 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
     if (index === -1)
       return
     accounts.value.splice(index, 1)
-    if (currentAccountId.value === id) {
+    if (currentAccountId.value === id)
       currentAccountId.value = accounts.value[0]?.id ?? ``
-    }
   }
 
   function setCurrentAccount(id: string) {

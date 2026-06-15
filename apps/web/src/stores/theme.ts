@@ -2,78 +2,8 @@ import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, P
 import { applyTheme } from '@md/core'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { parseStoredValue, safeGetItem, safeRemoveItem, safeSetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
-
-/** Legacy localStorage keys used before per-theme settings */
-const LEGACY_KEYS = [`fonts`, `size`, `color`, `codeBlockTheme`, `headingStyles`, `isMacCodeBlock`, `isShowLineNumber`]
-
-/**
- * Run legacy migration synchronously before store.reactive installs its watch.
- * Returns the migrated PerThemeSettingsMap (or {} if nothing to migrate).
- */
-function migrateLegacySettingsSync(currentTheme: ThemeName): PerThemeSettingsMap {
-  const hasAnyLegacyKey = LEGACY_KEYS.some(key => safeGetItem(key) !== null)
-  if (!hasAnyLegacyKey)
-    return {}
-
-  const migrationKey = addPrefix(`legacy_migrated`)
-  if (safeGetItem(migrationKey) !== null)
-    return {}
-
-  const existingMapRaw = safeGetItem(addPrefix(`themeSettings`))
-  const existingMap: PerThemeSettingsMap = existingMapRaw
-    ? parseStoredValue(existingMapRaw, {} as PerThemeSettingsMap)
-    : {}
-
-  const defaults = defaultPerThemeSettings()
-  const settings: PerThemeSettings = { ...existingMap[currentTheme] ?? defaults }
-
-  const legacyFont = safeGetItem(`fonts`)
-  if (legacyFont)
-    settings.fontFamily = legacyFont
-
-  const legacySize = safeGetItem(`size`)
-  if (legacySize)
-    settings.fontSize = legacySize
-
-  const legacyColor = safeGetItem(`color`)
-  if (legacyColor)
-    settings.primaryColor = legacyColor
-
-  const legacyCodeTheme = safeGetItem(`codeBlockTheme`)
-  if (legacyCodeTheme)
-    settings.codeBlockTheme = legacyCodeTheme
-
-  const legacyHeading = safeGetItem(`headingStyles`)
-  if (legacyHeading) {
-    try { settings.headingStyles = JSON.parse(legacyHeading) }
-    catch { /* ignore parse error */ }
-  }
-
-  const legacyMacBlock = safeGetItem(`isMacCodeBlock`)
-  if (legacyMacBlock !== null)
-    settings.isMacCodeBlock = legacyMacBlock === `true`
-
-  const legacyLineNum = safeGetItem(`isShowLineNumber`)
-  if (legacyLineNum !== null)
-    settings.isShowLineNumber = legacyLineNum === `true`
-
-  const result: PerThemeSettingsMap = { ...existingMap, [currentTheme]: settings }
-
-  // Persist the merged map so store.reactive will pick it up
-  safeSetItem(addPrefix(`themeSettings`), JSON.stringify(result))
-
-  // Mark migration as done
-  safeSetItem(migrationKey, `1`)
-
-  // Clean up legacy keys
-  for (const key of LEGACY_KEYS)
-    safeRemoveItem(key)
-
-  return result
-}
 
 /**
  * 主题和样式配置 Store
@@ -83,26 +13,16 @@ function migrateLegacySettingsSync(currentTheme: ThemeName): PerThemeSettingsMap
  * headingStyles、isShowLineNumber、isMacCodeBlock），切换主题时自动加载对应配置。
  */
 export const useThemeStore = defineStore(`theme`, () => {
-  // --- Legacy migration: run BEFORE reactive so initial value is correct ---
-  const initialTheme = safeGetItem(addPrefix(`theme`)) ?? defaultStyleConfig.theme
-  const migratedSettings = migrateLegacySettingsSync(initialTheme as ThemeName)
-
-  // 当前选中的主题
   const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)
 
-  // 每个主题的独立配置（持久化到 localStorage）
   const themeSettings = store.reactive<PerThemeSettingsMap>(
     addPrefix(`themeSettings`),
-    migratedSettings,
+    {},
   )
 
-  // 获取当前主题的配置（不存在时返回默认值）
   const currentSettings = computed<PerThemeSettings>(() => {
     return themeSettings.value[theme.value] ?? defaultPerThemeSettings()
   })
-
-  // --- Per-theme computed properties ---
-  // 使用 computed({ get, set }) 保持与现有 UI 组件的 Ref API 兼容
 
   const primaryColor = computed<string>({
     get: () => currentSettings.value.primaryColor,
@@ -139,7 +59,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     set: (v: boolean) => { setThemeField(`isMacCodeBlock`, v) },
   })
 
-  /** 更新当前主题的某个字段 */
   function setThemeField<K extends keyof PerThemeSettings>(key: K, value: PerThemeSettings[K]) {
     const t = theme.value
     const existing = themeSettings.value[t] ?? defaultPerThemeSettings()
@@ -149,30 +68,15 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
   }
 
-  // --- Global (non-theme) properties ---
-
-  // 是否开启微信外链接底部引用
   const isCiteStatus = store.reactive(`isCiteStatus`, defaultStyleConfig.isCiteStatus)
-
-  // 是否统计字数和阅读时间
   const isCountStatus = store.reactive(`isCountStatus`, defaultStyleConfig.isCountStatus)
-
-  // 是否开启段落首行缩进
   const isUseIndent = store.reactive(addPrefix(`use_indent`), false)
-
-  // 是否开启两端对齐
   const isUseJustify = store.reactive(addPrefix(`use_justify`), false)
-
-  // 图注格式
   const legend = store.reactive(`legend`, defaultStyleConfig.legend)
-
-  // 预览宽度
   const previewWidth = store.reactive(`previewWidth`, widthOptions[0].value)
 
-  // 计算属性
   const fontSizeNumber = computed(() => Number(fontSize.value.replace(`px`, ``)))
 
-  // Toggle 方法
   const toggleMacCodeBlock = useToggle(isMacCodeBlock)
   const toggleShowLineNumber = useToggle(isShowLineNumber)
   const toggleCiteStatus = useToggle(isCiteStatus)
@@ -180,7 +84,6 @@ export const useThemeStore = defineStore(`theme`, () => {
   const toggleUseIndent = useToggle(isUseIndent)
   const toggleUseJustify = useToggle(isUseJustify)
 
-  // 重置样式（仅重置当前主题的配置）
   const resetStyle = () => {
     themeSettings.value = {
       ...themeSettings.value,
@@ -193,7 +96,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     isUseJustify.value = false
   }
 
-  // 设置标题样式
   const setHeadingStyle = (level: HeadingLevel, style: HeadingStyleType) => {
     const existing = headingStyles.value
     headingStyles.value = {
@@ -202,12 +104,10 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
   }
 
-  // 获取标题样式
   const getHeadingStyle = (level: HeadingLevel): HeadingStyleType => {
     return headingStyles.value[level] || `default`
   }
 
-  // 切换 highlight.js 代码主题
   const updateCodeTheme = () => {
     const cssUrl = codeBlockTheme.value
     const el = document.querySelector(`#hljs`)
@@ -225,10 +125,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     }
   }
 
-  /**
-   * 应用当前主题配置（新主题系统）
-   * 使用 CSS 注入而非内联样式
-   */
   const applyCurrentTheme = async () => {
     try {
       const cssEditorStore = useCssEditorStore()
@@ -253,7 +149,6 @@ export const useThemeStore = defineStore(`theme`, () => {
   }
 
   return {
-    // State
     theme,
     themeSettings,
     fontFamily,
@@ -270,8 +165,6 @@ export const useThemeStore = defineStore(`theme`, () => {
     isUseJustify,
     previewWidth,
     headingStyles,
-
-    // Actions
     toggleMacCodeBlock,
     toggleShowLineNumber,
     toggleCiteStatus,

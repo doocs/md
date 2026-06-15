@@ -303,7 +303,7 @@ function applyImportedConfig() {
       else if (key === `currentPostIndex`)
         postStore.currentPostIndex = value
       else if (key === `posts`)
-        postStore.posts = value
+        postStore.replacePosts(value)
 
       // CSS Editor store 的状态
       else if (key === `cssContentConfig`)

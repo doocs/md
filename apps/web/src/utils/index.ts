@@ -25,7 +25,7 @@ export {
   LocalStorageEngine as LocalEngine,
   RestfulStorageEngine as RestfulEngine,
   type StorageEngine,
-} from './storage'
+} from '@/storage'
 export {
   modifyHtmlContent,
   postProcessHtml,

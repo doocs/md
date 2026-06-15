@@ -121,11 +121,11 @@ export const useSyncStore = defineStore(`sync`, () => {
       if (pulled.documents.length) {
         const { posts, changed } = mergeRemoteIntoLocal(postStore.posts, pulled.documents)
         if (changed)
-          postStore.posts = posts
+          postStore.replacePosts(posts)
       }
 
       if (pulled.settings.length) {
-        const { keys } = applyRemoteSettings(pulled.settings)
+        const { keys } = await applyRemoteSettings(pulled.settings)
         if (keys.length)
           await hydrateSyncedSettings(keys)
       }

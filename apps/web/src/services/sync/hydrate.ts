@@ -1,4 +1,6 @@
 import { storeToRefs } from 'pinia'
+import { store } from '@/storage/manager'
+import { parseStoredValue } from '@/storage/quota'
 import { useAIConfigStore } from '@/stores/aiConfig'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useCustomComponentStore } from '@/stores/customComponent'
@@ -9,7 +11,6 @@ import { useRenderStore } from '@/stores/render'
 import { useTemplateStore } from '@/stores/template'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { parseStoredValue, safeGetItem } from '@/utils/localStorageSafe'
 import { addPrefix } from '@/utils/prefix'
 
 const PREVIEW_REFRESH_KEYS = new Set([
@@ -28,7 +29,7 @@ const PREVIEW_REFRESH_KEYS = new Set([
 function hydrateRef<T>(key: string, keys: Set<string>, ref: { value: T }): void {
   if (!keys.has(key))
     return
-  const raw = safeGetItem(key)
+  const raw = store.getSync(key)
   if (raw === null)
     return
   ref.value = parseStoredValue(raw, ref.value)
@@ -47,7 +48,7 @@ async function refreshPreview(keys: Set<string>): Promise<void> {
   renderStore.render(editorStore.getContent())
 }
 
-/** 将已写入 localStorage 的远端设置同步到各 Pinia Store，无需整页刷新 */
+/** 将已写入本地存储的远端设置同步到各 Pinia Store，无需整页刷新 */
 export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void> {
   if (!appliedKeys.length)
     return

@@ -47,6 +47,7 @@
     "diff-match-patch": "^1.0.5",
     "es-toolkit": "^1.47.1",
     "html-to-image": "^1.11.13",
+    "idb": "^8.0.3",
     "isomorphic-dompurify": "^3.17.0",
     "jszip": "^3.10.1",
     "juice": "^12.1.0",
