@@ -116,6 +116,12 @@ export const useSyncStore = defineStore(`sync`, () => {
     lastError.value = ``
 
     try {
+      const tombstones = collectLocalDocuments().filter(doc => doc.deleted)
+      if (tombstones.length) {
+        const pushed = await authStore.syncClient.push({ documents: tombstones, settings: [] })
+        cursor = Math.max(cursor, pushed.cursor)
+      }
+
       const pulled = await authStore.syncClient.pull(cursor)
 
       if (pulled.documents.length) {

@@ -100,16 +100,15 @@
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
-    "@types/webpack": "^5.28.5",
-    "isomorphic-dompurify": "^3.17.0",
-    "postcss": "^8.5.15",
-    "ts-loader": "^9.6.0",
-    "tsconfig-paths-webpack-plugin": "^4.2.0"
+    "isomorphic-dompurify": "^3.17.0"
   },
   "devDependencies": {
     "@types/node": "^25.9.3",
     "@types/vscode": "^1.120.0",
+    "@types/webpack": "^5.28.5",
     "@vscode/vsce": "^3.9.2",
+    "ts-loader": "^9.6.0",
+    "tsconfig-paths-webpack-plugin": "^4.2.0",
     "tsx": "^4.22.4",
     "webpack": "^5.107.2",
     "webpack-cli": "^7.0.3"
