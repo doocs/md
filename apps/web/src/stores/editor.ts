@@ -8,6 +8,21 @@ export const useEditorStore = defineStore(`editor`, () => {
   // 内容编辑器实例
   const editor = ref<EditorView | null>(null)
 
+  let flushPendingContent: (() => void) | null = null
+
+  function registerContentFlush(fn: () => void) {
+    flushPendingContent = fn
+  }
+
+  function unregisterContentFlush() {
+    flushPendingContent = null
+  }
+
+  /** 将编辑器中尚未防抖落盘的内容同步到 post store（刷新前调用） */
+  function flushContentToPostStore() {
+    flushPendingContent?.()
+  }
+
   // 格式化文档
   const formatContent = async () => {
     if (!editor.value)
@@ -111,6 +126,9 @@ export const useEditorStore = defineStore(`editor`, () => {
 
   return {
     editor,
+    registerContentFlush,
+    unregisterContentFlush,
+    flushContentToPostStore,
     formatContent,
     importContent,
     clearContent,

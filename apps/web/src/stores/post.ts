@@ -3,6 +3,7 @@ import { debounce } from 'es-toolkit'
 import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import { documentRepo, getLoadedDocuments } from '@/storage'
+import { useEditorStore } from '@/stores/editor'
 import { addPrefix } from '@/utils/prefix'
 import { store } from '@/utils/storage'
 
@@ -61,16 +62,11 @@ export const usePostStore = defineStore(`post`, () => {
     await documentRepo.savePost(post)
   }, 500)
 
-  function flushPersist() {
-    persistAll.flush()
-    persistOne.flush()
-  }
-
   /** 删除等关键操作立即落盘，避免防抖未完成时刷新导致数据回弹 */
-  function persistImmediately() {
+  async function persistImmediately(): Promise<void> {
     persistAll.cancel()
     persistOne.cancel()
-    void documentRepo.saveAll([...posts.value])
+    await documentRepo.saveAll([...posts.value])
   }
 
   watch(
@@ -112,12 +108,27 @@ export const usePostStore = defineStore(`post`, () => {
   })
 
   onMounted(() => {
-    const flush = () => flushPersist()
-    window.addEventListener(`pagehide`, flush)
-    window.addEventListener(`beforeunload`, flush)
+    const editorStore = useEditorStore()
+
+    const flushToDisk = () => {
+      editorStore.flushContentToPostStore()
+      persistAll.flush()
+      persistOne.flush()
+      void persistImmediately()
+    }
+
+    const onVisibilityChange = () => {
+      if (document.visibilityState === `hidden`)
+        flushToDisk()
+    }
+
+    window.addEventListener(`pagehide`, flushToDisk)
+    window.addEventListener(`beforeunload`, flushToDisk)
+    document.addEventListener(`visibilitychange`, onVisibilityChange)
     onUnmounted(() => {
-      window.removeEventListener(`pagehide`, flush)
-      window.removeEventListener(`beforeunload`, flush)
+      window.removeEventListener(`pagehide`, flushToDisk)
+      window.removeEventListener(`beforeunload`, flushToDisk)
+      document.removeEventListener(`visibilitychange`, onVisibilityChange)
     })
   })
 
@@ -126,6 +137,13 @@ export const usePostStore = defineStore(`post`, () => {
     persistOne.cancel()
     posts.value = normalizePosts(nextPosts)
     void documentRepo.saveAll(posts.value)
+  }
+
+  async function replacePostsAndPersist(nextPosts: Post[]): Promise<void> {
+    persistAll.cancel()
+    persistOne.cancel()
+    posts.value = normalizePosts(nextPosts)
+    await documentRepo.saveAll(posts.value)
   }
 
   const findIndexById = (id: string) => posts.value.findIndex(p => p.id === id)
@@ -253,5 +271,7 @@ export const usePostStore = defineStore(`post`, () => {
     collapseAllPosts,
     expandAllPosts,
     replacePosts,
+    replacePostsAndPersist,
+    persistImmediately,
   }
 })

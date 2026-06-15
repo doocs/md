@@ -127,7 +127,7 @@ export const useSyncStore = defineStore(`sync`, () => {
       if (pulled.documents.length) {
         const { posts, changed } = mergeRemoteIntoLocal(postStore.posts, pulled.documents)
         if (changed)
-          postStore.replacePosts(posts)
+          await postStore.replacePostsAndPersist(posts)
       }
 
       if (pulled.settings.length) {
@@ -146,6 +146,7 @@ export const useSyncStore = defineStore(`sync`, () => {
       }
 
       writeSyncedIds(postStore.posts.map(p => p.id))
+      await postStore.persistImmediately()
       lastSyncAt.value = Date.now()
       status.value = `idle`
     }
