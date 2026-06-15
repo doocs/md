@@ -1,4 +1,6 @@
 interface Window {
+  __MD_UTOOLS__?: boolean
+
   __MP_Editor_JSAPI__: {
     invoke: (params: {
       apiName: string

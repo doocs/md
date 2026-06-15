@@ -1,25 +1,10 @@
-import { initComponentDarkVars } from '@md/core'
-import { createPinia } from 'pinia'
-import { createApp } from 'vue'
-import { initStorage } from '@/storage'
-
-import App from './App.vue'
-import { setupComponents } from './utils/setup-components'
+import { bootstrap } from './bootstrap'
 
 import 'vue-sonner/style.css'
-
-/* 每个页面公共css */
 import '@/assets/index.css'
+import '@/assets/less/codemirror-global.less'
+import '@/assets/less/global.less'
+
 import '@/assets/less/theme.less'
 
-async function bootstrap() {
-  initComponentDarkVars()
-  setupComponents()
-  await initStorage()
-
-  const app = createApp(App)
-  app.use(createPinia())
-  app.mount(`#app`)
-}
-
-bootstrap()
+bootstrap().catch(console.error)

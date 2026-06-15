@@ -10,7 +10,10 @@ function toStored(post: Post): StoredDocument {
     id: post.id,
     title: post.title,
     content: post.content,
-    history: post.history ?? [],
+    history: (post.history ?? []).map(({ datetime, content }) => ({
+      datetime: String(datetime),
+      content: String(content),
+    })),
     createDatetime: new Date(post.createDatetime).toISOString(),
     updateDatetime: new Date(post.updateDatetime).toISOString(),
     parentId: post.parentId ?? null,
