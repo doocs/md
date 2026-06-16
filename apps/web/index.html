@@ -5,38 +5,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <meta name="keywords" content="md,markdown,markdown-editor,wechat,official-account,yanglbme,doocs" />
     <meta name="description" content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器" />
-    <meta
-      name="viewport"
-      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover"
-    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>微信 Markdown 编辑器 | Doocs</title>
     <link rel="shortcut icon" href="/favicon.png" />
     <link rel="apple-touch-icon-precomposed" href="/favicon.png" />
     <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        overflow: hidden;
+      }
+
       .loading {
         position: fixed;
-        top: 0;
-        left: 0;
+        inset: 0;
         z-index: 99999;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        width: 100vw;
-        height: 100vh;
         font-size: 18px;
+        color: #171717;
+        background-color: #ffffff;
+      }
+
+      html.dark .loading {
+        color: #fafafa;
+        background-color: #141414;
       }
 
       .loading::before {
-        content: url('/src/assets/images/favicon.png');
+        content: url('/favicon.png');
         width: 100px;
         height: 100px;
         margin-bottom: 26px;
       }
 
-      .loading.dark {
-        color: #ffffff;
-        background-color: #141414;
+      .loading strong,
+      .loading .txt {
+        color: inherit;
       }
 
       .loading .txt {
@@ -70,23 +78,27 @@
     <noscript>
       <strong>Please enable JavaScript to continue.</strong>
     </noscript>
-    <div id="app">
-      <div class="loading">
-        <strong>致力于让 Markdown 编辑更简单</strong>
-        <p class="txt">正在加载编辑器</p>
-        <p class="timeout-tip" style="display: none; color: #e53935; font-size: 16px; margin-top: 2em">
-          加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息
-        </p>
-      </div>
+    <div id="app-initial-loader" class="loading">
+      <strong>致力于让 Markdown 编辑更简单</strong>
+      <p class="txt">正在加载编辑器</p>
+      <p class="timeout-tip" style="display: none; color: #e53935; font-size: 16px; margin-top: 2em">
+        加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息
+      </p>
     </div>
+    <div id="app"></div>
     <script>
-      const theme = localStorage.getItem('vueuse-color-scheme')
-      if (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.querySelector('.loading').classList.add('dark')
-      }
+      ;(function () {
+        const theme = localStorage.getItem('vueuse-color-scheme') ?? 'auto'
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (theme === 'dark' || (theme === 'auto' && prefersDark)) {
+          document.documentElement.classList.add('dark')
+        }
+      })()
+
+      const loader = document.getElementById('app-initial-loader')
 
       setTimeout(() => {
-        const tip = document.querySelector('.loading .timeout-tip')
+        const tip = loader?.querySelector('.timeout-tip')
         if (tip) {
           tip.style.display = 'block'
         }

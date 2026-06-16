@@ -13,6 +13,8 @@ import { useUIStore } from '@/stores/ui'
 
 const PostSlider = defineAsyncComponent(() => import('@/components/editor/post-slider/index.vue'))
 const FolderSourcePanel = defineAsyncComponent(() => import('@/components/editor/folder-source-panel/index.vue'))
+const CssEditor = defineAsyncComponent(() => import('@/components/editor/CssEditor.vue'))
+const RightSlider = defineAsyncComponent(() => import('@/components/editor/RightSlider.vue'))
 const UploadImgDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/UploadImgDialog.vue'))
 const InsertFormDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/InsertFormDialog.vue'))
 const ImportMarkdownDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/ImportMarkdownDialog.vue'))
@@ -263,7 +265,7 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
                 collapsible
                 :collapsed-size="0"
               >
-                <CssEditor v-if="!isMobile" />
+                <CssEditor v-if="!isMobile && uiStore.isShowCssEditor" />
               </ResizablePanel>
 
               <!-- 样式面板 -->
@@ -278,15 +280,13 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
                 collapsible
                 :collapsed-size="0"
               >
-                <RightSlider v-if="!isMobile" />
+                <RightSlider v-if="!isMobile && isOpenRightSlider" />
               </ResizablePanel>
             </ResizablePanelGroup>
 
-            <!-- 移动端：CssEditor 和 RightSlider 作为浮层 -->
-            <template v-if="isMobile">
-              <CssEditor />
-              <RightSlider />
-            </template>
+            <!-- 移动端：组件内部用 transform 控制显隐，需保持挂载以保留滑入动画 -->
+            <CssEditor v-if="isMobile" />
+            <RightSlider v-if="isMobile" />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>
@@ -316,7 +316,7 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
 
 <style lang="less" scoped>
 .container {
-  height: 100vh;
+  height: 100%;
   min-width: 100%;
   padding: 0;
 }

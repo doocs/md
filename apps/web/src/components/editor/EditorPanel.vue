@@ -8,6 +8,7 @@ import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useImageUploader } from '@/composables/useImageUploader'
+import { completeInitialPreviewBoot } from '@/composables/useInitialPreviewBoot'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
@@ -164,6 +165,7 @@ async function beforeImageUpload(file: File) {
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
     toast.error(`请先配置 ${imgHost} 图床参数`)
+    toggleShowUploadImgDialog(true)
     return false
   }
 
@@ -506,6 +508,7 @@ function commitEditorContentToPost() {
 onMounted(() => {
   const editorDom = editorRef.value
   if (editorDom == null) {
+    void completeInitialPreviewBoot()
     return
   }
 
@@ -528,6 +531,7 @@ onMounted(() => {
 
     editorRefresh()
     mdLocalToRemote()
+    void completeInitialPreviewBoot()
   })
 
   document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })

@@ -38,7 +38,7 @@ import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain } from '@/utils/clipboard'
+import { copyPlain, readPlainFromClipboard } from '@/utils/clipboard'
 import { normalizeFormulaInput } from '@/utils/formula'
 
 const confirmStore = useConfirmStore()
@@ -84,13 +84,9 @@ async function copyToClipboard() {
 
 // 从剪贴板粘贴
 async function pasteFromClipboard() {
-  try {
-    const text = await navigator.clipboard.readText()
+  const text = await readPlainFromClipboard()
+  if (text !== null)
     editorStore.replaceSelection(text)
-  }
-  catch {
-    // 静默失败
-  }
 }
 
 // 重置样式确认

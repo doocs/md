@@ -48,3 +48,14 @@ export async function copyHtml(html: string, fallback?: string): Promise<void> {
   }
   await copyPlain(plain)
 }
+
+export async function readPlainFromClipboard(): Promise<string | null> {
+  try {
+    return await navigator.clipboard.readText()
+  }
+  catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    toast.error(`粘贴失败，请检查浏览器剪贴板权限。${message}`)
+    return null
+  }
+}
