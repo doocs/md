@@ -9,7 +9,7 @@ export function scheduleInitialLoaderFallback() {
   if (fallbackTimer)
     return
 
-  fallbackTimer = window.setTimeout(() => {
+  fallbackTimer = setTimeout(() => {
     dismissInitialLoader()
   }, DISMISS_FALLBACK_MS)
 }
