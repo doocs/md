@@ -63,7 +63,7 @@ allowBuilds:
 
 patchedDependencies:
   '@codemirror/view@6.43.1': patches/@codemirror__view@6.43.1.patch
-  juice@12.1.0: patches/juice@12.1.0.patch
+  juice@12.1.1: patches/juice@12.1.1.patch
 peerDependencyRules:
   allowedVersions:
     vite: '8'
