@@ -1,0 +1,13 @@
+diff --git a/index.js b/index.js
+index 1111111..2222222 100644
+--- a/index.js
++++ b/index.js
+@@ -59,7 +59,7 @@ function parse (string, allowUnsafe) {
+     }
+   }
+ 
+-  var loader = allowUnsafe ? parser.load : parser.safeLoad
++  var loader = parser.load
+   var yaml = match[match.length - 1].replace(/^\s+|\s+$/g, '')
+   var attributes = loader(yaml) || {}
+   var body = string.replace(match[0], '')
