@@ -13,7 +13,6 @@ useDeepLinkImport()
 </script>
 
 <template>
-  <AppSplash />
   <CodemirrorEditor />
 
   <ConfirmDialog />

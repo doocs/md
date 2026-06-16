@@ -8,7 +8,6 @@ import {
 } from '@/utils/export-content'
 import { downloadFile, sanitizeTitle } from '@/utils/shared-helpers'
 import { usePostStore } from './post'
-import { useRenderStore } from './render'
 import { useUIStore } from './ui'
 
 /**
@@ -17,18 +16,10 @@ import { useUIStore } from './ui'
  */
 export const useExportStore = defineStore(`export`, () => {
   const postStore = usePostStore()
-  const renderStore = useRenderStore()
   const uiStore = useUIStore()
 
   // 将编辑器内容转换为 HTML
-  const editorContent2HTML = () => {
-    const temp = getHtmlContent()
-    const outputEl = document.querySelector(`#output`)
-    if (outputEl) {
-      outputEl.innerHTML = renderStore.output
-    }
-    return temp
-  }
+  const editorContent2HTML = () => getHtmlContent()
 
   // 导出编辑器内容为 HTML，并且下载到本地
   const exportEditorContent2HTML = async () => {
@@ -37,10 +28,6 @@ export const useExportStore = defineStore(`export`, () => {
       return
 
     await exportHTML(currentPost.title)
-    const outputEl = document.querySelector(`#output`)
-    if (outputEl) {
-      outputEl.innerHTML = renderStore.output
-    }
   }
 
   // 导出编辑器内容为无样式 HTML
@@ -107,10 +94,6 @@ export const useExportStore = defineStore(`export`, () => {
       return
 
     await exportPDF(currentPost.title)
-    const outputEl = document.querySelector(`#output`)
-    if (outputEl) {
-      outputEl.innerHTML = renderStore.output
-    }
   }
 
   // 导出编辑器内容到本地（Markdown）
