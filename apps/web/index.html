@@ -26,19 +26,25 @@
         justify-content: center;
         align-items: center;
         font-size: 18px;
+        color: #171717;
         background-color: #ffffff;
       }
 
+      html.dark .loading {
+        color: #fafafa;
+        background-color: #141414;
+      }
+
       .loading::before {
-        content: url('/src/assets/images/favicon.png');
+        content: url('/favicon.png');
         width: 100px;
         height: 100px;
         margin-bottom: 26px;
       }
 
-      .loading.dark {
-        color: #ffffff;
-        background-color: #141414;
+      .loading strong,
+      .loading .txt {
+        color: inherit;
       }
 
       .loading .txt {
@@ -81,14 +87,15 @@
     </div>
     <div id="app"></div>
     <script>
-      const theme = localStorage.getItem('vueuse-color-scheme')
+      ;(function () {
+        const theme = localStorage.getItem('vueuse-color-scheme') ?? 'auto'
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (theme === 'dark' || (theme === 'auto' && prefersDark)) {
+          document.documentElement.classList.add('dark')
+        }
+      })()
+
       const loader = document.getElementById('app-initial-loader')
-      if (
-        loader &&
-        (theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches))
-      ) {
-        loader.classList.add('dark')
-      }
 
       setTimeout(() => {
         const tip = loader?.querySelector('.timeout-tip')
