@@ -1,12 +1,11 @@
-import { toPng } from 'html-to-image'
 import {
   downloadMD,
   exportHTML,
   exportPDF,
+  exportPNG,
   exportPureHTML,
   getHtmlContent,
 } from '@/utils/export-content'
-import { downloadFile, sanitizeTitle } from '@/utils/shared-helpers'
 import { usePostStore } from './post'
 import { useUIStore } from './ui'
 
@@ -45,46 +44,10 @@ export const useExportStore = defineStore(`export`, () => {
     if (!currentPost)
       return
 
-    const el = document.querySelector<HTMLElement>(`#output-wrapper>.preview`)
-    if (!el)
-      return
-
-    // 添加临时样式：禁用代码块滚动，启用换行，隐藏仅用于预览的 UI 覆盖层
-    const style = document.createElement('style')
-    style.textContent = `
-      .diagram-download-bar { display: none !important; }
-      .preview pre.code__pre,
-      .preview .hljs.code__pre,
-      .preview pre.code__pre > code,
-      .preview .hljs.code__pre > code,
-      .preview .code-scroll,
-      .preview pre section,
-      .preview code section {
-        overflow: visible !important;
-      }
-      .preview pre.code__pre > code,
-      .preview .code-scroll,
-      .preview .code-scroll > div {
-        white-space: pre-wrap !important;
-        word-break: break-all !important;
-        min-width: auto !important;
-      }
-    `
-    document.head.appendChild(style)
-
-    try {
-      await new Promise(resolve => setTimeout(resolve, 100)) // brief delay for style application
-      const url = await toPng(el, {
-        backgroundColor: uiStore.isDark ? `` : `#fff`,
-        skipFonts: true,
-        pixelRatio: Math.max(window.devicePixelRatio || 1, 2),
-        style: { margin: `0` },
-      })
-      downloadFile(url, `${sanitizeTitle(currentPost.title)}.png`, `image/png`)
-    }
-    finally {
-      style.remove()
-    }
+    await exportPNG(currentPost.title, {
+      isDark: uiStore.isDark,
+      previewDevice: uiStore.previewDevice,
+    })
   }
 
   // 导出编辑器内容为 PDF
