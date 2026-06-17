@@ -1,6 +1,6 @@
 import { isAccountConfigured, MD_API_URL } from '@/services/account/config'
 import { ACCOUNT_TOKEN_KEY } from '@/services/account/oauth'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
 
 class UploadApiError extends Error {
   constructor(

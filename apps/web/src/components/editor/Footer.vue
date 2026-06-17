@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { MarkdownHeading } from '@/utils/markdownHeadings'
+import type { MarkdownHeading } from '@/lib/markdown/headings'
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Ellipsis, Eye, FileText, Keyboard, ListTree, LogIn, Monitor, Moon, PenLine, Pilcrow, Search, Share2, Smartphone, Sun, Type, User } from '@lucide/vue'
@@ -15,6 +15,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useSyncFooterMeta } from '@/composables/useSyncStatusMeta'
+import { formatRelativeTime } from '@/lib/format/relative-time'
+import { computeHeadingBreadcrumbs, extractMarkdownHeadings } from '@/lib/markdown/headings'
 import { isAccountUiEnabled } from '@/services/account/config'
 import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
@@ -23,8 +25,6 @@ import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { formatRelativeTime } from '@/utils/formatRelativeTime'
-import { computeHeadingBreadcrumbs, extractMarkdownHeadings } from '@/utils/markdownHeadings'
 
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
@@ -622,7 +622,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>{{ isLoggedIn ? syncTooltip : '云同步（请先登录账户）' }}</p>
+                <p>{{ isLoggedIn ? syncTooltip : '云同步' }}</p>
               </TooltipContent>
             </Tooltip>
           </template>

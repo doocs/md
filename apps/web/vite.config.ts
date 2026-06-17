@@ -47,7 +47,7 @@ export default defineConfig(({ mode }) => {
       ...(process.env.ANALYZE === `true` ? [visualizer({ emitFile: true, filename: `stats.html` }) as any] : []),
       AutoImport({
         imports: [`vue`, `pinia`, `@vueuse/core`],
-        dirs: [`./src/stores`, `./src/utils/toast`, `./src/composables`],
+        dirs: [`./src/stores`, `./src/lib/toast`, `./src/composables`],
       }),
       Components({
         resolvers: [],

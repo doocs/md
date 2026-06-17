@@ -2,13 +2,13 @@
 import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
 import { exportMergedTheme } from '@md/core'
 import { themeMap, themeOptionsMap } from '@md/shared'
+import { copyPlain } from '@/lib/browser/clipboard'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain } from '@/utils/clipboard'
 
 const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { ref, watch } from 'vue'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
 
 export interface QuickCommandPersisted {
   id: string

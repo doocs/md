@@ -1,8 +1,8 @@
+import { waitForPreviewReady } from '@/lib/preview/preview-ready'
+import { getHtmlContent, getShareExportStyles } from '@/services/export'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { getHtmlContent, getShareExportStyles } from '@/utils/export-content'
-import { waitForPreviewReady } from '@/utils/preview-ready'
 
 /** 捕获浅色模式分享快照（编辑器处于深色模式时会临时按浅色重渲染） */
 export async function captureShareSnapshot(): Promise<{ bodyHtml: string, stylesHtml: string }> {

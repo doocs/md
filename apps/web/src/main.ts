@@ -1,5 +1,5 @@
 import { bootstrap } from './bootstrap'
-import { silenceDevLogs } from './utils/silence-dev-logs'
+import { silenceDevLogs } from './lib/bootstrap/silence-dev-logs'
 
 import 'vue-sonner/style.css'
 import '@/assets/index.css'

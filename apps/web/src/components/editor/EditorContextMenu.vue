@@ -31,6 +31,8 @@ import {
 import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { useEditorFormat } from '@/composables/useEditorFormat'
+import { copyPlain, readPlainFromClipboard } from '@/lib/browser/clipboard'
+import { normalizeFormulaInput } from '@/lib/markdown/formula'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -38,8 +40,6 @@ import { useExportStore } from '@/stores/export'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain, readPlainFromClipboard } from '@/utils/clipboard'
-import { normalizeFormulaInput } from '@/utils/formula'
 
 const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()

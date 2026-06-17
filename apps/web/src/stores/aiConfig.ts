@@ -5,7 +5,7 @@ import {
   DEFAULT_SERVICE_TEMPERATURE,
   DEFAULT_SERVICE_TYPE,
 } from '@md/shared/constants'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
 
 /**
  * AI 配置 Store

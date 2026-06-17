@@ -3,7 +3,7 @@ import {
   DEFAULT_SERVICE_KEY,
   DEFAULT_SERVICE_TYPE,
 } from '@md/shared/constants'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
 
 /**
  * AI 图片生成配置 Store

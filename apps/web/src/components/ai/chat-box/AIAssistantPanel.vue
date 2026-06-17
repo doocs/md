@@ -31,12 +31,12 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { Textarea } from '@/components/ui/textarea'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { copyPlain } from '@/lib/browser/clipboard'
+import { store } from '@/storage'
 import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
 import { useQuickCommandsStore } from '@/stores/quickCommands'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain } from '@/utils/clipboard'
-import { store } from '@/utils/storage'
 
 const props = defineProps<{ open: boolean }>()
 

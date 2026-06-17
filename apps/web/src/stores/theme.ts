@@ -1,9 +1,9 @@
 import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, PerThemeSettingsMap, ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
+import { store } from '@/storage'
+import { addPrefix } from '@/storage/prefix'
 import { useCssEditorStore } from '@/stores/cssEditor'
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
 
 /**
  * 主题和样式配置 Store

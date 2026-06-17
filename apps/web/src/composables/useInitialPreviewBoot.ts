@@ -1,5 +1,5 @@
-import { dismissInitialLoader } from '@/utils/dismiss-initial-loader'
-import { waitForPreviewReady } from '@/utils/preview-ready'
+import { dismissInitialLoader } from '@/lib/bootstrap/dismiss-initial-loader'
+import { waitForPreviewReady } from '@/lib/preview/preview-ready'
 
 const INITIAL_PREVIEW_TIMEOUT_MS = 20_000
 const OUTPUT_WAIT_TIMEOUT_MS = 5_000

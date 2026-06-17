@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Check, Copy, Expand, UploadCloud } from '@lucide/vue'
 import { storeLabels } from '@md/shared/configs'
+import { downloadFile } from '@md/shared/utils/fileHelpers'
+import { copyPlain } from '@/lib/browser/clipboard'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain } from '@/utils/clipboard'
-import { downloadFile } from '@/utils/shared-helpers'
 
 const props = defineProps<{
   open: boolean

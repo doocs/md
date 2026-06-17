@@ -1,7 +1,7 @@
 import type { SyncSetting } from './types'
 import { store } from '@/storage/manager'
-import { safeGetItem } from '@/utils/localStorageSafe'
-import { addPrefix } from '@/utils/prefix'
+import { addPrefix } from '@/storage/prefix'
+import { safeGetItem } from '@/storage/safe-access'
 
 export interface ApplyRemoteSettingsResult {
   keys: string[]

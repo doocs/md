@@ -1,5 +1,5 @@
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
+import { addPrefix } from '@/storage/prefix'
 
 /**
  * UI 状态 Store

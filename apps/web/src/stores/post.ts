@@ -2,10 +2,9 @@ import type { Post } from '@/types/post'
 import { debounce } from 'es-toolkit'
 import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { documentRepo, getLoadedDocuments } from '@/storage'
+import { documentRepo, getLoadedDocuments, store } from '@/storage'
+import { addPrefix } from '@/storage/prefix'
 import { useEditorStore } from '@/stores/editor'
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
 
 export type { Post } from '@/types/post'
 

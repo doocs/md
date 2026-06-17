@@ -14,9 +14,9 @@ import {
 import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import { redoAction, undoAction } from '@md/shared/editor'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
+import { copyPlain, readPlainFromClipboard } from '@/lib/browser/clipboard'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
-import { copyPlain, readPlainFromClipboard } from '@/utils/clipboard'
 
 const props = withDefaults(defineProps<{
   asSub?: boolean

@@ -5,7 +5,7 @@ import {
   exportPNG,
   exportPureHTML,
   getHtmlContent,
-} from '@/utils/export-content'
+} from '@/services/export'
 import { usePostStore } from './post'
 import { useUIStore } from './ui'
 

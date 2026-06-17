@@ -2,9 +2,9 @@
 import { Compartment } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { javascriptSetup, theme } from '@md/shared'
+import { removeLeft } from '@md/shared/utils/basicHelpers'
+import { store } from '@/storage'
 import { useUIStore } from '@/stores/ui'
-import { removeLeft } from '@/utils/shared-helpers'
-import { store } from '@/utils/storage'
 
 const code = store.reactive(`formCustomConfig`, removeLeft(`
   const { file, util, okCb, errCb } = CUSTOM_ARG

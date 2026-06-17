@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
+import { addPrefix } from '@/storage/prefix'
 
 export interface MpAccount {
   /** UUID — internal store identifier */
