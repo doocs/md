@@ -335,7 +335,6 @@ watch(isProUser, (pro) => {
       v-else-if="!isLoggedIn"
       :icon="Share2"
       title="登录后分享预览"
-      description="登录账户后，可将当前文章生成与编辑器预览一致的只读链接。"
       action-label="登录"
       :action-icon="LogIn"
       @action="openAccountDialog"

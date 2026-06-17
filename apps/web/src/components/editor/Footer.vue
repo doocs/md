@@ -622,7 +622,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>{{ isLoggedIn ? syncTooltip : '云同步（请先登录账户）' }}</p>
+                <p>{{ isLoggedIn ? syncTooltip : '云同步' }}</p>
               </TooltipContent>
             </Tooltip>
           </template>
