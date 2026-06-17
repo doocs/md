@@ -1,5 +1,5 @@
 import { prefix } from '@md/shared/configs'
-import { addPrefix } from '@/utils/prefix'
+import { addPrefix } from '@/storage/prefix'
 
 /** IndexedDB 数据库名 */
 export const DB_NAME = `doocs-md`

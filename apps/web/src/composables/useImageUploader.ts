@@ -1,8 +1,8 @@
+import { toBase64 } from '@md/shared/utils/fileHelpers'
 import SparkMD5 from 'spark-md5'
 import { ref } from 'vue'
-import { fileUpload } from '@/utils/file-upload'
-import { toBase64 } from '@/utils/shared-helpers'
-import { store } from '@/utils/storage'
+import { fileUpload } from '@/services/upload'
+import { store } from '@/storage'
 
 const STORAGE_KEY = `uploaded_image_map`
 

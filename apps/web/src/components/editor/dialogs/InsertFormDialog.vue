@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import { createTable } from '@md/shared/utils/fileHelpers'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
-import { createTable } from '@/utils/shared-helpers'
 
 const editorStore = useEditorStore()
 const uiStore = useUIStore()

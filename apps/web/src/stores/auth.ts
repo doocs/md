@@ -3,7 +3,7 @@ import { ApiError, MdApiClient } from '@/services/account/client'
 import { gotoLogin, isAccountConfigured } from '@/services/account/config'
 import { ACCOUNT_TOKEN_KEY, captureOAuthToken } from '@/services/account/oauth'
 import { SyncClient } from '@/services/sync/client'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
 
 /**
  * 全局账户 Store

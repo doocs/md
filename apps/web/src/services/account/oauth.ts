@@ -1,5 +1,5 @@
-import { addPrefix } from '@/utils/prefix'
-import { store } from '@/utils/storage'
+import { store } from '@/storage'
+import { addPrefix } from '@/storage/prefix'
 import { OAUTH_TOKEN_HASH_KEY } from './config'
 
 export const ACCOUNT_TOKEN_KEY = addPrefix(`account_token`)

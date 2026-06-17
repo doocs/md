@@ -6,8 +6,8 @@ import Buffer from 'buffer-from'
 import CryptoJS from 'crypto-js'
 import { v4 as uuidv4 } from 'uuid'
 import { uploadDefaultImage } from '@/services/upload/client'
+import { store } from '@/storage'
 import { loadS3Sdk } from './s3-sdk'
-import { store } from './storage'
 
 /**
  * Safely parse JSON string, returns parsed result or throws a descriptive error

@@ -15,10 +15,10 @@ import {
   LEGACY_THEME_KEYS,
   STORE_CACHE,
 } from '@/storage/keys'
+import { addPrefix } from '@/storage/prefix'
 import { parseStoredValue } from '@/storage/quota'
 import { trimCacheValue } from '@/storage/repositories/cache'
 import { documentRepo } from '@/storage/repositories/documents'
-import { addPrefix } from '@/utils/prefix'
 
 function legacyRemove(key: string): void {
   try {

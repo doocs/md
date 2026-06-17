@@ -14,7 +14,16 @@ export type { StorageEngine } from '@/storage/engine'
 export { IndexedDBEngine, LocalStorageEngine, RestfulStorageEngine } from '@/storage/engines/indexed-db'
 export { store } from '@/storage/manager'
 export { clearCacheStore } from '@/storage/migrate/from-local-storage'
+export { addPrefix } from '@/storage/prefix'
 export { documentRepo, getLoadedDocuments, isUsingLegacyDocumentStorage } from '@/storage/repositories/documents'
+export {
+  isStorageQuotaError,
+  parseStoredValue,
+  safeGetItem,
+  safeRemoveItem,
+  safeSetItem,
+  warnStorageQuota,
+} from '@/storage/safe-access'
 
 let readyPromise: Promise<void> | null = null
 let initComplete = false

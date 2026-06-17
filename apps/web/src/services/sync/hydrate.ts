@@ -1,5 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { store } from '@/storage/manager'
+import { addPrefix } from '@/storage/prefix'
 import { parseStoredValue } from '@/storage/quota'
 import { useAIConfigStore } from '@/stores/aiConfig'
 import { useCssEditorStore } from '@/stores/cssEditor'
@@ -11,7 +12,6 @@ import { useRenderStore } from '@/stores/render'
 import { useTemplateStore } from '@/stores/template'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { addPrefix } from '@/utils/prefix'
 
 const PREVIEW_REFRESH_KEYS = new Set([
   addPrefix(`theme`),

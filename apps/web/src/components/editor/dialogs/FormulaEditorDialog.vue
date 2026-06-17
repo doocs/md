@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { escapeHtml, normalizeFormulaInput, wrapFormula } from '@/lib/markdown/formula'
+import { isMathJaxLoaded, loadMathJax } from '@/lib/preview/mathjax'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
-import { escapeHtml, normalizeFormulaInput, wrapFormula } from '@/utils/formula'
-import { isMathJaxLoaded, loadMathJax } from '@/utils/mathjax'
 
 const uiStore = useUIStore()
 const editorStore = useEditorStore()

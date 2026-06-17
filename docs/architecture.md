@@ -54,18 +54,18 @@ Web 端入口：
 
 ## Web 应用目录约定（`apps/web/src`）
 
-| 目录                 | 职责                                               |
-| -------------------- | -------------------------------------------------- |
-| `stores/`            | Pinia 全局状态，按领域划分                         |
-| `composables/`       | 跨组件复用的响应式逻辑                             |
-| `services/`          | 外部 API 客户端（account / sync / share / upload） |
-| `storage/`           | IndexedDB 抽象层与 repositories                    |
-| `components/ui/`     | Shadcn-Vue 设计系统（无业务逻辑）                  |
-| `components/editor/` | 编辑器主界面                                       |
-| `components/ai/`     | AI 相关 UI                                         |
-| `components/shared/` | 跨 feature 通用组件                                |
-| `entrypoints/`       | WXT 浏览器扩展入口                                 |
-| `utils/`             | 纯函数工具                                         |
+| 目录                 | 职责                                                                    |
+| -------------------- | ----------------------------------------------------------------------- |
+| `stores/`            | Pinia 全局状态，按领域划分                                              |
+| `composables/`       | 跨组件复用的响应式逻辑                                                  |
+| `services/`          | 外部 API 与领域服务（account / sync / share / upload / export）         |
+| `storage/`           | IndexedDB 抽象层、键前缀与安全读写                                      |
+| `lib/`               | 纯函数与浏览器辅助（bootstrap / browser / format / markdown / preview） |
+| `components/ui/`     | Shadcn-Vue 设计系统（无业务逻辑）                                       |
+| `components/editor/` | 编辑器主界面                                                            |
+| `components/ai/`     | AI 相关 UI                                                              |
+| `components/shared/` | 跨 feature 通用组件                                                     |
+| `entrypoints/`       | WXT 浏览器扩展入口                                                      |
 
 ## 状态管理（Web）
 

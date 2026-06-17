@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { DiagramDownloadOverlay } from '@/utils/diagramDownload'
+import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { highlightPendingBlocks, hljs } from '@md/core'
+import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { setupDiagramDownloadOverlay } from '@/utils/diagramDownload'
 
 const props = defineProps<{
   backLight: boolean

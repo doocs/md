@@ -12,10 +12,10 @@ import {
   PlusSquare,
   Trash2,
 } from '@lucide/vue'
+import { downloadMD } from '@/services/export'
 import { usePostStore } from '@/stores/post'
 import { useTemplateStore } from '@/stores/template'
 import { useUIStore } from '@/stores/ui'
-import { downloadMD } from '@/utils/export-content'
 import {
   getPostSliderDropdownContentProps,
   updatePostSliderMenuOpen,
