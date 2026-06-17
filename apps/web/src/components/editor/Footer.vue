@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import type { MarkdownHeading } from '@/utils/markdownHeadings'
 import { StateEffect } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { ArrowUpDown, BookOpen, ChevronRight, ChevronsUpDown, Clock, Columns2, Ellipsis, Eye, FileText, Keyboard, ListTree, LogIn, Monitor, Moon, PenLine, Pilcrow, Search, Share2, Smartphone, Sun, Type, User } from '@lucide/vue'
@@ -22,6 +23,8 @@ import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
+import { formatRelativeTime } from '@/utils/formatRelativeTime'
+import { computeHeadingBreadcrumbs, extractMarkdownHeadings } from '@/utils/markdownHeadings'
 
 const renderStore = useRenderStore()
 const editorStore = useEditorStore()
@@ -65,28 +68,6 @@ function openShareDialog() {
 function toggleTheme() {
   isMoreOpen.value = false
   uiStore.toggleDark()
-}
-
-// 相对时间格式化（复用）
-function formatRelativeTime(date: Date | string) {
-  const now = new Date()
-  const d = new Date(date)
-  const diff = now.getTime() - d.getTime()
-  const seconds = Math.floor(diff / 1000)
-  if (seconds < 10)
-    return `刚刚`
-  if (seconds < 60)
-    return `${seconds} 秒前`
-  const minutes = Math.floor(seconds / 60)
-  if (minutes < 60)
-    return `${minutes} 分钟前`
-  const hours = Math.floor(minutes / 60)
-  if (hours < 24)
-    return `${hours} 小时前`
-  const days = Math.floor(hours / 24)
-  if (days < 30)
-    return `${days} 天前`
-  return d.toLocaleDateString(`zh-CN`)
 }
 
 // 快速文档切换器
@@ -188,7 +169,7 @@ function goToLine() {
   })
   view.focus()
   isGoToLineActive.value = false
-  updateCursorInfo(view as EditorView)
+  updateCursorInfo(view as EditorView, { rebuildHeadings: true })
 }
 
 function cancelGoToLine() {
@@ -199,6 +180,27 @@ function cancelGoToLine() {
 // 监听编辑器变化，更新光标位置
 const attachedViews = new WeakSet()
 
+// 大纲 & 面包屑
+const breadcrumbs = ref<MarkdownHeading[]>([])
+const allHeadings = ref<MarkdownHeading[]>([])
+const isOutlineOpen = ref(false)
+const outlineScrollRef = ref<HTMLElement | null>(null)
+
+function updateCursorInfo(view: EditorView, options: { rebuildHeadings?: boolean } = {}) {
+  const state = view.state
+  const main = state.selection.main
+  const line = state.doc.lineAt(main.head)
+  cursorLine.value = line.number
+  cursorCol.value = main.head - line.from + 1
+  totalLines.value = state.doc.lines
+  selectionLength.value = Math.abs(main.to - main.from)
+
+  if (options.rebuildHeadings) {
+    allHeadings.value = extractMarkdownHeadings(state.doc)
+  }
+  breadcrumbs.value = computeHeadingBreadcrumbs(allHeadings.value, line.number)
+}
+
 watch(editor, (view) => {
   if (!view || attachedViews.has(view))
     return
@@ -206,11 +208,13 @@ watch(editor, (view) => {
   attachedViews.add(view)
 
   // 初始化一次
-  updateCursorInfo(view as EditorView)
+  updateCursorInfo(view as EditorView, { rebuildHeadings: true })
 
   const extension = EditorView.updateListener.of((update) => {
-    // 只在光标或文档变化时更新
-    if (update.selectionSet || update.docChanged) {
+    if (update.docChanged) {
+      updateCursorInfo(update.view, { rebuildHeadings: true })
+    }
+    else if (update.selectionSet) {
       updateCursorInfo(update.view)
     }
   })
@@ -224,88 +228,10 @@ watch(editor, (view) => {
 watch(currentPost, () => {
   nextTick(() => {
     if (editor.value) {
-      updateCursorInfo(editor.value as EditorView)
+      updateCursorInfo(editor.value as EditorView, { rebuildHeadings: true })
     }
   })
 })
-
-function updateCursorInfo(view: EditorView) {
-  const state = view.state
-  const main = state.selection.main
-  const line = state.doc.lineAt(main.head)
-  cursorLine.value = line.number
-  cursorCol.value = main.head - line.from + 1
-  totalLines.value = state.doc.lines
-  selectionLength.value = Math.abs(main.to - main.from)
-  updateHeadingsAndBreadcrumb(state.doc, line.number)
-}
-
-// 大纲 & 面包屑
-interface BreadcrumbItem {
-  title: string
-  level: number
-  line: number
-}
-
-const breadcrumbs = ref<BreadcrumbItem[]>([])
-const allHeadings = ref<BreadcrumbItem[]>([])
-const isOutlineOpen = ref(false)
-const outlineScrollRef = ref<HTMLElement | null>(null)
-
-function updateHeadingsAndBreadcrumb(doc: { lines: number, line: (n: number) => { text: string } }, currentLine: number) {
-  const items: BreadcrumbItem[] = []
-  const stack: BreadcrumbItem[] = []
-  let codeFenceChar = ``
-  let codeFenceCount = 0
-  let inFrontMatter = false
-
-  for (let i = 1; i <= doc.lines; i++) {
-    const text = doc.line(i).text
-    const trimmed = text.trimStart()
-
-    if (i === 1 && trimmed === `---`) {
-      inFrontMatter = true
-      continue
-    }
-    if (inFrontMatter) {
-      if (trimmed === `---` || trimmed === `...`)
-        inFrontMatter = false
-      continue
-    }
-
-    if (codeFenceChar) {
-      const closeMatch = trimmed.match(/^(`{3,}|~{3,})\s*$/)
-      if (closeMatch && closeMatch[1][0] === codeFenceChar && closeMatch[1].length >= codeFenceCount) {
-        codeFenceChar = ``
-        codeFenceCount = 0
-      }
-      continue
-    }
-    const openMatch = trimmed.match(/^(`{3,}|~{3,})/)
-    if (openMatch) {
-      codeFenceChar = openMatch[1][0]
-      codeFenceCount = openMatch[1].length
-      continue
-    }
-
-    const match = text.match(/^(\s{0,3})(#{1,6})\s+(.+)/)
-    if (match) {
-      const level = match[2].length
-      const title = match[3].replace(/\s*#+\s*$/, ``).trim()
-      const item = { title, level, line: i }
-      items.push(item)
-
-      if (i <= currentLine) {
-        while (stack.length > 0 && stack[stack.length - 1].level >= level)
-          stack.pop()
-        stack.push(item)
-      }
-    }
-  }
-
-  breadcrumbs.value = [...stack]
-  allHeadings.value = items
-}
 
 const activeHeadingLine = computed(() => {
   if (breadcrumbs.value.length === 0)
@@ -348,7 +274,7 @@ function jumpToHeading(line: number) {
   updateCursorInfo(view as EditorView)
 }
 
-// 上次保存时间（复用 formatRelativeTime）
+// 上次保存时间
 const savedTimeAgo = computed(() => {
   if (!currentPost.value?.updateDatetime)
     return ``
