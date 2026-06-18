@@ -27,8 +27,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1070.0",
-    "@aws-sdk/s3-request-presigner": "^3.1070.0",
+    "@aws-sdk/client-s3": "^3.1071.0",
+    "@aws-sdk/s3-request-presigner": "^3.1071.0",
     "@lucide/vue": "^1.20.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -61,7 +61,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.41.0",
-    "@cloudflare/workers-types": "^4.20260616.1",
+    "@cloudflare/workers-types": "^4.20260617.1",
     "@md/config": "workspace:*",
     "@tailwindcss/postcss": "^4.3.1",
     "@tailwindcss/vite": "^4.3.1",
