@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Copy, Loader2, Menu, Palette } from '@lucide/vue'
+import { Copy, Loader2, Menu, Palette, Users } from '@lucide/vue'
 import { defineAsyncComponent } from 'vue'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { generatePureHTML, processClipboardContent } from '@/services/export'
@@ -23,6 +23,8 @@ const MarkdownHelpDialog = defineAsyncComponent(() => import('./MarkdownHelpDial
 const AccountDialog = defineAsyncComponent(() => import('./AccountDialog.vue'))
 const SyncDialog = defineAsyncComponent(() => import('./SyncDialog.vue'))
 const ShareDialog = defineAsyncComponent(() => import('./ShareDialog.vue'))
+const CollabDialog = defineAsyncComponent(() => import('./CollabDialog.vue'))
+const CollabBanner = defineAsyncComponent(() => import('./CollabBanner.vue'))
 
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
@@ -34,7 +36,9 @@ const { editorRefresh } = useEditorRefresh()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, copyMode } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowCollabDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, copyMode } = storeToRefs(uiStore)
+const collabStore = useCollabStore()
+const { isCollabMode } = storeToRefs(collabStore)
 
 const isCopying = ref(false)
 
@@ -225,6 +229,7 @@ function copyToWeChat() {
 </script>
 
 <template>
+  <CollabBanner />
   <header
     class="header-container h-15 flex flex-wrap items-center justify-between px-5 relative"
   >
@@ -278,6 +283,17 @@ function copyToWeChat() {
       <!-- 文章信息（移动端隐藏） -->
       <PostInfo class="hidden md:inline-flex" />
 
+      <!-- 协作 -->
+      <Button
+        v-if="isCollabMode"
+        variant="outline"
+        class="h-9"
+        @click="uiStore.toggleShowCollabDialog(true)"
+      >
+        <Users class="mr-2 h-4 w-4" />
+        <span class="hidden sm:inline">协作</span>
+      </Button>
+
       <!-- 样式面板 -->
       <Button
         variant="outline"
@@ -299,6 +315,7 @@ function copyToWeChat() {
   <AccountDialog v-if="isShowAccountDialog" v-model:open="isShowAccountDialog" />
   <SyncDialog v-if="isShowSyncDialog" v-model:open="isShowSyncDialog" />
   <ShareDialog v-if="isShowShareDialog" v-model:open="isShowShareDialog" />
+  <CollabDialog v-if="isShowCollabDialog" v-model:open="isShowCollabDialog" />
 </template>
 
 <style lang="less" scoped>

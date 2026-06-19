@@ -15,6 +15,7 @@ import { useSlashCommand } from '@/composables/useSlashCommand'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { fileUpload } from '@/services/upload'
 import { store } from '@/storage'
+import { useCollabStore } from '@/stores/collab'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
@@ -24,6 +25,7 @@ import { useUIStore } from '@/stores/ui'
 const SidebarAIToolbar = defineAsyncComponent(() => import('@/components/ai/SidebarAIToolbar.vue'))
 
 const editorStore = useEditorStore()
+const collabStore = useCollabStore()
 const postStore = usePostStore()
 const renderStore = useRenderStore()
 const themeStore = useThemeStore()
@@ -61,6 +63,7 @@ const {
   enableImageReupload,
   viewMode,
 } = storeToRefs(uiStore)
+const { isCollabMode, isReadOnly } = storeToRefs(collabStore)
 
 const { toggleShowUploadImgDialog } = uiStore
 
@@ -68,7 +71,10 @@ const showEditor = computed(() => viewMode.value !== `preview`)
 
 const codeMirrorView = shallowRef<EditorView | null>(null)
 const themeCompartment = new Compartment()
+const editableCompartment = new Compartment()
 const changeTimer = ref<ReturnType<typeof setTimeout>>()
+
+let lastCollabEditorContent = ``
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const codeMirrorWrapper = useTemplateRef<HTMLDivElement>(`codeMirrorWrapper`)
@@ -447,6 +453,7 @@ function createFormTextArea(dom: HTMLDivElement) {
         onReplace: openReplaceWithSelection,
       }),
       themeCompartment.of(theme(isDark.value)),
+      editableCompartment.of(EditorView.editable.of(!isReadOnly.value)),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
           clearTimeout(changeTimer.value)
@@ -498,6 +505,15 @@ function commitEditorContentToPost() {
     return
 
   const value = codeMirrorView.value.state.doc.toString()
+
+  if (isCollabMode.value) {
+    if (value !== lastCollabEditorContent) {
+      lastCollabEditorContent = value
+      collabStore.notifyContentChanged()
+    }
+    return
+  }
+
   const post = posts.value[currentPostIndex.value]
   if (!post || value === post.content)
     return
@@ -547,6 +563,14 @@ watch(isDark, () => {
   editorRefresh()
 })
 
+watch(isReadOnly, (readonly) => {
+  if (!codeMirrorView.value)
+    return
+  codeMirrorView.value.dispatch({
+    effects: editableCompartment.reconfigure(EditorView.editable.of(!readonly)),
+  })
+})
+
 function syncEditorToPostContent(content: string) {
   if (!codeMirrorView.value)
     return
@@ -571,6 +595,8 @@ function syncEditorToPostContent(content: string) {
 }
 
 watch(currentPostIndex, () => {
+  if (isCollabMode.value)
+    return
   const post = posts.value[currentPostIndex.value]
   if (!post)
     return
@@ -581,7 +607,7 @@ watch(currentPostIndex, () => {
 watch(
   () => currentPost.value?.content,
   (content) => {
-    if (content == null)
+    if (isCollabMode.value || content == null)
       return
     syncEditorToPostContent(content)
   },

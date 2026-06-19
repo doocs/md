@@ -20,12 +20,15 @@ import PickColors from 'vue-pick-colors'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
+import { useCollabStore } from '@/stores/collab'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const confirmStore = useConfirmStore()
+const collabStore = useCollabStore()
+const { isReadOnly: isCollabReadOnly } = storeToRefs(collabStore)
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
@@ -217,7 +220,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
   >
     <div
       class="h-full space-y-4 overflow-auto p-4"
-      :class="{ 'pt-0': isMobile }"
+      :class="{ 'pt-0': isMobile, 'pointer-events-none opacity-60': isCollabReadOnly }"
     >
       <!-- 移动端标题栏 -->
       <div v-if="isMobile" class="sticky top-0 z-10 -mx-4 mb-4 border-b bg-background px-4 pb-3 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">

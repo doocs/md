@@ -1,4 +1,5 @@
 export * from './ai-services-types'
+export * from './collab'
 export * from './common'
 export * from './component'
 export * from './front-matter'

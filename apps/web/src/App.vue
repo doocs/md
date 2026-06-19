@@ -9,6 +9,8 @@ const { isDark } = storeToRefs(uiStore)
 
 usePlatformEnv()
 useAccountSyncBootstrap()
+useCollabBootstrap()
+useCollabStyleWatcher()
 useDeepLinkImport()
 </script>
 

@@ -144,6 +144,15 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowShareDialog.value = true
   }
 
+  // 是否展示协作对话框
+  const isShowCollabDialog = ref(false)
+  const toggleShowCollabDialog = useToggle(isShowCollabDialog)
+
+  /** 登录后待处理的协作邀请 token */
+  const pendingCollabInviteToken = ref<string | null>(null)
+  /** 登录后待打开的协作文档 id */
+  const pendingCollabDocumentId = ref<string | null>(null)
+
   // 是否展示关于 / 赞赏 / 语法帮助 / 配置导入导出对话框
   const isShowAboutDialog = ref(false)
   const toggleShowAboutDialog = useToggle(isShowAboutDialog)
@@ -263,6 +272,10 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowShareDialog,
     shareDialogInitialTab,
     openShareDialog,
+    isShowCollabDialog,
+    toggleShowCollabDialog,
+    pendingCollabInviteToken,
+    pendingCollabDocumentId,
     isShowAboutDialog,
     toggleShowAboutDialog,
     isShowFundDialog,
