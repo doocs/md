@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import CodemirrorEditor from '@/components/editor/CodemirrorEditor.vue'
+import CommandPalette from '@/components/editor/dialogs/CommandPalette.vue'
 import ConfirmDialog from '@/components/shared/confirm-dialog/ConfirmDialog.vue'
 import { Toaster } from '@/components/ui/sonner'
+import { useCommandPaletteHotkey } from '@/composables/useCommandPaletteHotkey'
 import { useUIStore } from '@/stores/ui'
 
 const uiStore = useUIStore()
@@ -10,10 +12,13 @@ const { isDark } = storeToRefs(uiStore)
 usePlatformEnv()
 useAccountSyncBootstrap()
 useDeepLinkImport()
+useCommandPaletteHotkey()
 </script>
 
 <template>
   <CodemirrorEditor />
+
+  <CommandPalette />
 
   <ConfirmDialog />
 

@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { BookText, Heart, HelpCircle, MessageSquare, Tag } from '@lucide/vue'
+import { BookText, Command, Heart, HelpCircle, Keyboard, MessageSquare, Tag } from '@lucide/vue'
+import { ctrlSign, shiftSign } from '@md/shared/configs'
 import { useUIStore } from '@/stores/ui'
 
 const props = withDefaults(defineProps<{
@@ -10,7 +11,13 @@ const props = withDefaults(defineProps<{
 
 const { asSub } = toRefs(props)
 const uiStore = useUIStore()
-const { toggleShowAboutDialog, toggleShowFundDialog, toggleShowMarkdownHelpDialog } = uiStore
+const {
+  toggleShowAboutDialog,
+  toggleShowFundDialog,
+  toggleShowMarkdownHelpDialog,
+  toggleShowKeyboardShortcutsDialog,
+  toggleShowCommandPalette,
+} = uiStore
 
 function openAboutDialog() {
   toggleShowAboutDialog(true)
@@ -22,6 +29,14 @@ function openFundDialog() {
 
 function openMarkdownHelp() {
   toggleShowMarkdownHelpDialog(true)
+}
+
+function openCommandPalette() {
+  toggleShowCommandPalette(true)
+}
+
+function openKeyboardShortcuts() {
+  toggleShowKeyboardShortcutsDialog(true)
 }
 
 function openFeedback() {
@@ -39,7 +54,23 @@ function openReleases() {
     <MenubarSubTrigger>
       帮助
     </MenubarSubTrigger>
-    <MenubarSubContent>
+    <MenubarSubContent class="w-72">
+      <MenubarItem class="pr-2" @click="openCommandPalette()">
+        <Command class="mr-2 h-4 w-4 shrink-0" />
+        <span class="min-w-0 flex-1">命令面板</span>
+        <MenubarShortcut class="shrink-0 pl-4">
+          <span class="inline-flex items-center gap-0.5">
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">{{ shiftSign }}</kbd>
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">P</kbd>
+          </span>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="openKeyboardShortcuts()">
+        <Keyboard class="mr-2 h-4 w-4" />
+        键盘快捷键
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarItem @click="openMarkdownHelp()">
         <BookText class="mr-2 h-4 w-4" />
         语法帮助
@@ -66,7 +97,23 @@ function openReleases() {
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>帮助</MenubarTrigger>
-    <MenubarContent align="start">
+    <MenubarContent align="start" class="w-72">
+      <MenubarItem class="pr-2" @click="openCommandPalette()">
+        <Command class="mr-2 h-4 w-4 shrink-0" />
+        <span class="min-w-0 flex-1">命令面板</span>
+        <MenubarShortcut class="shrink-0 pl-4">
+          <span class="inline-flex items-center gap-0.5">
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">{{ ctrlSign }}</kbd>
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">{{ shiftSign }}</kbd>
+            <kbd class="bg-gray-2 px-1 dark:bg-stone-9">P</kbd>
+          </span>
+        </MenubarShortcut>
+      </MenubarItem>
+      <MenubarItem @click="openKeyboardShortcuts()">
+        <Keyboard class="mr-2 h-4 w-4" />
+        键盘快捷键
+      </MenubarItem>
+      <MenubarSeparator />
       <MenubarItem @click="openMarkdownHelp()">
         <BookText class="mr-2 h-4 w-4" />
         语法帮助

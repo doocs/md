@@ -20,6 +20,7 @@ const AboutDialog = defineAsyncComponent(() => import('./AboutDialog.vue'))
 const FundDialog = defineAsyncComponent(() => import('./FundDialog.vue'))
 const EditorStateDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/EditorStateDialog.vue'))
 const MarkdownHelpDialog = defineAsyncComponent(() => import('./MarkdownHelpDialog.vue'))
+const KeyboardShortcutsDialog = defineAsyncComponent(() => import('./KeyboardShortcutsDialog.vue'))
 const AccountDialog = defineAsyncComponent(() => import('./AccountDialog.vue'))
 const SyncDialog = defineAsyncComponent(() => import('./SyncDialog.vue'))
 const ShareDialog = defineAsyncComponent(() => import('./ShareDialog.vue'))
@@ -34,7 +35,7 @@ const { editorRefresh } = useEditorRefresh()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, copyMode } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, isShowKeyboardShortcutsDialog, copyMode } = storeToRefs(uiStore)
 
 const isCopying = ref(false)
 
@@ -296,6 +297,7 @@ function copyToWeChat() {
   <FundDialog v-if="isShowFundDialog" v-model:open="isShowFundDialog" />
   <EditorStateDialog v-if="isShowEditorStateDialog" v-model:open="isShowEditorStateDialog" />
   <MarkdownHelpDialog v-if="isShowMarkdownHelpDialog" v-model:open="isShowMarkdownHelpDialog" />
+  <KeyboardShortcutsDialog v-if="isShowKeyboardShortcutsDialog" v-model:open="isShowKeyboardShortcutsDialog" />
   <AccountDialog v-if="isShowAccountDialog" v-model:open="isShowAccountDialog" />
   <SyncDialog v-if="isShowSyncDialog" v-model:open="isShowSyncDialog" />
   <ShareDialog v-if="isShowShareDialog" v-model:open="isShowShareDialog" />

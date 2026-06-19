@@ -157,6 +157,12 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowEditorStateDialog = ref(false)
   const toggleShowEditorStateDialog = useToggle(isShowEditorStateDialog)
 
+  const isShowKeyboardShortcutsDialog = ref(false)
+  const toggleShowKeyboardShortcutsDialog = useToggle(isShowKeyboardShortcutsDialog)
+
+  const isShowCommandPalette = ref(false)
+  const toggleShowCommandPalette = useToggle(isShowCommandPalette)
+
   // 组件对话框 — 打开时预展开的组件名（如 'MpProfile'）
   const componentDialogTarget = ref<string | null>(null)
 
@@ -271,6 +277,10 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowMarkdownHelpDialog,
     isShowEditorStateDialog,
     toggleShowEditorStateDialog,
+    isShowKeyboardShortcutsDialog,
+    toggleShowKeyboardShortcutsDialog,
+    isShowCommandPalette,
+    toggleShowCommandPalette,
     componentDialogTarget,
     openComponentDialogWithTarget,
     aiDialogVisible,
