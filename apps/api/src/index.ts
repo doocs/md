@@ -3,6 +3,18 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
+import {
+  acceptInviteHandler,
+  createCollabHandler,
+  createInviteHandler,
+  deleteCollabHandler,
+  getCollabHandler,
+  listCollabHandler,
+  listMembersHandler,
+  pullCollabHandler,
+  pushCollabHandler,
+  updateMemberHandler,
+} from './collab'
 import { isAllowedOrigin } from './origin'
 import { createShareHandler, deleteShareHandler, listSharesHandler, unlockShareHandler, viewShareHandler } from './share'
 import { SHARE_FAVICON_PATH } from './share-head'
@@ -16,7 +28,7 @@ const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 app.use(`*`, async (c, next) => {
   const handler = cors({
     origin: origin => (isAllowedOrigin(c.env, origin) ? origin : null),
-    allowMethods: [`GET`, `POST`, `DELETE`, `OPTIONS`],
+    allowMethods: [`GET`, `POST`, `PATCH`, `DELETE`, `OPTIONS`],
     allowHeaders: [`Authorization`, `Content-Type`],
     credentials: true,
     maxAge: 86400,
@@ -50,6 +62,16 @@ api.post(`/sync/activate`, activateHandler)
 api.get(`/share`, listSharesHandler)
 api.post(`/share`, createShareHandler)
 api.delete(`/share/:id`, deleteShareHandler)
+api.get(`/collab`, listCollabHandler)
+api.post(`/collab`, createCollabHandler)
+api.get(`/collab/:id`, getCollabHandler)
+api.delete(`/collab/:id`, deleteCollabHandler)
+api.get(`/collab/:id/pull`, pullCollabHandler)
+api.post(`/collab/:id/push`, pushCollabHandler)
+api.post(`/collab/:id/invite`, createInviteHandler)
+api.post(`/collab/invites/:token/accept`, acceptInviteHandler)
+api.get(`/collab/:id/members`, listMembersHandler)
+api.patch(`/collab/:id/members/:userId`, updateMemberHandler)
 
 app.route(`/`, api)
 

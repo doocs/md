@@ -7,6 +7,7 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 - GitHub OAuth 登录，签发自有 JWT（HS256，有效期 30 天）
 - 文章与偏好设置的增量同步（`/sync/pull`、`/sync/push`）
 - **预览分享**：登录用户可将编辑器预览快照发布为只读链接（`/share` → `GET /s/:id`），支持访问密码，默认 1 天过期
+- **云端协作**：登录用户可创建协作文档，邀请他人按角色（`owner` / `editor` / `viewer`）共同编辑正文与文档级样式（`/collab`）
 - **免费 / Pro 套餐**：Pro 支持更高同步频率；免费版限 30 次/小时，Pro 限 300 次/小时
 - **爱发电 Pro 开通**：Webhook 自动激活 + 订单号手动激活
 - 冲突策略：**last-write-wins**（按 `updateDatetime`），软删除墓碑保证删除可传播
@@ -30,6 +31,16 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 - `DELETE /share/:id` 取消分享（需登录 + Pro；链接立即失效）
 - `GET  /s/:shareId` 只读分享页（有密码时需先解锁）
 - `POST /s/:shareId/unlock` 校验分享密码并写入访问 Cookie
+- `GET  /collab` 列出当前用户参与的协作文档
+- `POST /collab` 创建协作文档（含正文 + `CollabStyleBundle` 样式包）
+- `GET  /collab/:id` 文档详情与成员列表
+- `DELETE /collab/:id` 软删除（owner）
+- `GET  /collab/:id/pull?since=<ms>` 增量拉取
+- `POST /collab/:id/push` 推送正文/样式变更（LWW，`editor`+）
+- `POST /collab/:id/invite` 生成邀请链接（owner）
+- `POST /collab/invites/:token/accept` 接受邀请（需登录）
+- `GET  /collab/:id/members` 成员列表（owner）
+- `PATCH /collab/:id/members/:userId` 修改角色或移除成员（owner）
 - `POST /webhooks/afdian` 爱发电订单 Webhook
 - `POST /upload` 默认图床上传（GitHub 或 R2，由服务端 `UPLOAD_BACKEND` 配置）
 

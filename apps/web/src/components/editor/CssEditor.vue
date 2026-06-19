@@ -3,6 +3,7 @@ import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lu
 import { exportMergedTheme } from '@md/core'
 import { themeMap, themeOptionsMap } from '@md/shared'
 import { copyPlain } from '@/lib/browser/clipboard'
+import { useCollabStore } from '@/stores/collab'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -11,6 +12,8 @@ import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const confirmStore = useConfirmStore()
+const collabStore = useCollabStore()
+const { isReadOnly: isCollabReadOnly } = storeToRefs(collabStore)
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
 const renderStore = useRenderStore()
@@ -359,6 +362,7 @@ function exportCurrentTheme() {
     :class="{
       'fixed top-0 right-0 w-full h-full z-100 bg-background border-l shadow-lg mobile-css-editor': isMobile,
       'animate': isMobile && enableAnimation,
+      'pointer-events-none opacity-60': isCollabReadOnly,
     }"
     :style="isMobile ? { transform: uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)' } : undefined"
   >
