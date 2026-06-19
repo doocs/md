@@ -76,7 +76,7 @@ export function useCommandPalette() {
         label: `切换深色模式`,
         group: `视图`,
         keywords: [`深色`, `浅色`, `主题`, `dark`, `light`, `theme`],
-        action: () => uiStore.toggleDark(),
+        action: () => { uiStore.toggleDark() },
       },
       {
         id: `toggle-style-panel`,
@@ -111,21 +111,21 @@ export function useCommandPalette() {
         label: `导入 Markdown`,
         group: `文件`,
         keywords: [`导入`, `import`, `markdown`, `md`],
-        action: () => uiStore.toggleShowImportMdDialog(true),
+        action: () => { uiStore.toggleShowImportMdDialog(true) },
       },
       {
         id: `template-dialog`,
         label: `模板管理`,
         group: `文件`,
         keywords: [`模板`, `template`],
-        action: () => uiStore.toggleShowTemplateDialog(true),
+        action: () => { uiStore.toggleShowTemplateDialog(true) },
       },
       {
         id: `editor-state`,
         label: `项目配置`,
         group: `文件`,
         keywords: [`配置`, `导入`, `导出`, `备份`, `settings`],
-        action: () => uiStore.toggleShowEditorStateDialog(true),
+        action: () => { uiStore.toggleShowEditorStateDialog(true) },
       },
       {
         id: `find`,
@@ -168,14 +168,14 @@ export function useCommandPalette() {
         label: `插入图片`,
         group: `插入`,
         keywords: [`图片`, `image`, `上传`, `图床`],
-        action: () => uiStore.toggleShowUploadImgDialog(true),
+        action: () => { uiStore.toggleShowUploadImgDialog(true) },
       },
       {
         id: `insert-table`,
         label: `插入表格`,
         group: `插入`,
         keywords: [`表格`, `table`],
-        action: () => uiStore.toggleShowInsertFormDialog(true),
+        action: () => { uiStore.toggleShowInsertFormDialog(true) },
       },
       {
         id: `insert-formula`,
@@ -189,7 +189,7 @@ export function useCommandPalette() {
         label: `插入组件`,
         group: `插入`,
         keywords: [`组件`, `component`, `块`],
-        action: () => uiStore.toggleShowComponentDialog(true),
+        action: () => { uiStore.toggleShowComponentDialog(true) },
       },
     ]
 
@@ -199,7 +199,7 @@ export function useCommandPalette() {
         label: `账户`,
         group: `云端`,
         keywords: [`账户`, `登录`, `account`, `login`],
-        action: () => uiStore.toggleShowAccountDialog(true),
+        action: () => { uiStore.toggleShowAccountDialog(true) },
       })
     }
 
@@ -209,7 +209,7 @@ export function useCommandPalette() {
         label: `云同步`,
         group: `云端`,
         keywords: [`同步`, `云`, `sync`, `cloud`],
-        action: () => uiStore.toggleShowSyncDialog(true),
+        action: () => { uiStore.toggleShowSyncDialog(true) },
       })
     }
 
