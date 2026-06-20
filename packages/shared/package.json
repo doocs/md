@@ -16,6 +16,9 @@
     "./editor": "./src/editor/index.ts",
     "./editor/*": "./src/editor/*.ts"
   },
+  "scripts": {
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/commands": "^6.10.3",
