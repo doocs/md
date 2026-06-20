@@ -11,6 +11,11 @@
     "./theme": "./src/theme/index.ts",
     "./theme/cssVariables": "./src/theme/cssVariables.ts"
   },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "type-check": "tsc --noEmit"
+  },
   "dependencies": {
     "@antv/infographic": "^0.2.19",
     "@md/shared": "workspace:*",
@@ -22,6 +27,9 @@
     "mermaid": "^11.15.0"
   },
   "devDependencies": {
-    "@md/config": "workspace:*"
+    "@md/config": "workspace:*",
+    "jsdom": "^29.1.1",
+    "typescript": "~6.0.3",
+    "vitest": "^4.1.9"
   }
 }
