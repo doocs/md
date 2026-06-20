@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { BookOpen, Code2, FileText, FunctionSquare, PieChart } from '@lucide/vue'
 import { computed, ref } from 'vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import { Button } from '@/components/ui/button'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 const props = defineProps<{
@@ -218,7 +217,7 @@ async function copySyntax(syntax: string) {
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="Markdown 语法帮助"
     description="查看支持的 Markdown 语法，点击语法可直接复制"
@@ -266,16 +265,5 @@ async function copySyntax(syntax: string) {
         </TabsContent>
       </Tabs>
     </div>
-
-    <template #footer>
-      <div class="flex items-center justify-between gap-3 border-t px-4 py-4 sm:px-6">
-        <span class="hidden text-xs text-muted-foreground sm:inline">
-          基于 CommonMark 规范，支持多种扩展语法
-        </span>
-        <Button variant="outline" class="h-10 w-full sm:w-auto" @click="dialogOpen = false">
-          关闭
-        </Button>
-      </div>
-    </template>
-  </CloudPanelDialog>
+  </PanelDialog>
 </template>

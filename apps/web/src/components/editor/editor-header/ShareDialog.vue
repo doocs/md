@@ -4,9 +4,9 @@ import type { ShareListItem, SharePasswordMode } from '@/services/share/types'
 import { Check, Clock, Copy, ExternalLink, Eye, Globe, Inbox, KeyRound, Loader2, LogIn, RefreshCw, Share2, Sparkles, Trash2 } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
-import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
+import CloudFeatureState from '@/components/editor/editor-header/cloud/CloudFeatureState.vue'
+import PanelCard from '@/components/shared/panel-dialog/PanelCard.vue'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -317,13 +317,13 @@ watch(isProUser, (pro) => {
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="分享预览"
     description="生成与编辑器预览一致的只读链接，便于转发给他人查看。"
     :icon="Share2"
   >
-    <CloudPanelState
+    <CloudFeatureState
       v-if="!isShareConfigured()"
       :icon="Share2"
       title="分享服务未配置"
@@ -331,7 +331,7 @@ watch(isProUser, (pro) => {
       compact
     />
 
-    <CloudPanelState
+    <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="Share2"
       title="登录后分享预览"
@@ -410,16 +410,26 @@ watch(isProUser, (pro) => {
                 {{ errorMessage }}
               </AlertDescription>
             </Alert>
+
+            <Button
+              class="h-10 w-full gap-2"
+              :disabled="isSubmitting || !canSubmit"
+              @click="createShare"
+            >
+              <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
+              <Share2 v-else class="size-4" />
+              {{ isSubmitting ? (submitStage || '正在生成…') : '生成分享链接' }}
+            </Button>
           </div>
         </template>
 
         <template v-else>
           <div class="space-y-4 px-4 py-4 sm:px-6">
-            <CloudPanelCard variant="success">
+            <PanelCard variant="success">
               <p class="text-xs text-green-900 dark:text-green-100">
                 分享链接已就绪，可直接复制或打开预览。
               </p>
-            </CloudPanelCard>
+            </PanelCard>
 
             <div class="space-y-2">
               <Label for="share-url" class="text-xs text-muted-foreground">分享链接</Label>
@@ -467,6 +477,14 @@ watch(isProUser, (pro) => {
               <span v-if="expiresLabel">过期：{{ expiresLabel }}</span>
               <span>预览与编辑器一致</span>
             </div>
+
+            <Button
+              variant="outline"
+              class="h-10 w-full"
+              @click="resetForm"
+            >
+              重新设置并生成
+            </Button>
           </div>
         </template>
       </TabsContent>
@@ -495,7 +513,7 @@ watch(isProUser, (pro) => {
             加载中…
           </div>
 
-          <CloudPanelState
+          <CloudFeatureState
             v-else-if="shareList.length === 0"
             :icon="Inbox"
             title="暂无分享记录"
@@ -504,7 +522,7 @@ watch(isProUser, (pro) => {
           />
 
           <div v-else class="max-h-80 space-y-2 overflow-y-auto pr-1">
-            <CloudPanelCard
+            <PanelCard
               v-for="share in shareList"
               :key="share.id"
               align="start"
@@ -542,33 +560,10 @@ watch(isProUser, (pro) => {
                   </Button>
                 </div>
               </template>
-            </CloudPanelCard>
+            </PanelCard>
           </div>
         </div>
       </TabsContent>
     </Tabs>
-
-    <template v-if="isShareConfigured() && isLoggedIn && activeTab === 'create'" #footer>
-      <div class="border-t px-4 py-4 sm:px-6">
-        <Button
-          v-if="!shareUrl"
-          class="h-10 w-full gap-2"
-          :disabled="isSubmitting || !canSubmit"
-          @click="createShare"
-        >
-          <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
-          <Share2 v-else class="size-4" />
-          {{ isSubmitting ? (submitStage || '正在生成…') : '生成分享链接' }}
-        </Button>
-        <Button
-          v-else
-          variant="outline"
-          class="h-10 w-full"
-          @click="resetForm"
-        >
-          重新设置并生成
-        </Button>
-      </div>
-    </template>
-  </CloudPanelDialog>
+  </PanelDialog>
 </template>
