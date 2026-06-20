@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Keyboard } from '@lucide/vue'
 import { computed } from 'vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { useCommandPalette } from '@/composables/useCommandPalette'
 import { KEYBOARD_SHORTCUT_CATEGORIES } from '@/configs/keyboard-shortcuts'
 
@@ -22,7 +22,7 @@ const dialogOpen = computed({
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="键盘快捷键"
     :description="`命令面板：${paletteShortcutLabel}`"
@@ -58,5 +58,5 @@ const dialogOpen = computed({
         </div>
       </section>
     </div>
-  </CloudPanelDialog>
+  </PanelDialog>
 </template>

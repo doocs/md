@@ -2,9 +2,9 @@
 import { AlertCircle, Cloud, CloudOff, Loader2, LogIn, RefreshCw } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
+import CloudFeatureState from '@/components/editor/editor-header/cloud/CloudFeatureState.vue'
+import PanelCard from '@/components/shared/panel-dialog/PanelCard.vue'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { useSyncStatusMeta } from '@/composables/useSyncStatusMeta'
@@ -60,13 +60,13 @@ async function handleSync() {
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="云同步"
     description="多设备同步文章与设置，不含密钥与图床凭证。"
     :icon="Cloud"
   >
-    <CloudPanelState
+    <CloudFeatureState
       v-if="!isSyncConfigured()"
       :icon="CloudOff"
       title="云同步未启用"
@@ -74,7 +74,7 @@ async function handleSync() {
       compact
     />
 
-    <CloudPanelState
+    <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="Cloud"
       title="登录后开启云同步"
@@ -84,7 +84,7 @@ async function handleSync() {
     />
 
     <div v-else class="space-y-4 px-4 py-4 sm:px-6">
-      <CloudPanelCard>
+      <PanelCard>
         <template #leading>
           <div
             class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg bg-background ring-1 ring-border/60"
@@ -111,7 +111,7 @@ async function handleSync() {
             上次同步：{{ lastSyncText }}
           </p>
         </div>
-      </CloudPanelCard>
+      </PanelCard>
 
       <Alert v-if="syncState === 'error' && lastError" variant="destructive" class="py-3">
         <AlertCircle class="size-4" />
@@ -119,16 +119,12 @@ async function handleSync() {
           {{ lastError }}
         </AlertDescription>
       </Alert>
-    </div>
 
-    <template v-if="isSyncConfigured() && isLoggedIn" #footer>
-      <div class="border-t px-4 py-4 sm:px-6">
-        <Button class="h-10 w-full gap-2" :disabled="isSyncing" @click="handleSync">
-          <Loader2 v-if="isSyncing" class="size-4 animate-spin" />
-          <RefreshCw v-else class="size-4" />
-          {{ isSyncing ? '同步中…' : '立即同步' }}
-        </Button>
-      </div>
-    </template>
-  </CloudPanelDialog>
+      <Button class="h-10 w-full gap-2" :disabled="isSyncing" @click="handleSync">
+        <Loader2 v-if="isSyncing" class="size-4 animate-spin" />
+        <RefreshCw v-else class="size-4" />
+        {{ isSyncing ? '同步中…' : '立即同步' }}
+      </Button>
+    </div>
+  </PanelDialog>
 </template>

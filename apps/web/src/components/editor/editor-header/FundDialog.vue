@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { Heart } from '@lucide/vue'
 import { computed } from 'vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import { Button } from '@/components/ui/button'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 
 const props = defineProps<{
   open: boolean
@@ -32,13 +31,13 @@ const contributors = [
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="赞赏"
     description="若觉得项目不错，可以通过以下方式支持我们～"
     :icon="Heart"
   >
-    <div class="px-4 py-6 sm:px-6">
+    <div class="px-4 py-4 sm:px-6">
       <div class="grid grid-cols-2 gap-4">
         <div v-for="contributor in contributors" :key="contributor.name" class="text-center">
           <img
@@ -49,13 +48,5 @@ const contributors = [
         </div>
       </div>
     </div>
-
-    <template #footer>
-      <div class="border-t px-4 py-4 sm:px-6">
-        <Button variant="outline" class="h-10 w-full" @click="dialogOpen = false">
-          关闭
-        </Button>
-      </div>
-    </template>
-  </CloudPanelDialog>
+  </PanelDialog>
 </template>

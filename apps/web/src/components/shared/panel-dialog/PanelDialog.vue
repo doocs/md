@@ -30,6 +30,7 @@ const sizeClassMap = {
   'xl': `sm:max-w-xl`,
   '2xl': `sm:max-w-2xl`,
   '3xl': `sm:max-w-3xl`,
+  '4xl': `sm:max-w-4xl`,
 } as const
 
 const dialogContentClass = computed(() => cn(
@@ -69,7 +70,9 @@ function onUpdate(val: boolean) {
         <slot />
       </div>
 
-      <slot name="footer" />
+      <div v-if="$slots.footer" class="shrink-0 px-4 pb-4 sm:px-6">
+        <slot name="footer" />
+      </div>
     </DialogContent>
   </Dialog>
 </template>

@@ -2,10 +2,10 @@
 import { Cloud, Crown, LogOut, Settings2, Share2, User } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
-import CloudPanelCard from '@/components/editor/editor-header/cloud-panel/CloudPanelCard.vue'
-import CloudPanelDialog from '@/components/editor/editor-header/cloud-panel/CloudPanelDialog.vue'
-import CloudPanelState from '@/components/editor/editor-header/cloud-panel/CloudPanelState.vue'
+import CloudFeatureState from '@/components/editor/editor-header/cloud/CloudFeatureState.vue'
 import GitHubIcon from '@/components/icons/GitHubIcon.vue'
+import PanelCard from '@/components/shared/panel-dialog/PanelCard.vue'
+import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { Button } from '@/components/ui/button'
 import { isShareProUser, isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
@@ -63,13 +63,13 @@ function openShareDialog() {
 </script>
 
 <template>
-  <CloudPanelDialog
+  <PanelDialog
     v-model:open="dialogOpen"
     title="账户"
     :description="dialogDescription"
     :icon="User"
   >
-    <CloudPanelState
+    <CloudFeatureState
       v-if="!isConfigured"
       :icon="Settings2"
       title="账户服务未配置"
@@ -79,9 +79,9 @@ function openShareDialog() {
       <code class="rounded-md border bg-muted/40 px-2 py-1 text-[11px] text-muted-foreground">
         VITE_MD_API_URL
       </code>
-    </CloudPanelState>
+    </CloudFeatureState>
 
-    <CloudPanelState
+    <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="User"
       title="登录你的账户"
@@ -91,7 +91,7 @@ function openShareDialog() {
     />
 
     <div v-else class="space-y-4 px-4 py-4 sm:px-6">
-      <CloudPanelCard align="center">
+      <PanelCard align="center">
         <template #leading>
           <img
             v-if="user?.avatar"
@@ -130,7 +130,7 @@ function openShareDialog() {
             @{{ user?.login }}
           </p>
         </div>
-      </CloudPanelCard>
+      </PanelCard>
 
       <div v-if="showSyncUi || showShareUi" class="grid gap-2 sm:grid-cols-2">
         <Button
@@ -152,19 +152,15 @@ function openShareDialog() {
           分享预览
         </Button>
       </div>
-    </div>
 
-    <template v-if="isConfigured && isLoggedIn" #footer>
-      <div class="px-4 py-4 sm:px-6">
-        <Button
-          variant="outline"
-          class="h-10 w-full gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
-          @click="handleLogout"
-        >
-          <LogOut class="size-4" />
-          退出登录
-        </Button>
-      </div>
-    </template>
-  </CloudPanelDialog>
+      <Button
+        variant="outline"
+        class="h-10 w-full gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
+        @click="handleLogout"
+      >
+        <LogOut class="size-4" />
+        退出登录
+      </Button>
+    </div>
+  </PanelDialog>
 </template>

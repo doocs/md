@@ -74,6 +74,12 @@ function getFlatIndex(groupIdx: number, cmdIdx: number) {
 }
 
 function onKeydown(event: KeyboardEvent) {
+  if (event.key === `Escape`) {
+    event.stopPropagation()
+    close()
+    return
+  }
+
   const count = filteredCommands.value.length
 
   if (event.key === `ArrowDown`) {
@@ -103,7 +109,6 @@ function isActive(groupIdx: number, cmdIdx: number) {
   <Dialog :open="isShowCommandPalette" @update:open="(v) => !v && close()">
     <DialogContent
       class="top-[18%] max-h-[min(70vh,32rem)] max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
-      @keydown.escape.stop="close"
     >
       <DialogHeader class="sr-only">
         <DialogTitle>命令面板</DialogTitle>
