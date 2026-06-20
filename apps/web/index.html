@@ -1,68 +1,44 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
-
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-
     <meta name="keywords" content="md,markdown,markdown-editor,wechat,official-account,yanglbme,doocs" />
-
     <meta name="description" content="Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器" />
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-
     <title>微信 Markdown 编辑器 | Doocs</title>
-
     <link rel="shortcut icon" href="/favicon.png" />
-
     <link rel="apple-touch-icon-precomposed" href="/favicon.png" />
-
     <style>
       html,
       body {
         margin: 0;
-
         height: 100%;
-
         overflow: hidden;
       }
 
       .loading {
         position: fixed;
-
         inset: 0;
-
         z-index: 99999;
-
         display: flex;
-
         flex-direction: column;
-
         justify-content: center;
-
         align-items: center;
-
         font-size: 18px;
-
         color: #171717;
-
         background-color: #ffffff;
       }
 
       html.dark .loading {
         color: #fafafa;
-
         background-color: #141414;
       }
 
       .loading::before {
         content: url('/favicon.png');
-
         width: 100px;
-
         height: 100px;
-
         margin-bottom: 26px;
       }
 
@@ -73,13 +49,11 @@
 
       .loading .txt {
         position: absolute;
-
         bottom: 10%;
       }
 
       .loading .txt::after {
         content: '...';
-
         animation: dots 1.5s steps(4, end) infinite;
       }
 
@@ -87,43 +61,32 @@
         0% {
           content: ' ';
         }
-
         25% {
           content: '.';
         }
-
         50% {
           content: '..';
         }
-
         75% {
           content: '...';
         }
       }
     </style>
-
     <script>
       ;(function () {
         const LOCALE_KEY = 'locale'
-
         const IDB_NAME = 'doocs-md'
-
         const IDB_SETTINGS_STORE = 'settings'
 
         window.__MD_LOADER_TEXT__ = {
           'zh-CN': {
             tagline: '致力于让 Markdown 编辑更简单',
-
             loading: '正在加载编辑器',
-
             timeout: '加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息',
           },
-
           'en-US': {
             tagline: 'Making Markdown editing simpler',
-
             loading: 'Loading editor',
-
             timeout:
               'Loading is taking too long. Try refreshing the page or press F12 to check the console for errors.',
           },
@@ -131,23 +94,17 @@
 
         function normalizeLocale(value) {
           if (value === 'zh-CN' || value === 'en-US') return value
-
           if (typeof value === 'string' && value.startsWith('zh')) return 'zh-CN'
-
           if (typeof value === 'string' && value.startsWith('en')) return 'en-US'
-
           return null
         }
 
         function detectFromNavigator() {
           const languages = navigator.languages?.length ? navigator.languages : [navigator.language]
-
           for (const language of languages) {
             const normalized = normalizeLocale(language)
-
             if (normalized) return normalized
           }
-
           return 'zh-CN'
         }
 
@@ -169,80 +126,57 @@
 
         window.__MD_APPLY_LOADER_LOCALE__ = function applyLoaderLocale(locale) {
           const text = window.__MD_LOADER_TEXT__[locale] || window.__MD_LOADER_TEXT__['zh-CN']
-
           document.documentElement.lang = locale
 
           const loader = document.getElementById('app-initial-loader')
-
           if (!loader) return
 
           const tagline = loader.querySelector('strong')
-
           const loading = loader.querySelector('.txt')
-
           const timeout = loader.querySelector('.timeout-tip')
-
           if (tagline) tagline.textContent = text.tagline
-
           if (loading) loading.textContent = text.loading
-
           if (timeout) timeout.textContent = text.timeout
         }
 
         function readLocaleFromIndexedDB(callback) {
           if (!window.indexedDB) {
             callback(null)
-
             return
           }
 
           const request = indexedDB.open(IDB_NAME)
-
           request.onerror = () => callback(null)
-
           request.onsuccess = () => {
             const db = request.result
-
             if (!db.objectStoreNames.contains(IDB_SETTINGS_STORE)) {
               callback(null)
-
               return
             }
 
             const tx = db.transaction(IDB_SETTINGS_STORE, 'readonly')
-
             const getRequest = tx.objectStore(IDB_SETTINGS_STORE).get(LOCALE_KEY)
-
             getRequest.onerror = () => callback(null)
-
             getRequest.onsuccess = () => {
               const record = getRequest.result
-
               const value = record && typeof record === 'object' ? record.value : record
-
               callback(normalizeLocale(value))
             }
           }
         }
 
         const initialLocale = readLocaleFromLocalStorage() || detectFromNavigator()
-
         window.__MD_BOOT_LOCALE__ = initialLocale
 
         readLocaleFromIndexedDB((idbLocale) => {
           if (!idbLocale) return
-
           cacheLocale(idbLocale)
-
           window.__MD_BOOT_LOCALE__ = idbLocale
-
           window.__MD_APPLY_LOADER_LOCALE__(idbLocale)
         })
 
         const theme = localStorage.getItem('vueuse-color-scheme') ?? 'auto'
-
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
-
         if (theme === 'dark' || (theme === 'auto' && prefersDark)) {
           document.documentElement.classList.add('dark')
         }
@@ -254,35 +188,25 @@
     <noscript>
       <strong>Please enable JavaScript to continue.</strong>
     </noscript>
-
     <div id="app-initial-loader" class="loading">
       <strong></strong>
-
       <p class="txt"></p>
-
       <p class="timeout-tip" style="display: none; color: #e53935; font-size: 16px; margin-top: 2em"></p>
     </div>
-
     <script>
       window.__MD_APPLY_LOADER_LOCALE__(window.__MD_BOOT_LOCALE__ || 'zh-CN')
     </script>
-
     <div id="app"></div>
-
     <script>
       const loader = document.getElementById('app-initial-loader')
-
       setTimeout(() => {
         const tip = loader?.querySelector('.timeout-tip')
-
         if (tip) {
           tip.style.display = 'block'
         }
       }, 30000)
     </script>
-
     <script type="module" src="/src/main.ts"></script>
-
     <script type="module" src="/src/sidepanel.ts"></script>
   </body>
 </html>
