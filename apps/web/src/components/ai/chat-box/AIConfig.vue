@@ -12,6 +12,7 @@ const emit = defineEmits([`saved`])
 
 const AIConfigStore = useAIConfigStore()
 const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
+const { t } = useI18n()
 
 /** UI 状态 */
 const { loading, fetchJSON } = useAIFetch()
@@ -38,14 +39,14 @@ watch(model, () => {
 
 function saveConfig(emitEvent = true) {
   if (emitEvent) {
-    testResult.value = `✅ 配置已保存`
+    testResult.value = t('ai.config.saved')
     emit(`saved`)
   }
 }
 
 function clearConfig() {
   AIConfigStore.reset()
-  testResult.value = `🗑️ 当前 AI 配置已清除`
+  testResult.value = t('ai.config.cleared')
 }
 
 async function testConnection() {
@@ -68,7 +69,7 @@ async function testConnection() {
     const res = await fetchJSON(url, headers, payload)
 
     if (res.ok) {
-      testResult.value = `✅ 测试成功，/chat/completions 可用`
+      testResult.value = t('ai.config.testSuccess')
       saveConfig(false)
     }
     else {
@@ -79,17 +80,17 @@ async function testConnection() {
           && (error?.code === `ModelNotOpen`
             || /not activated|未开通/i.test(error?.message))
         ) {
-          testResult.value = `⚠️ 测试成功，但当前模型未开通：${model.value}`
+          testResult.value = t('ai.config.modelNotActivated', { model: model.value })
           saveConfig(false)
           return
         }
       }
       catch {}
-      testResult.value = `❌ 测试失败：${res.status} ${res.statusText}，${res.errorText}`
+      testResult.value = t('ai.config.testFailed', { status: res.status, statusText: res.statusText, errorText: res.errorText })
     }
   }
   catch (err) {
-    testResult.value = `❌ 测试失败：${(err as Error).message}`
+    testResult.value = t('ai.config.testFailedMessage', { message: (err as Error).message })
   }
   finally {
     loading.value = false
@@ -100,12 +101,12 @@ async function testConnection() {
 <template>
   <div class="custom-scroll space-y-4 max-h-[calc(100dvh-10rem)] overflow-y-auto pr-1 text-xs sm:max-h-none sm:text-sm">
     <div class="font-medium">
-      AI 配置
+      {{ t('ai.config.title') }}
     </div>
 
     <!-- 服务类型 -->
     <div>
-      <Label class="mb-1 block text-sm font-medium">服务类型</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.serviceType') }}</Label>
       <Select v-model="type">
         <SelectTrigger class="w-full">
           <SelectValue>
@@ -126,17 +127,17 @@ async function testConnection() {
 
     <!-- API 端点 -->
     <div v-if="type !== DEFAULT_SERVICE_TYPE">
-      <Label class="mb-1 block text-sm font-medium">API 端点</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.apiEndpoint') }}</Label>
       <Input
         v-model="endpoint"
-        placeholder="输入 API 端点 URL"
+        :placeholder="t('ai.config.apiEndpointPlaceholder')"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
     <!-- API 密钥，仅非 default 显示 -->
     <div v-if="type !== DEFAULT_SERVICE_TYPE">
-      <Label class="mb-1 block text-sm font-medium">API 密钥</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.apiKey') }}</Label>
       <PasswordInput
         v-model="apiKey"
         placeholder="sk-..."
@@ -146,11 +147,11 @@ async function testConnection() {
 
     <!-- 模型名称 -->
     <div>
-      <Label class="mb-1 block text-sm font-medium">模型名称</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
       <Select v-if="currentService.models.length > 0" v-model="model">
         <SelectTrigger class="w-full">
           <SelectValue>
-            {{ model || '请选择模型' }}
+            {{ model || t('ai.config.selectModel') }}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
@@ -166,7 +167,7 @@ async function testConnection() {
       <Input
         v-else
         v-model="model"
-        placeholder="输入模型名称"
+        :placeholder="t('ai.config.modelPlaceholder')"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -174,14 +175,14 @@ async function testConnection() {
     <!-- 温度 temperature -->
     <div>
       <Label class="mb-1 flex items-center gap-1 text-sm font-medium">
-        温度
+        {{ t('ai.config.temperature') }}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger as-child>
               <Info class="text-gray-500" :size="16" />
             </TooltipTrigger>
             <TooltipContent side="top" class="z-[250]">
-              <div>控制输出的随机性：较小值使输出更确定，较大值使其更随机。</div>
+              <div>{{ t('ai.config.temperatureHint') }}</div>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -192,20 +193,20 @@ async function testConnection() {
         step="0.1"
         min="0"
         max="2"
-        placeholder="0 ~ 2，默认 1"
+        :placeholder="t('ai.config.temperaturePlaceholder')"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
 
     <!-- 最大 Token 数 -->
     <div>
-      <Label class="mb-1 block text-sm font-medium">最大 Token 数</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.maxTokens') }}</Label>
       <Input
         v-model.number="maxToken"
         type="number"
         min="1"
         max="32768"
-        placeholder="比如 1024"
+        :placeholder="t('ai.config.maxTokensPlaceholder')"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>
@@ -213,10 +214,10 @@ async function testConnection() {
     <!-- 操作按钮区域 -->
     <div class="mt-2 flex flex-col gap-2 sm:flex-row">
       <Button size="sm" @click="saveConfig">
-        保存
+        {{ t('common.save') }}
       </Button>
       <Button size="sm" variant="ghost" @click="clearConfig">
-        清空
+        {{ t('common.clear') }}
       </Button>
       <Button
         size="sm"
@@ -224,7 +225,7 @@ async function testConnection() {
         :disabled="loading"
         @click="testConnection"
       >
-        {{ loading ? '测试中...' : '测试连接' }}
+        {{ loading ? t('common.testing') : t('common.testConnection') }}
       </Button>
     </div>
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Compartment, EditorState } from '@codemirror/state'
-import { EditorView } from '@codemirror/view'
+import { EditorView, placeholder } from '@codemirror/view'
 import { markdownSetup, theme } from '@md/shared/editor'
 import { checkImage } from '@md/shared/utils/basicHelpers'
 import { toBase64 } from '@md/shared/utils/fileHelpers'
@@ -23,6 +23,7 @@ import { useUIStore } from '@/stores/ui'
 
 const SidebarAIToolbar = defineAsyncComponent(() => import('@/components/ai/SidebarAIToolbar.vue'))
 
+const { t, locale } = useI18n()
 const editorStore = useEditorStore()
 const postStore = usePostStore()
 const renderStore = useRenderStore()
@@ -68,6 +69,11 @@ const showEditor = computed(() => viewMode.value !== `preview`)
 
 const codeMirrorView = shallowRef<EditorView | null>(null)
 const themeCompartment = new Compartment()
+const placeholderCompartment = new Compartment()
+
+function editorPlaceholder() {
+  return placeholder(t(`codemirror.contentPlaceholder`))
+}
 const changeTimer = ref<ReturnType<typeof setTimeout>>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
@@ -165,7 +171,7 @@ async function beforeImageUpload(file: File) {
   const config = await store.get(`${imgHost}Config`)
   const isValidHost = imgHost === `default` || config
   if (!isValidHost) {
-    toast.error(`请先配置 ${imgHost} 图床参数`)
+    toast.error(t('editorPanel.configureImgHost', { host: imgHost }))
     toggleShowUploadImgDialog(true)
     return false
   }
@@ -175,7 +181,7 @@ async function beforeImageUpload(file: File) {
 
 function uploaded(imageUrl: string) {
   if (!imageUrl) {
-    toast.error(`上传图片未知异常`)
+    toast.error(t('editorPanel.uploadUnknownError'))
     return
   }
   setTimeout(() => {
@@ -185,7 +191,7 @@ function uploaded(imageUrl: string) {
   if (codeMirrorView.value) {
     codeMirrorView.value.dispatch(codeMirrorView.value.state.replaceSelection(`\n${markdownImage}\n`))
   }
-  toast.success(`图片上传成功`)
+  toast.success(t('editorPanel.uploadSuccess'))
 }
 
 async function compressImage(file: File) {
@@ -382,7 +388,7 @@ function createPasteHandler() {
         previewText = previewText.replace(mdImgRegex, (_, alt, url) => {
           const id = `LOADING_${Date.now()}_${matchIndex++}`
           placeholderMap.set(id, { originalUrl: url, originalAlt: alt })
-          return `![⏳ 转存中...](${id})`
+          return `![${t('editorPanel.reuploading')}](${id})`
         })
 
         view.dispatch(view.state.replaceSelection(previewText))
@@ -395,7 +401,7 @@ function createPasteHandler() {
 
             for (const [id, info] of placeholderMap.entries()) {
               if (info.originalUrl === url) {
-                const searchStr = `![⏳ 转存中...](${id})`
+                const searchStr = `![${t('editorPanel.reuploading')}](${id})`
                 const currentDoc = view.state.doc.toString()
                 const pos = currentDoc.indexOf(searchStr)
 
@@ -412,7 +418,7 @@ function createPasteHandler() {
             console.error(`转存失败: ${url}`, e)
             for (const [id, info] of placeholderMap.entries()) {
               if (info.originalUrl === url) {
-                const searchStr = `![⏳ 转存中...](${id})`
+                const searchStr = `![${t('editorPanel.reuploading')}](${id})`
                 const currentDoc = view.state.doc.toString()
                 const pos = currentDoc.indexOf(searchStr)
 
@@ -424,7 +430,7 @@ function createPasteHandler() {
                 }
               }
             }
-            toast.error(`图片转存失败，已保留原链接`)
+            toast.error(t('editorPanel.reuploadFailed'))
           }
         })).finally(() => {
           isImgLoading.value = false
@@ -446,6 +452,7 @@ function createFormTextArea(dom: HTMLDivElement) {
         onSearch: openSearchWithSelection,
         onReplace: openReplaceWithSelection,
       }),
+      placeholderCompartment.of(editorPlaceholder()),
       themeCompartment.of(theme(isDark.value)),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
@@ -545,6 +552,14 @@ watch(isDark, () => {
     })
   }
   editorRefresh()
+})
+
+watch(locale, () => {
+  if (!codeMirrorView.value)
+    return
+  codeMirrorView.value.dispatch({
+    effects: placeholderCompartment.reconfigure(editorPlaceholder()),
+  })
 })
 
 function syncEditorToPostContent(content: string) {

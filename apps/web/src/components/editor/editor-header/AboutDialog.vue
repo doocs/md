@@ -12,6 +12,8 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const { t } = useI18n()
+
 const dialogOpen = computed({
   get: () => props.open,
   set: (val: boolean) => emit(`update:open`, val),
@@ -31,18 +33,18 @@ function onRedirect(url: string) {
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="关于"
-    description="一款高度简洁的微信 Markdown 编辑器"
+    :title="t('about.title')"
+    :description="t('about.description')"
     :icon="HelpCircle"
   >
     <div class="space-y-4 px-4 py-4 text-center sm:px-6">
       <p class="text-sm text-muted-foreground">
-        扫码关注公众号 Doocs，原创技术内容第一时间推送！
+        {{ t('about.followHint') }}
       </p>
       <img
         class="mx-auto max-w-[200px] rounded-xl ring-1 ring-border"
         src="https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/1648303220922-7e14aefa-816e-44c1-8604-ade709ca1c69.png"
-        alt="Doocs Markdown 编辑器"
+        :alt="t('about.imageAlt')"
       >
       <div class="grid grid-cols-3 gap-2">
         <Button

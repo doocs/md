@@ -43,11 +43,12 @@ const showShareUi = isShareUiEnabled()
 const { syncFooterIcon, syncFooterIconClass, syncTooltip } = useSyncFooterMeta()
 
 const isMoreOpen = ref(false)
+const { t } = useI18n()
 
 const accountTooltip = computed(() => {
   if (!isLoggedIn.value)
-    return `登录账户`
-  return `账户 @${authStore.user?.login ?? ''}`
+    return t(`footer.loginAccount`)
+  return t(`footer.accountWithLogin`, { login: authStore.user?.login ?? '' })
 })
 
 function openAccountDialog() {
@@ -309,20 +310,19 @@ const displaySavedTime = computed(() => {
 
 // 右侧统计项
 const stats = computed(() => [
-  { icon: Pilcrow, value: readingTime.value.words, tooltip: `词数` },
-  { icon: Type, value: readingTime.value.chars, tooltip: `字符数` },
-  { icon: Clock, value: `${readingTime.value.minutes} 分钟`, tooltip: `预计阅读时间` },
-  { icon: BookOpen, value: totalLines.value, tooltip: `总行数` },
+  { icon: Pilcrow, value: readingTime.value.words, tooltip: t(`footer.wordCount`) },
+  { icon: Type, value: readingTime.value.chars, tooltip: t(`footer.charCount`) },
+  { icon: Clock, value: t(`footer.readingTimeMinutes`, { minutes: readingTime.value.minutes }), tooltip: t(`footer.estimatedReadingTime`) },
+  { icon: BookOpen, value: totalLines.value, tooltip: t(`footer.totalLines`) },
 ])
 
-// 视图模式选项
-const allViewModes = [
-  { key: `edit` as const, icon: PenLine, label: `编辑` },
-  { key: `split` as const, icon: Columns2, label: `双屏` },
-  { key: `preview` as const, icon: Eye, label: `预览` },
-]
+const allViewModes = computed(() => [
+  { key: `edit` as const, icon: PenLine, label: t(`footer.viewEdit`) },
+  { key: `split` as const, icon: Columns2, label: t(`footer.viewSplit`) },
+  { key: `preview` as const, icon: Eye, label: t(`footer.viewPreview`) },
+])
 const viewModes = computed(() =>
-  isMobile.value ? allViewModes.filter(m => m.key !== `split`) : allViewModes,
+  isMobile.value ? allViewModes.value.filter(m => m.key !== `split`) : allViewModes.value,
 )
 
 // 是否显示设备切换（双屏/预览模式 + 非真实移动端）
@@ -355,12 +355,12 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           <TooltipTrigger as-child>
             <span class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
               <Keyboard class="size-3 opacity-60" />
-              <span class="hidden sm:inline">行 {{ cursorLine }}，列 {{ cursorCol }}</span>
+              <span class="hidden sm:inline">{{ t('footer.lineCol', { line: cursorLine, col: cursorCol }) }}</span>
               <span class="sm:hidden">{{ cursorLine }}:{{ cursorCol }}</span>
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-            <p>光标位置（共 {{ totalLines }} 行） · 点击跳转</p>
+            <p>{{ t('footer.cursorPosition', { total: totalLines }) }}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -368,7 +368,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           v-if="selectionLength > 0"
           class="hidden items-center gap-1 rounded bg-primary/10 px-1.5 py-0.5 text-primary tabular-nums sm:flex"
         >
-          已选 {{ selectionLength }} 字符
+          {{ t('footer.selectedChars', { count: selectionLength }) }}
         </span>
       </div>
 
@@ -382,12 +382,12 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 @click="openSwitcher"
               >
                 <FileText class="size-3 shrink-0 opacity-60" />
-                <span class="truncate">{{ currentPost?.title || '未命名' }}</span>
+                <span class="truncate">{{ currentPost?.title || t('common.unnamed') }}</span>
                 <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
               </button>
             </TooltipTrigger>
             <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
-              <p>切换文档</p>
+              <p>{{ t('footer.switchDocument') }}</p>
             </TooltipContent>
           </Tooltip>
         </PopoverTriggerPrimitive>
@@ -399,13 +399,13 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               v-model="switcherQuery"
               type="text"
               class="h-5 w-full bg-transparent text-xs text-foreground outline-none placeholder:text-muted-foreground"
-              placeholder="搜索文档..."
+              :placeholder="t('footer.searchDocuments')"
               @keydown.escape="isSwitcherOpen = false"
             >
           </div>
           <div class="max-h-52 overflow-y-auto py-1">
             <div v-if="filteredPosts.length === 0" class="px-3 py-4 text-center text-xs text-muted-foreground">
-              无匹配文档
+              {{ t('footer.noMatchingDocuments') }}
             </div>
             <button
               v-for="post in filteredPosts"
@@ -439,18 +439,18 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                     <span class="max-w-24 truncate">{{ crumb.title }}</span>
                   </template>
                 </div>
-                <span v-else class="hidden opacity-50 sm:inline">大纲</span>
+                <span v-else class="hidden opacity-50 sm:inline">{{ t('footer.outline') }}</span>
               </button>
             </TooltipTrigger>
             <TooltipContent v-if="!isOutlineOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
-              <p>目录大纲</p>
+              <p>{{ t('footer.outlineTooltip') }}</p>
             </TooltipContent>
           </Tooltip>
         </PopoverTriggerPrimitive>
         <PopoverContent side="top" :side-offset="8" align="center" class="w-72 p-0">
           <div class="flex items-center justify-between border-b px-3 py-2">
-            <span class="text-xs font-medium tracking-wide text-muted-foreground">大纲</span>
-            <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ allHeadings.length }} 个标题</span>
+            <span class="text-xs font-medium tracking-wide text-muted-foreground">{{ t('footer.outline') }}</span>
+            <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ t('footer.headingCount', { count: allHeadings.length }) }}</span>
           </div>
           <div ref="outlineScrollRef" class="max-h-72 overflow-y-auto overflow-x-hidden py-1">
             <template v-if="allHeadings.length > 0">
@@ -476,7 +476,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               </button>
             </template>
             <div v-else class="px-3 py-8 text-center text-xs text-muted-foreground">
-              暂无标题
+              {{ t('footer.noHeadings') }}
             </div>
           </div>
         </PopoverContent>
@@ -512,7 +512,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         <Tooltip v-if="!isMobile">
           <TooltipTrigger as-child>
             <button
-              :aria-label="previewDevice === 'desktop' ? '移动端预览' : '桌面端预览'"
+              :aria-label="previewDevice === 'desktop' ? t('footer.mobilePreview') : t('footer.desktopPreview')"
               class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
               :class="showDeviceToggle
                 ? 'text-muted-foreground hover:bg-accent hover:text-foreground opacity-100'
@@ -524,7 +524,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             </button>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-            <p>{{ previewDevice === 'desktop' ? '移动端预览' : '桌面端预览' }}</p>
+            <p>{{ previewDevice === 'desktop' ? t('footer.mobilePreview') : t('footer.desktopPreview') }}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -532,7 +532,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         <Tooltip v-if="!isMobile && viewMode === 'split'">
           <TooltipTrigger as-child>
             <button
-              :aria-label="enableScrollSync ? '关闭同步滚动' : '开启同步滚动'"
+              :aria-label="enableScrollSync ? t('footer.disableScrollSync') : t('footer.enableScrollSync')"
               class="flex cursor-pointer items-center rounded-sm px-1.5 py-0.5 transition-all duration-200"
               :class="enableScrollSync
                 ? 'bg-accent text-foreground'
@@ -543,7 +543,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             </button>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-            <p>{{ enableScrollSync ? '关闭同步滚动' : '开启同步滚动' }}</p>
+            <p>{{ enableScrollSync ? t('footer.disableScrollSync') : t('footer.enableScrollSync') }}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -558,7 +558,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             </span>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-            <p>上次修改时间</p>
+            <p>{{ t('footer.lastModified') }}</p>
           </TooltipContent>
         </Tooltip>
 
@@ -585,7 +585,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             <Tooltip>
               <TooltipTrigger as-child>
                 <button
-                  aria-label="账户"
+                  :aria-label="t('common.account')"
                   class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                   :class="isLoggedIn ? 'text-primary' : ''"
                   @click="openAccountDialog"
@@ -610,7 +610,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             <Tooltip>
               <TooltipTrigger as-child>
                 <button
-                  aria-label="云同步"
+                  :aria-label="t('menu.cloudSync')"
                   class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                   @click="openSyncDialog"
                 >
@@ -622,7 +622,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>{{ isLoggedIn ? syncTooltip : '云同步' }}</p>
+                <p>{{ isLoggedIn ? syncTooltip : t('menu.cloudSync') }}</p>
               </TooltipContent>
             </Tooltip>
           </template>
@@ -631,7 +631,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             <Tooltip>
               <TooltipTrigger as-child>
                 <button
-                  aria-label="分享预览"
+                  :aria-label="t('menu.sharePreview')"
                   class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                   @click="openShareDialog"
                 >
@@ -639,7 +639,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 </button>
               </TooltipTrigger>
               <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-                <p>分享预览</p>
+                <p>{{ t('menu.sharePreview') }}</p>
               </TooltipContent>
             </Tooltip>
           </template>
@@ -647,7 +647,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           <Tooltip>
             <TooltipTrigger as-child>
               <button
-                aria-label="切换深色模式"
+                :aria-label="t('footer.toggleDarkMode')"
                 class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                 :class="isDark ? 'text-foreground' : ''"
                 @click="toggleTheme"
@@ -657,7 +657,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               </button>
             </TooltipTrigger>
             <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
-              <p>{{ isDark ? '浅色模式' : '深色模式' }}</p>
+              <p>{{ isDark ? t('common.lightMode') : t('common.darkMode') }}</p>
             </TooltipContent>
           </Tooltip>
         </div>
@@ -666,7 +666,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         <Popover v-model:open="isMoreOpen">
           <PopoverTriggerPrimitive as-child>
             <button
-              aria-label="更多操作"
+              :aria-label="t('common.moreActions')"
               class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground sm:hidden"
             >
               <Ellipsis class="size-3" />
@@ -698,7 +698,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
                 class="size-3 shrink-0"
                 :class="syncFooterIconClass"
               />
-              <span>{{ isLoggedIn ? syncTooltip : '云同步' }}</span>
+              <span>{{ isLoggedIn ? syncTooltip : t('menu.cloudSync') }}</span>
             </button>
             <button
               v-if="showShareUi"
@@ -706,7 +706,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
               @click="openShareDialog"
             >
               <Share2 class="size-3 shrink-0" />
-              <span>分享预览</span>
+              <span>{{ t('menu.sharePreview') }}</span>
             </button>
             <button
               class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs transition-colors hover:bg-accent"
@@ -714,7 +714,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             >
               <Moon v-if="isDark" class="size-3 shrink-0" />
               <Sun v-else class="size-3 shrink-0" />
-              <span>{{ isDark ? '浅色模式' : '深色模式' }}</span>
+              <span>{{ isDark ? t('common.lightMode') : t('common.darkMode') }}</span>
             </button>
           </PopoverContent>
         </Popover>

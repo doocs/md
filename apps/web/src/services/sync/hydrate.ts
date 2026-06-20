@@ -6,6 +6,7 @@ import { useAIConfigStore } from '@/stores/aiConfig'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
+import { useLocaleStore } from '@/stores/locale'
 import { usePostStore } from '@/stores/post'
 import { useQuickCommandsStore } from '@/stores/quickCommands'
 import { useRenderStore } from '@/stores/render'
@@ -80,13 +81,18 @@ export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void
   hydrateRef(`legend`, keys, theme.legend)
   hydrateRef(`previewWidth`, keys, theme.previewWidth)
 
-  hydrateRef(`isEditOnLeft`, keys, ui.isEditOnLeft)
   hydrateRef(`showAIToolbox`, keys, ui.showAIToolbox)
   hydrateRef(`viewMode`, keys, ui.viewMode)
   hydrateRef(`previewDevice`, keys, ui.previewDevice)
   hydrateRef(addPrefix(`enableImageReupload`), keys, ui.enableImageReupload)
   hydrateRef(addPrefix(`enableScrollSync`), keys, ui.enableScrollSync)
   hydrateRef(addPrefix(`copyMode`), keys, ui.copyMode)
+
+  if (keys.has(`locale`)) {
+    const raw = store.getSync(`locale`)
+    if (raw === `zh-CN` || raw === `en-US`)
+      useLocaleStore().setLocale(raw)
+  }
 
   hydrateRef(`openai_type`, keys, aiConfig.type)
   hydrateRef(`openai_temperature`, keys, aiConfig.temperature)

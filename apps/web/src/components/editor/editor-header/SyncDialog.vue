@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button'
 import { useSyncStatusMeta } from '@/composables/useSyncStatusMeta'
 import { isSyncConfigured } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
+import { useLocaleStore } from '@/stores/locale'
 import { useSyncStore } from '@/stores/sync'
 import { useUIStore } from '@/stores/ui'
 
@@ -21,12 +22,15 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const syncStore = useSyncStore()
 const uiStore = useUIStore()
+const localeStore = useLocaleStore()
 
 const { isLoggedIn } = storeToRefs(authStore)
 const { status, lastError, lastSyncAt, isSyncing, syncState } = storeToRefs(syncStore)
+const { locale } = storeToRefs(localeStore)
 const { syncStatusMeta } = useSyncStatusMeta({ errorHint: `generic` })
 
 const dialogOpen = computed({
@@ -36,8 +40,8 @@ const dialogOpen = computed({
 
 const lastSyncText = computed(() => {
   if (!lastSyncAt.value)
-    return `从未同步`
-  return new Date(lastSyncAt.value).toLocaleString(`zh-CN`, {
+    return t(`sync.neverSynced`)
+  return new Date(lastSyncAt.value).toLocaleString(locale.value, {
     month: `short`,
     day: `numeric`,
     hour: `2-digit`,
@@ -53,32 +57,32 @@ function openAccountDialog() {
 async function handleSync() {
   await syncStore.sync()
   if (status.value === `error`)
-    toast.error(`同步失败：${lastError.value}`)
+    toast.error(t(`sync.syncFailed`, { message: lastError.value }))
   else
-    toast.success(`同步完成`)
+    toast.success(t(`sync.syncSuccess`))
 }
 </script>
 
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="云同步"
-    description="多设备同步文章与设置，不含密钥与图床凭证。"
+    :title="t('sync.title')"
+    :description="t('sync.description')"
     :icon="Cloud"
   >
     <CloudFeatureState
       v-if="!isSyncConfigured()"
       :icon="CloudOff"
-      title="云同步未启用"
-      description="当前部署未配置同步服务，请联系部署方启用后再试。"
+      :title="t('sync.notConfiguredTitle')"
+      :description="t('sync.notConfiguredDescription')"
       compact
     />
 
     <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="Cloud"
-      title="登录后开启云同步"
-      action-label="登录"
+      :title="t('sync.loginTitle')"
+      :action-label="t('common.login')"
       :action-icon="LogIn"
       @action="openAccountDialog"
     />
@@ -108,7 +112,7 @@ async function handleSync() {
             {{ syncStatusMeta.hint }}
           </p>
           <p class="text-xs tabular-nums text-muted-foreground/80">
-            上次同步：{{ lastSyncText }}
+            {{ t('sync.lastSync', { time: lastSyncText }) }}
           </p>
         </div>
       </PanelCard>
@@ -123,7 +127,7 @@ async function handleSync() {
       <Button class="h-10 w-full gap-2" :disabled="isSyncing" @click="handleSync">
         <Loader2 v-if="isSyncing" class="size-4 animate-spin" />
         <RefreshCw v-else class="size-4" />
-        {{ isSyncing ? '同步中…' : '立即同步' }}
+        {{ isSyncing ? t('sync.syncing') : t('sync.syncNow') }}
       </Button>
     </div>
   </PanelDialog>

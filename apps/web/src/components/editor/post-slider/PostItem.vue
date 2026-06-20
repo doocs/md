@@ -23,7 +23,7 @@ import {
 } from './postSliderMenu'
 
 const props = defineProps<PostItemProps>()
-
+const { t, locale } = useI18n()
 const postStore = usePostStore()
 const templateStore = useTemplateStore()
 const uiStore = useUIStore()
@@ -80,7 +80,7 @@ function saveAsTemplate(postId: string) {
   templateStore.createTemplate({
     name: post.title,
     content: post.content,
-    description: `从「${post.title}」创建于 ${new Date().toLocaleString('zh-CN')}`,
+    description: t('post.templateFromPost', { title: post.title, date: new Date().toLocaleString(locale.value) }),
   })
   closePostMenu()
 }
@@ -89,7 +89,7 @@ function duplicateSingle(postId: string) {
   const p = posts.value.find(p => p.id === postId)
   if (!p)
     return
-  postStore.addPost(`${p.title} 副本`, p.parentId ?? null)
+  postStore.addPost(`${p.title} ${t('post.copySuffix')}`, p.parentId ?? null)
   const newPost = posts.value[posts.value.length - 1]
   postStore.updatePostContent(newPost.id, p.content)
   closePostMenu()
@@ -122,14 +122,14 @@ function commitInlineRename() {
     return
   const trimmed = inlineEditVal.value.trim()
   if (!trimmed) {
-    toast.error(`内容标题不可为空`)
+    toast.error(t('post.titleRequired'))
     inlineEditId.value = null
     return
   }
   const currentTitle = postStore.getPostById(id)?.title
   if (trimmed !== currentTitle) {
     postStore.renamePost(id, trimmed)
-    toast.success(`修改成功`)
+    toast.success(t('post.editSuccess'))
   }
   inlineEditId.value = null
 }
@@ -235,27 +235,27 @@ function cancelInlineRename() {
           v-bind="postDropdownProps"
         >
           <DropdownMenuItem @click.stop="actions.openAddPostDialog(post.id)">
-            <PlusSquare class="mr-2 size-4" /> 新增内容
+            <PlusSquare class="mr-2 size-4" /> {{ t('post.addPost') }}
           </DropdownMenuItem>
           <DropdownMenuItem @click.stop="actions.startRenamePost(post.id)">
-            <Edit3 class="mr-2 size-4" /> 重命名
+            <Edit3 class="mr-2 size-4" /> {{ t('post.menuRename') }}
           </DropdownMenuItem>
           <DropdownMenuItem @click.stop="duplicateSingle(post.id)">
-            <Copy class="mr-2 size-4" /> 复制
+            <Copy class="mr-2 size-4" /> {{ t('common.copy') }}
           </DropdownMenuItem>
           <DropdownMenuItem @click.stop="actions.openHistoryDialog(post.id)">
-            <History class="mr-2 size-4" /> 历史记录
+            <History class="mr-2 size-4" /> {{ t('common.history') }}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click.stop="downloadMD(post.content, post.title); closePostMenu()">
-            <FileDown class="mr-2 size-4" /> 导出 .md
+            <FileDown class="mr-2 size-4" /> {{ t('post.exportMd') }}
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem @click.stop="saveAsTemplate(post.id)">
-            <Package class="mr-2 size-4" /> 存储为模板
+            <Package class="mr-2 size-4" /> {{ t('post.saveAsTemplate') }}
           </DropdownMenuItem>
           <DropdownMenuItem @click.stop="applyTemplate(post.id)">
-            <FileInput class="mr-2 size-4" /> 应用模板
+            <FileInput class="mr-2 size-4" /> {{ t('post.applyTemplate') }}
           </DropdownMenuItem>
           <DropdownMenuSeparator v-if="posts.length > 1" />
           <DropdownMenuItem
@@ -263,7 +263,7 @@ function cancelInlineRename() {
             class="text-destructive focus:text-destructive"
             @click.stop="actions.startDelPost(post.id)"
           >
-            <Trash2 class="mr-2 size-4" /> 删除
+            <Trash2 class="mr-2 size-4" /> {{ t('common.delete') }}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

@@ -23,7 +23,6 @@ export const UNPREFIXED_APP_KEYS = new Set([
   `isCountStatus`,
   `legend`,
   `previewWidth`,
-  `isEditOnLeft`,
   `showAIToolbox`,
   `viewMode`,
   `previewDevice`,

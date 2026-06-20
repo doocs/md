@@ -4,20 +4,18 @@ import type { Component } from 'vue'
 
 const props = defineProps<{
   title: string
+  styleKey?: `font` | `fontSize` | `color`
   options: IConfigOption[]
   current: string
   change: (val: any) => void
   icon?: Component
 }>()
 
-function setStyle(title: string, value: string) {
-  switch (title) {
-    case `字体`:
+function setStyle(styleKey: typeof props.styleKey, value: string) {
+  switch (styleKey) {
+    case `font`:
       return { fontFamily: value }
-    case `字号`:
-      return { fontSize: value }
-    case `主题色`:
-    case `文字颜色`:
+    case `color`:
       return { color: value }
     default:
       return {}
@@ -32,16 +30,24 @@ function setStyle(title: string, value: string) {
       <span v-else class="mr-2 h-4 w-4" />
       <span>{{ props.title }}</span>
     </MenubarSubTrigger>
-    <MenubarSubContent class="max-h-56 overflow-auto">
+    <MenubarSubContent class="min-w-44 max-h-56 overflow-auto">
       <MenubarRadioGroup :model-value="current" @update:model-value="change">
         <MenubarRadioItem
           v-for="{ label, value, desc } in options"
           :key="value"
           :value="value"
-          class="w-50"
+          class="min-w-44"
         >
           {{ label }}
-          <DropdownMenuShortcut :style="setStyle(title, value)">
+          <DropdownMenuShortcut
+            v-if="styleKey === 'font' && desc"
+            :style="setStyle(styleKey, value)"
+          >
+            {{ desc }}
+          </DropdownMenuShortcut>
+          <DropdownMenuShortcut
+            v-else-if="styleKey === 'fontSize' && desc"
+          >
             {{ desc }}
           </DropdownMenuShortcut>
         </MenubarRadioItem>

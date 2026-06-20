@@ -1,3 +1,5 @@
+import { t } from '@/i18n/translate'
+
 class MpCommonProfile extends HTMLElement {
   constructor() {
     super()
@@ -43,7 +45,7 @@ class MpCommonProfile extends HTMLElement {
             </div>
           </div>
           <div id="js_a11y_wx_profile_logo" aria-hidden="true" class="wx_profile_card_ft">
-            ${serviceType === `1` ? `公众号` : `服务号`}
+            ${serviceType === `1` ? t('store.mpAccount.officialAccount') : t('store.mpAccount.serviceAccount')}
           </div>
         </div>
         <span aria-hidden="true" id="js_a11y_comma" class="weui-a11y_ref" style="display: none;">，</span>

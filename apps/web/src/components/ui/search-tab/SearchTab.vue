@@ -8,6 +8,8 @@ const props = defineProps<{
   editorView: EditorView
 }>()
 
+const { t } = useI18n()
+
 const showSearchTab = ref(false)
 const searchInputRef = ref<{ focus: () => void, select: () => void } | null>(null)
 
@@ -431,8 +433,8 @@ defineExpose({
       <!-- 折叠/展开按钮 -->
       <Button
         variant="ghost"
-        title="切换替换"
-        aria-label="切换替换"
+        :title="t('search.toggleReplace')"
+        :aria-label="t('search.toggleReplace')"
         class="h-7 w-5 flex items-center justify-center p-0"
         @click="toggleShowReplace"
       >
@@ -446,7 +448,7 @@ defineExpose({
           <Input
             ref="searchInputRef"
             v-model="searchWord"
-            placeholder="查找"
+            :placeholder="t('search.find')"
             class="h-7 w-full min-w-0 pr-16 text-sm"
             @keydown="handleSearchInputKeyDown"
           />
@@ -454,8 +456,8 @@ defineExpose({
             <Button
               variant="ghost"
               size="xs"
-              title="区分大小写"
-              aria-label="区分大小写"
+              :title="t('search.caseSensitive')"
+              :aria-label="t('search.caseSensitive')"
               class="h-5 w-5 p-0"
               :class="{ 'bg-accent': isCaseSensitive }"
               @click="toggleCaseSensitive"
@@ -465,8 +467,8 @@ defineExpose({
             <Button
               variant="ghost"
               size="xs"
-              title="正则表达式"
-              aria-label="正则表达式"
+              :title="t('search.regex')"
+              :aria-label="t('search.regex')"
               class="h-5 w-5 p-0"
               :class="{ 'bg-accent': isRegex }"
               @click="toggleRegex"
@@ -476,8 +478,8 @@ defineExpose({
             <Button
               variant="ghost"
               size="xs"
-              title="在选区内查找"
-              aria-label="在选区内查找"
+              :title="t('search.findInSelection')"
+              :aria-label="t('search.findInSelection')"
               class="h-5 w-5 p-0"
               :class="{ 'bg-accent': findInSelection }"
               @click="toggleFindInSelection"
@@ -493,8 +495,8 @@ defineExpose({
           <Button
             variant="ghost"
             size="xs"
-            title="上一处"
-            aria-label="上一处"
+            :title="t('search.previous')"
+            :aria-label="t('search.previous')"
             class="h-6 w-6 p-0"
             @click="prevMatch"
           >
@@ -503,8 +505,8 @@ defineExpose({
           <Button
             variant="ghost"
             size="xs"
-            title="下一处"
-            aria-label="下一处"
+            :title="t('search.next')"
+            :aria-label="t('search.next')"
             class="h-6 w-6 p-0"
             @click="nextMatch"
           >
@@ -513,8 +515,8 @@ defineExpose({
           <Button
             variant="ghost"
             size="xs"
-            title="关闭"
-            aria-label="关闭"
+            :title="t('search.close')"
+            :aria-label="t('search.close')"
             class="h-6 w-6 p-0"
             @click="closeSearchTab"
           >
@@ -526,7 +528,7 @@ defineExpose({
         <template v-if="showReplace">
           <textarea
             v-model="replaceWord"
-            placeholder="替换 (Shift+Enter 换行)"
+            :placeholder="t('search.replacePlaceholder')"
             class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none leading-none overflow-hidden max-h-[150px]"
             style="height: 28px; min-height: 28px"
             @keydown="handleReplaceInputKeyDown"
@@ -536,8 +538,8 @@ defineExpose({
             <Button
               variant="ghost"
               size="xs"
-              title="替换"
-              aria-label="替换"
+              :title="t('search.replace')"
+              :aria-label="t('search.replace')"
               class="h-6 w-6 p-0"
               @click="handleReplace"
             >
@@ -546,8 +548,8 @@ defineExpose({
             <Button
               variant="ghost"
               size="xs"
-              title="全部替换"
-              aria-label="全部替换"
+              :title="t('search.replaceAll')"
+              :aria-label="t('search.replaceAll')"
               class="h-6 w-6 p-0"
               @click="handleReplaceAll"
             >

@@ -1,9 +1,13 @@
+import { t } from '@/i18n/translate'
+
 /** 爱发电 Pro 赞助方案（doocs 官方） */
-export const AFDIAN_PRO_PLANS = [
-  { label: `月付`, planId: `81efdc48655711f18b6d52540025c377` },
-  { label: `季付`, planId: `ced9acca655a11f1a7cc52540025c377` },
-  { label: `年付`, planId: `df5084a2655a11f1bea45254001e7c00` },
-] as const
+export function getAfdianProPlans() {
+  return [
+    { label: t(`store.afdian.monthly`), planId: `81efdc48655711f18b6d52540025c377` },
+    { label: t(`store.afdian.quarterly`), planId: `ced9acca655a11f1a7cc52540025c377` },
+    { label: t(`store.afdian.yearly`), planId: `df5084a2655a11f1bea45254001e7c00` },
+  ] as const
+}
 
 const ORDER_BASE = (import.meta.env.VITE_AFDIAN_ORDER_BASE ?? `https://ifdian.net`).replace(/\/$/, ``)
 

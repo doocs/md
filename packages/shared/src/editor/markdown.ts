@@ -37,6 +37,7 @@ function insertTabAtCursor(view: EditorView): boolean {
 interface MarkdownKeymapOptions {
   onSearch?: (view: EditorView) => void
   onReplace?: (view: EditorView) => void
+  placeholder?: string
 }
 
 /**
@@ -98,6 +99,8 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
  *
  */
 export function markdownSetup(options?: MarkdownKeymapOptions) {
+  const { placeholder: placeholderText } = options || {}
+
   return [
     // 基础功能
     history(),
@@ -132,6 +135,6 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
     EditorView.lineWrapping,
     EditorState.allowMultipleSelections.of(true),
 
-    placeholder(`输入 "/" 快速添加内容`),
+    ...(placeholderText ? [placeholder(placeholderText)] : []),
   ]
 }

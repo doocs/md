@@ -11,30 +11,32 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const { t } = useI18n()
+
 const dialogOpen = computed({
   get: () => props.open,
   set: (val: boolean) => emit(`update:open`, val),
 })
 
-const contributors = [
+const contributors = computed(() => [
   {
     name: `yanglbme`,
     imageUrl: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/support1.jpg`,
-    altText: `赞赏二维码 1`,
+    altText: t(`fund.qrAlt1`),
   },
   {
     name: `yangfong`,
     imageUrl: `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/gh/doocs/md/images/support2.jpg`,
-    altText: `赞赏二维码 2`,
+    altText: t(`fund.qrAlt2`),
   },
-]
+])
 </script>
 
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="赞赏"
-    description="若觉得项目不错，可以通过以下方式支持我们～"
+    :title="t('fund.title')"
+    :description="t('fund.description')"
     :icon="Heart"
   >
     <div class="px-4 py-4 sm:px-6">

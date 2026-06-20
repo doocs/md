@@ -1,6 +1,5 @@
 import type { EditorView as EditorViewType } from '@codemirror/view'
 import type { ThemeName } from '@md/shared/configs'
-import { colorOptions, themeOptions } from '@md/shared/configs'
 import {
   formatBold,
   formatCode,
@@ -9,6 +8,8 @@ import {
   formatStrikethrough,
 } from '@md/shared/editor'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
+import { createLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
+import { t } from '@/i18n/translate'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -27,13 +28,6 @@ export interface SlashCommandItem {
   action: (view: EditorViewType) => void
 }
 
-export const SLASH_GROUP_LABELS: Record<SlashCommandGroup, string> = {
-  basic: `基础`,
-  common: `常用`,
-  edit: `编辑`,
-  style: `样式`,
-}
-
 export const SLASH_HEADING_IDS = [`h1`, `h2`, `h3`, `h4`, `h5`, `h6`] as const
 export const SLASH_BASIC_BLOCK_IDS = [`ordered-list`, `unordered-list`, `blockquote`, `divider`] as const
 export const SLASH_BASIC_FORMAT_IDS = [`bold`, `italic`, `strikethrough`, `inline-code`, `link-wrap`] as const
@@ -46,6 +40,10 @@ const HEADING_KEYWORDS: Record<number, string[]> = {
   4: [`h4`, `heading4`, `四级`, `标题`],
   5: [`h5`, `heading5`, `五级`, `标题`],
   6: [`h6`, `heading6`, `六级`, `标题`],
+}
+
+function getSlashGroupLabel(group: SlashCommandGroup): string {
+  return t(`slash.group.${group}`)
 }
 
 function insertText(view: EditorViewType, text: string, cursorOffset?: number) {
@@ -74,7 +72,7 @@ function createCommand(
 ): SlashCommandItem {
   return {
     ...partial,
-    groupLabel: SLASH_GROUP_LABELS[partial.group],
+    groupLabel: getSlashGroupLabel(partial.group),
   }
 }
 
@@ -116,7 +114,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
   const blockCommands: SlashCommandItem[] = [
     createCommand({
       id: `ordered-list`,
-      label: `有序列表`,
+      label: t(`menu.orderedList`),
       group: `basic`,
       keywords: [`ol`, `ordered`, `有序`, `列表`, `numbered`],
       icon: `ordered-list`,
@@ -124,7 +122,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `unordered-list`,
-      label: `无序列表`,
+      label: t(`menu.unorderedList`),
       group: `basic`,
       keywords: [`ul`, `unordered`, `无序`, `列表`, `bullet`],
       icon: `unordered-list`,
@@ -132,7 +130,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `blockquote`,
-      label: `引用`,
+      label: t(`slash.blockquote`),
       group: `basic`,
       keywords: [`quote`, `引用`, `blockquote`],
       icon: `blockquote`,
@@ -140,7 +138,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `divider`,
-      label: `分割线`,
+      label: t(`slash.divider`),
       group: `basic`,
       keywords: [`hr`, `divider`, `分割线`, `---`, `横线`],
       icon: `divider`,
@@ -151,7 +149,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
   const formatCommands: SlashCommandItem[] = [
     createCommand({
       id: `bold`,
-      label: `加粗`,
+      label: t(`menu.bold`),
       group: `basic`,
       keywords: [`bold`, `加粗`, `jiacu`, `b`, `strong`],
       icon: `bold`,
@@ -159,7 +157,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `italic`,
-      label: `斜体`,
+      label: t(`menu.italic`),
       group: `basic`,
       keywords: [`italic`, `斜体`, `xieti`, `i`, `em`],
       icon: `italic`,
@@ -167,7 +165,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `strikethrough`,
-      label: `删除线`,
+      label: t(`menu.strikethrough`),
       group: `basic`,
       keywords: [`strike`, `strikethrough`, `删除线`, `shanchuxian`, `del`],
       icon: `strikethrough`,
@@ -175,7 +173,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `inline-code`,
-      label: `行内代码`,
+      label: t(`menu.inlineCode`),
       group: `basic`,
       keywords: [`inline-code`, `code`, `行内代码`, `inline`],
       icon: `code-inline`,
@@ -183,7 +181,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `link-wrap`,
-      label: `超链接`,
+      label: t(`menu.link`),
       group: `basic`,
       keywords: [`link-wrap`, `超链接`, `chaolianjie`, `wrap`],
       icon: `link-wrap`,
@@ -194,7 +192,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
   const commonCommands: SlashCommandItem[] = [
     createCommand({
       id: `code-block`,
-      label: `代码块`,
+      label: t(`slash.codeBlock`),
       group: `common`,
       keywords: [`code`, `代码块`, `\`\`\``, `codeblock`, `fence`],
       icon: `code`,
@@ -210,7 +208,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `formula`,
-      label: `公式块`,
+      label: t(`slash.formulaBlock`),
       group: `common`,
       keywords: [`formula`, `公式`, `math`, `latex`, `$$`, `katex`],
       icon: `formula`,
@@ -220,7 +218,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `image`,
-      label: `图片`,
+      label: t(`menu.image`),
       group: `common`,
       keywords: [`image`, `图片`, `img`, `photo`, `picture`],
       icon: `image`,
@@ -230,7 +228,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `table`,
-      label: `表格`,
+      label: t(`menu.table`),
       group: `common`,
       keywords: [`table`, `表格`, `grid`],
       icon: `table`,
@@ -240,7 +238,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `component`,
-      label: `组件`,
+      label: t(`menu.component`),
       group: `common`,
       keywords: [`component`, `组件`, `blocks`, `block`],
       icon: `blocks`,
@@ -253,7 +251,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
   const editCommands: SlashCommandItem[] = [
     createCommand({
       id: `format-doc`,
-      label: `格式化`,
+      label: t(`menu.formatContent`),
       group: `edit`,
       keywords: [`format`, `格式化`, `geshihua`, `prettier`],
       icon: `format`,
@@ -264,7 +262,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `reset-content`,
-      label: `重置`,
+      label: t(`menu.reset`),
       group: `edit`,
       keywords: [`reset`, `重置`, `chongzhi`, `default`],
       icon: `reset`,
@@ -275,7 +273,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `clear-content`,
-      label: `清空`,
+      label: t(`menu.clear`),
       group: `edit`,
       keywords: [`clear`, `清空`, `qingkong`, `empty`],
       icon: `clear`,
@@ -286,7 +284,7 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
     createCommand({
       id: `find`,
-      label: `查找`,
+      label: t(`menu.find`),
       group: `edit`,
       keywords: [`find`, `search`, `查找`, `chazhao`],
       icon: `find`,
@@ -299,31 +297,34 @@ export function buildSlashCommands(): SlashCommandItem[] {
     }),
   ]
 
-  const styleCommands: SlashCommandItem[] = [
-    ...themeOptions.map(option => createCommand({
-      id: `theme-${option.value}`,
-      label: `主题 · ${option.label}`,
-      group: `style`,
-      keywords: [`theme`, `主题`, `zhuti`, option.value, option.label],
-      icon: `theme`,
-      action: (view) => {
-        applyTheme(option.value as ThemeName)
-        view.focus()
-      },
-    })),
-    ...colorOptions.map(option => createCommand({
-      id: `color-${option.value.replace('#', '')}`,
-      label: `主题色 · ${option.label}`,
-      group: `style`,
-      keywords: [`color`, `主题色`, `zhutise`, option.label, option.value],
-      icon: `color`,
-      swatch: option.value,
-      action: (view) => {
-        applyPrimaryColor(option.value)
-        view.focus()
-      },
-    })),
-  ]
+  const styleCommands: SlashCommandItem[] = (() => {
+    const { themeOptions: localizedThemes, colorOptions: localizedColors } = createLocalizedStyleOptions(t)
+    return [
+      ...localizedThemes.map(option => createCommand({
+        id: `theme-${option.value}`,
+        label: t(`slash.themeLabel`, { name: option.label }),
+        group: `style`,
+        keywords: [`theme`, `主题`, `zhuti`, option.value, option.label],
+        icon: `theme`,
+        action: (view) => {
+          applyTheme(option.value as ThemeName)
+          view.focus()
+        },
+      })),
+      ...localizedColors.map(option => createCommand({
+        id: `color-${option.value.replace('#', '')}`,
+        label: t(`slash.colorLabel`, { name: option.label }),
+        group: `style`,
+        keywords: [`color`, `主题色`, `zhutise`, option.label, option.value],
+        icon: `color`,
+        swatch: option.value,
+        action: (view) => {
+          applyPrimaryColor(option.value)
+          view.focus()
+        },
+      })),
+    ]
+  })()
 
   return [
     ...headingCommands,

@@ -2,6 +2,7 @@
  * Diagram download utilities
  * Supports downloading SVG diagrams (Mermaid, PlantUML, etc.) as .svg or .png
  */
+import { t } from '@/i18n/translate'
 
 const DOWNLOAD_ICON = `<svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>`
 
@@ -96,7 +97,7 @@ function createDownloadBar(container: HTMLElement, idx: number): HTMLDivElement 
   const bar = document.createElement(`div`)
   bar.className = `diagram-download-bar`
 
-  const svgBtn = makeButton(`SVG`, `下载为 SVG`)
+  const svgBtn = makeButton(`SVG`, t('store.diagram.downloadSvg'))
   svgBtn.addEventListener(`click`, (e) => {
     e.preventDefault()
     e.stopPropagation()
@@ -105,7 +106,7 @@ function createDownloadBar(container: HTMLElement, idx: number): HTMLDivElement 
       downloadDiagramSvg(svg, `diagram-${idx}`)
   })
 
-  const pngBtn = makeButton(`PNG`, `下载为 PNG`)
+  const pngBtn = makeButton(`PNG`, t('store.diagram.downloadPng'))
   pngBtn.addEventListener(`click`, async (e) => {
     e.preventDefault()
     e.stopPropagation()

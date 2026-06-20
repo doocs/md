@@ -4,6 +4,7 @@ import { isMathJaxLoaded, loadMathJax } from '@/lib/preview/mathjax'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
@@ -13,7 +14,7 @@ const latexInputRef = useTemplateRef<HTMLTextAreaElement>(`latexInputRef`)
 
 const formulaGroups = [
   {
-    name: `基础`,
+    key: `basic`,
     items: [
       `x^2+y^2=z^2`,
       `\\frac{a}{b}`,
@@ -26,7 +27,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `希腊`,
+    key: `greek`,
     items: [
       `\\alpha`,
       `\\beta`,
@@ -39,7 +40,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `关系`,
+    key: `relation`,
     items: [
       `a=b`,
       `a\\neq b`,
@@ -52,7 +53,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `符号`,
+    key: `symbol`,
     items: [
       `\\infty`,
       `\\partial`,
@@ -65,7 +66,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `逻辑`,
+    key: `logic`,
     items: [
       `p\\land q`,
       `p\\lor q`,
@@ -78,7 +79,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `矩阵`,
+    key: `matrix`,
     items: [
       `\\begin{bmatrix}a & b\\\\c & d\\end{bmatrix}`,
       `\\begin{pmatrix}1 & 0\\\\0 & 1\\end{pmatrix}`,
@@ -89,7 +90,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `代数`,
+    key: `algebra`,
     items: [
       `\\left(x-1\\right)\\left(x+3\\right)`,
       `x=a_0+\\frac{1}{a_1+\\frac{1}{a_2}}`,
@@ -99,7 +100,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `微积分`,
+    key: `calculus`,
     items: [
       `\\frac{dy}{dx}`,
       `\\int_a^b f(x)\\,dx`,
@@ -109,7 +110,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `统计`,
+    key: `statistics`,
     items: [
       `\\mathbb{E}[X]`,
       `\\mathrm{Var}(X)`,
@@ -119,7 +120,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `集合`,
+    key: `set`,
     items: [
       `A\\cup B`,
       `A\\cap B`,
@@ -130,7 +131,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `三角`,
+    key: `trigonometry`,
     items: [
       `\\sin\\theta`,
       `\\cos\\theta`,
@@ -141,7 +142,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `物理`,
+    key: `physics`,
     items: [
       `E=mc^2`,
       `F=ma`,
@@ -152,7 +153,7 @@ const formulaGroups = [
     ],
   },
   {
-    name: `化学`,
+    key: `chemistry`,
     items: [
       `2H_2 + O_2 \\rightarrow 2H_2O`,
       `A\\underset{b}{\\overset{a}{\\rightleftharpoons}}B`,
@@ -163,15 +164,15 @@ const formulaGroups = [
   },
 ] as const
 
-const selectedGroupName = ref<string>(formulaGroups[0].name)
+const selectedGroupKey = ref<string>(formulaGroups[0].key)
 
 const selectedGroup = computed(() => {
-  return formulaGroups.find(group => group.name === selectedGroupName.value) ?? formulaGroups[0]
+  return formulaGroups.find(group => group.key === selectedGroupKey.value) ?? formulaGroups[0]
 })
 
 function renderWithMathJax(latex: string, display: boolean): string {
   if (!isMathJaxLoaded()) {
-    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+    return `<div class="text-sm text-muted-foreground">${t('formula.loadingEngine')}</div>`
   }
   try {
     window.MathJax.texReset()
@@ -190,7 +191,7 @@ function renderWithMathJax(latex: string, display: boolean): string {
 const snippetPreviewCache = new Map<string, string>()
 function renderSnippet(snippet: string): string {
   if (!mathJaxReady.value) {
-    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+    return `<div class="text-sm text-muted-foreground">${t('formula.loadingEngine')}</div>`
   }
 
   const cached = snippetPreviewCache.get(snippet)
@@ -204,11 +205,11 @@ function renderSnippet(snippet: string): string {
 
 const previewHtml = computed(() => {
   if (!mathJaxReady.value) {
-    return `<div class="text-sm text-muted-foreground">正在加载公式引擎…</div>`
+    return `<div class="text-sm text-muted-foreground">${t('formula.loadingEngine')}</div>`
   }
   const content = latexText.value.trim()
   if (!content) {
-    return `<div class="text-sm text-muted-foreground">输入公式后会在这里显示预览</div>`
+    return `<div class="text-sm text-muted-foreground">${t('formula.previewEmpty')}</div>`
   }
   return renderWithMathJax(content, uiStore.formulaEditorDisplayMode)
 })
@@ -234,7 +235,7 @@ watch(
     const parsed = normalizeFormulaInput(uiStore.formulaEditorValue)
     latexText.value = parsed.latex || uiStore.formulaEditorValue
     uiStore.formulaEditorDisplayMode = uiStore.formulaEditorDisplayMode || parsed.displayMode
-    selectedGroupName.value = formulaGroups[0].name
+    selectedGroupKey.value = formulaGroups[0].key
 
     await nextTick()
     latexInputRef.value?.focus()
@@ -274,7 +275,7 @@ function insertSnippet(snippet: string) {
 function saveFormula() {
   const content = latexText.value.trim()
   if (!content) {
-    toast.error(`请输入公式内容`)
+    toast.error(t('formula.contentRequired'))
     return
   }
 
@@ -287,7 +288,7 @@ function saveFormula() {
     editorStore.replaceSelection(wrapped)
   }
 
-  toast.success(`公式已插入`)
+  toast.success(t('formula.insertSuccess'))
   uiStore.closeFormulaEditor()
 }
 
@@ -295,8 +296,8 @@ function toggleDisplayMode(nextMode: boolean) {
   uiStore.formulaEditorDisplayMode = nextMode
 }
 
-function setSelectedGroup(groupName: string) {
-  selectedGroupName.value = groupName
+function setSelectedGroup(groupKey: string) {
+  selectedGroupKey.value = groupKey
 }
 </script>
 
@@ -304,9 +305,9 @@ function setSelectedGroup(groupName: string) {
   <Dialog :open="uiStore.isShowFormulaEditorDialog" @update:open="onUpdate">
     <DialogContent class="sm:max-w-6xl max-h-[94vh] overflow-hidden flex flex-col p-0">
       <DialogHeader class="px-6 pt-6 pb-3 border-b">
-        <DialogTitle>公式编辑器</DialogTitle>
+        <DialogTitle>{{ t('formula.title') }}</DialogTitle>
         <DialogDescription>
-          支持 LaTeX 编辑、实时预览和公式库插入。
+          {{ t('formula.description') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -314,7 +315,7 @@ function setSelectedGroup(groupName: string) {
         <div class="lg:min-h-0 border-b lg:border-b-0 lg:border-r p-6 space-y-4 lg:overflow-hidden flex flex-col">
           <div class="space-y-2">
             <div class="flex items-center justify-between gap-3 flex-wrap">
-              <label class="text-sm font-medium">LaTeX 输入</label>
+              <label class="text-sm font-medium">{{ t('formula.latexInput') }}</label>
               <div class="inline-flex rounded-md border overflow-hidden">
                 <button
                   type="button"
@@ -322,7 +323,7 @@ function setSelectedGroup(groupName: string) {
                   :class="!uiStore.formulaEditorDisplayMode ? 'bg-foreground text-background' : 'bg-transparent text-muted-foreground'"
                   @click="toggleDisplayMode(false)"
                 >
-                  行内
+                  {{ t('formula.inline') }}
                 </button>
                 <button
                   type="button"
@@ -330,7 +331,7 @@ function setSelectedGroup(groupName: string) {
                   :class="uiStore.formulaEditorDisplayMode ? 'bg-foreground text-background' : 'bg-transparent text-muted-foreground'"
                   @click="toggleDisplayMode(true)"
                 >
-                  块级
+                  {{ t('formula.block') }}
                 </button>
               </div>
             </div>
@@ -338,13 +339,13 @@ function setSelectedGroup(groupName: string) {
               ref="latexInputRef"
               v-model="latexText"
               class="flex min-h-48 w-full rounded-md border border-input bg-background px-3 py-2 text-sm font-mono ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
-              placeholder="输入 LaTeX 公式"
+              :placeholder="t('formula.latexPlaceholder')"
               @input="handleLatexInput"
             />
           </div>
 
           <div class="space-y-2 lg:flex-1 lg:min-h-0 flex flex-col">
-            <label class="text-sm font-medium">预览</label>
+            <label class="text-sm font-medium">{{ t('formula.preview') }}</label>
             <div class="rounded-lg border bg-muted/30 p-4 overflow-x-auto min-h-28 flex-1 flex items-center">
               <div class="w-full" v-html="previewHtml" />
             </div>
@@ -354,18 +355,18 @@ function setSelectedGroup(groupName: string) {
         <div class="lg:min-h-0 p-6 space-y-4 lg:overflow-hidden bg-muted/20 flex flex-col">
           <div class="space-y-2 flex-shrink-0">
             <h3 class="text-sm font-medium">
-              公式库
+              {{ t('formula.library') }}
             </h3>
             <div class="flex flex-wrap gap-2">
               <button
                 v-for="group in formulaGroups"
-                :key="group.name"
+                :key="group.key"
                 type="button"
                 class="rounded-full border px-3 py-1.5 text-sm transition-colors"
-                :class="selectedGroupName === group.name ? 'bg-foreground text-background border-foreground' : 'bg-background text-foreground hover:bg-accent'"
-                @click="setSelectedGroup(group.name)"
+                :class="selectedGroupKey === group.key ? 'bg-foreground text-background border-foreground' : 'bg-background text-foreground hover:bg-accent'"
+                @click="setSelectedGroup(group.key)"
               >
-                {{ group.name }}
+                {{ t(`formula.groups.${group.key}`) }}
               </button>
             </div>
           </div>
@@ -374,7 +375,7 @@ function setSelectedGroup(groupName: string) {
             <div class="grid grid-cols-2 xl:grid-cols-3 gap-2 content-start">
               <button
                 v-for="snippet in selectedGroup.items"
-                :key="`${selectedGroup.name}-${snippet}`"
+                :key="`${selectedGroup.key}-${snippet}`"
                 type="button"
                 class="rounded-lg border bg-background px-3 py-2 text-left text-sm hover:border-primary hover:bg-primary/5 transition-colors"
                 @click="insertSnippet(snippet)"
@@ -388,10 +389,10 @@ function setSelectedGroup(groupName: string) {
 
       <DialogFooter class="px-6 py-4 border-t bg-background">
         <Button variant="outline" @click="uiStore.closeFormulaEditor()">
-          取消
+          {{ t('common.cancel') }}
         </Button>
         <Button @click="saveFormula()">
-          插入公式
+          {{ t('formula.insertFormula') }}
         </Button>
       </DialogFooter>
     </DialogContent>

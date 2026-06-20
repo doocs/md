@@ -21,6 +21,7 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const { t } = useI18n()
 const authStore = useAuthStore()
 const syncStore = useSyncStore()
 const uiStore = useUIStore()
@@ -39,7 +40,7 @@ const dialogOpen = computed({
 const dialogDescription = computed(() => {
   if (isLoggedIn.value || !isConfigured.value)
     return undefined
-  return `登录后可使用云同步、分享预览等云端能力。`
+  return t(`account.loginHint`)
 })
 
 function handleLogin() {
@@ -65,15 +66,15 @@ function openShareDialog() {
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="账户"
+    :title="t('account.title')"
     :description="dialogDescription"
     :icon="User"
   >
     <CloudFeatureState
       v-if="!isConfigured"
       :icon="Settings2"
-      title="账户服务未配置"
-      description="部署方需配置 VITE_MD_API_URL 后，方可使用登录与云同步。"
+      :title="t('account.notConfiguredTitle')"
+      :description="t('account.notConfiguredDescription')"
       compact
     >
       <code class="rounded-md border bg-muted/40 px-2 py-1 text-[11px] text-muted-foreground">
@@ -84,8 +85,8 @@ function openShareDialog() {
     <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="User"
-      title="登录你的账户"
-      action-label="GitHub 登录"
+      :title="t('account.loginTitle')"
+      :action-label="t('account.githubLogin')"
       :action-icon="GitHubIcon"
       @action="handleLogin"
     />
@@ -140,7 +141,7 @@ function openShareDialog() {
           @click="openSyncDialog"
         >
           <Cloud class="size-4 shrink-0" />
-          云同步
+          {{ t('account.cloudSync') }}
         </Button>
         <Button
           v-if="showShareUi"
@@ -149,7 +150,7 @@ function openShareDialog() {
           @click="openShareDialog"
         >
           <Share2 class="size-4 shrink-0" />
-          分享预览
+          {{ t('account.sharePreview') }}
         </Button>
       </div>
 
@@ -159,7 +160,7 @@ function openShareDialog() {
         @click="handleLogout"
       >
         <LogOut class="size-4" />
-        退出登录
+        {{ t('common.logout') }}
       </Button>
     </div>
   </PanelDialog>

@@ -1,3 +1,4 @@
+import { t } from '@/i18n/translate'
 import { isAccountConfigured, MD_API_URL } from '@/services/account/config'
 import { ACCOUNT_TOKEN_KEY } from '@/services/account/oauth'
 import { store } from '@/storage'
@@ -78,7 +79,7 @@ async function uploadImageViaApi(file: File, token?: string | null): Promise<str
 /** 默认图床：经 md-api 上传，登录可选（登录后享更高限流） */
 export async function uploadDefaultImage(file: File): Promise<string> {
   if (!isUploadViaApiEnabled())
-    throw new Error(`默认图床需要配置 md-api 上传服务`)
+    throw new Error(t('store.uploader.defaultHostRequiresApi'))
   const token = await store.get(ACCOUNT_TOKEN_KEY)
   return await uploadImageViaApi(file, token || undefined)
 }

@@ -16,6 +16,7 @@ watch(dialogOpen, v => emit(`update:open`, v))
 
 /* ---------- store & 新增 ---------- */
 const store = useQuickCommandsStore()
+const { t } = useI18n()
 const label = ref(``)
 const template = ref(``)
 
@@ -54,7 +55,7 @@ function saveEdit() {
       class="max-h-[90vh] w-[92vw] flex flex-col sm:max-w-lg"
     >
       <DialogHeader>
-        <DialogTitle>管理快捷指令</DialogTitle>
+        <DialogTitle>{{ t('ai.quickCommand.title') }}</DialogTitle>
       </DialogHeader>
 
       <!-- 列表：独立滚动区域 -->
@@ -66,18 +67,18 @@ function saveEdit() {
         >
           <!-- 编辑态 -->
           <template v-if="editingId === cmd.id">
-            <Input v-model="editLabel" placeholder="指令名称" />
+            <Input v-model="editLabel" :placeholder="t('ai.quickCommand.namePlaceholder')" />
             <Textarea
               v-model="editTemplate"
               rows="2"
-              placeholder="模板内容，支持 {{sel}} 占位"
+              :placeholder="t('ai.quickCommand.templatePlaceholder')"
             />
             <div class="flex justify-end gap-2">
               <Button size="xs" @click="saveEdit">
-                保存
+                {{ t('common.save') }}
               </Button>
               <Button variant="ghost" size="xs" @click="cancelEdit">
-                取消
+                {{ t('common.cancel') }}
               </Button>
             </div>
           </template>
@@ -88,10 +89,10 @@ function saveEdit() {
               <span class="break-all text-sm">{{ cmd.label }}</span>
               <div class="flex gap-1">
                 <Button variant="ghost" size="xs" @click="beginEdit(cmd)">
-                  编辑
+                  {{ t('common.edit') }}
                 </Button>
                 <Button variant="outline" size="xs" @click="store.remove(cmd.id)">
-                  删除
+                  {{ t('common.delete') }}
                 </Button>
               </div>
             </div>
@@ -101,14 +102,14 @@ function saveEdit() {
 
       <!-- 新增表单：固定在滚动区下方 -->
       <div class="space-y-2 mt-4 border rounded-md p-3">
-        <Input v-model="label" placeholder="指令名称 (如：改写为 SEO 文案)" />
+        <Input v-model="label" :placeholder="t('ai.quickCommand.nameExamplePlaceholder')" />
         <Textarea
           v-model="template"
           rows="2"
-          placeholder="模板，可用 {{sel}} 占位，例如：\n请把以下文字改写为 SEO 友好的标题：\n\n{{sel}}"
+          :placeholder="t('ai.quickCommand.templateExamplePlaceholder')"
         />
         <Button class="w-full" @click="addCmd">
-          添加
+          {{ t('common.add') }}
         </Button>
       </div>
     </DialogContent>

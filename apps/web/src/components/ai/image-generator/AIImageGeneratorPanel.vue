@@ -33,6 +33,8 @@ const props = defineProps<{ open: boolean }>()
 
 const emit = defineEmits([`update:open`])
 
+const { t } = useI18n()
+
 /** 图片链接有效期：1小时（毫秒） */
 const EXPIRY_TIME = 60 * 60 * 1000
 
@@ -275,12 +277,12 @@ async function doGenerateImage(promptText: string, clearInput = false) {
       }
     }
     else {
-      throw new Error(`未收到有效的图像数据`)
+      throw new Error(t(`ai.image.noValidData`))
     }
   }
   catch (e) {
     if ((e as Error).name !== `AbortError`) {
-      toast.error(`图像生成失败: ${(e as Error).message}`)
+      toast.error(t(`ai.image.generateFailed`, { message: (e as Error).message }))
     }
   }
   finally {
@@ -340,10 +342,10 @@ async function downloadImage(imageUrl: string, index: number) {
     a.click()
     document.body.removeChild(a)
     window.URL.revokeObjectURL(url)
-    toast.success(`图片已开始下载`)
+    toast.success(t(`ai.image.downloadStarted`))
   }
   catch {
-    toast.error(`下载失败，请重试`)
+    toast.error(t(`ai.image.downloadFailed`))
   }
 }
 
@@ -351,10 +353,10 @@ async function downloadImage(imageUrl: string, index: number) {
 async function copyImageUrl(imageUrl: string) {
   try {
     await copyPlain(imageUrl)
-    toast.success(`图片链接已复制到剪贴板`)
+    toast.success(t(`common.copiedToClipboard`))
   }
   catch {
-    toast.error(`复制失败，请重试`)
+    toast.error(t(`ai.image.copyFailed`))
   }
 }
 
@@ -401,7 +403,7 @@ function insertImageToCursor(imageUrl: string) {
     // 生成简洁的alt文本
     const altText = imagePrompt.trim()
       ? imagePrompt.trim().substring(0, 30).replace(/\n/g, ` `)
-      : `AI生成的图像`
+      : t(`ai.image.aiGeneratedAlt`)
 
     // 生成Markdown图片语法
     const markdownImage = `![${altText}](${imageUrl})`
@@ -416,13 +418,13 @@ function insertImageToCursor(imageUrl: string) {
     // 聚焦编辑器
     editor.value.focus()
 
-    toast.success(`图片已插入到编辑器`)
+    toast.success(t(`ai.image.insertedToEditor`))
 
     // 关闭弹窗
     dialogVisible.value = false
   }
   catch {
-    toast.error(`插入失败，请重试`)
+    toast.error(t(`ai.image.insertFailed`))
   }
 }
 
@@ -451,7 +453,7 @@ function closePreview() {
 /* ---------- 时间相关函数 ---------- */
 function getTimeRemaining(index: number): string {
   if (!imageTimestamps.value[index]) {
-    return `未知`
+    return t(`common.unknown`)
   }
 
   // EXPIRY_TIME 来自模块顶层常量
@@ -460,17 +462,17 @@ function getTimeRemaining(index: number): string {
   const remaining = EXPIRY_TIME - elapsed
 
   if (remaining <= 0) {
-    return `已过期`
+    return t(`ai.image.expired`)
   }
 
   const minutes = Math.floor(remaining / (60 * 1000))
   const seconds = Math.floor((remaining % (60 * 1000)) / 1000)
 
   if (minutes > 0) {
-    return `${minutes}分${seconds}秒`
+    return t(`ai.image.timeRemaining`, { minutes, seconds })
   }
   else {
-    return `${seconds}秒`
+    return t(`ai.image.secondsRemaining`, { seconds })
   }
 }
 
@@ -507,11 +509,11 @@ function getTimeRemainingClass(index: number): string {
       <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
-          <DialogTitle>AI 文生图</DialogTitle>
+          <DialogTitle>{{ t('ai.image.title') }}</DialogTitle>
 
           <Button
-            :title="configVisible ? 'AI 文生图' : '配置参数'"
-            :aria-label="configVisible ? 'AI 文生图' : '配置参数'"
+            :title="configVisible ? t('ai.image.title') : t('ai.image.configParams')"
+            :aria-label="configVisible ? t('ai.image.title') : t('ai.image.configParams')"
             variant="ghost"
             size="icon"
             @click="configVisible = !configVisible"
@@ -521,8 +523,8 @@ function getTimeRemainingClass(index: number): string {
           </Button>
 
           <Button
-            title="AI 对话"
-            aria-label="AI 对话"
+            :title="t('ai.image.chat')"
+            :aria-label="t('ai.image.chat')"
             variant="ghost"
             size="icon"
             @click="switchToChat()"
@@ -531,8 +533,8 @@ function getTimeRemainingClass(index: number): string {
           </Button>
 
           <Button
-            title="清空图像"
-            aria-label="清空图像"
+            :title="t('ai.image.clearImages')"
+            :aria-label="t('ai.image.clearImages')"
             variant="ghost"
             size="icon"
             @click="clearImages"
@@ -541,7 +543,7 @@ function getTimeRemainingClass(index: number): string {
           </Button>
         </div>
         <DialogDescription class="text-muted-foreground text-sm">
-          使用 AI 根据文字描述生成图像
+          {{ t('ai.image.description') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -563,14 +565,14 @@ function getTimeRemainingClass(index: number): string {
           <div v-if="loading" class="flex flex-col items-center gap-4">
             <Loader2 class="h-8 w-8 animate-spin text-primary" />
             <p class="text-sm text-muted-foreground">
-              正在生成图像...
+              {{ t('ai.image.generating') }}
             </p>
             <Button
               variant="outline"
               size="sm"
               @click="cancelGeneration"
             >
-              取消生成
+              {{ t('ai.image.cancelGeneration') }}
             </Button>
           </div>
 
@@ -583,7 +585,7 @@ function getTimeRemainingClass(index: number): string {
                 :disabled="currentImageIndex <= 0"
                 @click="previousImage"
               >
-                上一张
+                {{ t('ai.image.previous') }}
               </Button>
               <span class="text-sm text-muted-foreground">
                 {{ currentImageIndex + 1 }} / {{ generatedImages.length }}
@@ -594,7 +596,7 @@ function getTimeRemainingClass(index: number): string {
                 :disabled="currentImageIndex >= generatedImages.length - 1"
                 @click="nextImage"
               >
-                下一张
+                {{ t('ai.image.next') }}
               </Button>
             </div>
 
@@ -603,13 +605,13 @@ function getTimeRemainingClass(index: number): string {
               <div class="relative group cursor-pointer max-w-lg inline-flex justify-center" @click="viewFullImage(generatedImages[currentImageIndex])">
                 <img
                   :src="generatedImages[currentImageIndex]"
-                  :alt="`生成的图像 ${currentImageIndex + 1}`"
+                  :alt="t('ai.image.generatedImageAlt', { n: currentImageIndex + 1 })"
                   class="max-w-full h-[300px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
                 >
                 <!-- 点击查看大图提示 -->
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <div class="bg-black/70 text-white px-3 py-1 rounded-md text-sm">
-                    点击查看大图
+                    {{ t('ai.image.clickToViewLarge') }}
                   </div>
                 </div>
               </div>
@@ -618,19 +620,19 @@ function getTimeRemainingClass(index: number): string {
             <!-- 图像信息 -->
             <div class="px-2 sm:px-4 py-2 bg-muted/10 rounded space-y-1">
               <p class="text-xs text-muted-foreground text-center">
-                尺寸: {{ size }}
+                {{ t('ai.image.size') }}: {{ size }}
               </p>
               <!-- 提示词 -->
               <div class="text-xs text-muted-foreground break-words text-center">
-                <span class="font-medium">提示词:</span>
-                <span class="ml-1">{{ imagePrompts[currentImageIndex] || '无关联提示词' }}</span>
+                <span class="font-medium">{{ t('ai.image.prompt') }}:</span>
+                <span class="ml-1">{{ imagePrompts[currentImageIndex] || t('ai.image.noPrompt') }}</span>
               </div>
               <div class="text-xs text-muted-foreground text-center">
-                <span class="font-medium">剩余有效期:</span>
+                <span class="font-medium">{{ t('ai.image.remainingValidity') }}:</span>
                 <span class="ml-1" :class="getTimeRemainingClass(currentImageIndex)">
                   {{ getTimeRemaining(currentImageIndex) }}
                 </span>
-                <span class="font-medium">，请及时下载保存</span>
+                <span class="font-medium">{{ t('ai.image.downloadReminder') }}</span>
               </div>
             </div>
 
@@ -643,7 +645,7 @@ function getTimeRemainingClass(index: number): string {
                 @click="insertImageToCursor(generatedImages[currentImageIndex])"
               >
                 <ImageIcon class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                插入
+                {{ t('common.insert') }}
               </Button>
               <Button
                 variant="outline"
@@ -652,7 +654,7 @@ function getTimeRemainingClass(index: number): string {
                 @click="downloadImage(generatedImages[currentImageIndex], currentImageIndex)"
               >
                 <Download class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                下载
+                {{ t('common.download') }}
               </Button>
               <Button
                 variant="outline"
@@ -661,7 +663,7 @@ function getTimeRemainingClass(index: number): string {
                 @click="copyImageUrl(generatedImages[currentImageIndex])"
               >
                 <Copy class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                复制
+                {{ t('common.copy') }}
               </Button>
               <Button
                 variant="outline"
@@ -670,7 +672,7 @@ function getTimeRemainingClass(index: number): string {
                 @click="regenerateImage"
               >
                 <RefreshCcw class="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                重新生成
+                {{ t('ai.image.regenerate') }}
               </Button>
             </div>
           </div>
@@ -684,7 +686,7 @@ function getTimeRemainingClass(index: number): string {
         >
           <Textarea
             v-model="prompt"
-            placeholder="描述你想要生成的图像... (Enter 生成，Shift+Enter 换行)"
+            :placeholder="t('ai.image.inputPlaceholder')"
             rows="2"
             class="custom-scroll min-h-16 w-full resize-none border-none bg-transparent p-0 focus-visible:outline-hidden focus:outline-hidden focus-visible:ring-0 focus:ring-0 focus-visible:ring-offset-0 focus:ring-offset-0 focus-visible:ring-transparent focus:ring-transparent"
             @keydown="handleKeydown"
@@ -700,7 +702,7 @@ function getTimeRemainingClass(index: number): string {
               // eslint-disable-next-line vue/prefer-separate-static-class
               'bg-primary hover:bg-primary/90 text-primary-foreground',
             ]"
-            :aria-label="loading ? '取消' : '生成'"
+            :aria-label="loading ? t('common.cancel') : t('ai.image.generate')"
             @click="loading ? cancelGeneration() : generateImage()"
           >
             <Loader2 v-if="loading" class="h-4 w-4 animate-spin" />
@@ -719,7 +721,7 @@ function getTimeRemainingClass(index: number): string {
       tabindex="-1"
       role="dialog"
       aria-modal="true"
-      aria-label="图片预览"
+      :aria-label="t('ai.image.preview')"
       class="fixed inset-0 z-[1000] bg-black/90 flex items-center justify-center"
       @click.self="closePreview"
       @click.stop
@@ -729,8 +731,8 @@ function getTimeRemainingClass(index: number): string {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="关闭预览"
-        title="关闭预览"
+        :aria-label="t('ai.image.closePreview')"
+        :title="t('ai.image.closePreview')"
         class="absolute top-4 right-4 text-white hover:bg-white/20 z-10"
         @click.stop="closePreview"
       >
@@ -738,7 +740,7 @@ function getTimeRemainingClass(index: number): string {
       </Button>
       <img
         :src="previewImageUrl"
-        alt="预览大图"
+        :alt="t('ai.image.previewLarge')"
         class="max-w-[95vw] max-h-[95vh] object-contain"
         @click.stop="closePreview"
       >

@@ -50,7 +50,7 @@ function onUpdate(val: boolean) {
 
 <template>
   <Dialog :open="props.open" @update:open="onUpdate">
-    <DialogContent :class="dialogContentClass">
+    <DialogContent :class="dialogContentClass" @open-auto-focus.prevent>
       <div
         aria-hidden="true"
         class="mx-auto mt-2 mb-1 h-1 w-10 shrink-0 rounded-full bg-muted-foreground/25 sm:hidden"

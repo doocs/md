@@ -1,6 +1,7 @@
 import { toBase64 } from '@md/shared/utils/fileHelpers'
 import SparkMD5 from 'spark-md5'
 import { ref } from 'vue'
+import { t } from '@/i18n/translate'
 import { fileUpload } from '@/services/upload'
 import { store } from '@/storage'
 
@@ -33,10 +34,10 @@ export function useImageUploader() {
           resolve(spark.end())
         }
         else {
-          reject(new Error('文件读取失败'))
+          reject(new Error(t('store.uploader.fileReadFailed')))
         }
       }
-      fileReader.onerror = () => reject(new Error('文件读取错误'))
+      fileReader.onerror = () => reject(new Error(t('store.uploader.fileReadError')))
       fileReader.readAsArrayBuffer(file)
     })
   }
@@ -69,8 +70,8 @@ export function useImageUploader() {
         console.error(`Proxy fetch failed for ${url}`, proxyErr)
         const isCors = proxyErr.message.includes('Failed to fetch') || proxyErr.name === 'TypeError'
         const msg = isCors
-          ? '跨域请求失败：目标图片禁止了跨域访问，且代理服务也无法获取。'
-          : `图片下载失败: ${proxyErr.message}`
+          ? t('store.uploader.corsFailed')
+          : t('store.uploader.downloadFailed', { message: proxyErr.message })
         throw new Error(msg)
       }
     }
@@ -107,7 +108,7 @@ export function useImageUploader() {
     }
     catch (err: any) {
       console.error(err)
-      const msg = err.message || '上传失败'
+      const msg = err.message || t('store.uploader.uploadFailed')
       error.value = msg
       throw new Error(msg)
     }

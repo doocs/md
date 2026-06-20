@@ -37,6 +37,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { asSub } = toRefs(props)
+const { t } = useI18n()
 
 const editorStore = useEditorStore()
 const themeStore = useThemeStore()
@@ -64,10 +65,11 @@ const colorState = reactive({
 })
 
 const headingIcons = [Heading1, Heading2, Heading3, Heading4, Heading5, Heading6]
-const headingLevels = baseHeadingLevels.map((item, index) => ({
+const headingLevels = computed(() => baseHeadingLevels.map((item, index) => ({
   ...item,
   icon: headingIcons[index],
-}))
+  label: t(`menu.headingN`, { n: item.level }),
+})))
 
 function textColorChanged(color: string) {
   colorState.textColor = color
@@ -82,13 +84,13 @@ function textColorChanged(color: string) {
   <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
-      格式
+      {{ t('menu.format') }}
     </MenubarSubTrigger>
-    <MenubarSubContent class="w-64">
+    <MenubarSubContent class="min-w-64">
       <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />
-        加粗
+        {{ t('menu.bold') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">B</kbd>
@@ -96,7 +98,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-I`)">
         <Italic class="mr-2 h-4 w-4" />
-        斜体
+        {{ t('menu.italic') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">I</kbd>
@@ -104,7 +106,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-D`)">
         <Strikethrough class="mr-2 h-4 w-4" />
-        删除线
+        {{ t('menu.strikethrough') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
@@ -112,7 +114,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-K`)">
         <Link class="mr-2 h-4 w-4" />
-        超链接
+        {{ t('menu.link') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">K</kbd>
@@ -120,7 +122,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-E`)">
         <Code class="mr-2 h-4 w-4" />
-        行内代码
+        {{ t('menu.inlineCode') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
@@ -131,7 +133,7 @@ function textColorChanged(color: string) {
         <HoverCardTrigger as-child>
           <MenubarItem @click.prevent>
             <Paintbrush class="mr-2 h-4 w-4" />
-            文字颜色
+            {{ t('menu.textColor') }}
           </MenubarItem>
         </HoverCardTrigger>
         <HoverCardContent side="right" class="w-min">
@@ -154,9 +156,9 @@ function textColorChanged(color: string) {
       <MenubarSub>
         <MenubarSubTrigger>
           <Heading1 class="mr-2 h-4 w-4" />
-          标题
+          {{ t('menu.heading') }}
         </MenubarSubTrigger>
-        <MenubarSubContent class="w-48">
+        <MenubarSubContent class="min-w-44">
           <MenubarItem
             v-for="{ level, icon, label } in headingLevels"
             :key="level"
@@ -173,7 +175,7 @@ function textColorChanged(color: string) {
       </MenubarSub>
       <MenubarItem @click="addFormat(`${ctrlKey}-U`)">
         <List class="mr-2 h-4 w-4" />
-        无序列表
+        {{ t('menu.unorderedList') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">U</kbd>
@@ -181,7 +183,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-O`)">
         <ListOrdered class="mr-2 h-4 w-4" />
-        有序列表
+        {{ t('menu.orderedList') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">O</kbd>
@@ -192,11 +194,11 @@ function textColorChanged(color: string) {
 
       <MenubarItem @click="citeStatusChanged()">
         <Link2 class="mr-2 h-4 w-4" />
-        微信外链转引用
+        {{ t('menu.wechatLinkToCite') }}
       </MenubarItem>
       <MenubarItem @click="countStatusChanged()">
         <Clock class="mr-2 h-4 w-4" />
-        统计字数时间
+        {{ t('menu.wordCountTime') }}
       </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
@@ -204,13 +206,13 @@ function textColorChanged(color: string) {
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
-      格式
+      {{ t('menu.format') }}
     </MenubarTrigger>
-    <MenubarContent class="w-64" align="start">
+    <MenubarContent class="min-w-64" align="start">
       <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />
-        加粗
+        {{ t('menu.bold') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">B</kbd>
@@ -218,7 +220,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-I`)">
         <Italic class="mr-2 h-4 w-4" />
-        斜体
+        {{ t('menu.italic') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">I</kbd>
@@ -226,7 +228,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-D`)">
         <Strikethrough class="mr-2 h-4 w-4" />
-        删除线
+        {{ t('menu.strikethrough') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">D</kbd>
@@ -234,7 +236,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-K`)">
         <Link class="mr-2 h-4 w-4" />
-        超链接
+        {{ t('menu.link') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">K</kbd>
@@ -242,7 +244,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-E`)">
         <Code class="mr-2 h-4 w-4" />
-        行内代码
+        {{ t('menu.inlineCode') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">E</kbd>
@@ -253,7 +255,7 @@ function textColorChanged(color: string) {
         <HoverCardTrigger as-child>
           <MenubarItem @click.prevent>
             <Paintbrush class="mr-2 h-4 w-4" />
-            文字颜色
+            {{ t('menu.textColor') }}
           </MenubarItem>
         </HoverCardTrigger>
         <HoverCardContent side="right" class="w-min">
@@ -276,9 +278,9 @@ function textColorChanged(color: string) {
       <MenubarSub>
         <MenubarSubTrigger>
           <Heading1 class="mr-2 h-4 w-4" />
-          标题
+          {{ t('menu.heading') }}
         </MenubarSubTrigger>
-        <MenubarSubContent class="w-48">
+        <MenubarSubContent class="min-w-44">
           <MenubarItem
             v-for="{ level, icon, label } in headingLevels"
             :key="level"
@@ -295,7 +297,7 @@ function textColorChanged(color: string) {
       </MenubarSub>
       <MenubarItem @click="addFormat(`${ctrlKey}-U`)">
         <List class="mr-2 h-4 w-4" />
-        无序列表
+        {{ t('menu.unorderedList') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">U</kbd>
@@ -303,7 +305,7 @@ function textColorChanged(color: string) {
       </MenubarItem>
       <MenubarItem @click="addFormat(`${ctrlKey}-O`)">
         <ListOrdered class="mr-2 h-4 w-4" />
-        有序列表
+        {{ t('menu.orderedList') }}
         <MenubarShortcut>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">{{ ctrlSign }}</kbd>
           <kbd class="mx-1 bg-gray-2 dark:bg-stone-9">O</kbd>
@@ -314,11 +316,11 @@ function textColorChanged(color: string) {
 
       <MenubarItem @click="citeStatusChanged()">
         <Link2 class="mr-2 h-4 w-4" />
-        微信外链转引用
+        {{ t('menu.wechatLinkToCite') }}
       </MenubarItem>
       <MenubarItem @click="countStatusChanged()">
         <Clock class="mr-2 h-4 w-4" />
-        统计字数时间
+        {{ t('menu.wordCountTime') }}
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>

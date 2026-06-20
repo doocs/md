@@ -3,6 +3,8 @@ import { createTable } from '@md/shared/utils/fileHelpers'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
+
 const editorStore = useEditorStore()
 const uiStore = useUIStore()
 
@@ -45,11 +47,11 @@ function onUpdate(val: boolean) {
   <Dialog :open="uiStore.isShowInsertFormDialog" @update:open="onUpdate">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>插入表格</DialogTitle>
+        <DialogTitle>{{ t('insertForm.title') }}</DialogTitle>
       </DialogHeader>
       <div class="space-x-2 flex justify-between">
         <NumberField v-model="rowNum" :min="1" :max="100">
-          <Label>行数</Label>
+          <Label>{{ t('insertForm.rows') }}</Label>
           <NumberFieldContent>
             <NumberFieldDecrement />
             <NumberFieldInput />
@@ -57,7 +59,7 @@ function onUpdate(val: boolean) {
           </NumberFieldContent>
         </NumberField>
         <NumberField v-model="colNum" :min="1" :max="100">
-          <Label>列数</Label>
+          <Label>{{ t('insertForm.cols') }}</Label>
           <NumberFieldContent>
             <NumberFieldDecrement />
             <NumberFieldInput />
@@ -73,16 +75,16 @@ function onUpdate(val: boolean) {
             :class="{
               'bg-gray-100 dark:bg-gray-900': row === 1,
             }"
-            :placeholder="row === 1 ? '表头' : ''"
+            :placeholder="row === 1 ? t('insertForm.headerPlaceholder') : ''"
           />
         </div>
       </div>
       <DialogFooter>
         <Button variant="outline" @click="toggleShowInsertFormDialog(false)">
-          取 消
+          {{ t('common.cancel') }}
         </Button>
         <Button @click="insertTable">
-          确 定
+          {{ t('common.confirm') }}
         </Button>
       </DialogFooter>
     </DialogContent>

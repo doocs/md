@@ -1,6 +1,7 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
 import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
 import { v4 as uuidv4 } from 'uuid'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -60,7 +61,7 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
       updatedAt: now,
     }
     userComponents.value.push(def)
-    toast.success(`组件「${params.name}」创建成功`)
+    toast.success(t('store.component.created', { name: params.name }))
     return def
   }
 
@@ -70,7 +71,7 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   function updateComponent(id: string, params: UpdateComponentParams): boolean {
     const idx = userComponents.value.findIndex(c => c.id === id)
     if (idx === -1) {
-      toast.error(`组件不存在`)
+      toast.error(t('store.component.notFound'))
       return false
     }
     userComponents.value[idx] = {
@@ -78,7 +79,7 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
       ...params,
       updatedAt: Date.now(),
     }
-    toast.success(`组件已更新`)
+    toast.success(t('store.component.updated'))
     return true
   }
 
@@ -88,12 +89,12 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   function deleteComponent(id: string): boolean {
     const idx = userComponents.value.findIndex(c => c.id === id)
     if (idx === -1) {
-      toast.error(`组件不存在`)
+      toast.error(t('store.component.notFound'))
       return false
     }
     const name = userComponents.value[idx].name
     userComponents.value.splice(idx, 1)
-    toast.success(`组件「${name}」已删除`)
+    toast.success(t('store.component.deleted', { name }))
     return true
   }
 

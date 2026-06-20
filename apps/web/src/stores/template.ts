@@ -1,5 +1,6 @@
 import type { CreateTemplateParams, Template, UpdateTemplateParams } from '@md/shared'
 import { v4 as uuidv4 } from 'uuid'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -38,7 +39,7 @@ export const useTemplateStore = defineStore(`template`, () => {
     }
 
     templates.value.push(newTemplate)
-    toast.success(`模板「${params.name}」创建成功`)
+    toast.success(t('store.template.created', { name: params.name }))
     return newTemplate
   }
 
@@ -55,7 +56,7 @@ export const useTemplateStore = defineStore(`template`, () => {
   function updateTemplate(id: string, params: UpdateTemplateParams): boolean {
     const index = templates.value.findIndex(t => t.id === id)
     if (index === -1) {
-      toast.error(`模板不存在`)
+      toast.error(t('store.template.notFound'))
       return false
     }
 
@@ -65,7 +66,7 @@ export const useTemplateStore = defineStore(`template`, () => {
       updatedAt: Date.now(),
     }
 
-    toast.success(`模板已更新`)
+    toast.success(t('store.template.updated'))
     return true
   }
 
@@ -75,13 +76,13 @@ export const useTemplateStore = defineStore(`template`, () => {
   function deleteTemplate(id: string): boolean {
     const index = templates.value.findIndex(t => t.id === id)
     if (index === -1) {
-      toast.error(`模板不存在`)
+      toast.error(t('store.template.notFound'))
       return false
     }
 
     const templateName = templates.value[index].name
     templates.value.splice(index, 1)
-    toast.success(`模板「${templateName}」已删除`)
+    toast.success(t('store.template.deleted', { name: templateName }))
     return true
   }
 
@@ -117,7 +118,7 @@ export const useTemplateStore = defineStore(`template`, () => {
     })
 
     if (deletedCount > 0) {
-      toast.success(`已删除 ${deletedCount} 个模板`)
+      toast.success(t('store.template.batchDeleted', { count: deletedCount }))
     }
 
     return deletedCount
@@ -129,7 +130,7 @@ export const useTemplateStore = defineStore(`template`, () => {
   function clearAllTemplates(): void {
     const count = templates.value.length
     templates.value = []
-    toast.success(`已清空所有模板（共 ${count} 个）`)
+    toast.success(t('store.template.allCleared', { count }))
   }
 
   /**
@@ -147,7 +148,7 @@ export const useTemplateStore = defineStore(`template`, () => {
       const importedTemplates = JSON.parse(jsonData) as Template[]
 
       if (!Array.isArray(importedTemplates)) {
-        toast.error(`导入失败：数据格式不正确`)
+        toast.error(t('store.template.importInvalidFormat'))
         return false
       }
 
@@ -157,7 +158,7 @@ export const useTemplateStore = defineStore(`template`, () => {
       })
 
       if (validTemplates.length === 0) {
-        toast.error(`导入失败：没有有效的模板数据`)
+        toast.error(t('store.template.importNoValid'))
         return false
       }
 
@@ -176,12 +177,12 @@ export const useTemplateStore = defineStore(`template`, () => {
         }
       })
 
-      toast.success(`成功导入 ${validTemplates.length} 个模板`)
+      toast.success(t('store.template.importSuccess', { count: validTemplates.length }))
       return true
     }
     catch (error) {
       console.error(`Import templates failed:`, error)
-      toast.error(`导入失败：数据解析错误`)
+      toast.error(t('store.template.importParseError'))
       return false
     }
   }

@@ -55,6 +55,7 @@
     "uuid": "^14.0.0",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.38",
+    "vue-i18n": "^11.4.6",
     "vue-pick-colors": "^1.8.0",
     "vue-sonner": "^2.0.9",
     "yup": "^1.7.1"

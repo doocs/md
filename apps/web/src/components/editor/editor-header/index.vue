@@ -16,9 +16,11 @@ import InsertDropdown from './InsertDropdown.vue'
 import StyleDropdown from './StyleDropdown.vue'
 
 const emit = defineEmits([`startCopy`, `endCopy`])
+const { t } = useI18n()
 const AboutDialog = defineAsyncComponent(() => import('./AboutDialog.vue'))
 const FundDialog = defineAsyncComponent(() => import('./FundDialog.vue'))
 const EditorStateDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/EditorStateDialog.vue'))
+const PreferencesDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/PreferencesDialog.vue'))
 const MarkdownHelpDialog = defineAsyncComponent(() => import('./MarkdownHelpDialog.vue'))
 const KeyboardShortcutsDialog = defineAsyncComponent(() => import('./KeyboardShortcutsDialog.vue'))
 const AccountDialog = defineAsyncComponent(() => import('./AccountDialog.vue'))
@@ -35,7 +37,7 @@ const { editorRefresh } = useEditorRefresh()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowMarkdownHelpDialog, isShowKeyboardShortcutsDialog, copyMode } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowPreferencesDialog, isShowMarkdownHelpDialog, isShowKeyboardShortcutsDialog, copyMode } = storeToRefs(uiStore)
 
 const isCopying = ref(false)
 
@@ -104,10 +106,10 @@ async function copy() {
     try {
       const mdContent = editor.value?.state.doc.toString() || ``
       await copyContent(mdContent)
-      toast.success(`已复制 Markdown 源码到剪贴板。`)
+      toast.success(t(`toast.copiedMarkdown`))
     }
     catch (error) {
-      toast.error(`复制失败：${normalizeErrorMessage(error)}`)
+      toast.error(t(`toast.copyFailed`, { message: normalizeErrorMessage(error) }))
     }
     finally {
       isCopying.value = false
@@ -131,19 +133,19 @@ async function copy() {
           processedClipboardContent = await processClipboardContent(primaryColor.value)
         }
         catch (error) {
-          toast.error(`处理 HTML 失败，请联系开发者。${normalizeErrorMessage(error)}`)
+          toast.error(t(`toast.processHtmlFailed`, { message: normalizeErrorMessage(error) }))
           editorRefresh()
           return
         }
 
         if (processedClipboardContent.hasPendingAsyncContent) {
-          toast.warning(`部分图表或公式尚未渲染完成，已跳过未加载内容。请稍后再试。`)
+          toast.warning(t(`toast.asyncContentPending`))
         }
 
         const clipboardDiv = document.getElementById(`output`)
 
         if (!clipboardDiv) {
-          toast.error(`未找到复制输出区域，请刷新页面后重试。`)
+          toast.error(t(`toast.outputAreaMissing`))
           editorRefresh()
           return
         }
@@ -171,7 +173,7 @@ async function copy() {
             if (!fallbackSucceeded) {
               window.getSelection()?.removeAllRanges()
               editorRefresh()
-              toast.error(`复制失败，请联系开发者。${normalizeErrorMessage(error)}`)
+              toast.error(t(`toast.copyFailedContactDev`, { message: normalizeErrorMessage(error) }))
               return
             }
           }
@@ -190,8 +192,8 @@ async function copy() {
         // 输出提示
         toast.success(
           copyMode.value === `html`
-            ? `已复制 HTML 源码，请进行下一步操作。`
-            : `已复制渲染后的内容到剪贴板，可直接到公众号后台粘贴。`,
+            ? t(`toast.copiedHtml`)
+            : t(`toast.copiedRendered`),
         )
         window.dispatchEvent(
           new CustomEvent(`copyToMp`, {
@@ -203,7 +205,7 @@ async function copy() {
         editorRefresh()
       }
       catch (error) {
-        toast.error(`复制失败：${normalizeErrorMessage(error)}`)
+        toast.error(t(`toast.copyFailed`, { message: normalizeErrorMessage(error) }))
         editorRefresh()
       }
       finally {
@@ -273,7 +275,7 @@ function copyToWeChat() {
       >
         <Loader2 v-if="isCopying" class="mr-2 h-4 w-4 animate-spin" />
         <Copy v-else class="mr-2 h-4 w-4" />
-        <span>复制</span>
+        <span>{{ t('header.copy') }}</span>
       </Button>
 
       <!-- 文章信息（移动端隐藏） -->
@@ -287,7 +289,7 @@ function copyToWeChat() {
         @click="isOpenRightSlider = !isOpenRightSlider"
       >
         <Palette class="mr-2 h-4 w-4" />
-        <span>样式</span>
+        <span>{{ t('header.style') }}</span>
       </Button>
     </div>
   </header>
@@ -296,6 +298,7 @@ function copyToWeChat() {
   <AboutDialog v-if="isShowAboutDialog" v-model:open="isShowAboutDialog" />
   <FundDialog v-if="isShowFundDialog" v-model:open="isShowFundDialog" />
   <EditorStateDialog v-if="isShowEditorStateDialog" v-model:open="isShowEditorStateDialog" />
+  <PreferencesDialog v-model:open="isShowPreferencesDialog" />
   <MarkdownHelpDialog v-if="isShowMarkdownHelpDialog" v-model:open="isShowMarkdownHelpDialog" />
   <KeyboardShortcutsDialog v-if="isShowKeyboardShortcutsDialog" v-model:open="isShowKeyboardShortcutsDialog" />
   <AccountDialog v-if="isShowAccountDialog" v-model:open="isShowAccountDialog" />

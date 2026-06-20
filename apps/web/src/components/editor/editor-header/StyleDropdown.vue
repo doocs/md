@@ -6,14 +6,10 @@ import type { Format } from 'vue-pick-colors'
 import { ALargeSmall, Code, Droplet, FileCode, ImageIcon, Palette, Pipette, RotateCcw, SquareCode, Type } from '@lucide/vue'
 import {
   codeBlockThemeOptions,
-  colorOptions,
-  fontFamilyOptions,
-  fontSizeOptions,
-  legendOptions,
-  themeOptions,
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
+import { useLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
@@ -26,6 +22,8 @@ const props = withDefaults(defineProps<{
 })
 
 const { asSub } = toRefs(props)
+const { t } = useI18n()
+const localizedStyleOptions = useLocalizedStyleOptions()
 
 const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
@@ -92,14 +90,14 @@ function macCodeBlockChanged() {
 
 function resetStyleConfirm() {
   confirmStore.confirm({
-    title: '提示',
-    description: '此操作将丢失本地自定义样式，是否继续？',
+    title: t(`confirm.tip`),
+    description: t(`confirm.resetStyleDescription`),
     onConfirm: () => {
       themeStore.resetStyle()
       cssEditorStore.resetCssConfig()
       themeStore.applyCurrentTheme()
       editorRefresh()
-      toast.success(`样式已重置`)
+      toast.success(t(`toast.styleReset`))
     },
   })
 }
@@ -124,48 +122,51 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
   <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
-      样式
+      {{ t('menu.style') }}
     </MenubarSubTrigger>
-    <MenubarSubContent class="w-56">
+    <MenubarSubContent class="min-w-56 max-h-56 overflow-auto">
       <StyleOptionMenu
-        title="主题"
-        :options="themeOptions"
+        :title="t('menu.theme')"
+        :options="localizedStyleOptions.themeOptions"
         :current="theme"
         :change="themeChanged"
         :icon="Palette"
       />
       <MenubarSeparator />
       <StyleOptionMenu
-        title="字体"
-        :options="fontFamilyOptions"
+        :title="t('menu.font')"
+        style-key="font"
+        :options="localizedStyleOptions.fontFamilyOptions"
         :current="fontFamily"
         :change="fontChanged"
         :icon="Type"
       />
       <StyleOptionMenu
-        title="字号"
-        :options="fontSizeOptions"
+        :title="t('menu.fontSize')"
+        style-key="fontSize"
+        :options="localizedStyleOptions.fontSizeOptions"
         :current="fontSize"
         :change="sizeChanged"
         :icon="ALargeSmall"
       />
       <StyleOptionMenu
-        title="主题色"
-        :options="colorOptions"
+        :title="t('menu.primaryColor')"
+        style-key="color"
+        :options="localizedStyleOptions.colorOptions"
         :current="primaryColor"
         :change="colorChanged"
         :icon="Droplet"
       />
       <StyleOptionMenu
-        title="代码块主题"
+        :title="t('menu.codeBlockTheme')"
         :options="codeBlockThemeOptions"
         :current="codeBlockTheme"
         :change="codeBlockThemeChanged"
         :icon="Code"
       />
       <StyleOptionMenu
-        title="图注格式"
-        :options="legendOptions"
+        :title="t('menu.legendFormat')"
+        :options="localizedStyleOptions.legendOptions"
         :current="legend"
         :change="legendChanged"
         :icon="ImageIcon"
@@ -175,7 +176,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <HoverCard :open-delay="100">
           <HoverCardTrigger class="w-full flex">
             <Pipette class="mr-2 h-4 w-4" />
-            自定义主题色
+            {{ t('menu.customPrimaryColor') }}
           </HoverCardTrigger>
           <HoverCardContent side="right" class="w-min">
             <div ref="pickColorsContainer">
@@ -193,17 +194,17 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </MenubarCheckboxItem>
       <MenubarCheckboxItem class="pl-2" @click="customStyle">
         <FileCode class="mr-2 h-4 w-4" />
-        自定义 CSS
+        {{ t('menu.customCss') }}
       </MenubarCheckboxItem>
       <MenubarSeparator />
       <MenubarCheckboxItem class="pl-2" @click="macCodeBlockChanged">
         <SquareCode class="mr-2 h-4 w-4" />
-        Mac 代码块
+        {{ t('menu.macCodeBlock') }}
       </MenubarCheckboxItem>
       <MenubarSeparator />
       <MenubarCheckboxItem class="pl-2" divided @click="resetStyleConfirm">
         <RotateCcw class="mr-2 h-4 w-4" />
-        重置
+        {{ t('menu.reset') }}
       </MenubarCheckboxItem>
     </MenubarSubContent>
   </MenubarSub>
@@ -211,48 +212,51 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
-      样式
+      {{ t('menu.style') }}
     </MenubarTrigger>
-    <MenubarContent class="w-56" align="start">
+    <MenubarContent class="min-w-56" align="start">
       <StyleOptionMenu
-        title="主题"
-        :options="themeOptions"
+        :title="t('menu.theme')"
+        :options="localizedStyleOptions.themeOptions"
         :current="theme"
         :change="themeChanged"
         :icon="Palette"
       />
       <MenubarSeparator />
       <StyleOptionMenu
-        title="字体"
-        :options="fontFamilyOptions"
+        :title="t('menu.font')"
+        style-key="font"
+        :options="localizedStyleOptions.fontFamilyOptions"
         :current="fontFamily"
         :change="fontChanged"
         :icon="Type"
       />
       <StyleOptionMenu
-        title="字号"
-        :options="fontSizeOptions"
+        :title="t('menu.fontSize')"
+        style-key="fontSize"
+        :options="localizedStyleOptions.fontSizeOptions"
         :current="fontSize"
         :change="sizeChanged"
         :icon="ALargeSmall"
       />
       <StyleOptionMenu
-        title="主题色"
-        :options="colorOptions"
+        :title="t('menu.primaryColor')"
+        style-key="color"
+        :options="localizedStyleOptions.colorOptions"
         :current="primaryColor"
         :change="colorChanged"
         :icon="Droplet"
       />
       <StyleOptionMenu
-        title="代码块主题"
+        :title="t('menu.codeBlockTheme')"
         :options="codeBlockThemeOptions"
         :current="codeBlockTheme"
         :change="codeBlockThemeChanged"
         :icon="Code"
       />
       <StyleOptionMenu
-        title="图注格式"
-        :options="legendOptions"
+        :title="t('menu.legendFormat')"
+        :options="localizedStyleOptions.legendOptions"
         :current="legend"
         :change="legendChanged"
         :icon="ImageIcon"
@@ -262,7 +266,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <HoverCard :open-delay="100">
           <HoverCardTrigger class="w-full flex">
             <Pipette class="mr-2 h-4 w-4" />
-            自定义主题色
+            {{ t('menu.customPrimaryColor') }}
           </HoverCardTrigger>
           <HoverCardContent side="right" class="w-min">
             <div ref="pickColorsContainer">
@@ -280,17 +284,17 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </MenubarCheckboxItem>
       <MenubarCheckboxItem class="pl-2" @click="customStyle">
         <FileCode class="mr-2 h-4 w-4" />
-        自定义 CSS
+        {{ t('menu.customCss') }}
       </MenubarCheckboxItem>
       <MenubarSeparator />
       <MenubarCheckboxItem class="pl-2" @click="macCodeBlockChanged">
         <SquareCode class="mr-2 h-4 w-4" />
-        Mac 代码块
+        {{ t('menu.macCodeBlock') }}
       </MenubarCheckboxItem>
       <MenubarSeparator />
       <MenubarCheckboxItem class="pl-2" divided @click="resetStyleConfirm">
         <RotateCcw class="mr-2 h-4 w-4" />
-        重置
+        {{ t('menu.reset') }}
       </MenubarCheckboxItem>
     </MenubarContent>
   </MenubarMenu>

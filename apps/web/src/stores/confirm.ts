@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia'
+import { t } from '@/i18n/translate'
 
 interface ConfirmOptions {
   title?: string
@@ -15,20 +16,20 @@ interface ConfirmOptions {
 
 export const useConfirmStore = defineStore('confirm', () => {
   const isOpen = ref(false)
-  const title = ref('提示')
+  const title = ref(t('common.tip'))
   const description = ref('')
-  const cancelText = ref('取消')
-  const confirmText = ref('确定')
+  const cancelText = ref(t('common.cancel'))
+  const confirmText = ref(t('common.confirm'))
   const destructive = ref(false)
 
   let _onConfirm: (() => void | Promise<void>) | null = null
   let _onCancel: (() => void) | null = null
 
   function confirm(options: ConfirmOptions) {
-    title.value = options.title ?? '提示'
+    title.value = options.title ?? t('common.tip')
     description.value = options.description ?? ''
-    cancelText.value = options.cancelText ?? '取消'
-    confirmText.value = options.confirmText ?? '确定'
+    cancelText.value = options.cancelText ?? t('common.cancel')
+    confirmText.value = options.confirmText ?? t('common.confirm')
     destructive.value = options.destructive ?? false
     _onConfirm = options.onConfirm ?? null
     _onCancel = options.onCancel ?? null

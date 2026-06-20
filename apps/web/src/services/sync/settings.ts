@@ -23,7 +23,7 @@ export const SYNC_SETTING_KEYS: string[] = [
   `legend`,
   `previewWidth`,
   // 编辑器 / UI 偏好
-  `isEditOnLeft`,
+  `locale`,
   `showAIToolbox`,
   `viewMode`,
   `previewDevice`,

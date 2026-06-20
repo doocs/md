@@ -22,6 +22,7 @@ const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 
 const { hasShownAIToolboxHint } = storeToRefs(uiStore)
+const { t } = useI18n()
 
 // 工具栏状态：false=默认(只显示贴边栏), true=展开(显示AI图标)
 const isExpanded = ref(false) // 默认收起状态
@@ -201,7 +202,7 @@ onMounted(() => {
       v-if="!isExpanded"
       class="w-5 h-16 bg-gradient-to-b from-blue-500/90 to-purple-500/90 hover:from-blue-600/95 hover:to-purple-600/95 dark:from-blue-400/90 dark:to-purple-400/90 dark:hover:from-blue-500/95 dark:hover:to-purple-500/95 backdrop-blur-lg border-l border-y border-blue-300/50 dark:border-blue-600/50 cursor-pointer transition-all duration-200 flex items-center justify-center rounded-l-lg shadow-lg group utools-sidebar-edge"
       :class="{ 'animate-pulse-hint': showSelectionHint }"
-      title="展开AI工具栏"
+      :title="t('ai.toolbar.expand')"
       @click="toggleExpanded"
     >
       <Settings2 class="h-4 w-4 text-white drop-shadow-sm group-hover:scale-110 transition-transform duration-200" />
@@ -215,7 +216,7 @@ onMounted(() => {
         >
           <div class="relative flex items-center gap-2">
             <Wand2 class="h-4 w-4" />
-            <span>点击打开 AI 工具箱</span>
+            <span>{{ t('ai.toolbar.openToolboxHint') }}</span>
             <!-- 箭头 -->
             <div class="hint-arrow absolute top-1/2 -right-2 -translate-y-1/2 w-0 h-0 border-t-[6px] border-b-[6px] border-l-[6px] border-transparent border-l-purple-500" />
           </div>
@@ -235,7 +236,7 @@ onMounted(() => {
         <div class="flex flex-col items-center gap-1 px-1">
           <button
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
-            title="AI助手"
+            :title="t('ai.toolbar.assistant')"
             @click="openAIChat"
           >
             <Bot class="h-4 w-4" />
@@ -243,7 +244,7 @@ onMounted(() => {
 
           <!-- 标签 -->
           <span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">
-            助手
+            {{ t('ai.toolbar.assistantLabel') }}
           </span>
         </div>
 
@@ -256,7 +257,7 @@ onMounted(() => {
         <div class="flex flex-col items-center gap-1 px-1">
           <button
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
-            title="AI文生图"
+            :title="t('ai.toolbar.imageGen')"
             @click="openAIImageGenerator"
           >
             <ImageIcon class="h-4 w-4" />
@@ -264,7 +265,7 @@ onMounted(() => {
 
           <!-- 标签 -->
           <span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">
-            文生图
+            {{ t('ai.toolbar.imageGenLabel') }}
           </span>
         </div>
 
@@ -277,7 +278,7 @@ onMounted(() => {
         <div v-if="hasSelectedText && isExpanded" class="flex flex-col items-center gap-1 px-1">
           <button
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
-            title="AI工具箱"
+            :title="t('ai.toolbar.toolbox')"
             @click="openAIToolBox"
           >
             <Wand2 class="h-4 w-4" />
@@ -285,7 +286,7 @@ onMounted(() => {
 
           <!-- 标签 -->
           <span class="text-[9px] text-gray-500 dark:text-gray-400 font-medium text-center leading-tight">
-            工具箱
+            {{ t('ai.toolbar.toolboxLabel') }}
           </span>
         </div>
       </div>

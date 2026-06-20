@@ -1,4 +1,5 @@
 import type { EditorView } from '@codemirror/view'
+import { t } from '@/i18n/translate'
 
 /**
  * 编辑器 Store
@@ -54,7 +55,7 @@ export const useEditorStore = defineStore(`editor`, () => {
     editor.value.dispatch({
       changes: { from: 0, to: editor.value.state.doc.length, insert: `` },
     })
-    toast.success(`内容已清空`)
+    toast.success(t('store.editor.contentCleared'))
   }
 
   // 获取当前内容

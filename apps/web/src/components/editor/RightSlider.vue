@@ -6,20 +6,11 @@ import type {
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
 import { X } from '@lucide/vue'
-import {
-  codeBlockThemeOptions,
-  colorOptions,
-  fontFamilyOptions,
-  fontSizeOptions,
-  headingLevelOptions,
-  headingStyleOptions,
-  legendOptions,
-  themeOptions,
-} from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
+import { useLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
@@ -29,6 +20,8 @@ const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
+const { t } = useI18n()
+const localizedStyleOptions = useLocalizedStyleOptions()
 const {
   theme,
   fontFamily,
@@ -166,14 +159,14 @@ function setUseJustify(checked: boolean) {
 
 function resetStyleConfirm() {
   confirmStore.confirm({
-    title: '提示',
-    description: '此操作将丢失本地自定义样式，是否继续？',
+    title: t(`confirm.tip`),
+    description: t(`confirm.resetStyleDescription`),
     onConfirm: () => {
       themeStore.resetStyle()
       cssEditorStore.resetCssConfig()
       themeStore.applyCurrentTheme()
       editorRefresh()
-      toast.success(`样式已重置`)
+      toast.success(t(`toast.styleReset`))
     },
   })
 }
@@ -224,7 +217,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div aria-hidden="true" class="mx-auto mb-2 h-1 w-10 rounded-full bg-muted-foreground/25" />
         <div class="flex items-center justify-between">
           <h2 class="text-lg font-semibold">
-            样式设置
+            {{ t('rightSlider.title') }}
           </h2>
           <Button variant="ghost" size="sm" @click="isOpenRightSlider = false">
             <X class="h-4 w-4" />
@@ -234,11 +227,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          主题
+          {{ t('menu.theme') }}
         </h2>
-        <div class="grid grid-cols-3 justify-items-center gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <Button
-            v-for="{ label, value } in themeOptions" :key="value" class="w-full" variant="outline" :class="{
+            v-for="{ label, value } in localizedStyleOptions.themeOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
               'border-primary ring-1 ring-primary/20 border-2': theme === value,
             }" @click="themeChanged(value)"
           >
@@ -248,11 +241,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          字体
+          {{ t('menu.font') }}
         </h2>
-        <div class="grid grid-cols-3 justify-items-center gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <Button
-            v-for="{ label, value } in fontFamilyOptions" :key="value" variant="outline" class="w-full"
+            v-for="{ label, value } in localizedStyleOptions.fontFamilyOptions" :key="value" variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap"
             :class="{ 'border-primary ring-1 ring-primary/20 border-2': fontFamily === value }" @click="fontChanged(value)"
           >
             {{ label }}
@@ -261,30 +254,30 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          字号
+          {{ t('menu.fontSize') }}
         </h2>
-        <div class="grid grid-cols-5 justify-items-center gap-2">
+        <div class="grid grid-cols-5 gap-1.5">
           <Button
-            v-for="{ value, desc } in fontSizeOptions" :key="value" variant="outline" class="w-full" :class="{
+            v-for="{ label, value, desc } in localizedStyleOptions.fontSizeOptions" :key="value" variant="outline" class="h-auto w-full px-1 py-2 text-xs whitespace-nowrap" :title="desc" :class="{
               'border-primary ring-1 ring-primary/20 border-2': fontSize === value,
             }" @click="sizeChanged(value)"
           >
-            {{ desc }}
+            {{ label }}
           </Button>
         </div>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          主题色
+          {{ t('menu.primaryColor') }}
         </h2>
-        <div class="grid grid-cols-3 justify-items-center gap-2">
+        <div class="grid grid-cols-3 gap-2">
           <Button
-            v-for="{ label, value } in colorOptions" :key="value" class="w-full" variant="outline" :class="{
+            v-for="{ label, value } in localizedStyleOptions.colorOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
               'border-primary ring-1 ring-primary/20 border-2': primaryColor === value,
             }" @click="colorChanged(value)"
           >
             <span
-              class="mr-2 inline-block h-4 w-4 rounded-full" :style="{
+              class="mr-1.5 inline-block size-3 shrink-0 rounded-full" :style="{
                 background: value,
               }"
             />
@@ -294,7 +287,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          自定义主题色
+          {{ t('menu.customPrimaryColor') }}
         </h2>
         <div ref="pickColorsContainer">
           <PickColors
@@ -306,25 +299,25 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          标题样式
+          {{ t('rightSlider.headingStyle') }}
         </h2>
         <div class="flex gap-2">
           <Select v-model="selectedHeadingLevel">
             <SelectTrigger class="w-[120px]">
-              <SelectValue placeholder="选择标题" />
+              <SelectValue :placeholder="t('rightSlider.selectHeading')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="{ label, value } in headingLevelOptions" :key="value" :value="value">
+              <SelectItem v-for="{ label, value } in localizedStyleOptions.headingLevelOptions" :key="value" :value="value">
                 {{ label }}
               </SelectItem>
             </SelectContent>
           </Select>
           <Select v-model="selectedHeadingStyle">
             <SelectTrigger class="flex-1">
-              <SelectValue placeholder="选择样式" />
+              <SelectValue :placeholder="t('rightSlider.selectStyle')" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem v-for="{ label, value } in headingStyleOptions" :key="value" :value="value">
+              <SelectItem v-for="{ label, value } in localizedStyleOptions.headingStyleOptions" :key="value" :value="value">
                 {{ label }}
               </SelectItem>
             </SelectContent>
@@ -333,14 +326,14 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          代码块主题
+          {{ t('menu.codeBlockTheme') }}
         </h2>
         <Select v-model="codeBlockTheme" @update:model-value="codeBlockThemeChanged">
           <SelectTrigger>
-            <SelectValue placeholder="Select a code block theme" />
+            <SelectValue :placeholder="t('rightSlider.selectCodeBlockTheme')" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem v-for="{ label, value } in codeBlockThemeOptions" :key="label" :value="value">
+            <SelectItem v-for="{ label, value } in localizedStyleOptions.codeBlockThemeOptions" :key="label" :value="value">
               {{ label }}
             </SelectItem>
           </SelectContent>
@@ -348,11 +341,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          图注格式
+          {{ t('menu.legendFormat') }}
         </h2>
-        <div class="grid grid-cols-3 justify-items-center gap-2">
+        <div class="grid grid-cols-2 gap-2">
           <Button
-            v-for="{ label, value } in legendOptions" :key="value" class="w-full" variant="outline" :class="{
+            v-for="{ label, value } in localizedStyleOptions.legendOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
               'border-primary ring-1 ring-primary/20 border-2': legend === value,
             }" @click="legendChanged(value)"
           >
@@ -361,31 +354,31 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         </div>
       </div>
       <div class="flex items-center justify-between gap-3">
-        <Label for="mac-code-block" class="text-sm">Mac 代码块</Label>
-        <Switch id="mac-code-block" :model-value="isMacCodeBlock" @update:model-value="setMacCodeBlock" />
+        <Label for="mac-code-block" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('menu.macCodeBlock') }}</Label>
+        <Switch id="mac-code-block" class="shrink-0" :model-value="isMacCodeBlock" @update:model-value="setMacCodeBlock" />
       </div>
       <div class="flex items-center justify-between gap-3">
-        <Label for="show-line-number" class="text-sm">代码块行号</Label>
-        <Switch id="show-line-number" :model-value="isShowLineNumber" @update:model-value="setShowLineNumber" />
+        <Label for="show-line-number" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.codeBlockLineNumber') }}</Label>
+        <Switch id="show-line-number" class="shrink-0" :model-value="isShowLineNumber" @update:model-value="setShowLineNumber" />
       </div>
       <div class="flex items-center justify-between gap-3">
-        <Label for="cite-status" class="text-sm">微信外链转底部引用</Label>
-        <Switch id="cite-status" :model-value="isCiteStatus" @update:model-value="setCiteStatus" />
+        <Label for="cite-status" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.citeStatus') }}</Label>
+        <Switch id="cite-status" class="shrink-0" :model-value="isCiteStatus" @update:model-value="setCiteStatus" />
       </div>
       <div class="flex items-center justify-between gap-3">
-        <Label for="use-indent" class="text-sm">段落首行缩进</Label>
-        <Switch id="use-indent" :model-value="isUseIndent" @update:model-value="setUseIndent" />
+        <Label for="use-indent" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.paragraphIndent') }}</Label>
+        <Switch id="use-indent" class="shrink-0" :model-value="isUseIndent" @update:model-value="setUseIndent" />
       </div>
       <div class="flex items-center justify-between gap-3">
-        <Label for="use-justify" class="text-sm">段落两端对齐</Label>
-        <Switch id="use-justify" :model-value="isUseJustify" @update:model-value="setUseJustify" />
+        <Label for="use-justify" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.paragraphJustify') }}</Label>
+        <Switch id="use-justify" class="shrink-0" :model-value="isUseJustify" @update:model-value="setUseJustify" />
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
-          样式配置
+          {{ t('rightSlider.styleConfig') }}
         </h2>
         <Button variant="destructive" @click="resetStyleConfirm">
-          重置
+          {{ t('menu.reset') }}
         </Button>
       </div>
     </div>

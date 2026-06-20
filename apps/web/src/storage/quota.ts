@@ -1,3 +1,5 @@
+import { t } from '@/i18n/translate'
+
 let lastQuotaWarnAt = 0
 
 /** 本地存储配额不足时提示（5 秒内去重） */
@@ -6,7 +8,7 @@ export function warnStorageQuota(): void {
   if (now - lastQuotaWarnAt < 5000)
     return
   lastQuotaWarnAt = now
-  toast.warning(`本地存储空间不足，部分设置可能无法保存`)
+  toast.warning(t('toast.storageQuota'))
 }
 
 export function isStorageQuotaError(error: unknown): boolean {

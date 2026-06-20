@@ -6,6 +6,8 @@ import { removeLeft } from '@md/shared/utils/basicHelpers'
 import { store } from '@/storage'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
+
 const code = store.reactive(`formCustomConfig`, removeLeft(`
   const { file, util, okCb, errCb } = CUSTOM_ARG
   param = new FormData()
@@ -53,7 +55,7 @@ onUnmounted(() => {
 function formCustomSave() {
   const str = editor.value!.state.doc.toString()
   code.value = str
-  toast.success(`保存成功`)
+  toast.success(t('common.saveSuccess'))
 }
 </script>
 
@@ -73,12 +75,12 @@ function formCustomSave() {
         href="https://github.com/doocs/md/blob/main/docs/custom-upload.md"
         target="_blank" rel="noopener noreferrer"
       >
-        参数详情？
+        {{ t('customUpload.paramDetails') }}
       </Button>
     </div>
     <DialogFooter class="p-1">
       <Button @click="formCustomSave">
-        保存配置
+        {{ t('customUpload.saveConfig') }}
       </Button>
     </DialogFooter>
   </div>

@@ -11,6 +11,7 @@ import {
   updatePostSliderMenuOpen,
 } from './postSliderMenu'
 
+const { t } = useI18n()
 const confirmStore = useConfirmStore()
 const uiStore = useUIStore()
 const { isMobile, isOpenPostSlider } = storeToRefs(uiStore)
@@ -66,10 +67,10 @@ function openAddPostDialog(id: string) {
 
 function addPost() {
   if (!addPostInputVal.value.trim())
-    return toast.error(`内容标题不可为空`)
+    return toast.error(t('post.titleRequired'))
   postStore.addPost(addPostInputVal.value.trim(), parentId.value)
   isOpenAddDialog.value = false
-  toast.success(`内容新增成功`)
+  toast.success(t('post.addSuccess'))
 }
 
 function openCreatePostDialog() {
@@ -91,7 +92,7 @@ function startRenamePost(id: string) {
 }
 function renamePost() {
   if (!renamePostInputVal.value.trim()) {
-    return toast.error(`内容标题不可为空`)
+    return toast.error(t('post.titleRequired'))
   }
 
   if (renamePostInputVal.value === postStore.getPostById(editId.value!)?.title) {
@@ -100,7 +101,7 @@ function renamePost() {
   }
 
   postStore.renamePost(editId.value!, renamePostInputVal.value.trim())
-  toast.success(`内容重命名成功`)
+  toast.success(t('post.renameSuccess'))
   isOpenEditDialog.value = false
 }
 
@@ -111,7 +112,7 @@ const delRecursive = ref(false)
 const delConfirmText = computed(() => {
   const title = postStore.getPostById(delId.value || ``)?.title ?? ``
   const short = title.length > 20 ? `${title.slice(0, 20)}…` : title
-  return `此操作将删除「${short}」，是否继续？`
+  return t('confirm.deleteItem', { name: short })
 })
 
 const hasSubPosts = computed(() => {
@@ -129,7 +130,7 @@ function startDelPost(id: string) {
 function delPost() {
   postStore.delPost(delId.value!, delRecursive.value)
   isOpenDelPostConfirmDialog.value = false
-  toast.success(`内容删除成功`)
+  toast.success(t('post.deleteSuccess'))
 }
 
 /* ============ 历史记录 ============ */
@@ -173,15 +174,15 @@ function recoverHistory() {
   ed.dispatch({
     changes: { from: 0, to: ed.state.doc.length, insert: content },
   })
-  toast.success(`记录恢复成功`)
+  toast.success(t('post.restoreSuccess'))
   isOpenHistoryDialog.value = false
 }
 
 function confirmRestoreHistory() {
   confirmStore.confirm({
-    title: '提示',
-    description: '此操作将用该记录替换当前文章内容，是否继续？',
-    confirmText: '恢 复',
+    title: t('confirm.tip'),
+    description: t('post.restoreArticleDescription'),
+    confirmText: t('post.restore'),
     onConfirm: () => recoverHistory(),
   })
 }
@@ -342,7 +343,7 @@ function replaceFirst() {
     if (regex.test(post.title)) {
       regex.lastIndex = 0
       postStore.renamePost(post.id, replaceInText(post.title, q, replaceQuery.value))
-      toast.success(`已替换 1 处`)
+      toast.success(t('post.replacedOne'))
       return
     }
     regex.lastIndex = 0
@@ -355,7 +356,7 @@ function replaceFirst() {
           changes: { from: 0, to: ed.state.doc.length, insert: post.content },
         })
       }
-      toast.success(`已替换 1 处`)
+      toast.success(t('post.replacedOne'))
       return
     }
   }
@@ -393,7 +394,7 @@ function replaceAll() {
     }
   })
   if (count > 0)
-    toast.success(`已替换 ${count} 处`)
+    toast.success(t('post.replacedCount', { count }))
 }
 
 /* ============ 排序 ============ */
@@ -492,24 +493,24 @@ async function exportAll() {
   else {
     await exportPostsAsZip(toExport)
   }
-  toast.success(`已导出 ${toExport.length} 篇内容`)
+  toast.success(t('post.exportedBatch', { count: toExport.length }))
 }
 
 function openBatchDelConfirm() {
   const n = selectedPostIds.value.length
   const description = n === 1
-    ? `此操作将删除「${postStore.getPostById(selectedPostIds.value[0])?.title ?? ''}」，是否继续？`
-    : `此操作将删除已选的 ${n} 篇内容，是否继续？`
+    ? t('confirm.deleteItem', { name: postStore.getPostById(selectedPostIds.value[0])?.title ?? '' })
+    : t('post.deleteBatchConfirm', { count: n })
 
   confirmStore.confirm({
-    title: '提示',
+    title: t('confirm.tip'),
     description,
-    confirmText: '确定删除',
+    confirmText: t('post.confirmDelete'),
     destructive: true,
     onConfirm: () => {
       const ids = [...selectedPostIds.value]
       ids.forEach(id => postStore.delPost(id))
-      toast.success(`已删除 ${ids.length} 篇内容`)
+      toast.success(t('post.deletedBatch', { count: ids.length }))
       isSelectMode.value = false
       selectedPostIds.value = []
     },
@@ -522,12 +523,12 @@ function duplicateSelected() {
     return
   selectedPostIds.value.forEach((id) => {
     const p = postStore.getPostById(id)!
-    postStore.addPost(`${p.title} 副本`, p.parentId ?? null)
+    postStore.addPost(`${p.title} ${t('post.copySuffix')}`, p.parentId ?? null)
     // 覆盖刚创建的那篇内容
     const newPost = posts.value[posts.value.length - 1]
     postStore.updatePostContent(newPost.id, p.content)
   })
-  toast.success(`已复制 ${selectedPostIds.value.length} 篇内容`)
+  toast.success(t('post.duplicatedBatch', { count: selectedPostIds.value.length }))
   isSelectMode.value = false
   selectedPostIds.value = []
 }
@@ -546,7 +547,7 @@ function openMergeDialog() {
 
 function mergeSelected() {
   if (!mergeTitle.value.trim())
-    return toast.error(`合并标题不可为空`)
+    return toast.error(t('post.mergeTitleRequired'))
   const parts = selectedPostIds.value.map((id) => {
     const p = postStore.getPostById(id)!
     return `## ${p.title}\n\n${p.content}`
@@ -555,7 +556,7 @@ function mergeSelected() {
   postStore.addPost(mergeTitle.value.trim(), null)
   const newPost = posts.value[posts.value.length - 1]
   postStore.updatePostContent(newPost.id, mergedContent)
-  toast.success(`已合并为「${mergeTitle.value.trim()}」`)
+  toast.success(t('post.mergedAs', { title: mergeTitle.value.trim() }))
   isOpenMergeDialog.value = false
   isSelectMode.value = false
   selectedPostIds.value = []
@@ -586,7 +587,7 @@ function handleDrop(targetId: string | null) {
   }
 
   if (isParent(targetId)) {
-    toast.error(`不能将内容拖拽到其子内容下面`)
+    toast.error(t('post.dragToChildError'))
   }
   else if (sourceId !== targetId) {
     postStore.updatePostParentId(sourceId, targetId || null)
@@ -636,7 +637,7 @@ function handleDragEnd() {
   >
     <nav
       class="h-full flex flex-col overflow-hidden"
-      :aria-label="isMobile ? '内容管理' : undefined"
+      :aria-label="isMobile ? t('post.contentManage') : undefined"
       @dragover="handleDragOver"
       @drop.prevent="handleDrop(null)"
     >
@@ -678,7 +679,7 @@ function handleDragEnd() {
               isMobile ? 'size-8' : 'size-7',
               { 'text-primary bg-primary/10': isSelectMode },
             ]"
-            :title="isSelectMode ? '退出选择' : '多选操作'"
+            :title="isSelectMode ? t('post.exitSelect') : t('post.multiSelect')"
             @click="toggleSelectMode"
           >
             <CheckSquare class="size-4" />
@@ -688,7 +689,7 @@ function handleDragEnd() {
           <button
             v-if="isMobile"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 size-8"
-            title="导入 Markdown（支持批量）"
+            :title="t('post.importMarkdownBatch')"
             @click="openImportDialog"
           >
             <Upload class="size-4" />
@@ -718,45 +719,45 @@ function handleDragEnd() {
               v-bind="headerDropdownProps"
             >
               <DropdownMenuLabel class="text-xs text-muted-foreground font-normal">
-                排序方式
+                {{ t('post.sortBy') }}
               </DropdownMenuLabel>
               <DropdownMenuRadioGroup v-model="sortMode">
                 <DropdownMenuRadioItem value="A-Z">
-                  文件名（A-Z）
+                  {{ t('post.sortNameAZ') }}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="Z-A">
-                  文件名（Z-A）
+                  {{ t('post.sortNameZA') }}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="update-new-old">
-                  编辑时间（新→旧）
+                  {{ t('post.sortUpdateNewOld') }}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="update-old-new">
-                  编辑时间（旧→新）
+                  {{ t('post.sortUpdateOldNew') }}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="create-new-old">
-                  创建时间（新→旧）
+                  {{ t('post.sortCreateNewOld') }}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="create-old-new">
-                  创建时间（旧→新）
+                  {{ t('post.sortCreateOldNew') }}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem @click="openImportDialog">
                 <Upload class="mr-2 size-4" />
-                批量导入
+                {{ t('post.batchImport') }}
               </DropdownMenuItem>
               <DropdownMenuItem :disabled="!posts.length" @click="exportAll">
                 <Download class="mr-2 size-4" />
-                导出全部
+                {{ t('post.exportAll') }}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem @click="postStore.collapseAllPosts">
                 <ChevronsDownUp class="mr-2 size-4" />
-                全部收起
+                {{ t('post.collapseAll') }}
               </DropdownMenuItem>
               <DropdownMenuItem @click="postStore.expandAllPosts">
                 <ChevronsUpDown class="mr-2 size-4" />
-                全部展开
+                {{ t('post.expandAll') }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -779,14 +780,14 @@ function handleDragEnd() {
             ref="searchInputRef"
             v-model="searchQuery"
             class="w-full h-8 rounded-md border border-border bg-background px-2.5 pr-20 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors"
-            placeholder="搜索"
+            :placeholder="t('common.search')"
             @keydown.escape="closeSearch"
           >
           <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
             <button
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
               :class="{ 'text-primary bg-primary/10': isRegex }"
-              title="正则表达式"
+              :title="t('post.regex')"
               @click="isRegex = !isRegex"
             >
               <Regex class="size-3" />
@@ -794,7 +795,7 @@ function handleDragEnd() {
             <button
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
               :class="{ 'text-primary bg-primary/10': isCaseSensitive }"
-              title="区分大小写"
+              :title="t('post.caseSensitive')"
               @click="isCaseSensitive = !isCaseSensitive"
             >
               <span class="text-[10px] font-bold">Aa</span>
@@ -815,13 +816,13 @@ function handleDragEnd() {
             v-model="replaceQuery"
             class="w-full rounded-md border border-border bg-background px-2.5 pr-16 text-xs placeholder:text-muted-foreground/50 focus:outline-none focus:ring-1 focus:ring-ring transition-colors resize-none leading-none py-[10px] overflow-hidden max-h-[150px]"
             style="height: 32px; min-height: 32px"
-            placeholder="替换为…"
+            :placeholder="t('post.replaceWith')"
             @input="autoResizeReplace($event)"
           />
           <div class="absolute right-1.5 top-1.5 flex items-center gap-0.5">
             <button
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
-              title="替换一处"
+              :title="t('post.replaceOne')"
               :disabled="!searchQuery || totalMatches === 0"
               @click="replaceFirst"
             >
@@ -829,7 +830,7 @@ function handleDragEnd() {
             </button>
             <button
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
-              title="全部替换"
+              :title="t('post.replaceAll')"
               :disabled="!searchQuery || totalMatches === 0"
               @click="replaceAll"
             >
@@ -843,7 +844,7 @@ function handleDragEnd() {
       <div v-if="isSearching && searchQuery.trim()" class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
         <!-- 匹配统计 -->
         <div v-if="totalMatches > 0" class="px-2 py-1 text-xs text-muted-foreground/60">
-          共 {{ totalMatches }} 处匹配，{{ searchResults.length }} 篇内容
+          {{ t('post.matchStats', { matches: totalMatches, posts: searchResults.length }) }}
         </div>
         <template v-if="searchResults.length">
           <a
@@ -880,7 +881,7 @@ function handleDragEnd() {
         <div v-else class="flex flex-col items-center justify-center gap-2 py-12 px-6">
           <Search class="size-5 text-muted-foreground/30" />
           <p class="text-xs text-muted-foreground/50">
-            没有匹配的内容
+            {{ t('post.noMatch') }}
           </p>
         </div>
       </div>
@@ -915,10 +916,10 @@ function handleDragEnd() {
           </div>
           <div class="text-center space-y-1">
             <p class="text-sm font-medium text-muted-foreground/60">
-              暂无内容
+              {{ t('post.emptyTitle') }}
             </p>
             <p class="text-xs text-muted-foreground/40">
-              点击上方 + 按钮创建
+              {{ t('post.emptyHint') }}
             </p>
           </div>
         </div>
@@ -936,20 +937,20 @@ function handleDragEnd() {
           <!-- 选中信息行 -->
           <div class="flex items-center justify-between text-xs">
             <span class="text-muted-foreground">
-              已选
+              {{ t('post.selectedCount') }}
               <strong class="text-foreground font-semibold">{{ selectedPostIds.length }}</strong>
-              篇
+              {{ t('post.postUnit') }}
             </span>
             <div class="flex items-center gap-2 text-muted-foreground">
               <button
                 class="hover:text-foreground transition-colors"
                 @click="allSelected ? clearSelection() : selectAll()"
               >
-                {{ allSelected ? '取消全选' : '全选' }}
+                {{ allSelected ? t('common.deselectAll') : t('common.selectAll') }}
               </button>
               <span class="opacity-30">·</span>
               <button class="hover:text-foreground transition-colors" @click="toggleSelectMode">
-                完成
+                {{ t('common.done') }}
               </button>
             </div>
           </div>
@@ -958,7 +959,7 @@ function handleDragEnd() {
             <!-- 导出 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
-              title="导出"
+              :title="t('common.export')"
               :disabled="!selectedPostIds.length"
               @click="exportSelected"
             >
@@ -969,7 +970,7 @@ function handleDragEnd() {
             <!-- 复制 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
-              title="复制"
+              :title="t('common.copy')"
               :disabled="!selectedPostIds.length"
               @click="duplicateSelected"
             >
@@ -980,7 +981,7 @@ function handleDragEnd() {
             <!-- 合并 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
-              :title="selectedPostIds.length < 2 ? '至少选择 2 篇才能合并' : '合并'"
+              :title="selectedPostIds.length < 2 ? t('post.mergeMinTwo') : t('common.merge')"
               :disabled="selectedPostIds.length < 2"
               @click="openMergeDialog"
             >
@@ -993,7 +994,7 @@ function handleDragEnd() {
             <!-- 删除 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
-              :title="selectedPostIds.length >= posts.length ? '至少保留一篇内容' : '删除'"
+              :title="selectedPostIds.length >= posts.length ? t('post.keepOnePost') : t('common.delete')"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
               @click="openBatchDelConfirm()"
             >
@@ -1011,13 +1012,13 @@ function handleDragEnd() {
   <Dialog v-model:open="isOpenAddDialog">
     <DialogContent>
       <DialogHeader>
-        <DialogTitle>新增内容</DialogTitle>
-        <DialogDescription>请输入内容名称</DialogDescription>
+        <DialogTitle>{{ t('post.addTitle') }}</DialogTitle>
+        <DialogDescription>{{ t('post.addDescription') }}</DialogDescription>
       </DialogHeader>
-      <Input v-model="addPostInputVal" placeholder="输入标题…" @keyup.enter="addPost" />
+      <Input v-model="addPostInputVal" :placeholder="t('post.titlePlaceholder')" @keyup.enter="addPost" />
       <DialogFooter>
         <Button @click="addPost">
-          确 定
+          {{ t('common.confirm') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -1027,16 +1028,16 @@ function handleDragEnd() {
   <Dialog v-model:open="isOpenEditDialog">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>编辑内容名称</DialogTitle>
-        <DialogDescription>请输入新的内容名称</DialogDescription>
+        <DialogTitle>{{ t('post.editTitle') }}</DialogTitle>
+        <DialogDescription>{{ t('post.editDescription') }}</DialogDescription>
       </DialogHeader>
       <Input v-model="renamePostInputVal" @keyup.enter="renamePost" />
       <DialogFooter>
         <Button variant="outline" @click="isOpenEditDialog = false">
-          取消
+          {{ t('common.cancel') }}
         </Button>
         <Button @click="renamePost">
-          保存
+          {{ t('common.save') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -1046,7 +1047,7 @@ function handleDragEnd() {
   <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
     <AlertDialogContent>
       <AlertDialogHeader>
-        <AlertDialogTitle>提示</AlertDialogTitle>
+        <AlertDialogTitle>{{ t('confirm.tip') }}</AlertDialogTitle>
         <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
       </AlertDialogHeader>
       <div v-if="hasSubPosts" class="flex items-center gap-2 mt-2">
@@ -1060,13 +1061,13 @@ function handleDragEnd() {
           for="del-recursive"
           class="text-xs text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
         >
-          同时删除所有子内容
+          {{ t('post.deleteRecursive') }}
         </label>
       </div>
       <AlertDialogFooter>
-        <AlertDialogCancel>取消</AlertDialogCancel>
+        <AlertDialogCancel>{{ t('common.cancel') }}</AlertDialogCancel>
         <AlertDialogAction @click="delPost">
-          确定
+          {{ t('common.confirm') }}
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
@@ -1076,16 +1077,16 @@ function handleDragEnd() {
   <Dialog v-model:open="isOpenMergeDialog">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
-        <DialogTitle>合并为一篇</DialogTitle>
-        <DialogDescription>将选中的 {{ selectedPostIds.length }} 篇内容按顺序合并，请为合并结果命名</DialogDescription>
+        <DialogTitle>{{ t('post.mergeTitle') }}</DialogTitle>
+        <DialogDescription>{{ t('post.mergeDescription', { count: selectedPostIds.length }) }}</DialogDescription>
       </DialogHeader>
-      <Input v-model="mergeTitle" placeholder="输入合并后的标题…" @keyup.enter="mergeSelected" />
+      <Input v-model="mergeTitle" :placeholder="t('post.mergePlaceholder')" @keyup.enter="mergeSelected" />
       <DialogFooter>
         <Button variant="outline" @click="isOpenMergeDialog = false">
-          取消
+          {{ t('common.cancel') }}
         </Button>
         <Button @click="mergeSelected">
-          合并
+          {{ t('common.merge') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -1095,8 +1096,8 @@ function handleDragEnd() {
   <Dialog v-model:open="isOpenHistoryDialog">
     <DialogContent class="sm:max-w-4xl">
       <DialogHeader>
-        <DialogTitle>历史记录</DialogTitle>
-        <DialogDescription>每隔 30 秒自动保存，最多保留 10 条</DialogDescription>
+        <DialogTitle>{{ t('post.historyTitle') }}</DialogTitle>
+        <DialogDescription>{{ t('post.historyDescription') }}</DialogDescription>
       </DialogHeader>
 
       <div class="h-[50vh] flex gap-3">
@@ -1120,10 +1121,10 @@ function handleDragEnd() {
           <Tabs v-model="historyViewMode" class="flex flex-col h-full">
             <TabsList class="shrink-0 w-fit">
               <TabsTrigger value="content">
-                原文
+                {{ t('post.originalContent') }}
               </TabsTrigger>
               <TabsTrigger value="diff">
-                版本对比
+                {{ t('post.versionDiff') }}
               </TabsTrigger>
             </TabsList>
 
@@ -1135,7 +1136,7 @@ function handleDragEnd() {
 
             <TabsContent value="diff" class="flex-1 overflow-hidden mt-2">
               <div class="flex items-center gap-2 mb-2 text-xs text-muted-foreground shrink-0">
-                <span>对比：</span>
+                <span>{{ t('post.compareLabel') }}</span>
                 <Select v-model="compareTargetIndex">
                   <SelectTrigger class="h-7 w-auto text-xs">
                     <SelectValue />
@@ -1168,7 +1169,7 @@ function handleDragEnd() {
 
       <DialogFooter>
         <Button @click="confirmRestoreHistory">
-          恢 复
+          {{ t('post.restore') }}
         </Button>
       </DialogFooter>
     </DialogContent>

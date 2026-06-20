@@ -4,6 +4,7 @@ import CommandPalette from '@/components/editor/dialogs/CommandPalette.vue'
 import ConfirmDialog from '@/components/shared/confirm-dialog/ConfirmDialog.vue'
 import { Toaster } from '@/components/ui/sonner'
 import { useCommandPaletteHotkey } from '@/composables/useCommandPaletteHotkey'
+import { usePreferencesHotkey } from '@/composables/usePreferencesHotkey'
 import { useUIStore } from '@/stores/ui'
 
 const uiStore = useUIStore()
@@ -13,6 +14,7 @@ usePlatformEnv()
 useAccountSyncBootstrap()
 useDeepLinkImport()
 useCommandPaletteHotkey()
+usePreferencesHotkey()
 </script>
 
 <template>

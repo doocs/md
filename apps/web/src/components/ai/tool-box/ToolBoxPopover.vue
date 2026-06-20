@@ -58,6 +58,7 @@ watch(dialogVisible, val => emit(`update:open`, val))
 const AIConfigStore = useAIConfigStore()
 const { apiKey, endpoint, model, temperature, maxToken, type }
   = storeToRefs(AIConfigStore)
+const { t } = useI18n()
 
 /* -------------------- action options -------------------- */
 interface ActionOption {
@@ -66,44 +67,44 @@ interface ActionOption {
   defaultPrompt: string
 }
 
-const actionOptions: ActionOption[] = [
+const actionOptions = computed<ActionOption[]>(() => [
   {
     value: `optimize`,
-    label: `优化文本`,
-    defaultPrompt: `请优化文本，使其更通顺易读。`,
+    label: t('ai.toolbox.actions.optimize.label'),
+    defaultPrompt: t('ai.toolbox.actions.optimize.prompt'),
   },
   {
     value: `summarize`,
-    label: `文章总结`,
-    defaultPrompt: `请对文本进行摘要，输出主要观点和结论。`,
+    label: t('ai.toolbox.actions.summarize.label'),
+    defaultPrompt: t('ai.toolbox.actions.summarize.prompt'),
   },
   {
     value: `spellcheck`,
-    label: `错别字纠正`,
-    defaultPrompt: `请找出并纠正文本中的错别字、标点和语法错误。`,
+    label: t('ai.toolbox.actions.spellcheck.label'),
+    defaultPrompt: t('ai.toolbox.actions.spellcheck.prompt'),
   },
   {
     value: `translate-zh`,
-    label: `翻译为中文`,
-    defaultPrompt: `请将文本翻译为地道的中文。`,
+    label: t('ai.toolbox.actions.translateZh.label'),
+    defaultPrompt: t('ai.toolbox.actions.translateZh.prompt'),
   },
   {
     value: `translate-en`,
-    label: `翻译为英文`,
-    defaultPrompt: `请将文本翻译为自然流畅的英文。`,
+    label: t('ai.toolbox.actions.translateEn.label'),
+    defaultPrompt: t('ai.toolbox.actions.translateEn.prompt'),
   },
   {
     value: `expand`,
-    label: `扩写`,
-    defaultPrompt: `请对文本进行扩写，丰富细节、充实内容，保持原有风格和意图。`,
+    label: t('ai.toolbox.actions.expand.label'),
+    defaultPrompt: t('ai.toolbox.actions.expand.prompt'),
   },
   {
     value: `continue`,
-    label: `续写`,
-    defaultPrompt: `请根据文本内容，以相同风格继续向下补充撰写，保持语言连贯。`,
+    label: t('ai.toolbox.actions.continue.label'),
+    defaultPrompt: t('ai.toolbox.actions.continue.prompt'),
   },
-  { value: `custom`, label: `自定义`, defaultPrompt: `` },
-]
+  { value: `custom`, label: t('ai.toolbox.actions.custom.label'), defaultPrompt: `` },
+])
 
 /* -------------------- watchers -------------------- */
 watch(message, async () => {
@@ -159,22 +160,21 @@ async function runAIAction() {
   resetState()
   loading.value = true
 
-  const systemPrompt
-    = `你是一名专业的多语言文本助手，请根据用户的指令处理下列内容。在输出时，不要输出任何额外的信息，只输出处理后的文本。`
-  const picked = actionOptions.find(o => o.value === selectedAction.value)!
+  const systemPrompt = t('ai.toolbox.systemPrompt')
+  const picked = actionOptions.value.find(o => o.value === selectedAction.value)!
   const parts: string[] = []
 
   if (picked.defaultPrompt)
     parts.push(picked.defaultPrompt)
   if (customPrompts.value.length)
-    parts.push(`请同时满足以下要求：${customPrompts.value.join(`、`)}。`)
+    parts.push(t('ai.toolbox.satisfyRequirements', { requirements: customPrompts.value.join(`、`) }))
   if (!parts.length)
-    parts.push(`请根据最佳实践优化文本。`)
+    parts.push(t('ai.toolbox.optimizeDefault'))
 
   const userCommand = parts.join(` `)
   const messages = [
     { role: `system`, content: systemPrompt },
-    { role: `user`, content: `${userCommand}\n\n待处理文本：\n${text}` },
+    { role: `user`, content: `${userCommand}\n\n${t('ai.toolbox.textToProcess', { text })}` },
   ]
 
   const payload = {
@@ -200,7 +200,7 @@ async function runAIAction() {
   }
   catch (e: any) {
     console.error(`请求失败：`, e)
-    error.value = e.message || `请求失败`
+    error.value = e.message || t('ai.toolbox.requestFailed')
   }
 }
 
@@ -250,11 +250,11 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
       <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start px-6 pt-6 pb-4">
         <div class="space-x-1 flex items-center">
-          <DialogTitle>AI 工具箱</DialogTitle>
+          <DialogTitle>{{ t('ai.toolbox.title') }}</DialogTitle>
 
           <Button
-            :title="configVisible ? 'AI 工具箱' : '配置参数'"
-            :aria-label="configVisible ? 'AI 工具箱' : '配置参数'"
+            :title="configVisible ? t('ai.toolbox.title') : t('ai.chat.configParams')"
+            :aria-label="configVisible ? t('ai.toolbox.title') : t('ai.chat.configParams')"
             variant="ghost"
             size="icon"
             @click="configVisible = !configVisible"
@@ -278,11 +278,11 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         <!-- action selector -->
         <div>
           <div class="mb-1.5 text-sm font-medium">
-            选择操作
+            {{ t('ai.toolbox.selectAction') }}
           </div>
           <Select v-model="selectedAction">
             <SelectTrigger class="w-full">
-              <SelectValue placeholder="请选择要执行的操作" />
+              <SelectValue :placeholder="t('ai.toolbox.selectActionPlaceholder')" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
@@ -301,7 +301,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         <!-- original text -->
         <div>
           <div class="mb-1.5 text-sm font-medium">
-            原文
+            {{ t('ai.toolbox.originalText') }}
           </div>
           <div
             class="border-border custom-scroll bg-muted/20 text-muted-foreground max-h-32 overflow-y-auto whitespace-pre-line border rounded px-3 py-2 text-sm"
@@ -313,7 +313,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         <!-- custom prompts -->
         <div v-if="selectedAction === 'custom'">
           <div class="mb-1.5 text-sm font-medium">
-            自定义提示词（可选）
+            {{ t('ai.toolbox.customPrompt') }}
           </div>
           <div
             class="custom-scroll border-border max-h-24 min-h-[40px] flex flex-wrap gap-2 overflow-y-auto border rounded px-2 py-1"
@@ -333,7 +333,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
             </template>
             <input
               class="min-w-[100px] flex-1 bg-transparent py-1 text-sm focus:outline-hidden"
-              placeholder="输入提示词后按回车"
+              :placeholder="t('ai.toolbox.customPromptPlaceholder')"
               @keydown.enter="addPrompt"
             >
           </div>
@@ -347,7 +347,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         <!-- result -->
         <div v-if="message">
           <div class="mb-1.5 text-sm font-medium">
-            处理结果
+            {{ t('ai.toolbox.result') }}
           </div>
           <div
             ref="resultContainer"
@@ -361,14 +361,14 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
       <!-- ============ 底部按钮 ============ -->
       <div v-if="!configVisible" class="flex justify-end gap-2 px-6 py-3.5 mt-auto">
         <Button v-if="loading" variant="secondary" @click="stopAI">
-          <Pause class="mr-1 h-4 w-4" /> 终止
+          <Pause class="mr-1 h-4 w-4" /> {{ t('ai.toolbox.stop') }}
         </Button>
         <Button
           v-if="hasResult && !loading"
           variant="default"
           @click="replaceText"
         >
-          接受
+          {{ t('ai.toolbox.accept') }}
         </Button>
         <Button
           v-if="!loading"
@@ -376,7 +376,7 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
           :disabled="!hasResult && !!message"
           @click="runAIAction"
         >
-          {{ hasResult ? '重试' : 'AI 处理' }}
+          {{ hasResult ? t('ai.toolbox.retry') : t('ai.toolbox.process') }}
         </Button>
       </div>
     </DialogContent>

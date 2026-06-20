@@ -1,4 +1,5 @@
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
+import { t } from '@/i18n/translate'
 import { waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { getHtmlContent } from './html-content'
 import { getStylesToAdd, SHARE_SHELL_VARS_CSS } from './share-styles'
@@ -9,6 +10,7 @@ export async function exportPDF(title: string = `untitled`) {
   const htmlStr = getHtmlContent()
   const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
+  const pageFooter = t('store.pdf.pageFooter')
 
   const printHtml = `<!DOCTYPE html>
 <html>
@@ -38,7 +40,7 @@ export async function exportPDF(title: string = `untitled`) {
         color: #999;
       }
       @bottom-right {
-        content: "第 " counter(page) " 页，共 " counter(pages) " 页";
+        content: "${pageFooter}";
         font-size: 10px;
         color: #999;
       }
