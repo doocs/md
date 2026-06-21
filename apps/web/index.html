@@ -81,12 +81,16 @@
             tagline: '致力于让 Markdown 编辑更简单',
             loading: '正在加载编辑器',
             timeout: '加载时间过长，请尝试刷新页面或按 F12 查看控制台是否有异常信息',
+            title: '微信 Markdown 编辑器 | Doocs',
+            description: 'Wechat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器',
           },
           'en-US': {
             tagline: 'Making Markdown editing simpler',
             loading: 'Loading editor',
             timeout:
               'Loading is taking too long. Try refreshing the page or press F12 to check the console for errors.',
+            title: 'WeChat Markdown Editor | Doocs',
+            description: 'Wechat Markdown Editor | A minimalist Markdown editor for WeChat Official Accounts',
           },
         }
 
@@ -117,6 +121,10 @@
         window.__MD_APPLY_LOADER_LOCALE__ = function applyLoaderLocale(locale) {
           const text = window.__MD_LOADER_TEXT__[locale] || window.__MD_LOADER_TEXT__['zh-CN']
           document.documentElement.lang = locale
+          document.title = text.title
+
+          const description = document.querySelector('meta[name="description"]')
+          if (description) description.setAttribute('content', text.description)
 
           const loader = document.getElementById('app-initial-loader')
           if (!loader) return

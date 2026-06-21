@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Check, Copy, Expand, UploadCloud } from '@lucide/vue'
-import { storeLabels } from '@md/shared/configs'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
 import { computed } from 'vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
@@ -19,7 +18,12 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const { t } = useI18n()
+const { t, te } = useI18n()
+
+function storeStateLabel(key: string) {
+  const i18nKey = `editorState.storeLabels.${key}`
+  return te(i18nKey) ? t(i18nKey) : key
+}
 
 const dialogOpen = computed({
   get: () => props.open,
@@ -363,7 +367,7 @@ function applyImportedConfig() {
                     v-model="storeStates.selected[key]"
                   />
                   <label :for="`export-${key}`" class="text-sm text-foreground">
-                    {{ storeLabels[key] || key }}
+                    {{ storeStateLabel(key) }}
                   </label>
                 </li>
               </ul>
@@ -455,7 +459,7 @@ function applyImportedConfig() {
                       v-model="importStates.selected[key]"
                     />
                     <label :for="`import-${key}`" class="text-sm text-foreground">
-                      {{ storeLabels[key] || key }}
+                      {{ storeStateLabel(key) }}
                     </label>
                   </li>
                 </ul>

@@ -61,6 +61,7 @@ export default {
     syncedTooltip: `已同步`,
     failedTooltip: `同步失败，点击重试`,
     pendingTooltip: `有未同步的更改`,
+    rateLimited: `同步次数已达上限，请稍后再试`,
   },
   uploader: {
     fileReadFailed: `文件读取失败`,

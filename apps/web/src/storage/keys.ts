@@ -26,6 +26,7 @@ export const UNPREFIXED_APP_KEYS = new Set([
   `showAIToolbox`,
   `viewMode`,
   `previewDevice`,
+  `locale`,
   `openai_type`,
   `openai_temperature`,
   `openai_max_token`,

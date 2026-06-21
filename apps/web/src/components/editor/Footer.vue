@@ -43,7 +43,7 @@ const showShareUi = isShareUiEnabled()
 const { syncFooterIcon, syncFooterIconClass, syncTooltip } = useSyncFooterMeta()
 
 const isMoreOpen = ref(false)
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const accountTooltip = computed(() => {
   if (!isLoggedIn.value)
@@ -277,10 +277,16 @@ function jumpToHeading(line: number) {
 
 // 上次保存时间
 const savedTimeAgo = computed(() => {
+  void locale.value
   if (!currentPost.value?.updateDatetime)
     return ``
   return formatRelativeTime(currentPost.value.updateDatetime)
 })
+
+function relativeTime(datetime: string | Date) {
+  void locale.value
+  return formatRelativeTime(datetime)
+}
 
 // 每 10 秒刷新一次相对时间（页面不可见时暂停）
 const refreshKey = ref(0)
@@ -301,10 +307,11 @@ onUnmounted(() => {
     clearInterval(refreshTimer)
 })
 
-// 强制 computed 依赖 refreshKey
+// 强制 computed 依赖 refreshKey 与 locale
 const displaySavedTime = computed(() => {
   // eslint-disable-next-line ts/no-unused-expressions
   refreshKey.value
+  void locale.value
   return savedTimeAgo.value
 })
 
@@ -417,7 +424,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             >
               <FileText class="size-3 shrink-0 opacity-50" />
               <span class="min-w-0 flex-1 truncate">{{ post.title }}</span>
-              <span class="shrink-0 text-[10px] opacity-50">{{ formatRelativeTime(post.updateDatetime) }}</span>
+              <span class="shrink-0 text-[10px] opacity-50">{{ relativeTime(post.updateDatetime) }}</span>
             </button>
           </div>
         </PopoverContent>

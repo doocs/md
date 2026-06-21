@@ -61,6 +61,7 @@ export default {
     syncedTooltip: `Synced`,
     failedTooltip: `Sync failed. Click to retry`,
     pendingTooltip: `Unsynced changes`,
+    rateLimited: `Sync rate limit reached. Please try again later`,
   },
   uploader: {
     fileReadFailed: `Failed to read file`,

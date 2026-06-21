@@ -65,15 +65,18 @@ function buildSyncStatusMeta(
 }
 
 export function useSyncStatusMeta(options?: { errorHint?: `detail` | `generic` }) {
+  const { locale } = useI18n()
   const syncStore = useSyncStore()
   const { syncState, lastError, isSyncing } = storeToRefs(syncStore)
   const errorHint = options?.errorHint ?? `detail`
 
-  const syncStatusMeta = computed(() =>
-    buildSyncStatusMeta(syncState.value, lastError.value, errorHint),
-  )
+  const syncStatusMeta = computed(() => {
+    void locale.value
+    return buildSyncStatusMeta(syncState.value, lastError.value, errorHint)
+  })
 
   const syncTooltip = computed(() => {
+    void locale.value
     switch (syncState.value) {
       case `syncing`:
         return t('store.sync.syncingTooltip')
