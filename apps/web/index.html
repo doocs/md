@@ -75,8 +75,6 @@
     <script>
       ;(function () {
         const LOCALE_KEY = 'locale'
-        const IDB_NAME = 'doocs-md'
-        const IDB_SETTINGS_STORE = 'settings'
 
         window.__MD_LOADER_TEXT__ = {
           'zh-CN': {
@@ -116,14 +114,6 @@
           }
         }
 
-        function cacheLocale(locale) {
-          try {
-            localStorage.setItem(LOCALE_KEY, locale)
-          } catch {
-            // ignore
-          }
-        }
-
         window.__MD_APPLY_LOADER_LOCALE__ = function applyLoaderLocale(locale) {
           const text = window.__MD_LOADER_TEXT__[locale] || window.__MD_LOADER_TEXT__['zh-CN']
           document.documentElement.lang = locale
@@ -139,41 +129,7 @@
           if (timeout) timeout.textContent = text.timeout
         }
 
-        function readLocaleFromIndexedDB(callback) {
-          if (!window.indexedDB) {
-            callback(null)
-            return
-          }
-
-          const request = indexedDB.open(IDB_NAME)
-          request.onerror = () => callback(null)
-          request.onsuccess = () => {
-            const db = request.result
-            if (!db.objectStoreNames.contains(IDB_SETTINGS_STORE)) {
-              callback(null)
-              return
-            }
-
-            const tx = db.transaction(IDB_SETTINGS_STORE, 'readonly')
-            const getRequest = tx.objectStore(IDB_SETTINGS_STORE).get(LOCALE_KEY)
-            getRequest.onerror = () => callback(null)
-            getRequest.onsuccess = () => {
-              const record = getRequest.result
-              const value = record && typeof record === 'object' ? record.value : record
-              callback(normalizeLocale(value))
-            }
-          }
-        }
-
-        const initialLocale = readLocaleFromLocalStorage() || detectFromNavigator()
-        window.__MD_BOOT_LOCALE__ = initialLocale
-
-        readLocaleFromIndexedDB((idbLocale) => {
-          if (!idbLocale) return
-          cacheLocale(idbLocale)
-          window.__MD_BOOT_LOCALE__ = idbLocale
-          window.__MD_APPLY_LOADER_LOCALE__(idbLocale)
-        })
+        window.__MD_BOOT_LOCALE__ = readLocaleFromLocalStorage() || detectFromNavigator()
 
         const theme = localStorage.getItem('vueuse-color-scheme') ?? 'auto'
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches
