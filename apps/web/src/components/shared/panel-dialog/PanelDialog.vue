@@ -8,6 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
+import { blurFocusInsideDialogOnClose, blurFocusOutsideDialog } from '@/lib/a11y/dialog-focus'
 import { cn } from '@/lib/utils'
 
 const props = withDefaults(defineProps<{
@@ -48,13 +49,7 @@ function onUpdate(val: boolean) {
 }
 
 function onCloseAutoFocus(event: Event) {
-  const active = document.activeElement
-  if (!(active instanceof HTMLElement) || active === document.body)
-    return
-
-  const dialog = event.currentTarget
-  if (dialog instanceof HTMLElement && dialog.contains(active))
-    active.blur()
+  blurFocusInsideDialogOnClose(event)
 }
 </script>
 
@@ -62,7 +57,7 @@ function onCloseAutoFocus(event: Event) {
   <Dialog :open="props.open" @update:open="onUpdate">
     <DialogContent
       :class="dialogContentClass"
-      @open-auto-focus.prevent
+      @open-auto-focus="blurFocusOutsideDialog"
       @close-auto-focus="onCloseAutoFocus"
     >
       <div
@@ -75,8 +70,10 @@ function onCloseAutoFocus(event: Event) {
           <component :is="icon" v-if="icon" class="size-5 shrink-0 text-primary" />
           {{ title }}
         </DialogTitle>
-        <DialogDescription v-if="description" class="text-left text-sm">
-          {{ description }}
+        <DialogDescription
+          :class="cn('text-left text-sm', !description && 'sr-only')"
+        >
+          {{ description || '\u00a0' }}
         </DialogDescription>
       </DialogHeader>
 
