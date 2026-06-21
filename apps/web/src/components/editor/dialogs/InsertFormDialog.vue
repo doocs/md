@@ -48,6 +48,9 @@ function onUpdate(val: boolean) {
     <DialogContent>
       <DialogHeader>
         <DialogTitle>{{ t('insertForm.title') }}</DialogTitle>
+        <DialogDescription>
+          {{ t('insertForm.description') }}
+        </DialogDescription>
       </DialogHeader>
       <div class="space-x-2 flex justify-between">
         <NumberField v-model="rowNum" :min="1" :max="100">

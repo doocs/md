@@ -141,6 +141,7 @@ export default {
   },
   insertForm: {
     title: `插入表格`,
+    description: `设置行列数并填写表头，确认后插入 Markdown 表格`,
     rows: `行数`,
     cols: `列数`,
     headerPlaceholder: `表头`,

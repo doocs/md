@@ -103,7 +103,7 @@ export default {
     blockquote: `Blockquote`,
     divider: `Divider`,
     codeBlock: `Code block`,
-    formulaBlock: `Formula block`,
+    formulaBlock: `Formula`,
   },
   keyboard: {
     description: `Command palette: {shortcut}`,

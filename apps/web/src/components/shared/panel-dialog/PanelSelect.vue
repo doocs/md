@@ -16,6 +16,12 @@ const emit = defineEmits<{
 const selectedLabel = computed(() =>
   props.options.find(option => option.value === props.modelValue)?.label ?? props.modelValue,
 )
+
+function onValueChange(value: unknown) {
+  if (typeof value !== `string`)
+    return
+  emit(`update:modelValue`, value)
+}
 </script>
 
 <template>
@@ -35,7 +41,7 @@ const selectedLabel = computed(() =>
     <DropdownMenuContent align="end" class="z-200 min-w-[140px]">
       <DropdownMenuRadioGroup
         :model-value="modelValue"
-        @update:model-value="emit('update:modelValue', $event)"
+        @update:model-value="onValueChange"
       >
         <DropdownMenuRadioItem
           v-for="option in options"

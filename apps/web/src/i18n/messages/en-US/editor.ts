@@ -141,6 +141,7 @@ export default {
   },
   insertForm: {
     title: `Insert Table`,
+    description: `Set rows and columns, fill in headers, then insert a Markdown table`,
     rows: `Rows`,
     cols: `Columns`,
     headerPlaceholder: `Header`,

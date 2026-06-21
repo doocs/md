@@ -103,7 +103,7 @@ export default {
     blockquote: `引用`,
     divider: `分割线`,
     codeBlock: `代码块`,
-    formulaBlock: `公式块`,
+    formulaBlock: `公式`,
   },
   keyboard: {
     description: `命令面板：{shortcut}`,
