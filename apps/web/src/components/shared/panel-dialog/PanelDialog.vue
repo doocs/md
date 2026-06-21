@@ -46,11 +46,25 @@ const dialogContentClass = computed(() => cn(
 function onUpdate(val: boolean) {
   emit(`update:open`, val)
 }
+
+function onCloseAutoFocus(event: Event) {
+  const active = document.activeElement
+  if (!(active instanceof HTMLElement) || active === document.body)
+    return
+
+  const dialog = event.currentTarget
+  if (dialog instanceof HTMLElement && dialog.contains(active))
+    active.blur()
+}
 </script>
 
 <template>
   <Dialog :open="props.open" @update:open="onUpdate">
-    <DialogContent :class="dialogContentClass" @open-auto-focus.prevent>
+    <DialogContent
+      :class="dialogContentClass"
+      @open-auto-focus.prevent
+      @close-auto-focus="onCloseAutoFocus"
+    >
       <div
         aria-hidden="true"
         class="mx-auto mt-2 mb-1 h-1 w-10 shrink-0 rounded-full bg-muted-foreground/25 sm:hidden"

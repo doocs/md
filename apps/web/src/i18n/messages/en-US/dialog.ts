@@ -238,7 +238,7 @@ export default {
     },
     wordCount: {
       label: `Word count`,
-      hint: `Show word count in the footer`,
+      hint: `Show word count and reading time at the top of the preview`,
     },
   },
 }

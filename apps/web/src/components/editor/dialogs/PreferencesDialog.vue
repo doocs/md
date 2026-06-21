@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { Settings } from '@lucide/vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
+import PanelSelect from '@/components/shared/panel-dialog/PanelSelect.vue'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { LOCALE_OPTIONS } from '@/i18n/constants'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
@@ -21,6 +23,7 @@ const { t } = useI18n()
 const localeStore = useLocaleStore()
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
+const { editorRefresh } = useEditorRefresh()
 
 const dialogOpen = computed({
   get: () => props.open,
@@ -55,6 +58,18 @@ const previewDeviceOptions = computed(() => [
   { value: `desktop`, label: t(`preferences.previewDeviceOption.desktop`) },
   { value: `mobile`, label: t(`preferences.previewDeviceOption.mobile`) },
 ] as const)
+
+const localeOptions = computed(() =>
+  LOCALE_OPTIONS.map(option => ({
+    value: option.value,
+    label: t(option.labelKey),
+  })),
+)
+
+function setCountStatus(value: boolean) {
+  isCountStatus.value = value
+  editorRefresh()
+}
 </script>
 
 <template>
@@ -86,23 +101,11 @@ const previewDeviceOptions = computed(() => [
               {{ t('preferences.language.hint') }}
             </p>
           </div>
-          <Select
+          <PanelSelect
             :model-value="localeStore.locale"
+            :options="localeOptions"
             @update:model-value="localeStore.setLocale($event as typeof localeStore.locale)"
-          >
-            <SelectTrigger class="w-[140px] shrink-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="option in LOCALE_OPTIONS"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ t(option.labelKey) }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
 
         <div class="flex items-center justify-between gap-4 border-b py-3">
@@ -123,23 +126,11 @@ const previewDeviceOptions = computed(() => [
           <div class="min-w-0 space-y-0.5">
             <Label>{{ t('preferences.viewMode.label') }}</Label>
           </div>
-          <Select
+          <PanelSelect
             :model-value="viewMode"
+            :options="viewModeOptions"
             @update:model-value="uiStore.setViewMode($event as typeof viewMode)"
-          >
-            <SelectTrigger class="w-[140px] shrink-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="option in viewModeOptions"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
 
         <div class="flex items-center justify-between gap-4 border-b py-3">
@@ -193,23 +184,11 @@ const previewDeviceOptions = computed(() => [
           <div class="min-w-0 space-y-0.5">
             <Label>{{ t('preferences.previewDevice.label') }}</Label>
           </div>
-          <Select
+          <PanelSelect
             :model-value="previewDevice"
+            :options="previewDeviceOptions"
             @update:model-value="uiStore.setPreviewDevice($event as typeof previewDevice)"
-          >
-            <SelectTrigger class="w-[140px] shrink-0">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem
-                v-for="option in previewDeviceOptions"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </SelectItem>
-            </SelectContent>
-          </Select>
+          />
         </div>
 
         <div class="flex items-center justify-between gap-4 py-3">
@@ -223,7 +202,7 @@ const previewDeviceOptions = computed(() => [
             id="pref-word-count"
             class="shrink-0"
             :model-value="isCountStatus"
-            @update:model-value="isCountStatus = $event"
+            @update:model-value="setCountStatus($event)"
           />
         </div>
       </TabsContent>

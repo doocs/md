@@ -238,7 +238,7 @@ export default {
     },
     wordCount: {
       label: `字数统计`,
-      hint: `在页脚显示字数统计`,
+      hint: `在预览文章顶部显示字数与阅读时间`,
     },
   },
 }
