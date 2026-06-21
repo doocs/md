@@ -39,6 +39,7 @@ Pull requests are welcome. You can also share ideas in [Discussions](https://git
 - Ruby annotation extension: `[text]{ruby}` and `[text]^(ruby)` formats
 - Multiple code highlight themes; customizable theme colors and CSS
 - Local draft management with auto-save
+- Sync editor preferences after sign-in ([cloud sync](/docs/cloud-sync.md))
 - Multiple image hosting options (GitHub, Alibaba Cloud OSS, Tencent COS, Qiniu, MinIO, S3, Cloudflare R2, and more)
 - File import and export
 - AI assistant integration (DeepSeek, OpenAI, Tongyi Qianwen, Tencent Hunyuan, Volcengine, 302.AI, etc.)

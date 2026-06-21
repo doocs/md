@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展等特性。
+**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**简体中文 / English 界面**等特性。
 
 - **在线地址:** https://md.doocs.org
 - **Node 版本:** >= 22.22.2（`.nvmrc`: v22.22.2）
@@ -99,10 +99,22 @@ pnpm mcp dev          # MCP Server 监听模式
 
 ### 状态管理
 
-- Pinia store 位于 `apps/web/src/stores/`（按领域划分：`useEditorStore`、`useThemeStore`、`useUiStore` 等）
+- Pinia store 位于 `apps/web/src/stores/`（按领域划分：`useEditorStore`、`useThemeStore`、`useUiStore`、`useLocaleStore` 等）
 - UI 组件遵循 Shadcn-Vue 模式，位于 `apps/web/src/components/ui`
 - 跨 feature 通用组件位于 `apps/web/src/components/shared`
 - 架构详情见 [docs/architecture.md](./docs/architecture.md)
+
+### 国际化（i18n，`@md/web`）
+
+Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**en-US**；VS Code 扩展、uTools、CLI、MCP **未**国际化。
+
+- **库**：`vue-i18n`（composition API，`legacy: false`），在 `apps/web/vite.config.ts` 中通过 `unplugin-auto-import` 自动导入 `useI18n`
+- **文案**：`apps/web/src/i18n/messages/{zh-CN,en-US}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`）
+- **组件内**：`useI18n()` + `t('key')`；**Store / 工具函数**：`@/i18n/translate` 的 `t()` / `getLocale()` / `formatLocalDateTime()`
+- **语言状态**：`useLocaleStore`（持久化 key：`locale`）；用户可在 **偏好设置**（`Ctrl+,`）→ General 切换
+- **启动**：`await initStorage()` → `setupI18n(detectInitialLocale())` → Pinia → `useLocaleStore()`（见 `apps/web/src/bootstrap.ts`）；`index.html` 启动屏从 `localStorage` 读取 locale
+- **云同步**：`locale` 在 `SYNC_SETTING_KEYS` 中，远端应用后由 `hydrateSyncedSettings` 热更新
+- **约定**：新增用户可见文案须同时维护 zh-CN 与 en-US；在 computed 中调用 `t()` 且需随语言切换更新时，应依赖 `locale`（例如 `void locale.value`）
 
 ## Lint 与格式化
 
