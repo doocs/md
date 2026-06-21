@@ -11,6 +11,7 @@ import {
 import { useCommandPalette } from '@/composables/useCommandPalette'
 import { useUIStore } from '@/stores/ui'
 
+const { t, locale } = useI18n()
 const uiStore = useUIStore()
 const { isShowCommandPalette } = storeToRefs(uiStore)
 const { buildCommands } = useCommandPalette()
@@ -19,7 +20,10 @@ const query = ref(``)
 const activeIndex = ref(0)
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const allCommands = computed(() => buildCommands())
+const allCommands = computed(() => {
+  void locale.value
+  return buildCommands()
+})
 
 const filteredCommands = computed(() => {
   const q = query.value.trim().toLowerCase()
@@ -61,8 +65,16 @@ function close() {
   uiStore.toggleShowCommandPalette(false)
 }
 
+function waitForDismissLayer() {
+  return new Promise<void>((resolve) => {
+    requestAnimationFrame(() => requestAnimationFrame(() => resolve()))
+  })
+}
+
 async function runCommand(cmd: PaletteCommand) {
   close()
+  await nextTick()
+  await waitForDismissLayer()
   await cmd.action()
 }
 
@@ -111,8 +123,8 @@ function isActive(groupIdx: number, cmdIdx: number) {
       class="top-[18%] max-h-[min(70vh,32rem)] max-w-xl translate-y-0 gap-0 overflow-hidden p-0"
     >
       <DialogHeader class="sr-only">
-        <DialogTitle>命令面板</DialogTitle>
-        <DialogDescription>搜索并执行编辑器命令</DialogDescription>
+        <DialogTitle>{{ t('commandPalette.title') }}</DialogTitle>
+        <DialogDescription>{{ t('commandPalette.description') }}</DialogDescription>
       </DialogHeader>
 
       <div class="flex items-center gap-2 border-b px-3 py-2.5">
@@ -122,7 +134,7 @@ function isActive(groupIdx: number, cmdIdx: number) {
           v-model="query"
           type="text"
           class="h-8 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-          placeholder="搜索命令…"
+          :placeholder="t('commandPalette.searchPlaceholder')"
           @keydown="onKeydown"
         >
       </div>
@@ -156,7 +168,7 @@ function isActive(groupIdx: number, cmdIdx: number) {
           </template>
         </template>
         <p v-else class="px-3 py-8 text-center text-sm text-muted-foreground">
-          无匹配命令
+          {{ t('commandPalette.noMatch') }}
         </p>
       </div>
     </DialogContent>

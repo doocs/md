@@ -1,4 +1,5 @@
 import { v4 as uuidv4 } from 'uuid'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -39,7 +40,7 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
     const newAccount: MpAccount = {
       id: uuidv4(),
       mpId: data?.mpId ?? ``,
-      name: data?.name ?? `新账号`,
+      name: data?.name ?? t('store.mpAccount.newAccount'),
       logo: data?.logo ?? ``,
       desc: data?.desc ?? ``,
       serviceType: data?.serviceType ?? `1`,

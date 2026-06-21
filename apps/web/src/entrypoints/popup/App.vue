@@ -2,6 +2,8 @@
 import { browser } from 'wxt/browser'
 import logo from '/mpmd/logo.svg'
 
+const { t } = useI18n()
+
 function onOpenOption() {
   browser.runtime.openOptionsPage()
 }
@@ -21,23 +23,23 @@ function onOpenOption() {
           font-weight: bold;
           margin-left: 8px;
         "
-      >使用必读</span>
+      >{{ t('store.popup.mustRead') }}</span>
     </div>
     <section style="margin-top: 12px; line-height: 28px">
-      <div>如果您希望使用微信公众号素材库作为图床功能，需要进行以下配置：</div>
+      <div>{{ t('store.popup.mpHostIntro') }}</div>
       <div>
-        1.开启公众号开发者模式
+        {{ t('store.popup.step1') }}
         <span><a
           href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
           target="_blank" rel="noopener noreferrer"
-        >查看文档</a></span>
+        >{{ t('store.popup.viewDocs') }}</a></span>
       </div>
       <div>
-        2.配置IP白名单<span><a href="https://md-pages.doocs.org/tutorial" target="_blank" rel="noopener noreferrer">使用教程</a></span>
+        {{ t('store.popup.step2') }}<span><a href="https://md-pages.doocs.org/tutorial" target="_blank" rel="noopener noreferrer">{{ t('store.popup.tutorial') }}</a></span>
       </div>
       <div>
         <button class="button" @click="onOpenOption">
-          开始使用
+          {{ t('store.popup.getStarted') }}
         </button>
       </div>
     </section>

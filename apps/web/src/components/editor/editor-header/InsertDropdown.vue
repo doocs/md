@@ -11,6 +11,7 @@ const props = withDefaults(defineProps<{
 })
 
 const { asSub } = toRefs(props)
+const { t } = useI18n()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
@@ -29,24 +30,24 @@ function openFormulaEditor() {
   <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
-      插入
+      {{ t('menu.insert') }}
     </MenubarSubTrigger>
     <MenubarSubContent class="w-52">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        图片
+        {{ t('menu.image') }}
       </MenubarItem>
       <MenubarItem @click="openFormulaEditor()">
         <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
-        公式
+        {{ t('menu.formula') }}
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        表格
+        {{ t('menu.table') }}
       </MenubarItem>
       <MenubarItem @click="toggleShowComponentDialog()">
         <Blocks class="mr-2 h-4 w-4" />
-        组件
+        {{ t('menu.component') }}
       </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
@@ -54,24 +55,24 @@ function openFormulaEditor() {
   <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
-      插入
+      {{ t('menu.insert') }}
     </MenubarTrigger>
     <MenubarContent class="w-52" align="start">
       <MenubarItem @click="toggleShowUploadImgDialog()">
         <Image class="mr-2 h-4 w-4" />
-        图片
+        {{ t('menu.image') }}
       </MenubarItem>
       <MenubarItem @click="openFormulaEditor()">
         <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
-        公式
+        {{ t('menu.formula') }}
       </MenubarItem>
       <MenubarItem @click="toggleShowInsertFormDialog()">
         <Table class="mr-2 h-4 w-4" />
-        表格
+        {{ t('menu.table') }}
       </MenubarItem>
       <MenubarItem @click="toggleShowComponentDialog()">
         <Blocks class="mr-2 h-4 w-4" />
-        组件
+        {{ t('menu.component') }}
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>

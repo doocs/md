@@ -16,6 +16,7 @@ import { captureShareSnapshot } from '@/services/share/capture-snapshot'
 import { isShareConfigured, isShareProUser, ShareApiError, ShareClient } from '@/services/share/client'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
+import { useLocaleStore } from '@/stores/locale'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 
@@ -34,34 +35,37 @@ interface PasswordOption {
   icon: Component
 }
 
-const passwordOptions: PasswordOption[] = [
-  {
-    value: `none`,
-    label: `公开链接`,
-    description: `任何人持链接即可查看`,
-    icon: Globe,
-  },
-  {
-    value: `custom`,
-    label: `自定义密码`,
-    description: `自行设置 4–64 位访问密码`,
-    icon: KeyRound,
-  },
-  {
-    value: `auto`,
-    label: `随机密码`,
-    description: `系统生成 8 位密码，生成后展示`,
-    icon: Sparkles,
-  },
-]
-
+const { t } = useI18n()
 const authStore = useAuthStore()
 const postStore = usePostStore()
 const uiStore = useUIStore()
 const confirmStore = useConfirmStore()
+const localeStore = useLocaleStore()
+
+const passwordOptions = computed<PasswordOption[]>(() => [
+  {
+    value: `none`,
+    label: t(`share.passwordMode.public.label`),
+    description: t(`share.passwordMode.public.description`),
+    icon: Globe,
+  },
+  {
+    value: `custom`,
+    label: t(`share.passwordMode.custom.label`),
+    description: t(`share.passwordMode.custom.description`),
+    icon: KeyRound,
+  },
+  {
+    value: `auto`,
+    label: t(`share.passwordMode.auto.label`),
+    description: t(`share.passwordMode.auto.description`),
+    icon: Sparkles,
+  },
+])
 
 const { isLoggedIn, user } = storeToRefs(authStore)
 const { shareDialogInitialTab } = storeToRefs(uiStore)
+const { locale } = storeToRefs(localeStore)
 
 const activeTab = ref<`create` | `manage`>(`create`)
 const shareList = ref<ShareListItem[]>([])
@@ -95,7 +99,7 @@ const copiedPassword = ref(false)
 const expiresLabel = computed(() => {
   if (!expiresAt.value)
     return ``
-  return new Date(expiresAt.value).toLocaleString(`zh-CN`)
+  return t(`share.expiresAt`, { date: new Date(expiresAt.value).toLocaleString(locale.value) })
 })
 
 const canSubmit = computed(() => {
@@ -125,15 +129,15 @@ function resetDialog() {
 
 function formatShareTitle(title: string): string {
   const trimmed = title.trim()
-  return trimmed || `无标题`
+  return trimmed || t(`share.untitled`)
 }
 
-function formatShareExpiry(expiresAt: number | null, expired: boolean): string {
+function formatShareExpiry(expiresAtValue: number | null, expired: boolean): string {
   if (expired)
-    return `已过期`
-  if (!expiresAt)
-    return `永久有效`
-  return `${new Date(expiresAt).toLocaleString(`zh-CN`)} 过期`
+    return t(`share.expired`)
+  if (!expiresAtValue)
+    return t(`share.permanent`)
+  return t(`share.expiresOn`, { date: new Date(expiresAtValue).toLocaleString(locale.value) })
 }
 
 async function loadShareList() {
@@ -147,9 +151,9 @@ async function loadShareList() {
   }
   catch (err) {
     const message = err instanceof ShareApiError && err.message === `pro_required`
-      ? `我的分享为 Pro 专属功能`
+      ? t(`share.proRequired`)
       : err instanceof Error ? err.message : String(err)
-    toast.error(`加载分享列表失败：${message}`)
+    toast.error(t(`share.loadListFailed`, { message }))
   }
   finally {
     isLoadingList.value = false
@@ -158,9 +162,9 @@ async function loadShareList() {
 
 function confirmRevokeShare(share: ShareListItem) {
   confirmStore.confirm({
-    title: `取消分享`,
-    description: `确定取消「${formatShareTitle(share.title)}」的分享吗？链接将立即失效。`,
-    confirmText: `取消分享`,
+    title: t(`share.revokeTitle`),
+    description: t(`share.revokeDescription`, { title: formatShareTitle(share.title) }),
+    confirmText: t(`share.revokeShare`),
     destructive: true,
     onConfirm: async () => {
       revokingId.value = share.id
@@ -169,11 +173,11 @@ function confirmRevokeShare(share: ShareListItem) {
         shareList.value = shareList.value.filter(item => item.id !== share.id)
         if (shareUrl.value === share.url)
           resetForm()
-        toast.success(`已取消分享`)
+        toast.success(t(`share.revokeSuccess`))
       }
       catch (err) {
         const message = err instanceof Error ? err.message : String(err)
-        toast.error(`取消分享失败：${message}`)
+        toast.error(t(`share.revokeFailed`, { message }))
       }
       finally {
         revokingId.value = null
@@ -191,12 +195,12 @@ function formatShareError(err: unknown): string {
   if (err instanceof ShareApiError && err.status === 429 && err.body?.error === `rate_limited`) {
     const limit = typeof err.body.limit === `number` ? err.body.limit : null
     const retryAfterSec = typeof err.body.retryAfterSec === `number` ? err.body.retryAfterSec : null
-    const limitText = limit != null ? `每天最多分享 ${limit} 次` : `分享过于频繁`
+    const limitText = limit != null ? t(`share.rateLimited`, { limit }) : t(`share.rateLimitedGeneric`)
     const retryHint = retryAfterSec != null
       ? retryAfterSec >= 3600
-        ? `，请 ${Math.ceil(retryAfterSec / 3600)} 小时后再试`
-        : `，请 ${Math.max(1, Math.ceil(retryAfterSec / 60))} 分钟后再试`
-      : `，请明天再试`
+        ? t(`share.retryAfterHours`, { hours: Math.ceil(retryAfterSec / 3600) })
+        : t(`share.retryAfterMinutes`, { minutes: Math.max(1, Math.ceil(retryAfterSec / 60)) })
+      : t(`share.retryTomorrow`)
 
     return `${limitText}${retryHint}`
   }
@@ -212,7 +216,7 @@ async function createShare() {
     return
 
   isSubmitting.value = true
-  submitStage.value = `正在等待图表与公式渲染…`
+  submitStage.value = t(`share.stageRendering`)
   errorMessage.value = ``
   shareUrl.value = ``
   sharePassword.value = ``
@@ -222,11 +226,11 @@ async function createShare() {
 
   try {
     const htmlSnapshot = await captureShareSnapshot()
-    submitStage.value = `正在上传分享快照…`
+    submitStage.value = t(`share.stageUploading`)
 
     const currentPost = postStore.currentPost
     if (!currentPost?.id)
-      throw new Error(`当前文章无效，请刷新后重试。`)
+      throw new Error(t(`share.invalidPost`))
 
     const result = await shareClient.create({
       postId: currentPost.id,
@@ -239,16 +243,16 @@ async function createShare() {
     expiresAt.value = result.expiresAt
     isProtected.value = result.protected
     sharePassword.value = result.password ?? ``
-    toast.success(result.updated ? `分享链接已更新` : `分享链接已生成`)
+    toast.success(result.updated ? t(`share.linkUpdated`) : t(`share.linkCreated`))
   }
   catch (err) {
     const message = formatShareError(err)
     errorMessage.value = message === `invalid_password`
-      ? `密码长度需为 4–64 个字符。`
+      ? t(`share.invalidPassword`)
       : message === `forbidden`
-        ? `无权更新此分享，请刷新后重试。`
+        ? t(`share.forbidden`)
         : message
-    toast.error(`生成分享链接失败：${errorMessage.value}`)
+    toast.error(t(`share.createFailed`, { message: errorMessage.value }))
   }
   finally {
     isSubmitting.value = false
@@ -274,10 +278,10 @@ async function copyText(text: string, kind: `link` | `password`) {
         copiedPassword.value = false
       }, 2000)
     }
-    toast.success(`已复制`)
+    toast.success(t(`common.copied`))
   }
   catch {
-    toast.error(`复制失败，请手动复制`)
+    toast.error(t(`common.copyFailed`))
   }
 }
 
@@ -285,9 +289,9 @@ async function copyShareBundle() {
   if (!shareUrl.value)
     return
 
-  const lines = [`链接：${shareUrl.value}`]
+  const lines = [t(`share.copyBundle.link`, { url: shareUrl.value })]
   if (sharePassword.value)
-    lines.push(`密码：${sharePassword.value}`)
+    lines.push(t(`share.copyBundle.password`, { password: sharePassword.value }))
   await copyText(lines.join(`\n`), `link`)
 }
 
@@ -319,23 +323,23 @@ watch(isProUser, (pro) => {
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="分享预览"
-    description="生成与编辑器预览一致的只读链接，便于转发给他人查看。"
+    :title="t('share.title')"
+    :description="t('share.description')"
     :icon="Share2"
   >
     <CloudFeatureState
       v-if="!isShareConfigured()"
       :icon="Share2"
-      title="分享服务未配置"
-      description="当前部署未配置分享服务，请联系部署方启用后再试。"
+      :title="t('share.notConfiguredTitle')"
+      :description="t('share.notConfiguredDescription')"
       compact
     />
 
     <CloudFeatureState
       v-else-if="!isLoggedIn"
       :icon="Share2"
-      title="登录后分享预览"
-      action-label="登录"
+      :title="t('share.loginTitle')"
+      :action-label="t('common.login')"
       :action-icon="LogIn"
       @action="openAccountDialog"
     />
@@ -343,10 +347,10 @@ watch(isProUser, (pro) => {
     <Tabs v-else v-model="activeTab" class="gap-0">
       <TabsList v-if="isProUser" class="mx-4 mt-4 grid w-auto grid-cols-2 sm:mx-6">
         <TabsTrigger value="create">
-          生成分享
+          {{ t('share.tabCreate') }}
         </TabsTrigger>
         <TabsTrigger value="manage">
-          我的分享
+          {{ t('share.tabManage') }}
         </TabsTrigger>
       </TabsList>
 
@@ -356,18 +360,18 @@ watch(isProUser, (pro) => {
             <div class="flex flex-wrap gap-2">
               <span class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground">
                 <Clock class="size-3.5" />
-                1 天后过期
+                {{ t('share.expiresIn1Day') }}
               </span>
               <span
                 v-if="!isProUser"
                 class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground"
               >
-                2 次/天
+                {{ t('share.limitPerDay') }}
               </span>
             </div>
 
             <div class="space-y-2">
-              <Label class="text-sm">访问密码</Label>
+              <Label class="text-sm">{{ t('share.passwordLabel') }}</Label>
               <div class="grid gap-2">
                 <button
                   v-for="option in passwordOptions"
@@ -394,14 +398,14 @@ watch(isProUser, (pro) => {
 
             <div v-if="passwordMode === 'custom'" class="space-y-2 pl-1">
               <Label for="share-custom-password" class="text-xs text-muted-foreground">
-                输入访问密码
+                {{ t('share.customPasswordLabel') }}
               </Label>
               <Input
                 id="share-custom-password"
                 v-model="customPassword"
                 type="password"
                 autocomplete="new-password"
-                placeholder="4–64 个字符"
+                :placeholder="t('share.customPasswordPlaceholder')"
               />
             </div>
 
@@ -418,7 +422,7 @@ watch(isProUser, (pro) => {
             >
               <Loader2 v-if="isSubmitting" class="size-4 animate-spin" />
               <Share2 v-else class="size-4" />
-              {{ isSubmitting ? (submitStage || '正在生成…') : '生成分享链接' }}
+              {{ isSubmitting ? (submitStage || t('share.generating')) : t('share.generateLink') }}
             </Button>
           </div>
         </template>
@@ -427,12 +431,12 @@ watch(isProUser, (pro) => {
           <div class="space-y-4 px-4 py-4 sm:px-6">
             <PanelCard variant="success">
               <p class="text-xs text-green-900 dark:text-green-100">
-                分享链接已就绪，可直接复制或打开预览。
+                {{ t('share.readyHint') }}
               </p>
             </PanelCard>
 
             <div class="space-y-2">
-              <Label for="share-url" class="text-xs text-muted-foreground">分享链接</Label>
+              <Label for="share-url" class="text-xs text-muted-foreground">{{ t('share.linkLabel') }}</Label>
               <div class="flex gap-2">
                 <Input
                   id="share-url"
@@ -451,7 +455,7 @@ watch(isProUser, (pro) => {
             </div>
 
             <div v-if="isProtected && sharePassword" class="space-y-2">
-              <Label for="share-password" class="text-xs text-muted-foreground">访问密码</Label>
+              <Label for="share-password" class="text-xs text-muted-foreground">{{ t('share.accessPasswordLabel') }}</Label>
               <div class="flex gap-2">
                 <Input
                   id="share-password"
@@ -465,17 +469,17 @@ watch(isProUser, (pro) => {
                 </Button>
               </div>
               <Button variant="outline" class="w-full" @click="copyShareBundle">
-                复制链接与密码
+                {{ t('share.copyLinkAndPassword') }}
               </Button>
             </div>
 
             <p v-else-if="isProtected && passwordMode === 'custom'" class="text-xs text-muted-foreground">
-              已启用密码保护，请妥善保管你设置的密码。
+              {{ t('share.customPasswordHint') }}
             </p>
 
             <div class="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-              <span v-if="expiresLabel">过期：{{ expiresLabel }}</span>
-              <span>预览与编辑器一致</span>
+              <span v-if="expiresLabel">{{ expiresLabel }}</span>
+              <span>{{ t('share.previewConsistent') }}</span>
             </div>
 
             <Button
@@ -483,7 +487,7 @@ watch(isProUser, (pro) => {
               class="h-10 w-full"
               @click="resetForm"
             >
-              重新设置并生成
+              {{ t('share.regenerate') }}
             </Button>
           </div>
         </template>
@@ -493,13 +497,13 @@ watch(isProUser, (pro) => {
         <div class="space-y-3 px-4 py-4 sm:px-6">
           <div class="flex items-center justify-between gap-2">
             <p class="text-xs text-muted-foreground">
-              管理已发布的分享链接，取消后链接立即失效。
+              {{ t('share.manageHint') }}
             </p>
             <Button
               variant="ghost"
               size="icon"
               class="shrink-0"
-              title="刷新列表"
+              :title="t('share.refreshList')"
               :disabled="isLoadingList"
               @click="loadShareList"
             >
@@ -510,14 +514,14 @@ watch(isProUser, (pro) => {
 
           <div v-if="isLoadingList && shareList.length === 0" class="flex items-center justify-center py-10 text-sm text-muted-foreground">
             <Loader2 class="mr-2 size-4 animate-spin" />
-            加载中…
+            {{ t('common.loading') }}
           </div>
 
           <CloudFeatureState
             v-else-if="shareList.length === 0"
             :icon="Inbox"
-            title="暂无分享记录"
-            description="生成分享后，可在此统一管理链接。"
+            :title="t('share.emptyTitle')"
+            :description="t('share.emptyDescription')"
             compact
           />
 
@@ -534,24 +538,24 @@ watch(isProUser, (pro) => {
               <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
                 <span class="inline-flex items-center gap-1">
                   <Eye class="size-3" />
-                  {{ share.viewCount }} 次阅读
+                  {{ t('share.viewCount', { count: share.viewCount }) }}
                 </span>
                 <span>{{ formatShareExpiry(share.expiresAt, share.expired) }}</span>
-                <span v-if="share.protected">已设密码</span>
+                <span v-if="share.protected">{{ t('share.passwordProtected') }}</span>
               </div>
               <template #trailing>
                 <div class="flex shrink-0 flex-wrap items-center justify-end gap-0.5">
-                  <Button variant="ghost" size="icon" title="复制链接" @click="copyText(share.url, 'link')">
+                  <Button variant="ghost" size="icon" :title="t('share.copyLink')" @click="copyText(share.url, 'link')">
                     <Copy class="size-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" title="打开预览" @click="openShareUrl(share.url)">
+                  <Button variant="ghost" size="icon" :title="t('share.openPreview')" @click="openShareUrl(share.url)">
                     <ExternalLink class="size-4" />
                   </Button>
                   <Button
                     variant="ghost"
                     size="icon"
                     class="text-destructive hover:text-destructive"
-                    title="取消分享"
+                    :title="t('share.revokeShare')"
                     :disabled="revokingId === share.id"
                     @click="confirmRevokeShare(share)"
                   >

@@ -3,7 +3,7 @@ import { addPrefix } from '@/storage/prefix'
 
 /** IndexedDB 数据库名 */
 export const DB_NAME = `doocs-md`
-export const DB_VERSION = 1
+export const DB_VERSION = 2
 
 export const STORE_DOCUMENTS = `documents`
 export const STORE_SETTINGS = `settings`
@@ -23,10 +23,10 @@ export const UNPREFIXED_APP_KEYS = new Set([
   `isCountStatus`,
   `legend`,
   `previewWidth`,
-  `isEditOnLeft`,
   `showAIToolbox`,
   `viewMode`,
   `previewDevice`,
+  `locale`,
   `openai_type`,
   `openai_temperature`,
   `openai_max_token`,

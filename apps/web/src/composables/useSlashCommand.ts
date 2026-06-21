@@ -11,13 +11,17 @@ export function useSlashCommand() {
   const activeIndex = ref(0)
   const slashFrom = ref(-1)
 
-  const allCommands = buildSlashCommands()
+  const { locale } = useI18n()
+  const allCommands = computed(() => {
+    void locale.value
+    return buildSlashCommands()
+  })
 
   const filteredCommands = computed(() => {
     const f = filter.value.toLowerCase().trim()
     if (!f)
-      return allCommands
-    return allCommands.filter(
+      return allCommands.value
+    return allCommands.value.filter(
       cmd =>
         cmd.label.toLowerCase().includes(f)
         || cmd.id.toLowerCase().includes(f)

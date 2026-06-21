@@ -12,6 +12,7 @@ import { progress as Progress } from '@/components/ui/progress'
 import { useImageUploader } from '@/composables/useImageUploader'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
 
@@ -121,14 +122,14 @@ async function handleUpload() {
   const pathsToUpload = Array.from(selectedPaths.value)
   const total = pathsToUpload.length
   if (total === 0) {
-    toast.warning('请至少勾选一项')
+    toast.warning(t('localImage.selectAtLeastOne'))
     return
   }
 
   // 检查未匹配的
   const unmatched = pathsToUpload.filter(p => !findMatchedFile(p))
   if (unmatched.length > 0) {
-    toast.error(`以下图片未在文件夹中找到：${unmatched.join(', ')}`)
+    toast.error(t('localImage.notFoundInFolder', { paths: unmatched.join(', ') }))
     return
   }
 
@@ -152,7 +153,7 @@ async function handleUpload() {
       uploadResults.value[path] = url
     }
     catch (err: unknown) {
-      uploadErrors.value[path] = (err as Error).message || '上传失败'
+      uploadErrors.value[path] = (err as Error).message || t('localImage.uploadFailed')
     }
     progressValue.value = Math.round(((i + 1) / total) * 100)
   }
@@ -205,9 +206,9 @@ function onOpenChange(val: boolean) {
   <Dialog :open="isDialogOpen" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-lg">
       <DialogHeader>
-        <DialogTitle>检测到本地图片</DialogTitle>
+        <DialogTitle>{{ t('localImage.title') }}</DialogTitle>
         <DialogDescription>
-          文档中包含本地图片路径，请选择包含这些图片的文件夹，系统将自动匹配并上传。
+          {{ t('localImage.description') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -216,10 +217,10 @@ function onOpenChange(val: boolean) {
         <div class="rounded-md border">
           <div class="flex items-center justify-between border-b px-4 py-2">
             <span class="text-sm font-medium">
-              检测到 {{ uiStore.localImageUploadData.detectedPaths.length }} 张本地图片
+              {{ t('localImage.detectedCount', { count: uiStore.localImageUploadData.detectedPaths.length }) }}
             </span>
             <span v-if="folderFiles.length > 0" class="text-xs text-muted-foreground">
-              已匹配 {{ matchedCount }} / {{ selectedPaths.size }}
+              {{ t('localImage.matchedCount', { matched: matchedCount, total: selectedPaths.size }) }}
             </span>
           </div>
           <div class="max-h-48 overflow-auto p-2">
@@ -266,35 +267,35 @@ function onOpenChange(val: boolean) {
           >
           <Button variant="outline" class="w-full" as="span">
             <FolderOpen class="mr-2 h-4 w-4" />
-            {{ folderFiles.length > 0 ? `已选择文件夹 (${folderFiles.length} 个文件)` : '选择包含图片的文件夹' }}
+            {{ folderFiles.length > 0 ? t('localImage.folderSelected', { count: folderFiles.length }) : t('localImage.selectFolder') }}
           </Button>
         </label>
 
         <!-- 底部操作区 -->
         <div v-if="isAllUploaded" class="flex justify-end pt-2">
           <Button @click="handleApply">
-            完成
+            {{ t('common.done') }}
           </Button>
         </div>
         <div v-else-if="hasUploadAttempt" class="flex items-center justify-between gap-2 pt-2">
           <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
-            跳过
+            {{ t('common.skip') }}
           </Button>
           <div class="flex gap-2">
             <Button
               v-if="Object.keys(uploadResults).length > 0"
               @click="handleApply"
             >
-              完成
+              {{ t('common.done') }}
             </Button>
             <Button variant="outline" @click="handleUpload">
-              重新上传
+              {{ t('localImage.reupload') }}
             </Button>
           </div>
         </div>
         <div v-else class="flex items-center justify-between gap-2 pt-2">
           <Button variant="link" class="px-2 text-muted-foreground" @click="handleSkip">
-            跳过
+            {{ t('common.skip') }}
           </Button>
           <div class="flex gap-2">
             <Button
@@ -302,7 +303,7 @@ function onOpenChange(val: boolean) {
               @click="handleUpload"
             >
               <Loader2 v-if="isUploading" class="mr-2 h-4 w-4 animate-spin" />
-              {{ isUploading ? '上传中...' : '上传图片' }}
+              {{ isUploading ? t('common.uploading') : t('localImage.uploadImages') }}
             </Button>
           </div>
         </div>

@@ -3,7 +3,7 @@ import { Keyboard } from '@lucide/vue'
 import { computed } from 'vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { useCommandPalette } from '@/composables/useCommandPalette'
-import { KEYBOARD_SHORTCUT_CATEGORIES } from '@/configs/keyboard-shortcuts'
+import { buildKeyboardShortcutCategories } from '@/configs/keyboard-shortcuts'
 
 const props = defineProps<{
   open: boolean
@@ -13,7 +13,13 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
+const { t, locale } = useI18n()
 const { paletteShortcutLabel } = useCommandPalette()
+
+const shortcutCategories = computed(() => {
+  void locale.value
+  return buildKeyboardShortcutCategories()
+})
 
 const dialogOpen = computed({
   get: () => props.open,
@@ -24,14 +30,14 @@ const dialogOpen = computed({
 <template>
   <PanelDialog
     v-model:open="dialogOpen"
-    title="键盘快捷键"
-    :description="`命令面板：${paletteShortcutLabel}`"
+    :title="t('menu.keyboardShortcuts')"
+    :description="t('keyboard.description', { shortcut: paletteShortcutLabel })"
     :icon="Keyboard"
     size="2xl"
   >
     <div class="space-y-5 overflow-y-auto px-4 py-4 sm:px-6">
       <section
-        v-for="category in KEYBOARD_SHORTCUT_CATEGORIES"
+        v-for="category in shortcutCategories"
         :key="category.title"
         class="space-y-2"
       >

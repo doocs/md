@@ -11,6 +11,7 @@ const props = defineProps<{
   onContentClick: (event: MouseEvent) => void
 }>()
 
+const { t } = useI18n()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
 
@@ -89,7 +90,7 @@ defineExpose({
           <div v-if="isCoping" class="loading-mask">
             <div class="loading-mask-box">
               <div class="loading__img" />
-              <span>正在生成</span>
+              <span>{{ t('common.generating') }}</span>
             </div>
           </div>
         </div>

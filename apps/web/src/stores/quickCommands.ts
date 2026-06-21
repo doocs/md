@@ -1,5 +1,6 @@
 import { v4 as uuidv4 } from 'uuid'
 import { ref, watch } from 'vue'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 
 export interface QuickCommandPersisted {
@@ -23,13 +24,14 @@ function hydrate(cmd: QuickCommandPersisted): QuickCommandRuntime {
   }
 }
 
-// 4 条默认指令
-const DEFAULT_COMMANDS: QuickCommandPersisted[] = [
-  { id: `polish`, label: `润色`, template: `请润色以下内容：\n\n{{sel}}` },
-  { id: `to-en`, label: `翻译成英文`, template: `请将以下内容翻译为英文：\n\n{{sel}}` },
-  { id: `to-zh`, label: `翻译成中文`, template: `Please translate the following content into Chinese:\n\n{{sel}}` },
-  { id: `summary`, label: `总结`, template: `请对以下内容进行总结：\n\n{{sel}}` },
-]
+function getDefaultCommands(): QuickCommandPersisted[] {
+  return [
+    { id: `polish`, label: t('ai.quickCommand.polish.label'), template: t('ai.quickCommand.polish.template') },
+    { id: `to-en`, label: t('ai.quickCommand.toEn.label'), template: t('ai.quickCommand.toEn.template') },
+    { id: `to-zh`, label: t('ai.quickCommand.toZh.label'), template: t('ai.quickCommand.toZh.template') },
+    { id: `summary`, label: t('ai.quickCommand.summary.label'), template: t('ai.quickCommand.summary.template') },
+  ]
+}
 
 export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
   // ---------- state ----------
@@ -51,13 +53,13 @@ export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
         commands.value = parsed.map(hydrate)
       }
       catch (e) {
-        console.warn(`解析快捷指令失败，已恢复默认值`, e)
-        commands.value = DEFAULT_COMMANDS.map(hydrate)
+        console.warn(t('ai.quickCommand.parseFailed'), e)
+        commands.value = getDefaultCommands().map(hydrate)
         await save()
       }
     }
     else {
-      commands.value = DEFAULT_COMMANDS.map(hydrate)
+      commands.value = getDefaultCommands().map(hydrate)
       await save()
     }
   }

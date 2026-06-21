@@ -6,6 +6,8 @@ const props = defineProps<{
   newText: string
 }>()
 
+const { t } = useI18n()
+
 interface DiffSpan {
   type: 'equal' | 'insert' | 'delete'
   text: string
@@ -140,7 +142,7 @@ onMounted(() => {
 
     <!-- 无差异 -->
     <div v-if="isIdentical" class="flex-1 flex items-center justify-center text-sm text-muted-foreground">
-      两个版本内容完全相同
+      {{ t('versionDiff.identical') }}
     </div>
 
     <!-- 差异内容 -->

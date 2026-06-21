@@ -11,10 +11,6 @@ export const useUIStore = defineStore(`ui`, () => {
   const isDark = useDark()
   const toggleDark = useToggle(isDark)
 
-  // 是否在左侧编辑
-  const isEditOnLeft = store.reactive(`isEditOnLeft`, true)
-  const toggleEditOnLeft = useToggle(isEditOnLeft)
-
   // 是否开启 AI 工具箱
   const showAIToolbox = store.reactive(`showAIToolbox`, true)
   const toggleAIToolbox = useToggle(showAIToolbox)
@@ -157,6 +153,9 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowEditorStateDialog = ref(false)
   const toggleShowEditorStateDialog = useToggle(isShowEditorStateDialog)
 
+  const isShowPreferencesDialog = ref(false)
+  const toggleShowPreferencesDialog = useToggle(isShowPreferencesDialog)
+
   const isShowKeyboardShortcutsDialog = ref(false)
   const toggleShowKeyboardShortcutsDialog = useToggle(isShowKeyboardShortcutsDialog)
 
@@ -226,7 +225,6 @@ export const useUIStore = defineStore(`ui`, () => {
   return {
     // ==================== 全局 UI 状态 ====================
     isDark,
-    isEditOnLeft,
     showAIToolbox,
     hasShownAIToolboxHint,
     isOpenRightSlider,
@@ -277,6 +275,8 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowMarkdownHelpDialog,
     isShowEditorStateDialog,
     toggleShowEditorStateDialog,
+    isShowPreferencesDialog,
+    toggleShowPreferencesDialog,
     isShowKeyboardShortcutsDialog,
     toggleShowKeyboardShortcutsDialog,
     isShowCommandPalette,
@@ -295,7 +295,6 @@ export const useUIStore = defineStore(`ui`, () => {
 
     // ==================== Actions ====================
     toggleDark,
-    toggleEditOnLeft,
     toggleAIToolbox,
     toggleImageReupload,
     toggleScrollSync,

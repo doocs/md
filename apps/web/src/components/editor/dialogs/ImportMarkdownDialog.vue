@@ -3,6 +3,7 @@ import { FileText, Globe, Loader2, Upload } from '@lucide/vue'
 import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
 const postStore = usePostStore()
 const uiStore = useUIStore()
 
@@ -101,11 +102,11 @@ function isMarkdownUrl(rawUrl: string): boolean {
 async function fetchMarkdownFile(rawUrl: string, signal: AbortSignal): Promise<string> {
   const response = await fetch(rawUrl, { signal })
   if (!response.ok) {
-    throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+    throw new Error(t('importMd.requestFailed', { status: response.status, statusText: response.statusText }))
   }
   const content = await response.text()
   if (!content.trim()) {
-    throw new Error(`该链接返回的内容为空`)
+    throw new Error(t('importMd.contentEmpty'))
   }
   return content
 }
@@ -120,7 +121,7 @@ async function fetchViaAnythingMd(rawUrl: string, signal: AbortSignal): Promise<
   })
 
   if (!response.ok) {
-    throw new Error(`请求失败: ${response.status} ${response.statusText}`)
+    throw new Error(t('importMd.requestFailed', { status: response.status, statusText: response.statusText }))
   }
 
   const data = await response.json()
@@ -128,12 +129,12 @@ async function fetchViaAnythingMd(rawUrl: string, signal: AbortSignal): Promise<
     throw new DOMException(``, `AbortError`)
 
   if (!data.success) {
-    throw new Error(data.error || `转换失败`)
+    throw new Error(data.error || t('importMd.convertFailed'))
   }
 
   const markdown = data.markdown?.trim()
   if (!markdown) {
-    throw new Error(`转换结果为空`)
+    throw new Error(t('importMd.convertResultEmpty'))
   }
   return markdown
 }
@@ -141,12 +142,12 @@ async function fetchViaAnythingMd(rawUrl: string, signal: AbortSignal): Promise<
 async function importFromUrl() {
   const rawUrl = url.value.trim()
   if (!rawUrl) {
-    urlError.value = `请输入链接`
+    urlError.value = t('importMd.urlRequired')
     return
   }
 
   if (!URL.canParse(rawUrl) || !/^https?:\/\//i.test(rawUrl)) {
-    urlError.value = `请输入有效的 URL 地址（仅支持 http/https）`
+    urlError.value = t('importMd.urlInvalid')
     return
   }
 
@@ -177,7 +178,7 @@ async function importFromUrl() {
   catch (err) {
     if ((err as Error).name === `AbortError`)
       return
-    urlError.value = (err as Error).message || `导入失败，请检查链接是否有效`
+    urlError.value = (err as Error).message || t('importMd.importFailed')
   }
   finally {
     isUrlLoading.value = false
@@ -210,7 +211,7 @@ function handleDrop(event: DragEvent) {
   )
 
   if (validFiles.length === 0) {
-    toast.error(`请拖入 Markdown 文件（.md / .markdown / .txt）`)
+    toast.error(t('importMd.dropInvalid'))
     return
   }
 
@@ -243,7 +244,7 @@ async function readAndImportFiles(files: File[]) {
     await importContent(title, content)
   }
   if (validResults.length > 0) {
-    toast.success(validResults.length === 1 ? `已导入 1 篇文章` : `已批量导入 ${validResults.length} 篇文章`)
+    toast.success(validResults.length === 1 ? t('importMd.importedOne') : t('importMd.importedBatch', { count: validResults.length }))
   }
 }
 
@@ -282,9 +283,9 @@ watch(isShowImportMdDialog, (visible) => {
   <Dialog :open="isShowImportMdDialog" @update:open="onOpenChange">
     <DialogContent class="sm:max-w-xl">
       <DialogHeader>
-        <DialogTitle>导入 Markdown</DialogTitle>
+        <DialogTitle>{{ t('importMd.title') }}</DialogTitle>
         <DialogDescription>
-          从网络链接或本地文件导入内容，支持公众号文章、博客等任意网页链接
+          {{ t('importMd.description') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -293,13 +294,13 @@ watch(isShowImportMdDialog, (visible) => {
           <TabsTrigger value="file">
             <span class="inline-flex items-center">
               <Upload class="mr-2 size-4 shrink-0" />
-              本地文件
+              {{ t('importMd.localFile') }}
             </span>
           </TabsTrigger>
           <TabsTrigger value="url">
             <span class="inline-flex items-center">
               <Globe class="mr-2 size-4 shrink-0" />
-              网络链接
+              {{ t('importMd.networkUrl') }}
             </span>
           </TabsTrigger>
         </TabsList>
@@ -319,10 +320,10 @@ watch(isShowImportMdDialog, (visible) => {
           >
             <FileText class="mb-3 size-10 text-muted-foreground" />
             <p class="text-sm text-muted-foreground">
-              点击选择文件或拖拽文件到此处
+              {{ t('importMd.dropHint') }}
             </p>
             <p class="mt-1 text-xs text-muted-foreground/70">
-              支持 .md、.markdown、.txt 格式
+              {{ t('importMd.formatHint') }}
             </p>
           </div>
         </TabsContent>
@@ -333,7 +334,7 @@ watch(isShowImportMdDialog, (visible) => {
             <div class="space-y-2">
               <Input
                 v-model="url"
-                placeholder="如：https://mp.weixin.qq.com/s/xxxxx"
+                :placeholder="t('importMd.urlPlaceholder')"
                 :class="{ 'border-destructive': urlError }"
                 @keydown.enter="importFromUrl"
                 @input="urlError = ``"
@@ -342,7 +343,7 @@ watch(isShowImportMdDialog, (visible) => {
                 {{ urlError }}
               </p>
               <p v-else class="text-xs text-muted-foreground">
-                支持 Markdown 文件链接直接导入，或网页链接自动转换
+                {{ t('importMd.urlHint') }}
               </p>
             </div>
             <Button
@@ -351,16 +352,16 @@ watch(isShowImportMdDialog, (visible) => {
               @click="importFromUrl"
             >
               <Loader2 v-if="isUrlLoading" class="mr-2 size-4 animate-spin" />
-              {{ isUrlLoading ? '导入中...' : '导入' }}
+              {{ isUrlLoading ? t('importMd.importing') : t('common.import') }}
             </Button>
             <p class="text-center text-xs text-muted-foreground/60">
-              基于
+              {{ t('importMd.poweredBy') }}
               <a
                 href="https://github.com/doocs/anything-md"
                 target="_blank" rel="noopener noreferrer"
                 class="underline hover:text-muted-foreground"
               >Anything-MD</a>
-              提供转换服务
+              {{ t('importMd.conversionService') }}
             </p>
           </div>
         </TabsContent>

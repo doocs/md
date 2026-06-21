@@ -1,3 +1,5 @@
+import { t } from '@/i18n/translate'
+
 function legacyCopy(text: string): Promise<void> {
   return new Promise((resolve, reject) => {
     try {
@@ -55,7 +57,7 @@ export async function readPlainFromClipboard(): Promise<string | null> {
   }
   catch (error) {
     const message = error instanceof Error ? error.message : String(error)
-    toast.error(`粘贴失败，请检查浏览器剪贴板权限。${message}`)
+    toast.error(t('toast.pasteFailed', { message }))
     return null
   }
 }

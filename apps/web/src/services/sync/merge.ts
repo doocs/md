@@ -1,5 +1,6 @@
 import type { SyncDocument } from './types'
 import type { Post, PostHistory } from '@/types/post'
+import { formatLocalDateTime } from '@/i18n/translate'
 
 export function toMs(value: Date | string | number | undefined): number {
   if (value == null)
@@ -44,7 +45,7 @@ function mergeHistory(winner: Post, loserContent: string, loserDatetime: number)
   if (exists)
     return
   history.push({
-    datetime: new Date(loserDatetime).toLocaleString(`zh-cn`),
+    datetime: formatLocalDateTime(new Date(loserDatetime)),
     content: loserContent,
   })
 }

@@ -163,12 +163,19 @@ function isActive(command: SlashCommandItem) {
   return getGlobalIndex(command) === props.activeIndex
 }
 
+const { t } = useI18n()
+
+function shortPrefixedLabel(label: string) {
+  const parts = label.split(/\s*[·•]\s*/)
+  return parts.length > 1 ? parts[parts.length - 1]! : label
+}
+
 function shortThemeLabel(label: string) {
-  return label.replace(/^主题 · /, ``)
+  return shortPrefixedLabel(label)
 }
 
 function shortColorLabel(label: string) {
-  return label.replace(/^主题色 · /, ``)
+  return shortPrefixedLabel(label)
 }
 
 watch(
@@ -241,7 +248,7 @@ onUnmounted(() => {
           @scroll="updateScrollHint"
         >
           <div class="slash-filter-hint">
-            匹配「{{ filter }}」
+            {{ t('slash.filterMatch', { filter }) }}
           </div>
           <div class="slash-list">
             <button
@@ -285,7 +292,7 @@ onUnmounted(() => {
         >
           <section v-if="headingCommands.length > 0 || basicBlockCommands.length > 0 || basicFormatCommands.length > 0" class="slash-section">
             <div class="slash-section-title">
-              基础
+              {{ t('slash.group.basic') }}
             </div>
             <div v-if="headingCommands.length > 0" class="slash-heading-row">
               <button
@@ -328,7 +335,7 @@ onUnmounted(() => {
 
           <section v-if="commonCommands.length > 0" class="slash-section">
             <div class="slash-section-title">
-              常用
+              {{ t('slash.group.common') }}
             </div>
             <div class="slash-grid-2">
               <button
@@ -354,7 +361,7 @@ onUnmounted(() => {
 
           <section v-if="editDocCommands.length > 0" class="slash-section">
             <div class="slash-section-title">
-              编辑
+              {{ t('slash.group.edit') }}
             </div>
             <div class="slash-chip-row slash-chip-row--compact">
               <button
@@ -373,12 +380,12 @@ onUnmounted(() => {
 
           <section v-if="styleCommands.length > 0" class="slash-section slash-section--last">
             <div class="slash-section-title">
-              样式
+              {{ t('slash.group.style') }}
             </div>
 
             <div v-if="styleThemeCommands.length > 0" class="slash-subsection">
               <div class="slash-subsection-title">
-                主题
+                {{ t('slash.theme') }}
               </div>
               <div class="slash-theme-row">
                 <button
@@ -397,7 +404,7 @@ onUnmounted(() => {
 
             <div v-if="styleColorCommands.length > 0" class="slash-subsection">
               <div class="slash-subsection-title">
-                主题色
+                {{ t('slash.primaryColor') }}
               </div>
               <div class="slash-color-grid">
                 <button

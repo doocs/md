@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import type { ThemeName } from '@md/shared/configs'
 import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
 import { exportMergedTheme } from '@md/core'
-import { themeMap, themeOptionsMap } from '@md/shared'
+import { themeMap } from '@md/shared'
+import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
+import { blurFocusOutsideDialog } from '@/lib/a11y/dialog-focus'
 import { copyPlain } from '@/lib/browser/clipboard'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
@@ -10,6 +13,7 @@ import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
 const confirmStore = useConfirmStore()
 const cssEditorStore = useCssEditorStore()
 const uiStore = useUIStore()
@@ -60,7 +64,7 @@ function commitInlineRename() {
     return
   const trimmed = inlineEditVal.value.trim()
   if (!trimmed) {
-    toast.error(`方案名不可为空`)
+    toast.error(t('cssEditor.schemeNameRequired'))
     inlineEditId.value = null
     return
   }
@@ -69,7 +73,7 @@ function commitInlineRename() {
     currentTab.title = trimmed
     currentTab.name = trimmed
     currentTab.updateDatetime = new Date()
-    toast.success(`修改成功`)
+    toast.success(t('post.editSuccess'))
   }
   inlineEditId.value = null
 }
@@ -93,13 +97,13 @@ function rename(name: string) {
 
 function editTabName() {
   if (!(editInputVal.value).trim()) {
-    toast.error(`编辑失败，方案名不可为空`)
+    toast.error(t('cssEditor.editNameFailed'))
     return
   }
 
   cssEditorStore.renameTab(editInputVal.value)
   isOpenEditDialog.value = false
-  toast.success(`修改成功`)
+  toast.success(t('post.editSuccess'))
 }
 
 const isOpenAddDialog = ref(false)
@@ -110,7 +114,7 @@ const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
 
 async function addTab() {
   if (!(addInputVal.value).trim()) {
-    toast.error(`新建失败，方案名不可为空`)
+    toast.error(t('cssEditor.createNameFailed'))
     return
   }
 
@@ -130,7 +134,7 @@ async function addTab() {
   cssEditorStore.addCssContentTab(newTabName, initialContent)
 
   isOpenAddDialog.value = false
-  toast.success(`新建成功`)
+  toast.success(t('cssEditor.createSuccess'))
 
   // 重置为空白
   baseThemeForNew.value = 'blank'
@@ -141,12 +145,12 @@ async function addTab() {
 
 function removeHandler(targetId: string) {
   confirmStore.confirm({
-    title: '提示',
-    description: '此操作将删除该自定义方案，是否继续？',
+    title: t('confirm.tip'),
+    description: t('cssEditor.deleteSchemeConfirm'),
     onConfirm: () => {
       const tabs = cssContentConfig.value.tabs
       if (tabs.length === 1) {
-        toast.warning(`至少保留一个方案`)
+        toast.warning(t('cssEditor.keepOneScheme'))
         return
       }
 
@@ -165,13 +169,13 @@ function removeHandler(targetId: string) {
       cssEditorStore.tabChanged(activeId)
       cssContentConfig.value.tabs = tabs.filter(tab => tab.id !== targetId)
 
-      toast.success(`删除成功`)
+      toast.success(t('common.deleteSuccess'))
     },
   })
 }
 
 function addHandler() {
-  addInputVal.value = `方案${cssContentConfig.value.tabs.length + 1}`
+  addInputVal.value = t('cssEditor.schemeDefaultName', { index: cssContentConfig.value.tabs.length + 1 })
   baseThemeForNew.value = 'blank' // 重置选择
   isOpenAddDialog.value = true
 }
@@ -233,13 +237,13 @@ const allSelected = computed(
 function openBatchDelConfirm() {
   const n = selectedIds.value.length
   const description = n === 1
-    ? `此操作将删除「${cssContentConfig.value.tabs.find(t => t.id === selectedIds.value[0])?.title ?? ''}」，是否继续？`
-    : `此操作将删除已选的 ${n} 个方案，是否继续？`
+    ? t('confirm.deleteItem', { name: cssContentConfig.value.tabs.find(tab => tab.id === selectedIds.value[0])?.title ?? '' })
+    : t('confirm.deleteCssScheme', { count: n })
 
   confirmStore.confirm({
-    title: '提示',
+    title: t('confirm.tip'),
     description,
-    confirmText: '确定删除',
+    confirmText: t('post.confirmDelete'),
     destructive: true,
     onConfirm: () => {
       cssEditorStore.batchDeleteTabs()
@@ -269,7 +273,7 @@ function openViewThemeDialog() {
 async function copyThemeCSS() {
   const css = themeMap[selectedViewTheme.value]
   await copyPlain(css)
-  toast.success('已复制到剪贴板')
+  toast.success(t('common.copiedToClipboard'))
 }
 
 // 基于当前查看的主题新建方案
@@ -277,7 +281,7 @@ function createFromViewTheme() {
   isOpenViewThemeDialog.value = false
   // 设置基础主题并打开新建对话框
   baseThemeForNew.value = selectedViewTheme.value
-  addInputVal.value = `基于${themeOptionsMap[selectedViewTheme.value].label}主题`
+  addInputVal.value = t('cssEditor.basedOnTheme', { theme: getThemeLabel(t, selectedViewTheme.value as ThemeName) })
   isOpenAddDialog.value = true
 }
 
@@ -321,7 +325,7 @@ onUnmounted(() => {
 function exportCurrentTheme() {
   const currentTab = cssContentConfig.value.tabs.find(tab => tab.id === cssContentConfig.value.active)
   if (!currentTab) {
-    toast.error(`未找到当前方案`)
+    toast.error(t('cssEditor.schemeNotFound'))
     return
   }
 
@@ -412,10 +416,10 @@ function exportCurrentTheme() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" class="w-32">
               <DropdownMenuItem @click.stop="rename(item.name)">
-                <Edit3 class="mr-2 size-4" /> 重命名
+                <Edit3 class="mr-2 size-4" /> {{ t('common.rename') }}
               </DropdownMenuItem>
               <DropdownMenuItem @click.stop="cssEditorStore.exportSingleTab(item.id)">
-                <Download class="mr-2 size-4" /> 导出
+                <Download class="mr-2 size-4" /> {{ t('common.export') }}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem
@@ -423,7 +427,7 @@ function exportCurrentTheme() {
                 class="text-destructive focus:text-destructive"
                 @click.stop="removeHandler(item.id)"
               >
-                <X class="mr-2 size-4" /> 删除
+                <X class="mr-2 size-4" /> {{ t('common.delete') }}
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -471,7 +475,7 @@ function exportCurrentTheme() {
       <textarea
         id="cssEditor"
         type="textarea"
-        placeholder="Your custom css here."
+        :placeholder="t('cssEditor.cssPlaceholder')"
       />
     </div>
 
@@ -483,27 +487,27 @@ function exportCurrentTheme() {
       >
         <div class="flex items-center justify-between text-xs">
           <span class="text-muted-foreground">
-            已选
+            {{ t('common.selected') }}
             <strong class="text-foreground font-semibold">{{ selectedIds.length }}</strong>
-            个
+            {{ t('cssEditor.selectedUnit') }}
           </span>
           <div class="flex items-center gap-2 text-muted-foreground">
             <button
               class="hover:text-foreground transition-colors"
               @click="allSelected ? cssEditorStore.clearSelection() : cssEditorStore.selectAllTabs()"
             >
-              {{ allSelected ? '取消全选' : '全选' }}
+              {{ allSelected ? t('common.deselectAll') : t('common.selectAll') }}
             </button>
             <span class="opacity-30">·</span>
             <button class="hover:text-foreground transition-colors" @click="exitSelectMode">
-              完成
+              {{ t('common.done') }}
             </button>
           </div>
         </div>
         <div class="flex">
           <button
             class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
-            title="导出"
+            :title="t('common.export')"
             :disabled="!selectedIds.length"
             @click="cssEditorStore.batchExportTabs"
           >
@@ -512,7 +516,7 @@ function exportCurrentTheme() {
           <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
           <button
             class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
-            :title="selectedIds.length >= cssContentConfig.tabs.length ? '至少保留一个方案' : '删除'"
+            :title="selectedIds.length >= cssContentConfig.tabs.length ? t('cssEditor.deleteSchemeMinOne') : t('common.delete')"
             :disabled="!selectedIds.length || selectedIds.length >= cssContentConfig.tabs.length"
             @click="openBatchDelConfirm()"
           >
@@ -534,13 +538,13 @@ function exportCurrentTheme() {
           class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
           @click="contextMenuRename"
         >
-          <Edit3 class="mr-2 size-3.5" /> 重命名
+          <Edit3 class="mr-2 size-3.5" /> {{ t('common.rename') }}
         </button>
         <button
           class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
           @click="contextMenuExport"
         >
-          <Download class="mr-2 size-3.5" /> 导出
+          <Download class="mr-2 size-3.5" /> {{ t('common.export') }}
         </button>
         <div class="my-1 h-px bg-border" />
         <button
@@ -548,13 +552,13 @@ function exportCurrentTheme() {
           class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-destructive hover:bg-destructive/8 transition-colors"
           @click="contextMenuDelete"
         >
-          <X class="mr-2 size-3.5" /> 删除
+          <X class="mr-2 size-3.5" /> {{ t('common.delete') }}
         </button>
         <button
           class="flex w-full items-center rounded-sm px-2 py-1.5 text-xs text-foreground hover:bg-accent transition-colors"
           @click="enterSelectModeFromContextMenu"
         >
-          <CheckSquare class="mr-2 size-3.5" /> 多选
+          <CheckSquare class="mr-2 size-3.5" /> {{ t('cssEditor.multiSelect') }}
         </button>
       </div>
     </Teleport>
@@ -563,48 +567,48 @@ function exportCurrentTheme() {
     <Dialog v-model:open="isOpenAddDialog">
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>新建自定义 CSS</DialogTitle>
+          <DialogTitle>{{ t('cssEditor.newTitle') }}</DialogTitle>
           <DialogDescription>
-            请输入方案名称，并选择初始模板
+            {{ t('cssEditor.newDescription') }}
           </DialogDescription>
         </DialogHeader>
         <div class="space-y-4">
           <div class="space-y-2">
-            <label class="text-sm font-medium">方案名称</label>
-            <Input v-model="addInputVal" placeholder="输入方案名称" @keyup.enter="addTab" />
+            <label class="text-sm font-medium">{{ t('cssEditor.schemeName') }}</label>
+            <Input v-model="addInputVal" :placeholder="t('cssEditor.schemeNamePlaceholder')" @keyup.enter="addTab" />
           </div>
           <div class="space-y-2">
-            <label class="text-sm font-medium">初始模板</label>
+            <label class="text-sm font-medium">{{ t('cssEditor.initialTemplate') }}</label>
             <Select v-model="baseThemeForNew">
               <SelectTrigger>
-                <SelectValue placeholder="选择初始模板" />
+                <SelectValue :placeholder="t('cssEditor.selectTemplate')" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="blank">
-                  空白方案
+                  {{ t('cssEditor.blankScheme') }}
                 </SelectItem>
                 <SelectItem value="default">
-                  基于经典主题
+                  {{ t('cssEditor.basedClassic') }}
                 </SelectItem>
                 <SelectItem value="grace">
-                  基于优雅主题
+                  {{ t('cssEditor.basedGrace') }}
                 </SelectItem>
                 <SelectItem value="simple">
-                  基于简洁主题
+                  {{ t('cssEditor.basedSimple') }}
                 </SelectItem>
               </SelectContent>
             </Select>
             <p class="text-xs text-muted-foreground">
-              选择一个内置主题作为起点，可以在其基础上进行修改
+              {{ t('cssEditor.templateHint') }}
             </p>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" @click="isOpenAddDialog = false">
-            取消
+            {{ t('common.cancel') }}
           </Button>
           <Button @click="addTab()">
-            创建
+            {{ t('common.create') }}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -614,18 +618,18 @@ function exportCurrentTheme() {
     <Dialog v-model:open="isOpenEditDialog">
       <DialogContent class="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>编辑方案名称</DialogTitle>
+          <DialogTitle>{{ t('cssEditor.editSchemeTitle') }}</DialogTitle>
           <DialogDescription>
-            请输入新的方案名称
+            {{ t('cssEditor.editSchemeDescription') }}
           </DialogDescription>
         </DialogHeader>
         <Input v-model="editInputVal" @keyup.enter="editTabName" />
         <DialogFooter>
           <Button variant="outline" @click="isOpenEditDialog = false">
-            取消
+            {{ t('common.cancel') }}
           </Button>
           <Button @click="editTabName">
-            保存
+            {{ t('common.save') }}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -634,31 +638,31 @@ function exportCurrentTheme() {
 
   <!-- 查看内置主题对话框 -->
   <Dialog v-model:open="isOpenViewThemeDialog">
-    <DialogContent class="sm:max-w-4xl max-h-[90vh] flex flex-col" @open-auto-focus.prevent>
+    <DialogContent class="sm:max-w-4xl max-h-[90vh] flex flex-col" @open-auto-focus="blurFocusOutsideDialog">
       <DialogHeader>
-        <DialogTitle>查看内置主题样式</DialogTitle>
+        <DialogTitle>{{ t('cssEditor.viewBuiltinTitle') }}</DialogTitle>
         <DialogDescription>
-          查看并复制内置主题的 CSS 代码，或基于它们创建新方案
+          {{ t('cssEditor.viewBuiltinDescription') }}
         </DialogDescription>
       </DialogHeader>
 
       <div class="space-y-4 flex-1 min-h-0 flex flex-col">
         <!-- 主题选择器 -->
         <div class="space-y-2">
-          <label class="text-sm font-medium">选择主题</label>
+          <label class="text-sm font-medium">{{ t('cssEditor.selectTheme') }}</label>
           <Select v-model="selectedViewTheme">
             <SelectTrigger class="w-full mt-2 sm:w-[200px] focus-visible:ring-0 focus-visible:ring-offset-0">
-              <SelectValue placeholder="选择主题" />
+              <SelectValue :placeholder="t('cssEditor.selectThemePlaceholder')" />
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="default">
-                {{ themeOptionsMap.default.label }}
+                {{ getThemeLabel(t, 'default') }}
               </SelectItem>
               <SelectItem value="grace">
-                {{ themeOptionsMap.grace.label }}
+                {{ getThemeLabel(t, 'grace') }}
               </SelectItem>
               <SelectItem value="simple">
-                {{ themeOptionsMap.simple.label }}
+                {{ getThemeLabel(t, 'simple') }}
               </SelectItem>
             </SelectContent>
           </Select>
@@ -672,13 +676,13 @@ function exportCurrentTheme() {
 
       <DialogFooter class="flex-col sm:flex-row gap-2">
         <Button variant="outline" @click="isOpenViewThemeDialog = false">
-          关闭
+          {{ t('common.close') }}
         </Button>
         <Button variant="outline" @click="copyThemeCSS">
-          复制全部
+          {{ t('cssEditor.copyAll') }}
         </Button>
         <Button variant="outline" @click="createFromViewTheme">
-          基于此主题新建
+          {{ t('cssEditor.createFromTheme') }}
         </Button>
       </DialogFooter>
     </DialogContent>

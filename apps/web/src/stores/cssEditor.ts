@@ -5,6 +5,7 @@ import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
 import { v4 as uuidv4 } from 'uuid'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -53,8 +54,8 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       const defaultId = uuidv4()
       cssContentConfig.value.tabs = [{
         id: defaultId,
-        title: `方案1`,
-        name: `方案1`,
+        title: t('store.cssEditor.schemeDefault'),
+        name: t('store.cssEditor.schemeDefault'),
         content: DEFAULT_CSS_CONTENT,
         createDatetime: now,
         updateDatetime: now,
@@ -89,8 +90,8 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
         const now = new Date()
         cssContentConfig.value.tabs = [{
           id: defaultId,
-          title: `方案1`,
-          name: `方案1`,
+          title: t('store.cssEditor.schemeDefault'),
+          name: t('store.cssEditor.schemeDefault'),
           content: DEFAULT_CSS_CONTENT,
           createDatetime: now,
           updateDatetime: now,
@@ -178,8 +179,8 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       tabs: [
         {
           id: defaultId,
-          title: `方案 1`,
-          name: `方案 1`,
+          title: t('store.cssEditor.schemeDefaultSpaced'),
+          name: t('store.cssEditor.schemeDefaultSpaced'),
           content: DEFAULT_CSS_CONTENT,
           createDatetime: new Date(),
           updateDatetime: new Date(),
@@ -313,7 +314,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       return
 
     if (selectedIds.length >= cssContentConfig.value.tabs.length) {
-      toast.warning(`至少保留一个方案`)
+      toast.warning(t('store.cssEditor.keepAtLeastOne'))
       return
     }
 
@@ -330,7 +331,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     cssContentConfig.value.tabs = tabs
     cssContentConfig.value.selectedIds = []
     cssContentConfig.value.isSelectMode = false
-    toast.success(`已删除 ${selectedIds.length} 个方案`)
+    toast.success(t('store.cssEditor.batchDeleted', { count: selectedIds.length }))
   }
 
   const batchExportTabs = async () => {
@@ -361,14 +362,14 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     cssContentConfig.value.selectedIds = []
     cssContentConfig.value.isSelectMode = false
-    toast.success(`已导出 ${selectedIds.length} 个方案`)
+    toast.success(t('store.cssEditor.batchExported', { count: selectedIds.length }))
   }
 
   const exportSingleTab = (id: string) => {
     const tab = cssContentConfig.value.tabs.find(t => t.id === id)
     if (tab) {
       downloadFile(`data:text/css;charset=utf-8,${encodeURIComponent(tab.content)}`, `${sanitizeTitle(tab.title)}.css`)
-      toast.success(`已导出「${tab.title}」`)
+      toast.success(t('store.cssEditor.singleExported', { name: tab.title }))
     }
   }
 

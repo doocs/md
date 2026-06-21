@@ -7,6 +7,7 @@ import { usePostStore } from '@/stores/post'
 import { useTemplateStore } from '@/stores/template'
 import { useUIStore } from '@/stores/ui'
 
+const { t, locale } = useI18n()
 const confirmStore = useConfirmStore()
 const editorStore = useEditorStore()
 const postStore = usePostStore()
@@ -66,12 +67,12 @@ function validateForm(): boolean {
   formErrors.name = ''
 
   if (!formData.name.trim()) {
-    formErrors.name = '模板名称不能为空'
+    formErrors.name = t('template.nameRequired')
     return false
   }
 
   if (formData.name.trim().length > 50) {
-    formErrors.name = '模板名称不能超过 50 个字符'
+    formErrors.name = t('template.nameTooLong')
     return false
   }
 
@@ -112,11 +113,11 @@ function applyTemplate(template: Template) {
   if (currentPost) {
     postStore.updatePostContent(currentPost.id, template.content)
     editorStore.importContent(template.content)
-    toast.success(`已应用模板「${template.name}」到当前文章`)
+    toast.success(t('template.appliedToPost', { name: template.name }))
   }
   else {
     editorStore.importContent(template.content)
-    toast.success(`已应用模板「${template.name}」`)
+    toast.success(t('template.applied', { name: template.name }))
   }
   toggleShowTemplateDialog(false)
 }
@@ -130,15 +131,15 @@ function insertTemplate(template: Template) {
     postStore.updatePostContent(currentPost.id, editorStore.getContent())
   }
 
-  toast.success(`已插入模板「${template.name}」`)
+  toast.success(t('template.inserted', { name: template.name }))
   toggleShowTemplateDialog(false)
 }
 
 // 打开删除确认对话框
 function openDeleteConfirm(template: Template) {
   confirmStore.confirm({
-    title: '确认删除',
-    description: `确定要删除模板「${template.name}」吗？此操作不可恢复。`,
+    title: t('template.confirmDelete'),
+    description: t('confirm.deleteTemplate', { name: template.name }),
     onConfirm: () => { templateStore.deleteTemplate(template.id) },
   })
 }
@@ -146,7 +147,7 @@ function openDeleteConfirm(template: Template) {
 // 格式化日期
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp)
-  return date.toLocaleString('zh-CN', {
+  return date.toLocaleString(locale.value, {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
@@ -170,10 +171,10 @@ function onUpdate(val: boolean) {
       <DialogHeader class="px-6 pt-6 pb-4 border-b">
         <DialogTitle class="flex items-center gap-2">
           <Package class="size-5" />
-          模板管理
+          {{ t('template.title') }}
         </DialogTitle>
         <DialogDescription>
-          保存和管理您的 Markdown 模板，快速复用常用内容
+          {{ t('template.description') }}
         </DialogDescription>
       </DialogHeader>
 
@@ -183,18 +184,18 @@ function onUpdate(val: boolean) {
         <div v-if="isShowForm" class="space-y-4 mb-6 p-4 border rounded-lg bg-muted/30">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold">
-              {{ formMode === 'create' ? '新建模板' : '编辑模板' }}
+              {{ formMode === 'create' ? t('template.create') : t('template.edit') }}
             </h3>
           </div>
 
           <div class="space-y-4">
             <!-- 模板名称 -->
             <div class="space-y-2">
-              <Label for="template-name">模板名称 *</Label>
+              <Label for="template-name">{{ t('template.nameLabel') }}</Label>
               <Input
                 id="template-name"
                 v-model="formData.name"
-                placeholder="请输入模板名称"
+                :placeholder="t('template.namePlaceholder')"
                 :class="{ 'border-red-500': formErrors.name }"
               />
               <p v-if="formErrors.name" class="text-sm text-red-500">
@@ -204,22 +205,22 @@ function onUpdate(val: boolean) {
 
             <!-- 模板描述 -->
             <div class="space-y-2">
-              <Label for="template-description">模板描述</Label>
+              <Label for="template-description">{{ t('template.descLabel') }}</Label>
               <Textarea
                 id="template-description"
                 v-model="formData.description"
-                placeholder="请输入模板描述（可选）"
+                :placeholder="t('template.descPlaceholder')"
                 class="resize-none h-20"
               />
             </div>
 
             <!-- 模板内容编辑 -->
             <div class="space-y-2">
-              <Label for="template-content">模板内容</Label>
+              <Label for="template-content">{{ t('template.contentLabel') }}</Label>
               <Textarea
                 id="template-content"
                 v-model="formData.content"
-                placeholder="请输入模板内容"
+                :placeholder="t('template.contentPlaceholder')"
                 class="resize-none h-40 font-mono text-sm"
               />
             </div>
@@ -228,10 +229,10 @@ function onUpdate(val: boolean) {
           <!-- 表单操作按钮 -->
           <div class="flex gap-2 justify-end">
             <Button variant="outline" @click="cancelForm">
-              取消
+              {{ t('common.cancel') }}
             </Button>
             <Button @click="saveTemplate">
-              {{ formMode === 'create' ? '创建' : '保存' }}
+              {{ formMode === 'create' ? t('common.create') : t('common.save') }}
             </Button>
           </div>
         </div>
@@ -242,13 +243,13 @@ function onUpdate(val: boolean) {
             <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
             <Input
               v-model="searchKeyword"
-              placeholder="搜索模板名称、描述..."
+              :placeholder="t('template.searchPlaceholder')"
               class="pl-9"
             />
           </div>
           <Button @click="openCreateForm">
             <Plus class="mr-2 size-4" />
-            新建模板
+            {{ t('template.newTemplate') }}
           </Button>
         </div>
 
@@ -258,10 +259,10 @@ function onUpdate(val: boolean) {
           <div v-if="filteredTemplates.length === 0" class="text-center py-12">
             <Package class="mx-auto size-12 text-muted-foreground mb-4" />
             <p class="text-muted-foreground mb-2">
-              {{ searchKeyword ? '未找到匹配的模板' : '暂无模板' }}
+              {{ searchKeyword ? t('template.noMatch') : t('template.empty') }}
             </p>
             <p v-if="!searchKeyword" class="text-sm text-muted-foreground mb-4">
-              点击「新建模板」按钮创建您的第一个模板
+              {{ t('template.emptyHint') }}
             </p>
           </div>
 
@@ -288,11 +289,11 @@ function onUpdate(val: boolean) {
                 <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                   <span class="flex items-center gap-1">
                     <Calendar class="size-3" />
-                    创建：{{ formatDate(template.createdAt) }}
+                    {{ t('template.createdAt') }}{{ formatDate(template.createdAt) }}
                   </span>
                   <span class="flex items-center gap-1">
                     <Clock class="size-3" />
-                    更新：{{ formatDate(template.updatedAt) }}
+                    {{ t('template.updatedAt') }}{{ formatDate(template.updatedAt) }}
                   </span>
                 </div>
               </div>
@@ -303,7 +304,7 @@ function onUpdate(val: boolean) {
                   variant="outline"
                   size="icon"
                   class="size-8"
-                  title="应用模板（替换全部内容）"
+                  :title="t('template.applyTitle')"
                   @click="applyTemplate(template)"
                 >
                   <FileInput class="size-4" />
@@ -312,7 +313,7 @@ function onUpdate(val: boolean) {
                   variant="outline"
                   size="icon"
                   class="size-8"
-                  title="插入模板（在光标处插入）"
+                  :title="t('template.insertTitle')"
                   @click="insertTemplate(template)"
                 >
                   <FileDown class="size-4" />
@@ -321,7 +322,7 @@ function onUpdate(val: boolean) {
                   variant="outline"
                   size="icon"
                   class="size-8"
-                  title="编辑模板"
+                  :title="t('template.editTitle')"
                   @click="openEditForm(template)"
                 >
                   <Pencil class="size-4" />
@@ -330,7 +331,7 @@ function onUpdate(val: boolean) {
                   variant="outline"
                   size="icon"
                   class="size-8 text-destructive hover:text-destructive"
-                  title="删除模板"
+                  :title="t('template.deleteTitle')"
                   @click="openDeleteConfirm(template)"
                 >
                   <Trash2 class="size-4" />

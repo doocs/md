@@ -14,6 +14,7 @@ import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 import FolderTree from './FolderTree.vue'
 
+const { t } = useI18n()
 const folderSourceStore = useFolderSourceStore()
 const postStore = usePostStore()
 const uiStore = useUIStore()
@@ -91,10 +92,10 @@ async function handleOpenFile(node: any) {
     // 记录当前文件路径以便自动同步
     setCurrentFilePath(node.path)
 
-    toast.success(`已加载文件: ${node.name}`)
+    toast.success(t('folder.fileLoaded', { name: node.name }))
   }
   catch (error) {
-    console.error(`打开文件失败:`, error)
+    console.error(t('folder.openFileFailed'), error)
   }
 }
 </script>
@@ -122,7 +123,7 @@ async function handleOpenFile(node: any) {
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-semibold flex items-center gap-2">
           <FolderTreeIcon class="h-4 w-4" />
-          本地文件夹
+          {{ t('folder.title') }}
         </h3>
         <div class="flex items-center gap-1">
           <Button
@@ -130,7 +131,7 @@ async function handleOpenFile(node: any) {
             variant="ghost"
             size="sm"
             class="h-7 w-7 p-0"
-            title="关闭文件夹"
+            :title="t('folder.closeFolder')"
             @click="handleCloseFolder"
           >
             <FolderClosed class="h-3 w-3" />
@@ -139,7 +140,7 @@ async function handleOpenFile(node: any) {
             variant="ghost"
             size="sm"
             class="h-7 w-7 p-0"
-            title="关闭面板"
+            :title="t('folder.closePanel')"
             @click="isOpenFolderPanel = false"
           >
             <X class="h-3 w-3" />
@@ -158,7 +159,7 @@ async function handleOpenFile(node: any) {
         >
           <FolderPlus v-if="!isLoading" class="h-3 w-3 mr-1" />
           <Loader2 v-else class="h-3 w-3 mr-1 animate-spin" />
-          打开文件夹
+          {{ t('folder.openFolder') }}
         </Button>
 
         <Button
@@ -183,10 +184,10 @@ async function handleOpenFile(node: any) {
       >
         <FolderClosed class="h-12 w-12 mb-2 opacity-50" />
         <p class="text-sm">
-          您的浏览器不支持本地文件夹访问
+          {{ t('folder.browserUnsupported') }}
         </p>
         <p class="text-xs mt-1">
-          请使用 Chrome、Edge 或 Opera 浏览器
+          {{ t('folder.browserHint') }}
         </p>
       </div>
 
@@ -197,7 +198,7 @@ async function handleOpenFile(node: any) {
       >
         <Loader2 class="h-8 w-8 animate-spin text-primary" />
         <p class="text-sm text-muted-foreground mt-2">
-          加载中...
+          {{ t('common.loading') }}
         </p>
       </div>
 
@@ -218,10 +219,10 @@ async function handleOpenFile(node: any) {
       >
         <FolderOpen class="h-12 w-12 mb-2 opacity-50" />
         <p class="text-sm">
-          未打开文件夹
+          {{ t('folder.noFolder') }}
         </p>
         <p class="text-xs mt-1">
-          点击上方按钮打开本地文件夹
+          {{ t('folder.noFolderHint') }}
         </p>
       </div>
 

@@ -21,6 +21,7 @@ const modelValue = useVModel(props, `modelValue`, emits, {
 })
 
 const showPassword = ref(false)
+const { t } = useI18n()
 
 function togglePasswordVisibility() {
   showPassword.value = !showPassword.value
@@ -38,7 +39,7 @@ function togglePasswordVisibility() {
     <button
       type="button"
       class="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-      aria-label="切换密码可见性"
+      :aria-label="t('store.passwordInput.toggleVisibility')"
       @click="togglePasswordVisibility"
     >
       <Eye v-if="!showPassword" class="h-4 w-4" />

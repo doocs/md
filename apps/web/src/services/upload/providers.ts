@@ -5,6 +5,7 @@ import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import Buffer from 'buffer-from'
 import CryptoJS from 'crypto-js'
 import { v4 as uuidv4 } from 'uuid'
+import { t } from '@/i18n/translate'
 import { uploadDefaultImage } from '@/services/upload/client'
 import { store } from '@/storage'
 import { loadS3Sdk } from './s3-sdk'
@@ -460,7 +461,7 @@ async function mpFileUpload(file: File) {
   }
   const access_token = await getMpToken(appID, appsecret, proxyOrigin)
   if (!access_token) {
-    throw new Error(`获取 access_token 失败`)
+    throw new Error(t(`upload.provider.accessTokenFailed`))
   }
 
   const formdata = new FormData()
@@ -484,7 +485,7 @@ async function mpFileUpload(file: File) {
   const res = await fetch<any, { url: string }>(url, requestOptions)
 
   if (!res.url) {
-    throw new Error(`上传失败，未获取到URL`)
+    throw new Error(t(`upload.provider.uploadNoUrl`))
   }
 
   let imageUrl = res.url
@@ -552,7 +553,7 @@ async function upyunUpload(file: File) {
   })
 
   if (!res.ok) {
-    throw new Error(`上传失败: ${await res.text()}`)
+    throw new Error(t(`upload.provider.uploadFailedWithDetail`, { detail: await res.text() }))
   }
 
   return `${domain}/${filename}`
@@ -582,7 +583,7 @@ async function telegramUpload(file: File): Promise<string> {
   })
 
   if (!sendRes.ok || !sendRes.result.photo.length) {
-    throw new Error(`Telegram sendPhoto 失败`)
+    throw new Error(t(`upload.provider.telegramSendPhotoFailed`))
   }
   // 取最大的分辨率那张图
   const fileId = sendRes.result.photo[sendRes.result.photo.length - 1].file_id
@@ -596,7 +597,7 @@ async function telegramUpload(file: File): Promise<string> {
     method: `GET`,
   })
   if (!fileRes.ok) {
-    throw new Error(`Telegram getFile 失败`)
+    throw new Error(t(`upload.provider.telegramGetFileFailed`))
   }
 
   const filePath = fileRes.result.file_path
@@ -631,7 +632,7 @@ async function cloudinaryUpload(file: File): Promise<string> {
   } = config || { cloudName: ``, apiKey: ``, apiSecret: ``, uploadPreset: ``, folder: ``, domain: `` }
 
   if (!cloudName || !apiKey)
-    throw new Error(`Cloudinary 配置缺少 cloudName / apiKey`)
+    throw new Error(t(`upload.provider.cloudinaryMissingConfig`))
 
   const timestamp = Math.floor(Date.now() / 1000) // Cloudinary 要求秒级时间戳
   const formData = new FormData()
@@ -658,7 +659,7 @@ async function cloudinaryUpload(file: File): Promise<string> {
     formData.append(`upload_preset`, uploadPreset)
   }
   else {
-    throw new Error(`未配置 apiSecret 时必须提供 uploadPreset`)
+    throw new Error(t(`upload.provider.cloudinaryMissingPreset`))
   }
 
   if (folder)
@@ -672,7 +673,7 @@ async function cloudinaryUpload(file: File): Promise<string> {
 
   const originUrl = res.secure_url || res.url
   if (!originUrl)
-    throw new Error(`Cloudinary 返回缺少 url 字段`)
+    throw new Error(t(`upload.provider.cloudinaryMissingUrl`))
 
   // 如果配置了自定义域名，则把 host 换掉
   if (domain) {

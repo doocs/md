@@ -1,4 +1,13 @@
 import { browser, defineBackground } from '#imports'
+import { detectInitialLocale } from '@/i18n/detect'
+import enUS from '@/i18n/messages/en-US/store'
+import zhCN from '@/i18n/messages/zh-CN/store'
+
+function getExtensionTitle(): string {
+  return detectInitialLocale() === `en-US`
+    ? enUS.extension.editorTitle
+    : zhCN.extension.editorTitle
+}
 
 export default defineBackground({
   type: `module`,
@@ -21,16 +30,15 @@ export default defineBackground({
         return
       browser.contextMenus.create({
         id: `openSidePanel`,
-        title: `MD 公众号编辑器`,
+        title: getExtensionTitle(),
         documentUrlPatterns: [`https://mp.weixin.qq.com/cgi-bin/appmsg*`],
         contexts: [`all`],
       })
     })
 
     browser.contextMenus.onClicked.addListener((info, tab) => {
-      if (info.menuItemId === `openSidePanel`) {
-        browser.sidePanel.open({ tabId: tab!.id! })
-      }
+      if (info.menuItemId === `openSidePanel` && tab?.id)
+        browser.sidePanel.open({ tabId: tab.id })
     })
   },
 })

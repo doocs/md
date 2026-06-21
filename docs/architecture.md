@@ -56,6 +56,7 @@ Web 端入口：
 
 | 目录                 | 职责                                                                    |
 | -------------------- | ----------------------------------------------------------------------- |
+| `i18n/`              | vue-i18n 配置、locale 检测、按领域拆分的 message 模块                   |
 | `stores/`            | Pinia 全局状态，按领域划分                                              |
 | `composables/`       | 跨组件复用的响应式逻辑                                                  |
 | `services/`          | 外部 API 与领域服务（account / sync / share / upload / export）         |
@@ -75,6 +76,7 @@ Pinia stores 按领域划分：
 - `useThemeStore` — 主题与样式（含 per-theme 配置持久化）
 - `useRenderStore` — 渲染结果与目录标题
 - `useUIStore` — 布局、对话框、视图模式
+- `useLocaleStore` — 界面语言（zh-CN / en-US），同步 `document.title` 与 i18n 实例
 - `useSyncStore` / `useAuthStore` — 云同步与账户
 - `useConfirmStore` — 全局确认对话框（`components/shared/confirm-dialog/`）
 
@@ -84,7 +86,7 @@ Pinia stores 按领域划分：
 
 - **白名单**：`apps/web/src/services/sync/settings.ts` 中的 `SYNC_SETTING_KEYS`
 - **合并策略**：LWW，元数据存于 `sync_settings_meta`
-- **热更新**：远端设置应用后由 `hydrateSyncedSettings`（`services/sync/hydrate.ts`）写入 Store，无需刷新页面
+- **热更新**：远端设置应用后由 `hydrateSyncedSettings`（`services/sync/hydrate.ts`）写入 Store（含 `locale`），无需刷新页面
 - **用户说明**：见 [cloud-sync.md](./cloud-sync.md)
 
 ## 本地存储
@@ -100,8 +102,16 @@ Pinia stores 按领域划分：
 1. `main.ts` → `bootstrap()`（`apps/web/src/bootstrap.ts`）
 2. `initComponentDarkVars()` + `setupComponents()`
 3. `await initStorage()`（迁移 localStorage、预加载 KV 缓存、加载文档）
-4. `createApp` / Pinia 初始化并挂载
-5. `App.vue` 中 `usePlatformEnv()`、`useAccountSyncBootstrap()`、`useDeepLinkImport()` 完成账户与深链引导
+4. `setupI18n(detectInitialLocale())` + `setAppI18n()`，注册 vue-i18n 插件
+5. `createApp`、Pinia、`useLocaleStore()` 并挂载
+6. `App.vue` 中 `usePlatformEnv()`、`useAccountSyncBootstrap()`、`useDeepLinkImport()` 完成账户与深链引导
+
+### 国际化（i18n）
+
+- **范围**：`apps/web` 主应用 UI；扩展 popup / background 部分文案。VS Code、uTools、CLI、MCP 无 i18n。
+- **入口**：`apps/web/src/i18n/`（`detect.ts`、`translate.ts`、`messages/`）
+- **偏好**：`PreferencesDialog`（文件菜单或 `Ctrl+,`）→ General → Language
+- **动态 UI**：命令面板、快捷键列表、Slash 命令、CodeMirror placeholder 等在 `locale` 变化时重建；Store 内 toast 使用 `@/i18n/translate` 的 `t()`
 
 ## 构建
 

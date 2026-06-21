@@ -4,15 +4,18 @@ import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
 import { escapeHtml, previewComponent } from '@md/core'
 import DOMPurify from 'isomorphic-dompurify'
+import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
 import { useMpAccountsStore } from '@/stores/mpAccounts'
 import { useUIStore } from '@/stores/ui'
 
+const { t } = useI18n()
 const confirmStore = useConfirmStore()
 const editorStore = useEditorStore()
 const componentStore = useCustomComponentStore()
+const localizedBuiltinComponents = useLocalizedBuiltinComponents()
 const mpAccountsStore = useMpAccountsStore()
 const uiStore = useUIStore()
 
@@ -97,20 +100,20 @@ function validate(): boolean {
   const name = formData.name.trim()
 
   if (!name) {
-    formErrors.name = '组件名称不能为空'
+    formErrors.name = t('component.nameRequired')
     return false
   }
   if (!/^[A-Z][a-zA-Z0-9]*$/.test(name)) {
-    formErrors.name = '组件名称必须以大写字母开头，只含字母和数字（PascalCase）'
+    formErrors.name = t('component.nameInvalid')
     return false
   }
   const duplicate = componentStore.userComponents.find(c => c.name === name && (formMode.value === 'create' || c.id !== editingId.value))
   if (duplicate) {
-    formErrors.name = '组件名称已存在，请更换名称'
+    formErrors.name = t('component.nameDuplicate')
     return false
   }
   if (!formData.template.trim()) {
-    formErrors.template = '组件模板不能为空'
+    formErrors.template = t('component.templateRequired')
     return false
   }
   return true
@@ -210,7 +213,7 @@ function exportComponents() {
   a.download = `md-components-${Date.now()}.json`
   a.click()
   URL.revokeObjectURL(url)
-  toast.success('已导出自定义组件')
+  toast.success(t('component.exportSuccess'))
 }
 
 const importFileRef = ref<HTMLInputElement | null>(null)
@@ -228,7 +231,7 @@ function onImportFile(event: Event) {
     try {
       const parsed: CustomComponentDef[] = JSON.parse(e.target?.result as string)
       if (!Array.isArray(parsed))
-        throw new Error('格式错误')
+        throw new Error(t('component.formatError'))
       let imported = 0
       for (const def of parsed) {
         if (!def.name || !def.template)
@@ -252,10 +255,10 @@ function onImportFile(event: Event) {
         }
         imported++
       }
-      toast.success(`成功导入 ${imported} 个组件`)
+      toast.success(t('component.importSuccess', { count: imported }))
     }
     catch {
-      toast.error('导入失败，请确认文件格式正确')
+      toast.error(t('component.importFailed'))
     }
     // reset input so the same file can be re-imported
     if (importFileRef.value)
@@ -268,16 +271,16 @@ function onImportFile(event: Event) {
 // 列表操作
 // ──────────────────────────────────────────────
 function insertSnippet(def: CustomComponentDef) {
-  const snippet = componentStore.buildSnippet(def)
+  const snippet = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
   editorStore.insertAtCursor(snippet)
-  toast.success(`已插入组件「${def.name}」`)
+  toast.success(t('component.insertSuccess', { name: def.name }))
   toggleShowComponentDialog(false)
 }
 
 function openDeleteConfirm(def: CustomComponentDef) {
   confirmStore.confirm({
-    title: '确认删除',
-    description: `确定要删除组件「${def.name}」吗？`,
+    title: t('component.confirmDelete'),
+    description: t('component.deleteConfirm', { name: def.name }),
     onConfirm: () => { componentStore.deleteComponent(def.id) },
   })
 }
@@ -289,10 +292,10 @@ function onUpdate(val: boolean) {
   }
 }
 
-const PREVIEW_FALLBACK_HTML = `<span style="color:#aaa;font-size:12px;">（无内容）</span>`
+const PREVIEW_FALLBACK_HTML = computed(() => `<span style="color:#aaa;font-size:12px;">${t('component.noContent')}</span>`)
 
 function getPropDefaultPlaceholder(type: string): string {
-  return type === 'array' ? '["item1","item2"]' : '默认值'
+  return type === 'array' ? '["item1","item2"]' : t('component.defaultValue')
 }
 
 // ──────────────────────────────────────────────
@@ -314,25 +317,29 @@ function toggleExpand(id: string) {
 // ──────────────────────────────────────────────
 const copiedId = ref<string | null>(null)
 
+function findBuiltinDef(id: string) {
+  return componentStore.builtInComponents.find(c => c.id === id)
+}
+
 async function copySnippet(def: CustomComponentDef) {
-  const text = def.example || componentStore.buildSnippet(def)
+  const text = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
   try {
     await navigator.clipboard.writeText(text)
     copiedId.value = def.id
     setTimeout(() => { copiedId.value = null }, 1500)
   }
   catch {
-    toast.error(`复制失败，请手动复制`)
+    toast.error(t('common.copyFailed'))
   }
 }
 
 // 类型颜色标签
 function propTypeBadge(prop: ComponentPropDef) {
   if (prop.required)
-    return { label: '必填', class: 'bg-red-50 text-red-600 border-red-200' }
+    return { label: t('component.required'), class: 'bg-red-50 text-red-600 border-red-200' }
   if (prop.default !== undefined && prop.default !== '')
-    return { label: '可选', class: 'bg-blue-50 text-blue-600 border-blue-200' }
-  return { label: '可选', class: 'bg-muted text-muted-foreground border-border' }
+    return { label: t('component.optional'), class: 'bg-blue-50 text-blue-600 border-blue-200' }
+  return { label: t('component.optional'), class: 'bg-muted text-muted-foreground border-border' }
 }
 
 // ──────────────────────────────────────────────
@@ -362,7 +369,7 @@ function buildMpAccountSnippet(account: MpAccount): string {
 function insertMpAccount(account: MpAccount) {
   const snippet = buildMpAccountSnippet(account)
   editorStore.insertAtCursor(snippet)
-  toast.success(`已插入公众号名片「${account.name}」`)
+  toast.success(t('component.insertMpSuccess', { name: account.name }))
   toggleShowComponentDialog(false)
 }
 
@@ -378,11 +385,11 @@ function openEditMpAccount(id: string) {
 
 function deleteMpAccount(account: MpAccount) {
   confirmStore.confirm({
-    title: '确认删除',
-    description: `确定要删除公众号「${account.name}」吗？此操作不可恢复。`,
+    title: t('component.confirmDelete'),
+    description: t('component.deleteMpConfirm', { name: account.name }),
     onConfirm: () => {
       mpAccountsStore.deleteAccount(account.id)
-      toast.success('已删除')
+      toast.success(t('component.deleted'))
     },
   })
 }
@@ -410,10 +417,10 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
       <DialogHeader class="px-4 sm:px-6 pt-5 pb-4 border-b shrink-0">
         <DialogTitle class="flex items-center gap-2 text-base">
           <Blocks class="size-4.5" />
-          组件
+          {{ t('menu.component') }}
         </DialogTitle>
         <DialogDescription class="text-xs leading-relaxed mt-1">
-          在 Markdown 中插入 JSX 风格组件，如
+          {{ t('component.description') }}
           <code class="bg-muted px-1 py-0.5 rounded font-mono">&lt;QRCodeBlock url="…" /&gt;</code>
         </DialogDescription>
       </DialogHeader>
@@ -422,15 +429,15 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
         <!-- ─── 新建/编辑表单 ─── -->
         <div v-if="isShowForm" class="space-y-5 p-4 sm:p-5 border rounded-xl bg-muted/30">
           <h3 class="text-sm font-semibold">
-            {{ formMode === 'create' ? '新建组件' : '编辑组件' }}
+            {{ formMode === 'create' ? t('component.create') : t('component.edit') }}
           </h3>
 
           <!-- 组件名称 -->
           <div class="space-y-1.5">
             <Label for="comp-name">
-              组件名称
+              {{ t('component.nameLabel') }}
               <span class="text-red-500 ml-0.5">*</span>
-              <span class="text-muted-foreground text-xs font-normal ml-1">（PascalCase，如 QRCodeBlock）</span>
+              <span class="text-muted-foreground text-xs font-normal ml-1">{{ t('component.nameHint') }}</span>
             </Label>
             <Input
               id="comp-name"
@@ -445,30 +452,30 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
           <!-- 组件描述 -->
           <div class="space-y-1.5">
-            <Label for="comp-desc">组件描述</Label>
+            <Label for="comp-desc">{{ t('component.descLabel') }}</Label>
             <Input
               id="comp-desc"
               v-model="formData.description"
-              placeholder="简短描述该组件的用途"
+              :placeholder="t('component.descPlaceholder')"
             />
           </div>
 
           <!-- Props 定义 -->
           <div class="space-y-2">
             <div class="flex items-center justify-between">
-              <Label>Props 定义</Label>
+              <Label>{{ t('component.propsLabel') }}</Label>
               <Button variant="outline" size="sm" @click="addPropRow">
                 <Plus class="size-3 mr-1" />
-                添加 Prop
+                {{ t('component.addProp') }}
               </Button>
             </div>
             <template v-if="propRows.length > 0">
               <!-- 桌面端：网格表头 -->
               <div class="hidden sm:grid grid-cols-13 gap-2 px-1">
-                <span class="col-span-3 text-xs text-muted-foreground">名称</span>
-                <span class="col-span-2 text-xs text-muted-foreground">类型</span>
-                <span class="col-span-4 text-xs text-muted-foreground">描述</span>
-                <span class="col-span-3 text-xs text-muted-foreground">默认值</span>
+                <span class="col-span-3 text-xs text-muted-foreground">{{ t('component.propName') }}</span>
+                <span class="col-span-2 text-xs text-muted-foreground">{{ t('component.propType') }}</span>
+                <span class="col-span-4 text-xs text-muted-foreground">{{ t('component.propDesc') }}</span>
+                <span class="col-span-3 text-xs text-muted-foreground">{{ t('component.propDefault') }}</span>
                 <span class="col-span-1" />
               </div>
               <div class="space-y-2">
@@ -478,11 +485,11 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   class="flex flex-col sm:grid sm:grid-cols-13 gap-2 items-start sm:items-center p-3 sm:p-0 border sm:border-0 rounded-lg sm:rounded-none bg-muted/20 sm:bg-transparent"
                 >
                   <div class="w-full sm:col-span-3 flex gap-1 items-center">
-                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">名称</span>
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propName') }}</span>
                     <Input v-model="row.name" placeholder="propName" class="h-8 text-sm flex-1" />
                   </div>
                   <div class="w-full sm:col-span-2 flex gap-1 items-center">
-                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">类型</span>
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propType') }}</span>
                     <select
                       v-model="row.type"
                       class="h-8 w-full rounded-md border bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
@@ -502,11 +509,11 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                     </select>
                   </div>
                   <div class="w-full sm:col-span-4 flex gap-1 items-center">
-                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">描述</span>
-                    <Input v-model="row.description" placeholder="描述" class="h-8 text-sm flex-1" />
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propDesc') }}</span>
+                    <Input v-model="row.description" :placeholder="t('component.propDesc')" class="h-8 text-sm flex-1" />
                   </div>
                   <div class="w-full sm:col-span-3 flex gap-1 items-center">
-                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">默认值</span>
+                    <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propDefault') }}</span>
                     <Input
                       v-model="row.default"
                       :placeholder="getPropDefaultPlaceholder(row.type)"
@@ -514,7 +521,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                     />
                   </div>
                   <div class="flex items-center gap-2 sm:col-span-1 sm:justify-center">
-                    <label class="flex items-center gap-1 text-xs cursor-pointer select-none" title="必填">
+                    <label class="flex items-center gap-1 text-xs cursor-pointer select-none" :title="t('component.required')">
                       <input v-model="row.required" type="checkbox" class="cursor-pointer">
                     </label>
                     <Button
@@ -530,17 +537,17 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               </div>
             </template>
             <div v-else class="rounded-lg border border-dashed bg-muted/20 px-3 py-4 text-xs text-muted-foreground">
-              当前组件没有 Props。需要时可点击“添加 Prop”新增。
+              {{ t('component.noProps') }}
             </div>
             <p class="text-xs text-muted-foreground">
-              在模板中使用 <code class="bg-muted px-1 rounded">&#123;&#123;propName&#125;&#125;</code> 引用 prop 值
+              {{ t('component.propRefHint') }}
             </p>
           </div>
 
           <!-- HTML 模板 -->
           <div class="space-y-1.5">
             <Label for="comp-template">
-              HTML 模板
+              {{ t('component.htmlTemplate') }}
               <span class="text-red-500 ml-0.5">*</span>
             </Label>
             <Textarea
@@ -554,19 +561,19 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               {{ formErrors.template }}
             </p>
             <div class="text-xs text-muted-foreground space-y-0.5">
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;propName&#125;&#125;</code> — 替换为 prop 值（自动 HTML 转义）</p>
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;#if prop&#125;&#125;...&#123;&#123;#else&#125;&#125;...&#123;&#123;/if&#125;&#125;</code> — 条件块（支持 else）</p>
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;#unless prop&#125;&#125;...&#123;&#123;/unless&#125;&#125;</code> — 反向条件</p>
-              <p><code class="bg-muted px-1 rounded">&#123;&#123;#each arrayProp&#125;&#125;...&#123;&#123;item&#125;&#125;...&#123;&#123;item.key&#125;&#125;...&#123;&#123;/each&#125;&#125;</code> — 数组循环</p>
+              <p>{{ t('component.templateHint1') }}</p>
+              <p>{{ t('component.templateHint2') }}</p>
+              <p>{{ t('component.templateHint3') }}</p>
+              <p>{{ t('component.templateHint4') }}</p>
             </div>
           </div>
 
           <!-- 实时预览 -->
           <div v-if="formData.template.trim()" class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <Label class="text-muted-foreground">预览（使用默认 prop 值）</Label>
+              <Label class="text-muted-foreground">{{ t('component.previewLabel') }}</Label>
               <Button variant="ghost" size="sm" class="h-6 px-2 text-xs" @click="isShowPreview = !isShowPreview">
-                {{ isShowPreview ? '收起' : '展开' }}
+                {{ isShowPreview ? t('common.collapse') : t('common.expand') }}
               </Button>
             </div>
             <div
@@ -578,10 +585,10 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
           <div class="flex gap-2 justify-end">
             <Button variant="outline" @click="cancelForm">
-              取消
+              {{ t('common.cancel') }}
             </Button>
             <Button @click="saveComponent">
-              {{ formMode === 'create' ? '创建' : '保存' }}
+              {{ formMode === 'create' ? t('common.create') : t('common.save') }}
             </Button>
           </div>
         </div>
@@ -593,20 +600,20 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
               <TabsTrigger value="builtin">
                 <span class="inline-flex items-center gap-1.5">
                   <Lock class="size-3.5" />
-                  内置组件
+                  {{ t('component.builtin') }}
                 </span>
               </TabsTrigger>
               <TabsTrigger value="custom">
                 <span class="inline-flex items-center gap-1.5">
                   <Blocks class="size-3.5" />
-                  自定义组件
+                  {{ t('component.custom') }}
                 </span>
               </TabsTrigger>
             </TabsList>
 
             <TabsContent value="builtin" class="mt-4 space-y-2">
               <div
-                v-for="def in componentStore.builtInComponents"
+                v-for="def in localizedBuiltinComponents"
                 :key="def.id"
                 class="border rounded-xl overflow-hidden transition-all"
                 :class="expandedId === def.id ? 'border-primary/30 bg-primary/2' : 'hover:border-border/80 bg-card'"
@@ -621,9 +628,9 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
                       <code class="text-sm font-semibold text-primary">{{ def.name }}</code>
-                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">内置</span>
+                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">{{ t('component.builtinBadge') }}</span>
                       <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
-                        {{ def.props.length }} 个属性
+                        {{ t('component.propCount', { count: def.props.length }) }}
                       </span>
                     </div>
                     <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
@@ -638,7 +645,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       @click="insertSnippet(def)"
                     >
                       <Zap class="size-3" />
-                      插入
+                      {{ t('common.insert') }}
                     </Button>
                     <Button
                       variant="ghost"
@@ -665,26 +672,26 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   <div v-if="expandedId === def.id" class="border-t px-3 sm:px-4 py-3 space-y-3 bg-muted/20">
                     <div v-if="def.props.length > 0">
                       <p class="text-xs font-medium text-muted-foreground mb-2">
-                        属性说明
+                        {{ t('component.propDocs') }}
                       </p>
                       <div class="hidden sm:block rounded-lg border overflow-hidden">
                         <table class="w-full text-xs">
                           <thead class="bg-muted/50">
                             <tr>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
-                                属性名
+                                {{ t('component.propNameCol') }}
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
-                                类型
+                                {{ t('component.typeCol') }}
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground w-14">
-                                状态
+                                {{ t('component.statusCol') }}
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground">
-                                描述
+                                {{ t('component.descCol') }}
                               </th>
                               <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
-                                默认值
+                                {{ t('component.defaultCol') }}
                               </th>
                             </tr>
                           </thead>
@@ -735,7 +742,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                             {{ prop.description }}
                           </p>
                           <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
-                            <span>默认：</span>
+                            <span>{{ t('component.defaultPrefix') }}</span>
                             <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
                           </div>
                         </div>
@@ -744,7 +751,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
                     <div>
                       <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        使用示例
+                        {{ t('component.example') }}
                       </p>
                       <div class="relative group">
                         <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
@@ -764,16 +771,16 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       <div class="flex items-center justify-between">
                         <p class="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
                           <Rss class="size-3.5" />
-                          已保存的公众号
+                          {{ t('component.savedAccounts') }}
                         </p>
                         <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="openAddMpAccount">
                           <Plus class="size-3" />
-                          新增
+                          {{ t('common.add') }}
                         </Button>
                       </div>
                       <div v-if="mpAccountsStore.accounts.length === 0" class="text-center py-4">
                         <p class="text-xs text-muted-foreground">
-                          暂无保存的公众号，点击「新增」添加
+                          {{ t('component.noAccounts') }}
                         </p>
                       </div>
                       <div v-else class="space-y-1.5">
@@ -807,7 +814,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="top" class="z-250">
-                                插入
+                                {{ t('common.insert') }}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -819,7 +826,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="top" class="z-250">
-                                编辑
+                                {{ t('common.edit') }}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -831,7 +838,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                                 </Button>
                               </TooltipTrigger>
                               <TooltipContent side="top" class="z-250">
-                                删除
+                                {{ t('common.delete') }}
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
@@ -849,30 +856,30 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                 <div class="flex items-center gap-1.5">
                   <Blocks class="size-3.5 text-muted-foreground" />
                   <h4 class="text-sm font-medium text-muted-foreground">
-                    自定义组件
+                    {{ t('component.custom') }}
                   </h4>
                   <span class="text-xs text-muted-foreground/60">
-                    {{ componentStore.userComponents.length }} 个
+                    {{ t('component.propCount', { count: componentStore.userComponents.length }) }}
                   </span>
                 </div>
                 <div class="flex items-center gap-1.5">
                   <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" :disabled="componentStore.userComponents.length === 0" @click="exportComponents">
                     <Download class="size-3" />
-                    导出
+                    {{ t('common.export') }}
                   </Button>
                   <Button variant="outline" size="sm" class="h-6 px-2 text-xs gap-1" @click="triggerImport">
                     <Upload class="size-3" />
-                    导入
+                    {{ t('common.import') }}
                   </Button>
                   <Button variant="outline" size="sm" class="h-6 px-2 text-xs" @click="openCreateForm">
                     <Plus class="mr-1 size-3" />
-                    新建
+                    {{ t('common.create') }}
                   </Button>
                 </div>
               </div>
               <div v-if="componentStore.userComponents.length === 0" class="text-center py-8 border rounded-xl bg-card/50">
                 <p class="text-xs text-muted-foreground">
-                  暂无自定义组件，点击上方”新建”按钮创建
+                  {{ t('component.noCustom') }}
                 </p>
               </div>
               <div v-else class="space-y-2">
@@ -893,7 +900,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
                         <code class="text-sm font-semibold text-foreground">{{ def.name }}</code>
                         <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
-                          {{ def.props.length }} 个属性
+                          {{ t('component.propCount', { count: def.props.length }) }}
                         </span>
                       </div>
                       <p v-if="def.description" class="text-xs text-muted-foreground leading-relaxed line-clamp-1">
@@ -908,7 +915,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         @click="insertSnippet(def)"
                       >
                         <Zap class="size-3" />
-                        插入
+                        {{ t('common.insert') }}
                       </Button>
                       <Button
                         variant="ghost"
@@ -935,26 +942,26 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                     <div v-if="expandedId === def.id" class="border-t px-3 sm:px-4 py-3 space-y-3 bg-muted/20">
                       <div v-if="def.props.length > 0">
                         <p class="text-xs font-medium text-muted-foreground mb-2">
-                          属性说明
+                          {{ t('component.propDocs') }}
                         </p>
                         <div class="hidden sm:block rounded-lg border overflow-hidden">
                           <table class="w-full text-xs">
                             <thead class="bg-muted/50">
                               <tr>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
-                                  属性名
+                                  {{ t('component.propNameCol') }}
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
-                                  类型
+                                  {{ t('component.typeCol') }}
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground w-14">
-                                  状态
+                                  {{ t('component.statusCol') }}
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground">
-                                  描述
+                                  {{ t('component.descCol') }}
                                 </th>
                                 <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
-                                  默认值
+                                  {{ t('component.defaultCol') }}
                                 </th>
                               </tr>
                             </thead>
@@ -1005,7 +1012,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                               {{ prop.description }}
                             </p>
                             <div v-if="prop.default" class="flex items-center gap-1 text-xs text-muted-foreground">
-                              <span>默认：</span>
+                              <span>{{ t('component.defaultPrefix') }}</span>
                               <code class="bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
                             </div>
                           </div>
@@ -1013,13 +1020,13 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       </div>
                       <div v-else>
                         <p class="text-xs text-muted-foreground italic">
-                          该组件无属性定义
+                          {{ t('component.noPropsDefined') }}
                         </p>
                       </div>
 
                       <div>
                         <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                          使用示例
+                          {{ t('component.example') }}
                         </p>
                         <div class="relative group">
                           <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
@@ -1042,7 +1049,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           @click="openEditForm(def)"
                         >
                           <Pencil class="size-3" />
-                          编辑
+                          {{ t('common.edit') }}
                         </Button>
                         <Button
                           variant="outline"
@@ -1051,7 +1058,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           @click="openDeleteConfirm(def)"
                         >
                           <Trash2 class="size-3" />
-                          删除
+                          {{ t('common.delete') }}
                         </Button>
                       </div>
                     </div>

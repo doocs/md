@@ -10,35 +10,37 @@ import { useUIStore } from '@/stores/ui'
 
 const emit = defineEmits([`uploadImage`])
 
+const { t } = useI18n()
+
 const uiStore = useUIStore()
 const { enableImageReupload } = storeToRefs(uiStore)
 const { toggleImageReupload } = uiStore
 
 // github
-const githubSchema = toTypedSchema(yup.object({
-  repo: yup.string().required(`GitHub 仓库不能为空`),
+const githubSchema = computed(() => toTypedSchema(yup.object({
+  repo: yup.string().required(t(`upload.validation.githubRepoRequired`)),
   branch: yup.string().optional(),
-  accessToken: yup.string().required(`GitHub Token 不能为空`),
+  accessToken: yup.string().required(t(`upload.validation.githubTokenRequired`)),
   useCDN: yup.boolean().required(),
-}))
+})))
 
 const githubConfig = store.reactive(`githubConfig`, { repo: ``, branch: ``, accessToken: ``, useCDN: false })
 
 async function githubSubmit(formValues: GenericObject) {
   Object.assign(githubConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // 阿里云
-const aliOSSSchema = toTypedSchema(yup.object({
-  accessKeyId: yup.string().required(`AccessKey ID 不能为空`),
-  accessKeySecret: yup.string().required(`AccessKey Secret 不能为空`),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  region: yup.string().required(`Region 不能为空`),
+const aliOSSSchema = computed(() => toTypedSchema(yup.object({
+  accessKeyId: yup.string().required(t(`upload.validation.accessKeyIdRequired`)),
+  accessKeySecret: yup.string().required(t(`upload.validation.accessKeySecretRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  region: yup.string().required(t(`upload.validation.regionRequired`)),
   useSSL: yup.boolean().required(),
   cdnHost: yup.string().optional(),
   path: yup.string().optional(),
-}))
+})))
 
 const aliOSSConfig = store.reactive(`aliOSSConfig`, {
   accessKeyId: ``,
@@ -52,18 +54,18 @@ const aliOSSConfig = store.reactive(`aliOSSConfig`, {
 
 async function aliOSSSubmit(formValues: GenericObject) {
   Object.assign(aliOSSConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // 腾讯云
-const txCOSSchema = toTypedSchema(yup.object({
-  secretId: yup.string().required(`Secret ID 不能为空`),
-  secretKey: yup.string().required(`Secret Key 不能为空`),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  region: yup.string().required(`Region 不能为空`),
+const txCOSSchema = computed(() => toTypedSchema(yup.object({
+  secretId: yup.string().required(t(`upload.validation.secretIdRequired`)),
+  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  region: yup.string().required(t(`upload.validation.regionRequired`)),
   cdnHost: yup.string().optional(),
   path: yup.string().optional(),
-}))
+})))
 
 const txCOSConfig = store.reactive(`txCOSConfig`, {
   secretId: ``,
@@ -76,18 +78,18 @@ const txCOSConfig = store.reactive(`txCOSConfig`, {
 
 async function txCOSSubmit(formValues: GenericObject) {
   Object.assign(txCOSConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // 七牛云
-const qiniuSchema = toTypedSchema(yup.object({
-  accessKey: yup.string().required(`AccessKey 不能为空`),
-  secretKey: yup.string().required(`SecretKey 不能为空`),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  domain: yup.string().required(`Bucket 对应域名不能为空`),
+const qiniuSchema = computed(() => toTypedSchema(yup.object({
+  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
+  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  domain: yup.string().required(t(`upload.validation.domainRequired`)),
   region: yup.string().optional(),
   path: yup.string().optional(),
-}))
+})))
 
 const qiniuConfig = store.reactive(`qiniuConfig`, {
   accessKey: ``,
@@ -100,18 +102,18 @@ const qiniuConfig = store.reactive(`qiniuConfig`, {
 
 async function qiniuSubmit(formValues: GenericObject) {
   Object.assign(qiniuConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // MinIO
-const minioOSSSchema = toTypedSchema(yup.object({
-  endpoint: yup.string().required(`Endpoint 不能为空`),
+const minioOSSSchema = computed(() => toTypedSchema(yup.object({
+  endpoint: yup.string().required(t(`upload.validation.endpointRequired`)),
   port: yup.string().optional(),
   useSSL: yup.boolean().required(),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  accessKey: yup.string().required(`AccessKey 不能为空`),
-  secretKey: yup.string().required(`SecretKey 不能为空`),
-}))
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
+  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
+})))
 
 const minioOSSConfig = store.reactive(`minioConfig`, {
   endpoint: ``,
@@ -124,20 +126,20 @@ const minioOSSConfig = store.reactive(`minioConfig`, {
 
 async function minioOSSSubmit(formValues: GenericObject) {
   Object.assign(minioOSSConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // S3
-const s3Schema = toTypedSchema(yup.object({
+const s3Schema = computed(() => toTypedSchema(yup.object({
   endpoint: yup.string().optional(),
-  region: yup.string().required(`Region 不能为空`),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  accessKeyId: yup.string().required(`AccessKey ID 不能为空`),
-  accessKeySecret: yup.string().required(`Secret AccessKey 不能为空`),
+  region: yup.string().required(t(`upload.validation.regionRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  accessKeyId: yup.string().required(t(`upload.validation.accessKeyIdRequired`)),
+  accessKeySecret: yup.string().required(t(`upload.validation.secretAccessKeyRequired`)),
   path: yup.string().optional(),
   cdnHost: yup.string().optional(),
   pathStyle: yup.boolean().optional(),
-}))
+})))
 
 const s3Config = store.reactive(`s3Config`, {
   endpoint: ``,
@@ -152,22 +154,22 @@ const s3Config = store.reactive(`s3Config`, {
 
 async function s3Submit(formValues: GenericObject) {
   Object.assign(s3Config.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // Telegram 图床
-const telegramSchema = toTypedSchema(
+const telegramSchema = computed(() => toTypedSchema(
   yup.object({
-    token: yup.string().required(`Bot Token 不能为空`),
-    chatId: yup.string().required(`Chat ID 不能为空`),
+    token: yup.string().required(t(`upload.validation.botTokenRequired`)),
+    chatId: yup.string().required(t(`upload.validation.chatIdRequired`)),
   }),
-)
+))
 
 const telegramConfig = store.reactive(`telegramConfig`, { token: ``, chatId: `` })
 
 async function telegramSubmit(values: GenericObject) {
   Object.assign(telegramConfig.value, values)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // 公众号
@@ -187,17 +189,17 @@ const isProxyRequired = computed(() => {
 
 const mpPlaceholder = computed(() => {
   if (isProxyRequired.value) {
-    return `如：http://proxy.example.com`
+    return t(`upload.placeholders.proxyExample`)
   }
-  return `可不填`
+  return t(`upload.placeholders.proxyOptional`)
 })
 const mpSchema = computed(() =>
   toTypedSchema(yup.object({
     proxyOrigin: isProxyRequired.value
-      ? yup.string().required(`代理域名不能为空`)
+      ? yup.string().required(t(`upload.validation.proxyRequired`))
       : yup.string().optional(),
-    appID: yup.string().required(`AppID 不能为空`),
-    appsecret: yup.string().required(`AppSecret 不能为空`),
+    appID: yup.string().required(t(`upload.validation.appIdRequired`)),
+    appsecret: yup.string().required(t(`upload.validation.appSecretRequired`)),
   })),
 )
 
@@ -209,18 +211,18 @@ const mpConfig = store.reactive(`mpConfig`, {
 
 async function mpSubmit(formValues: GenericObject) {
   Object.assign(mpConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // Cloudflare R2
-const r2Schema = toTypedSchema(yup.object({
-  accountId: yup.string().required(`Account ID 不能为空`),
-  accessKey: yup.string().required(`AccessKey 不能为空`),
-  secretKey: yup.string().required(`SecretKey 不能为空`),
-  bucket: yup.string().required(`Bucket 不能为空`),
-  domain: yup.string().required(`Bucket 对应域名不能为空`),
+const r2Schema = computed(() => toTypedSchema(yup.object({
+  accountId: yup.string().required(t(`upload.validation.accountIdRequired`)),
+  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
+  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  domain: yup.string().required(t(`upload.validation.domainRequired`)),
   path: yup.string().optional(),
-}))
+})))
 
 const r2Config = store.reactive(`r2Config`, {
   accountId: ``,
@@ -233,16 +235,16 @@ const r2Config = store.reactive(`r2Config`, {
 
 async function r2Submit(formValues: GenericObject) {
   Object.assign(r2Config.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // 又拍云
 const upyunSchema = computed(() => toTypedSchema(
   yup.object({
-    bucket: yup.string().required(`Bucket 不能为空`),
-    operator: yup.string().required(`操作员 不能为空`),
-    password: yup.string().required(`密码 不能为空`),
-    domain: yup.string().required(`CDN 域名不能为空`),
+    bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+    operator: yup.string().required(t(`upload.validation.operatorRequired`)),
+    password: yup.string().required(t(`upload.validation.passwordRequired`)),
+    domain: yup.string().required(t(`upload.validation.cdnDomainRequired`)),
     path: yup.string().optional(),
   }),
 ))
@@ -257,24 +259,24 @@ const upyunConfig = store.reactive(`upyunConfig`, {
 
 async function upyunSubmit(formValues: GenericObject) {
   Object.assign(upyunConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
 // Cloudinary
-const cloudinarySchema = toTypedSchema(
+const cloudinarySchema = computed(() => toTypedSchema(
   yup.object({
-    cloudName: yup.string().required(`Cloud Name 不能为空`),
-    apiKey: yup.string().required(`API Key 不能为空`),
+    cloudName: yup.string().required(t(`upload.validation.cloudNameRequired`)),
+    apiKey: yup.string().required(t(`upload.validation.apiKeyRequired`)),
     apiSecret: yup.string().optional(),
     uploadPreset: yup.string().when(`apiSecret`, {
       is: (v: string | undefined) => !v || v.length === 0,
-      then: s => s.required(`未填写 apiSecret 时必须提供上传预设名`),
+      then: s => s.required(t(`upload.validation.uploadPresetRequired`)),
       otherwise: s => s.optional(),
     }),
     folder: yup.string().optional(),
     domain: yup.string().optional(),
   }),
-)
+))
 
 const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
   cloudName: ``,
@@ -287,13 +289,13 @@ const cloudinaryConfig = store.reactive(`cloudinaryConfig`, {
 
 async function cloudinarySubmit(formValues: GenericObject) {
   Object.assign(cloudinaryConfig.value, formValues)
-  toast.success(`保存成功`)
+  toast.success(t(`common.saveSuccess`))
 }
 
-const options = [
+const options = computed(() => [
   {
     value: `default`,
-    label: `默认`,
+    label: t(`upload.hosts.default`),
   },
   {
     value: `github`,
@@ -301,15 +303,15 @@ const options = [
   },
   {
     value: `aliOSS`,
-    label: `阿里云`,
+    label: t(`upload.hosts.aliOSS`),
   },
   {
     value: `txCOS`,
-    label: `腾讯云`,
+    label: t(`upload.hosts.txCOS`),
   },
   {
     value: `qiniu`,
-    label: `七牛云`,
+    label: t(`upload.hosts.qiniu`),
   },
   {
     value: `minio`,
@@ -321,7 +323,7 @@ const options = [
   },
   {
     value: `mp`,
-    label: `公众号图床`,
+    label: t(`upload.hosts.mp`),
   },
   {
     value: `r2`,
@@ -329,7 +331,7 @@ const options = [
   },
   {
     value: `upyun`,
-    label: `又拍云`,
+    label: t(`upload.hosts.upyun`),
   },
   { value: `telegram`, label: `Telegram` },
   {
@@ -339,16 +341,16 @@ const options = [
 
   {
     value: `formCustom`,
-    label: `自定义代码`,
+    label: t(`upload.hosts.formCustom`),
   },
-]
+])
 
 const imgHost = store.reactive(`imgHost`, `default`)
 const useCompression = store.reactive(`useCompression`, false)
 const activeName = ref(`upload`)
 
 async function changeImgHost() {
-  toast.success(`图床已切换`)
+  toast.success(t(`upload.hostSwitched`))
 }
 
 async function changeCompression() {
@@ -368,7 +370,7 @@ async function beforeImageUpload(file: File) {
   const config = await store.get(`${imgHostValue}Config`)
   const isValidHost = imgHostValue === `default` || config
   if (!isValidHost) {
-    toast.error(`请先配置 ${imgHostValue} 图床参数`)
+    toast.error(t(`upload.configureHostFirst`, { host: imgHostValue }))
     return false
   }
   return true
@@ -431,7 +433,7 @@ function onTabScroll(e: WheelEvent) {
   <Dialog v-model:open="uiStore.isShowUploadImgDialog">
     <DialogContent class="md:max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
-        <DialogTitle>本地上传</DialogTitle>
+        <DialogTitle>{{ t('upload.title') }}</DialogTitle>
       </DialogHeader>
       <Tabs v-model="activeName" class="w-full md:w-full flex flex-col flex-1 overflow-hidden">
         <TabsList
@@ -439,7 +441,7 @@ function onTabScroll(e: WheelEvent) {
           @wheel="onTabScroll"
         >
           <TabsTrigger value="upload" class="text-xs md:text-sm whitespace-nowrap">
-            选择上传
+            {{ t('upload.selectUpload') }}
           </TabsTrigger>
           <TabsTrigger
             v-for="item in options.filter(item => item.value !== 'default')"
@@ -454,7 +456,7 @@ function onTabScroll(e: WheelEvent) {
         <TabsContent value="upload" class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
           <Select v-model="imgHost" class="my-4" @update:model-value="changeImgHost">
             <SelectTrigger>
-              <SelectValue placeholder="请选择图床" />
+              <SelectValue :placeholder="t('upload.selectHostPlaceholder')" />
             </SelectTrigger>
             <SelectContent class="max-h-64 md:max-h-96">
               <SelectItem
@@ -471,7 +473,7 @@ function onTabScroll(e: WheelEvent) {
           <div class="space-y-3 my-4">
             <div class="flex items-center justify-between gap-4">
               <span class="text-sm">
-                开启图片压缩
+                {{ t('upload.enableCompression') }}
               </span>
               <Switch
                 v-model="useCompression"
@@ -482,7 +484,7 @@ function onTabScroll(e: WheelEvent) {
 
             <div class="flex items-center justify-between gap-4">
               <span class="text-sm">
-                粘贴图片时自动转存
+                {{ t('upload.autoReuploadOnPaste') }}
               </span>
               <Switch
                 v-model="enableImageReupload"
@@ -491,7 +493,7 @@ function onTabScroll(e: WheelEvent) {
               />
             </div>
             <p class="text-xs text-muted-foreground mt-1.5">
-              粘贴 Markdown 图片链接时自动转存到配置的图床
+              {{ t('upload.autoReuploadMdHint') }}
             </p>
           </div>
 
@@ -508,8 +510,8 @@ function onTabScroll(e: WheelEvent) {
             <Progress v-if="isUploading" indeterminate class="absolute left-0 right-0 rounded-none" style="top: -24px; height: 2px;" />
             <UploadCloud class="size-16 md:size-20" />
             <p class="text-center text-sm md:text-base px-4">
-              将图片拖到此处，或
-              <strong>点击上传</strong>
+              {{ t('upload.dragOrClick') }}
+              <strong>{{ t('upload.clickToUpload') }}</strong>
             </p>
             <div v-if="imageUrl" class="absolute left-0 right-0 h-full w-full flex items-center justify-center bg-white dark:bg-black">
               <img :src="imageUrl" class="max-h-40 object-contain">
@@ -521,21 +523,21 @@ function onTabScroll(e: WheelEvent) {
           <Form :validation-schema="githubSchema" :initial-values="githubConfig" class="flex flex-col flex-1 overflow-hidden" @submit="githubSubmit">
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Field v-slot="{ field, errorMessage }" name="repo">
-                <FormItem label="GitHub 仓库" required :error="errorMessage">
+                <FormItem :label="t('upload.labels.githubRepo')" required :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：github.com/yanglbme/resource"
+                    :placeholder="t('upload.placeholders.githubRepo')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="branch">
-                <FormItem label="分支" :error="errorMessage">
+                <FormItem :label="t('upload.labels.branch')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：release，可不填，默认 master"
+                    :placeholder="t('upload.placeholders.branch')"
                   />
                 </FormItem>
               </Field>
@@ -546,13 +548,13 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="如：cc1d0c1426d0fd0902bd2d7184b14da61b8abc46"
+                    :placeholder="t('upload.placeholders.token')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="useCDN" type="boolean">
-                <FormItem label="CDN 加速" :error="errorMessage">
+                <FormItem :label="t('upload.labels.cdnAccel')" :error="errorMessage">
                   <Switch
                     :model-value="field.value"
                     :name="field.name"
@@ -570,14 +572,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://docs.github.com/en/github/authenticating-to-github/creating-a-personal-access-token"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何获取 GitHub Token？
+                  {{ t('upload.help.githubToken') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -591,7 +593,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：LTAI4GdoocsmdoxUf13ylbaNHk"
+                    :placeholder="t('upload.placeholders.accessKeyId')"
                   />
                 </FormItem>
               </Field>
@@ -602,7 +604,7 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="如：cc1d0c142doocs0902bd2d7md4b14da6ylbabc46"
+                    :placeholder="t('upload.placeholders.accessKeySecret')"
                   />
                 </FormItem>
               </Field>
@@ -612,17 +614,17 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：doocs"
+                    :placeholder="t('upload.placeholders.bucket')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="region">
-                <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                <FormItem :label="t('upload.labels.bucketRegion')" required :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：oss-cn-shenzhen"
+                    :placeholder="t('upload.placeholders.ossRegion')"
                   />
                 </FormItem>
               </Field>
@@ -639,21 +641,21 @@ function onTabScroll(e: WheelEvent) {
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="cdnHost">
-                <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                <FormItem :label="t('upload.labels.customCdn')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                    :placeholder="t('upload.placeholders.cdnHost')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：img，可不填，默认为根目录"
+                    :placeholder="t('upload.placeholders.storagePath')"
                   />
                 </FormItem>
               </Field>
@@ -666,14 +668,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://help.aliyun.com/document_detail/31883.html"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用阿里云 OSS？
+                  {{ t('upload.help.aliOSS') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -687,7 +689,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：AKIDnQp1w3DOOCSs8F5MDp9tdoocsmdUPonW3"
+                    :placeholder="t('upload.placeholders.secretId')"
                   />
                 </FormItem>
               </Field>
@@ -698,7 +700,7 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="如：ukLmdtEJ9271f3DOocsMDsCXdS3YlbW0"
+                    :placeholder="t('upload.placeholders.secretKey')"
                   />
                 </FormItem>
               </Field>
@@ -708,37 +710,37 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：doocs-3212520134"
+                    :placeholder="t('upload.placeholders.cosBucket')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="region">
-                <FormItem label="Bucket 所在区域" required :error="errorMessage">
+                <FormItem :label="t('upload.labels.bucketRegion')" required :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：ap-guangzhou"
+                    :placeholder="t('upload.placeholders.cosRegion')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="cdnHost">
-                <FormItem label="自定义 CDN 域名" :error="errorMessage">
+                <FormItem :label="t('upload.labels.customCdn')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：https://imagecdn.alidaodao.com，可不填"
+                    :placeholder="t('upload.placeholders.cdnHost')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：img，可不填，默认根目录"
+                    :placeholder="t('upload.placeholders.storagePathRoot')"
                   />
                 </FormItem>
               </Field>
@@ -751,14 +753,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://cloud.tencent.com/document/product/436/38484"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用腾讯云 COS？
+                  {{ t('upload.help.txCOS') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -772,7 +774,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：6DD3VaLJ_SQgOdoocsyTV_YWaDmdnL2n8EGx7kG"
+                    :placeholder="t('upload.placeholders.qiniuAccessKey')"
                   />
                 </FormItem>
               </Field>
@@ -783,7 +785,7 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="如：qgZa5qrvDOOcsmdKStD1oCjZ9nB7MDvJUs_34SIm"
+                    :placeholder="t('upload.placeholders.qiniuSecretKey')"
                   />
                 </FormItem>
               </Field>
@@ -793,37 +795,37 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：md"
+                    :placeholder="t('upload.placeholders.qiniuBucket')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="domain">
-                <FormItem label="Bucket 对应域名" required :error="errorMessage">
+                <FormItem :label="t('upload.labels.domain')" required :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：https://images.123ylb.cn"
+                    :placeholder="t('upload.placeholders.qiniuDomain')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="region">
-                <FormItem label="存储区域" :error="errorMessage">
+                <FormItem :label="t('upload.labels.storageRegion')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：z2，可不填"
+                    :placeholder="t('upload.placeholders.qiniuRegion')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：img，可不填，默认为根目录"
+                    :placeholder="t('upload.placeholders.storagePath')"
                   />
                 </FormItem>
               </Field>
@@ -836,14 +838,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://developer.qiniu.com/kodo"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用七牛云 Kodo？
+                  {{ t('upload.help.qiniu') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -857,7 +859,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：play.min.io"
+                    :placeholder="t('upload.placeholders.minioEndpoint')"
                   />
                 </FormItem>
               </Field>
@@ -868,7 +870,7 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="number"
-                    placeholder="如：9000，可不填，http 默认为 80，https 默认为 443"
+                    :placeholder="t('upload.placeholders.minioPort')"
                   />
                 </FormItem>
               </Field>
@@ -889,20 +891,20 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：doocs"
+                    :placeholder="t('upload.placeholders.bucket')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="accessKey">
                 <FormItem label="AccessKey" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：zhangsan" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.minioAccessKey')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="secretKey">
                 <FormItem label="SecretKey" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：asdasdasd" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.minioSecretKey')" />
                 </FormItem>
               </Field>
 
@@ -914,14 +916,14 @@ function onTabScroll(e: WheelEvent) {
                   href="http://docs.minio.org.cn/docs/master/minio-client-complete-guide"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用 MinIO？
+                  {{ t('upload.help.minio') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -935,7 +937,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：s3.amazonaws.com，可不填"
+                    :placeholder="t('upload.placeholders.s3Endpoint')"
                   />
                 </FormItem>
               </Field>
@@ -945,7 +947,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：us-east-1"
+                    :placeholder="t('upload.placeholders.s3Region')"
                   />
                 </FormItem>
               </Field>
@@ -955,7 +957,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：bucket-name"
+                    :placeholder="t('upload.placeholders.s3Bucket')"
                   />
                 </FormItem>
               </Field>
@@ -965,7 +967,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：AKIAIOSFODNN7EXAMPLE"
+                    :placeholder="t('upload.placeholders.s3AccessKeyId')"
                   />
                 </FormItem>
               </Field>
@@ -976,27 +978,27 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="如：wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY"
+                    :placeholder="t('upload.placeholders.s3AccessKeySecret')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：img，可不填，默认根目录"
+                    :placeholder="t('upload.placeholders.storagePathRoot')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="cdnHost">
-                <FormItem label="自定义域名" :error="errorMessage">
+                <FormItem :label="t('upload.labels.customDomain')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：https://cdn.example.com"
+                    :placeholder="t('upload.placeholders.customDomain')"
                   />
                 </FormItem>
               </Field>
@@ -1015,7 +1017,7 @@ function onTabScroll(e: WheelEvent) {
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -1030,7 +1032,7 @@ function onTabScroll(e: WheelEvent) {
                 v-slot="{ field, errorMessage }"
                 name="proxyOrigin"
               >
-                <FormItem label="代理域名" required :error="errorMessage">
+                <FormItem :label="t('upload.labels.proxyDomain')" required :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
@@ -1044,7 +1046,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：wx6e1234567890efa3"
+                    :placeholder="t('upload.placeholders.appId')"
                   />
                 </FormItem>
               </Field>
@@ -1054,7 +1056,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：d9f1abcdef01234567890abcdef82397"
+                    :placeholder="t('upload.placeholders.appSecret')"
                   />
                 </FormItem>
               </Field>
@@ -1068,7 +1070,7 @@ function onTabScroll(e: WheelEvent) {
                     href="https://developers.weixin.qq.com/doc/offiaccount/Getting_Started/Getting_Started_Guide.html"
                     target="_blank" rel="noopener noreferrer"
                   >
-                    如何开启公众号开发者模式并获取应用账号密钥？
+                    {{ t('upload.help.mpDevMode') }}
                   </Button>
                   <Button
                     variant="link"
@@ -1077,7 +1079,7 @@ function onTabScroll(e: WheelEvent) {
                     href="https://md-pages.doocs.org/tutorial/"
                     target="_blank" rel="noopener noreferrer"
                   >
-                    如何在浏览器插件中使用公众号图床？
+                    {{ t('upload.help.mpExtension') }}
                   </Button>
                 </div>
               </FormItem>
@@ -1085,7 +1087,7 @@ function onTabScroll(e: WheelEvent) {
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -1096,37 +1098,37 @@ function onTabScroll(e: WheelEvent) {
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Field v-slot="{ field, errorMessage }" name="accountId">
                 <FormItem label="AccountId" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如: 0030f123e55a57546f4c281c564e560" class="w-full min-w-0 md:min-w-[350px]" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.accountId')" class="w-full min-w-0 md:min-w-[350px]" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="accessKey">
                 <FormItem label="AccessKey" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如: 358090b3a12824a6b0787gae7ad0fc72" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.r2AccessKey')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="secretKey">
                 <FormItem label="SecretKey" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+                  <Input v-bind="field" v-model="field.value" type="password" :placeholder="t('upload.placeholders.r2SecretKey')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="bucket">
                 <FormItem label="Bucket" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：md" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.qiniuBucket')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="domain">
-                <FormItem label="域名" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：https://oss.example.com" />
+                <FormItem :label="t('upload.labels.domain')" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.r2Domain')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.storagePath')" />
                 </FormItem>
               </Field>
 
@@ -1139,7 +1141,7 @@ function onTabScroll(e: WheelEvent) {
                     href="https://developers.cloudflare.com/r2/api/s3/api/"
                     target="_blank" rel="noopener noreferrer"
                   >
-                    如何使用 S3 API 操作 Cloudflare R2？
+                    {{ t('upload.help.r2S3Api') }}
                   </Button>
                   <Button
                     variant="link"
@@ -1148,7 +1150,7 @@ function onTabScroll(e: WheelEvent) {
                     href="https://developers.cloudflare.com/r2/buckets/cors/"
                     target="_blank" rel="noopener noreferrer"
                   >
-                    如何设置跨域(CORS)？
+                    {{ t('upload.help.r2Cors') }}
                   </Button>
                 </div>
               </FormItem>
@@ -1156,7 +1158,7 @@ function onTabScroll(e: WheelEvent) {
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -1167,31 +1169,31 @@ function onTabScroll(e: WheelEvent) {
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Field v-slot="{ field, errorMessage }" name="bucket">
                 <FormItem label="Bucket" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如: md" class="w-full min-w-0 md:min-w-[350px]" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.upyunBucket')" class="w-full min-w-0 md:min-w-[350px]" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="operator">
-                <FormItem label="操作员" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如: operator" />
+                <FormItem :label="t('upload.labels.operator')" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.upyunOperator')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="password">
-                <FormItem label="操作员密码" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" type="password" placeholder="如: c1c4dbcb0b6b785ac6633422a06dff3dac055fe74fe40xj1b5c5fcf1bf128010" />
+                <FormItem :label="t('upload.labels.operatorPassword')" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" type="password" :placeholder="t('upload.placeholders.r2SecretKey')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="domain">
-                <FormItem label="域名" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：http://xxx.test.upcdn.net" />
+                <FormItem :label="t('upload.labels.domain')" required :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.upyunDomain')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="path">
-                <FormItem label="存储路径" :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：img，可不填，默认为根目录" />
+                <FormItem :label="t('upload.labels.storagePath')" :error="errorMessage">
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.storagePath')" />
                 </FormItem>
               </Field>
 
@@ -1203,14 +1205,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://help.upyun.com/"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用 又拍云？
+                  {{ t('upload.help.upyun') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -1221,12 +1223,12 @@ function onTabScroll(e: WheelEvent) {
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Field v-slot="{ field, errorMessage }" name="token">
                 <FormItem label="Bot Token" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：123456789:ABCdefGHIjkl-MNOPqrSTUvwxYZ" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.telegramToken')" />
                 </FormItem>
               </Field>
               <Field v-slot="{ field, errorMessage }" name="chatId">
                 <FormItem label="Chat ID" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：-1001234567890" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.telegramChatId')" />
                 </FormItem>
               </Field>
               <FormItem>
@@ -1237,14 +1239,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://github.com/doocs/md/blob/main/docs/telegram-usage.md"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  如何使用 Telegram？
+                  {{ t('upload.help.telegram') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>
@@ -1260,13 +1262,13 @@ function onTabScroll(e: WheelEvent) {
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Field v-slot="{ field, errorMessage }" name="cloudName">
                 <FormItem label="Cloud Name" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：demo" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.cloudName')" />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="apiKey">
                 <FormItem label="API Key" required :error="errorMessage">
-                  <Input v-bind="field" v-model="field.value" placeholder="如：1234567890" />
+                  <Input v-bind="field" v-model="field.value" :placeholder="t('upload.placeholders.apiKey')" />
                 </FormItem>
               </Field>
 
@@ -1276,7 +1278,7 @@ function onTabScroll(e: WheelEvent) {
                     v-bind="field"
                     v-model="field.value"
                     type="password"
-                    placeholder="用于签名上传，可不填"
+                    :placeholder="t('upload.placeholders.apiSecretOptional')"
                   />
                 </FormItem>
               </Field>
@@ -1286,7 +1288,7 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="unsigned 时必填，signed 时可不填"
+                    :placeholder="t('upload.placeholders.uploadPresetUnsigned')"
                   />
                 </FormItem>
               </Field>
@@ -1296,17 +1298,17 @@ function onTabScroll(e: WheelEvent) {
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：blog/image，可不填"
+                    :placeholder="t('upload.placeholders.cloudinaryFolder')"
                   />
                 </FormItem>
               </Field>
 
               <Field v-slot="{ field, errorMessage }" name="domain">
-                <FormItem label="自定义域名 / CDN" :error="errorMessage">
+                <FormItem :label="t('upload.labels.customDomainCdn')" :error="errorMessage">
                   <Input
                     v-bind="field"
                     v-model="field.value"
-                    placeholder="如：https://cdn.example.com，可不填"
+                    :placeholder="t('upload.placeholders.cloudinaryDomain')"
                   />
                 </FormItem>
               </Field>
@@ -1319,14 +1321,14 @@ function onTabScroll(e: WheelEvent) {
                   href="https://cloudinary.com/documentation/upload_images"
                   target="_blank" rel="noopener noreferrer"
                 >
-                  Cloudinary 使用文档
+                  {{ t('upload.help.cloudinary') }}
                 </Button>
               </FormItem>
             </div>
 
             <DialogFooter class="p-1">
               <Button type="submit">
-                保存配置
+                {{ t('upload.saveConfig') }}
               </Button>
             </DialogFooter>
           </Form>

@@ -2,6 +2,7 @@ import type { Component } from 'vue'
 import { AlertCircle, Cloud, CloudCheck, CloudOff, Loader2 } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed } from 'vue'
+import { t } from '@/i18n/translate'
 import { useAuthStore } from '@/stores/auth'
 import { useSyncStore } from '@/stores/sync'
 
@@ -24,8 +25,8 @@ function buildSyncStatusMeta(
   switch (state) {
     case `syncing`:
       return {
-        label: `同步中`,
-        hint: `正在与云端交换数据…`,
+        label: t('store.sync.syncing'),
+        hint: t('store.sync.syncingHint'),
         dotClass: `bg-primary animate-pulse`,
         icon: Loader2,
         iconClass: `text-primary animate-spin`,
@@ -33,8 +34,8 @@ function buildSyncStatusMeta(
       }
     case `synced`:
       return {
-        label: `已同步`,
-        hint: `本地内容与云端一致`,
+        label: t('store.sync.synced'),
+        hint: t('store.sync.syncedHint'),
         dotClass: `bg-green-500`,
         icon: CloudCheck,
         iconClass: `text-green-600 dark:text-green-400`,
@@ -42,10 +43,10 @@ function buildSyncStatusMeta(
       }
     case `error`:
       return {
-        label: `同步失败`,
+        label: t('store.sync.failed'),
         hint: errorHint === `generic`
-          ? `同步失败，请查看下方详情`
-          : (lastError || `请稍后重试`),
+          ? t('store.sync.failedHintDetail')
+          : (lastError || t('store.sync.retryLater')),
         dotClass: `bg-destructive`,
         icon: AlertCircle,
         iconClass: `text-destructive`,
@@ -53,8 +54,8 @@ function buildSyncStatusMeta(
       }
     default:
       return {
-        label: `待同步`,
-        hint: `本地有未上传的更改`,
+        label: t('store.sync.pending'),
+        hint: t('store.sync.pendingHint'),
         dotClass: `bg-amber-500`,
         icon: CloudOff,
         iconClass: `text-amber-600 dark:text-amber-400`,
@@ -64,24 +65,27 @@ function buildSyncStatusMeta(
 }
 
 export function useSyncStatusMeta(options?: { errorHint?: `detail` | `generic` }) {
+  const { locale } = useI18n()
   const syncStore = useSyncStore()
   const { syncState, lastError, isSyncing } = storeToRefs(syncStore)
   const errorHint = options?.errorHint ?? `detail`
 
-  const syncStatusMeta = computed(() =>
-    buildSyncStatusMeta(syncState.value, lastError.value, errorHint),
-  )
+  const syncStatusMeta = computed(() => {
+    void locale.value
+    return buildSyncStatusMeta(syncState.value, lastError.value, errorHint)
+  })
 
   const syncTooltip = computed(() => {
+    void locale.value
     switch (syncState.value) {
       case `syncing`:
-        return `同步中…`
+        return t('store.sync.syncingTooltip')
       case `synced`:
-        return `已同步`
+        return t('store.sync.syncedTooltip')
       case `error`:
-        return `同步失败，点击重试`
+        return t('store.sync.failedTooltip')
       default:
-        return `有未同步的更改`
+        return t('store.sync.pendingTooltip')
     }
   })
 

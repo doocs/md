@@ -1,4 +1,5 @@
 import type { SyncDocument } from '@/services/sync/types'
+import { t } from '@/i18n/translate'
 import { ApiError } from '@/services/account/client'
 import { isSyncConfigured } from '@/services/sync/client'
 import { hydrateSyncedSettings } from '@/services/sync/hydrate'
@@ -102,7 +103,7 @@ export const useSyncStore = defineStore(`sync`, () => {
   function formatSyncError(e: unknown): string {
     if (e instanceof ApiError) {
       if (e.status === 429)
-        return `同步次数已达上限，请稍后再试`
+        return t(`store.sync.rateLimited`)
       return e.message
     }
     return e instanceof Error ? e.message : String(e)
