@@ -11,7 +11,7 @@ import {
 import { useCommandPalette } from '@/composables/useCommandPalette'
 import { useUIStore } from '@/stores/ui'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const uiStore = useUIStore()
 const { isShowCommandPalette } = storeToRefs(uiStore)
 const { buildCommands } = useCommandPalette()
@@ -20,7 +20,10 @@ const query = ref(``)
 const activeIndex = ref(0)
 const inputRef = ref<HTMLInputElement | null>(null)
 
-const allCommands = computed(() => buildCommands())
+const allCommands = computed(() => {
+  void locale.value
+  return buildCommands()
+})
 
 const filteredCommands = computed(() => {
   const q = query.value.trim().toLowerCase()

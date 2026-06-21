@@ -12,3 +12,7 @@ export function getLocale(): AppLocale {
   const current = getAppI18n().global.locale
   return (typeof current === `string` ? current : current.value) as AppLocale
 }
+
+export function formatLocalDateTime(date: Date = new Date()): string {
+  return date.toLocaleString(getLocale())
+}

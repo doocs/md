@@ -13,10 +13,13 @@ const emit = defineEmits<{
   'update:open': [value: boolean]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { paletteShortcutLabel } = useCommandPalette()
 
-const shortcutCategories = computed(() => buildKeyboardShortcutCategories())
+const shortcutCategories = computed(() => {
+  void locale.value
+  return buildKeyboardShortcutCategories()
+})
 
 const dialogOpen = computed({
   get: () => props.open,

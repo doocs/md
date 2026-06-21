@@ -2,7 +2,7 @@ import type { Post } from '@/types/post'
 import { debounce } from 'es-toolkit'
 import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
-import { t } from '@/i18n/translate'
+import { formatLocalDateTime, t } from '@/i18n/translate'
 import { documentRepo, getLoadedDocuments, store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 import { useEditorStore } from '@/stores/editor'
@@ -15,7 +15,7 @@ function createDefaultPost(): Post {
     title: t('store.post.defaultTitle'),
     content: DEFAULT_CONTENT,
     history: [
-      { datetime: new Date().toLocaleString(`zh-cn`), content: DEFAULT_CONTENT },
+      { datetime: formatLocalDateTime(), content: DEFAULT_CONTENT },
     ],
     createDatetime: new Date(),
     updateDatetime: new Date(),
@@ -165,7 +165,7 @@ export const usePostStore = defineStore(`post`, () => {
       title,
       content: `# ${title}`,
       history: [
-        { datetime: new Date().toLocaleString(`zh-cn`), content: `# ${title}` },
+        { datetime: formatLocalDateTime(), content: `# ${title}` },
       ],
       createDatetime: new Date(),
       updateDatetime: new Date(),

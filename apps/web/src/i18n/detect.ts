@@ -41,5 +41,13 @@ export function detectInitialLocale(): AppLocale {
   if (fromStorage && SUPPORTED_LOCALES.includes(fromStorage))
     return fromStorage
 
+  if (typeof window !== `undefined`) {
+    const bootLocale = normalizeLocale(
+      (window as Window & { __MD_BOOT_LOCALE__?: string }).__MD_BOOT_LOCALE__,
+    )
+    if (bootLocale && SUPPORTED_LOCALES.includes(bootLocale))
+      return bootLocale
+  }
+
   return detectFromNavigator() ?? DEFAULT_LOCALE
 }

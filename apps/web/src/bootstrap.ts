@@ -4,7 +4,7 @@ import { createApp } from 'vue'
 import { detectInitialLocale } from '@/i18n/detect'
 import { setAppI18n, setupI18n } from '@/i18n/index'
 import { initStorage } from '@/storage'
-import { initLocaleStore } from '@/stores/locale'
+import { useLocaleStore } from '@/stores/locale'
 
 import AppRoot from './App.vue'
 import { scheduleInitialLoaderFallback } from './lib/bootstrap/dismiss-initial-loader'
@@ -21,7 +21,7 @@ export async function bootstrap(): Promise<void> {
   const app = createApp(AppRoot)
   app.use(i18n)
   app.use(createPinia())
-  initLocaleStore()
+  useLocaleStore()
   app.mount(`#app`)
   scheduleInitialLoaderFallback()
 }

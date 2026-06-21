@@ -1,5 +1,5 @@
 import type { AppLocale } from '@/i18n/types'
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY } from '@/i18n/constants'
+import { LOCALE_STORAGE_KEY } from '@/i18n/constants'
 import { detectInitialLocale } from '@/i18n/detect'
 import { getAppI18n } from '@/i18n/index'
 import enUS from '@/i18n/messages/en-US'
@@ -40,11 +40,6 @@ function setI18nLocale(value: AppLocale) {
     i18n.global.locale.value = value
 }
 
-function getI18nLocale(): AppLocale {
-  const current = getAppI18n().global.locale
-  return (typeof current === `string` ? current : current.value) as AppLocale
-}
-
 export const useLocaleStore = defineStore(`locale`, () => {
   const locale = store.reactive<AppLocale>(LOCALE_STORAGE_KEY, detectInitialLocale())
 
@@ -67,7 +62,3 @@ export const useLocaleStore = defineStore(`locale`, () => {
     setLocale,
   }
 })
-
-export function initLocaleStore() {
-  syncDocumentLocale(getI18nLocale() || DEFAULT_LOCALE)
-}

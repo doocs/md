@@ -12,6 +12,7 @@ import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useImageUploader } from '@/composables/useImageUploader'
 import { completeInitialPreviewBoot } from '@/composables/useInitialPreviewBoot'
 import { useSlashCommand } from '@/composables/useSlashCommand'
+import { formatLocalDateTime } from '@/i18n/translate'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { fileUpload } from '@/services/upload'
 import { store } from '@/storage'
@@ -616,7 +617,7 @@ onMounted(() => {
     currentPost.history ??= []
     currentPost.history.unshift({
       content: currentPost.content,
-      datetime: new Date().toLocaleString(`zh-CN`),
+      datetime: formatLocalDateTime(),
     })
 
     currentPost.history.length = Math.min(currentPost.history.length, 10)
