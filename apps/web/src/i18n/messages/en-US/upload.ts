@@ -12,12 +12,22 @@ export default {
   configureHostFirst: `Please configure {host} image host first`,
   hosts: {
     default: `Default`,
+    github: `GitHub`,
     aliOSS: `Alibaba Cloud`,
     txCOS: `Tencent Cloud`,
     qiniu: `Qiniu`,
+    minio: `MinIO`,
+    s3: `S3`,
     mp: `WeChat Official Account`,
+    r2: `Cloudflare R2`,
     upyun: `Upyun`,
+    telegram: `Telegram`,
+    cloudinary: `Cloudinary`,
     formCustom: `Custom code`,
+  },
+  errors: {
+    invalidFormat: `Please upload GIF/JPG/JPEG/PNG/WEBP images only`,
+    tooLarge: `Image size cannot exceed {maxSize} MB (WeChat limit)`,
   },
   labels: {
     githubRepo: `GitHub repository`,

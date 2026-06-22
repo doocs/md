@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import type { GenericObject } from 'vee-validate'
 import { UploadCloud } from '@lucide/vue'
-import { checkImage } from '@md/shared/utils/basicHelpers'
 import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
 import * as yup from 'yup'
+import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
+import { validateImageFile } from '@/lib/upload/validate-image'
 import { store } from '@/storage'
 import { useUIStore } from '@/stores/ui'
 
@@ -292,58 +293,7 @@ async function cloudinarySubmit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-const options = computed(() => [
-  {
-    value: `default`,
-    label: t(`upload.hosts.default`),
-  },
-  {
-    value: `github`,
-    label: `GitHub`,
-  },
-  {
-    value: `aliOSS`,
-    label: t(`upload.hosts.aliOSS`),
-  },
-  {
-    value: `txCOS`,
-    label: t(`upload.hosts.txCOS`),
-  },
-  {
-    value: `qiniu`,
-    label: t(`upload.hosts.qiniu`),
-  },
-  {
-    value: `minio`,
-    label: `MinIO`,
-  },
-  {
-    value: `s3`,
-    label: `S3`,
-  },
-  {
-    value: `mp`,
-    label: t(`upload.hosts.mp`),
-  },
-  {
-    value: `r2`,
-    label: `Cloudflare R2`,
-  },
-  {
-    value: `upyun`,
-    label: t(`upload.hosts.upyun`),
-  },
-  { value: `telegram`, label: `Telegram` },
-  {
-    value: `cloudinary`,
-    label: `Cloudinary`,
-  },
-
-  {
-    value: `formCustom`,
-    label: t(`upload.hosts.formCustom`),
-  },
-])
+const uploadHostOptions = useLocalizedUploadHostOptions()
 
 const imgHost = store.reactive(`imgHost`, `default`)
 const useCompression = store.reactive(`useCompression`, false)
@@ -358,19 +308,18 @@ async function changeCompression() {
 }
 
 async function beforeImageUpload(file: File) {
-  // check image
-  const checkResult = checkImage(file)
+  const checkResult = validateImageFile(file, t)
   if (!checkResult.ok) {
     toast.error(checkResult.msg)
     return false
   }
-  // check image host
-  const imgHostValue = imgHost.value || `default`
 
+  const imgHostValue = imgHost.value || `default`
   const config = await store.get(`${imgHostValue}Config`)
   const isValidHost = imgHostValue === `default` || config
   if (!isValidHost) {
-    toast.error(t(`upload.configureHostFirst`, { host: imgHostValue }))
+    const hostLabel = uploadHostOptions.value.find(option => option.value === imgHostValue)?.label ?? imgHostValue
+    toast.error(t(`upload.configureHostFirst`, { host: hostLabel }))
     return false
   }
   return true
@@ -444,7 +393,7 @@ function onTabScroll(e: WheelEvent) {
             {{ t('upload.selectUpload') }}
           </TabsTrigger>
           <TabsTrigger
-            v-for="item in options.filter(item => item.value !== 'default')"
+            v-for="item in uploadHostOptions.filter(item => item.value !== 'default')"
             :key="item.value"
             :value="item.value"
             class="text-xs md:text-sm whitespace-nowrap"
@@ -460,7 +409,7 @@ function onTabScroll(e: WheelEvent) {
             </SelectTrigger>
             <SelectContent class="max-h-64 md:max-h-96">
               <SelectItem
-                v-for="item in options"
+                v-for="item in uploadHostOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"

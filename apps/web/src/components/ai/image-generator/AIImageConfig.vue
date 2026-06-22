@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
-import { imageServiceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -13,6 +12,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -26,10 +26,12 @@ const { t } = useI18n()
 /** UI 状态 */
 const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
+const localizedAIServices = useLocalizedAIServiceOptions()
 
 /** 当前服务信息 */
 const currentService = computed(
-  () => imageServiceOptions.find(s => s.value === type.value) || imageServiceOptions[0],
+  () => localizedAIServices.value.imageServiceOptions.find(s => s.value === type.value)
+    || localizedAIServices.value.imageServiceOptions[0],
 )
 
 /* -------------------------- 监听 -------------------------- */
@@ -151,7 +153,7 @@ const styleOptions = computed(() => [
         </SelectTrigger>
         <SelectContent>
           <SelectItem
-            v-for="option in imageServiceOptions"
+            v-for="option in localizedAIServices.imageServiceOptions"
             :key="option.value"
             :value="option.value"
           >
