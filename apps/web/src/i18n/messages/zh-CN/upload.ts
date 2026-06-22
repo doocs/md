@@ -12,12 +12,22 @@ export default {
   configureHostFirst: `请先配置 {host} 图床参数`,
   hosts: {
     default: `默认`,
+    github: `GitHub`,
     aliOSS: `阿里云`,
     txCOS: `腾讯云`,
     qiniu: `七牛云`,
+    minio: `MinIO`,
+    s3: `S3`,
     mp: `公众号图床`,
+    r2: `Cloudflare R2`,
     upyun: `又拍云`,
+    telegram: `Telegram`,
+    cloudinary: `Cloudinary`,
     formCustom: `自定义代码`,
+  },
+  errors: {
+    invalidFormat: `请上传 GIF/JPG/JPEG/PNG/WEBP 格式的图片`,
+    tooLarge: `由于公众号限制，图片大小不能超过 {maxSize}M`,
   },
   labels: {
     githubRepo: `GitHub 仓库`,

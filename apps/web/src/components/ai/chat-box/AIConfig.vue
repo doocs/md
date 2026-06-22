@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
-import { serviceOptions } from '@md/shared/configs'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
 import { PasswordInput } from '@/components/ui/password-input'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIConfigStore from '@/stores/aiConfig'
 
 /* -------------------------- 基础数据 -------------------------- */
@@ -17,10 +17,12 @@ const { t } = useI18n()
 /** UI 状态 */
 const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
+const localizedAIServices = useLocalizedAIServiceOptions()
 
 /** 当前服务信息 */
 const currentService = computed(
-  () => serviceOptions.find(s => s.value === type.value) || serviceOptions[0],
+  () => localizedAIServices.value.serviceOptions.find(s => s.value === type.value)
+    || localizedAIServices.value.serviceOptions[0],
 )
 
 /* -------------------------- 监听 -------------------------- */
@@ -115,7 +117,7 @@ async function testConnection() {
         </SelectTrigger>
         <SelectContent>
           <SelectItem
-            v-for="service in serviceOptions"
+            v-for="service in localizedAIServices.serviceOptions"
             :key="service.value"
             :value="service.value"
           >
