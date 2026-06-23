@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Compartment, EditorState } from '@codemirror/state'
-import { EditorView, placeholder } from '@codemirror/view'
+import { Compartment, EditorState, Prec } from '@codemirror/state'
+import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { markdownSetup, theme } from '@md/shared/editor'
 import { toBase64 } from '@md/shared/utils/fileHelpers'
 import imageCompression from 'browser-image-compression'
@@ -13,6 +13,7 @@ import { completeInitialPreviewBoot } from '@/composables/useInitialPreviewBoot'
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { formatLocalDateTime } from '@/i18n/translate'
+import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { validateImageFile } from '@/lib/upload/validate-image'
 import { fileUpload } from '@/services/upload'
@@ -455,7 +456,12 @@ function createFormTextArea(dom: HTMLDivElement) {
       markdownSetup({
         onSearch: openSearchWithSelection,
         onReplace: openReplaceWithSelection,
+        onGoToLine: () => uiStore.requestGoToLine(),
       }),
+      Prec.high(keymap.of([
+        { key: `Mod-Alt-ArrowUp`, run: view => jumpToAdjacentHeading(view, `prev`) },
+        { key: `Mod-Alt-ArrowDown`, run: view => jumpToAdjacentHeading(view, `next`) },
+      ])),
       placeholderCompartment.of(editorPlaceholder()),
       themeCompartment.of(theme(isDark.value)),
       EditorView.updateListener.of((update) => {

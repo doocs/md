@@ -37,6 +37,7 @@ function insertTabAtCursor(view: EditorView): boolean {
 interface MarkdownKeymapOptions {
   onSearch?: (view: EditorView) => void
   onReplace?: (view: EditorView) => void
+  onGoToLine?: (view: EditorView) => void
   placeholder?: string
 }
 
@@ -47,7 +48,7 @@ interface MarkdownKeymapOptions {
  * @param options.onSearch - 搜索回调（可选）
  */
 export function markdownKeymap(options?: MarkdownKeymapOptions) {
-  const { onSearch, onReplace } = options || {}
+  const { onSearch, onReplace, onGoToLine } = options || {}
 
   return keymap.of([
     // Tab 键在光标位置插入缩进
@@ -83,8 +84,9 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
     // 格式化
     { key: `Shift-Alt-f`, run: (view: EditorView) => { formatMarkdown(view); return true } },
 
-    // 阻止 Mod-g（避免触发 CodeMirror 内置搜索）
-    { key: `Mod-g`, run: () => true },
+    ...(onGoToLine
+      ? [{ key: `Mod-g`, run: (view: EditorView) => { onGoToLine(view); return true } }]
+      : [{ key: `Mod-g`, run: () => true }]),
   ])
 }
 
