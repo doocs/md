@@ -5,12 +5,15 @@ export interface ShareHtmlSnapshot {
 
 export type SharePasswordMode = `none` | `custom` | `auto`
 
+export type ShareExpiresMode = `1d` | `7d` | `30d` | `never`
+
 export interface CreateShareRequest {
   postId: string
   title?: string
   htmlSnapshot: ShareHtmlSnapshot
   passwordMode?: SharePasswordMode
   password?: string
+  expiresMode?: ShareExpiresMode
 }
 
 export interface CreateShareResponse {

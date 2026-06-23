@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Component } from 'vue'
-import type { ShareListItem, SharePasswordMode } from '@/services/share/types'
+import type { ShareExpiresMode, ShareListItem, SharePasswordMode } from '@/services/share/types'
 import { Check, Clock, Copy, ExternalLink, Eye, Globe, Inbox, KeyRound, Loader2, LogIn, RefreshCw, Share2, Sparkles, Trash2 } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed, ref, watch } from 'vue'
@@ -35,6 +35,11 @@ interface PasswordOption {
   icon: Component
 }
 
+interface ExpiresOption {
+  value: ShareExpiresMode
+  label: string
+}
+
 const { t } = useI18n()
 const authStore = useAuthStore()
 const postStore = usePostStore()
@@ -63,6 +68,13 @@ const passwordOptions = computed<PasswordOption[]>(() => [
   },
 ])
 
+const expiresOptions = computed<ExpiresOption[]>(() => [
+  { value: `1d`, label: t(`share.expiresMode.1d`) },
+  { value: `7d`, label: t(`share.expiresMode.7d`) },
+  { value: `30d`, label: t(`share.expiresMode.30d`) },
+  { value: `never`, label: t(`share.expiresMode.never`) },
+])
+
 const { isLoggedIn, user } = storeToRefs(authStore)
 const { shareDialogInitialTab } = storeToRefs(uiStore)
 const { locale } = storeToRefs(localeStore)
@@ -85,6 +97,7 @@ const dialogOpen = computed({
 
 const shareClient = new ShareClient(() => authStore.token)
 const passwordMode = ref<SharePasswordMode>(`none`)
+const expiresMode = ref<ShareExpiresMode>(`1d`)
 const customPassword = ref(``)
 const isSubmitting = ref(false)
 const submitStage = ref(``)
@@ -97,6 +110,8 @@ const copiedLink = ref(false)
 const copiedPassword = ref(false)
 
 const expiresLabel = computed(() => {
+  if (expiresAt.value == null && shareUrl.value)
+    return t(`share.permanent`)
   if (!expiresAt.value)
     return ``
   return t(`share.expiresAt`, { date: new Date(expiresAt.value).toLocaleString(locale.value) })
@@ -110,6 +125,7 @@ const canSubmit = computed(() => {
 
 function resetForm() {
   passwordMode.value = `none`
+  expiresMode.value = `1d`
   customPassword.value = ``
   shareUrl.value = ``
   sharePassword.value = ``
@@ -238,6 +254,7 @@ async function createShare() {
       htmlSnapshot,
       passwordMode: passwordMode.value,
       ...(passwordMode.value === `custom` ? { password: customPassword.value.trim() } : {}),
+      ...(isProUser.value ? { expiresMode: expiresMode.value } : {}),
     })
     shareUrl.value = result.url
     expiresAt.value = result.expiresAt
@@ -358,7 +375,10 @@ watch(isProUser, (pro) => {
         <template v-if="!shareUrl">
           <div class="space-y-4 px-4 py-4 sm:px-6">
             <div class="flex flex-wrap gap-2">
-              <span class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground">
+              <span
+                v-if="!isProUser"
+                class="inline-flex items-center gap-1 rounded-md border bg-background px-2 py-1 text-xs text-muted-foreground"
+              >
                 <Clock class="size-3.5" />
                 {{ t('share.expiresIn1Day') }}
               </span>
@@ -368,6 +388,24 @@ watch(isProUser, (pro) => {
               >
                 {{ t('share.limitPerDay') }}
               </span>
+            </div>
+
+            <div v-if="isProUser" class="space-y-2">
+              <Label class="text-sm">{{ t('share.expiresLabel') }}</Label>
+              <div class="flex flex-wrap gap-2">
+                <button
+                  v-for="option in expiresOptions"
+                  :key="option.value"
+                  type="button"
+                  class="rounded-md border px-3 py-1.5 text-sm transition-colors"
+                  :class="expiresMode === option.value
+                    ? 'border-primary bg-primary/5 font-medium text-primary ring-1 ring-primary/20'
+                    : 'text-muted-foreground hover:bg-muted/50'"
+                  @click="expiresMode = option.value"
+                >
+                  {{ option.label }}
+                </button>
+              </div>
             </div>
 
             <div class="space-y-2">
