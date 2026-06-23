@@ -111,8 +111,13 @@ export default {
       general: `General`,
       edit: `Edit`,
       format: `Format`,
+      navigation: `Navigation`,
     },
     slashCommand: `Slash command`,
     closeSearchPanel: `Close search panel`,
+    goToLine: `Go to line`,
+    previousHeading: `Previous heading`,
+    nextHeading: `Next heading`,
+    outlineNavigate: `Outline panel navigation`,
   },
 }

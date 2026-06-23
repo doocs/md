@@ -193,6 +193,13 @@ export const useUIStore = defineStore(`ui`, () => {
     searchTabRequest.value = null
   }
 
+  // 跳转行号（Footer 监听并打开输入框）
+  const goToLineRequest = ref(0)
+
+  function requestGoToLine() {
+    goToLineRequest.value++
+  }
+
   // ==================== 工具函数 ====================
   // 处理窗口大小变化
   let splitCollapsedByResize = false
@@ -292,6 +299,8 @@ export const useUIStore = defineStore(`ui`, () => {
     searchTabRequest,
     openSearchTab,
     clearSearchTabRequest,
+    goToLineRequest,
+    requestGoToLine,
 
     // ==================== Actions ====================
     toggleDark,

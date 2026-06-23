@@ -35,7 +35,16 @@ export function buildKeyboardShortcutCategories(): ShortcutCategory[] {
         { label: t(`menu.paste`), keys: mod(`V`) },
         { label: t(`menu.find`), keys: mod(`F`) },
         { label: t(`menu.replace`), keys: mod(`H`) },
+        { label: t(`keyboard.goToLine`), keys: mod(`G`) },
         { label: t(`menu.formatContent`), keys: [altSign, shiftSign, `F`] },
+      ],
+    },
+    {
+      title: t(`keyboard.category.navigation`),
+      items: [
+        { label: t(`keyboard.previousHeading`), keys: mod(altSign, `↑`) },
+        { label: t(`keyboard.nextHeading`), keys: mod(altSign, `↓`) },
+        { label: t(`keyboard.outlineNavigate`), keys: [`↑`, `↓`, `Enter`, `Esc`] },
       ],
     },
     {

@@ -29,7 +29,7 @@
     "type-check": "pnpm type-check:web && pnpm type-check:packages",
     "type-check:web": "pnpm --filter @md/web exec vue-tsc --noEmit",
     "type-check:packages": "pnpm --filter @md/core --filter @md/shared --filter @md/api run type-check",
-    "test": "pnpm --filter @md/core test",
+    "test": "pnpm --filter @md/core test && pnpm --filter @md/web test",
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector",
     "utools:package": "node ./scripts/package-utools.mjs",

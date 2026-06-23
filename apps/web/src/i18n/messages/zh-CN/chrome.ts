@@ -111,8 +111,13 @@ export default {
       general: `通用`,
       edit: `编辑`,
       format: `格式`,
+      navigation: `导航`,
     },
     slashCommand: `斜杠命令`,
     closeSearchPanel: `关闭搜索面板`,
+    goToLine: `跳转到行`,
+    previousHeading: `上一个标题`,
+    nextHeading: `下一个标题`,
+    outlineNavigate: `大纲面板导航`,
   },
 }

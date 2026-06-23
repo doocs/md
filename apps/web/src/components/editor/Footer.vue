@@ -16,6 +16,12 @@ import {
 } from '@/components/ui/tooltip'
 import { useSyncFooterMeta } from '@/composables/useSyncStatusMeta'
 import { formatRelativeTime } from '@/lib/format/relative-time'
+import {
+  clampGoToLineValue,
+  findOutlineFocusIndex,
+  jumpToLine,
+  moveOutlineFocusIndex,
+} from '@/lib/markdown/headingNavigation'
 import { computeHeadingBreadcrumbs, extractMarkdownHeadings } from '@/lib/markdown/headings'
 import { isAccountUiEnabled } from '@/services/account/config'
 import { isShareUiEnabled } from '@/services/share/client'
@@ -162,13 +168,8 @@ function goToLine() {
   const view = editor.value
   if (!view)
     return
-  const target = Math.max(1, Math.min(Number.parseInt(goToLineInput.value) || 1, totalLines.value))
-  const line = view.state.doc.line(target)
-  view.dispatch({
-    selection: { anchor: line.from },
-    scrollIntoView: true,
-  })
-  view.focus()
+  const target = clampGoToLineValue(goToLineInput.value, totalLines.value)
+  jumpToLine(view as EditorView, target)
   isGoToLineActive.value = false
   updateCursorInfo(view as EditorView, { rebuildHeadings: true })
 }
@@ -186,6 +187,7 @@ const breadcrumbs = ref<MarkdownHeading[]>([])
 const allHeadings = ref<MarkdownHeading[]>([])
 const isOutlineOpen = ref(false)
 const outlineScrollRef = ref<HTMLElement | null>(null)
+const outlineFocusIndex = ref(-1)
 
 function updateCursorInfo(view: EditorView, options: { rebuildHeadings?: boolean } = {}) {
   const state = view.state
@@ -255,8 +257,11 @@ function jumpToHeadingAndClose(line: number) {
 
 watch(isOutlineOpen, (open) => {
   if (open) {
+    syncOutlineFocusIndex()
     nextTick(() => {
-      const el = outlineScrollRef.value?.querySelector(`[data-active="true"]`)
+      outlineScrollRef.value?.focus()
+      const el = outlineScrollRef.value?.querySelector(`[data-outline-index="${outlineFocusIndex.value}"]`)
+        ?? outlineScrollRef.value?.querySelector(`[data-active="true"]`)
       el?.scrollIntoView({ block: `nearest` })
     })
   }
@@ -266,13 +271,59 @@ function jumpToHeading(line: number) {
   const view = editor.value
   if (!view)
     return
-  const target = view.state.doc.line(line)
-  view.dispatch({
-    selection: { anchor: target.from },
-    scrollIntoView: true,
-  })
-  view.focus()
+  jumpToLine(view as EditorView, line)
   updateCursorInfo(view as EditorView)
+}
+
+watch(() => uiStore.goToLineRequest, () => {
+  if (isGoToLineActive.value)
+    return
+  openGoToLine()
+})
+
+function syncOutlineFocusIndex() {
+  outlineFocusIndex.value = findOutlineFocusIndex(allHeadings.value, activeHeadingLine.value)
+}
+
+function scrollOutlineFocusIntoView() {
+  nextTick(() => {
+    const container = outlineScrollRef.value
+    if (!container || outlineFocusIndex.value < 0)
+      return
+    const el = container.querySelector(`[data-outline-index="${outlineFocusIndex.value}"]`)
+    el?.scrollIntoView({ block: `nearest` })
+  })
+}
+
+function handleOutlineKeydown(event: KeyboardEvent) {
+  if (allHeadings.value.length === 0)
+    return
+
+  const key = event.key
+  if (key === `Escape`) {
+    isOutlineOpen.value = false
+    editor.value?.focus()
+    event.preventDefault()
+    return
+  }
+
+  if (key === `Enter`) {
+    const item = allHeadings.value[outlineFocusIndex.value]
+    if (item)
+      jumpToHeadingAndClose(item.line)
+    event.preventDefault()
+    return
+  }
+
+  if (key === `ArrowUp` || key === `ArrowDown` || key === `Home` || key === `End`) {
+    outlineFocusIndex.value = moveOutlineFocusIndex(
+      allHeadings.value,
+      outlineFocusIndex.value,
+      key,
+    )
+    scrollOutlineFocusIntoView()
+    event.preventDefault()
+  }
 }
 
 // 上次保存时间
@@ -454,19 +505,33 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             </TooltipContent>
           </Tooltip>
         </PopoverTriggerPrimitive>
-        <PopoverContent side="top" :side-offset="8" align="center" class="w-72 p-0">
+        <PopoverContent
+          side="top"
+          :side-offset="8"
+          align="center"
+          class="w-72 p-0"
+        >
           <div class="flex items-center justify-between border-b px-3 py-2">
             <span class="text-xs font-medium tracking-wide text-muted-foreground">{{ t('footer.outline') }}</span>
             <span class="text-[10px] tabular-nums text-muted-foreground/50">{{ t('footer.headingCount', { count: allHeadings.length }) }}</span>
           </div>
-          <div ref="outlineScrollRef" class="max-h-72 overflow-y-auto overflow-x-hidden py-1">
+          <div
+            ref="outlineScrollRef"
+            tabindex="-1"
+            class="max-h-72 overflow-y-auto overflow-x-hidden py-1 outline-none"
+            @keydown.stop="handleOutlineKeydown"
+          >
             <template v-if="allHeadings.length > 0">
               <button
-                v-for="item in allHeadings"
+                v-for="(item, index) in allHeadings"
                 :key="item.line"
+                :data-outline-index="index"
                 :data-active="activeHeadingLine === item.line"
                 class="group flex w-full items-start px-2 py-1 text-left text-[13px] transition-colors hover:bg-accent"
-                :class="activeHeadingLine === item.line ? 'bg-accent/60' : ''"
+                :class="[
+                  activeHeadingLine === item.line ? 'bg-accent/60' : '',
+                  outlineFocusIndex === index ? 'bg-accent/40 ring-1 ring-primary/30' : '',
+                ]"
                 :style="{ paddingLeft: `${8 + (item.level - 1) * 16}px` }"
                 @click="jumpToHeadingAndClose(item.line)"
               >
