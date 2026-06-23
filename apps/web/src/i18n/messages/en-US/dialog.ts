@@ -9,6 +9,13 @@ export default {
     tabManage: `My Shares`,
     expiresIn1Day: `Expires in 1 day`,
     limitPerDay: `2 per day`,
+    expiresLabel: `Link validity`,
+    expiresMode: {
+      '1d': `1 day`,
+      '7d': `7 days`,
+      '30d': `30 days`,
+      'never': `Never expires`,
+    },
     passwordLabel: `Access password`,
     passwordMode: {
       public: {

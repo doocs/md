@@ -9,6 +9,13 @@ export default {
     tabManage: `我的分享`,
     expiresIn1Day: `1 天后过期`,
     limitPerDay: `2 次/天`,
+    expiresLabel: `链接有效期`,
+    expiresMode: {
+      '1d': `1 天`,
+      '7d': `7 天`,
+      '30d': `30 天`,
+      'never': `永不过期`,
+    },
     passwordLabel: `访问密码`,
     passwordMode: {
       public: {

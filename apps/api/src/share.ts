@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import type { CreateShareRequest, ShareHtmlSnapshot } from './share-types'
+import type { CreateShareRequest, ShareExpiresMode, ShareHtmlSnapshot } from './share-types'
 import type { Env } from './types'
 import { getCookie, setCookie } from 'hono/cookie'
 import { getUserById } from './db'
@@ -38,6 +38,12 @@ import { sanitizeHtmlSnapshot, sanitizeStylesSnapshot, SHARE_PAGE_CSP } from './
 const MAX_SNAPSHOT_BYTES = 2 * 1024 * 1024
 const MAX_POST_ID_LENGTH = 64
 const SHARE_EXPIRE_MS = 24 * 60 * 60 * 1000
+const SHARE_EXPIRE_MS_BY_MODE: Record<ShareExpiresMode, number | null> = {
+  '1d': SHARE_EXPIRE_MS,
+  '7d': 7 * SHARE_EXPIRE_MS,
+  '30d': 30 * SHARE_EXPIRE_MS,
+  'never': null,
+}
 const UNLOCK_ATTEMPT_LIMIT = 20
 
 async function deriveShareId(userId: string, postId: string): Promise<string> {
@@ -80,6 +86,23 @@ function parsePostId(value: unknown): string | null {
   if (!postId || postId.length > MAX_POST_ID_LENGTH)
     return null
   return postId
+}
+
+function parseShareExpiresMode(value: unknown): ShareExpiresMode | null {
+  if (value === `1d` || value === `7d` || value === `30d` || value === `never`)
+    return value
+  return null
+}
+
+function resolveShareExpiresAt(
+  body: CreateShareRequest,
+  plan: ReturnType<typeof getEffectivePlan>,
+  now: number,
+): number | null {
+  const requested = parseShareExpiresMode(body.expiresMode) ?? `1d`
+  const mode: ShareExpiresMode = plan === `pro` ? requested : `1d`
+  const delta = SHARE_EXPIRE_MS_BY_MODE[mode]
+  return delta == null ? null : now + delta
 }
 
 function buildShareUrl(c: Context<{ Bindings: Env, Variables: { userId: string } }>, id: string): string {
@@ -286,7 +309,7 @@ export async function createShareHandler(c: Context<{ Bindings: Env, Variables: 
   const existing = await getShareByUserAndPostId(c.env.DB, userId, postId)
 
   const now = Date.now()
-  const expiresAt = now + SHARE_EXPIRE_MS
+  const expiresAt = resolveShareExpiresAt(body, plan, now)
   const title = typeof body.title === `string` ? body.title.trim().slice(0, 200) : ``
   const id = existing?.id ?? await deriveShareId(userId, postId)
 
