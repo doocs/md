@@ -1,4 +1,5 @@
 import type { Context } from 'hono'
+import type { ShareFooterAuthor } from './share-page'
 import type { CreateShareRequest, ShareExpiresMode, ShareHtmlSnapshot } from './share-types'
 import type { Env } from './types'
 import { getCookie, setCookie } from 'hono/cookie'
@@ -21,7 +22,7 @@ import {
   updateShareContent,
 } from './share-db'
 import { buildShareGateHtml } from './share-gate-page'
-import { buildSharePageHtml, injectShareViewCount } from './share-page'
+import { buildSharePageHtml, injectShareFooter } from './share-page'
 import {
   generateSharePassword,
   hashSharePassword,
@@ -359,6 +360,16 @@ export async function createShareHandler(c: Context<{ Bindings: Env, Variables: 
   })
 }
 
+async function resolveShareAuthor(db: D1Database, userId: string): Promise<ShareFooterAuthor> {
+  const user = await getUserById(db, userId)
+  if (!user)
+    return { displayName: `未知用户` }
+
+  return {
+    displayName: user.name?.trim() || user.login,
+  }
+}
+
 export async function viewShareHandler(c: Context<{ Bindings: Env }>) {
   const id = c.req.param(`shareId`)
   if (!id || !SHARE_ID_RE.test(id))
@@ -376,13 +387,17 @@ export async function viewShareHandler(c: Context<{ Bindings: Env }>) {
     if (!unlocked) {
       const error = c.req.query(`error`)
       const gateError = error === `rate_limited` || error === `invalid` ? error : undefined
-      return shareHtml(c, buildShareGateHtml(id, share.title, { error: gateError }))
+      const author = await resolveShareAuthor(c.env.DB, share.user_id)
+      return shareHtml(c, buildShareGateHtml(id, share.title, { error: gateError, author }))
     }
   }
 
-  const viewCount = await incrementShareViewCount(c.env.DB, id)
+  const [viewCount, author] = await Promise.all([
+    incrementShareViewCount(c.env.DB, id),
+    resolveShareAuthor(c.env.DB, share.user_id),
+  ])
 
-  return shareHtml(c, injectShareViewCount(share.html, viewCount))
+  return shareHtml(c, injectShareFooter(share.html, author, viewCount))
 }
 
 export async function unlockShareHandler(c: Context<{ Bindings: Env }>) {

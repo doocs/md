@@ -10,8 +10,11 @@ function escapeHtml(text: string): string {
 }
 
 export const SHARE_VIEW_COUNT_PLACEHOLDER = `{{SHARE_VIEW_COUNT}}`
+export const SHARE_AUTHOR_PLACEHOLDER = `{{SHARE_AUTHOR}}`
 
-const SHARE_DOOCS_URL = `https://github.com/doocs/md`
+export interface ShareFooterAuthor {
+  displayName: string
+}
 
 const SHARE_FOOTER_STYLES = `
     .share-footer {
@@ -33,9 +36,8 @@ const SHARE_FOOTER_STYLES = `
       line-height: 1.6;
       color: #888;
     }
-    .share-footer-copy a {
+    .share-footer-author {
       color: #555;
-      text-decoration: none;
       font-weight: 500;
     }
     .share-footer-divider {
@@ -49,18 +51,27 @@ const SHARE_FOOTER_STYLES = `
       letter-spacing: 0.02em;
     }`
 
-function buildShareFooterHtml(viewCount: number | string): string {
+export function buildShareAuthorHtml(author: ShareFooterAuthor): string {
+  const safeName = escapeHtml(author.displayName)
+  return `由 ${safeName} 分享`
+}
+
+function buildShareFooterHtml(authorHtml: string, viewCount: number | string): string {
   const count = typeof viewCount === `string`
     ? viewCount
     : String(Math.max(0, Math.floor(viewCount)))
 
   return `<div class="share-footer">
       <p class="share-footer-inner">
-        <span class="share-footer-copy">Copyright © <a href="${SHARE_DOOCS_URL}" target="_blank" rel="noopener noreferrer">Doocs</a>. All rights reserved.</span>
+        <span class="share-footer-author">${authorHtml}</span>
         <span class="share-footer-divider" aria-hidden="true">·</span>
         <span class="share-footer-meta">阅读 ${count} 次</span>
       </p>
     </div>`
+}
+
+function buildShareFooterWithPlaceholders(): string {
+  return buildShareFooterHtml(SHARE_AUTHOR_PLACEHOLDER, SHARE_VIEW_COUNT_PLACEHOLDER)
 }
 
 export function buildSharePageHtml(
@@ -107,7 +118,7 @@ export function buildSharePageHtml(
     <div class="share-content">
     ${bodyHtml}
     </div>
-    ${buildShareFooterHtml(SHARE_VIEW_COUNT_PLACEHOLDER)}
+    ${buildShareFooterWithPlaceholders()}
   </div>
 </body>
 </html>`
@@ -115,23 +126,34 @@ export function buildSharePageHtml(
 
 const LEGACY_FOOTER_RE = /<div class="share-footer">[\s\S]*?<\/div>/
 
-/** 将快照 HTML 中的阅读数占位符替换为当前值（兼容旧版 footer） */
-export function injectShareViewCount(html: string, viewCount: number): string {
-  const safeCount = Math.max(0, Math.floor(viewCount))
-  const countText = String(safeCount)
+function ensureShareFooterStyles(html: string): string {
+  if (html.includes(`.share-footer-author {`))
+    return html
+  return html.replace(`</style>`, `${SHARE_FOOTER_STYLES}\n  </style>`)
+}
 
-  let next = html.includes(SHARE_VIEW_COUNT_PLACEHOLDER)
-    ? html.replaceAll(SHARE_VIEW_COUNT_PLACEHOLDER, countText)
-    : html
+/** 将快照 HTML 中的 footer 占位符替换为分享者与阅读数（兼容旧版 footer） */
+export function injectShareFooter(
+  html: string,
+  author: ShareFooterAuthor,
+  viewCount: number,
+): string {
+  const authorHtml = buildShareAuthorHtml(author)
+  const countText = String(Math.max(0, Math.floor(viewCount)))
 
-  if (next.includes(`share-footer-inner`))
-    return next
+  let next = html
+  if (next.includes(SHARE_AUTHOR_PLACEHOLDER))
+    next = next.replaceAll(SHARE_AUTHOR_PLACEHOLDER, authorHtml)
+  if (next.includes(SHARE_VIEW_COUNT_PLACEHOLDER))
+    next = next.replaceAll(SHARE_VIEW_COUNT_PLACEHOLDER, countText)
 
-  if (!LEGACY_FOOTER_RE.test(next))
-    return next
+  const needsLegacyFooter = next.includes(`share-footer-copy`)
+    || (next.includes(`share-footer`) && !next.includes(`share-footer-author`))
 
-  next = next.replace(LEGACY_FOOTER_RE, buildShareFooterHtml(safeCount))
-  if (!next.includes(`.share-footer-inner {`))
-    next = next.replace(`</style>`, `${SHARE_FOOTER_STYLES}\n  </style>`)
+  if (needsLegacyFooter && LEGACY_FOOTER_RE.test(next)) {
+    next = next.replace(LEGACY_FOOTER_RE, buildShareFooterHtml(authorHtml, countText))
+    next = ensureShareFooterStyles(next)
+  }
+
   return next
 }
