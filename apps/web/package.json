@@ -29,8 +29,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1073.0",
-    "@aws-sdk/s3-request-presigner": "^3.1073.0",
+    "@aws-sdk/client-s3": "^3.1074.0",
+    "@aws-sdk/s3-request-presigner": "^3.1074.0",
     "@lucide/vue": "^1.21.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -74,7 +74,7 @@
     "@types/spark-md5": "3.0.5",
     "@vitejs/plugin-vue": "^6.0.7",
     "cross-env": "^10.1.0",
-    "less": "^4.6.6",
+    "less": "^4.6.7",
     "linkedom": "^0.18.12",
     "npm-run-all2": "^9.0.2",
     "ohash": "^2.0.11",
