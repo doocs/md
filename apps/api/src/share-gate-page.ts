@@ -1,4 +1,6 @@
+import type { ShareFooterAuthor } from './share-page'
 import { sharePageFaviconLink } from './share-head'
+import { buildShareAuthorHtml } from './share-page'
 import { sharePageCspMeta } from './share-sanitize'
 
 function escapeHtml(text: string): string {
@@ -12,7 +14,7 @@ function escapeHtml(text: string): string {
 export function buildShareGateHtml(
   shareId: string,
   title: string,
-  options: { error?: `invalid` | `rate_limited` } = {},
+  options: { error?: `invalid` | `rate_limited`, author?: ShareFooterAuthor } = {},
 ): string {
   const safeTitle = escapeHtml(title || `Markdown 分享`)
   const errorMessage = options.error === `rate_limited`
@@ -107,7 +109,6 @@ export function buildShareGateHtml(
       font-size: 12px;
       color: #999;
     }
-    .footer a { color: inherit; }
   </style>
 </head>
 <body>
@@ -121,7 +122,7 @@ export function buildShareGateHtml(
       <button type="submit">查看内容</button>
     </form>
     <div class="footer">
-      由 <a href="https://md.doocs.org" target="_blank" rel="noopener noreferrer">doocs/md</a> 分享
+      ${options.author ? buildShareAuthorHtml(options.author) : `由 doocs/md 分享`}
     </div>
   </div>
 </body>
