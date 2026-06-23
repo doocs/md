@@ -1,4 +1,4 @@
-import { waitForPreviewReady } from '@/lib/preview/preview-ready'
+import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { getHtmlContent, getShareExportStyles } from '@/services/export'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -11,18 +11,24 @@ export async function captureShareSnapshot(): Promise<{ bodyHtml: string, styles
   const uiStore = useUIStore()
   const content = editorStore.getContent()
   const rerenderForLight = uiStore.isDark
+  const shareThemeMode = `light` as const
 
-  if (rerenderForLight) {
-    renderStore.render(content, { themeMode: `light` })
-    await waitForPreviewReady()
-  }
-  else {
-    await waitForPreviewReady()
-  }
+  if (rerenderForLight)
+    renderStore.render(content, { themeMode: shareThemeMode })
+
+  const ready = await waitForPreviewReady(undefined, { themeMode: shareThemeMode })
 
   try {
+    let bodyHtml = getHtmlContent({ themeMode: shareThemeMode })
+    if (!ready) {
+      const wrapper = document.createElement(`div`)
+      wrapper.innerHTML = bodyHtml
+      stripUnresolvedAsyncPlaceholders(wrapper)
+      bodyHtml = wrapper.innerHTML
+    }
+
     return {
-      bodyHtml: getHtmlContent(),
+      bodyHtml,
       stylesHtml: await getShareExportStyles(),
     }
   }

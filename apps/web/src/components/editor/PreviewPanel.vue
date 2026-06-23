@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
-import { highlightPendingBlocks, hljs } from '@md/core'
+import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
@@ -16,7 +16,7 @@ const renderStore = useRenderStore()
 const uiStore = useUIStore()
 
 const { output } = storeToRefs(renderStore)
-const { isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
+const { isDark, isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
 
 const effectivePreviewWidth = computed(() => {
   if (isMobile.value)
@@ -26,13 +26,25 @@ const effectivePreviewWidth = computed(() => {
 
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
-watch(output, () => {
-  nextTick(() => {
-    const outputElement = document.getElementById(`output`)
-    if (outputElement) {
-      highlightPendingBlocks(hljs, outputElement)
-    }
+function hydratePreviewDiagrams() {
+  const outputElement = document.getElementById(`output`)
+  if (!outputElement)
+    return
+
+  highlightPendingBlocks(hljs, outputElement)
+  hydratePendingInfographicDiagrams(outputElement, {
+    themeMode: isDark.value ? `dark` : `light`,
   })
+}
+
+watch(output, () => {
+  nextTick(hydratePreviewDiagrams)
+})
+
+watch(viewMode, () => {
+  if (viewMode.value === `edit`)
+    return
+  nextTick(hydratePreviewDiagrams)
 })
 
 let diagramOverlay: DiagramDownloadOverlay | null = null
@@ -54,6 +66,7 @@ onMounted(() => {
     const outputEl = document.getElementById(`output`)
     if (outputEl) {
       diagramOverlay = setupDiagramDownloadOverlay(outputEl)
+      hydratePreviewDiagrams()
     }
   })
 })

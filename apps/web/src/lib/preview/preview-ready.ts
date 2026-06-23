@@ -1,8 +1,19 @@
+import { hydratePendingInfographicDiagrams } from '@md/core'
+import { nextTick } from 'vue'
+
 const PREVIEW_READY_TIMEOUT_MS = 20_000
 const PREVIEW_POLL_INTERVAL_MS = 250
 
+export interface WaitForPreviewReadyOptions {
+  themeMode?: `light` | `dark`
+}
+
 function delay(ms: number) {
   return new Promise<void>(resolve => window.setTimeout(resolve, ms))
+}
+
+function resolveInfographicOptions(options?: WaitForPreviewReadyOptions) {
+  return options?.themeMode ? { themeMode: options.themeMode } : undefined
 }
 
 function isDiagramStillLoading(output: HTMLElement): boolean {
@@ -34,19 +45,32 @@ function isMathStillLoading(output: HTMLElement): boolean {
 }
 
 /** 等待预览区异步图表与公式渲染完成；超时返回 false */
-export async function waitForPreviewReady(timeoutMs = PREVIEW_READY_TIMEOUT_MS): Promise<boolean> {
+export async function waitForPreviewReady(
+  timeoutMs = PREVIEW_READY_TIMEOUT_MS,
+  options?: WaitForPreviewReadyOptions,
+): Promise<boolean> {
+  // 等待 Vue 将 renderStore.output 同步到 #output，避免检测到旧 DOM 后提前返回
+  await nextTick()
+  await nextTick()
+
   const output = document.getElementById(`output`)
   if (!output)
     return false
 
+  const infographicOptions = resolveInfographicOptions(options)
   const deadline = Date.now() + timeoutMs
+
   while (Date.now() < deadline) {
+    hydratePendingInfographicDiagrams(output, infographicOptions)
+
     if (!isDiagramStillLoading(output) && !isMathStillLoading(output))
       return true
+
     await delay(PREVIEW_POLL_INTERVAL_MS)
   }
 
-  return false
+  hydratePendingInfographicDiagrams(output, infographicOptions)
+  return !isDiagramStillLoading(output) && !isMathStillLoading(output)
 }
 
 /** 移除仍未渲染完成的占位内容，避免复制/导出时出现「正在加载…」文案 */
