@@ -163,9 +163,10 @@ After clone, create the link once:
 ./scripts/link-claude-skills.ps1
 ```
 
-| Skill        | When to use                                                                     |
-| ------------ | ------------------------------------------------------------------------------- |
-| `git-commit` | Commit changes with Conventional Commits (`/git-commit` or "commit my changes") |
-| `create-pr`  | Create a GitHub pull request (`/create-pr` or "open a PR")                      |
+| Skill        | When to use                                                                           |
+| ------------ | ------------------------------------------------------------------------------------- |
+| `git-commit` | Commit changes with Conventional Commits (`/git-commit` or "commit my changes")       |
+| `create-pr`  | Create a GitHub pull request (`/create-pr` or "open a PR")                            |
+| `wechat-svg` | WeChat SVG whitelist, bubbling-group interaction, paste compatibility (`/wechat-svg`) |
 
 Invoke manually: `/skill-name` in Cursor or Claude Code; OpenCode uses the `skill` tool.
