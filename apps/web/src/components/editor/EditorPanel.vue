@@ -680,7 +680,7 @@ defineExpose({
       <div
         id="editor"
         ref="editorRef"
-        class="codemirror-container"
+        class="codemirror-container mathjax-ignore"
       />
     </EditorContextMenu>
   </div>

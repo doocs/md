@@ -272,7 +272,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       const text = this.parser.parseInline(tokens)
       const isFigureImage = text.includes(`<figure`) && text.includes(`<img`)
       const isEmpty = text.trim() === ``
-      if (isFigureImage || isEmpty) {
+      const isKatexOnly = /^<section class="katex-block"[\s\S]*<\/section>\s*$/.test(text.trim())
+      if (isFigureImage || isEmpty || isKatexOnly) {
         return text
       }
       return styledContent(`p`, text)

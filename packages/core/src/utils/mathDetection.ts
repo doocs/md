@@ -1,7 +1,27 @@
 export const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1(?=[\s?!.,:？！。，：]|$)/
 export const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/
-export const blockRule = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
-const blockRuleDetect = /^\s{0,3}(\${1,2})[ \t]*\n[\s\S]+?\n\s{0,3}\1[ \t]*(?:\n|$)/m
+/** 块级公式：换行写法 `$$\n...\n$$` */
+export const blockRuleMultiline = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
+/** 块级公式：单行写法 `$$...$$`（独占一行） */
+export const blockRuleSingleLine = /^\s{0,3}(\${1,2})([^\n$]+)\1[ \t]*(?:\n|$)/
+
+export function matchBlockKatex(src: string): RegExpMatchArray | null {
+  return src.match(blockRuleMultiline) ?? src.match(blockRuleSingleLine)
+}
+
+/** @deprecated 使用 matchBlockKatex；保留导出以兼容旧引用 */
+export const blockRule = blockRuleMultiline
+
+function contentHasBlockKatex(content: string): boolean {
+  for (let i = 0; i <= content.length; i++) {
+    if (i > 0 && content[i - 1] !== '\n')
+      continue
+    if (matchBlockKatex(content.slice(i)))
+      return true
+  }
+  return false
+}
+
 export const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
 export const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 
@@ -49,7 +69,7 @@ export function findInlineKatexStart(src: string, nonStandard: boolean, ruleReg:
  * 默认 nonStandard=true，与 renderer-impl 配置一致。
  */
 export function contentHasMath(content: string, nonStandard = true): boolean {
-  if (blockRuleDetect.test(content))
+  if (contentHasBlockKatex(content))
     return true
   if (blockLatexAnywhere.test(content))
     return true
