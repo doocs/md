@@ -6,6 +6,7 @@
 import baseCSS from './base.css?raw'
 import defaultCSS from './default.css?raw'
 import graceCSS from './grace.css?raw'
+import plainCSS from './plain.css?raw'
 import simpleCSS from './simple.css?raw'
 
 /**
@@ -19,6 +20,7 @@ export const baseCSSContent = baseCSS
 export const themeMap = {
   default: defaultCSS,
   grace: graceCSS,
+  plain: plainCSS,
   simple: simpleCSS,
 } as const
 

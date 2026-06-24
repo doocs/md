@@ -1,0 +1,148 @@
+/**
+ * MD 朴素主题
+ * 参考墨滴（MdNice）默认排版：居中标题、两端对齐正文、少装饰
+ */
+
+/* ==================== 标题 ==================== */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  display: block;
+  margin: 2em 8px 1em;
+  padding: 0;
+  border: none;
+  border-radius: 0;
+  background: none;
+  box-shadow: none;
+  text-shadow: none;
+  text-align: center;
+  color: #333333;
+  font-weight: bold;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+}
+
+h1 {
+  font-size: calc(var(--md-font-size) * 1.2);
+}
+
+h2 {
+  font-size: calc(var(--md-font-size) * 1.15);
+}
+
+h3 {
+  font-size: calc(var(--md-font-size) * 1.1);
+}
+
+h4,
+h5,
+h6 {
+  font-size: var(--md-font-size);
+}
+
+/* ==================== 段落 ==================== */
+p {
+  margin: 1em 8px;
+  text-align: justify;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  color: #333333;
+}
+
+/* ==================== 引用块 ==================== */
+blockquote {
+  font-style: normal;
+  padding: 0.5em 1em;
+  margin: 1em 8px;
+  border: none;
+  border-left: 3px solid #cccccc;
+  border-radius: 0;
+  background: none;
+  color: #333333;
+}
+
+blockquote > p {
+  letter-spacing: 0.08em;
+  color: #333333;
+}
+
+/* ==================== 行内代码 ==================== */
+.codespan {
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 3px;
+  box-shadow: none;
+}
+
+/* ==================== 代码块 ==================== */
+pre.code__pre,
+.hljs.code__pre {
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  box-shadow: none;
+}
+
+pre.code__pre > code,
+.hljs.code__pre > code {
+  font-family: Menlo, Monaco, 'Courier New', monospace;
+}
+
+/* ==================== 图片 ==================== */
+img {
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+figcaption,
+.md-figcaption {
+  text-align: center;
+  color: #888888;
+  font-size: 0.85em;
+}
+
+/* ==================== 列表 ==================== */
+ol,
+ul {
+  padding-left: 1.5em;
+  margin: 1em 8px;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  color: #333333;
+}
+
+ul {
+  list-style: disc;
+}
+
+li {
+  margin: 0.3em 0;
+  color: #333333;
+}
+
+/* ==================== 分隔线 ==================== */
+hr {
+  height: 1px;
+  border: none;
+  margin: 2em 8px;
+  background: #e5e5e5;
+}
+
+/* ==================== 链接 ==================== */
+a {
+  color: #576b95;
+  text-decoration: none;
+}
+
+/* ==================== 强调 ==================== */
+strong {
+  font-weight: bold;
+  color: #333333;
+}
+
+em {
+  font-style: italic;
+}

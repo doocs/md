@@ -188,6 +188,7 @@ export default {
       default: { label: `Classic`, desc: `` },
       grace: { label: `Grace`, desc: `{'@'}brzhang` },
       simple: { label: `Simple`, desc: `{'@'}okooo5km` },
+      plain: { label: `Plain`, desc: `MdNice style` },
     },
     fontFamily: {
       sansSerif: { label: `Sans`, desc: `Font123Abc` },

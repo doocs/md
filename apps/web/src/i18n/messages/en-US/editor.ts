@@ -391,6 +391,7 @@ export default {
     basedClassic: `Based on Classic theme`,
     basedGrace: `Based on Grace theme`,
     basedSimple: `Based on Simple theme`,
+    basedPlain: `Based on Plain theme`,
     newTitle: `New custom CSS`,
     newDescription: `Enter a scheme name and choose an initial template`,
     schemeName: `Scheme name`,

@@ -110,7 +110,7 @@ const isOpenAddDialog = ref(false)
 
 const addInputVal = ref(``)
 // 新建方案时选择的基础主题
-const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
+const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'plain' | 'simple'>('blank')
 
 async function addTab() {
   if (!(addInputVal.value).trim()) {
@@ -181,7 +181,7 @@ function addHandler() {
 }
 
 const isOpenViewThemeDialog = ref(false)
-const selectedViewTheme = ref<'default' | 'grace' | 'simple'>('default')
+const selectedViewTheme = ref<'default' | 'grace' | 'plain' | 'simple'>('default')
 
 const contextMenuTargetId = ref<string | null>(null)
 const showContextMenu = ref(false)
@@ -596,6 +596,9 @@ function exportCurrentTheme() {
                 <SelectItem value="simple">
                   {{ t('cssEditor.basedSimple') }}
                 </SelectItem>
+                <SelectItem value="plain">
+                  {{ t('cssEditor.basedPlain') }}
+                </SelectItem>
               </SelectContent>
             </Select>
             <p class="text-xs text-muted-foreground">
@@ -663,6 +666,9 @@ function exportCurrentTheme() {
               </SelectItem>
               <SelectItem value="simple">
                 {{ getThemeLabel(t, 'simple') }}
+              </SelectItem>
+              <SelectItem value="plain">
+                {{ getThemeLabel(t, 'plain') }}
               </SelectItem>
             </SelectContent>
           </Select>

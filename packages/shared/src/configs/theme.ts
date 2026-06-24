@@ -20,6 +20,11 @@ export const themeOptionsMap = {
     value: `simple`,
     desc: `@okooo5km`,
   },
+  plain: {
+    label: `朴素`,
+    value: `plain`,
+    desc: `MdNice 风格`,
+  },
 }
 
 export const themeOptions: IConfigOption<ThemeName>[] = [
@@ -37,5 +42,10 @@ export const themeOptions: IConfigOption<ThemeName>[] = [
     label: `简洁`,
     value: `simple`,
     desc: `@okooo5km`,
+  },
+  {
+    label: `朴素`,
+    value: `plain`,
+    desc: `MdNice 风格`,
   },
 ]

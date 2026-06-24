@@ -391,6 +391,7 @@ export default {
     basedClassic: `基于经典主题`,
     basedGrace: `基于优雅主题`,
     basedSimple: `基于简洁主题`,
+    basedPlain: `基于朴素主题`,
     newTitle: `新建自定义 CSS`,
     newDescription: `请输入方案名称，并选择初始模板`,
     schemeName: `方案名称`,
