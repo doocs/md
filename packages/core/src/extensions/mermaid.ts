@@ -1,10 +1,28 @@
+import type { DiagramMessages } from '@md/shared/types'
 import type { MarkedExtension, Token } from 'marked'
 import type { MermaidToken } from '../types/marked-tokens'
 import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
+import {
+  diagramStateAttr,
+  formatDiagramMessage,
+  MD_DIAGRAM_STATE,
+  MD_DIAGRAM_STATE_ATTR,
+  resolveDiagramMessages,
+} from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
 
 let initPromise: Promise<typeof import('mermaid')['default']> | null = null
+type DiagramMessagesSource = DiagramMessages | (() => DiagramMessages | undefined)
+
+let diagramMessagesSource: DiagramMessagesSource | undefined
+
+function getDiagramMessages(): DiagramMessages {
+  const resolved = typeof diagramMessagesSource === `function`
+    ? diagramMessagesSource()
+    : diagramMessagesSource
+  return resolveDiagramMessages(resolved)
+}
 
 export async function initializeMermaid() {
   return getMermaid()
@@ -33,6 +51,7 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     const el = document.getElementById(id)
     if (el) {
       el.innerHTML = svg
+      el.setAttribute(MD_DIAGRAM_STATE_ATTR, MD_DIAGRAM_STATE.ready)
     }
   }
 
@@ -40,7 +59,10 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     console.error('Failed to render Mermaid:', error)
     const el = document.getElementById(id)
     if (el) {
-      el.innerHTML = `<div style="color: red; padding: 10px; border: 1px solid red;">Mermaid 渲染失败: ${error instanceof Error ? error.message : String(error)}</div>`
+      const detail = error instanceof Error ? error.message : String(error)
+      const messages = getDiagramMessages()
+      el.innerHTML = `<div style="color: red; padding: 10px; border: 1px solid red;">${formatDiagramMessage(messages.mermaidError, detail)}</div>`
+      el.setAttribute(MD_DIAGRAM_STATE_ATTR, MD_DIAGRAM_STATE.error)
     }
   }
 
@@ -50,7 +72,8 @@ function renderMermaid(id: string, code: string, cacheKey: string) {
     .catch(handleError)
 }
 
-export function markedMermaid(): MarkedExtension {
+export function markedMermaid(messagesSource?: DiagramMessagesSource): MarkedExtension {
+  diagramMessagesSource = messagesSource
   const className = 'mermaid-diagram'
 
   return {
@@ -85,7 +108,8 @@ export function markedMermaid(): MarkedExtension {
           const id = `mermaid-${cacheKey}`
           renderMermaid(id, code, cacheKey)
 
-          return `<!--mermaid-start--><div id="${id}" class="${className}">正在加载 Mermaid...</div><!--mermaid-end-->`
+          const messages = getDiagramMessages()
+          return `<!--mermaid-start--><div id="${id}" class="${className}" ${diagramStateAttr(MD_DIAGRAM_STATE.loading)}>${messages.mermaidLoading}</div><!--mermaid-end-->`
         }),
       },
     ],

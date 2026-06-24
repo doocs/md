@@ -84,6 +84,12 @@ export default {
   diagram: {
     downloadSvg: `下载为 SVG`,
     downloadPng: `下载为 PNG`,
+    mermaidLoading: `正在加载 Mermaid...`,
+    mermaidError: `Mermaid 渲染失败: {detail}`,
+    plantumlLoading: `正在加载 PlantUML 图表...`,
+    plantumlError: `PlantUML 图表加载失败`,
+    infographicLoading: `正在加载 Infographic...`,
+    infographicError: `Infographic 渲染失败: {detail}`,
   },
   popup: {
     mustRead: `使用必读`,

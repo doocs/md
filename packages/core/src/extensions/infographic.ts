@@ -1,11 +1,20 @@
+import type { DiagramMessages } from '@md/shared/types'
 import type { MarkedExtension, Token } from 'marked'
 import type { InfographicToken } from '../types/marked-tokens'
 import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
+import {
+  diagramStateAttr,
+  formatDiagramMessage,
+  MD_DIAGRAM_STATE,
+  MD_DIAGRAM_STATE_ATTR,
+  resolveDiagramMessages,
+} from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
 
 interface InfographicOptions {
   themeMode?: 'dark' | 'light'
+  diagramMessages?: DiagramMessages
 }
 
 type InfographicOptionsSource = InfographicOptions | (() => InfographicOptions | undefined)
@@ -79,17 +88,21 @@ function svgElementToHtml(svg: SVGElement | Node): string {
 
 function applySvgByCacheKey(cacheKey: string, svgHtml: string) {
   const el = document.getElementById(`${INFOGRAPHIC_ID_PREFIX}${cacheKey}`)
-  if (el)
+  if (el) {
     el.innerHTML = svgHtml
+    el.setAttribute(MD_DIAGRAM_STATE_ATTR, MD_DIAGRAM_STATE.ready)
+  }
 }
 
-function showInfographicError(containerId: string, error: unknown) {
+function showInfographicError(containerId: string, error: unknown, messages?: DiagramMessages) {
   const container = document.getElementById(containerId)
   if (!container)
     return
 
-  const message = error instanceof Error ? error.message : String(error)
-  container.innerHTML = `<div style="color: red; padding: 10px; border: 1px solid red;">Infographic 渲染失败: ${message}</div>`
+  const detail = error instanceof Error ? error.message : String(error)
+  const resolved = resolveDiagramMessages(messages)
+  container.innerHTML = `<div style="color: red; padding: 10px; border: 1px solid red;">${formatDiagramMessage(resolved.infographicError, detail)}</div>`
+  container.setAttribute(MD_DIAGRAM_STATE_ATTR, MD_DIAGRAM_STATE.error)
 }
 
 async function renderInfographic(containerId: string, code: string, cacheKey: string, options?: InfographicOptions) {
@@ -157,7 +170,7 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
   }
   catch (error) {
     console.error(`Failed to render Infographic:`, error)
-    showInfographicError(containerId, error)
+    showInfographicError(containerId, error, options?.diagramMessages)
   }
   finally {
     offscreenContainer.remove()
@@ -174,8 +187,7 @@ export function hydratePendingInfographicDiagrams(root: ParentNode, options?: In
     if (el.querySelector(`svg, img`))
       return
 
-    const text = el.textContent ?? ``
-    if (text.includes(`渲染失败`))
+    if (el.getAttribute(MD_DIAGRAM_STATE_ATTR) === MD_DIAGRAM_STATE.error)
       return
 
     const id = el.id
@@ -229,7 +241,8 @@ export function markedInfographic(options?: InfographicOptionsSource): MarkedExt
           const id = `${INFOGRAPHIC_ID_PREFIX}${cacheKey}`
           void renderInfographic(id, code, cacheKey, currentOptions)
 
-          return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;">正在加载 Infographic...</div><!--infographic-end-->`
+          const messages = resolveDiagramMessages(currentOptions?.diagramMessages)
+          return `<!--infographic-start--><div id="${id}" class="${className}" style="width: 100%;" ${diagramStateAttr(MD_DIAGRAM_STATE.loading)}>${messages.infographicLoading}</div><!--infographic-end-->`
         }),
       },
     ],

@@ -455,11 +455,15 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   markdownParser.use(markedAlert({}))
   markdownParser.use(MDKatex({ nonStandard: true }, true))
   markdownParser.use(markedFootnotes())
-  markdownParser.use(markedMermaid())
+  markdownParser.use(markedMermaid(() => opts.diagramMessages))
   markdownParser.use(markedPlantUML({
     inlineSvg: true, // 启用SVG内嵌，适用于微信公众号
+    getDiagramMessages: () => opts.diagramMessages,
   }))
-  markdownParser.use(markedInfographic(() => ({ themeMode: opts.themeMode })))
+  markdownParser.use(markedInfographic(() => ({
+    themeMode: opts.themeMode,
+    diagramMessages: opts.diagramMessages,
+  })))
   markdownParser.use(markedRuby())
 
   return {

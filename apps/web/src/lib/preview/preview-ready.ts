@@ -1,8 +1,14 @@
-import { hydratePendingInfographicDiagrams } from '@md/core'
+import {
+  hydratePendingInfographicDiagrams,
+  isAsyncDiagramPending,
+  MD_DIAGRAM_STATE,
+  MD_DIAGRAM_STATE_ATTR,
+} from '@md/core'
 import { nextTick } from 'vue'
 
 const PREVIEW_READY_TIMEOUT_MS = 20_000
 const PREVIEW_POLL_INTERVAL_MS = 250
+const ASYNC_DIAGRAM_SELECTOR = `.mermaid-diagram, .plantuml-diagram, .infographic-diagram`
 
 export interface WaitForPreviewReadyOptions {
   themeMode?: `light` | `dark`
@@ -17,15 +23,8 @@ function resolveInfographicOptions(options?: WaitForPreviewReadyOptions) {
 }
 
 function isDiagramStillLoading(output: HTMLElement): boolean {
-  for (const el of output.querySelectorAll<HTMLElement>(`.mermaid-diagram, .plantuml-diagram, .infographic-diagram`)) {
-    if (el.querySelector(`svg, img`))
-      continue
-
-    const text = el.textContent ?? ``
-    if (text.includes(`正在加载`) || text.includes(`加载失败`))
-      return true
-
-    if (el.classList.contains(`mermaid-diagram`) || el.classList.contains(`infographic-diagram`))
+  for (const el of output.querySelectorAll<HTMLElement>(ASYNC_DIAGRAM_SELECTOR)) {
+    if (isAsyncDiagramPending(el))
       return true
   }
 
@@ -75,12 +74,11 @@ export async function waitForPreviewReady(
 
 /** 移除仍未渲染完成的占位内容，避免复制/导出时出现「正在加载…」文案 */
 export function stripUnresolvedAsyncPlaceholders(root: ParentNode) {
-  root.querySelectorAll<HTMLElement>(`.mermaid-diagram, .plantuml-diagram, .infographic-diagram`).forEach((el) => {
+  root.querySelectorAll<HTMLElement>(ASYNC_DIAGRAM_SELECTOR).forEach((el) => {
     if (el.querySelector(`svg, img`))
       return
 
-    const text = el.textContent ?? ``
-    if (text.includes(`正在加载`) || text.includes(`加载失败`))
+    if (el.getAttribute(MD_DIAGRAM_STATE_ATTR) === MD_DIAGRAM_STATE.loading)
       el.remove()
   })
 
