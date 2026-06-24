@@ -36,9 +36,10 @@ export default defineWxtModule({
       }])
     })
     wxt.hook(`vite:build:extendConfig`, (_, config) => {
-      if (config.build?.rollupOptions?.input && config.build?.rollupOptions?.output) {
-        const input = config.build?.rollupOptions.input as Record<string, string>
-        const wxtOutput = config.build?.rollupOptions.output as {
+      const rolldownOptions = config.build?.rolldownOptions ?? config.build?.rollupOptions
+      if (rolldownOptions?.input && rolldownOptions?.output) {
+        const input = rolldownOptions.input as Record<string, string>
+        const wxtOutput = rolldownOptions.output as {
           manualChunks?: (id: string) => string | undefined
         }
         if (input.options || input.sidepanel) {
