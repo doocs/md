@@ -63,7 +63,6 @@ export default defineConfig(({ mode }) => {
     },
     css: { devSourcemap: true },
     build: {
-      chunkImportMap: true,
       rolldownOptions: {
         onwarn(warning, warn) {
           // @vueuse/core 中的 /* #__PURE__ */ 注释位置不符合 Rolldown 要求，忽略该警告
