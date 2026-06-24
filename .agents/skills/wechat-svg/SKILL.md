@@ -76,7 +76,7 @@ description: >-
 5. 每个遭遇物做成闭环模块：施加层 → 姿态层 → 抵消层
 6. 先统一交互模式，再统一全链实现
 
-详细原则见 [core-principles.md](./core-principles.md)。
+详细原则见 [core-principles.md](./references/core-principles.md)。
 
 ## 已验证的交互写法
 
@@ -137,7 +137,7 @@ description: >-
 </g>
 ```
 
-详细规则与排错见 [image-integration.md](./image-integration.md)。
+详细规则与排错见 [image-integration.md](./references/image-integration.md)。
 
 ## 排错顺序
 
@@ -174,5 +174,5 @@ description: >-
 
 ## 延伸阅读
 
-- [core-principles.md](./core-principles.md) — 洋葱式嵌套、模块化、局部效果收口
-- [image-integration.md](./image-integration.md) — `<image>` 接入与典型陷阱
+- [core-principles.md](./references/core-principles.md) — 洋葱式嵌套、模块化、局部效果收口
+- [image-integration.md](./references/image-integration.md) — `<image>` 接入与典型陷阱
