@@ -40,7 +40,7 @@
     "@codemirror/view": "6.43.2"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "9.0.0",
+    "@antfu/eslint-config": "9.1.0",
     "@types/node": "^26.0.0",
     "archiver": "^8.0.0",
     "eslint": "^10.5.0",
