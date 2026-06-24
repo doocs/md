@@ -5,11 +5,11 @@ import { asKatexRenderer } from '../types/marked-tokens'
 import { escapeHtml } from '../utils/basicHelpers'
 import {
   blockLatexRule,
-  blockRule,
   findInlineKatexStart,
   inlineLatexRule,
   inlineRule,
   inlineRuleNonStandard,
+  matchBlockKatex,
 } from '../utils/mathDetection'
 import { ensureMathJaxLoaded, isMathJaxReady } from '../utils/mathjax'
 
@@ -101,8 +101,12 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRen
   return {
     name: `blockKatex`,
     level: `block` as const,
+    start(src: string) {
+      const index = src.search(/^\s{0,3}\${1,2}/m)
+      return index === -1 ? undefined : index
+    },
     tokenizer(src: string) {
-      const match = src.match(blockRule)
+      const match = matchBlockKatex(src)
       if (match) {
         return {
           type: `blockKatex`,

@@ -46,4 +46,26 @@ describe('initRenderer', () => {
     expect(output).toContain(`字数`)
     expect(output).toContain(`Hi`)
   })
+
+  it('renders single-line block formula as katex-block without paragraph wrapper', () => {
+    const renderer = initRenderer({})
+    const formula = `$$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
+    const { html } = renderMarkdown(formula, renderer)
+
+    expect(html).toContain(`katex-block`)
+    expect(html).toContain(`data-math-raw`)
+    expect(html).not.toMatch(/<p[^>]*>\s*<section class="katex-block"/)
+  })
+
+  it('renders list item followed by single-line block formula without paragraph wrapper', () => {
+    const renderer = initRenderer({})
+    const userMd = `1.比如识别段落之间带有编号的latex公式，如 
+
+$$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
+    const { html } = renderMarkdown(userMd, renderer)
+
+    expect(html).toContain(`data-math-raw`)
+    expect(html).toContain(`\\tag{1}`)
+    expect(html).not.toMatch(/<p[^>]*>\s*<section class="katex-block"/)
+  })
 })

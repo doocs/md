@@ -44,6 +44,13 @@ export function loadMathJax(): Promise<void> {
       MathJax: {
         tex: { tags: `ams` },
         svg: { fontCache: `none` },
+        // 仅通过 tex2svg 在预览区渲染；禁止扫描整页 DOM，否则会改写 CodeMirror 编辑区内的 $$...$$
+        startup: {
+          typeset: false,
+        },
+        options: {
+          ignoreHtmlClass: `mathjax-ignore`,
+        },
       },
     })
 
