@@ -84,6 +84,12 @@ export default {
   diagram: {
     downloadSvg: `Download as SVG`,
     downloadPng: `Download as PNG`,
+    mermaidLoading: `Loading Mermaid…`,
+    mermaidError: `Mermaid render failed: {detail}`,
+    plantumlLoading: `Loading PlantUML diagram…`,
+    plantumlError: `Failed to load PlantUML diagram`,
+    infographicLoading: `Loading infographic…`,
+    infographicError: `Infographic render failed: {detail}`,
   },
   popup: {
     mustRead: `Before you start`,

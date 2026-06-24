@@ -1,5 +1,6 @@
 import { initRenderer } from '@md/core'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
+import { t } from '@/i18n/translate'
 import { useCustomComponentStore } from './customComponent'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
@@ -44,6 +45,15 @@ export const useRenderStore = defineStore(`render`, () => {
   // 获取渲染器
   const getRenderer = () => renderer
 
+  const buildDiagramMessages = () => ({
+    mermaidLoading: t(`store.diagram.mermaidLoading`),
+    mermaidError: t(`store.diagram.mermaidError`),
+    plantumlLoading: t(`store.diagram.plantumlLoading`),
+    plantumlError: t(`store.diagram.plantumlError`),
+    infographicLoading: t(`store.diagram.infographicLoading`),
+    infographicError: t(`store.diagram.infographicError`),
+  })
+
   // 提取标题
   const extractTitles = () => {
     const div = document.createElement(`div`)
@@ -85,6 +95,7 @@ export const useRenderStore = defineStore(`render`, () => {
       isShowLineNumber: themeStore.isShowLineNumber,
       themeMode,
       components: componentStore.registry,
+      diagramMessages: buildDiagramMessages(),
     })
 
     // 渲染 Markdown
