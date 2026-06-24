@@ -1,6 +1,7 @@
+import type { Plugin } from 'vite'
 import path from 'node:path'
-import process from 'node:process'
 
+import process from 'node:process'
 import { cloudflare } from '@cloudflare/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
@@ -44,7 +45,9 @@ export default defineConfig(({ mode }) => {
       VitePluginRadar({
         analytics: { id: `G-7NZL3PZ0NK` },
       }),
-      ...(process.env.ANALYZE === `true` ? [visualizer({ emitFile: true, filename: `stats.html` }) as any] : []),
+      ...(process.env.ANALYZE === `true`
+        ? [visualizer({ emitFile: true, filename: `stats.html` }) as Plugin]
+        : []),
       AutoImport({
         imports: [`vue`, `pinia`, `@vueuse/core`, `vue-i18n`],
         dirs: [`./src/stores`, `./src/lib/toast`, `./src/composables`],
