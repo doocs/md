@@ -1,4 +1,5 @@
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
+import { sanitizeMermaidDiagramsForWeChat } from './mermaid-wechat'
 import { getStylesToAdd } from './share-styles'
 
 export function solveWeChatImage(container?: HTMLElement) {
@@ -149,6 +150,8 @@ export async function processClipboardContent(primaryColor: string) {
       }
     })
   })
+
+  sanitizeMermaidDiagramsForWeChat(clipboardDiv)
 
   return {
     html: clipboardDiv.innerHTML,
