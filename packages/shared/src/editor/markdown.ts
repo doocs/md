@@ -39,6 +39,8 @@ interface MarkdownKeymapOptions {
   onReplace?: (view: EditorView) => void
   onGoToLine?: (view: EditorView) => void
   placeholder?: string
+  /** 为 true 时不注入 history()，由调用方通过 Compartment 管理（便于切换文档时清空撤销栈） */
+  withoutHistory?: boolean
 }
 
 /**
@@ -101,11 +103,11 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
  *
  */
 export function markdownSetup(options?: MarkdownKeymapOptions) {
-  const { placeholder: placeholderText } = options || {}
+  const { placeholder: placeholderText, withoutHistory } = options || {}
 
   return [
     // 基础功能
-    history(),
+    ...(withoutHistory ? [] : [history()]),
     highlightSelectionMatches(),
     closeBrackets(),
 
