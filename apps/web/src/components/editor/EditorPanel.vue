@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Compartment, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
-import { markdownSetup, theme } from '@md/shared/editor'
+import { history, markdownSetup, replaceDocumentWithoutHistory, resetEditorHistory, theme } from '@md/shared/editor'
 import { toBase64 } from '@md/shared/utils/fileHelpers'
 import imageCompression from 'browser-image-compression'
 import { defineAsyncComponent } from 'vue'
@@ -74,6 +74,7 @@ const showEditor = computed(() => viewMode.value !== `preview`)
 const codeMirrorView = shallowRef<EditorView | null>(null)
 const themeCompartment = new Compartment()
 const placeholderCompartment = new Compartment()
+const historyCompartment = new Compartment()
 
 function editorPlaceholder() {
   return placeholder(t(`codemirror.contentPlaceholder`))
@@ -457,7 +458,9 @@ function createFormTextArea(dom: HTMLDivElement) {
         onSearch: openSearchWithSelection,
         onReplace: openReplaceWithSelection,
         onGoToLine: () => uiStore.requestGoToLine(),
+        withoutHistory: true,
       }),
+      historyCompartment.of(history()),
       Prec.high(keymap.of([
         { key: `Mod-Alt-ArrowUp`, run: view => jumpToAdjacentHeading(view, `prev`) },
         { key: `Mod-Alt-ArrowDown`, run: view => jumpToAdjacentHeading(view, `next`) },
@@ -508,19 +511,23 @@ async function preloadMathJaxIfNeeded(content: string) {
 
 let postSwitchGeneration = 0
 
-function commitEditorContentToPost() {
+function flushEditorContentToPostAtIndex(index: number) {
   clearTimeout(changeTimer.value)
   changeTimer.value = undefined
-  if (!codeMirrorView.value)
+  if (!codeMirrorView.value || index < 0)
     return
 
   const value = codeMirrorView.value.state.doc.toString()
-  const post = posts.value[currentPostIndex.value]
+  const post = posts.value[index]
   if (!post || value === post.content)
     return
 
   post.updateDatetime = new Date()
   post.content = value
+}
+
+function commitEditorContentToPost() {
+  flushEditorContentToPostAtIndex(currentPostIndex.value)
 }
 
 onMounted(() => {
@@ -573,21 +580,17 @@ watch(locale, () => {
 })
 
 function syncEditorToPostContent(content: string) {
-  if (!codeMirrorView.value)
+  const view = codeMirrorView.value
+  if (!view)
     return
 
-  const currentContent = codeMirrorView.value.state.doc.toString()
+  const currentContent = view.state.doc.toString()
   if (currentContent === content)
     return
 
   const generation = ++postSwitchGeneration
-  codeMirrorView.value.dispatch({
-    changes: {
-      from: 0,
-      to: codeMirrorView.value.state.doc.length,
-      insert: content,
-    },
-  })
+  replaceDocumentWithoutHistory(view, content)
+  resetEditorHistory(view, historyCompartment)
   void preloadMathJaxIfNeeded(content).then(() => {
     if (generation !== postSwitchGeneration)
       return
@@ -595,8 +598,11 @@ function syncEditorToPostContent(content: string) {
   })
 }
 
-watch(currentPostIndex, () => {
-  const post = posts.value[currentPostIndex.value]
+watch(currentPostIndex, (newIndex, oldIndex) => {
+  if (oldIndex !== undefined && oldIndex >= 0)
+    flushEditorContentToPostAtIndex(oldIndex)
+
+  const post = posts.value[newIndex]
   if (!post)
     return
   syncEditorToPostContent(post.content)
