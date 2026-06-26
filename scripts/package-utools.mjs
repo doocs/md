@@ -5,7 +5,7 @@ import { cp, mkdir, readFile, rm, writeFile, access } from 'node:fs/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import archiver from 'archiver'
+import { ZipArchive } from 'archiver'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const rootDir = path.resolve(__dirname, `..`)
@@ -79,7 +79,7 @@ async function main() {
   const zipPath = path.join(releaseDir, `${packageName}.zip`)
   await new Promise((resolve, reject) => {
     const output = fs.createWriteStream(zipPath)
-    const archive = archiver(`zip`, { zlib: { level: 9 } })
+    const archive = new ZipArchive({ zlib: { level: 9 } })
 
     output.on(`close`, resolve)
     archive.on(`error`, reject)

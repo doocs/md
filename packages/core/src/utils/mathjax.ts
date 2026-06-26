@@ -1,5 +1,12 @@
-const MATHJAX_SCRIPT_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
+const MATHJAX_CDN_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
+const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
 const MATHJAX_SCRIPT_ID = `MathJax-script`
+
+function getMathJaxScriptUrl(): string {
+  if (typeof window !== `undefined` && window.__MD_UTOOLS__)
+    return MATHJAX_LOCAL_URL
+  return MATHJAX_CDN_URL
+}
 
 export const MATHJAX_READY_EVENT = `md:mathjax-ready`
 
@@ -24,7 +31,7 @@ function appendMathJaxScript(): HTMLScriptElement {
 
   const script = document.createElement(`script`)
   script.id = MATHJAX_SCRIPT_ID
-  script.src = MATHJAX_SCRIPT_URL
+  script.src = getMathJaxScriptUrl()
   document.head.appendChild(script)
   return script
 }

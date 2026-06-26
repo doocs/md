@@ -17,4 +17,5 @@ interface MathJaxGlobal {
 
 interface Window {
   MathJax: MathJaxGlobal
+  __MD_UTOOLS__?: boolean
 }

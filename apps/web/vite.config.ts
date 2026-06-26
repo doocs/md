@@ -42,7 +42,7 @@ export default defineConfig(({ mode }) => {
       mode === `development` && env.VITE_VUE_DEVTOOLS === `true` && vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
       }),
-      VitePluginRadar({
+      !isUTools && VitePluginRadar({
         analytics: { id: `G-7NZL3PZ0NK` },
       }),
       ...(process.env.ANALYZE === `true`
