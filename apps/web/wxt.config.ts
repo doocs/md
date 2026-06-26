@@ -1,6 +1,7 @@
 import type { ConfigEnv } from 'vite'
 import fs from 'node:fs'
 import path from 'node:path'
+import { loadEnv } from 'vite'
 import { defineConfig } from 'wxt'
 import ViteConfig from './vite.config'
 
@@ -20,6 +21,22 @@ function getRootPackageVersion() {
 
 const version = getRootPackageVersion()
 
+function getApiHostPermissions(mode: string): string[] {
+  const env = loadEnv(mode, __dirname, [`VITE_`])
+  const apiUrl = (env.VITE_MD_API_URL || env.VITE_SYNC_API_URL || ``).replace(/\/$/, ``)
+  if (!apiUrl)
+    return []
+  try {
+    const { protocol, hostname } = new URL(apiUrl)
+    if (protocol !== `https:` && protocol !== `http:`)
+      return []
+    return [`${protocol}//${hostname}/*`]
+  }
+  catch {
+    return []
+  }
+}
+
 export default defineConfig({
   srcDir: `src`,
   modulesDir: `src/modules`,
@@ -29,8 +46,9 @@ export default defineConfig({
     icons: {
       256: mode === `development` ? `/mpmd/icon-256-gray.png` : `/mpmd/icon-256.png`,
     },
-    permissions: [`storage`, `activeTab`, `sidePanel`, `contextMenus`],
+    permissions: [`storage`, `activeTab`, `sidePanel`, `contextMenus`, `identity`],
     host_permissions: [
+      ...getApiHostPermissions(mode),
       `https://*.github.com/*`,
       `https://*.githubusercontent.com/*`,
       `https://*.gitee.com/*`,

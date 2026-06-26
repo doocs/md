@@ -4,6 +4,15 @@ function escapeRegex(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`)
 }
 
+/** 浏览器扩展页面发起的 fetch 会携带 chrome-extension:// / moz-extension:// 来源 */
+const EXTENSION_ORIGIN_RE = /^(?:chrome-extension|moz-extension|safari-web-extension):\/\/[^/]+$/i
+
+export function isBrowserExtensionOrigin(origin: string | undefined | null): boolean {
+  if (!origin)
+    return false
+  return EXTENSION_ORIGIN_RE.test(origin)
+}
+
 /**
  * 判断 origin 是否匹配某个模式。
  * - 精确匹配：完全相等

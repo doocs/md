@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Cloud, Crown, LogOut, Settings2, Share2, User } from '@lucide/vue'
+import { Cloud, Crown, LoaderCircle, LogOut, Settings2, Share2, User } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import CloudFeatureState from '@/components/editor/editor-header/cloud/CloudFeatureState.vue'
 import GitHubIcon from '@/components/icons/GitHubIcon.vue'
 import PanelCard from '@/components/shared/panel-dialog/PanelCard.vue'
@@ -43,8 +43,18 @@ const dialogDescription = computed(() => {
   return t(`account.loginHint`)
 })
 
-function handleLogin() {
-  authStore.login()
+const isLoggingIn = ref(false)
+
+async function handleLogin() {
+  if (isLoggingIn.value)
+    return
+  isLoggingIn.value = true
+  try {
+    await authStore.login()
+  }
+  finally {
+    isLoggingIn.value = false
+  }
 }
 
 function handleLogout() {
@@ -86,8 +96,9 @@ function openShareDialog() {
       v-else-if="!isLoggedIn"
       :icon="User"
       :title="t('account.loginTitle')"
-      :action-label="t('account.githubLogin')"
-      :action-icon="GitHubIcon"
+      :action-label="isLoggingIn ? t('account.loggingIn') : t('account.githubLogin')"
+      :action-icon="isLoggingIn ? LoaderCircle : GitHubIcon"
+      :action-disabled="isLoggingIn"
       @action="handleLogin"
     />
 

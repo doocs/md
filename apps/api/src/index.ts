@@ -3,7 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
-import { isAllowedOrigin } from './origin'
+import { isAllowedOrigin, isBrowserExtensionOrigin } from './origin'
 import { createShareHandler, deleteShareHandler, listSharesHandler, unlockShareHandler, viewShareHandler } from './share'
 import { SHARE_FAVICON_PATH } from './share-head'
 import { pullHandler, pushHandler } from './sync'
@@ -15,7 +15,7 @@ const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 // CORS：允许 APP_URL 中配置的来源（支持通配符，逗号分隔）携带凭据访问
 app.use(`*`, async (c, next) => {
   const handler = cors({
-    origin: origin => (isAllowedOrigin(c.env, origin) ? origin : null),
+    origin: origin => (isAllowedOrigin(c.env, origin) || isBrowserExtensionOrigin(origin) ? origin : null),
     allowMethods: [`GET`, `POST`, `DELETE`, `OPTIONS`],
     allowHeaders: [`Authorization`, `Content-Type`],
     credentials: true,
