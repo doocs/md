@@ -1,6 +1,7 @@
 // Markdown 扩展导出
 export * from './alert'
 export * from './component'
+export * from './diagram-theme'
 export * from './footnotes'
 export * from './infographic'
 export * from './katex'

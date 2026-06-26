@@ -272,6 +272,35 @@ function isPlantUmlDiagramSvg(svg: SVGSVGElement): boolean {
   return svg.hasAttribute(`data-diagram-type`)
 }
 
+/** MathJax / formula SVGs rely on ids and defs; never run diagram sanitization on them. */
+function isMathFormulaSvg(svg: SVGSVGElement): boolean {
+  return svg.closest(`.katex-inline, .katex-block, mjx-container`) != null
+}
+
+const WECHAT_MATH_FILL = `#333333`
+
+/** Keep MathJax SVG intact but force readable colors for WeChat paste. */
+export function prepareMathFormulasForWeChat(root: ParentNode) {
+  root.querySelectorAll<HTMLElement>(`.katex-inline, .katex-block`).forEach((wrapper) => {
+    wrapper.style.color = WECHAT_MATH_FILL
+  })
+
+  root.querySelectorAll<SVGSVGElement>(`.katex-inline svg, .katex-block svg, mjx-container svg`).forEach((svg) => {
+    svg.style.color = WECHAT_MATH_FILL
+    if (!svg.getAttribute(`fill`) || svg.getAttribute(`fill`) === `currentColor`)
+      svg.setAttribute(`fill`, WECHAT_MATH_FILL)
+
+    svg.querySelectorAll<SVGElement>(`path, rect, use, g`).forEach((node) => {
+      const fill = node.getAttribute(`fill`)
+      if (fill === `currentColor` || fill === `#fff` || fill === `#ffffff` || fill === `white`)
+        node.setAttribute(`fill`, WECHAT_MATH_FILL)
+      const stroke = node.getAttribute(`stroke`)
+      if (stroke === `currentColor` || stroke === `#fff` || stroke === `#ffffff` || stroke === `white`)
+        node.setAttribute(`stroke`, WECHAT_MATH_FILL)
+    })
+  })
+}
+
 function isHiddenPlantUmlHelper(el: Element): boolean {
   const fillOpacity = el.getAttribute(`fill-opacity`)
   if (fillOpacity !== null && Number.parseFloat(fillOpacity) === 0)
@@ -575,6 +604,9 @@ export function sanitizeSvgsForWeChat(root: ParentNode) {
   try {
     for (const node of svgs) {
       const svg = node
+      if (isMathFormulaSvg(svg))
+        continue
+
       const parent = svg.parentElement
       const nextSibling = svg.nextSibling
       const isPlantuml = isPlantUmlDiagramSvg(svg)

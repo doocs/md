@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import {
+  prepareMathFormulasForWeChat,
   sanitizeSvgForWeChat,
   sanitizeSvgsForWeChat,
 } from './wechat-svg'
@@ -286,5 +287,53 @@ describe(`sanitizeSvgsForWeChat`, () => {
     expect(title.textContent?.trim()).toBe(`Note`)
 
     root.remove()
+  })
+
+  it(`skips MathJax formula SVGs (preserves ids and defs)`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <section class="katex-block" data-math-display="true">
+        <svg xmlns="http://www.w3.org/2000/svg" width="10ex" height="2.5ex" role="img" aria-label="E=mc^2">
+          <defs>
+            <path id="MJX-TEST" d="M0 0h10v10H0z"></path>
+          </defs>
+          <g fill="currentColor" stroke="currentColor">
+            <use href="#MJX-TEST" x="0" y="0"></use>
+          </g>
+        </svg>
+      </section>
+    `
+    document.body.appendChild(root)
+
+    const svg = root.querySelector(`svg`) as SVGSVGElement
+    const originalWidth = svg.getAttribute(`width`)
+
+    sanitizeSvgsForWeChat(root)
+
+    expect(root.querySelector(`defs`)).not.toBeNull()
+    expect(root.querySelector(`#MJX-TEST`)).not.toBeNull()
+    expect(svg.getAttribute(`width`)).toBe(originalWidth)
+    expect(svg.getAttribute(`id`)).toBeNull()
+
+    root.remove()
+  })
+})
+
+describe(`prepareMathFormulasForWeChat`, () => {
+  it(`forces readable fill on formula SVGs`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <span class="katex-inline" style="color: #ffffff;">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor">
+          <path fill="currentColor" d="M0 0h10v10H0z"></path>
+        </svg>
+      </span>
+    `
+    prepareMathFormulasForWeChat(root)
+
+    const wrapper = root.querySelector(`.katex-inline`) as HTMLElement
+    const path = root.querySelector(`path`) as SVGPathElement
+    expect(wrapper.style.color).toBe(`rgb(51, 51, 51)`)
+    expect(path.getAttribute(`fill`)).toBe(`#333333`)
   })
 })
