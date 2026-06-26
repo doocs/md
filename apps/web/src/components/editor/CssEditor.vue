@@ -4,7 +4,6 @@ import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lu
 import { exportMergedTheme } from '@md/core'
 import { themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
-import { blurFocusOutsideDialog } from '@/lib/a11y/dialog-focus'
 import { copyPlain } from '@/lib/browser/clipboard'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
@@ -638,7 +637,7 @@ function exportCurrentTheme() {
 
   <!-- 查看内置主题对话框 -->
   <Dialog v-model:open="isOpenViewThemeDialog">
-    <DialogContent class="sm:max-w-4xl max-h-[90vh] flex flex-col" @open-auto-focus="blurFocusOutsideDialog">
+    <DialogContent class="sm:max-w-4xl max-h-[90vh] flex flex-col">
       <DialogHeader>
         <DialogTitle>{{ t('cssEditor.viewBuiltinTitle') }}</DialogTitle>
         <DialogDescription>

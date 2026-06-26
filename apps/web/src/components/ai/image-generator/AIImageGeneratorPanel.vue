@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog'
 import { Textarea } from '@/components/ui/textarea'
 import { buildAIHeaders, resolveEndpointUrl } from '@/composables/useAIFetch'
+import { prepareModalOverlayFocus } from '@/lib/a11y/dialog-focus'
 import { copyPlain } from '@/lib/browser/clipboard'
 import { store } from '@/storage'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
@@ -436,6 +437,7 @@ watch(previewImageUrl, async (imageUrl) => {
   if (!imageUrl)
     return
 
+  prepareModalOverlayFocus()
   await nextTick()
   previewOverlayRef.value?.focus()
 })

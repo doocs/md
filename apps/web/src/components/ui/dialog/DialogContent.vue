@@ -10,6 +10,7 @@ import {
   DialogPortal,
   useForwardPropsEmits,
 } from 'reka-ui'
+import { useDialogContentA11yBindings } from '@/lib/a11y/dialog-focus'
 import { cn } from '@/lib/utils'
 
 const props = defineProps<DialogContentProps & { class?: HTMLAttributes[`class`] }>()
@@ -22,6 +23,7 @@ const delegatedProps = computed(() => {
 })
 
 const forwarded = useForwardPropsEmits(delegatedProps, emits)
+const contentBindings = useDialogContentA11yBindings(forwarded)
 </script>
 
 <template>
@@ -30,7 +32,7 @@ const forwarded = useForwardPropsEmits(delegatedProps, emits)
       class="data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-200 bg-black/80"
     />
     <DialogContent
-      v-bind="forwarded"
+      v-bind="contentBindings"
       :class="
         cn(
           'fixed left-1/2 top-1/2 z-200 grid w-[90vw] max-w-md sm:max-w-lg -translate-x-1/2 -translate-y-1/2 gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 sm:rounded-lg',
