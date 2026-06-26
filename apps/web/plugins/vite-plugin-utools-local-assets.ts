@@ -28,7 +28,7 @@ export function utoolsLocalAssetsPlugin(): Plugin {
         if (!isUTools)
           return html
 
-        return html.replaceAll(MATHJAX_CDN_URL, MATHJAX_LOCAL_URL)
+        return html.split(MATHJAX_CDN_URL).join(MATHJAX_LOCAL_URL)
       },
     },
     async closeBundle() {
