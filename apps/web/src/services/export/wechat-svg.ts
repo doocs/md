@@ -265,6 +265,245 @@ function parsePixelAttribute(value: string | null): number | null {
   return Number.isFinite(parsed) && parsed > 0 ? parsed : null
 }
 
+function isPlantUmlDiagramSvg(svg: SVGSVGElement): boolean {
+  if (svg.closest(`.plantuml-diagram`) != null)
+    return true
+  // PlantUML server embeds diagram type on the root <svg>.
+  return svg.hasAttribute(`data-diagram-type`)
+}
+
+/** MathJax / formula SVGs rely on ids and defs; never run diagram sanitization on them. */
+function isMathFormulaSvg(svg: SVGSVGElement): boolean {
+  return svg.closest(`.katex-inline, .katex-block, mjx-container`) != null
+}
+
+const WECHAT_MATH_FILL = `#333333`
+
+/** Keep MathJax SVG intact but force readable colors for WeChat paste. */
+export function prepareMathFormulasForWeChat(root: ParentNode) {
+  root.querySelectorAll<HTMLElement>(`.katex-inline, .katex-block`).forEach((wrapper) => {
+    wrapper.style.color = WECHAT_MATH_FILL
+  })
+
+  root.querySelectorAll<SVGSVGElement>(`.katex-inline svg, .katex-block svg, mjx-container svg`).forEach((svg) => {
+    svg.style.color = WECHAT_MATH_FILL
+    if (!svg.getAttribute(`fill`) || svg.getAttribute(`fill`) === `currentColor`)
+      svg.setAttribute(`fill`, WECHAT_MATH_FILL)
+
+    svg.querySelectorAll<SVGElement>(`path, rect, use, g`).forEach((node) => {
+      const fill = node.getAttribute(`fill`)
+      if (fill === `currentColor` || fill === `#fff` || fill === `#ffffff` || fill === `white`)
+        node.setAttribute(`fill`, WECHAT_MATH_FILL)
+      const stroke = node.getAttribute(`stroke`)
+      if (stroke === `currentColor` || stroke === `#fff` || stroke === `#ffffff` || stroke === `white`)
+        node.setAttribute(`stroke`, WECHAT_MATH_FILL)
+    })
+  })
+}
+
+function isHiddenPlantUmlHelper(el: Element): boolean {
+  const fillOpacity = el.getAttribute(`fill-opacity`)
+  if (fillOpacity !== null && Number.parseFloat(fillOpacity) === 0)
+    return true
+  const opacity = el.getAttribute(`opacity`)
+  if (opacity !== null && Number.parseFloat(opacity) === 0)
+    return true
+  return false
+}
+
+/** Trim PlantUML viewBox padding using real geometry (browser only). */
+function tightenPlantUmlViewBox(svg: SVGSVGElement): boolean {
+  if (typeof SVGGraphicsElement === `undefined`)
+    return false
+
+  let minX = Infinity
+  let minY = Infinity
+  let maxX = -Infinity
+  let maxY = -Infinity
+  let hasContent = false
+
+  svg.querySelectorAll(`path, line, rect, circle, ellipse, polygon, polyline, text, image, use`).forEach((el) => {
+    if (!(el instanceof SVGGraphicsElement) || isHiddenPlantUmlHelper(el))
+      return
+
+    try {
+      const box = el.getBBox()
+      if (box.width <= 0 && box.height <= 0)
+        return
+      hasContent = true
+      minX = Math.min(minX, box.x)
+      minY = Math.min(minY, box.y)
+      maxX = Math.max(maxX, box.x + box.width)
+      maxY = Math.max(maxY, box.y + box.height)
+    }
+    catch {}
+  })
+
+  if (!hasContent) {
+    try {
+      const rootBox = svg.getBBox()
+      if (rootBox.width > 0 && rootBox.height > 0) {
+        minX = rootBox.x
+        minY = rootBox.y
+        maxX = rootBox.x + rootBox.width
+        maxY = rootBox.y + rootBox.height
+        hasContent = true
+      }
+    }
+    catch {}
+  }
+
+  if (!hasContent)
+    return false
+
+  const pad = 2
+  minX -= pad
+  minY -= pad
+  const width = Math.max(1, maxX + pad - minX)
+  const height = Math.max(1, maxY + pad - minY)
+
+  svg.setAttribute(`viewBox`, `${minX} ${minY} ${width} ${height}`)
+  return true
+}
+
+function mergeSvgStyle(svg: SVGSVGElement, declarations: string[]) {
+  const keys = new Set(declarations.map(d => d.split(`:`)[0]?.trim()).filter(Boolean))
+  const kept = (svg.getAttribute(`style`) ?? ``)
+    .split(`;`)
+    .map(part => part.trim())
+    .filter(Boolean)
+    .filter((part) => {
+      const key = part.split(`:`)[0]?.trim()
+      return key && !keys.has(key)
+    })
+
+  svg.setAttribute(`style`, `${[...kept, ...declarations].join(`; `)};`)
+}
+
+function applyPlantUmlSvgDisplay(
+  svg: SVGSVGElement,
+  width: number,
+  height: number,
+  mode: `inline` | `scroll` = `inline`,
+) {
+  if (mode === `scroll`) {
+    mergeSvgStyle(svg, [
+      `display: block`,
+      `vertical-align: top`,
+      `width: 100%`,
+      `height: ${height}px`,
+      `max-width: none`,
+    ])
+    return
+  }
+
+  mergeSvgStyle(svg, [
+    `display: block`,
+    `vertical-align: top`,
+    `width: 100%`,
+    `max-width: ${width}px`,
+    `height: auto`,
+  ])
+}
+
+/** PlantUML strips root width/height; viewBox units match pixel dimensions. */
+function resolvePlantUmlPixelSize(svg: SVGSVGElement): { width: number, height: number } {
+  const viewBox = parseViewBox(svg.getAttribute(`viewBox`))
+  if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+    return {
+      width: Math.max(1, Math.round(viewBox.width)),
+      height: Math.max(1, Math.round(viewBox.height)),
+    }
+  }
+
+  const attrWidth = parsePixelAttribute(svg.getAttribute(`width`))
+  const attrHeight = parsePixelAttribute(svg.getAttribute(`height`))
+  if (attrWidth && attrHeight)
+    return { width: attrWidth, height: attrHeight }
+
+  const rect = svg.getBoundingClientRect()
+  const width = attrWidth ?? viewBox?.width ?? (rect.width > 0 ? rect.width : WECHAT_MAX_WIDTH_PX)
+  let height = attrHeight ?? viewBox?.height ?? (rect.height > 0 ? rect.height : width * 0.75)
+
+  if (viewBox && viewBox.width > 0 && viewBox.height > 0) {
+    const aspect = viewBox.height / viewBox.width
+    if (Math.abs((height / width) - aspect) > 0.01)
+      height = width * aspect
+  }
+
+  return {
+    width: Math.max(1, Math.round(width)),
+    height: Math.max(1, Math.round(height)),
+  }
+}
+
+function fixPlantUmlDimensions(svg: SVGSVGElement): { width: number, height: number } {
+  const { width, height } = resolvePlantUmlPixelSize(svg)
+
+  if (!svg.hasAttribute(`xmlns`))
+    svg.setAttribute(`xmlns`, SVG_NS)
+
+  svg.setAttribute(`width`, String(width))
+  svg.setAttribute(`height`, String(height))
+  svg.setAttribute(`preserveAspectRatio`, `xMidYMid meet`)
+  return { width, height }
+}
+
+function normalizePlantUmlContainer(container: HTMLElement) {
+  container.setAttribute(
+    `style`,
+    `box-sizing: border-box; width: 100%; margin: 0; padding: 0; line-height: 0; font-size: 0;`,
+  )
+}
+
+/**
+ * WeChat horizontal scroll — same nested <section> pattern as markedSlider().
+ * @see packages/core/src/extensions/slider.ts
+ */
+function wrapWidePlantUmlSvg(svg: SVGSVGElement) {
+  const width = Number.parseFloat(svg.getAttribute(`width`) ?? `0`)
+  const height = Number.parseFloat(svg.getAttribute(`height`) ?? `0`)
+  if (width <= WECHAT_MAX_WIDTH_PX)
+    return
+
+  const parent = svg.parentNode
+  if (!parent)
+    return
+
+  const outer = document.createElement(`section`)
+  outer.setAttribute(
+    `style`,
+    `box-sizing: border-box; width: 100%; margin: 0; padding: 0; line-height: 0; font-size: 0;`,
+  )
+
+  const scroll = document.createElement(`section`)
+  scroll.setAttribute(
+    `style`,
+    `overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%; font-size: 0; line-height: 0;${height > 0 ? ` height: ${height}px;` : ``}`,
+  )
+
+  const inner = document.createElement(`section`)
+  inner.setAttribute(
+    `style`,
+    `display: inline-block; width: ${width}px;${height > 0 ? ` height: ${height}px;` : ``} vertical-align: top; line-height: 0; font-size: 0;`,
+  )
+
+  const hint = document.createElement(`p`)
+  hint.setAttribute(
+    `style`,
+    `font-size: 14px; color: #999; text-align: center; margin-top: 5px; margin-bottom: 0; white-space: normal;`,
+  )
+  hint.textContent = `<<< 左右滑动看更多 >>>`
+
+  applyPlantUmlSvgDisplay(svg, width, height, `scroll`)
+
+  parent.insertBefore(outer, svg)
+  inner.appendChild(svg)
+  scroll.appendChild(inner)
+  outer.appendChild(scroll)
+  outer.appendChild(hint)
+}
+
 function resolveSvgPixelSize(svg: SVGSVGElement): { width: number, height: number } {
   const rect = svg.getBoundingClientRect()
   const viewBox = parseViewBox(svg.getAttribute(`viewBox`))
@@ -304,17 +543,6 @@ function fixSvgDimensions(svg: SVGSVGElement) {
 
   svg.setAttribute(`width`, String(width))
   svg.setAttribute(`height`, String(height))
-  svg.setAttribute(
-    `style`,
-    `display:block;width:${width}px;max-width:100%;height:auto;margin:0 auto;`,
-  )
-}
-
-function fixMermaidDiagramContainer(container: HTMLElement) {
-  container.setAttribute(
-    `style`,
-    `text-align:center;line-height:0;width:100%;max-width:${WECHAT_MAX_WIDTH_PX}px;margin:0 auto;overflow:hidden;`,
-  )
 }
 
 function stripUnsupportedAttributes(svg: SVGSVGElement) {
@@ -334,21 +562,38 @@ function stripUnsupportedAttributes(svg: SVGSVGElement) {
   svg.removeAttribute(`class`)
 }
 
+export interface SanitizeSvgOptions {
+  /** Keep natural width and wrap with horizontal scroll when wider than the article column. */
+  plantuml?: boolean
+}
+
 /**
- * Adapt a Mermaid SVG for WeChat: inline markers, responsive sizing, strip defs/id/class.
+ * Adapt an SVG for WeChat: inline markers, explicit pixel sizing, strip defs/id/class.
  */
-export function sanitizeMermaidSvgForWeChat(svg: SVGSVGElement) {
+export function sanitizeSvgForWeChat(svg: SVGSVGElement, options?: SanitizeSvgOptions) {
+  const isPlantuml = options?.plantuml ?? isPlantUmlDiagramSvg(svg)
+
   expandMarkers(svg)
   inlinePresentationAttributes(svg)
-  fixSvgDimensions(svg)
+
+  if (isPlantuml) {
+    tightenPlantUmlViewBox(svg)
+    const size = fixPlantUmlDimensions(svg)
+    if (size.width <= WECHAT_MAX_WIDTH_PX)
+      applyPlantUmlSvgDisplay(svg, size.width, size.height)
+  }
+  else {
+    fixSvgDimensions(svg)
+  }
+
   stripUnsupportedAttributes(svg)
 }
 
 /**
- * Process all Mermaid diagrams under `root` (attaches temporarily for getComputedStyle).
+ * Process all SVG elements under `root` (attaches temporarily for getComputedStyle).
  */
-export function sanitizeMermaidDiagramsForWeChat(root: ParentNode) {
-  const svgs = Array.from(root.querySelectorAll<SVGSVGElement>(`.mermaid-diagram svg`))
+export function sanitizeSvgsForWeChat(root: ParentNode) {
+  const svgs = Array.from(root.querySelectorAll<SVGSVGElement>(`svg`))
   if (svgs.length === 0)
     return
 
@@ -359,12 +604,22 @@ export function sanitizeMermaidDiagramsForWeChat(root: ParentNode) {
   try {
     for (const node of svgs) {
       const svg = node
+      if (isMathFormulaSvg(svg))
+        continue
+
       const parent = svg.parentElement
+      const nextSibling = svg.nextSibling
+      const isPlantuml = isPlantUmlDiagramSvg(svg)
       host.appendChild(svg)
-      sanitizeMermaidSvgForWeChat(svg)
-      if (parent instanceof HTMLElement)
-        fixMermaidDiagramContainer(parent)
-      parent?.appendChild(svg)
+      sanitizeSvgForWeChat(svg, { plantuml: isPlantuml })
+      if (parent)
+        parent.insertBefore(svg, nextSibling)
+      if (isPlantuml) {
+        const container = svg.closest(`.plantuml-diagram`) as HTMLElement | null
+        if (container)
+          normalizePlantUmlContainer(container)
+        wrapWidePlantUmlSvg(svg)
+      }
     }
   }
   finally {

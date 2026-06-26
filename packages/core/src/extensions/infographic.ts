@@ -1,6 +1,7 @@
 import type { DiagramMessages } from '@md/shared/types'
 import type { MarkedExtension, Token } from 'marked'
 import type { InfographicToken } from '../types/marked-tokens'
+import type { DiagramThemeMode } from './diagram-theme'
 import { asDiagramToken, asTextTokenRenderer, isCodeToken } from '../types/marked-tokens'
 import {
   diagramStateAttr,
@@ -11,9 +12,10 @@ import {
 } from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
 import { createSVGCache } from '../utils/svgCache'
+import { DIAGRAM_DARK_COLORS, DIAGRAM_LIGHT_COLORS, resolveDiagramThemeMode } from './diagram-theme'
 
 interface InfographicOptions {
-  themeMode?: 'dark' | 'light'
+  themeMode?: DiagramThemeMode
   diagramMessages?: DiagramMessages
 }
 
@@ -32,16 +34,20 @@ const OFFSCREEN_WIDTH = `800px`
 
 const INFOGRAPHIC_LIGHT_COLORS = {
   theme: `default` as const,
-  colorBg: `#ffffff`,
-  colorText: `#262626`,
+  colorBg: DIAGRAM_LIGHT_COLORS.background,
+  colorText: DIAGRAM_LIGHT_COLORS.text,
   svgBackground: `transparent`,
 }
 
 const INFOGRAPHIC_DARK_COLORS = {
   theme: `dark` as const,
-  colorBg: `#1f1f1f`,
-  colorText: `#ffffff`,
-  svgBackground: `#1f1f1f`,
+  colorBg: DIAGRAM_DARK_COLORS.background,
+  colorText: DIAGRAM_DARK_COLORS.text,
+  svgBackground: DIAGRAM_DARK_COLORS.background,
+}
+
+function buildInfographicCacheKey(code: string, themeMode?: DiagramThemeMode): string {
+  return simpleHash(`${code}-${resolveDiagramThemeMode(themeMode)}-v2`)
 }
 
 function resolveInfographicTheme(options?: InfographicOptions) {
@@ -105,22 +111,11 @@ function showInfographicError(containerId: string, error: unknown, messages?: Di
   container.setAttribute(MD_DIAGRAM_STATE_ATTR, MD_DIAGRAM_STATE.error)
 }
 
-async function renderInfographic(containerId: string, code: string, cacheKey: string, options?: InfographicOptions) {
-  if (typeof window === `undefined`)
-    return
-
-  pendingMeta.set(cacheKey, { code, options })
-
+async function renderInfographicSvgHtml(code: string, options?: InfographicOptions): Promise<string> {
+  const cacheKey = buildInfographicCacheKey(code, options?.themeMode)
   const cached = svgCache.get(cacheKey)
-  if (cached) {
-    applySvgByCacheKey(cacheKey, cached)
-    return
-  }
-
-  if (inFlight.has(cacheKey))
-    return
-
-  inFlight.add(cacheKey)
+  if (cached)
+    return cached
 
   const offscreenContainer = document.createElement(`div`)
   offscreenContainer.style.width = OFFSCREEN_WIDTH
@@ -134,7 +129,7 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
 
     const { theme, svgBackground, themeConfig } = resolveInfographicTheme(options)
 
-    await new Promise<void>((resolve, reject) => {
+    const svgHtml = await new Promise<string>((resolve, reject) => {
       const instance = new Infographic({
         container: offscreenContainer,
         svg: {
@@ -152,10 +147,9 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
       instance.on(`loaded`, ({ node }) => {
         exportToSVG(node, { removeIds: true })
           .then((svg) => {
-            const svgHtml = svgElementToHtml(svg)
-            svgCache.set(cacheKey, svgHtml)
-            applySvgByCacheKey(cacheKey, svgHtml)
-            resolve()
+            const html = svgElementToHtml(svg)
+            svgCache.set(cacheKey, html)
+            resolve(html)
           })
           .catch(reject)
       })
@@ -167,13 +161,40 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
         reject(error)
       }
     })
+
+    return svgHtml
+  }
+  finally {
+    offscreenContainer.remove()
+  }
+}
+
+async function renderInfographic(containerId: string, code: string, cacheKey: string, options?: InfographicOptions) {
+  if (typeof window === `undefined`)
+    return
+
+  pendingMeta.set(cacheKey, { code, options })
+
+  const cached = svgCache.get(cacheKey)
+  if (cached) {
+    applySvgByCacheKey(cacheKey, cached)
+    return
+  }
+
+  if (inFlight.has(cacheKey))
+    return
+
+  inFlight.add(cacheKey)
+
+  try {
+    const svgHtml = await renderInfographicSvgHtml(code, options)
+    applySvgByCacheKey(cacheKey, svgHtml)
   }
   catch (error) {
     console.error(`Failed to render Infographic:`, error)
     showInfographicError(containerId, error, options?.diagramMessages)
   }
   finally {
-    offscreenContainer.remove()
     inFlight.delete(cacheKey)
   }
 }
@@ -231,7 +252,7 @@ export function markedInfographic(options?: InfographicOptionsSource): MarkedExt
         renderer: asTextTokenRenderer((token: InfographicToken) => {
           const code = token.text
           const currentOptions = resolveOptions(options)
-          const cacheKey = simpleHash(`${code}-${currentOptions?.themeMode || `light`}-v2`)
+          const cacheKey = buildInfographicCacheKey(code, currentOptions?.themeMode)
 
           const cached = svgCache.get(cacheKey)
           if (cached) {
