@@ -5,15 +5,28 @@ import { isSyncUiEnabled } from '@/services/sync/client'
 export function useAccountSyncBootstrap() {
   const authStore = useAuthStore()
   const syncStore = useSyncStore()
+  let cloudSyncReady = false
+
+  async function ensureCloudSync(): Promise<void> {
+    if (!isSyncUiEnabled() || !authStore.isLoggedIn)
+      return
+
+    if (!cloudSyncReady) {
+      syncStore.startAutoSyncWatcher()
+      cloudSyncReady = true
+    }
+    void syncStore.sync()
+  }
 
   onMounted(async () => {
     if (isAccountConfigured())
       await authStore.bootstrap()
 
-    if (!isSyncUiEnabled() || !authStore.isLoggedIn)
-      return
+    await ensureCloudSync()
+  })
 
-    syncStore.startAutoSyncWatcher()
-    void syncStore.sync()
+  watch(() => authStore.isLoggedIn, (loggedIn) => {
+    if (loggedIn)
+      void ensureCloudSync()
   })
 }

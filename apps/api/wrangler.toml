@@ -28,7 +28,7 @@ binding = "ASSETS"
 # 前端来源白名单，用于 CORS 与「登录后回跳到发起方」。
 # 支持通配符 `*`（匹配单个主机标签）。第一个非通配项作为默认回跳地址。
 # - 生产站、Gitee Pages、Cloudflare Workers、本地开发、PR 预览
-APP_URL = "https://md.doocs.org,https://doocs.gitee.io,https://md.doocs.workers.dev,http://localhost:5173,https://md-pr-*.doocs.workers.dev,https://doocs-md-preview-pr-*.surge.sh"
+APP_URL = "https://md.doocs.org,https://doocs.gitee.io,https://md.doocs.workers.dev,http://localhost:5173,https://md-pr-*.doocs.workers.dev,https://doocs-md-preview-pr-*.surge.sh,https://*.chromiumapp.org,https://*.extensions.allizom.org,https://*.microsoftedgeextension.net"
 
 # 爱发电创作者 user_id（开发者后台可见，非密钥）
 AFDIAN_USER_ID = "f001c5a8655111f18f5e52540025c377"

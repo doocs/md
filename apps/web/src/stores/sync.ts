@@ -168,9 +168,12 @@ export const useSyncStore = defineStore(`sync`, () => {
     }, syncDebounceMs.value)
   }
 
+  let autoSyncWatcherStarted = false
+
   function startAutoSyncWatcher(): void {
-    if (!SYNC_PRO_ENABLED)
+    if (!SYNC_PRO_ENABLED || autoSyncWatcherStarted)
       return
+    autoSyncWatcherStarted = true
     watch(
       () => postStore.posts,
       () => scheduleAutoSync(),

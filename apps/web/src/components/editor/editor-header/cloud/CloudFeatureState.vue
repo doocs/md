@@ -9,6 +9,7 @@ defineProps<{
   description?: string
   actionLabel?: string
   actionIcon?: Component
+  actionDisabled?: boolean
   compact?: boolean
 }>()
 
@@ -42,6 +43,7 @@ const emit = defineEmits<{
     <Button
       v-if="actionLabel"
       class="h-10 w-full max-w-xs gap-2 sm:w-auto sm:min-w-[200px]"
+      :disabled="actionDisabled"
       @click="emit('action')"
     >
       <component :is="actionIcon" v-if="actionIcon" class="size-4" />

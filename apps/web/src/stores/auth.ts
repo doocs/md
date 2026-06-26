@@ -1,6 +1,12 @@
 import type { AccountUser } from '@/services/account/types'
+import { t } from '@/i18n/translate'
 import { ApiError, MdApiClient } from '@/services/account/client'
 import { gotoLogin, isAccountConfigured } from '@/services/account/config'
+import {
+  canLoginInExtension,
+  isExtensionContext,
+  loginViaExtensionIdentity,
+} from '@/services/account/extension'
 import { ACCOUNT_TOKEN_KEY, captureOAuthToken } from '@/services/account/oauth'
 import { SyncClient } from '@/services/sync/client'
 import { store } from '@/storage'
@@ -34,9 +40,9 @@ export const useAuthStore = defineStore(`auth`, () => {
       await fetchMe()
   }
 
-  async function fetchMe(): Promise<void> {
+  async function fetchMe(): Promise<boolean> {
     if (!token.value)
-      return
+      return false
     try {
       const me = await api.me()
       user.value = {
@@ -44,14 +50,40 @@ export const useAuthStore = defineStore(`auth`, () => {
         plan: me.plan ?? `free`,
         planExpiresAt: me.planExpiresAt ?? null,
       }
+      return true
     }
     catch (e) {
       if (e instanceof ApiError && (e.status === 401 || e.status === 403))
         logout()
+      return false
     }
   }
 
-  function login(): void {
+  async function login(): Promise<void> {
+    if (isExtensionContext()) {
+      if (!canLoginInExtension()) {
+        toast.error(t(`account.extensionLoginUnavailable`))
+        return
+      }
+
+      const result = await loginViaExtensionIdentity()
+      if (!result.ok) {
+        if (result.reason !== `cancelled`)
+          toast.error(t(`account.loginFailed`))
+        return
+      }
+
+      token.value = result.token
+      await store.set(ACCOUNT_TOKEN_KEY, result.token)
+
+      const ok = await fetchMe()
+      if (!ok) {
+        logout()
+        toast.error(t(`account.loginFailed`))
+      }
+      return
+    }
+
     gotoLogin()
   }
 
