@@ -228,6 +228,8 @@ async function fetchSvgContent(svgUrl: string, errorMessage: string): Promise<st
       // 移除style中的width和height
       .replace(/(<svg[^>]*style="[^"]*?)width:[^;]*;?/g, `$1`)
       .replace(/(<svg[^>]*style="[^"]*?)height:[^;]*;?/g, `$1`)
+      // "none" squashes diagrams when only one axis is constrained in preview / WeChat
+      .replace(/preserveAspectRatio="none"/g, `preserveAspectRatio="xMidYMid meet"`)
   }
   catch (error) {
     console.warn(`Failed to fetch SVG content from ${svgUrl}:`, error)
