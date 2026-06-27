@@ -175,6 +175,13 @@ export async function processClipboardContent(_primaryColor: string) {
           if (cleaned)
             p.setAttribute(`style`, cleaned)
         }
+        // 继承父 ol/ul 的 padding-left（li 自身不继承父元素 padding）
+        const parentList = li.closest(`ol, ul`) as HTMLElement | null
+        if (parentList) {
+          const pp = window.getComputedStyle(parentList).paddingLeft
+          if (pp && pp !== `0px`)
+            p.style.paddingLeft = pp
+        }
         // 去掉已有 bullet/number 前缀（防止双重）
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
@@ -207,17 +214,11 @@ export async function processClipboardContent(_primaryColor: string) {
         }
       }
     })
-    // 清除 ol/ul 的 padding-left（juice 内联的，会影响解包后的子元素）
-    clipboardDiv.querySelectorAll(`ul, ol`).forEach((list) => {
-      list.style.paddingLeft = `0`
-      list.style.marginLeft = `0`
-    })
-    // 清除列表转换来的段落的 margin/padding（用长属性，不覆盖子属性）
+    // 清除列表转换来的段落的 margin（保留 paddingLeft 继承自 ol/ul）
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
       p.style.marginTop = `0`
       p.style.marginBottom = `0`
-      p.style.paddingLeft = `0`
     })
 
     // 公众号 blockquote 超 300 字报错，转成 section（computed style 已内联）
