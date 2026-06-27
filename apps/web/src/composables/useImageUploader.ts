@@ -47,6 +47,9 @@ export function useImageUploader() {
     const getFilename = (u: string) => u.split('/').pop()?.split('?')[0] || `image-${Date.now()}.png`
     const filename = getFilename(url)
 
+    // 将 http:// 升级为 https://，避免 Mixed Content 被浏览器拦截
+    const safeUrl = url.replace(/^http:\/\//i, 'https://')
+
     const fetchBlob = async (targetUrl: string, options?: RequestInit) => {
       const res = await fetch(targetUrl, options)
       if (!res.ok)
@@ -55,19 +58,19 @@ export function useImageUploader() {
     }
 
     try {
-      const blob = await fetchBlob(url, { referrerPolicy: 'no-referrer' })
+      const blob = await fetchBlob(safeUrl, { referrerPolicy: 'no-referrer' })
       return new File([blob], filename, { type: blob.type })
     }
     catch (directErr) {
-      console.warn(`Direct fetch failed for ${url}, trying proxy...`, directErr)
+      console.warn(`Direct fetch failed for ${safeUrl}, trying proxy...`, directErr)
 
       try {
-        const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(url)}`
+        const proxyUrl = `https://wsrv.nl/?url=${encodeURIComponent(safeUrl)}`
         const blob = await fetchBlob(proxyUrl)
         return new File([blob], filename, { type: blob.type })
       }
       catch (proxyErr: any) {
-        console.error(`Proxy fetch failed for ${url}`, proxyErr)
+        console.error(`Proxy fetch failed for ${safeUrl}`, proxyErr)
         const isCors = proxyErr.message.includes('Failed to fetch') || proxyErr.name === 'TypeError'
         const msg = isCors
           ? t('store.uploader.corsFailed')
