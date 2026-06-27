@@ -214,11 +214,12 @@ export async function processClipboardContent(_primaryColor: string) {
         }
       }
     })
-    // 清除列表转换来的段落的 margin
+    // 列表段落统一加左边距（模拟 ol/ul 的 padding-left）
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
       p.style.marginTop = `0`
       p.style.marginBottom = `0`
+      p.style.paddingLeft = `1.5em`
     })
 
     // 公众号 blockquote 超 300 字报错，转成 section（computed style 已内联）
