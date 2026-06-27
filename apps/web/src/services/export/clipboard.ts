@@ -268,6 +268,14 @@ export async function processClipboardContent(primaryColor: string) {
       p.style.listStyle = `none`
     })
 
+    // 公众号 blockquote 超 300 字报错，转成带样式的 div
+    clipboardDiv.querySelectorAll(`blockquote`).forEach((bq) => {
+      const div = document.createElement(`div`)
+      div.setAttribute(`style`, `border-left: 4px solid #ddd; padding: 8px 16px; margin: 1em 0; background: #f9f9f9;`)
+      div.innerHTML = bq.innerHTML
+      bq.parentElement?.replaceChild(div, bq)
+    })
+
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
       const style = h1.getAttribute(`style`) ?? ``
