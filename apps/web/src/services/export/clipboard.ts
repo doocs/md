@@ -175,18 +175,19 @@ export async function processClipboardContent(_primaryColor: string) {
           if (cleaned)
             p.setAttribute(`style`, cleaned)
         }
-        // 全角空格缩进（纯文本，公众号不会删）
+        // 列表缩进用 CSS padding-left
+        p.style.paddingLeft = `1.5em`
         const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``)
-          p.innerHTML = `\u3000\u3000${idx}. ${p.innerHTML}`
+          p.innerHTML = `${idx}. ${p.innerHTML}`
         }
         else {
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
-          p.innerHTML = `\u3000\u3000• ${p.innerHTML}`
+          p.innerHTML = `• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
         li.remove()
