@@ -295,13 +295,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-        </div>
-        <div ref="pickColorsContainer" class="mt-2">
-          <PickColors
-            v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
-            :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
-            :popup-container="pickColorsContainer" @change="colorChanged"
-          />
+          <div ref="pickColorsContainer" class="flex items-center justify-center">
+            <PickColors
+              v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
+              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
+              :popup-container="pickColorsContainer" @change="colorChanged"
+            />
+          </div>
         </div>
       </div>
       <div class="space-y-2">
@@ -321,13 +321,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-        </div>
-        <div ref="pickBgColorsContainer" class="mt-2">
-          <PickColors
-            v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
-            :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
-            :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
-          />
+          <div ref="pickBgColorsContainer" class="flex items-center justify-center">
+            <PickColors
+              v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
+              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
+              :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
+            />
+          </div>
         </div>
       </div>
       <div class="space-y-2">
