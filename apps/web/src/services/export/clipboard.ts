@@ -210,16 +210,6 @@ export async function processClipboardContent(primaryColor: string) {
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
     // 公众号对 ul/ol/li 渲染有问题（重复圆点、序号全变成1），转成纯文本段落
-    function getListDepth(el: Element): number {
-      let depth = 0
-      let cur = el.parentElement
-      while (cur) {
-        if (cur.tagName === `UL` || cur.tagName === `OL`)
-          depth++
-        cur = cur.parentElement
-      }
-      return depth
-    }
     // 先禁用 CSS 圆点，防止转换后双重标记
     clipboardDiv.querySelectorAll(`ul, ol`).forEach((el) => { el.style.listStyle = `none` })
     // 从内向外处理，避免浏览器自动修正 DOM 结构
@@ -231,7 +221,6 @@ export async function processClipboardContent(primaryColor: string) {
       for (const li of deepest) {
         const parent = li.parentElement
         const isOrdered = parent?.tagName === `OL`
-        const depth = getListDepth(li)
         const nestedLists: Element[] = []
         li.querySelectorAll(`:scope > ul, :scope > ol`).forEach(l => nestedLists.push(l))
         nestedLists.forEach(l => li.removeChild(l))
@@ -240,30 +229,22 @@ export async function processClipboardContent(primaryColor: string) {
         const liStyle = li.getAttribute(`style`)
         if (liStyle)
           p.setAttribute(`style`, liStyle)
-        // 去掉已有的 bullet/number 前缀（防止双重）
-        const textContent = p.textContent?.trimStart() ?? ``
-        const hasExistingBullet = /^[•·\-*]\s/.test(textContent)
-        const hasExistingNumber = /^\d+\.\s/.test(textContent)
-        if (depth > 1) {
-          const indent = `\u00A0\u00A0\u00A0\u00A0`.repeat(depth - 1)
-          p.innerHTML = indent + p.innerHTML
-        }
-        // 只操作第一个文本节点，保留子元素（strong/em/a 等）
-        function stripFirstTextNode(el: Element, regex: RegExp) {
-          const tn = Array.from(el.childNodes).find(n => n.nodeType === 3)
-          if (tn)
-            tn.textContent = (tn.textContent ?? ``).replace(regex, ``)
-        }
+        // 去掉已有 bullet/number 前缀（防止双重）
         if (isOrdered) {
-          if (hasExistingNumber)
-            stripFirstTextNode(p, /^\d+\.\s*/)
+          // 快照 siblings，避免 live 集合变化导致 index 错误
           const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
           const idx = siblings.indexOf(li) + 1
+          // 去掉已有数字前缀（第一个文本节点）
+          const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
+          if (firstTn)
+            firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``)
           p.innerHTML = `${idx}. ${p.innerHTML}`
         }
         else {
-          if (hasExistingBullet)
-            stripFirstTextNode(p, /^[•·\-*]\s*/)
+          // 去掉已有 bullet 前缀（第一个文本节点）
+          const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
+          if (firstTn)
+            firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
           p.innerHTML = `• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
