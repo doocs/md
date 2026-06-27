@@ -93,7 +93,7 @@ blockquote > p {
   display: block;
   font-size: 1em;
   color: hsl(var(--foreground));
-  margin: 0;
+  margin: 0 0 0.5em 0;
 }
 
 /* ==================== 代码块 ==================== */

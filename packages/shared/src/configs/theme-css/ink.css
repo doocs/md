@@ -107,7 +107,7 @@ blockquote > p {
   font-size: 1em;
   letter-spacing: 0.06em;
   color: hsl(var(--foreground));
-  margin: 0;
+  margin: 0 0 0.5em 0;
 }
 
 /* ==================== 代码块 ==================== */

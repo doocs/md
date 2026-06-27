@@ -268,11 +268,6 @@ export async function processClipboardContent(primaryColor: string) {
       p.style.listStyle = `none`
     })
 
-    // 引用块内段落间距
-    clipboardDiv.querySelectorAll(`blockquote p`).forEach((p) => {
-      p.style.marginBottom = `0.5em`
-    })
-
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
       const style = h1.getAttribute(`style`) ?? ``
