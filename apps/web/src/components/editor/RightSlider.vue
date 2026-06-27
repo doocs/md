@@ -302,6 +302,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                 :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'" @change="colorChanged" />
             </PopoverContent>
           </PopoverRoot>
+        </div>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
