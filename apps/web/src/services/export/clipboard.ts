@@ -256,10 +256,15 @@ export async function processClipboardContent(primaryColor: string) {
       }
       lis = clipboardDiv.querySelectorAll(`li`)
     }
-    // 移除空的 ul/ol 容器
+    // 移除空的 ul/ol 容器（先解包子节点再删）
     clipboardDiv.querySelectorAll(`ul, ol`).forEach((list) => {
-      if (!list.querySelector(`li`))
-        list.remove()
+      if (!list.querySelector(`li`)) {
+        const listParent = list.parentElement
+        if (listParent) {
+          while (list.firstChild) listParent.insertBefore(list.firstChild, list)
+          listParent.removeChild(list)
+        }
+      }
     })
 
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
