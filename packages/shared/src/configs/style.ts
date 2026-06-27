@@ -144,6 +144,34 @@ export const backgroundOptions: IConfigOption[] = [
   },
 ]
 
+export const backgroundPatternOptions: IConfigOption[] = [
+  {
+    label: `无`,
+    value: `none`,
+    desc: `纯色`,
+  },
+  {
+    label: `方格`,
+    value: `grid`,
+    desc: `坐标纸`,
+  },
+  {
+    label: `星点`,
+    value: `dots`,
+    desc: `Claude 风格`,
+  },
+  {
+    label: `横线`,
+    value: `lines`,
+    desc: `信纸`,
+  },
+  {
+    label: `竖线`,
+    value: `vlines`,
+    desc: `笔记本`,
+  },
+]
+
 export const widthOptions: IConfigOption[] = [
   {
     label: `移动端`,
@@ -309,6 +337,7 @@ export const defaultStyleConfig = {
   fontSize: fontSizeOptions[2].value,
   primaryColor: colorOptions[0].value,
   backgroundColor: `#ffffff`,
+  backgroundPattern: `none`,
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
@@ -319,6 +348,7 @@ export interface PerThemeSettings {
   fontFamily: string
   fontSize: string
   backgroundColor: string
+  backgroundPattern: string
   codeBlockTheme: string
   headingStyles: HeadingStyles
   isShowLineNumber: boolean
@@ -335,6 +365,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
     codeBlockTheme: codeBlockThemeOptions[23].value,
     headingStyles: {},
     isShowLineNumber: false,
@@ -345,6 +376,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
     codeBlockTheme: codeBlockThemeOptions[23].value,
     headingStyles: {},
     isShowLineNumber: false,
@@ -355,6 +387,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
     codeBlockTheme: codeBlockThemeOptions[23].value,
     headingStyles: {},
     isShowLineNumber: false,
@@ -365,6 +398,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     fontFamily: fontFamilyOptions[1].value,
     fontSize: `16px`,
     backgroundColor: `#faf8f5`,
+    backgroundPattern: `none`,
     codeBlockTheme: codeBlockThemeOptions[23].value,
     headingStyles: {},
     isShowLineNumber: false,
@@ -375,6 +409,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#f5f5f5`,
+    backgroundPattern: `grid`,
     codeBlockTheme: codeBlockThemeOptions[23].value,
     headingStyles: {},
     isShowLineNumber: false,
@@ -388,6 +423,7 @@ export function defaultPerThemeSettings(themeName?: ThemeName): PerThemeSettings
     fontFamily: defaultStyleConfig.fontFamily,
     fontSize: defaultStyleConfig.fontSize,
     backgroundColor: defaultStyleConfig.backgroundColor,
+    backgroundPattern: defaultStyleConfig.backgroundPattern,
     codeBlockTheme: defaultStyleConfig.codeBlockTheme,
     headingStyles: { ...defaultStyleConfig.headingStyles },
     isShowLineNumber: defaultStyleConfig.isShowLineNumber,

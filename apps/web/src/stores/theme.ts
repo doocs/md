@@ -44,6 +44,11 @@ export const useThemeStore = defineStore(`theme`, () => {
     set: (v: string) => { setThemeField(`backgroundColor`, v) },
   })
 
+  const backgroundPattern = computed<string>({
+    get: () => currentSettings.value.backgroundPattern,
+    set: (v: string) => { setThemeField(`backgroundPattern`, v) },
+  })
+
   const codeBlockTheme = computed<string>({
     get: () => currentSettings.value.codeBlockTheme,
     set: (v: string) => { setThemeField(`codeBlockTheme`, v) },
@@ -162,6 +167,7 @@ export const useThemeStore = defineStore(`theme`, () => {
     fontSizeNumber,
     primaryColor,
     backgroundColor,
+    backgroundPattern,
     codeBlockTheme,
     legend,
     isMacCodeBlock,

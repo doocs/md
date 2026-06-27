@@ -17,8 +17,27 @@ const renderStore = useRenderStore()
 const uiStore = useUIStore()
 const themeStore = useThemeStore()
 const { output } = storeToRefs(renderStore)
-const { backgroundColor } = storeToRefs(themeStore)
+const { backgroundColor, backgroundPattern } = storeToRefs(themeStore)
 const { isDark, isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
+
+const PATTERN_CSS: Record<string, string> = {
+  none: 'none',
+  grid: `linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)`,
+  dots: `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)`,
+  lines: `repeating-linear-gradient(transparent, transparent 29px, rgba(0,0,0,0.04) 29px, rgba(0,0,0,0.04) 30px)`,
+  vlines: `repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(0,0,0,0.04) 29px, rgba(0,0,0,0.04) 30px)`,
+}
+
+const previewStyle = computed(() => {
+  const pattern = backgroundPattern.value || 'none'
+  const bgImage = PATTERN_CSS[pattern] || 'none'
+  const bgSize = pattern === 'dots' ? '20px 20px' : pattern === 'grid' ? '20px 20px' : pattern === 'none' ? 'auto' : '30px 30px'
+  return {
+    backgroundColor: backgroundColor.value,
+    backgroundImage: bgImage,
+    backgroundSize: bgSize,
+  }
+})
 
 const effectivePreviewWidth = computed(() => {
   if (isMobile.value)
@@ -100,7 +119,7 @@ defineExpose({
             effectivePreviewWidth,
             effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
           ]"
-          :style="{ backgroundColor }"
+          :style="previewStyle"
         >
           <section id="output" class="w-full" @click="onContentClick" v-html="output" />
           <div v-if="isCoping" class="loading-mask">

@@ -142,6 +142,7 @@ export default {
     fontSize: `字号`,
     primaryColor: `主题色`,
     backgroundColor: `背景色`,
+    backgroundPattern: `背景图案`,
     codeBlockTheme: `代码主题`,
     legendFormat: `图注`,
     customPrimaryColor: `自定义色`,

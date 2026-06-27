@@ -3,12 +3,7 @@
  * 报纸刊物感 —— 方格背景、粗黑标题、经典报纸排版
  */
 
-/* 预览区背景：方格纸图案（背景色由 .preview 容器控制） */
-#output {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
+/* 预览区背景：方格纸（背景色和图案由 .preview 容器的 Vue 绑定控制） */
 
 /* ==================== 标题样式 ==================== */
 h1 {

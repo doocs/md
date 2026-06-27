@@ -28,6 +28,7 @@ const {
   fontSize,
   primaryColor,
   backgroundColor,
+  backgroundPattern,
   codeBlockTheme,
   legend,
   isMacCodeBlock,
@@ -95,6 +96,10 @@ function colorChanged(newColor: string) {
 function backgroundColorChanged(newColor: string) {
   themeStore.backgroundColor = newColor
   themeStore.applyCurrentTheme()
+}
+
+function patternChanged(newPattern: string) {
+  themeStore.backgroundPattern = newPattern
 }
 
 function codeBlockThemeChanged(newTheme: unknown) {
@@ -318,6 +323,20 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
                 background: value,
               }"
             />
+            {{ label }}
+          </Button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-sm font-medium">
+          {{ t('menu.backgroundPattern') }}
+        </h2>
+        <div class="grid grid-cols-3 gap-2">
+          <Button
+            v-for="{ label, value } in localizedStyleOptions.backgroundPatternOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
+              'border-primary ring-1 ring-primary/20 border-2': backgroundPattern === value,
+            }" @click="patternChanged(value)"
+          >
             {{ label }}
           </Button>
         </div>

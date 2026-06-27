@@ -142,6 +142,7 @@ export default {
     fontSize: `Size`,
     primaryColor: `Color`,
     backgroundColor: `Background`,
+    backgroundPattern: `Pattern`,
     codeBlockTheme: `Code theme`,
     legendFormat: `Caption`,
     customPrimaryColor: `Custom color`,
