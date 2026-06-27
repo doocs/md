@@ -7,9 +7,6 @@ import type {
 import type { Format } from 'vue-pick-colors'
 import { X } from '@lucide/vue'
 import PickColors from 'vue-pick-colors'
-import PopoverContent from '@/components/ui/popover/PopoverContent.vue'
-import PopoverRoot from '@/components/ui/popover/Popover.vue'
-import PopoverTrigger from '@/components/ui/popover/PopoverTrigger.vue'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
@@ -18,6 +15,12 @@ import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
+
+const confirmStore = useConfirmStore()
+const cssEditorStore = useCssEditorStore()
+const uiStore = useUIStore()
+const themeStore = useThemeStore()
+const { t } = useI18n()
 const localizedStyleOptions = useLocalizedStyleOptions()
 const {
   theme,
@@ -98,7 +101,6 @@ function backgroundColorChanged(newColor: string) {
 function patternChanged(newPattern: string) {
   themeStore.backgroundPattern = newPattern
 }
-
 
 function codeBlockThemeChanged(newTheme: unknown) {
   if (typeof newTheme !== 'string')
@@ -195,6 +197,9 @@ watch(isOpenRightSlider, () => {
 watch(isMobile, () => {
   enableAnimation.value = false
 })
+
+const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
+const pickBgColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickBgColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
@@ -290,18 +295,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <PopoverRoot>
-            <PopoverTrigger as-child>
-              <Button variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap">
-                <span class="mr-1.5 inline-block size-3 shrink-0 rounded-full" :style="{ background: primaryColor }" />
-                {{ t('menu.customPrimaryColor') }}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-[280px] p-3">
-              <PickColors v-model:value="primaryColor" show-alpha :format="format"
-                :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'" @change="colorChanged" />
-            </PopoverContent>
-          </PopoverRoot>
+          <div ref="pickColorsContainer" class="flex items-center justify-center">
+            <PickColors
+              v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
+              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
+              :popup-container="pickColorsContainer" @change="colorChanged"
+            />
+          </div>
         </div>
       </div>
       <div class="space-y-2">
@@ -321,18 +321,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <PopoverRoot>
-            <PopoverTrigger as-child>
-              <Button variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap">
-                <span class="mr-1.5 inline-block size-3 shrink-0 rounded-full border" :style="{ background: backgroundColor }" />
-                {{ t('menu.customPrimaryColor') }}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent class="w-[280px] p-3">
-              <PickColors v-model:value="backgroundColor" show-alpha :format="format"
-                :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'" @change="backgroundColorChanged" />
-            </PopoverContent>
-          </PopoverRoot>
+          <div ref="pickBgColorsContainer" class="flex items-center justify-center">
+            <PickColors
+              v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
+              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
+              :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
+            />
+          </div>
         </div>
       </div>
       <div class="space-y-2">
