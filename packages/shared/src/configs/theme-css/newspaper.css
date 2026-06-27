@@ -1,23 +1,21 @@
 /**
  * MD 报刊主题
- * 报纸刊物感 —— 方格背景、粗黑标题、经典报纸排版
+ * 报纸刊物感 —— 粗黑标题、经典报纸排版
  */
-
-/* 预览区背景：方格纸（背景色和图案由 .preview 容器的 Vue 绑定控制） */
 
 /* ==================== 标题样式 ==================== */
 h1 {
   display: block;
   padding: 0.4em 0 0.35em;
   margin: 1.5em 8px 0.4em;
-  color: #111;
+  color: hsl(var(--foreground));
   font-size: calc(var(--md-font-size) * 2);
   font-weight: 900;
   letter-spacing: -0.03em;
   line-height: 1.1;
   text-transform: uppercase;
-  border-top: 6px solid #111;
-  border-bottom: 3px solid #111;
+  border-top: 6px solid hsl(var(--foreground));
+  border-bottom: 3px solid hsl(var(--foreground));
   padding-top: 0.3em;
 }
 
@@ -25,18 +23,18 @@ h2 {
   display: block;
   padding: 0.2em 0;
   margin: 1.8em 8px 0.3em;
-  color: #111;
+  color: hsl(var(--foreground));
   font-size: calc(var(--md-font-size) * 1.4);
   font-weight: 900;
   letter-spacing: -0.01em;
   line-height: 1.2;
-  border-bottom: 1px solid #111;
+  border-bottom: 1px solid hsl(var(--foreground));
   padding-bottom: 0.25em;
 }
 
 h3 {
   margin: 1.5em 8px 0.3em;
-  color: #111;
+  color: hsl(var(--foreground));
   font-size: calc(var(--md-font-size) * 1.15);
   font-weight: 800;
   font-style: italic;
@@ -44,17 +42,16 @@ h3 {
 
 h4 {
   margin: 1.2em 8px 0.3em;
-  color: #111;
-  font-size: var(--md-font-size);
+  color: hsl(var(--foreground));
+  font-size: calc(var(--md-font-size) * 0.85);
   font-weight: 800;
   text-transform: uppercase;
   letter-spacing: 0.12em;
-  font-size: calc(var(--md-font-size) * 0.85);
 }
 
 h5 {
   margin: 1.2em 8px 0.3em;
-  color: #555;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
   font-size: calc(var(--md-font-size) * 0.85);
   font-weight: 700;
   text-transform: uppercase;
@@ -64,7 +61,7 @@ h5 {
 h6 {
   margin: 1.2em 8px 0.3em;
   font-size: calc(var(--md-font-size) * 0.85);
-  color: #888;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.15em;
@@ -75,7 +72,7 @@ p {
   margin: 0.7em 8px;
   letter-spacing: 0.01em;
   line-height: 1.7;
-  color: #222;
+  color: hsl(var(--foreground));
 }
 
 /* ==================== 引用块 ==================== */
@@ -83,10 +80,10 @@ blockquote {
   font-style: normal;
   padding: 1em 1.2em;
   border: none;
-  border-top: 3px solid #111;
-  border-bottom: 1px solid #111;
+  border-top: 3px solid hsl(var(--foreground));
+  border-bottom: 1px solid hsl(var(--foreground));
   border-radius: 0;
-  color: #333;
+  color: hsl(var(--foreground));
   background: rgba(0, 0, 0, 0.02);
   margin: 1.2em 8px;
   font-size: 0.95em;
@@ -95,7 +92,7 @@ blockquote {
 blockquote > p {
   display: block;
   font-size: 1em;
-  color: #333;
+  color: hsl(var(--foreground));
   margin: 0;
 }
 
@@ -127,7 +124,7 @@ pre.code__pre > code,
 
 /* ==================== 行内代码 ==================== */
 .codespan {
-  color: #222;
+  color: var(--md-primary-color);
   background: rgba(0, 0, 0, 0.05);
   border-radius: 2px;
   padding: 0.1em 0.35em;
@@ -148,7 +145,7 @@ figcaption,
 .md-figcaption {
   text-align: left;
   font-size: 0.8em;
-  color: #666;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
   font-style: italic;
   margin-top: 0.3em;
   padding: 0.2em 0;
@@ -175,7 +172,7 @@ hr {
   height: auto;
   margin: 1.5em 8px;
   text-align: center;
-  color: #999;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
 }
 
 hr::after {
@@ -187,12 +184,12 @@ hr::after {
 /* ==================== 强调 ==================== */
 em {
   font-style: italic;
-  color: #222;
+  color: hsl(var(--foreground));
 }
 
 /* ==================== 链接 ==================== */
 a {
-  color: #222;
+  color: var(--md-primary-color);
   text-decoration: underline;
   text-underline-offset: 3px;
   text-decoration-thickness: 1.5px;
@@ -202,18 +199,18 @@ a {
 /* ==================== 粗体 ==================== */
 strong {
   font-weight: 900;
-  color: #111;
+  color: hsl(var(--foreground));
 }
 
 /* ==================== 表格（经典报纸风格） ==================== */
 table {
-  color: #222;
+  color: hsl(var(--foreground));
   border-collapse: collapse;
   width: 100%;
 }
 
 thead {
-  color: #222;
+  color: hsl(var(--foreground));
 }
 
 th {
@@ -223,8 +220,8 @@ th {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-size: 0.82em;
-  border-top: 3px solid #111;
-  border-bottom: 1px solid #111;
+  border-top: 3px solid hsl(var(--foreground));
+  border-bottom: 1px solid hsl(var(--foreground));
 }
 
 td {
@@ -235,13 +232,13 @@ td {
 
 /* 表格最后一行加粗底线 */
 table tbody tr:last-child td {
-  border-bottom: 3px solid #111;
+  border-bottom: 3px solid hsl(var(--foreground));
 }
 
 /* ==================== 标记高亮 ==================== */
 .markup-highlight {
-  background: #111;
-  color: #f9f9f9;
+  background: var(--md-primary-color);
+  color: hsl(var(--background, 0 0% 100%));
   padding: 0.1em 0.3em;
   font-weight: 700;
 }
