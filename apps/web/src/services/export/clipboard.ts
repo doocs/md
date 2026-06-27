@@ -275,17 +275,21 @@ export async function processClipboardContent(primaryColor: string) {
       for (const attr of bq.attributes) {
         section.setAttribute(attr.name, attr.value)
       }
-      // juice 无法解析 CSS 变量，补上兜底样式
-      const existingStyle = section.getAttribute(`style`) ?? ``
+      // juice 无法解析 CSS 变量，先替换含 var() 的属性，再补缺失的
+      let style = section.getAttribute(`style`) ?? ``
+      style = style
+        .replace(/border-left:[^;]*var\([^)]*\)[^;]*/g, `border-left: 3px solid #ddd`)
+        .replace(/background:[^;]*var\([^)]*\)[^;]*/g, `background: #f7f7f7`)
+        .replace(/color:[^;]*var\([^)]*\)[^;]*/g, `color: #3f3f3f`)
       const fallbacks = [
-        !existingStyle.includes(`border-left`) && `border-left: 3px solid #ddd`,
-        !existingStyle.includes(`background`) && `background: #f7f7f7`,
-        !existingStyle.includes(`padding`) && `padding: 8px 16px`,
-        !existingStyle.includes(`margin`) && `margin: 1em 0`,
+        !style.includes(`border-left`) && `border-left: 3px solid #ddd`,
+        !style.includes(`background`) && `background: #f7f7f7`,
+        !style.includes(`padding`) && `padding: 8px 16px`,
+        !style.includes(`margin`) && `margin: 1em 0`,
       ].filter(Boolean).join(`; `)
-      if (fallbacks) {
-        section.setAttribute(`style`, existingStyle ? `${existingStyle}; ${fallbacks}` : fallbacks)
-      }
+      if (fallbacks)
+        style = style ? `${style}; ${fallbacks}` : fallbacks
+      section.setAttribute(`style`, style)
       section.innerHTML = bq.innerHTML
       bq.parentElement?.replaceChild(section, bq)
     })
