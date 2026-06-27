@@ -2,7 +2,6 @@ import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/pre
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { getStylesToAdd } from './share-styles'
 import { prepareMathFormulasForWeChat, sanitizeSvgsForWeChat } from './wechat-svg'
 
 export function solveWeChatImage(container?: HTMLElement) {
@@ -27,108 +26,6 @@ export function solveWeChatImage(container?: HTMLElement) {
   })
 }
 
-async function mergeCss(html: string): Promise<string> {
-  const { default: juice } = await import(`juice`)
-  return juice(html, {
-    resolveCSSVariables: true,
-  })
-}
-
-function modifyHtmlStructure(htmlString: string): string {
-  const tempDiv = document.createElement(`div`)
-  tempDiv.innerHTML = htmlString
-
-  tempDiv.querySelectorAll(`li > ul, li > ol`).forEach((originalItem) => {
-    originalItem.parentElement?.insertAdjacentElement(`afterend`, originalItem)
-  })
-
-  return tempDiv.innerHTML
-}
-
-/**
- * 公众号不支持 ::after / ::before / ::first-letter 伪元素。
- * 直接在 DOM 上把伪元素转成真正的 HTML 元素，并清理 CSS 中的伪元素规则。
- */
-function processPseudoElementsForWeChat(container: HTMLElement, cssText: string): string {
-  // 1. hr::after → 用 div 画一条细灰线
-  if (/hr::after\s*\{/.test(cssText)) {
-    container.querySelectorAll(`hr`).forEach((hr) => {
-      hr.style.border = `none`
-      hr.style.margin = `1em 8px`
-      const line = document.createElement(`div`)
-      line.style.width = `100%`
-      line.style.height = `1px`
-      line.style.background = `#ccc`
-      hr.parentElement?.insertBefore(line, hr.nextSibling)
-    })
-  }
-
-  // 2. h1::after { 下划线 } → 在 h1 后插入 div
-  const h1AfterMatch = cssText.match(/h1::after\s*\{([^}]+)\}/)
-  if (h1AfterMatch) {
-    const s = h1AfterMatch[1]
-    const w = s.match(/width:\s*([^;]+)/)?.[1]?.trim() ?? `60%`
-    const h = s.match(/height:\s*([^;]+)/)?.[1]?.trim() ?? `3px`
-    container.querySelectorAll(`h1`).forEach((h1) => {
-      const line = document.createElement(`div`)
-      line.style.width = w
-      line.style.height = h
-      line.style.background = `#3f3f3f`
-      line.style.margin = `0 auto`
-      h1.parentElement?.insertBefore(line, h1.nextSibling)
-    })
-  }
-
-  // 3. ::first-letter → span 包裹首字
-  const ruleRegex = /([^{}]+?)::first-letter\s*\{([^}]+)\}/g
-  const firstLetterRules: { sel: string, styles: string }[] = []
-  let m = ruleRegex.exec(cssText)
-  while (m) {
-    for (const s of m[1].split(`,`)) {
-      firstLetterRules.push({ sel: s.trim().replace(/^body\s+/i, ``), styles: m[2].trim().replace(/;?\s*$/, ``) })
-    }
-    m = ruleRegex.exec(cssText)
-  }
-  const resolveColor = (s: string) => s.replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
-  const flStyle = resolveColor(firstLetterRules[0]?.styles ?? ``)
-  const matchedPs = new Set<Element>()
-  for (const { sel, styles } of firstLetterRules) {
-    const prevSel = sel.replace(/\s*\+\s*p\s*$/, ``)
-    if (!prevSel)
-      continue
-    for (const prevEl of container.querySelectorAll(prevSel)) {
-      const nextP = prevEl.nextElementSibling
-      if (!nextP || nextP.tagName !== `P`)
-        continue
-      matchedPs.add(nextP)
-      const tn = Array.from(nextP.childNodes).find(n => n.nodeType === 3 && (n.textContent ?? ``).trim())
-      if (!tn)
-        continue
-      const txt = tn.textContent ?? ``
-      const span = document.createElement(`span`)
-      span.textContent = txt[0]
-      span.setAttribute(`style`, resolveColor(styles))
-      nextP.insertBefore(span, tn)
-      tn.textContent = txt.slice(1)
-    }
-  }
-  const firstP = container.querySelector(`p`)
-  if (firstP && !matchedPs.has(firstP) && flStyle) {
-    const tn = Array.from(firstP.childNodes).find(n => n.nodeType === 3 && (n.textContent ?? ``).trim())
-    if (tn) {
-      const txt = tn.textContent ?? ``
-      const span = document.createElement(`span`)
-      span.textContent = txt[0]
-      span.setAttribute(`style`, flStyle)
-      firstP.insertBefore(span, tn)
-      tn.textContent = txt.slice(1)
-    }
-  }
-
-  // 4. 清理 CSS 中的伪元素规则
-  return cssText.replace(/[^{}]+?::(after|before|first-letter)\s*\{[^}]+\}\s*/g, ``)
-}
-
 function createEmptyNode(): HTMLElement {
   const node = document.createElement(`p`)
   node.style.fontSize = `0`
@@ -143,7 +40,7 @@ function createEmptyNode(): HTMLElement {
  * Diagrams are always exported in light theme (WeChat does not remap SVG colors;
  * dual-theme @media/class wrappers violate WeChat SVG constraints).
  */
-export async function processClipboardContent(primaryColor: string) {
+export async function processClipboardContent(_primaryColor: string) {
   const outputElement = document.getElementById(`output`)
   if (!outputElement) {
     return {
@@ -167,7 +64,7 @@ export async function processClipboardContent(primaryColor: string) {
 
   try {
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
-    // 背景色/图案在父元素 .preview 上，复制到剪贴板内容
+    // 背景色/图案在父元素 .preview 上
     const previewParent = outputElement.closest(`.preview`) as HTMLElement | null
     if (previewParent) {
       const bg = previewParent.style.backgroundColor
@@ -181,15 +78,70 @@ export async function processClipboardContent(primaryColor: string) {
       }
     }
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
-    const stylesToAdd = await getStylesToAdd()
 
-    // 公众号不支持伪元素，直接在 DOM 上处理（先处理再加 CSS 到 innerHTML）
-    const cleanedCSS = processPseudoElementsForWeChat(clipboardDiv, stylesToAdd || ``)
-    if (cleanedCSS || stylesToAdd) {
-      clipboardDiv.innerHTML = (cleanedCSS || stylesToAdd || ``) + clipboardDiv.innerHTML
+    // 核心：从预览 DOM 的 computedStyle 提取关键属性，直接内联
+    // 不依赖 juice，保证样式 1:1 还原
+    const STYLE_PROPS = [
+      `color`,
+      `background-color`,
+      `background-image`,
+      `background-size`,
+      `font-size`,
+      `font-weight`,
+      `font-style`,
+      `font-family`,
+      `line-height`,
+      `letter-spacing`,
+      `text-align`,
+      `text-decoration`,
+      `text-indent`,
+      `vertical-align`,
+      `white-space`,
+      `word-break`,
+      `border`,
+      `border-left`,
+      `border-right`,
+      `border-top`,
+      `border-bottom`,
+      `border-collapse`,
+      `border-spacing`,
+      `padding`,
+      `padding-left`,
+      `padding-right`,
+      `padding-top`,
+      `padding-bottom`,
+      `margin`,
+      `margin-left`,
+      `margin-right`,
+      `margin-top`,
+      `margin-bottom`,
+      `display`,
+      `float`,
+      `clear`,
+      `list-style`,
+      `list-style-type`,
+      `list-style-position`,
+    ] as const
+
+    function inlineComputedStyles(live: Element, cloned: Element) {
+      const computed = window.getComputedStyle(live)
+      const el = cloned as HTMLElement
+      for (const prop of STYLE_PROPS) {
+        const val = computed.getPropertyValue(prop)
+        if (val && val !== `initial` && val !== `normal`) {
+          if (prop === `display` && (val === `flex` || val === `grid` || val === `contents`))
+            continue
+          el.style.setProperty(prop, val)
+        }
+      }
     }
 
-    clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
+    // 遍历克隆 DOM，与预览 DOM 一一对应提取样式
+    const liveElements = outputElement.querySelectorAll(`*`)
+    const clonedElements = clipboardDiv.querySelectorAll(`*`)
+    for (let i = 0; i < liveElements.length && i < clonedElements.length; i++) {
+      inlineComputedStyles(liveElements[i], clonedElements[i])
+    }
 
     const liPositions = new Map<Element, number>()
     for (const ol of clipboardDiv.querySelectorAll(`ol`)) {
@@ -266,59 +218,29 @@ export async function processClipboardContent(primaryColor: string) {
       p.style.listStyle = `none`
     })
 
-    // 公众号 blockquote 超 300 字报错，转成 section 并保留内联样式
+    // 公众号 blockquote 超 300 字报错，转成 section（computed style 已内联）
     clipboardDiv.querySelectorAll(`blockquote`).forEach((bq) => {
       const section = document.createElement(`section`)
-      // 复制 blockquote 上所有属性（含 juice 内联的 style）
       for (const attr of bq.attributes) {
         section.setAttribute(attr.name, attr.value)
       }
-      // juice 无法解析 CSS 变量，先替换含 var() 的属性，再补缺失的
-      let style = section.getAttribute(`style`) ?? ``
-      style = style
-        .replace(/border-left:[^;]*var\([^)]*\)[^;]*/g, `border-left: 3px solid #ddd`)
-        .replace(/background:[^;]*var\([^)]*\)[^;]*/g, `background: #f7f7f7`)
-        .replace(/color:[^;]*var\([^)]*\)[^;]*/g, `color: #3f3f3f`)
-      const fallbacks = [
-        !style.includes(`border-left`) && `border-left: 3px solid #ddd`,
-        !style.includes(`background`) && `background: #f7f7f7`,
-        !style.includes(`padding`) && `padding: 8px 16px`,
-        !style.includes(`margin`) && `margin: 1em 0`,
-      ].filter(Boolean).join(`; `)
-      if (fallbacks)
-        style = style ? `${style}; ${fallbacks}` : fallbacks
-      section.setAttribute(`style`, style)
       section.innerHTML = bq.innerHTML
       bq.parentElement?.replaceChild(section, bq)
     })
 
-    // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
+    // h1 inline-block + margin:auto 在公众号不居中
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
       const style = h1.getAttribute(`style`) ?? ``
-      if (style.includes(`display: inline-block`) || style.includes(`display:inline-block`)) {
-        const newStyle = style
-          .replace(/display:\s*inline-block\s*;?/g, `display: block; width: fit-content; margin-left: auto; margin-right: auto;`)
-        h1.setAttribute(`style`, newStyle)
+      if (style.includes(`inline-block`)) {
+        h1.setAttribute(`style`, style
+          .replace(/display:\s*inline-block\s*;?/g, `display: block; width: fit-content; margin-left: auto; margin-right: auto;`))
       }
-    })
-
-    // figcaption 居中（juice 可能没匹配到选择器）
-    clipboardDiv.querySelectorAll(`figcaption, .md-figcaption`).forEach((cap) => {
-      cap.style.textAlign = `center`
-      cap.style.fontSize = `0.85em`
-      cap.style.color = `#999`
     })
 
     clipboardDiv.querySelectorAll(`a[href^="#"]`).forEach(a => a.removeAttribute(`href`))
 
     clipboardDiv.innerHTML = clipboardDiv.innerHTML
       .replace(/([^-])top:(.*?)em/g, `$1transform: translateY($2em)`)
-      .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
-      .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
-      .replace(/var\(--md-primary-color\)/g, primaryColor)
-      .replace(/--md-primary-color:.+?;/g, ``)
-      .replace(/--md-font-family:.+?;/g, ``)
-      .replace(/--md-font-size:.+?;/g, ``)
       .replace(
         /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
         `<span class="nodeLabel"$1>$2</span>`,
