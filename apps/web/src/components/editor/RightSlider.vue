@@ -338,6 +338,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             <span class="text-xs whitespace-nowrap">{{ t('menu.customPrimaryColor') }}</span>
           </div>
+        </div>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
