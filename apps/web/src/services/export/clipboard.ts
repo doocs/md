@@ -267,6 +267,14 @@ export async function processClipboardContent(primaryColor: string) {
       }
     })
 
+    // 清除 juice 给 li 内联的 list-style（转成 p 后仍会被渲染）
+    clipboardDiv.querySelectorAll(`p[style]`).forEach((p) => {
+      const style = p.getAttribute(`style`) ?? ``
+      if (style.includes(`list-style`)) {
+        p.setAttribute(`style`, style.replace(/list-style[^;]*;?\s*/g, ``))
+      }
+    })
+
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
       const style = h1.getAttribute(`style`) ?? ``
