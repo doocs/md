@@ -214,6 +214,7 @@ export async function processClipboardContent(primaryColor: string) {
         li.querySelectorAll(`:scope > ul, :scope > ol`).forEach(l => nestedLists.push(l))
         nestedLists.forEach(l => li.removeChild(l))
         const p = document.createElement(`p`)
+        p.setAttribute(`data-from-list`, `true`)
         p.innerHTML = li.innerHTML
         const liStyle = li.getAttribute(`style`)
         if (liStyle) {
@@ -254,10 +255,11 @@ export async function processClipboardContent(primaryColor: string) {
       }
     })
 
-    // 清除转换后列表段落的 margin/padding
-    clipboardDiv.querySelectorAll(`p`).forEach((p) => {
+    // 清除列表转换来的段落的 margin/padding/list-style
+    clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
+      p.removeAttribute(`data-from-list`)
       const style = p.getAttribute(`style`) ?? ``
-      if (style.includes(`list-style`) || style.includes(`padding`) || style.includes(`margin`)) {
+      if (style) {
         p.setAttribute(`style`, style
           .replace(/padding[^;]*;?\s*/g, ``)
           .replace(/margin[^;]*;?\s*/g, ``)
