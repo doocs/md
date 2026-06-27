@@ -30,7 +30,7 @@ export function solveWeChatImage(container?: HTMLElement) {
 async function mergeCss(html: string): Promise<string> {
   const { default: juice } = await import(`juice`)
   return juice(html, {
-    inlinePseudoElements: true,
+    inlinePseudoElements: false, // 已手动处理伪元素
     preserveImportant: true,
     resolveCSSVariables: false,
   })
@@ -49,14 +49,11 @@ function modifyHtmlStructure(htmlString: string): string {
 
 /**
  * 公众号不支持 ::after / ::before / ::first-letter 伪元素。
- * 一次 DOM 解析，把所有伪元素转成真正的 HTML 元素。
+ * 直接在 DOM 上把伪元素转成真正的 HTML 元素，并清理 CSS 中的伪元素规则。
  */
-function processPseudoElementsForWeChat(html: string): string {
-  const tempDiv = document.createElement(`div`)
-  tempDiv.innerHTML = html
-
+function processPseudoElementsForWeChat(container: HTMLElement, cssText: string): string {
   // 1. hr::after { content: '■ ■ ■' } → 在 hr 后插入 span
-  const hrAfterMatch = html.match(/hr::after\s*\{([^}]+)\}/)
+  const hrAfterMatch = cssText.match(/hr::after\s*\{([^}]+)\}/)
   if (hrAfterMatch) {
     const styles = hrAfterMatch[1]
     const contentMatch = styles.match(/content:\s*['"](.+?)['"]/)
@@ -64,7 +61,7 @@ function processPseudoElementsForWeChat(html: string): string {
       const text = contentMatch[1].replace(/\\([0-9a-f]{2,6})/gi, (_, h) => String.fromCodePoint(Number.parseInt(h, 16)))
       const ls = styles.match(/letter-spacing:\s*([^;]+)/)?.[1]?.trim() ?? `0.5em`
       const fs = styles.match(/font-size:\s*([^;]+)/)?.[1]?.trim() ?? `0.6em`
-      tempDiv.querySelectorAll(`hr`).forEach((hr) => {
+      container.querySelectorAll(`hr`).forEach((hr) => {
         hr.style.border = `none`
         hr.style.textAlign = `center`
         hr.style.margin = `2.5em 8px`
@@ -78,12 +75,12 @@ function processPseudoElementsForWeChat(html: string): string {
   }
 
   // 2. h1::after { 下划线 } → 在 h1 后插入 div
-  const h1AfterMatch = html.match(/h1::after\s*\{([^}]+)\}/)
+  const h1AfterMatch = cssText.match(/h1::after\s*\{([^}]+)\}/)
   if (h1AfterMatch) {
     const s = h1AfterMatch[1]
     const w = s.match(/width:\s*([^;]+)/)?.[1]?.trim() ?? `60%`
     const h = s.match(/height:\s*([^;]+)/)?.[1]?.trim() ?? `3px`
-    tempDiv.querySelectorAll(`h1`).forEach((h1) => {
+    container.querySelectorAll(`h1`).forEach((h1) => {
       const line = document.createElement(`div`)
       line.style.width = w
       line.style.height = h
@@ -96,12 +93,12 @@ function processPseudoElementsForWeChat(html: string): string {
   // 3. ::first-letter → span 包裹首字
   const ruleRegex = /([^{}]+?)::first-letter\s*\{([^}]+)\}/g
   const firstLetterRules: { sel: string, styles: string }[] = []
-  let m = ruleRegex.exec(html)
+  let m = ruleRegex.exec(cssText)
   while (m) {
     for (const s of m[1].split(`,`)) {
       firstLetterRules.push({ sel: s.trim().replace(/^body\s+/i, ``), styles: m[2].trim().replace(/;?\s*$/, ``) })
     }
-    m = ruleRegex.exec(html)
+    m = ruleRegex.exec(cssText)
   }
   const resolveColor = (s: string) => s.replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
   const flStyle = resolveColor(firstLetterRules[0]?.styles ?? ``)
@@ -110,7 +107,7 @@ function processPseudoElementsForWeChat(html: string): string {
     const prevSel = sel.replace(/\s*\+\s*p\s*$/, ``)
     if (!prevSel)
       continue
-    for (const prevEl of tempDiv.querySelectorAll(prevSel)) {
+    for (const prevEl of container.querySelectorAll(prevSel)) {
       const nextP = prevEl.nextElementSibling
       if (!nextP || nextP.tagName !== `P`)
         continue
@@ -126,8 +123,7 @@ function processPseudoElementsForWeChat(html: string): string {
       tn.textContent = txt.slice(1)
     }
   }
-  // h1 在公众号变成原生标题，h1+p 失效，对第一个 <p> 补首字
-  const firstP = tempDiv.querySelector(`p`)
+  const firstP = container.querySelector(`p`)
   if (firstP && !matchedPs.has(firstP) && flStyle) {
     const tn = Array.from(firstP.childNodes).find(n => n.nodeType === 3 && (n.textContent ?? ``).trim())
     if (tn) {
@@ -140,10 +136,8 @@ function processPseudoElementsForWeChat(html: string): string {
     }
   }
 
-  // 4. 清理所有伪元素 CSS 规则
-  let result = tempDiv.innerHTML
-  result = result.replace(/[^{}]+?::(after|before|first-letter)\s*\{[^}]+\}\s*/g, ``)
-  return result
+  // 4. 清理 CSS 中的伪元素规则
+  return cssText.replace(/[^{}]+?::(after|before|first-letter)\s*\{[^}]+\}\s*/g, ``)
 }
 
 function createEmptyNode(): HTMLElement {
@@ -200,19 +194,14 @@ export async function processClipboardContent(primaryColor: string) {
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
     const stylesToAdd = await getStylesToAdd()
 
-    if (stylesToAdd) {
-      clipboardDiv.innerHTML = stylesToAdd + clipboardDiv.innerHTML
+    // 公众号不支持伪元素，直接在 DOM 上处理（先处理再加 CSS 到 innerHTML）
+    const cleanedCSS = processPseudoElementsForWeChat(clipboardDiv, stylesToAdd || ``)
+    if (cleanedCSS || stylesToAdd) {
+      clipboardDiv.innerHTML = (cleanedCSS || stylesToAdd || ``) + clipboardDiv.innerHTML
     }
-
-    // 公众号不支持伪元素，一次处理 ::after / ::before / ::first-letter
-    clipboardDiv.innerHTML = processPseudoElementsForWeChat(clipboardDiv.innerHTML)
 
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
-    // 公众号对 ul/ol/li 渲染有问题（重复圆点、序号全变成1），转成纯文本段落
-    // 先禁用 CSS 圆点，防止转换后双重标记
-    clipboardDiv.querySelectorAll(`ul, ol`).forEach((el) => { el.style.listStyle = `none` })
-    // 预计算每个 li 的编号（DOM 变化后 index 会错）
     const liPositions = new Map<Element, number>()
     for (const ol of clipboardDiv.querySelectorAll(`ol`)) {
       let idx = 1
