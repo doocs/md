@@ -52,29 +52,17 @@ function modifyHtmlStructure(htmlString: string): string {
  * 直接在 DOM 上把伪元素转成真正的 HTML 元素，并清理 CSS 中的伪元素规则。
  */
 function processPseudoElementsForWeChat(container: HTMLElement, cssText: string): string {
-  // 1. hr::after { content: '■ ■ ■' } → 在 hr 后插入 span
-  const hrAfterMatch = cssText.match(/hr::after\s*\{([^}]+)\}/)
-  if (hrAfterMatch) {
-    const styles = hrAfterMatch[1]
-    const contentMatch = styles.match(/content:\s*['"](.+?)['"]/)
-    if (contentMatch) {
-      const text = contentMatch[1].replace(/\\([0-9a-f]{2,6})/gi, (_, h) => String.fromCodePoint(Number.parseInt(h, 16)))
-      const ls = styles.match(/letter-spacing:\s*([^;]+)/)?.[1]?.trim() ?? `0.5em`
-      const fs = styles.match(/font-size:\s*([^;]+)/)?.[1]?.trim() ?? `0.6em`
-      container.querySelectorAll(`hr`).forEach((hr) => {
-        hr.style.border = `none`
-        hr.style.color = `#666` // 替代 hsl(var(--muted-foreground))
-        hr.style.margin = `1em 8px`
-        // span 插在 hr 后面（兄弟节点），需要自身 block + text-align 居中
-        const span = document.createElement(`span`)
-        span.textContent = text
-        span.style.display = `block`
-        span.style.textAlign = `center`
-        span.style.letterSpacing = ls
-        span.style.fontSize = fs
-        hr.parentElement?.insertBefore(span, hr.nextSibling)
-      })
-    }
+  // 1. hr::after → 用 div 画一条细灰线
+  if (/hr::after\s*\{/.test(cssText)) {
+    container.querySelectorAll(`hr`).forEach((hr) => {
+      hr.style.border = `none`
+      hr.style.margin = `1em 8px`
+      const line = document.createElement(`div`)
+      line.style.width = `100%`
+      line.style.height = `1px`
+      line.style.background = `#ccc`
+      hr.parentElement?.insertBefore(line, hr.nextSibling)
+    })
   }
 
   // 2. h1::after { 下划线 } → 在 h1 后插入 div
