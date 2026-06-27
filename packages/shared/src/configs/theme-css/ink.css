@@ -5,7 +5,8 @@
 
 /* ==================== 标题样式 ==================== */
 h1 {
-  display: inline-block;
+  display: block;
+  width: fit-content;
   padding: 0.4em 1.5em;
   margin: 2em auto 1em;
   color: hsl(var(--foreground));
