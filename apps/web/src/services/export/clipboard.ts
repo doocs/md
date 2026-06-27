@@ -63,6 +63,7 @@ function processPseudoElementsForWeChat(container: HTMLElement, cssText: string)
       const fs = styles.match(/font-size:\s*([^;]+)/)?.[1]?.trim() ?? `0.6em`
       container.querySelectorAll(`hr`).forEach((hr) => {
         hr.style.border = `none`
+        hr.style.color = `#666` // 替代 hsl(var(--muted-foreground))
         hr.style.margin = `2.5em 8px`
         // span 插在 hr 后面（兄弟节点），需要自身 block + text-align 居中
         const span = document.createElement(`span`)
