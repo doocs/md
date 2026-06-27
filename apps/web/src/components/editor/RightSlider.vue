@@ -104,12 +104,12 @@ function patternChanged(newPattern: string) {
 
 function openPrimaryColorPicker() {
   const el = pickColorsContainer.value
-  if (el) el.querySelector('div')?.click()
+  if (el) el.firstElementChild?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
 }
 
 function openBgColorPicker() {
   const el = pickBgColorsContainer.value
-  if (el) el.querySelector('div')?.click()
+  if (el) el.firstElementChild?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
 }
 
 function codeBlockThemeChanged(newTheme: unknown) {
