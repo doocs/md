@@ -254,11 +254,14 @@ export async function processClipboardContent(primaryColor: string) {
       }
     })
 
-    // 清除 juice 给 li 内联的 list-style（转成 p 后仍会被渲染）
-    clipboardDiv.querySelectorAll(`p[style]`).forEach((p) => {
+    // 清除转换后列表段落的 margin/padding
+    clipboardDiv.querySelectorAll(`p`).forEach((p) => {
       const style = p.getAttribute(`style`) ?? ``
-      if (style.includes(`list-style`)) {
-        p.setAttribute(`style`, style.replace(/list-style[^;]*;?\s*/g, ``))
+      if (style.includes(`list-style`) || style.includes(`padding`) || style.includes(`margin`)) {
+        p.setAttribute(`style`, style
+          .replace(/padding[^;]*;?\s*/g, ``)
+          .replace(/margin[^;]*;?\s*/g, ``)
+          .replace(/list-style[^;]*;?\s*/g, ``))
       }
     })
 
