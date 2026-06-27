@@ -175,28 +175,28 @@ export async function processClipboardContent(_primaryColor: string) {
           if (cleaned)
             p.setAttribute(`style`, cleaned)
         }
-        // 继承父 ol/ul 的 padding-left（li 自身不继承父元素 padding）
-        const parentList = li.closest(`ol, ul`) as HTMLElement | null
-        if (parentList) {
-          const pp = window.getComputedStyle(parentList).paddingLeft
-          if (pp && pp !== `0px`)
-            p.style.paddingLeft = pp
+        // 用全角空格做缩进（CSS padding-left 公众号会吃掉）
+        let depth = 0
+        let cur: Element | null = li.parentElement
+        while (cur) {
+          if (cur.tagName === `OL` || cur.tagName === `UL`)
+            depth++
+          cur = cur.parentElement
         }
         // 去掉已有 bullet/number 前缀（防止双重）
+        const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
-          // 去掉已有数字前缀（第一个文本节点）
-          const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``)
-          p.innerHTML = `${idx}. ${p.innerHTML}`
+          const indent = depth > 1 ? `\u3000\u3000`.repeat(depth - 1) : ``
+          p.innerHTML = `${indent}${idx}. ${p.innerHTML}`
         }
         else {
-          // 去掉已有 bullet 前缀（第一个文本节点）
-          const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
-          p.innerHTML = `• ${p.innerHTML}`
+          const indent = depth > 1 ? `\u3000\u3000`.repeat(depth - 1) : ``
+          p.innerHTML = `${indent}• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
         li.remove()
@@ -214,7 +214,7 @@ export async function processClipboardContent(_primaryColor: string) {
         }
       }
     })
-    // 清除列表转换来的段落的 margin（保留 paddingLeft 继承自 ol/ul）
+    // 清除列表转换来的段落的 margin
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
       p.style.marginTop = `0`
