@@ -209,6 +209,34 @@ export async function processClipboardContent(primaryColor: string) {
 
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
+    // 公众号对 ul/ol/li 渲染有问题（重复圆点、序号全变成1），转成纯文本段落
+    clipboardDiv.querySelectorAll(`li`).forEach((li, _i) => {
+      const parent = li.parentElement
+      const isOrdered = parent?.tagName === `OL`
+      const p = document.createElement(`p`)
+      p.innerHTML = li.innerHTML
+      // 保留 li 上的内联样式
+      const liStyle = li.getAttribute(`style`)
+      if (liStyle)
+        p.setAttribute(`style`, liStyle)
+      // 加上 bullet/number 前缀文本
+      if (isOrdered) {
+        const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
+        const idx = siblings.indexOf(li) + 1
+        p.innerHTML = `${idx}. ${p.innerHTML}`
+      }
+      else {
+        p.innerHTML = `• ${p.innerHTML}`
+      }
+      parent?.insertBefore(p, li)
+      li.remove()
+    })
+    // 移除空的 ul/ol 容器
+    clipboardDiv.querySelectorAll(`ul, ol`).forEach((list) => {
+      if (!list.querySelector(`li`))
+        list.remove()
+    })
+
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
       const style = h1.getAttribute(`style`) ?? ``
