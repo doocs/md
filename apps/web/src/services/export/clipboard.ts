@@ -182,7 +182,8 @@ export async function processClipboardContent(_primaryColor: string) {
         // 有序保留序号，无序去掉 bullet
         const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
         if (firstTn) {
-          firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
+          // 先去掉已有的 bullet 和数字前缀
+          firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``).replace(/^[•·\-*]\s*/, ``)
         }
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
