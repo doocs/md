@@ -216,8 +216,11 @@ export async function processClipboardContent(primaryColor: string) {
         const p = document.createElement(`p`)
         p.innerHTML = li.innerHTML
         const liStyle = li.getAttribute(`style`)
-        if (liStyle)
-          p.setAttribute(`style`, liStyle)
+        if (liStyle) {
+          const cleaned = liStyle.replace(/padding-left[^;]*;?\s*/g, ``)
+          if (cleaned)
+            p.setAttribute(`style`, cleaned)
+        }
         // 去掉已有 bullet/number 前缀（防止双重）
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
