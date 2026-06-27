@@ -47,6 +47,105 @@ function modifyHtmlStructure(htmlString: string): string {
   return tempDiv.innerHTML
 }
 
+/**
+ * 公众号不支持 ::after / ::before / ::first-letter 伪元素。
+ * 一次 DOM 解析，把所有伪元素转成真正的 HTML 元素。
+ */
+function processPseudoElementsForWeChat(html: string): string {
+  const tempDiv = document.createElement(`div`)
+  tempDiv.innerHTML = html
+
+  // 1. hr::after { content: '■ ■ ■' } → 在 hr 后插入 span
+  const hrAfterMatch = html.match(/hr::after\s*\{([^}]+)\}/)
+  if (hrAfterMatch) {
+    const styles = hrAfterMatch[1]
+    const contentMatch = styles.match(/content:\s*['"](.+?)['"]/)
+    if (contentMatch) {
+      const text = contentMatch[1].replace(/\\([0-9a-f]{2,6})/gi, (_, h) => String.fromCodePoint(Number.parseInt(h, 16)))
+      const ls = styles.match(/letter-spacing:\s*([^;]+)/)?.[1]?.trim() ?? `0.5em`
+      const fs = styles.match(/font-size:\s*([^;]+)/)?.[1]?.trim() ?? `0.6em`
+      tempDiv.querySelectorAll(`hr`).forEach((hr) => {
+        hr.style.border = `none`
+        hr.style.textAlign = `center`
+        hr.style.margin = `2.5em 8px`
+        const span = document.createElement(`span`)
+        span.textContent = text
+        span.style.letterSpacing = ls
+        span.style.fontSize = fs
+        hr.parentElement?.insertBefore(span, hr.nextSibling)
+      })
+    }
+  }
+
+  // 2. h1::after { 下划线 } → 在 h1 后插入 div
+  const h1AfterMatch = html.match(/h1::after\s*\{([^}]+)\}/)
+  if (h1AfterMatch) {
+    const s = h1AfterMatch[1]
+    const w = s.match(/width:\s*([^;]+)/)?.[1]?.trim() ?? `60%`
+    const h = s.match(/height:\s*([^;]+)/)?.[1]?.trim() ?? `3px`
+    tempDiv.querySelectorAll(`h1`).forEach((h1) => {
+      const line = document.createElement(`div`)
+      line.style.width = w
+      line.style.height = h
+      line.style.background = `#3f3f3f`
+      line.style.margin = `0 auto`
+      h1.parentElement?.insertBefore(line, h1.nextSibling)
+    })
+  }
+
+  // 3. ::first-letter → span 包裹首字
+  const ruleRegex = /([^{}]+?)::first-letter\s*\{([^}]+)\}/g
+  const firstLetterRules: { sel: string, styles: string }[] = []
+  let m = ruleRegex.exec(html)
+  while (m) {
+    for (const s of m[1].split(`,`)) {
+      firstLetterRules.push({ sel: s.trim().replace(/^body\s+/i, ``), styles: m[2].trim().replace(/;?\s*$/, ``) })
+    }
+    m = ruleRegex.exec(html)
+  }
+  const resolveColor = (s: string) => s.replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
+  const flStyle = resolveColor(firstLetterRules[0]?.styles ?? ``)
+  const matchedPs = new Set<Element>()
+  for (const { sel, styles } of firstLetterRules) {
+    const prevSel = sel.replace(/\s*\+\s*p\s*$/, ``)
+    if (!prevSel)
+      continue
+    for (const prevEl of tempDiv.querySelectorAll(prevSel)) {
+      const nextP = prevEl.nextElementSibling
+      if (!nextP || nextP.tagName !== `P`)
+        continue
+      matchedPs.add(nextP)
+      const tn = Array.from(nextP.childNodes).find(n => n.nodeType === 3 && (n.textContent ?? ``).trim())
+      if (!tn)
+        continue
+      const txt = tn.textContent ?? ``
+      const span = document.createElement(`span`)
+      span.textContent = txt[0]
+      span.setAttribute(`style`, resolveColor(styles))
+      nextP.insertBefore(span, tn)
+      tn.textContent = txt.slice(1)
+    }
+  }
+  // h1 在公众号变成原生标题，h1+p 失效，对第一个 <p> 补首字
+  const firstP = tempDiv.querySelector(`p`)
+  if (firstP && !matchedPs.has(firstP) && flStyle) {
+    const tn = Array.from(firstP.childNodes).find(n => n.nodeType === 3 && (n.textContent ?? ``).trim())
+    if (tn) {
+      const txt = tn.textContent ?? ``
+      const span = document.createElement(`span`)
+      span.textContent = txt[0]
+      span.setAttribute(`style`, flStyle)
+      firstP.insertBefore(span, tn)
+      tn.textContent = txt.slice(1)
+    }
+  }
+
+  // 4. 清理所有伪元素 CSS 规则
+  let result = tempDiv.innerHTML
+  result = result.replace(/[^{}]+?::(after|before|first-letter)\s*\{[^}]+\}\s*/g, ``)
+  return result
+}
+
 function createEmptyNode(): HTMLElement {
   const node = document.createElement(`p`)
   node.style.fontSize = `0`
@@ -85,15 +184,40 @@ export async function processClipboardContent(primaryColor: string) {
 
   try {
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
+    // 背景色/图案在父元素 .preview 上，复制到剪贴板内容
+    const previewParent = outputElement.closest(`.preview`) as HTMLElement | null
+    if (previewParent) {
+      const bg = previewParent.style.backgroundColor
+      const bgImage = previewParent.style.backgroundImage
+      const bgSize = previewParent.style.backgroundSize
+      if (bg && bg !== `transparent`)
+        clipboardDiv.style.backgroundColor = bg
+      if (bgImage && bgImage !== `none`) {
+        clipboardDiv.style.backgroundImage = bgImage
+        clipboardDiv.style.backgroundSize = bgSize || `20px 20px`
+      }
+    }
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
-
     const stylesToAdd = await getStylesToAdd()
 
     if (stylesToAdd) {
       clipboardDiv.innerHTML = stylesToAdd + clipboardDiv.innerHTML
     }
 
+    // 公众号不支持伪元素，一次处理 ::after / ::before / ::first-letter
+    clipboardDiv.innerHTML = processPseudoElementsForWeChat(clipboardDiv.innerHTML)
+
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
+
+    // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
+    clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
+      const style = h1.getAttribute(`style`) ?? ``
+      if (style.includes(`display: inline-block`) || style.includes(`display:inline-block`)) {
+        const newStyle = style
+          .replace(/display:\s*inline-block\s*;?/g, `display: block; width: fit-content; margin-left: auto; margin-right: auto;`)
+        h1.setAttribute(`style`, newStyle)
+      }
+    })
 
     clipboardDiv.querySelectorAll(`a[href^="#"]`).forEach(a => a.removeAttribute(`href`))
 
@@ -134,7 +258,6 @@ export async function processClipboardContent(primaryColor: string) {
       section.setAttribute(`xmlns`, xmlns)
       section.setAttribute(`style`, style)
       section.innerHTML = parent.innerHTML
-
       const grand = parent.parentElement
       if (!grand)
         return
@@ -163,9 +286,8 @@ export async function processClipboardContent(primaryColor: string) {
         if (dominantBaseline) {
           textElem.removeAttribute(`dominant-baseline`)
           const dy = variantMap[dominantBaseline as keyof typeof variantMap]
-          if (dy) {
+          if (dy)
             textElem.setAttribute(`dy`, dy)
-          }
         }
       })
     })
@@ -173,8 +295,20 @@ export async function processClipboardContent(primaryColor: string) {
     sanitizeSvgsForWeChat(clipboardDiv)
     prepareMathFormulasForWeChat(clipboardDiv)
 
+    // 背景色/图案设在 clipboardDiv.style 上，innerHTML 会丢失。
+    // 用 section 包裹，把背景样式带进去，清除边距铺满。
+    const bgParts = [
+      clipboardDiv.style.backgroundColor && `background-color: ${clipboardDiv.style.backgroundColor}`,
+      clipboardDiv.style.backgroundImage && `background-image: ${clipboardDiv.style.backgroundImage}`,
+      clipboardDiv.style.backgroundSize && `background-size: ${clipboardDiv.style.backgroundSize}`,
+    ].filter(Boolean)
+    let finalHtml = clipboardDiv.innerHTML
+    if (bgParts.length) {
+      finalHtml = `<section style="${bgParts.join(`; `)}; margin: 0; padding: 0; box-sizing: border-box;">${finalHtml}</section>`
+    }
+
     return {
-      html: clipboardDiv.innerHTML,
+      html: finalHtml,
       plainText: clipboardDiv.textContent || ``,
       hasPendingAsyncContent: !previewReady,
     }

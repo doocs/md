@@ -4,9 +4,7 @@ import type {
   HeadingStyleType,
   themeMap,
 } from '@md/shared/configs'
-import type { Format } from 'vue-pick-colors'
 import { X } from '@lucide/vue'
-import PickColors from 'vue-pick-colors'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
@@ -16,10 +14,10 @@ import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
-const confirmStore = useConfirmStore()
-const cssEditorStore = useCssEditorStore()
-const uiStore = useUIStore()
 const themeStore = useThemeStore()
+const uiStore = useUIStore()
+const cssEditorStore = useCssEditorStore()
+const confirmStore = useConfirmStore()
 const { t } = useI18n()
 const localizedStyleOptions = useLocalizedStyleOptions()
 const {
@@ -62,7 +60,7 @@ const selectedHeadingStyle = computed({
   },
 })
 
-const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
+const { isMobile, isOpenRightSlider } = storeToRefs(uiStore)
 
 // Theme change handlers
 function themeChanged(newTheme: keyof typeof themeMap) {
@@ -197,11 +195,6 @@ watch(isOpenRightSlider, () => {
 watch(isMobile, () => {
   enableAnimation.value = false
 })
-
-const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
-const pickBgColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickBgColorsContainer`)
-const format = ref<Format>(`rgb`)
-const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
 
 <template>
@@ -295,12 +288,12 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickColorsContainer" class="flex items-center justify-center">
-            <PickColors
-              v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
-              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
-              :popup-container="pickColorsContainer" @change="colorChanged"
-            />
+          <div class="col-span-3 relative">
+            <Button variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" @click="$refs.primaryColorInput.click()">
+              <span class="mr-1.5 inline-block size-3 shrink-0 rounded-full" :style="{ background: primaryColor }" />
+              {{ t('menu.customPrimaryColor') }}
+            </Button>
+            <input ref="primaryColorInput" type="color" :value="primaryColor" class="absolute opacity-0 w-0 h-0" @input="colorChanged(($event.target as HTMLInputElement).value)">
           </div>
         </div>
       </div>
@@ -321,12 +314,12 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickBgColorsContainer" class="flex items-center justify-center">
-            <PickColors
-              v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
-              :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
-              :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
-            />
+          <div class="col-span-3 relative">
+            <Button variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" @click="$refs.bgColorInput.click()">
+              <span class="mr-1.5 inline-block size-3 shrink-0 rounded-full border" :style="{ background: backgroundColor }" />
+              {{ t('menu.customPrimaryColor') }}
+            </Button>
+            <input ref="bgColorInput" type="color" :value="backgroundColor" class="absolute opacity-0 w-0 h-0" @input="backgroundColorChanged(($event.target as HTMLInputElement).value)">
           </div>
         </div>
       </div>
