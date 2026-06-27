@@ -145,6 +145,15 @@ export async function processClipboardContent(_primaryColor: string) {
 
     // 从内向外处理，避免浏览器自动修正 DOM 结构
     let lis = clipboardDiv.querySelectorAll(`li`)
+    // 预计算有序列表序号
+    const liPositions = new Map<Element, number>()
+    for (const ol of clipboardDiv.querySelectorAll(`ol`)) {
+      let idx = 1
+      for (const child of ol.children) {
+        if (child.tagName === `LI`)
+          liPositions.set(child, idx++)
+      }
+    }
     while (lis.length) {
       const deepest = Array.from(lis).filter(li => !li.querySelector(`li`))
       if (!deepest.length)
@@ -154,10 +163,11 @@ export async function processClipboardContent(_primaryColor: string) {
         li.querySelectorAll(`:scope > ul, :scope > ol`).forEach(l => nestedLists.push(l))
         nestedLists.forEach(l => li.removeChild(l))
         const parent = li.parentElement
+        const isOrdered = parent?.tagName === `OL`
         const p = document.createElement(`p`)
         p.setAttribute(`data-from-list`, `true`)
         p.innerHTML = li.innerHTML
-        // 从 li 复制 computed style（font/color/line-height 等），去掉列表相关
+        // 从 li 复制 computed style，去掉列表相关属性
         const liStyle = li.getAttribute(`style`)
         if (liStyle) {
           const s = liStyle
@@ -166,10 +176,18 @@ export async function processClipboardContent(_primaryColor: string) {
           if (s)
             p.setAttribute(`style`, s)
         }
-        // 只去掉第一个文本节点的 bullet/number 前缀
+        // 强制 block + 无 list-style，防止公众号自动加样式
+        p.style.display = `block`
+        p.style.listStyle = `none`
+        // 有序保留序号，无序去掉 bullet
         const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
-        if (firstTn)
-          firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``).replace(/^[•·\-*]\s*/, ``)
+        if (firstTn) {
+          firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
+        }
+        if (isOrdered) {
+          const idx = liPositions.get(li) ?? 1
+          p.innerHTML = `${idx}. ${p.innerHTML}`
+        }
         parent?.insertBefore(p, li)
         li.remove()
         nestedLists.forEach(l => p.parentElement?.insertBefore(l, p.nextSibling))
