@@ -238,16 +238,27 @@ export async function processClipboardContent(primaryColor: string) {
         const liStyle = li.getAttribute(`style`)
         if (liStyle)
           p.setAttribute(`style`, liStyle)
+        // 去掉已有的 bullet/number 前缀（防止双重）
+        const textContent = p.textContent?.trimStart() ?? ``
+        const hasExistingBullet = /^[•·\-*]\s/.test(textContent)
+        const hasExistingNumber = /^\d+\.\s/.test(textContent)
         if (depth > 1) {
           const indent = `\u00A0\u00A0\u00A0\u00A0`.repeat(depth - 1)
           p.innerHTML = indent + p.innerHTML
         }
         if (isOrdered) {
+          if (hasExistingNumber) {
+            // 已有序号，清理后重新编号
+            p.textContent = p.textContent?.replace(/^\d+\.\s*/, ``) ?? ``
+          }
           const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
           const idx = siblings.indexOf(li) + 1
           p.innerHTML = `${idx}. ${p.innerHTML}`
         }
         else {
+          if (hasExistingBullet) {
+            p.textContent = p.textContent?.replace(/^[•·\-*]\s*/, ``) ?? ``
+          }
           p.innerHTML = `• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
