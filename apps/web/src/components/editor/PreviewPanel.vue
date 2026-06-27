@@ -20,7 +20,7 @@ const { output } = storeToRefs(renderStore)
 const { backgroundColor, backgroundPattern } = storeToRefs(themeStore)
 const { isDark, isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
 
-const PATTERN_CSS: Record<string, string> = {
+const PATTERN_CSS_LIGHT: Record<string, string> = {
   none: 'none',
   grid: `linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px)`,
   dots: `radial-gradient(circle, rgba(0,0,0,0.08) 1px, transparent 1px)`,
@@ -28,12 +28,22 @@ const PATTERN_CSS: Record<string, string> = {
   vlines: `repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(0,0,0,0.04) 29px, rgba(0,0,0,0.04) 30px)`,
 }
 
+const PATTERN_CSS_DARK: Record<string, string> = {
+  none: 'none',
+  grid: `linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)`,
+  dots: `radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+  lines: `repeating-linear-gradient(transparent, transparent 29px, rgba(255,255,255,0.06) 29px, rgba(255,255,255,0.06) 30px)`,
+  vlines: `repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(255,255,255,0.06) 29px, rgba(255,255,255,0.06) 30px)`,
+}
+
 const previewStyle = computed(() => {
+  const dark = isDark.value
   const pattern = backgroundPattern.value || 'none'
-  const bgImage = PATTERN_CSS[pattern] || 'none'
+  const patterns = dark ? PATTERN_CSS_DARK : PATTERN_CSS_LIGHT
+  const bgImage = patterns[pattern] || 'none'
   const bgSize = pattern === 'dots' ? '20px 20px' : pattern === 'grid' ? '20px 20px' : pattern === 'none' ? 'auto' : '30px 30px'
   return {
-    backgroundColor: backgroundColor.value,
+    backgroundColor: dark ? '#191919' : backgroundColor.value,
     backgroundImage: bgImage,
     backgroundSize: bgSize,
   }
