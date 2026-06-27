@@ -175,28 +175,18 @@ export async function processClipboardContent(_primaryColor: string) {
           if (cleaned)
             p.setAttribute(`style`, cleaned)
         }
-        // 用全角空格做缩进（CSS padding-left 公众号会吃掉）
-        let depth = 0
-        let cur: Element | null = li.parentElement
-        while (cur) {
-          if (cur.tagName === `OL` || cur.tagName === `UL`)
-            depth++
-          cur = cur.parentElement
-        }
-        // 去掉已有 bullet/number 前缀（防止双重）
+        // 全角空格缩进（纯文本，公众号不会删）
         const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
         if (isOrdered) {
           const idx = liPositions.get(li) ?? 1
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``)
-          const indent = depth > 1 ? `\u3000\u3000`.repeat(depth - 1) : ``
-          p.innerHTML = `${indent}${idx}. ${p.innerHTML}`
+          p.innerHTML = `\u3000\u3000${idx}. ${p.innerHTML}`
         }
         else {
           if (firstTn)
             firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
-          const indent = depth > 1 ? `\u3000\u3000`.repeat(depth - 1) : ``
-          p.innerHTML = `${indent}• ${p.innerHTML}`
+          p.innerHTML = `\u3000\u3000• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
         li.remove()
@@ -214,15 +204,13 @@ export async function processClipboardContent(_primaryColor: string) {
         }
       }
     })
-    // 列表段落统一加左边距（模拟 ol/ul 的 padding-left）
+    // 清除列表转换来的段落的 margin
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
       p.style.marginTop = `0`
       p.style.marginBottom = `0`
-      p.style.paddingLeft = `1.5em`
     })
-
-    // 公众号 blockquote 超 300 字报错，转成 section（computed style 已内联）
+    // 公众号 blockquote 超 300 字报错，转成 section
     clipboardDiv.querySelectorAll(`blockquote`).forEach((bq) => {
       const section = document.createElement(`section`)
       for (const attr of bq.attributes) {
