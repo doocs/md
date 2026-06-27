@@ -199,6 +199,7 @@ watch(isMobile, () => {
 })
 
 const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
+const pickBgColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickBgColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
@@ -295,12 +296,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             {{ label }}
           </Button>
         </div>
-      </div>
-      <div class="space-y-2">
-        <h2 class="text-sm font-medium">
-          {{ t('menu.customPrimaryColor') }}
-        </h2>
-        <div ref="pickColorsContainer">
+        <div ref="pickColorsContainer" class="mt-2">
           <PickColors
             v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
             :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
@@ -325,6 +321,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
+        </div>
+        <div ref="pickBgColorsContainer" class="mt-2">
+          <PickColors
+            v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
+            :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
+            :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
+          />
         </div>
       </div>
       <div class="space-y-2">
