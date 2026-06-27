@@ -248,19 +248,22 @@ export async function processClipboardContent(primaryColor: string) {
           const indent = `\u00A0\u00A0\u00A0\u00A0`.repeat(depth - 1)
           p.innerHTML = indent + p.innerHTML
         }
+        // 只操作第一个文本节点，保留子元素（strong/em/a 等）
+        function stripFirstTextNode(el: Element, regex: RegExp) {
+          const tn = Array.from(el.childNodes).find(n => n.nodeType === 3)
+          if (tn)
+            tn.textContent = (tn.textContent ?? ``).replace(regex, ``)
+        }
         if (isOrdered) {
-          if (hasExistingNumber) {
-            // 已有序号，清理后重新编号
-            p.textContent = p.textContent?.replace(/^\d+\.\s*/, ``) ?? ``
-          }
+          if (hasExistingNumber)
+            stripFirstTextNode(p, /^\d+\.\s*/)
           const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
           const idx = siblings.indexOf(li) + 1
           p.innerHTML = `${idx}. ${p.innerHTML}`
         }
         else {
-          if (hasExistingBullet) {
-            p.textContent = p.textContent?.replace(/^[•·\-*]\s*/, ``) ?? ``
-          }
+          if (hasExistingBullet)
+            stripFirstTextNode(p, /^[•·\-*]\s*/)
           p.innerHTML = `• ${p.innerHTML}`
         }
         parent?.insertBefore(p, li)
