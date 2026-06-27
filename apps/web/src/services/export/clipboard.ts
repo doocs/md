@@ -220,6 +220,8 @@ export async function processClipboardContent(primaryColor: string) {
       }
       return depth
     }
+    // 先禁用 CSS 圆点，防止转换后双重标记
+    clipboardDiv.querySelectorAll(`ul, ol`).forEach((el) => { el.style.listStyle = `none` })
     // 从内向外处理，避免浏览器自动修正 DOM 结构
     let lis = clipboardDiv.querySelectorAll(`li`)
     while (lis.length) {
