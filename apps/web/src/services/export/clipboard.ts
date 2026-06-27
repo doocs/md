@@ -212,13 +212,12 @@ export async function processClipboardContent(_primaryColor: string) {
       list.style.paddingLeft = `0`
       list.style.marginLeft = `0`
     })
-
-    // 清除列表转换来的段落的 margin/padding/list-style
+    // 清除列表转换来的段落的 margin/padding（用长属性，不覆盖子属性）
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
-      p.style.margin = `0`
-      p.style.padding = `0`
-      p.style.listStyle = `none`
+      p.style.marginTop = `0`
+      p.style.marginBottom = `0`
+      p.style.paddingLeft = `0`
     })
 
     // 公众号 blockquote 超 300 字报错，转成 section（computed style 已内联）
