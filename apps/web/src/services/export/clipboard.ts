@@ -254,6 +254,11 @@ export async function processClipboardContent(primaryColor: string) {
         }
       }
     })
+    // 清除 ol/ul 的 padding-left（juice 内联的，会影响解包后的子元素）
+    clipboardDiv.querySelectorAll(`ul, ol`).forEach((list) => {
+      list.style.paddingLeft = `0`
+      list.style.marginLeft = `0`
+    })
 
     // 清除列表转换来的段落的 margin/padding/list-style
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
