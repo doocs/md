@@ -212,6 +212,15 @@ export async function processClipboardContent(primaryColor: string) {
     // 公众号对 ul/ol/li 渲染有问题（重复圆点、序号全变成1），转成纯文本段落
     // 先禁用 CSS 圆点，防止转换后双重标记
     clipboardDiv.querySelectorAll(`ul, ol`).forEach((el) => { el.style.listStyle = `none` })
+    // 预计算每个 li 的编号（DOM 变化后 index 会错）
+    const liPositions = new Map<Element, number>()
+    for (const ol of clipboardDiv.querySelectorAll(`ol`)) {
+      let idx = 1
+      for (const child of ol.children) {
+        if (child.tagName === `LI`)
+          liPositions.set(child, idx++)
+      }
+    }
     // 从内向外处理，避免浏览器自动修正 DOM 结构
     let lis = clipboardDiv.querySelectorAll(`li`)
     while (lis.length) {
@@ -231,9 +240,7 @@ export async function processClipboardContent(primaryColor: string) {
           p.setAttribute(`style`, liStyle)
         // 去掉已有 bullet/number 前缀（防止双重）
         if (isOrdered) {
-          // 快照 siblings，避免 live 集合变化导致 index 错误
-          const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
-          const idx = siblings.indexOf(li) + 1
+          const idx = liPositions.get(li) ?? 1
           // 去掉已有数字前缀（第一个文本节点）
           const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
           if (firstTn)
