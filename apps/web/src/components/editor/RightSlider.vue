@@ -295,12 +295,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickColorsContainer" class="flex items-center justify-center">
+          <div ref="pickColorsContainer" class="flex items-center justify-center gap-1">
             <PickColors
               v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
               :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
               :popup-container="pickColorsContainer" @change="colorChanged"
             />
+            <span class="text-xs whitespace-nowrap">{{ t('menu.customPrimaryColor') }}</span>
           </div>
         </div>
       </div>
@@ -321,12 +322,13 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickBgColorsContainer" class="flex items-center justify-center">
+          <div ref="pickBgColorsContainer" class="flex items-center justify-center gap-1">
             <PickColors
               v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
               :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
               :popup-container="pickBgColorsContainer" @change="backgroundColorChanged"
             />
+            <span class="text-xs whitespace-nowrap">{{ t('menu.customPrimaryColor') }}</span>
           </div>
         </div>
       </div>
