@@ -64,5 +64,8 @@ This repository is a pnpm monorepo containing a Vue 3 web application, a VSCode 
 - **`display: inline-block` + `margin: auto`** — 不会水平居中。需要改成 `display: block; width: fit-content; margin-left: auto; margin-right: auto`。
 - **CSS 变量（`var(--xxx)`）** — juice 的 `resolveCSSVariables: false`，不解析变量。复制流程中通过字符串替换手动处理关键变量。
 - **`hsl(var(--foreground))`** — 替换为 `#3f3f3f`。
+- **`<blockquote>` 超 300 字** — 公众号会报"不合理引用"错误。复制时将 `<blockquote>` 转为 `<div>`（样式已由 juice 内联）。
+- **`<ul>/<ol>/<li>`** — 公众号渲染有 bug（重复圆点、序号全变 1）。复制时转为纯文本 `<p>` 段落。
+- **列表 `padding-left`** — 主题 CSS 统一使用 `0.5em`，避免缩进过大。
 
 **新增主题时**，如果使用了伪元素（`::after`、`::before`、`::first-letter`），必须在 `clipboard.ts` 中添加对应的公众号兼容处理，否则复制后效果丢失。
