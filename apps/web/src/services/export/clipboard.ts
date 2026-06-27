@@ -268,10 +268,16 @@ export async function processClipboardContent(primaryColor: string) {
       p.style.listStyle = `none`
     })
 
-    // 公众号 blockquote 超 300 字报错，直接换标签名（juice 已内联样式）
-    clipboardDiv.innerHTML = clipboardDiv.innerHTML
-      .replace(/<blockquote/g, `<div`)
-      .replace(/<\/blockquote>/g, `</div>`)
+    // 公众号 blockquote 超 300 字报错，转成 div 并保留内联样式
+    clipboardDiv.querySelectorAll(`blockquote`).forEach((bq) => {
+      const div = document.createElement(`div`)
+      // 复制 blockquote 上所有属性（含 juice 内联的 style）
+      for (const attr of bq.attributes) {
+        div.setAttribute(attr.name, attr.value)
+      }
+      div.innerHTML = bq.innerHTML
+      bq.parentElement?.replaceChild(div, bq)
+    })
 
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
     clipboardDiv.querySelectorAll(`h1`).forEach((h1) => {
