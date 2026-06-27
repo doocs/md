@@ -143,14 +143,6 @@ export async function processClipboardContent(_primaryColor: string) {
       inlineComputedStyles(liveElements[i], clonedElements[i])
     }
 
-    const liPositions = new Map<Element, number>()
-    for (const ol of clipboardDiv.querySelectorAll(`ol`)) {
-      let idx = 1
-      for (const child of ol.children) {
-        if (child.tagName === `LI`)
-          liPositions.set(child, idx++)
-      }
-    }
     // 从内向外处理，避免浏览器自动修正 DOM 结构
     let lis = clipboardDiv.querySelectorAll(`li`)
     while (lis.length) {
@@ -158,37 +150,26 @@ export async function processClipboardContent(_primaryColor: string) {
       if (!deepest.length)
         break
       for (const li of deepest) {
-        const parent = li.parentElement
-        const isOrdered = parent?.tagName === `OL`
         const nestedLists: Element[] = []
         li.querySelectorAll(`:scope > ul, :scope > ol`).forEach(l => nestedLists.push(l))
         nestedLists.forEach(l => li.removeChild(l))
+        const parent = li.parentElement
         const p = document.createElement(`p`)
         p.setAttribute(`data-from-list`, `true`)
         p.innerHTML = li.innerHTML
-        // 从 li 复制 computed style（含 font/color/line-height 等）
+        // 从 li 复制 computed style（font/color/line-height 等），去掉列表相关
         const liStyle = li.getAttribute(`style`)
         if (liStyle) {
-          const cleaned = liStyle
+          const s = liStyle
             .replace(/padding-left[^;]*;?\s*/g, ``)
             .replace(/list-style[^;]*;?\s*/g, ``)
-          if (cleaned)
-            p.setAttribute(`style`, cleaned)
+          if (s)
+            p.setAttribute(`style`, s)
         }
-        // 列表缩进用 CSS padding-left
-        p.style.paddingLeft = `1.5em`
+        // 只去掉第一个文本节点的 bullet/number 前缀
         const firstTn = Array.from(p.childNodes).find(n => n.nodeType === 3)
-        if (isOrdered) {
-          const idx = liPositions.get(li) ?? 1
-          if (firstTn)
-            firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``)
-          p.innerHTML = `${idx}. ${p.innerHTML}`
-        }
-        else {
-          if (firstTn)
-            firstTn.textContent = (firstTn.textContent ?? ``).replace(/^[•·\-*]\s*/, ``)
-          p.innerHTML = `• ${p.innerHTML}`
-        }
+        if (firstTn)
+          firstTn.textContent = (firstTn.textContent ?? ``).replace(/^\d+\.\s*/, ``).replace(/^[•·\-*]\s*/, ``)
         parent?.insertBefore(p, li)
         li.remove()
         nestedLists.forEach(l => p.parentElement?.insertBefore(l, p.nextSibling))
