@@ -210,27 +210,52 @@ export async function processClipboardContent(primaryColor: string) {
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
     // 公众号对 ul/ol/li 渲染有问题（重复圆点、序号全变成1），转成纯文本段落
-    clipboardDiv.querySelectorAll(`li`).forEach((li, _i) => {
-      const parent = li.parentElement
-      const isOrdered = parent?.tagName === `OL`
-      const p = document.createElement(`p`)
-      p.innerHTML = li.innerHTML
-      // 保留 li 上的内联样式
-      const liStyle = li.getAttribute(`style`)
-      if (liStyle)
-        p.setAttribute(`style`, liStyle)
-      // 加上 bullet/number 前缀文本
-      if (isOrdered) {
-        const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
-        const idx = siblings.indexOf(li) + 1
-        p.innerHTML = `${idx}. ${p.innerHTML}`
+    function getListDepth(el: Element): number {
+      let depth = 0
+      let cur = el.parentElement
+      while (cur) {
+        if (cur.tagName === `UL` || cur.tagName === `OL`)
+          depth++
+        cur = cur.parentElement
       }
-      else {
-        p.innerHTML = `• ${p.innerHTML}`
+      return depth
+    }
+    // 从内向外处理，避免浏览器自动修正 DOM 结构
+    let lis = clipboardDiv.querySelectorAll(`li`)
+    while (lis.length) {
+      const deepest = Array.from(lis).filter(li => !li.querySelector(`li`))
+      if (!deepest.length)
+        break
+      for (const li of deepest) {
+        const parent = li.parentElement
+        const isOrdered = parent?.tagName === `OL`
+        const depth = getListDepth(li)
+        const nestedLists: Element[] = []
+        li.querySelectorAll(`:scope > ul, :scope > ol`).forEach(l => nestedLists.push(l))
+        nestedLists.forEach(l => li.removeChild(l))
+        const p = document.createElement(`p`)
+        p.innerHTML = li.innerHTML
+        const liStyle = li.getAttribute(`style`)
+        if (liStyle)
+          p.setAttribute(`style`, liStyle)
+        if (depth > 1) {
+          const indent = `\u00A0\u00A0\u00A0\u00A0`.repeat(depth - 1)
+          p.innerHTML = indent + p.innerHTML
+        }
+        if (isOrdered) {
+          const siblings = parent ? Array.from(parent.children).filter(c => c.tagName === `LI`) : []
+          const idx = siblings.indexOf(li) + 1
+          p.innerHTML = `${idx}. ${p.innerHTML}`
+        }
+        else {
+          p.innerHTML = `• ${p.innerHTML}`
+        }
+        parent?.insertBefore(p, li)
+        li.remove()
+        nestedLists.forEach(l => p.parentElement?.insertBefore(l, p.nextSibling))
       }
-      parent?.insertBefore(p, li)
-      li.remove()
-    })
+      lis = clipboardDiv.querySelectorAll(`li`)
+    }
     // 移除空的 ul/ol 容器
     clipboardDiv.querySelectorAll(`ul, ol`).forEach((list) => {
       if (!list.querySelector(`li`))
