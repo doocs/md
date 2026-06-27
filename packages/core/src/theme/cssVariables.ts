@@ -20,7 +20,19 @@ export interface CSSVariableConfig {
  * @param config - 配置对象
  * @returns CSS 变量字符串
  */
+function lightenColor(hex: string): string {
+  // ponytail: simple hex lighten for dark mode visibility
+  const r = parseInt(hex.slice(1, 3), 16)
+  const g = parseInt(hex.slice(3, 5), 16)
+  const b = parseInt(hex.slice(5, 7), 16)
+  const lr = Math.round(r + (255 - r) * 0.35)
+  const lg = Math.round(g + (255 - g) * 0.35)
+  const lb = Math.round(b + (255 - b) * 0.35)
+  return `#${lr.toString(16).padStart(2, '0')}${lg.toString(16).padStart(2, '0')}${lb.toString(16).padStart(2, '0')}`
+}
+
 export function generateCSSVariables(config: CSSVariableConfig): string {
+  const darkPrimary = lightenColor(config.primaryColor)
   return `
 :root {
   /* 动态配置变量 */
@@ -28,6 +40,11 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   --md-font-family: ${config.fontFamily};
   --md-font-size: ${config.fontSize};
   --md-bg-color: ${config.backgroundColor ?? '#ffffff'};
+}
+
+/* 暗色模式：自动提亮主题色 */
+.dark {
+  --md-primary-color: ${darkPrimary};
 }
 
 /* 段落缩进和对齐 */
