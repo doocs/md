@@ -102,6 +102,16 @@ function patternChanged(newPattern: string) {
   themeStore.backgroundPattern = newPattern
 }
 
+function openPrimaryColorPicker() {
+  const el = pickColorsContainer.value
+  if (el) el.querySelector('div')?.click()
+}
+
+function openBgColorPicker() {
+  const el = pickBgColorsContainer.value
+  if (el) el.querySelector('div')?.click()
+}
+
 function codeBlockThemeChanged(newTheme: unknown) {
   if (typeof newTheme !== 'string')
     return
@@ -298,7 +308,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
           <div
             ref="pickColorsContainer"
             class="flex items-center justify-center gap-1 cursor-pointer"
-            @click="pickColorsContainer?.querySelector('.vc-input__input')?.click()"
+            @click="openPrimaryColorPicker"
           >
             <PickColors
               v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
@@ -329,7 +339,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
           <div
             ref="pickBgColorsContainer"
             class="flex items-center justify-center gap-1 cursor-pointer"
-            @click="pickBgColorsContainer?.querySelector('.vc-input__input')?.click()"
+            @click="openBgColorPicker"
           >
             <PickColors
               v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
