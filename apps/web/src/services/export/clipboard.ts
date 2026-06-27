@@ -363,7 +363,7 @@ export async function processClipboardContent(primaryColor: string) {
     ].filter(Boolean)
     let finalHtml = clipboardDiv.innerHTML
     if (bgParts.length) {
-      finalHtml = `<section style="${bgParts.join(`; `)}; margin: 0; padding: 16px; box-sizing: border-box;">${finalHtml}</section>`
+      finalHtml = `<section style="${bgParts.join(`; `)}; margin: 0; padding: 16px 8px; box-sizing: border-box;">${finalHtml}</section>`
     }
 
     return {
