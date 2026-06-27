@@ -268,15 +268,26 @@ export async function processClipboardContent(primaryColor: string) {
       p.style.listStyle = `none`
     })
 
-    // 公众号 blockquote 超 300 字报错，转成 div 并保留内联样式
+    // 公众号 blockquote 超 300 字报错，转成 section 并保留内联样式
     clipboardDiv.querySelectorAll(`blockquote`).forEach((bq) => {
-      const div = document.createElement(`div`)
+      const section = document.createElement(`section`)
       // 复制 blockquote 上所有属性（含 juice 内联的 style）
       for (const attr of bq.attributes) {
-        div.setAttribute(attr.name, attr.value)
+        section.setAttribute(attr.name, attr.value)
       }
-      div.innerHTML = bq.innerHTML
-      bq.parentElement?.replaceChild(div, bq)
+      // juice 无法解析 CSS 变量，补上兜底样式
+      const existingStyle = section.getAttribute(`style`) ?? ``
+      const fallbacks = [
+        !existingStyle.includes(`border-left`) && `border-left: 3px solid #ddd`,
+        !existingStyle.includes(`background`) && `background: #f7f7f7`,
+        !existingStyle.includes(`padding`) && `padding: 8px 16px`,
+        !existingStyle.includes(`margin`) && `margin: 1em 0`,
+      ].filter(Boolean).join(`; `)
+      if (fallbacks) {
+        section.setAttribute(`style`, existingStyle ? `${existingStyle}; ${fallbacks}` : fallbacks)
+      }
+      section.innerHTML = bq.innerHTML
+      bq.parentElement?.replaceChild(section, bq)
     })
 
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content
