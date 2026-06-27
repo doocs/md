@@ -148,12 +148,6 @@ export const useThemeStore = defineStore(`theme`, () => {
           headingStyles: headingStyles.value,
         },
       })
-
-      // 同步背景色到 .preview 容器（覆盖 padding 区域）
-      const previewEl = document.querySelector(`.preview`) as HTMLElement
-      if (previewEl) {
-        previewEl.style.backgroundColor = backgroundColor.value
-      }
     }
     catch (error) {
       console.error(`[applyCurrentTheme] 主题应用失败:`, error)

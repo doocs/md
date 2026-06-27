@@ -52,9 +52,9 @@ section table {
   letter-spacing: unset !important;
 }
 
-/* 预览区背景色（通过主题配置动态设置） */
+/* 预览区背景色由 .preview 容器的内联 style 控制 */
 #output {
-  background-color: var(--md-bg-color, #ffffff);
+  background-color: transparent;
 }
 
 /* ==================== 脚注 ==================== */

@@ -3,6 +3,7 @@ import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const props = defineProps<{
@@ -14,8 +15,9 @@ const props = defineProps<{
 const { t } = useI18n()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
-
+const themeStore = useThemeStore()
 const { output } = storeToRefs(renderStore)
+const { backgroundColor } = storeToRefs(themeStore)
 const { isDark, isMobile, viewMode, previewDevice } = storeToRefs(uiStore)
 
 const effectivePreviewWidth = computed(() => {
@@ -98,6 +100,7 @@ defineExpose({
             effectivePreviewWidth,
             effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
           ]"
+          :style="{ backgroundColor }"
         >
           <section id="output" class="w-full" @click="onContentClick" v-html="output" />
           <div v-if="isCoping" class="loading-mask">
