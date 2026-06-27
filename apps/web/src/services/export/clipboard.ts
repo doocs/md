@@ -263,13 +263,9 @@ export async function processClipboardContent(primaryColor: string) {
     // 清除列表转换来的段落的 margin/padding/list-style
     clipboardDiv.querySelectorAll(`p[data-from-list]`).forEach((p) => {
       p.removeAttribute(`data-from-list`)
-      const style = p.getAttribute(`style`) ?? ``
-      if (style) {
-        p.setAttribute(`style`, style
-          .replace(/padding[^;]*;?\s*/g, ``)
-          .replace(/margin[^;]*;?\s*/g, ``)
-          .replace(/list-style[^;]*;?\s*/g, ``))
-      }
+      p.style.margin = `0`
+      p.style.padding = `0`
+      p.style.listStyle = `none`
     })
 
     // h1 inline-block + margin:auto 在公众号不居中，改成 block + fit-content

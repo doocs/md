@@ -109,14 +109,14 @@ img {
 
 /* ==================== 列表 ==================== */
 ol {
-  padding-left: 1em;
+  padding-left: 0.5em;
   margin-left: 0;
   color: hsl(var(--foreground));
 }
 
 ul {
   list-style: circle;
-  padding-left: 1em;
+  padding-left: 0.5em;
   margin-left: 0;
   color: hsl(var(--foreground));
 }

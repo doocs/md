@@ -167,11 +167,11 @@ figcaption,
 
 /* ==================== 列表 ==================== */
 ol {
-  padding-left: 2em;
+  padding-left: 0.5em;
 }
 
 ul {
-  padding-left: 1.5em;
+  padding-left: 0.5em;
   list-style-type: none;
 }
 
