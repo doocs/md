@@ -295,7 +295,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickColorsContainer" class="flex items-center justify-center gap-1">
+          <div
+            ref="pickColorsContainer"
+            class="flex items-center justify-center gap-1 cursor-pointer"
+            @click="pickColorsContainer?.querySelector('.vc-input__input')?.click()"
+          >
             <PickColors
               v-if="pickColorsContainer" v-model:value="primaryColor" show-alpha :format="format"
               :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
@@ -322,7 +326,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             {{ label }}
           </Button>
-          <div ref="pickBgColorsContainer" class="flex items-center justify-center gap-1">
+          <div
+            ref="pickBgColorsContainer"
+            class="flex items-center justify-center gap-1 cursor-pointer"
+            @click="pickBgColorsContainer?.querySelector('.vc-input__input')?.click()"
+          >
             <PickColors
               v-if="pickBgColorsContainer" v-model:value="backgroundColor" show-alpha :format="format"
               :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
@@ -330,7 +338,6 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             />
             <span class="text-xs whitespace-nowrap">{{ t('menu.customPrimaryColor') }}</span>
           </div>
-        </div>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
