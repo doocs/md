@@ -37,6 +37,13 @@ h6 {
   font-size: var(--md-font-size);
 }
 
+/* ==================== 段落 ==================== */
+p {
+  margin: 1.5em 8px;
+  letter-spacing: 0.1em;
+  color: hsl(var(--foreground));
+}
+
 /* ==================== 引用块 ==================== */
 blockquote {
   font-style: italic;
@@ -67,6 +74,14 @@ pre.code__pre,
 pre.code__pre > code,
 .hljs.code__pre > code {
   font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  display: -webkit-box;
+  padding: 0.5em 1em 1em;
+  overflow-x: auto;
+  text-indent: 0;
+  color: inherit;
+  background: none;
+  white-space: nowrap;
+  margin: 0;
 }
 
 /* ==================== 图片 ==================== */

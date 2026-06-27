@@ -21,7 +21,7 @@ export const useThemeStore = defineStore(`theme`, () => {
   )
 
   const currentSettings = computed<PerThemeSettings>(() => {
-    return themeSettings.value[theme.value] ?? defaultPerThemeSettings()
+    return themeSettings.value[theme.value] ?? defaultPerThemeSettings(theme.value)
   })
 
   const primaryColor = computed<string>({
@@ -37,6 +37,11 @@ export const useThemeStore = defineStore(`theme`, () => {
   const fontSize = computed<string>({
     get: () => currentSettings.value.fontSize,
     set: (v: string) => { setThemeField(`fontSize`, v) },
+  })
+
+  const backgroundColor = computed<string>({
+    get: () => currentSettings.value.backgroundColor,
+    set: (v: string) => { setThemeField(`backgroundColor`, v) },
   })
 
   const codeBlockTheme = computed<string>({
@@ -61,7 +66,7 @@ export const useThemeStore = defineStore(`theme`, () => {
 
   function setThemeField<K extends keyof PerThemeSettings>(key: K, value: PerThemeSettings[K]) {
     const t = theme.value
-    const existing = themeSettings.value[t] ?? defaultPerThemeSettings()
+    const existing = themeSettings.value[t] ?? defaultPerThemeSettings(t)
     themeSettings.value = {
       ...themeSettings.value,
       [t]: { ...existing, [key]: value },
@@ -87,7 +92,7 @@ export const useThemeStore = defineStore(`theme`, () => {
   const resetStyle = () => {
     themeSettings.value = {
       ...themeSettings.value,
-      [theme.value]: defaultPerThemeSettings(),
+      [theme.value]: defaultPerThemeSettings(theme.value),
     }
     isCiteStatus.value = defaultStyleConfig.isCiteStatus
     isCountStatus.value = defaultStyleConfig.isCountStatus
@@ -137,6 +142,7 @@ export const useThemeStore = defineStore(`theme`, () => {
           primaryColor: primaryColor.value,
           fontFamily: fontFamily.value,
           fontSize: fontSize.value,
+          backgroundColor: backgroundColor.value,
           isUseIndent: isUseIndent.value,
           isUseJustify: isUseJustify.value,
           headingStyles: headingStyles.value,
@@ -155,6 +161,7 @@ export const useThemeStore = defineStore(`theme`, () => {
     fontSize,
     fontSizeNumber,
     primaryColor,
+    backgroundColor,
     codeBlockTheme,
     legend,
     isMacCodeBlock,

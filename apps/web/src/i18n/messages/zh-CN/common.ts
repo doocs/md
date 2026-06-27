@@ -141,6 +141,7 @@ export default {
     font: `字体`,
     fontSize: `字号`,
     primaryColor: `主题色`,
+    backgroundColor: `背景色`,
     codeBlockTheme: `代码主题`,
     legendFormat: `图注`,
     customPrimaryColor: `自定义色`,
@@ -188,6 +189,8 @@ export default {
       default: { label: `经典`, desc: `` },
       grace: { label: `优雅`, desc: `{'@'}brzhang` },
       simple: { label: `简洁`, desc: `{'@'}okooo5km` },
+      ink: { label: `黑印`, desc: `浓墨重彩，传统印刷` },
+      newspaper: { label: `报刊`, desc: `报刊排版，粗黑分明` },
     },
     fontFamily: {
       sansSerif: { label: `无衬线`, desc: `字体123Abc` },

@@ -27,6 +27,7 @@ const {
   fontFamily,
   fontSize,
   primaryColor,
+  backgroundColor,
   codeBlockTheme,
   legend,
   isMacCodeBlock,
@@ -89,6 +90,11 @@ function colorChanged(newColor: string) {
   // 使用新主题系统
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
+}
+
+function backgroundColorChanged(newColor: string) {
+  themeStore.backgroundColor = newColor
+  themeStore.applyCurrentTheme()
 }
 
 function codeBlockThemeChanged(newTheme: unknown) {
@@ -295,6 +301,25 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
             :format-options="formatOptions" :theme="isDark ? 'dark' : 'light'"
             :popup-container="pickColorsContainer" @change="colorChanged"
           />
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-sm font-medium">
+          {{ t('menu.backgroundColor') }}
+        </h2>
+        <div class="grid grid-cols-3 gap-2">
+          <Button
+            v-for="{ label, value } in localizedStyleOptions.backgroundOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
+              'border-primary ring-1 ring-primary/20 border-2': backgroundColor === value,
+            }" @click="backgroundColorChanged(value)"
+          >
+            <span
+              class="mr-1.5 inline-block size-3 shrink-0 rounded-full border" :style="{
+                background: value,
+              }"
+            />
+            {{ label }}
+          </Button>
         </div>
       </div>
       <div class="space-y-2">

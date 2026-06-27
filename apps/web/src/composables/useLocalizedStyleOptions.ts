@@ -1,6 +1,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import type { IConfigOption } from '@md/shared/types'
 import {
+  backgroundOptions,
   codeBlockThemeOptions,
   colorOptions,
   fontFamilyOptions,
@@ -105,6 +106,7 @@ export function createLocalizedStyleOptions(t: Translate) {
     fontFamilyOptions: localizeFontFamilyOptions(t),
     fontSizeOptions: localizeFontSizeOptions(t),
     colorOptions: localizeColorOptions(t),
+    backgroundOptions,
     codeBlockThemeOptions,
     headingLevelOptions: localizeHeadingLevelOptions(t),
     headingStyleOptions: localizeHeadingStyleOptions(t),

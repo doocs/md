@@ -106,6 +106,44 @@ export const colorOptions: IConfigOption[] = [
   },
 ]
 
+export const backgroundOptions: IConfigOption[] = [
+  {
+    label: `白色`,
+    value: `#ffffff`,
+    desc: `默认`,
+  },
+  {
+    label: `暖白`,
+    value: `#faf8f5`,
+    desc: `护眼纸张`,
+  },
+  {
+    label: `浅灰`,
+    value: `#f5f5f5`,
+    desc: `柔和底色`,
+  },
+  {
+    label: `米白`,
+    value: `#fdfcfb`,
+    desc: `杂志质感`,
+  },
+  {
+    label: `浅蓝`,
+    value: `#f0f7ff`,
+    desc: `清新`,
+  },
+  {
+    label: `浅绿`,
+    value: `#f0f9f4`,
+    desc: `自然`,
+  },
+  {
+    label: `深色`,
+    value: `#1a1b26`,
+    desc: `暗夜模式`,
+  },
+]
+
 export const widthOptions: IConfigOption[] = [
   {
     label: `移动端`,
@@ -270,6 +308,7 @@ export const defaultStyleConfig = {
   fontFamily: fontFamilyOptions[0].value,
   fontSize: fontSizeOptions[2].value,
   primaryColor: colorOptions[0].value,
+  backgroundColor: `#ffffff`,
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
@@ -279,22 +318,86 @@ export interface PerThemeSettings {
   primaryColor: string
   fontFamily: string
   fontSize: string
+  backgroundColor: string
   codeBlockTheme: string
   headingStyles: HeadingStyles
   isShowLineNumber: boolean
   isMacCodeBlock: boolean
 }
 
-export function defaultPerThemeSettings(): PerThemeSettings {
-  return {
+/**
+ * 每个主题的推荐默认配置
+ * 切换主题时自动加载对应配置，确保风格统一
+ */
+export const perThemeDefaults: PerThemeSettingsMap = {
+  default: {
+    primaryColor: `#0F4C81`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  grace: {
+    primaryColor: `#92617E`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  simple: {
+    primaryColor: `#333333`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  ink: {
+    primaryColor: `#333333`,
+    fontFamily: fontFamilyOptions[1].value,
+    fontSize: `16px`,
+    backgroundColor: `#faf8f5`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  newspaper: {
+    primaryColor: `#0F4C81`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#f5f5f5`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+}
+
+export function defaultPerThemeSettings(themeName?: ThemeName): PerThemeSettings {
+  const base: PerThemeSettings = {
     primaryColor: defaultStyleConfig.primaryColor,
     fontFamily: defaultStyleConfig.fontFamily,
     fontSize: defaultStyleConfig.fontSize,
+    backgroundColor: defaultStyleConfig.backgroundColor,
     codeBlockTheme: defaultStyleConfig.codeBlockTheme,
     headingStyles: { ...defaultStyleConfig.headingStyles },
     isShowLineNumber: defaultStyleConfig.isShowLineNumber,
     isMacCodeBlock: defaultStyleConfig.isMacCodeBlock,
   }
+  if (!themeName) {
+    return base
+  }
+  const overrides = perThemeDefaults[themeName]
+  return overrides ? { ...base, ...overrides } : base
 }
 
 export type PerThemeSettingsMap = Partial<Record<ThemeName, PerThemeSettings>>

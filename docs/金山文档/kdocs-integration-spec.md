@@ -22,13 +22,14 @@ Netlify Function (fetch-data.js)  ← 服务端代理（解决 CORS）
 
 ## 2. 配置参数
 
-| 参数 | localStorage Key | 默认值 | 说明 |
-|---|---|---|---|
-| AirScript Token | `kdocs_token` | 无 | 金山文档脚本管理中的认证 Token |
-| Webhook URL | `kdocs_webhook` | （见下方示例） | 金山文档脚本管理中的云端 webhook，每个文件不同 |
-| 数据表 ID | `kdocs_sheet_id` | `8` | 多维表格中的表 ID（案例数据总台账） |
+| 参数            | localStorage Key | 默认值         | 说明                                           |
+| --------------- | ---------------- | -------------- | ---------------------------------------------- |
+| AirScript Token | `kdocs_token`    | 无             | 金山文档脚本管理中的认证 Token                 |
+| Webhook URL     | `kdocs_webhook`  | （见下方示例） | 金山文档脚本管理中的云端 webhook，每个文件不同 |
+| 数据表 ID       | `kdocs_sheet_id` | `8`            | 多维表格中的表 ID（案例数据总台账）            |
 
 **Webhook URL 示例**（特定文件地址，迁移时需替换）：
+
 ```
 https://www.kdocs.cn/api/v3/ide/file/csgbbXAoJgsU/script/V2-1pOgfYHUM3Jga7Fiaty27R/sync_task
 ```
@@ -40,6 +41,7 @@ https://www.kdocs.cn/api/v3/ide/file/csgbbXAoJgsU/script/V2-1pOgfYHUM3Jga7Fiaty2
 ### 3.1 获取记录（getRecords）
 
 **请求**：
+
 ```
 POST <webhook_url>
 Headers:
@@ -60,6 +62,7 @@ Body:
 ```
 
 **响应**（多种格式兼容）：
+
 ```json
 {
   "success": true,
@@ -81,27 +84,29 @@ Body:
 ```
 
 **响应解析逻辑**（4 级兼容）：
+
 ```javascript
 const data = resp.data?.result?.data
   || resp.data
   || resp.data?.records
-  || resp.records;
+  || resp.records
 ```
 
 ### 3.2 其他支持的操作
 
-| 操作 | type | 说明 |
-|---|---|---|
-| 获取记录 | `getRecords` | 分页查询，支持筛选 |
-| 搜索记录 | `searchRecords` | 关键词搜索 |
-| 创建记录 | `createRecords` | 批量插入 |
-| 更新记录 | `updateRecords` | 按 ID 更新 |
-| 删除记录 | `deleteRecords` | 按 ID 删除 |
-| 获取单条 | `getRecord` | 按 ID 查询 |
-| 上传附件 | `createRecordsWithAttachment` | 带附件创建 |
-| 获取附件 URL | `getAttachmentURL` | 获取附件下载链接 |
+| 操作         | type                          | 说明               |
+| ------------ | ----------------------------- | ------------------ |
+| 获取记录     | `getRecords`                  | 分页查询，支持筛选 |
+| 搜索记录     | `searchRecords`               | 关键词搜索         |
+| 创建记录     | `createRecords`               | 批量插入           |
+| 更新记录     | `updateRecords`               | 按 ID 更新         |
+| 删除记录     | `deleteRecords`               | 按 ID 删除         |
+| 获取单条     | `getRecord`                   | 按 ID 查询         |
+| 上传附件     | `createRecordsWithAttachment` | 带附件创建         |
+| 获取附件 URL | `getAttachmentURL`            | 获取附件下载链接   |
 
 **请求格式统一**：
+
 ```json
 {
   "Context": {
@@ -140,29 +145,36 @@ const data = resp.data?.result?.data
 ### 5.2 预设模板
 
 **default（案例分析）**：
+
 ```markdown
 # 【案例标题】
 
 ## 案件概述
+
 - **案例类型**：【案例类型】
 - **我方角色**：【我方角色】
 - **承办律师**：【承办律师】
 
 ## 案件详情
+
 【案件详情】
 
 ## 案件结果
+
 【案件结果】
 ```
 
 **brief（案例简报）**：
+
 ```markdown
 ## 【案例标题】
+
 **类型**：【案例类型】 | **角色**：【我方角色】
 **结果**：【案件结果】
 ```
 
 **compile（案例汇编）**：
+
 ```markdown
 ---
 title: 广东岭南律师事务所婚姻家事团队案例汇编
@@ -170,9 +182,11 @@ subtitle: 婚姻家事法律服务的专业实践与典型成果
 ---
 
 ## 导语
+
 （自动生成）
 
 ## 典型性代表业绩
+
 （按类型分组，每条记录生成一个案例条目）
 ```
 
@@ -189,13 +203,13 @@ subtitle: 婚姻家事法律服务的专业实践与典型成果
 
 ### 6.1 支持的 AI 供应商
 
-| 供应商 | 默认 Base URL | 默认模型 |
-|---|---|---|
-| OpenAI | `https://api.openai.com/v1` | `gpt-4o-mini` |
-| DeepSeek | `https://api.deepseek.com/v1` | `deepseek-chat` |
+| 供应商      | 默认 Base URL                   | 默认模型                   |
+| ----------- | ------------------------------- | -------------------------- |
+| OpenAI      | `https://api.openai.com/v1`     | `gpt-4o-mini`              |
+| DeepSeek    | `https://api.deepseek.com/v1`   | `deepseek-chat`            |
 | SiliconFlow | `https://api.siliconflow.cn/v1` | `Qwen/Qwen2.5-7B-Instruct` |
-| MiniMax | `https://api.minimax.chat/v1` | `MiniMax-Text-01` |
-| 小米 MiLM | `https://api.xiaomi.com/v1` | `MiLM-7B` |
+| MiniMax     | `https://api.minimax.chat/v1`   | `MiniMax-Text-01`          |
+| 小米 MiLM   | `https://api.xiaomi.com/v1`     | `MiLM-7B`                  |
 
 ### 6.2 调用方式
 
@@ -248,7 +262,7 @@ const resp = await fetch(webhook, {
       },
     },
   }),
-});
+})
 ```
 
 ---
@@ -274,6 +288,7 @@ Netlify Function (convert.js)
 ### 8.2 API
 
 **创建分享**：
+
 ```
 POST /api/convert
 Body: { markdown: "...", theme: "default", save: true }
@@ -281,6 +296,7 @@ Response: { id: "a1b2c3d4", html: "...", theme: "default" }
 ```
 
 **访问分享**：
+
 ```
 GET /s/a1b2c3d4
 Response: HTML（完整文章页面，可直接渲染）
@@ -306,15 +322,15 @@ Response: HTML（完整文章页面，可直接渲染）
 
 ## 10. 相关文件索引
 
-| 文件 | 说明 |
-|---|---|
-| `src/functions/fetch-data.js` | Netlify Function 代理（KDocs 数据） |
-| `src/functions/convert.js` | POST /api/convert，转换 + 分享存储 |
-| `src/functions/share.js` | GET /s/:id，分享链接读取 |
-| `src/site/js/settings.js` | 配置 UI（Token/Webhook/SheetId/AI） |
-| `src/site/js/sidebar.js` | 数据获取、模板、AI 润色核心逻辑 |
-| `src/site/js/constants.js` | localStorage Keys、AI 供应商预设 |
-| `src/site/js/dom.js` | DOM 元素引用 |
-| `docs/金山文档/金山文档云端对接接口.js` | AirScript 后台完整代码（1202 行） |
-| `docs/金山文档/金山文档请求端调用示例.js` | 客户端调用示例 |
-| `docs/金山文档/诉讼案件要素.xlsx` | 字段结构参考 |
+| 文件                                      | 说明                                |
+| ----------------------------------------- | ----------------------------------- |
+| `src/functions/fetch-data.js`             | Netlify Function 代理（KDocs 数据） |
+| `src/functions/convert.js`                | POST /api/convert，转换 + 分享存储  |
+| `src/functions/share.js`                  | GET /s/:id，分享链接读取            |
+| `src/site/js/settings.js`                 | 配置 UI（Token/Webhook/SheetId/AI） |
+| `src/site/js/sidebar.js`                  | 数据获取、模板、AI 润色核心逻辑     |
+| `src/site/js/constants.js`                | localStorage Keys、AI 供应商预设    |
+| `src/site/js/dom.js`                      | DOM 元素引用                        |
+| `docs/金山文档/金山文档云端对接接口.js`   | AirScript 后台完整代码（1202 行）   |
+| `docs/金山文档/金山文档请求端调用示例.js` | 客户端调用示例                      |
+| `docs/金山文档/诉讼案件要素.xlsx`         | 字段结构参考                        |

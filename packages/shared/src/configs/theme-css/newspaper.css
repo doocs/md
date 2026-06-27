@@ -1,0 +1,263 @@
+/**
+ * MD 报刊主题
+ * 报纸刊物感 —— 方格背景、粗黑标题、经典报纸排版
+ */
+
+/* 预览区背景：方格纸（背景色通过 CSS 变量控制） */
+#output {
+  background-color: var(--md-bg-color, #f5f5f5);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* ==================== 标题样式 ==================== */
+h1 {
+  display: block;
+  padding: 0.4em 0 0.35em;
+  margin: 1.5em 8px 0.4em;
+  color: #111;
+  font-size: calc(var(--md-font-size) * 2);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-transform: uppercase;
+  border-top: 6px solid #111;
+  border-bottom: 3px solid #111;
+  padding-top: 0.3em;
+}
+
+h2 {
+  display: block;
+  padding: 0.2em 0;
+  margin: 1.8em 8px 0.3em;
+  color: #111;
+  font-size: calc(var(--md-font-size) * 1.4);
+  font-weight: 900;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+  border-bottom: 1px solid #111;
+  padding-bottom: 0.25em;
+}
+
+h3 {
+  margin: 1.5em 8px 0.3em;
+  color: #111;
+  font-size: calc(var(--md-font-size) * 1.15);
+  font-weight: 800;
+  font-style: italic;
+}
+
+h4 {
+  margin: 1.2em 8px 0.3em;
+  color: #111;
+  font-size: var(--md-font-size);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-size: calc(var(--md-font-size) * 0.85);
+}
+
+h5 {
+  margin: 1.2em 8px 0.3em;
+  color: #555;
+  font-size: calc(var(--md-font-size) * 0.85);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+h6 {
+  margin: 1.2em 8px 0.3em;
+  font-size: calc(var(--md-font-size) * 0.85);
+  color: #888;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+}
+
+/* ==================== 段落 ==================== */
+p {
+  margin: 0.7em 8px;
+  letter-spacing: 0.01em;
+  line-height: 1.7;
+  color: #222;
+}
+
+/* ==================== 引用块 ==================== */
+blockquote {
+  font-style: normal;
+  padding: 1em 1.2em;
+  border: none;
+  border-top: 3px solid #111;
+  border-bottom: 1px solid #111;
+  border-radius: 0;
+  color: #333;
+  background: rgba(0, 0, 0, 0.02);
+  margin: 1.2em 8px;
+  font-size: 0.95em;
+}
+
+blockquote > p {
+  display: block;
+  font-size: 1em;
+  color: #333;
+  margin: 0;
+}
+
+/* ==================== 代码块 ==================== */
+pre.code__pre,
+.hljs.code__pre {
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 88%;
+  overflow-x: auto;
+  padding: 0 !important;
+  line-height: 1.5;
+  margin: 10px 8px;
+}
+
+pre.code__pre > code,
+.hljs.code__pre > code {
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  display: -webkit-box;
+  padding: 0.5em 1em 1em;
+  overflow-x: auto;
+  text-indent: 0;
+  color: inherit;
+  background: none;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* ==================== 行内代码 ==================== */
+.codespan {
+  color: #222;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 2px;
+  padding: 0.1em 0.35em;
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  font-size: 0.88em;
+}
+
+/* ==================== 图片 ==================== */
+img {
+  display: block;
+  max-width: 100%;
+  margin: 0.1em auto 0.5em;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+figcaption,
+.md-figcaption {
+  text-align: left;
+  font-size: 0.8em;
+  color: #666;
+  font-style: italic;
+  margin-top: 0.3em;
+  padding: 0.2em 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* ==================== 列表 ==================== */
+ol {
+  padding-left: 2em;
+}
+
+ul {
+  padding-left: 1.5em;
+}
+
+li {
+  margin: 0.2em 8px;
+  line-height: 1.7;
+}
+
+/* ==================== 分隔线 ==================== */
+hr {
+  border: none;
+  height: auto;
+  margin: 1.5em 8px;
+  text-align: center;
+  color: #999;
+}
+
+hr::after {
+  content: '\2014  \00A7  \2014';
+  letter-spacing: 0.5em;
+  font-size: 0.8em;
+}
+
+/* ==================== 强调 ==================== */
+em {
+  font-style: italic;
+  color: #222;
+}
+
+/* ==================== 链接 ==================== */
+a {
+  color: #222;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1.5px;
+  font-weight: 600;
+}
+
+/* ==================== 粗体 ==================== */
+strong {
+  font-weight: 900;
+  color: #111;
+}
+
+/* ==================== 表格（经典报纸风格） ==================== */
+table {
+  color: #222;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+thead {
+  color: #222;
+}
+
+th {
+  padding: 0.5em 1em;
+  text-align: left;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-size: 0.82em;
+  border-top: 3px solid #111;
+  border-bottom: 1px solid #111;
+}
+
+td {
+  padding: 0.4em 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  font-size: 0.95em;
+}
+
+/* 表格最后一行加粗底线 */
+table tbody tr:last-child td {
+  border-bottom: 3px solid #111;
+}
+
+/* ==================== 标记高亮 ==================== */
+.markup-highlight {
+  background: #111;
+  color: #f9f9f9;
+  padding: 0.1em 0.3em;
+  font-weight: 700;
+}
+
+.markup-underline {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.markup-wavyline {
+  text-decoration: underline wavy;
+  text-underline-offset: 3px;
+}

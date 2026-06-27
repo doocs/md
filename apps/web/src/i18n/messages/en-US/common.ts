@@ -141,6 +141,7 @@ export default {
     font: `Font`,
     fontSize: `Size`,
     primaryColor: `Color`,
+    backgroundColor: `Background`,
     codeBlockTheme: `Code theme`,
     legendFormat: `Caption`,
     customPrimaryColor: `Custom color`,
@@ -188,6 +189,8 @@ export default {
       default: { label: `Classic`, desc: `` },
       grace: { label: `Grace`, desc: `{'@'}brzhang` },
       simple: { label: `Simple`, desc: `{'@'}okooo5km` },
+      ink: { label: `Ink`, desc: `Bold print style` },
+      newspaper: { label: `Newspaper`, desc: `Editorial layout` },
     },
     fontFamily: {
       sansSerif: { label: `Sans`, desc: `Font123Abc` },

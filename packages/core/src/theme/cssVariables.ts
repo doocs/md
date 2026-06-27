@@ -9,6 +9,7 @@ export interface CSSVariableConfig {
   primaryColor: string
   fontFamily: string
   fontSize: string
+  backgroundColor?: string
   isUseIndent?: boolean
   isUseJustify?: boolean
   headingStyles?: HeadingStyles
@@ -26,6 +27,7 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   --md-primary-color: ${config.primaryColor};
   --md-font-family: ${config.fontFamily};
   --md-font-size: ${config.fontSize};
+  --md-bg-color: ${config.backgroundColor ?? '#ffffff'};
 }
 
 /* 段落缩进和对齐 */
