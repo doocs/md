@@ -166,9 +166,12 @@ export async function processClipboardContent(_primaryColor: string) {
         const p = document.createElement(`p`)
         p.setAttribute(`data-from-list`, `true`)
         p.innerHTML = li.innerHTML
+        // 从 li 复制 computed style（含 font/color/line-height 等）
         const liStyle = li.getAttribute(`style`)
         if (liStyle) {
-          const cleaned = liStyle.replace(/padding-left[^;]*;?\s*/g, ``)
+          const cleaned = liStyle
+            .replace(/padding-left[^;]*;?\s*/g, ``)
+            .replace(/list-style[^;]*;?\s*/g, ``)
           if (cleaned)
             p.setAttribute(`style`, cleaned)
         }
