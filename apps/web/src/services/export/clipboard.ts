@@ -63,10 +63,12 @@ function processPseudoElementsForWeChat(container: HTMLElement, cssText: string)
       const fs = styles.match(/font-size:\s*([^;]+)/)?.[1]?.trim() ?? `0.6em`
       container.querySelectorAll(`hr`).forEach((hr) => {
         hr.style.border = `none`
-        hr.style.textAlign = `center`
         hr.style.margin = `2.5em 8px`
+        // span 插在 hr 后面（兄弟节点），需要自身 block + text-align 居中
         const span = document.createElement(`span`)
         span.textContent = text
+        span.style.display = `block`
+        span.style.textAlign = `center`
         span.style.letterSpacing = ls
         span.style.fontSize = fs
         hr.parentElement?.insertBefore(span, hr.nextSibling)
@@ -276,6 +278,13 @@ export async function processClipboardContent(primaryColor: string) {
           .replace(/display:\s*inline-block\s*;?/g, `display: block; width: fit-content; margin-left: auto; margin-right: auto;`)
         h1.setAttribute(`style`, newStyle)
       }
+    })
+
+    // figcaption 居中（juice 可能没匹配到选择器）
+    clipboardDiv.querySelectorAll(`figcaption, .md-figcaption`).forEach((cap) => {
+      cap.style.textAlign = `center`
+      cap.style.fontSize = `0.85em`
+      cap.style.color = `#999`
     })
 
     clipboardDiv.querySelectorAll(`a[href^="#"]`).forEach(a => a.removeAttribute(`href`))
