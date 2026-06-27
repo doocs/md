@@ -104,12 +104,16 @@ function patternChanged(newPattern: string) {
 
 function openPrimaryColorPicker() {
   const el = pickColorsContainer.value
-  if (el) el.firstElementChild?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+  if (!el) return
+  const trigger = el.querySelector('.color-item') || el.querySelector('canvas, svg, div[class]')
+  if (trigger) trigger.click()
 }
 
 function openBgColorPicker() {
   const el = pickBgColorsContainer.value
-  if (el) el.firstElementChild?.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+  if (!el) return
+  const trigger = el.querySelector('.color-item') || el.querySelector('canvas, svg, div[class]')
+  if (trigger) trigger.click()
 }
 
 function codeBlockThemeChanged(newTheme: unknown) {
