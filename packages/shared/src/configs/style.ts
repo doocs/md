@@ -56,22 +56,22 @@ export const colorOptions: IConfigOption[] = [
   },
   {
     label: `翡翠绿`,
-    value: `#009874`,
+    value: `#50C878`,
     desc: `自然平衡`,
   },
   {
     label: `活力橘`,
-    value: `#FA5151`,
+    value: `#FF6B35`,
     desc: `热情活力`,
   },
   {
     label: `柠檬黄`,
-    value: `#FECE00`,
+    value: `#FFF44F`,
     desc: `明亮温暖`,
   },
   {
     label: `薰衣紫`,
-    value: `#92617E`,
+    value: `#B57EDC`,
     desc: `优雅神秘`,
   },
   {
