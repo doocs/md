@@ -55,6 +55,11 @@ export const colorOptions: IConfigOption[] = [
     desc: `深邃纯粹`,
   },
   {
+    label: `公文红`,
+    value: `#CC0000`,
+    desc: `庄重正式`,
+  },
+  {
     label: `薄荷绿`,
     value: `#3DB89F`,
     desc: `清新治愈`,

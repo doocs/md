@@ -17,8 +17,8 @@ h2 {
   padding: 0;
   margin: 1.8em 8px 0.7em;
   font-size: calc(var(--md-font-size) * 1.25);
-  font-weight: 700;
-  color: var(--md-primary-color);
+  font-weight: 800;
+  color: color-mix(in srgb, var(--md-primary-color) 85%, hsl(var(--foreground)));
   text-align: center;
 }
 
