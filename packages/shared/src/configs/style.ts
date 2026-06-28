@@ -55,9 +55,9 @@ export const colorOptions: IConfigOption[] = [
     desc: `深邃纯粹`,
   },
   {
-    label: `翡翠绿`,
-    value: `#50C878`,
-    desc: `自然平衡`,
+    label: `薄荷绿`,
+    value: `#3DB89F`,
+    desc: `清新治愈`,
   },
   {
     label: `活力橘`,
@@ -65,28 +65,28 @@ export const colorOptions: IConfigOption[] = [
     desc: `热情活力`,
   },
   {
-    label: `柠檬黄`,
-    value: `#FFF44F`,
+    label: `蜜糖黄`,
+    value: `#E0A800`,
     desc: `明亮温暖`,
   },
   {
     label: `薰衣紫`,
-    value: `#B57EDC`,
+    value: `#9B8EC8`,
     desc: `优雅神秘`,
   },
   {
     label: `天空蓝`,
-    value: `#55C9EA`,
+    value: `#3498DB`,
     desc: `清爽自由`,
   },
   {
     label: `玫瑰金`,
-    value: `#B76E79`,
-    desc: `奢华现代`,
+    value: `#C08081`,
+    desc: `柔和奢华`,
   },
   {
     label: `橄榄绿`,
-    value: `#556B2F`,
+    value: `#6B8E23`,
     desc: `沉稳自然`,
   },
   {
@@ -95,13 +95,13 @@ export const colorOptions: IConfigOption[] = [
     desc: `内敛极简`,
   },
   {
-    label: `雾烟灰`,
-    value: `#A9A9A9`,
-    desc: `柔和低调`,
+    label: `莫兰迪灰`,
+    value: `#8E8E8E`,
+    desc: `高级灰调`,
   },
   {
     label: `樱花粉`,
-    value: `#FFB7C5`,
+    value: `#E8728A`,
     desc: `浪漫甜美`,
   },
 ]
