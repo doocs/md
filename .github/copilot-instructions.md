@@ -55,3 +55,17 @@ This repository is a pnpm monorepo containing a Vue 3 web application, a VSCode 
 ### Git Conventions
 - **Commit Messages:** Follow Conventional Commits (`feat`, `fix`, `docs`, `chore`, etc.).
 - **Branch Naming:** `feat/description`, `fix/description`.
+
+### WeChat (公众号) 兼容性
+复制到公众号后台时，CSS 通过 juice 内联。**公众号编辑器不支持以下 CSS 特性**，主题开发时必须注意：
+
+- **`::after` / `::before` 伪元素** — 公众号会完全剥离。`content` 属性中的 unicode 转义（如 `\25A0`）会被 juice 拆成乱码。需要在 `apps/web/src/services/export/clipboard.ts` 的 `processPseudoElementsForWeChat()` 中转成真正的 HTML 元素。
+- **`::first-letter` 伪元素** — 公众号不支持。需要在 `processFirstLetterForWeChat()` 中转成 `<span>` 包裹首字。
+- **`display: inline-block` + `margin: auto`** — 不会水平居中。需要改成 `display: block; width: fit-content; margin-left: auto; margin-right: auto`。
+- **CSS 变量（`var(--xxx)`）** — juice 的 `resolveCSSVariables: false`，不解析变量。复制流程中通过字符串替换手动处理关键变量。
+- **`hsl(var(--foreground))`** — 替换为 `#3f3f3f`。
+- **`<blockquote>` 超 300 字** — 公众号会报"不合理引用"错误。复制时将 `<blockquote>` 转为 `<div>`（样式已由 juice 内联）。
+- **`<ul>/<ol>/<li>`** — 公众号渲染有 bug（重复圆点、序号全变 1）。复制时转为纯文本 `<p>` 段落。
+- **列表 `padding-left`** — 主题 CSS 统一使用 `0.5em`，避免缩进过大。
+
+**新增主题时**，如果使用了伪元素（`::after`、`::before`、`::first-letter`），必须在 `clipboard.ts` 中添加对应的公众号兼容处理，否则复制后效果丢失。

@@ -1,4 +1,6 @@
 {
+  // Use project TypeScript version instead of VSCode's bundled one
+  "typescript.tsdk": "node_modules/typescript/lib",
   // Disable the default formatter, use eslint instead
   "prettier.enable": false,
   "editor.formatOnSave": false,

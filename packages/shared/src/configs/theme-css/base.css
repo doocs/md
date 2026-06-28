@@ -1,6 +1,7 @@
 /**
  * MD 基础主题样式
  * 包含所有元素的基础样式和 CSS 变量定义
+ * 所有主题共享的结构样式（GFM alerts、KaTeX、figure、footnotes、markup）
  */
 
 /* ==================== 容器样式 ==================== */
@@ -38,6 +39,7 @@ section blockquote {
   margin-left: 0;
   margin-right: 0;
   margin-top: 0;
+  border-left: 0;
 }
 
 #output table,
@@ -49,4 +51,359 @@ section table {
 .mermaid-diagram .nodeLabel p {
   color: unset !important;
   letter-spacing: unset !important;
+}
+
+/* 预览区背景色由 .preview 容器的内联 style 控制 */
+#output {
+  background-color: transparent;
+}
+
+/* ==================== 脚注 ==================== */
+/* footnotes 在 buildFootnotes() 中渲染为 <p> 标签 */
+p.footnotes {
+  margin: 0.5em 8px;
+  font-size: 80%;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 图表 ==================== */
+figure {
+  margin: 1.5em 8px;
+  color: hsl(var(--foreground));
+}
+
+figcaption,
+.md-figcaption {
+  text-align: center;
+  color: color-mix(in srgb, hsl(var(--foreground)) 50%, transparent);
+  font-size: 0.8em;
+}
+
+/* ==================== KaTeX 公式 ==================== */
+.katex-inline {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.katex-block {
+  max-width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 0.5em 0;
+  text-align: center;
+}
+
+.katex-pending {
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+  font-size: 0.875em;
+}
+
+.katex-block.katex-pending {
+  padding: 0.75em 0;
+}
+
+.katex-inline.katex-pending {
+  opacity: 0.75;
+}
+
+/* ==================== 标记高亮 ==================== */
+.markup-highlight {
+  background-color: var(--md-primary-color);
+  padding: 2px 4px;
+  border-radius: 2px;
+  color: #fff;
+}
+
+.markup-underline {
+  text-decoration: underline;
+  text-decoration-color: var(--md-primary-color);
+}
+
+.markup-wavyline {
+  text-decoration: underline wavy;
+  text-decoration-color: var(--md-primary-color);
+  text-decoration-thickness: 2px;
+}
+
+/* ==================== GFM 警告块（共享结构样式） ==================== */
+.alert-title-note,
+.alert-title-tip,
+.alert-title-info,
+.alert-title-important,
+.alert-title-warning,
+.alert-title-caution,
+.alert-title-abstract,
+.alert-title-summary,
+.alert-title-tldr,
+.alert-title-todo,
+.alert-title-success,
+.alert-title-done,
+.alert-title-question,
+.alert-title-help,
+.alert-title-faq,
+.alert-title-failure,
+.alert-title-fail,
+.alert-title-missing,
+.alert-title-danger,
+.alert-title-error,
+.alert-title-bug,
+.alert-title-example,
+.alert-title-quote,
+.alert-title-cite,
+.alert-title-theorem,
+.alert-title-lemma,
+.alert-title-corollary,
+.alert-title-proposition,
+.alert-title-definition,
+.alert-title-axiom,
+.alert-title-postulate,
+.alert-title-assumption,
+.alert-title-proof,
+.alert-title-remark,
+.alert-title-custom {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.alert-title-note {
+  color: #478be6;
+}
+
+.alert-title-tip {
+  color: #57ab5a;
+}
+
+.alert-title-info {
+  color: #93c5fd;
+}
+
+.alert-title-important {
+  color: #986ee2;
+}
+
+.alert-title-warning {
+  color: #c69026;
+}
+
+.alert-title-caution {
+  color: #e5534b;
+}
+
+/* Obsidian-style callout colors */
+.alert-title-abstract,
+.alert-title-summary,
+.alert-title-tldr {
+  color: #00bfff;
+}
+
+.alert-title-todo {
+  color: #478be6;
+}
+
+.alert-title-success,
+.alert-title-done {
+  color: #57ab5a;
+}
+
+.alert-title-question,
+.alert-title-help,
+.alert-title-faq {
+  color: #c69026;
+}
+
+.alert-title-failure,
+.alert-title-fail,
+.alert-title-missing {
+  color: #e5534b;
+}
+
+.alert-title-danger,
+.alert-title-error {
+  color: #e5534b;
+}
+
+.alert-title-bug {
+  color: #e5534b;
+}
+
+.alert-title-example {
+  color: #986ee2;
+}
+
+.alert-title-quote,
+.alert-title-cite {
+  color: #9ca3af;
+}
+
+/* GFM Alert SVG 图标颜色 */
+.alert-icon-note {
+  fill: #478be6;
+}
+
+.alert-icon-tip {
+  fill: #57ab5a;
+}
+
+.alert-icon-info {
+  fill: #93c5fd;
+}
+
+.alert-icon-important {
+  fill: #986ee2;
+}
+
+.alert-icon-warning {
+  fill: #c69026;
+}
+
+.alert-icon-caution {
+  fill: #e5534b;
+}
+
+/* Obsidian-style callout icon colors */
+.alert-icon-abstract,
+.alert-icon-summary,
+.alert-icon-tldr {
+  fill: #00bfff;
+}
+
+.alert-icon-todo {
+  fill: #478be6;
+}
+
+.alert-icon-success,
+.alert-icon-done {
+  fill: #57ab5a;
+}
+
+.alert-icon-question,
+.alert-icon-help,
+.alert-icon-faq {
+  fill: #c69026;
+}
+
+.alert-icon-failure,
+.alert-icon-fail,
+.alert-icon-missing {
+  fill: #e5534b;
+}
+
+.alert-icon-danger,
+.alert-icon-error {
+  fill: #e5534b;
+}
+
+.alert-icon-bug {
+  fill: #e5534b;
+}
+
+.alert-icon-example {
+  fill: #986ee2;
+}
+
+.alert-icon-quote,
+.alert-icon-cite {
+  fill: #9ca3af;
+}
+
+/* ==================== 学术环境（定理、引理、定义等） ==================== */
+/* 标题颜色 */
+.alert-title-theorem,
+.alert-title-lemma,
+.alert-title-corollary,
+.alert-title-proposition {
+  color: #986ee2;
+}
+
+.alert-title-definition {
+  color: #57ab5a;
+}
+
+.alert-title-axiom,
+.alert-title-postulate,
+.alert-title-assumption {
+  color: #478be6;
+}
+
+.alert-title-proof {
+  color: #9ca3af;
+}
+
+.alert-title-remark {
+  color: #c69026;
+}
+
+/* 图标颜色 */
+.alert-icon-theorem,
+.alert-icon-lemma,
+.alert-icon-corollary,
+.alert-icon-proposition {
+  fill: #986ee2;
+}
+
+.alert-icon-definition {
+  fill: #57ab5a;
+}
+
+.alert-icon-axiom,
+.alert-icon-postulate,
+.alert-icon-assumption {
+  fill: #478be6;
+}
+
+.alert-icon-proof {
+  fill: #9ca3af;
+}
+
+.alert-icon-remark {
+  fill: #c69026;
+}
+
+/* 盒子描边：学术环境使用完整边框，更接近定理环境的视觉效果 */
+#output .markdown-alert-theorem,
+#output .markdown-alert-lemma,
+#output .markdown-alert-corollary,
+#output .markdown-alert-proposition {
+  border: 1px solid rgba(152, 110, 226, 0.35);
+}
+
+#output .markdown-alert-definition {
+  border: 1px solid rgba(87, 171, 90, 0.35);
+}
+
+#output .markdown-alert-axiom,
+#output .markdown-alert-postulate,
+#output .markdown-alert-assumption {
+  border: 1px solid rgba(71, 139, 230, 0.35);
+}
+
+#output .markdown-alert-proof {
+  border: 1px solid rgba(156, 163, 175, 0.35);
+}
+
+#output .markdown-alert-remark {
+  border: 1px solid rgba(198, 144, 38, 0.35);
+}
+
+/* 自定义/未知名称的兜底样式：无图标，使用主题主色 */
+.alert-title-custom {
+  color: var(--md-primary-color);
+}
+
+#output .markdown-alert-custom {
+  border: 1px solid color-mix(in srgb, var(--md-primary-color) 35%, transparent);
+}
+
+/* 学术环境正文使用斜体，符合数学写作惯例 */
+.markdown-alert-theorem > :not(.markdown-alert-title),
+.markdown-alert-lemma > :not(.markdown-alert-title),
+.markdown-alert-corollary > :not(.markdown-alert-title),
+.markdown-alert-proposition > :not(.markdown-alert-title),
+.markdown-alert-definition > :not(.markdown-alert-title),
+.markdown-alert-axiom > :not(.markdown-alert-title),
+.markdown-alert-postulate > :not(.markdown-alert-title),
+.markdown-alert-assumption > :not(.markdown-alert-title) {
+  font-style: italic;
 }

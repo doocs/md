@@ -25,6 +25,8 @@ export const themeOptions = [
   { value: `default`, label: `经典`, desc: `` },
   { value: `grace`, label: `优雅`, desc: `@brzhang` },
   { value: `simple`, label: `简洁`, desc: `@okooo5km` },
+  { value: `ink`, label: `黑印`, desc: `浓墨重彩，传统印刷` },
+  { value: `newspaper`, label: `报刊`, desc: `报刊排版，粗黑分明` },
 ] as const
 
 export const fontFamilyOptions = [

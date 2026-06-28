@@ -20,6 +20,16 @@ export const themeOptionsMap = {
     value: `simple`,
     desc: `@okooo5km`,
   },
+  ink: {
+    label: `黑印`,
+    value: `ink`,
+    desc: `浓墨重彩，传统印刷`,
+  },
+  newspaper: {
+    label: `报刊`,
+    value: `newspaper`,
+    desc: `报刊排版，粗黑分明`,
+  },
 }
 
 export const themeOptions: IConfigOption<ThemeName>[] = [
@@ -37,5 +47,15 @@ export const themeOptions: IConfigOption<ThemeName>[] = [
     label: `简洁`,
     value: `simple`,
     desc: `@okooo5km`,
+  },
+  {
+    label: `黑印`,
+    value: `ink`,
+    desc: `浓墨重彩，传统印刷`,
+  },
+  {
+    label: `报刊`,
+    value: `newspaper`,
+    desc: `报刊排版，粗黑分明`,
   },
 ]

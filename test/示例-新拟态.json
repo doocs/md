@@ -1,0 +1,64 @@
+{
+  "version": "2.0",
+  "config": {
+    "header": null,
+    "nav": {
+      "enabled": false
+    },
+    "footer": {
+      "enabled": true,
+      "author": "产品团队",
+      "date": "2026年5月24日"
+    },
+    "theme": "neumorphism",
+    "leadTitle": "产品理念"
+  },
+  "content": {
+    "title": "智能家居产品设计理念",
+    "subtitle": "让生活更简单、更舒适",
+    "sections": [
+      {
+        "type": "lead",
+        "paragraphs": [
+          "我们相信，科技应该服务于生活，而不是让生活变得复杂。每一个产品设计决策，都源于对用户真实需求的深刻理解。"
+        ]
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "极简交互"
+      },
+      {
+        "type": "paragraph",
+        "text": "通过智能学习算法，设备能够自动适应用户的生活习惯，减少手动操作。一键场景模式，让复杂的设备联动变得简单。"
+      },
+      {
+        "type": "heading",
+        "level": 3,
+        "text": "核心特性"
+      },
+      {
+        "type": "list",
+        "ordered": false,
+        "items": [
+          "语音控制：支持自然语言交互",
+          "场景联动：多设备智能协同",
+          "能耗优化：AI 驱动的节能策略",
+          "安全防护：银行级数据加密"
+        ]
+      },
+      {
+        "type": "blockquote",
+        "text": "好的设计是看不见的，它自然而然地融入生活。"
+      },
+      {
+        "type": "divider"
+      },
+      {
+        "type": "contact",
+        "title": "了解更多",
+        "text": "访问我们的官网或拨打客服热线 400-888-8888"
+      }
+    ]
+  }
+}
