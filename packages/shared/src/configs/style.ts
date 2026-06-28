@@ -51,8 +51,8 @@ export const fontSizeOptions: IConfigOption[] = [
 export const colorOptions: IConfigOption[] = [
   {
     label: `经典蓝`,
-    value: `#0F4C81`,
-    desc: `稳重冷静`,
+    value: `#002FA7`,
+    desc: `克莱因蓝，深邃纯粹`,
   },
   {
     label: `翡翠绿`,
