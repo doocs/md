@@ -361,7 +361,7 @@ export interface PerThemeSettings {
  */
 export const perThemeDefaults: PerThemeSettingsMap = {
   default: {
-    primaryColor: `#0F4C81`,
+    primaryColor: `#0a3a66`,
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,
@@ -372,7 +372,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     isMacCodeBlock: true,
   },
   grace: {
-    primaryColor: `#92617E`,
+    primaryColor: `#6d4560`,
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,
@@ -383,7 +383,7 @@ export const perThemeDefaults: PerThemeSettingsMap = {
     isMacCodeBlock: true,
   },
   simple: {
-    primaryColor: `#333333`,
+    primaryColor: `#222222`,
     fontFamily: fontFamilyOptions[0].value,
     fontSize: `16px`,
     backgroundColor: `#ffffff`,

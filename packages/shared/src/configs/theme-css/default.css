@@ -73,7 +73,6 @@ p {
 blockquote {
   font-style: normal;
   padding: 1em;
-  border-left: 4px solid var(--md-primary-color);
   border-radius: 6px;
   color: hsl(var(--foreground));
   background: var(--blockquote-background);

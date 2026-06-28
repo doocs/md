@@ -5,36 +5,54 @@
 
 /* ==================== 标题样式 ==================== */
 h1 {
-  padding: 0.5em 1em;
-  border-bottom: 2px solid var(--md-primary-color);
-  font-size: calc(var(--md-font-size) * 1.4);
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 0;
+  margin: 2em 8px 1em;
+  color: var(--md-primary-color);
+  font-size: calc(var(--md-font-size) * 1.5);
+  font-weight: 800;
 }
 
 h2 {
-  padding: 0.3em 1em;
-  border-radius: 8px;
+  display: table;
+  padding: 0.4em 1.4em;
+  margin: 2em auto 1em;
+  color: #fff;
+  background: var(--md-primary-color);
   font-size: calc(var(--md-font-size) * 1.3);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  font-weight: 700;
+  border-radius: 8px;
+  text-align: center;
 }
 
 h3 {
-  padding-left: 12px;
-  font-size: calc(var(--md-font-size) * 1.2);
-  border-left: 4px solid var(--md-primary-color);
+  margin: 1.6em 8px 0.6em;
+  font-size: calc(var(--md-font-size) * 1.12);
+  font-style: italic;
+  font-weight: 600;
   border-bottom: 1px dashed var(--md-primary-color);
+  padding-bottom: 0.25em;
+  color: color-mix(in srgb, var(--md-primary-color) 85%, hsl(var(--foreground)));
+  text-align: left;
 }
 
 h4 {
-  font-size: calc(var(--md-font-size) * 1.1);
+  margin: 1.4em 8px 0.4em;
+  font-size: calc(var(--md-font-size) * 1.06);
+  font-weight: 700;
+  color: hsl(var(--foreground));
 }
 
 h5 {
+  margin: 1.2em 8px 0.3em;
   font-size: var(--md-font-size);
+  font-weight: 700;
+  color: var(--md-primary-color);
 }
 
 h6 {
+  margin: 1em 8px 0.3em;
   font-size: var(--md-font-size);
+  color: hsl(var(--muted-foreground));
 }
 
 /* ==================== 段落 ==================== */
@@ -47,11 +65,10 @@ p {
 /* ==================== 引用块 ==================== */
 blockquote {
   font-style: italic;
-  padding: 1em 1em 1em 2em;
-  border-left: 4px solid var(--md-primary-color);
+  padding: 1em 1.2em;
+  background: color-mix(in srgb, var(--md-primary-color) 6%, transparent);
   border-radius: 6px;
-  color: rgba(0, 0, 0, 0.6);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  color: color-mix(in srgb, hsl(var(--foreground)) 85%, transparent);
   margin-bottom: 1em;
 }
 

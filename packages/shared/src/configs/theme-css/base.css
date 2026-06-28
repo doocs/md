@@ -39,6 +39,7 @@ section blockquote {
   margin-left: 0;
   margin-right: 0;
   margin-top: 0;
+  border-left: 0;
 }
 
 #output table,
@@ -361,34 +362,29 @@ figcaption,
 }
 
 /* 盒子描边：学术环境使用完整边框，更接近定理环境的视觉效果 */
-.markdown-alert-theorem,
-.markdown-alert-lemma,
-.markdown-alert-corollary,
-.markdown-alert-proposition {
+#output .markdown-alert-theorem,
+#output .markdown-alert-lemma,
+#output .markdown-alert-corollary,
+#output .markdown-alert-proposition {
   border: 1px solid rgba(152, 110, 226, 0.35);
-  border-left: 4px solid #986ee2;
 }
 
-.markdown-alert-definition {
+#output .markdown-alert-definition {
   border: 1px solid rgba(87, 171, 90, 0.35);
-  border-left: 4px solid #57ab5a;
 }
 
-.markdown-alert-axiom,
-.markdown-alert-postulate,
-.markdown-alert-assumption {
+#output .markdown-alert-axiom,
+#output .markdown-alert-postulate,
+#output .markdown-alert-assumption {
   border: 1px solid rgba(71, 139, 230, 0.35);
-  border-left: 4px solid #478be6;
 }
 
-.markdown-alert-proof {
+#output .markdown-alert-proof {
   border: 1px solid rgba(156, 163, 175, 0.35);
-  border-left: 4px solid #9ca3af;
 }
 
-.markdown-alert-remark {
+#output .markdown-alert-remark {
   border: 1px solid rgba(198, 144, 38, 0.35);
-  border-left: 4px solid #c69026;
 }
 
 /* 自定义/未知名称的兜底样式：无图标，使用主题主色 */
@@ -396,8 +392,8 @@ figcaption,
   color: var(--md-primary-color);
 }
 
-.markdown-alert-custom {
-  border-left: 4px solid var(--md-primary-color);
+#output .markdown-alert-custom {
+  border: 1px solid color-mix(in srgb, var(--md-primary-color) 35%, transparent);
 }
 
 /* 学术环境正文使用斜体，符合数学写作惯例 */
