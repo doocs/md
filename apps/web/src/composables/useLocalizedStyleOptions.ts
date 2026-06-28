@@ -18,16 +18,17 @@ type Translate = (key: string) => string
 const FONT_FAMILY_KEYS = [`sansSerif`, `serif`, `monospace`] as const
 const FONT_SIZE_DESC_KEYS = [`smaller`, `slightlySmaller`, `recommended`, `slightlyLarger`, `larger`] as const
 const COLOR_KEYS = [
-  `classicBlue`,
-  `emeraldGreen`,
+  `kleinBlue`,
+  `officialRed`,
+  `mintGreen`,
   `vividOrange`,
-  `lemonYellow`,
+  `honeyYellow`,
   `lavenderPurple`,
   `skyBlue`,
   `roseGold`,
   `oliveGreen`,
   `graphiteBlack`,
-  `mistGray`,
+  `morandiGray`,
   `sakuraPink`,
 ] as const
 const LEGEND_KEYS = [`titleAlt`, `altTitle`, `titleOnly`, `altOnly`, `filename`, `none`] as const
