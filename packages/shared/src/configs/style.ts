@@ -50,43 +50,48 @@ export const fontSizeOptions: IConfigOption[] = [
 
 export const colorOptions: IConfigOption[] = [
   {
-    label: `经典蓝`,
-    value: `#0F4C81`,
-    desc: `稳重冷静`,
+    label: `克莱因蓝`,
+    value: `#002FA7`,
+    desc: `深邃纯粹`,
   },
   {
-    label: `翡翠绿`,
-    value: `#009874`,
-    desc: `自然平衡`,
+    label: `公文红`,
+    value: `#CC0000`,
+    desc: `庄重正式`,
+  },
+  {
+    label: `薄荷绿`,
+    value: `#3DB89F`,
+    desc: `清新治愈`,
   },
   {
     label: `活力橘`,
-    value: `#FA5151`,
+    value: `#FF6B35`,
     desc: `热情活力`,
   },
   {
-    label: `柠檬黄`,
-    value: `#FECE00`,
+    label: `蜜糖黄`,
+    value: `#E0A800`,
     desc: `明亮温暖`,
   },
   {
     label: `薰衣紫`,
-    value: `#92617E`,
+    value: `#9B8EC8`,
     desc: `优雅神秘`,
   },
   {
     label: `天空蓝`,
-    value: `#55C9EA`,
+    value: `#3498DB`,
     desc: `清爽自由`,
   },
   {
     label: `玫瑰金`,
-    value: `#B76E79`,
-    desc: `奢华现代`,
+    value: `#C08081`,
+    desc: `柔和奢华`,
   },
   {
     label: `橄榄绿`,
-    value: `#556B2F`,
+    value: `#6B8E23`,
     desc: `沉稳自然`,
   },
   {
@@ -95,14 +100,80 @@ export const colorOptions: IConfigOption[] = [
     desc: `内敛极简`,
   },
   {
-    label: `雾烟灰`,
-    value: `#A9A9A9`,
-    desc: `柔和低调`,
+    label: `莫兰迪灰`,
+    value: `#8E8E8E`,
+    desc: `高级灰调`,
   },
   {
     label: `樱花粉`,
-    value: `#FFB7C5`,
+    value: `#E8728A`,
     desc: `浪漫甜美`,
+  },
+]
+
+export const backgroundOptions: IConfigOption[] = [
+  {
+    label: `白色`,
+    value: `#ffffff`,
+    desc: `默认`,
+  },
+  {
+    label: `暖白`,
+    value: `#faf8f5`,
+    desc: `护眼纸张`,
+  },
+  {
+    label: `浅灰`,
+    value: `#f5f5f5`,
+    desc: `柔和底色`,
+  },
+  {
+    label: `米白`,
+    value: `#fdfcfb`,
+    desc: `杂志质感`,
+  },
+  {
+    label: `浅蓝`,
+    value: `#f0f7ff`,
+    desc: `清新`,
+  },
+  {
+    label: `浅绿`,
+    value: `#f0f9f4`,
+    desc: `自然`,
+  },
+  {
+    label: `深色`,
+    value: `#1a1b26`,
+    desc: `暗夜模式`,
+  },
+]
+
+export const backgroundPatternOptions: IConfigOption[] = [
+  {
+    label: `无`,
+    value: `none`,
+    desc: `纯色`,
+  },
+  {
+    label: `方格`,
+    value: `grid`,
+    desc: `坐标纸`,
+  },
+  {
+    label: `星点`,
+    value: `dots`,
+    desc: `Claude 风格`,
+  },
+  {
+    label: `横线`,
+    value: `lines`,
+    desc: `信纸`,
+  },
+  {
+    label: `竖线`,
+    value: `vlines`,
+    desc: `笔记本`,
   },
 ]
 
@@ -270,6 +341,8 @@ export const defaultStyleConfig = {
   fontFamily: fontFamilyOptions[0].value,
   fontSize: fontSizeOptions[2].value,
   primaryColor: colorOptions[0].value,
+  backgroundColor: `#ffffff`,
+  backgroundPattern: `none`,
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
@@ -279,22 +352,93 @@ export interface PerThemeSettings {
   primaryColor: string
   fontFamily: string
   fontSize: string
+  backgroundColor: string
+  backgroundPattern: string
   codeBlockTheme: string
   headingStyles: HeadingStyles
   isShowLineNumber: boolean
   isMacCodeBlock: boolean
 }
 
-export function defaultPerThemeSettings(): PerThemeSettings {
-  return {
+/**
+ * 每个主题的推荐默认配置
+ * 切换主题时自动加载对应配置，确保风格统一
+ */
+export const perThemeDefaults: PerThemeSettingsMap = {
+  default: {
+    primaryColor: `#0a3a66`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  grace: {
+    primaryColor: `#6d4560`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  simple: {
+    primaryColor: `#222222`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#ffffff`,
+    backgroundPattern: `none`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  ink: {
+    primaryColor: `#333333`,
+    fontFamily: fontFamilyOptions[1].value,
+    fontSize: `16px`,
+    backgroundColor: `#faf8f5`,
+    backgroundPattern: `none`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+  newspaper: {
+    primaryColor: `#0F4C81`,
+    fontFamily: fontFamilyOptions[0].value,
+    fontSize: `16px`,
+    backgroundColor: `#f5f5f5`,
+    backgroundPattern: `grid`,
+    codeBlockTheme: codeBlockThemeOptions[23].value,
+    headingStyles: {},
+    isShowLineNumber: false,
+    isMacCodeBlock: true,
+  },
+}
+
+export function defaultPerThemeSettings(themeName?: ThemeName): PerThemeSettings {
+  const base: PerThemeSettings = {
     primaryColor: defaultStyleConfig.primaryColor,
     fontFamily: defaultStyleConfig.fontFamily,
     fontSize: defaultStyleConfig.fontSize,
+    backgroundColor: defaultStyleConfig.backgroundColor,
+    backgroundPattern: defaultStyleConfig.backgroundPattern,
     codeBlockTheme: defaultStyleConfig.codeBlockTheme,
     headingStyles: { ...defaultStyleConfig.headingStyles },
     isShowLineNumber: defaultStyleConfig.isShowLineNumber,
     isMacCodeBlock: defaultStyleConfig.isMacCodeBlock,
   }
+  if (!themeName) {
+    return base
+  }
+  const overrides = perThemeDefaults[themeName]
+  return overrides ? { ...base, ...overrides } : base
 }
 
 export type PerThemeSettingsMap = Partial<Record<ThemeName, PerThemeSettings>>

@@ -1,6 +1,8 @@
 import type { ThemeName } from '@md/shared/configs'
 import type { IConfigOption } from '@md/shared/types'
 import {
+  backgroundOptions,
+  backgroundPatternOptions,
   codeBlockThemeOptions,
   colorOptions,
   fontFamilyOptions,
@@ -16,16 +18,17 @@ type Translate = (key: string) => string
 const FONT_FAMILY_KEYS = [`sansSerif`, `serif`, `monospace`] as const
 const FONT_SIZE_DESC_KEYS = [`smaller`, `slightlySmaller`, `recommended`, `slightlyLarger`, `larger`] as const
 const COLOR_KEYS = [
-  `classicBlue`,
-  `emeraldGreen`,
+  `kleinBlue`,
+  `officialRed`,
+  `mintGreen`,
   `vividOrange`,
-  `lemonYellow`,
+  `honeyYellow`,
   `lavenderPurple`,
   `skyBlue`,
   `roseGold`,
   `oliveGreen`,
   `graphiteBlack`,
-  `mistGray`,
+  `morandiGray`,
   `sakuraPink`,
 ] as const
 const LEGEND_KEYS = [`titleAlt`, `altTitle`, `titleOnly`, `altOnly`, `filename`, `none`] as const
@@ -105,6 +108,8 @@ export function createLocalizedStyleOptions(t: Translate) {
     fontFamilyOptions: localizeFontFamilyOptions(t),
     fontSizeOptions: localizeFontSizeOptions(t),
     colorOptions: localizeColorOptions(t),
+    backgroundOptions,
+    backgroundPatternOptions,
     codeBlockThemeOptions,
     headingLevelOptions: localizeHeadingLevelOptions(t),
     headingStyleOptions: localizeHeadingStyleOptions(t),

@@ -1,0 +1,258 @@
+/**
+ * MD 黑印主题
+ * 传统印刷感 —— 方框标题、首字下沉、黑方块分隔
+ */
+
+/* ==================== 标题样式 ==================== */
+h1 {
+  display: block;
+  width: fit-content;
+  padding: 0.4em 1.5em;
+  margin: 2em auto 1em;
+  color: hsl(var(--foreground));
+  font-size: calc(var(--md-font-size) * 1.5);
+  font-weight: 900;
+  letter-spacing: 0.15em;
+  text-align: center;
+  border: 3px solid hsl(var(--foreground));
+  position: relative;
+}
+
+h1::after {
+  content: '';
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 3px;
+  background: hsl(var(--foreground));
+}
+
+h2 {
+  display: block;
+  padding: 0.3em 0 0.35em;
+  margin: 2.5em 8px 0.8em;
+  color: hsl(var(--foreground));
+  font-size: calc(var(--md-font-size) * 1.3);
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  border-bottom: 3px solid hsl(var(--foreground));
+}
+
+h3 {
+  margin: 2em 8px 0.6em;
+  color: hsl(var(--foreground));
+  font-size: calc(var(--md-font-size) * 1.15);
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+h4 {
+  margin: 1.8em 8px 0.5em;
+  color: hsl(var(--foreground));
+  font-size: calc(var(--md-font-size) * 1.08);
+  font-weight: 700;
+}
+
+h5 {
+  margin: 1.5em 8px 0.5em;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+  font-size: var(--md-font-size);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+h6 {
+  margin: 1.5em 8px 0.5em;
+  font-size: var(--md-font-size);
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+/* ==================== 段落（首字下沉） ==================== */
+p {
+  margin: 1.2em 8px;
+  letter-spacing: 0.06em;
+  line-height: 1.9;
+  color: hsl(var(--foreground));
+}
+
+h1 + p::first-letter,
+h2 + p::first-letter,
+h3 + p::first-letter {
+  float: left;
+  font-size: 3.2em;
+  line-height: 0.8;
+  padding: 0.05em 0.1em 0 0;
+  font-weight: 900;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 引用块 ==================== */
+blockquote {
+  font-style: normal;
+  padding: 1.2em 1.5em;
+  border: none;
+  border-radius: 0;
+  color: hsl(var(--foreground));
+  background: rgba(0, 0, 0, 0.04);
+  margin: 1.5em 8px;
+}
+
+blockquote > p {
+  display: block;
+  font-size: 1em;
+  letter-spacing: 0.06em;
+  color: hsl(var(--foreground));
+  margin: 0 0 0.5em 0;
+}
+
+/* ==================== 代码块 ==================== */
+pre.code__pre,
+.hljs.code__pre {
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+  box-shadow: none;
+  font-size: 90%;
+  overflow-x: auto;
+  padding: 0 !important;
+  line-height: 1.5;
+  margin: 10px 8px;
+}
+
+pre.code__pre > code,
+.hljs.code__pre > code {
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  display: -webkit-box;
+  padding: 0.5em 1em 1em;
+  overflow-x: auto;
+  text-indent: 0;
+  color: inherit;
+  background: none;
+  white-space: nowrap;
+  margin: 0;
+}
+
+/* ==================== 行内代码 ==================== */
+.codespan {
+  color: var(--md-primary-color);
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  padding: 0.15em 0.4em;
+  font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
+  border-bottom: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+/* ==================== 图片 ==================== */
+img {
+  display: block;
+  max-width: 100%;
+  margin: 0.1em auto 0.5em;
+  border-radius: 0;
+  box-shadow: none;
+  border: 2px solid hsl(var(--foreground));
+}
+
+figcaption,
+.md-figcaption {
+  text-align: center;
+  font-size: 0.85em;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+  font-style: italic;
+  margin-top: 0.5em;
+}
+
+/* ==================== 列表 ==================== */
+ol {
+  padding-left: 0.5em;
+}
+
+ul {
+  padding-left: 0.5em;
+  list-style-type: none;
+}
+
+li {
+  margin: 0.4em 8px;
+  line-height: 1.8;
+}
+
+/* ==================== 分隔线（黑方块） ==================== */
+hr {
+  border: none;
+  height: auto;
+  text-align: center;
+  margin: 2.5em 8px;
+  color: hsl(var(--muted-foreground, 0 0% 45%));
+}
+
+hr::after {
+  content: '\25A0  \25A0  \25A0';
+  letter-spacing: 0.5em;
+  font-size: 0.6em;
+}
+
+/* ==================== 强调 ==================== */
+em {
+  font-style: italic;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 链接 ==================== */
+a {
+  color: hsl(var(--foreground));
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  text-decoration-thickness: 2px;
+  font-weight: 700;
+}
+
+/* ==================== 粗体 ==================== */
+strong {
+  font-weight: 900;
+  color: hsl(var(--foreground));
+}
+
+/* ==================== 表格 ==================== */
+table {
+  color: hsl(var(--foreground));
+  border-collapse: collapse;
+}
+
+thead {
+  color: hsl(var(--background, 0 0% 100%));
+  background: hsl(var(--foreground));
+}
+
+th {
+  padding: 0.6em 1em;
+  text-align: left;
+  font-weight: 700;
+}
+
+td {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+/* ==================== 标记高亮 ==================== */
+.markup-highlight {
+  background: var(--md-primary-color);
+  color: hsl(var(--background, 0 0% 100%));
+  padding: 0.1em 0.3em;
+  font-weight: 700;
+}
+
+.markup-underline {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.markup-wavyline {
+  text-decoration: underline wavy;
+  text-underline-offset: 4px;
+}

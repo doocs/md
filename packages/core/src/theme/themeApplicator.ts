@@ -25,16 +25,9 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
   // 1. 生成 CSS 变量
   const variablesCSS = generateCSSVariables(config.variables)
 
-  // 2. 构建主题 CSS（模拟旧系统的合并行为）
-  let themeCSS = themeMap.default // 默认主题作为基础
-
-  // 3. 如果不是 default 主题，叠加主题特定样式
-  if (config.themeName !== `default`) {
-    const specificThemeCSS = themeMap[config.themeName as ThemeName]
-    if (specificThemeCSS) {
-      themeCSS = `${themeCSS}\n\n${specificThemeCSS}`
-    }
-  }
+  // 2. 构建主题 CSS：baseCSSContent 已包含所有共享样式（GFM alerts、KaTeX、
+  //    figure、footnotes、markup），每个主题 CSS 文件自包含，不继承 default.css
+  const themeCSS = themeMap[config.themeName as ThemeName] ?? themeMap.default
 
   // 4. 给主题 CSS 添加作用域（只影响 #output 预览区域）
   const scopedThemeCSS = wrapCSSWithScope(themeCSS, `#output`)
