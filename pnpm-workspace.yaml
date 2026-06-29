@@ -46,7 +46,7 @@ overrides:
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.4.1
   undici@^7: ^8.4.1
-  uuid: ^14.0.0
+  uuid: ^14.0.1
   workbox-build>source-map: 0.7.4
   ws@<8.21.0: ^8.21.0
   yauzl: ^3.4.0
