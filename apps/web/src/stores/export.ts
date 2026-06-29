@@ -45,7 +45,6 @@ export const useExportStore = defineStore(`export`, () => {
       return
 
     await exportPNG(currentPost.title, {
-      isDark: uiStore.isDark,
       previewDevice: uiStore.previewDevice,
     })
   }

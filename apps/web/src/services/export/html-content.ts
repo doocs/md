@@ -1,7 +1,14 @@
 import { hydratePendingInfographicDiagrams } from '@md/core'
+import { applyExportLayout } from './apply-export-layout'
+
+export interface GetHtmlContentOptions {
+  themeMode?: `light` | `dark`
+  /** Wrap wide tables/code for static exports (PDF/HTML). */
+  staticLayout?: boolean
+}
 
 /** 获取 HTML 内容 */
-export function getHtmlContent(options?: { themeMode?: `light` | `dark` }): string {
+export function getHtmlContent(options?: GetHtmlContentOptions): string {
   const element = document.querySelector(`#output`)
   if (!element)
     return ``
@@ -11,5 +18,7 @@ export function getHtmlContent(options?: { themeMode?: `light` | `dark` }): stri
     clone,
     options?.themeMode ? { themeMode: options.themeMode } : undefined,
   )
+  if (options?.staticLayout)
+    applyExportLayout(clone)
   return clone.innerHTML
 }

@@ -1,13 +1,14 @@
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { t } from '@/i18n/translate'
 import { waitForPreviewReady } from '@/lib/preview/preview-ready'
+import { EXPORT_LAYOUT_CSS } from './apply-export-layout'
 import { getHtmlContent } from './html-content'
 import { getStylesToAdd, SHARE_SHELL_VARS_CSS } from './share-styles'
 
 /** 导出 PDF 文档（新主题系统） */
 export async function exportPDF(title: string = `untitled`) {
   await waitForPreviewReady()
-  const htmlStr = getHtmlContent()
+  const htmlStr = getHtmlContent({ staticLayout: true })
   const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
   const pageFooter = t('store.pdf.pageFooter')
@@ -19,6 +20,7 @@ export async function exportPDF(title: string = `untitled`) {
   <title>${safeTitle}</title>
   <style>${SHARE_SHELL_VARS_CSS}</style>
   ${stylesToAdd}
+  <style>${EXPORT_LAYOUT_CSS}</style>
   <style>
     /* 强制打印背景颜色和图片 */
     * {
