@@ -135,6 +135,24 @@ export function getPngCaptureBackgroundColor(): string {
   return useNightPreview ? `#191919` : `#fff`
 }
 
+const PNG_PREVIEW_SHELL_CSS = `
+  ${PNG_CAPTURE_HOST} .preview {
+    position: relative;
+    margin: 0 auto;
+    padding: 20px;
+    font-size: 14px;
+    box-sizing: border-box;
+    word-wrap: break-word;
+  }
+
+  ${PNG_CAPTURE_HOST} .preview table {
+    margin-bottom: 10px;
+    border-collapse: collapse;
+    display: table;
+    min-width: 100%;
+  }
+`
+
 /** Scoped theme + layout styles for off-screen PNG capture. */
 export async function getPngCaptureStyles(): Promise<string> {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
@@ -148,6 +166,7 @@ export async function getPngCaptureStyles(): Promise<string> {
 
   const parts = [
     `<style>${shellVars}</style>`,
+    `<style>${PNG_PREVIEW_SHELL_CSS}</style>`,
     `<style>${scopeThemeToCaptureRoot(themeStyle.textContent)}</style>`,
     `<style>${getScopedExportLayoutCss(PNG_CAPTURE_HOST)}</style>`,
   ]
