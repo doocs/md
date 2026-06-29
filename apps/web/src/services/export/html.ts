@@ -3,13 +3,14 @@ import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
 import { Marked } from 'marked'
 import { waitForPreviewReady } from '@/lib/preview/preview-ready'
+import { EXPORT_LAYOUT_CSS } from './apply-export-layout'
 import { getHtmlContent } from './html-content'
 import { getStylesToAdd, SHARE_SHELL_VARS_CSS } from './share-styles'
 
 /** 导出 HTML 生成内容 */
 export async function exportHTML(title: string = `untitled`) {
   await waitForPreviewReady()
-  const htmlStr = getHtmlContent()
+  const htmlStr = getHtmlContent({ staticLayout: true })
   const stylesToAdd = await getStylesToAdd()
 
   const fullHtml = `<!DOCTYPE html>
@@ -19,6 +20,7 @@ export async function exportHTML(title: string = `untitled`) {
   <title>${sanitizeTitle(title)}</title>
   <style>${SHARE_SHELL_VARS_CSS}</style>
   ${stylesToAdd}
+  <style>${EXPORT_LAYOUT_CSS}</style>
 </head>
 <body>
   <div style="width: 750px; margin: auto; padding: 20px;">
