@@ -1,6 +1,7 @@
 import type { RendererAPI } from '@md/shared/types'
 import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import DOMPurify from 'isomorphic-dompurify'
+import { stripBreakBeforeInlineKatex } from './mathDetection'
 
 const INFOGRAPHIC_PLACEHOLDER_REGEX = /<!--infographic-start-->[\s\S]*?<!--infographic-end-->/g
 const MERMAID_PLACEHOLDER_REGEX = /<!--mermaid-start-->[\s\S]*?<!--mermaid-end-->/g
@@ -59,6 +60,7 @@ export function renderMarkdown(raw: string, renderer: RendererAPI) {
 
   // marked -> html
   let html = renderer.renderMarkdownToHtml(markdownContent)
+  html = stripBreakBeforeInlineKatex(html)
   html = sanitizeHtml(html)
   return { html, readingTime }
 }
@@ -109,6 +111,7 @@ export function modifyHtmlContent(content: string, renderer: RendererAPI): strin
   } = renderer.parseFrontMatterAndContent(content)
 
   let html = renderer.renderMarkdownToHtml(markdownContent)
+  html = stripBreakBeforeInlineKatex(html)
   html = sanitizeHtml(html)
   return postProcessHtml(html, readingTimeResult, renderer)
 }
