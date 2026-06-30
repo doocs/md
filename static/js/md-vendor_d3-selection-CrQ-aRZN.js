@@ -1,0 +1,1 @@
+import{E as e,T as t}from"./md-vendor_antv_infographic-CGUbxYda.js";function n(n){return typeof n==`string`?new t([[document.querySelector(n)]],[document.documentElement]):new t([[n]],e)}export{n as t};

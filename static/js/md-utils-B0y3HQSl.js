@@ -1,0 +1,1 @@
+import{n as e}from"./md-vendor_class-variance-authority-BLUaYARZ.js";import{t}from"./md-vendor_tailwind-merge-DxdGK6Xj.js";function n(...n){return t(e(n))}export{n as t};

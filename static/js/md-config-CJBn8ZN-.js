@@ -1,0 +1,1 @@
+var e=`https://md-api.doocs.org`.replace(/\/$/,``),t=`account_token`;function n(){return!!e}function r(){return n()}function i(){let t=`${window.location.origin}${window.location.pathname}`,n=encodeURIComponent(t);window.location.href=`${e}/auth/github?redirect=${n}`}export{r as a,n as i,t as n,i as r,e as t};
