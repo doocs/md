@@ -45,7 +45,7 @@
     "archiver": "^8.0.0",
     "eslint": "^10.6.0",
     "eslint-plugin-format": "^2.0.1",
-    "prettier": "2.8.8",
+    "prettier": "3.9.4",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
     "typescript": "~6.0.3"
