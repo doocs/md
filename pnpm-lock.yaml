@@ -48,9 +48,15 @@ overrides:
   yauzl: ^3.4.0
 
 patchedDependencies:
-  '@codemirror/view@6.43.4': 57e68d979309f5b8fe1e0feeb48eebdd7b795ba743cb4ae887bd0b8aca17001f
-  front-matter@4.0.2: 0b8ab26732d017d28a51b74567fc5a3e349276cd9e94bd77d6885e88af9a887b
-  juice@12.1.1: dcd1f89cb59a233375a0b488e0c0fd2c299ff1c4ef138410f7c3018f3a25186d
+  '@codemirror/view@6.43.4':
+    hash: 57e68d979309f5b8fe1e0feeb48eebdd7b795ba743cb4ae887bd0b8aca17001f
+    path: patches/@codemirror__view@6.43.4.patch
+  front-matter@4.0.2:
+    hash: 0b8ab26732d017d28a51b74567fc5a3e349276cd9e94bd77d6885e88af9a887b
+    path: patches/front-matter@4.0.2.patch
+  juice@12.1.1:
+    hash: dcd1f89cb59a233375a0b488e0c0fd2c299ff1c4ef138410f7c3018f3a25186d
+    path: patches/juice@12.1.1.patch
 
 importers:
 
@@ -288,8 +294,8 @@ importers:
         specifier: ^0.18.12
         version: 0.18.12
       mathjax:
-        specifier: ^3.2.2
-        version: 3.2.2
+        specifier: ^4.1.2
+        version: 4.1.2
       npm-run-all2:
         specifier: ^9.0.2
         version: 9.0.2
@@ -1701,6 +1707,9 @@ packages:
 
   '@marijn/find-cluster-break@1.0.3':
     resolution: {integrity: sha512-FY+MKLBoTsLNJF/eLWaOsXGdz6uh3Iu1axjPf6TUq92IYumcTcXWHoS747JARLkcdlJ/Waiaxc5wQfFO8jC6NA==}
+
+  '@mathjax/mathjax-newcm-font@4.1.2':
+    resolution: {integrity: sha512-lZHMjNP2XbABHA3kVn40rbse5ERUeMEmrGH03qLkCwxq4/5Z/eNLr0akw1MmQcqTwCbvkx1BFcmJ7RCfbRlw3Q==}
 
   '@mermaid-js/parser@1.2.0':
     resolution: {integrity: sha512-oYPyv8A4As1yH5Bx+04iQEQxXuIQDe0GKCNSRgao6z8AM9jixXIfP0vsppRLvGf+nKIOb9/LdpWA4YuJiVvESA==}
@@ -5058,8 +5067,8 @@ packages:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
 
-  mathjax@3.2.2:
-    resolution: {integrity: sha512-Bt+SSVU8eBG27zChVewOicYs7Xsdt40qm4+UpHyX7k0/O9NliPc+x77k1/FEsPsjKPZGJvtRZM1vO+geW0OhGw==}
+  mathjax@4.1.2:
+    resolution: {integrity: sha512-EQDS8xBpVg179BXoLeZ9JlwUFftOC5qylw20UlAMDhrTuooENigOocY79aNkkFSyvj/AST/89ZAo12+r5bPI4w==}
 
   mdast-util-find-and-replace@3.0.2:
     resolution: {integrity: sha512-Tmd1Vg/m3Xz43afeNxDIhWRtFZgM2VLyaf4vSTYwudTyeuTneoL3qtWMA5jeLyz/O1vDJmmV4QuScFCA2tBPwg==}
@@ -8718,6 +8727,8 @@ snapshots:
 
   '@marijn/find-cluster-break@1.0.3': {}
 
+  '@mathjax/mathjax-newcm-font@4.1.2': {}
+
   '@mermaid-js/parser@1.2.0':
     dependencies:
       '@chevrotain/types': 11.1.2
@@ -9414,8 +9425,8 @@ snapshots:
 
   '@typescript-eslint/project-service@8.60.1(typescript@6.0.3)':
     dependencies:
-      '@typescript-eslint/tsconfig-utils': 8.60.1(typescript@6.0.3)
-      '@typescript-eslint/types': 8.60.1
+      '@typescript-eslint/tsconfig-utils': 8.62.1(typescript@6.0.3)
+      '@typescript-eslint/types': 8.62.1
       debug: 4.4.3(supports-color@5.5.0)
       typescript: 6.0.3
     transitivePeerDependencies:
@@ -12228,7 +12239,9 @@ snapshots:
 
   math-intrinsics@1.1.0: {}
 
-  mathjax@3.2.2: {}
+  mathjax@4.1.2:
+    dependencies:
+      '@mathjax/mathjax-newcm-font': 4.1.2
 
   mdast-util-find-and-replace@3.0.2:
     dependencies:
