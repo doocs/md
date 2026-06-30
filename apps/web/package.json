@@ -29,8 +29,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1075.0",
-    "@aws-sdk/s3-request-presigner": "^3.1075.0",
+    "@aws-sdk/client-s3": "^3.1076.0",
+    "@aws-sdk/s3-request-presigner": "^3.1076.0",
     "@lucide/vue": "^1.22.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -66,7 +66,7 @@
     "@cloudflare/vite-plugin": "1.42.3",
     "@cloudflare/workers-types": "^4.20260629.1",
     "@md/config": "workspace:*",
-    "@tailwindcss/vite": "^4.3.1",
+    "@tailwindcss/vite": "^4.3.2",
     "@types/buffer-from": "^1.1.3",
     "@types/crypto-js": "^4.2.2",
     "@types/diff-match-patch": "^1.0.36",
@@ -80,7 +80,7 @@
     "ohash": "^2.0.11",
     "rollup-plugin-visualizer": "^7.0.1",
     "shx": "^0.4.0",
-    "tailwindcss": "^4.3.1",
+    "tailwindcss": "^4.3.2",
     "tw-animate-css": "^1.4.0",
     "unplugin-auto-import": "^21.0.0",
     "unplugin-vue-components": "^32.1.0",
