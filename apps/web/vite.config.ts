@@ -2,7 +2,6 @@ import type { Plugin } from 'vite'
 import path from 'node:path'
 
 import process from 'node:process'
-import { cloudflare } from '@cloudflare/vite-plugin'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -23,6 +22,10 @@ const base = isNetlify || isCfWorkers || isCfPages ? `/` : isUTools ? `./` : `/m
 
 const PKG_NAME_SPECIAL_CHARS = /[^\w-]/g
 
+const cloudflarePlugin = isCfWorkers
+  ? (await import(`@cloudflare/vite-plugin`)).cloudflare()
+  : undefined
+
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd())
 
@@ -37,7 +40,7 @@ export default defineConfig(({ mode }) => {
           },
         },
       }),
-      isCfWorkers && cloudflare(),
+      isCfWorkers && cloudflarePlugin,
       tailwindcss(),
       mode === `development` && env.VITE_VUE_DEVTOOLS === `true` && vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
@@ -74,7 +77,7 @@ export default defineConfig(({ mode }) => {
           chunkFileNames: `static/js/md-[name]-[hash].js`,
           entryFileNames: `static/js/md-[name]-[hash].js`,
           assetFileNames: `static/[ext]/md-[name]-[hash].[ext]`,
-          manualChunks(id) {
+          manualChunks(id: string) {
             if (id.includes(`node_modules`)) {
               // @lezer/* are CodeMirror's parser primitives, keep together
               if (id.includes(`codemirror`) || id.includes(`@lezer`))
@@ -124,7 +127,8 @@ export default defineConfig(({ mode }) => {
           },
         },
       },
-      chunkSizeWarningLimit: 2000,
+      // Mermaid is lazy-loaded (~2.15 MB minified); keep limit above that chunk
+      chunkSizeWarningLimit: 2500,
     },
   }
 })
