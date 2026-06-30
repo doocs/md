@@ -102,7 +102,7 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRen
     name: `blockKatex`,
     level: `block` as const,
     start(src: string) {
-      const index = src.search(/^\s{0,3}\${1,2}/m)
+      const index = src.search(/^\s{0,3}\$\$/m)
       return index === -1 ? undefined : index
     },
     tokenizer(src: string) {

@@ -34,4 +34,15 @@ describe('mathDetection block rules', () => {
     expect(singleLineFormula.match(inlineRuleNonStandard)?.[2]?.trim())
       .toBe(`ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}`)
   })
+
+  it('does not match single-dollar formula at line start (#1743)', () => {
+    expect(matchBlockKatex(`$y_1 = y_2$`)).toBeNull()
+    expect(matchBlockKatex(`  $y_1 = y_2$`)).toBeNull()
+  })
+
+  it('does not match single-dollar formula after newline in block scan', () => {
+    const src = `取\n$y_1 = y_2 = \\cdots = y_n = -y$，就退化为二元的情形`
+    const lineStart = src.indexOf(`$`)
+    expect(matchBlockKatex(src.slice(lineStart))).toBeNull()
+  })
 })

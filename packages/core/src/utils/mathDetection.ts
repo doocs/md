@@ -2,8 +2,8 @@ export const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1
 export const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/
 /** 块级公式：换行写法 `$$\n...\n$$` */
 export const blockRuleMultiline = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
-/** 块级公式：单行写法 `$$...$$`（独占一行） */
-export const blockRuleSingleLine = /^\s{0,3}(\${1,2})([^\n$]+)\1[ \t]*(?:\n|$)/
+/** 块级公式：单行写法 `$$...$$`（独占一行，仅双美元符） */
+export const blockRuleSingleLine = /^\s{0,3}(\$\$)([^\n]+)\1[ \t]*(?:\n|$)/
 
 export function matchBlockKatex(src: string): RegExpMatchArray | null {
   return src.match(blockRuleMultiline) ?? src.match(blockRuleSingleLine)
@@ -78,4 +78,9 @@ export function contentHasMath(content: string, nonStandard = true): boolean {
 
   const ruleReg = nonStandard ? inlineRuleNonStandard : inlineRule
   return findInlineKatexStart(content, nonStandard, ruleReg) !== undefined
+}
+
+/** 移除 inline 公式前因 breaks 产生的多余换行 */
+export function stripBreakBeforeInlineKatex(html: string): string {
+  return html.replace(/<br\s*\/?>\s*(?=<span class="katex-inline)/gi, ``)
 }
