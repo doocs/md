@@ -1,0 +1,20 @@
+name: Sync with upstream
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'   # 每 6 小时跑一次
+  workflow_dispatch:          # 也支持手动触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync fork (PR 模式 + rebase)
+        uses: repo-sync/github-sync@v4
+        with:
+          upstream_branch: main
+          upstream_repo: doocs/md
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          sync_strategy: rebase     # 直接 push 成功时不冲突则跳过 PR
+          pr_label: upstream-sync
+          pr_reviewers: 'Chang4'          # 改成你的 GitHub 用户名,自动 assign
