@@ -64,7 +64,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.43.0",
-    "@cloudflare/workers-types": "^5.20260705.1",
+    "@cloudflare/workers-types": "^4.20260702.1",
     "@md/config": "workspace:*",
     "@tailwindcss/vite": "^4.3.2",
     "@types/buffer-from": "^1.1.3",
