@@ -12,10 +12,10 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "hono": "^4.12.27"
+    "hono": "^4.12.28"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "4.20260702.1",
+    "@cloudflare/workers-types": "5.20260706.1",
     "@types/node": "^26.1.0",
     "typescript": "~6.0.3",
     "wrangler": "^4.107.0"

@@ -9,7 +9,8 @@ packages:
   - packages/*
 
 overrides:
-  '@codemirror/view': 6.43.5
+  '@codemirror/state': 6.7.1
+  '@codemirror/view': 6.43.6
   '@webext-core/isolated-element': 1.1.4
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.3'
@@ -63,7 +64,7 @@ allowBuilds:
   workerd: true
 
 patchedDependencies:
-  '@codemirror/view@6.43.5': patches/@codemirror__view@6.43.5.patch
+  '@codemirror/view@6.43.6': patches/@codemirror__view@6.43.6.patch
   front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.1: patches/juice@12.1.1.patch
 peerDependencyRules:
