@@ -75,7 +75,7 @@
     "cross-env": "^10.1.0",
     "less": "^4.6.7",
     "linkedom": "^0.18.12",
-    "mathjax": "^3.2.2",
+    "mathjax": "^4.1.3",
     "npm-run-all2": "^9.0.2",
     "ohash": "^2.0.11",
     "rollup-plugin-visualizer": "^7.0.1",
