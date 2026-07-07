@@ -149,7 +149,8 @@ function renderDiffCode(text: string, baseLang: string): string {
     .join(``)
 
   const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
-  return `<pre class="hljs code__pre">${span}<code class="language-diff-${baseLang}">${rendered}</code></pre>`
+  // 与普通代码块一致：用单个块级容器包裹，避免 code 上的 -webkit-box 把多行 span 横向摆放导致错位
+  return `<pre class="hljs code__pre">${span}<code class="language-diff-${baseLang}"><span class="code-block__inner" style="display:block">${rendered}</span></code></pre>`
 }
 
 interface ParseResult {
