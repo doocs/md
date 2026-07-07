@@ -29,8 +29,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1079.0",
-    "@aws-sdk/s3-request-presigner": "^3.1079.0",
+    "@aws-sdk/client-s3": "^3.1080.0",
+    "@aws-sdk/s3-request-presigner": "^3.1080.0",
     "@lucide/vue": "^1.23.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
@@ -87,7 +87,7 @@
     "vite": "^8.1.3",
     "vite-plugin-radar": "^0.11.0",
     "vite-plugin-vue-devtools": "^8.1.5",
-    "vitest": "^4.1.9",
+    "vitest": "^4.1.10",
     "vue-tsc": "^3.3.6",
     "wrangler": "^4.107.0",
     "wxt": "^0.20.27"
