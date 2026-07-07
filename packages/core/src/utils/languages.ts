@@ -241,7 +241,11 @@ export function highlightAndFormatCode(text: string, language: string, hljs: HLJ
   }
   else {
     const rawHighlighted = hljs.highlight(text, { language }).value
-    highlighted = formatHighlightedCode(rawHighlighted, true)
+    const formatted = formatHighlightedCode(rawHighlighted, true)
+    // 用单个块级容器包裹高亮内容：code 上的 display:-webkit-box 是老式弹性盒，
+    // 若直接平铺多个 span/<br>，不同 Chromium 版本（如部分 Edge）会把子节点按横向盒重排导致代码行错位。
+    // 只保留一个 flex 子项即可让内部 <br> 正常换行，同时保留 -webkit-box 以维持微信端横向滚动。
+    highlighted = `<span class="code-block__inner" style="display:block">${formatted}</span>`
   }
 
   return highlighted
