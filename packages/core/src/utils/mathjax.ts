@@ -1,3 +1,5 @@
+/// <reference path="../mathjax.d.ts" />
+
 export const MATHJAX_CDN_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
 export const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
 
