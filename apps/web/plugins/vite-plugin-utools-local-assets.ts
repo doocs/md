@@ -3,15 +3,35 @@ import { Buffer } from 'node:buffer'
 import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
+import {
+  MATHJAX_BUNDLE_CDN_BASE,
+  MATHJAX_CDN_URL,
+  MATHJAX_FILE_LIST_URL,
+  MATHJAX_LOCAL_URL,
+} from '@md/core/utils/mathjax'
 
-const MATHJAX_CDN_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
-const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
-const MATHJAX_CDN_BASE = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5`
-const MATHJAX_FILE_LIST_URL = `https://data.jsdelivr.com/v1/package/npm/mathjax@3.2.2/flat?limit=1000`
 const DOWNLOAD_CONCURRENCY = 10
 
 interface JsdelivrFile {
   name: string
+}
+
+function resolveSafeDestination(targetDir: string, relativePath: string): string {
+  const destination = path.resolve(targetDir, relativePath)
+  const resolvedTarget = path.resolve(targetDir)
+  const isInsideTarget = destination === resolvedTarget
+    || destination.startsWith(`${resolvedTarget}${path.sep}`)
+
+  if (!isInsideTarget)
+    throw new Error(`Unsafe MathJax path: ${relativePath}`)
+
+  return destination
+}
+
+function isSafeRelativePath(relativePath: string): boolean {
+  return relativePath.length > 0
+    && !path.isAbsolute(relativePath)
+    && !relativePath.split(/[/\\]/).includes(`..`)
 }
 
 async function listMathJaxEs5Files(): Promise<string[]> {
@@ -24,6 +44,7 @@ async function listMathJaxEs5Files(): Promise<string[]> {
     .map(file => file.name)
     .filter(name => name.startsWith(`/es5/`))
     .map(name => name.slice(`/es5/`.length))
+    .filter(isSafeRelativePath)
 }
 
 async function downloadMathJaxEs5(targetDir: string) {
@@ -33,12 +54,12 @@ async function downloadMathJaxEs5(targetDir: string) {
   for (let index = 0; index < files.length; index += DOWNLOAD_CONCURRENCY) {
     const batch = files.slice(index, index + DOWNLOAD_CONCURRENCY)
     await Promise.all(batch.map(async (relativePath) => {
-      const url = `${MATHJAX_CDN_BASE}/${relativePath}`
+      const url = `${MATHJAX_BUNDLE_CDN_BASE}/${relativePath}`
       const response = await fetch(url)
       if (!response.ok)
         throw new Error(`Failed to download ${url}: ${response.status}`)
 
-      const destination = path.join(targetDir, relativePath)
+      const destination = resolveSafeDestination(targetDir, relativePath)
       await mkdir(path.dirname(destination), { recursive: true })
       await writeFile(destination, Buffer.from(await response.arrayBuffer()))
     }))

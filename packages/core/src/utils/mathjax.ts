@@ -1,5 +1,13 @@
-const MATHJAX_CDN_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
-const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
+export const MATHJAX_VERSION = `3.2.2`
+
+const MATHJAX_MAJOR = MATHJAX_VERSION.split(`.`)[0]!
+const MATHJAX_CDN_ORIGIN = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm`
+export const MATHJAX_CDN_BASE = `${MATHJAX_CDN_ORIGIN}/mathjax@${MATHJAX_MAJOR}/es5`
+export const MATHJAX_CDN_URL = `${MATHJAX_CDN_BASE}/tex-svg.js`
+export const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
+export const MATHJAX_BUNDLE_CDN_BASE = `https://cdn.jsdelivr.net/npm/mathjax@${MATHJAX_VERSION}/es5`
+export const MATHJAX_FILE_LIST_URL = `https://data.jsdelivr.com/v1/package/npm/mathjax@${MATHJAX_VERSION}/flat?limit=1000`
+
 const MATHJAX_SCRIPT_ID = `MathJax-script`
 
 function getMathJaxScriptUrl(): string {
