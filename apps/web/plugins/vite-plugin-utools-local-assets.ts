@@ -1,13 +1,49 @@
 import type { Plugin } from 'vite'
-import { cp } from 'node:fs/promises'
-import { createRequire } from 'node:module'
+import { Buffer } from 'node:buffer'
+import { mkdir, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import process from 'node:process'
 
-const require = createRequire(import.meta.url)
-
 const MATHJAX_CDN_URL = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5/tex-svg.js`
 const MATHJAX_LOCAL_URL = `./static/libs/mathjax/tex-svg.js`
+const MATHJAX_CDN_BASE = `https://cdn-doocs.oss-cn-shenzhen.aliyuncs.com/npm/mathjax@3/es5`
+const MATHJAX_FILE_LIST_URL = `https://data.jsdelivr.com/v1/package/npm/mathjax@3.2.2/flat?limit=1000`
+const DOWNLOAD_CONCURRENCY = 10
+
+interface JsdelivrFile {
+  name: string
+}
+
+async function listMathJaxEs5Files(): Promise<string[]> {
+  const response = await fetch(MATHJAX_FILE_LIST_URL)
+  if (!response.ok)
+    throw new Error(`Failed to list MathJax files: ${response.status}`)
+
+  const data = await response.json() as { files: JsdelivrFile[] }
+  return data.files
+    .map(file => file.name)
+    .filter(name => name.startsWith(`/es5/`))
+    .map(name => name.slice(`/es5/`.length))
+}
+
+async function downloadMathJaxEs5(targetDir: string) {
+  const files = await listMathJaxEs5Files()
+  await mkdir(targetDir, { recursive: true })
+
+  for (let index = 0; index < files.length; index += DOWNLOAD_CONCURRENCY) {
+    const batch = files.slice(index, index + DOWNLOAD_CONCURRENCY)
+    await Promise.all(batch.map(async (relativePath) => {
+      const url = `${MATHJAX_CDN_BASE}/${relativePath}`
+      const response = await fetch(url)
+      if (!response.ok)
+        throw new Error(`Failed to download ${url}: ${response.status}`)
+
+      const destination = path.join(targetDir, relativePath)
+      await mkdir(path.dirname(destination), { recursive: true })
+      await writeFile(destination, Buffer.from(await response.arrayBuffer()))
+    }))
+  }
+}
 
 /**
  * Vite 插件：在 uTools 构建时将远程资源替换为本地资源
@@ -35,11 +71,8 @@ export function utoolsLocalAssetsPlugin(): Plugin {
       if (!isUTools)
         return
 
-      const mathjaxRoot = path.dirname(require.resolve(`mathjax/package.json`))
-      const mathjaxEs5 = path.join(mathjaxRoot, `es5`)
       const targetDir = path.join(outDir, `static`, `libs`, `mathjax`)
-
-      await cp(mathjaxEs5, targetDir, { recursive: true })
+      await downloadMathJaxEs5(targetDir)
     },
   }
 }
