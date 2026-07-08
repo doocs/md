@@ -87,7 +87,7 @@
     "vite-plugin-radar": "^0.11.0",
     "vite-plugin-vue-devtools": "^8.1.5",
     "vitest": "^4.1.10",
-    "vue-tsc": "^3.3.6",
+    "vue-tsc": "^3.3.7",
     "wrangler": "^4.108.0",
     "wxt": "^0.20.27"
   }
