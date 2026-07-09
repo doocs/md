@@ -1,5 +1,5 @@
-import type { EditorView } from '@codemirror/view'
 import type { MarkdownHeading } from './headings'
+import { EditorView } from '@codemirror/view'
 import { extractMarkdownHeadings } from './headings'
 
 export type HeadingDirection = 'prev' | 'next'
@@ -76,12 +76,12 @@ export function moveOutlineFocusIndex(
   }
 }
 
-export function jumpToLine(view: EditorView, lineNumber: number): boolean {
+export function jumpToLine(view: EditorView, lineNumber: number, snapPoint: 'start' | 'end' = 'start'): boolean {
   const target = clampGoToLineValue(String(lineNumber), view.state.doc.lines)
   const line = view.state.doc.line(target)
   view.dispatch({
     selection: { anchor: line.from },
-    scrollIntoView: true,
+    effects: EditorView.scrollIntoView(line.from, { y: snapPoint }),
   })
   view.focus()
   return true
