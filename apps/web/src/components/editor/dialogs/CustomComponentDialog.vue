@@ -442,7 +442,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
             <Input
               id="comp-name"
               v-model="formData.name"
-              placeholder="QRCodeBlock"
+              :placeholder="t('component.namePlaceholder')"
               :class="{ 'border-red-500': formErrors.name }"
             />
             <p v-if="formErrors.name" class="text-sm text-red-500">
