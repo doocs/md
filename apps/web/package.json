@@ -29,8 +29,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1081.0",
-    "@aws-sdk/s3-request-presigner": "^3.1081.0",
+    "@aws-sdk/client-s3": "^3.1083.0",
+    "@aws-sdk/s3-request-presigner": "^3.1083.0",
     "@lucide/vue": "^1.23.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
