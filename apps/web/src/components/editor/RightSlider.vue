@@ -232,7 +232,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 gap-2">
           <Button
             v-for="{ label, value } in localizedStyleOptions.themeOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': theme === value,
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': theme === value,
             }" @click="themeChanged(value)"
           >
             {{ label }}
@@ -246,7 +246,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 gap-2">
           <Button
             v-for="{ label, value } in localizedStyleOptions.fontFamilyOptions" :key="value" variant="outline" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap"
-            :class="{ 'border-primary ring-1 ring-primary/20 border-2': fontFamily === value }" @click="fontChanged(value)"
+            :class="{ 'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': fontFamily === value }" @click="fontChanged(value)"
           >
             {{ label }}
           </Button>
@@ -259,7 +259,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-5 gap-1.5">
           <Button
             v-for="{ label, value, desc } in localizedStyleOptions.fontSizeOptions" :key="value" variant="outline" class="h-auto w-full px-1 py-2 text-xs whitespace-nowrap" :title="desc" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': fontSize === value,
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': fontSize === value,
             }" @click="sizeChanged(value)"
           >
             {{ label }}
@@ -273,7 +273,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-3 gap-2">
           <Button
             v-for="{ label, value } in localizedStyleOptions.colorOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': primaryColor === value,
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': primaryColor === value,
             }" @click="colorChanged(value)"
           >
             <span
@@ -346,7 +346,7 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <div class="grid grid-cols-2 gap-2">
           <Button
             v-for="{ label, value } in localizedStyleOptions.legendOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
-              'border-primary ring-1 ring-primary/20 border-2': legend === value,
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': legend === value,
             }" @click="legendChanged(value)"
           >
             {{ label }}
