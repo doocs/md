@@ -37,6 +37,7 @@ export default {
     citeStatus: `外链转引用`,
     paragraphIndent: `首行缩进`,
     paragraphJustify: `两端对齐`,
+    wordCount: `字数统计`,
     selectCodeBlockTheme: `代码主题`,
   },
   contextMenu: {

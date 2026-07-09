@@ -37,6 +37,7 @@ export default {
     citeStatus: `Link → footnote`,
     paragraphIndent: `Indent`,
     paragraphJustify: `Justify`,
+    wordCount: `Word count`,
     selectCodeBlockTheme: `Code theme`,
   },
   contextMenu: {
