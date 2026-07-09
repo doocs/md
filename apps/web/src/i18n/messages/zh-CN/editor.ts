@@ -236,6 +236,7 @@ export default {
     edit: `编辑组件`,
     nameLabel: `组件名称`,
     nameHint: `（PascalCase，如 QRCodeBlock）`,
+    namePlaceholder: `例：QRCodeBlock`,
     descLabel: `组件描述`,
     descPlaceholder: `简短描述该组件的用途`,
     propsLabel: `Props 定义`,

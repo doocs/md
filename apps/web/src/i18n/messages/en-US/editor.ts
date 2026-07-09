@@ -236,6 +236,7 @@ export default {
     edit: `Edit component`,
     nameLabel: `Component name`,
     nameHint: `(PascalCase, e.g. QRCodeBlock)`,
+    namePlaceholder: `e.g. QRCodeBlock`,
     descLabel: `Description`,
     descPlaceholder: `Brief description of this component`,
     propsLabel: `Props definition`,
