@@ -54,6 +54,14 @@ export const useRenderStore = defineStore(`render`, () => {
     infographicError: t(`store.diagram.infographicError`),
   })
 
+  const buildCountMessages = () => ({
+    // 保留占位符，交由 core 层替换为具体数值。
+    summary: t(`store.count.summary`, {
+      words: `{words}`,
+      minutes: `{minutes}`,
+    }),
+  })
+
   // 提取标题
   const extractTitles = () => {
     const div = document.createElement(`div`)
@@ -96,6 +104,7 @@ export const useRenderStore = defineStore(`render`, () => {
       themeMode,
       components: componentStore.registry,
       diagramMessages: buildDiagramMessages(),
+      countMessages: buildCountMessages(),
     })
 
     // 渲染 Markdown

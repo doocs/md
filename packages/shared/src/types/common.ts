@@ -17,6 +17,10 @@ export interface DiagramMessages {
   infographicError: string
 }
 
+export interface CountMessages {
+  summary: string
+}
+
 export interface IOpts {
   legend?: string
   citeStatus?: boolean
@@ -28,6 +32,8 @@ export interface IOpts {
   components?: ComponentRegistry
   /** 异步图表加载/失败文案（Web 端按 locale 注入） */
   diagramMessages?: DiagramMessages
+  /** 阅读时长统计文案（Web 端按 locale 注入） */
+  countMessages?: CountMessages
 }
 
 export interface IConfigOption<VT = string> {

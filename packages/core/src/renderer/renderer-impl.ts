@@ -34,6 +34,7 @@ const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
+const DEFAULT_COUNT_SUMMARY = `字数 {words}，阅读大约需 {minutes} 分钟`
 
 const ADDITION_STYLE = `
     <style>
@@ -237,6 +238,15 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     opts = { ...opts, ...newOpts }
   }
 
+  function formatCountSummary(words: number, minutes: number): string {
+    const template = opts.countMessages?.summary || DEFAULT_COUNT_SUMMARY
+    return template
+      .split(`{words}`)
+      .join(String(words))
+      .split(`{minutes}`)
+      .join(String(minutes))
+  }
+
   function buildReadingTime(readingTime: ReadTimeResults): string {
     if (!opts.countStatus) {
       return ``
@@ -244,9 +254,10 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     if (!readingTime.words) {
       return ``
     }
+    const minutes = Math.ceil(readingTime.minutes)
     return `
       <blockquote class="md-blockquote">
-        <p class="md-blockquote-p">字数 ${readingTime?.words}，阅读大约需 ${Math.ceil(readingTime?.minutes)} 分钟</p>
+        <p class="md-blockquote-p">${formatCountSummary(readingTime.words, minutes)}</p>
       </blockquote>
     `
   }
