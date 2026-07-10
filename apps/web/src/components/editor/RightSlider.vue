@@ -34,6 +34,7 @@ const {
   isCiteStatus,
   isUseIndent,
   isUseJustify,
+  isCountStatus,
 } = storeToRefs(themeStore)
 
 const { scheduleEditorRefresh, editorRefresh } = useEditorRefresh()
@@ -155,6 +156,16 @@ function setUseIndent(checked: boolean) {
 function setUseJustify(checked: boolean) {
   if (checked !== isUseJustify.value)
     useJustifyChanged()
+}
+
+function countStatusChanged() {
+  themeStore.isCountStatus = !themeStore.isCountStatus
+  editorRefresh()
+}
+
+function setCountStatus(checked: boolean) {
+  if (checked !== isCountStatus.value)
+    countStatusChanged()
 }
 
 function resetStyleConfirm() {
@@ -372,6 +383,10 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
       <div class="flex items-center justify-between gap-3">
         <Label for="use-justify" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.paragraphJustify') }}</Label>
         <Switch id="use-justify" class="shrink-0" :model-value="isUseJustify" @update:model-value="setUseJustify" />
+      </div>
+      <div class="flex items-center justify-between gap-3">
+        <Label for="count-status" class="min-w-0 shrink text-xs leading-snug sm:text-sm">{{ t('rightSlider.wordCount') }}</Label>
+        <Switch id="count-status" class="shrink-0" :model-value="isCountStatus" @update:model-value="setCountStatus" />
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">
