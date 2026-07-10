@@ -30,7 +30,7 @@ function setStyle(styleKey: typeof props.styleKey, value: string) {
       <span v-else class="mr-2 h-4 w-4" />
       <span>{{ props.title }}</span>
     </MenubarSubTrigger>
-    <MenubarSubContent class="min-w-44 max-h-56 overflow-auto">
+    <MenubarSubContent class="min-w-44 max-h-56 overflow-y-auto">
       <MenubarRadioGroup :model-value="current" @update:model-value="change">
         <MenubarRadioItem
           v-for="{ label, value, desc } in options"
