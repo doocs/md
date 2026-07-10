@@ -240,6 +240,8 @@ watch(
     await nextTick()
     latexInputRef.value?.focus()
   },
+  // Dialog is mounted via v-if when already open; without immediate the first open never loads MathJax.
+  { immediate: true },
 )
 
 function onUpdate(open: boolean) {
