@@ -321,7 +321,7 @@ export default {
       TipBlock: {
         description: `提示框组件，高亮展示小贴士或注意事项`,
         props: {
-          type: `类型：info | success | warning | danger`,
+          type: `类型：info、success、warning、danger`,
           title: `标题（可选）`,
           content: `提示内容`,
         },

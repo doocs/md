@@ -73,7 +73,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
     description: `提示框组件，高亮展示小贴士或注意事项`,
     builtIn: true,
     props: [
-      { name: `type`, description: `类型：info | success | warning | danger`, default: `info` },
+      { name: `type`, description: `类型：info、success、warning、danger`, default: `info` },
       { name: `title`, description: `标题（可选）` },
       { name: `content`, description: `提示内容`, required: true },
     ],
