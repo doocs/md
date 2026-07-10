@@ -529,7 +529,7 @@ defineExpose({
           <textarea
             v-model="replaceWord"
             :placeholder="t('search.replacePlaceholder')"
-            class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 resize-none leading-none overflow-hidden max-h-[150px]"
+            class="mt-0.5 min-w-0 rounded-md border border-input bg-background px-3 py-[7px] text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring resize-none leading-none overflow-hidden max-h-[150px]"
             style="height: 28px; min-height: 28px"
             @keydown="handleReplaceInputKeyDown"
             @input="autoResizeTextarea($event)"
