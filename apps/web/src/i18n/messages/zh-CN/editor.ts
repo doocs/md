@@ -256,7 +256,6 @@ export default {
     previewLabel: `预览（使用默认 prop 值）`,
     builtin: `内置组件`,
     custom: `自定义组件`,
-    builtinBadge: `内置`,
     propCount: `{count} 个属性`,
     propDocs: `属性说明`,
     propNameCol: `属性名`,

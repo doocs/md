@@ -256,7 +256,6 @@ export default {
     previewLabel: `Preview (using default prop values)`,
     builtin: `Built-in`,
     custom: `Custom`,
-    builtinBadge: `Built-in`,
     propCount: `{count} props`,
     propDocs: `Props`,
     propNameCol: `Name`,
