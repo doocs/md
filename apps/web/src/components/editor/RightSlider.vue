@@ -201,6 +201,11 @@ watch(isMobile, () => {
 const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
+
+// 右侧栏收窄时，主题色只显示色块
+const colorGridRef = useTemplateRef<HTMLElement | undefined>(`colorGridRef`)
+const { width: colorGridWidth } = useElementSize(colorGridRef)
+const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth.value < 280)
 </script>
 
 <template>
@@ -281,18 +286,31 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         <h2 class="text-sm font-medium">
           {{ t('menu.primaryColor') }}
         </h2>
-        <div class="grid grid-cols-3 gap-2">
+        <div
+          ref="colorGridRef"
+          class="grid gap-2"
+          :class="isColorCompact ? 'grid-cols-4 sm:grid-cols-5' : 'grid-cols-3'"
+        >
           <Button
-            v-for="{ label, value } in localizedStyleOptions.colorOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
-              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': primaryColor === value,
-            }" @click="colorChanged(value)"
+            v-for="{ label, value } in localizedStyleOptions.colorOptions"
+            :key="value"
+            class="h-auto w-full text-xs whitespace-nowrap"
+            :class="[
+              isColorCompact ? 'justify-center px-1 py-2' : 'px-1.5 py-2',
+              {
+                'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': primaryColor === value,
+              },
+            ]"
+            variant="outline"
+            :title="label"
+            @click="colorChanged(value)"
           >
             <span
-              class="mr-1.5 inline-block size-3 shrink-0 rounded-full" :style="{
-                background: value,
-              }"
+              class="inline-block shrink-0 rounded-full"
+              :class="isColorCompact ? 'size-4' : 'mr-1.5 size-3'"
+              :style="{ background: value }"
             />
-            {{ label }}
+            <span v-if="!isColorCompact">{{ label }}</span>
           </Button>
         </div>
       </div>
