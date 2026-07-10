@@ -321,7 +321,7 @@ export default {
       TipBlock: {
         description: `Callout block for tips and notices`,
         props: {
-          type: `Type: info | success | warning | danger`,
+          type: `Type: info, success, warning, danger`,
           title: `Title (optional)`,
           content: `Tip content`,
         },
