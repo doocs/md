@@ -91,6 +91,9 @@ export default {
     infographicLoading: `正在加载 Infographic...`,
     infographicError: `Infographic 渲染失败: {detail}`,
   },
+  count: {
+    summary: `字数 {words}，阅读大约需 {minutes} 分钟`,
+  },
   popup: {
     mustRead: `使用必读`,
     mpHostIntro: `如果您希望使用微信公众号素材库作为图床功能，需要进行以下配置：`,

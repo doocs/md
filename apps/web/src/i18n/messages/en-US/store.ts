@@ -91,6 +91,9 @@ export default {
     infographicLoading: `Loading infographic…`,
     infographicError: `Infographic render failed: {detail}`,
   },
+  count: {
+    summary: `{words} words, about {minutes} min read`,
+  },
   popup: {
     mustRead: `Before you start`,
     mpHostIntro: `To use the WeChat Official Account media library as an image host, complete the following setup:`,

@@ -577,6 +577,7 @@ watch(locale, () => {
   codeMirrorView.value.dispatch({
     effects: placeholderCompartment.reconfigure(editorPlaceholder()),
   })
+  editorRefresh()
 })
 
 function syncEditorToPostContent(content: string) {
