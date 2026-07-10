@@ -240,6 +240,7 @@ watch(
     await nextTick()
     latexInputRef.value?.focus()
   },
+  { immediate: true },
 )
 
 function onUpdate(open: boolean) {
