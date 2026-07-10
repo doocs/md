@@ -520,12 +520,14 @@ td {
 .katex-inline {
   max-width: 100%;
   overflow-x: auto;
+  cursor: pointer;
 }
 
 .katex-block {
   max-width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
+  cursor: pointer;
   padding: 0.5em 0;
   text-align: center;
 }
