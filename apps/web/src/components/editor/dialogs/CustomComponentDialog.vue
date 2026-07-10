@@ -675,22 +675,22 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         {{ t('component.propDocs') }}
                       </p>
                       <div class="hidden sm:block rounded-lg border overflow-hidden">
-                        <table class="w-full text-xs">
-                          <thead class="bg-muted/50">
-                            <tr>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28">
+                        <table class="w-full text-xs border-separate border-spacing-0">
+                          <thead>
+                            <tr class="bg-muted/40">
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-28 border-b border-r border-border/50">
                                 {{ t('component.propNameCol') }}
                               </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16 border-b border-r border-border/50">
                                 {{ t('component.typeCol') }}
                               </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16">
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-16 border-b border-r border-border/50">
                                 {{ t('component.statusCol') }}
                               </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground">
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground border-b border-r border-border/50">
                                 {{ t('component.descCol') }}
                               </th>
-                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24">
+                              <th class="text-left px-3 py-2 font-medium text-muted-foreground w-24 border-b border-border/50">
                                 {{ t('component.defaultCol') }}
                               </th>
                             </tr>
@@ -699,24 +699,24 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                             <tr
                               v-for="prop in def.props"
                               :key="prop.name"
-                              class="border-t border-border/50"
+                              class="bg-background"
                             >
-                              <td class="px-3 py-2">
+                              <td class="px-3 py-2 border-b border-r border-border/30">
                                 <code class="font-mono text-primary font-medium">{{ prop.name }}</code>
                               </td>
-                              <td class="px-3 py-2">
+                              <td class="px-3 py-2 border-b border-r border-border/30">
                                 <code class="text-[10px] bg-muted/60 px-1.5 py-0.5 rounded text-muted-foreground">{{ prop.type || 'string' }}</code>
                               </td>
-                              <td class="px-3 py-2">
+                              <td class="px-3 py-2 border-b border-r border-border/30">
                                 <span
                                   class="inline-flex items-center px-1.5 py-0.5 rounded border text-[10px] font-medium"
                                   :class="propTypeBadge(prop).class"
                                 >{{ propTypeBadge(prop).label }}</span>
                               </td>
-                              <td class="px-3 py-2 text-muted-foreground">
+                              <td class="px-3 py-2 border-b border-r border-border/30 text-muted-foreground">
                                 {{ prop.description || '—' }}
                               </td>
-                              <td class="px-3 py-2">
+                              <td class="px-3 py-2 border-b border-border/30">
                                 <code v-if="prop.default" class="text-[11px] bg-muted px-1.5 py-0.5 rounded text-foreground">{{ prop.default }}</code>
                                 <span v-else class="text-muted-foreground/50">—</span>
                               </td>
