@@ -628,7 +628,6 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                   <div class="flex-1 min-w-0">
                     <div class="flex flex-wrap items-center gap-1.5 mb-0.5">
                       <code class="text-sm font-semibold text-primary">{{ def.name }}</code>
-                      <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">{{ t('component.builtinBadge') }}</span>
                       <span class="text-[10px] border px-1.5 py-px rounded-full bg-muted text-muted-foreground">
                         {{ t('component.propCount', { count: def.props.length }) }}
                       </span>
