@@ -428,6 +428,9 @@ function exportCurrentTheme() {
               >
                 <X class="mr-2 size-4" /> {{ t('common.delete') }}
               </DropdownMenuItem>
+              <DropdownMenuItem @click.stop="cssEditorStore.toggleSelectMode(); cssEditorStore.toggleSelectTab(item.id)">
+                <CheckSquare class="mr-2 size-4" /> {{ t('cssEditor.multiSelect') }}
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
