@@ -196,6 +196,10 @@ function jumpToHeading(line: number) {
   nextTick(() => editor.value?.focus())
 }
 
+function onOutlineDismiss() {
+  nextTick(() => editor.value?.focus())
+}
+
 function switchToPost(id: string) {
   postStore.currentPostId = id
   nextTick(() => editor.value?.focus())
@@ -318,6 +322,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         :headings="allHeadings"
         :active-heading-line="activeHeadingLine"
         @jump="jumpToHeading"
+        @dismiss="onOutlineDismiss"
       />
 
       <!-- 桌面端占位 flex-1 -->

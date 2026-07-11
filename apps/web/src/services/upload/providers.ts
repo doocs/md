@@ -2,13 +2,23 @@ import type { S3ClientConfig } from '@aws-sdk/client-s3'
 import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
-import Buffer from 'buffer-from'
-import CryptoJS from 'crypto-js'
-import { v4 as uuidv4 } from 'uuid'
 import { t } from '@/i18n/translate'
 import { uploadDefaultImage } from '@/services/upload/client'
 import { store } from '@/storage'
 import { loadS3Sdk } from './s3-sdk'
+
+type CryptoJSModule = typeof import('crypto-js')
+
+let cryptoJsPromise: Promise<CryptoJSModule> | null = null
+
+function loadCryptoJS() {
+  cryptoJsPromise ??= import(`crypto-js`)
+  return cryptoJsPromise
+}
+
+function uuidv4() {
+  return crypto.randomUUID()
+}
 
 /**
  * Safely parse JSON string, returns parsed result or throws a descriptive error
@@ -115,10 +125,11 @@ async function ghFileUpload(content: string, filename: string) {
 // Qiniu File Upload
 // -----------------------------------------------------------------------
 
-function getQiniuToken(accessKey: string, secretKey: string, putPolicy: {
+async function getQiniuToken(accessKey: string, secretKey: string, putPolicy: {
   scope: string
   deadline: number
 }) {
+  const CryptoJS = await loadCryptoJS()
   const policy = JSON.stringify(putPolicy)
   const encoded = base64encode(utf16to8(policy))
   const hash = CryptoJS.HmacSHA1(encoded, secretKey)
@@ -134,7 +145,7 @@ async function qiniuUpload(file: File) {
   const qiniu = await loadQiniu()
   const configStr = await store.get(`qiniuConfig`)
   const { accessKey, secretKey, bucket, region, path, domain } = safeJsonParse<{ accessKey: string, secretKey: string, bucket: string, region?: string, path: string, domain: string }>(configStr, `qiniu config`)
-  const token = getQiniuToken(accessKey, secretKey, {
+  const token = await getQiniuToken(accessKey, secretKey, {
     scope: bucket,
     deadline: Math.trunc(Date.now() / 1000) + 3600,
   })
@@ -538,6 +549,7 @@ async function upyunUpload(file: File) {
   const date = new Date().toUTCString()
   const method = `PUT`
   const signStr = [method, uri, date].join(`&`)
+  const CryptoJS = await loadCryptoJS()
   const passwordMd5 = CryptoJS.MD5(password).toString()
   const signature = CryptoJS.HmacSHA1(signStr, passwordMd5).toString(CryptoJS.enc.Base64)
   const authorization = `UPYUN ${operator}:${signature}`
@@ -651,6 +663,7 @@ async function cloudinaryUpload(file: File): Promise<string> {
     params.push(`timestamp=${timestamp}`)
 
     const signatureBase = params.sort().join(`&`)
+    const CryptoJS = await loadCryptoJS()
     const signature = CryptoJS.SHA1(signatureBase + apiSecret).toString()
     formData.append(`signature`, signature)
   }
@@ -690,9 +703,11 @@ async function cloudinaryUpload(file: File): Promise<string> {
 
 async function formCustomUpload(content: string, file: File) {
   const customConfig = await store.get(`formCustomConfig`)
-  const [{ S3Client, PutObjectCommand, getSignedUrl }, qiniu] = await Promise.all([
+  const [{ S3Client, PutObjectCommand, getSignedUrl }, qiniu, CryptoJS, Buffer] = await Promise.all([
     loadS3Sdk(),
     loadQiniu(),
+    loadCryptoJS(),
+    import(`buffer-from`).then(m => m.default),
   ])
   const str = `
     async (CUSTOM_ARG) => {
@@ -704,10 +719,8 @@ async function formCustomUpload(content: string, file: File) {
       content, // 待上传图片的 base64
       file, // 待上传图片的 file 对象
       util: {
-        axios: fetch, // axios 实例
+        axios: fetch, // axios-compatible fetch wrapper
         CryptoJS, // 加密库
-        // OSS, // OSS references removed
-        // COS, // COS references removed
         Buffer, // buffer-from
         uuidv4, // uuid
         qiniu, // qiniu-js

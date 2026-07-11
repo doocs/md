@@ -3,7 +3,6 @@ import type { PerThemeSettings, PerThemeSettingsMap, ThemeName } from '@md/share
 import type { IndexedDBEngine } from '@/storage/engines/indexed-db'
 import type { Post } from '@/types/post'
 import { defaultPerThemeSettings, defaultStyleConfig } from '@md/shared/configs'
-import { v4 as uuidv4 } from 'uuid'
 import { getDatabase } from '@/storage/db'
 import {
   isAppLocalStorageKey,
@@ -198,7 +197,7 @@ export async function migrateMpProfile(engine: IndexedDBEngine): Promise<void> {
     }
 
     const migrated = [{
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       mpId: old.id ?? ``,
       name: old.name ?? ``,
       logo: old.logo ?? ``,

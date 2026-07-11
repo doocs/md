@@ -1,8 +1,7 @@
 import type { Post } from '@/types/post'
-import { debounce } from 'es-toolkit'
-import { v4 as uuidv4 } from 'uuid'
 import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
 import { formatLocalDateTime, t } from '@/i18n/translate'
+import { debounce } from '@/lib/debounce'
 import { documentRepo, getLoadedDocuments, store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 import { useEditorStore } from '@/stores/editor'
@@ -11,7 +10,7 @@ export type { Post } from '@/types/post'
 
 function createDefaultPost(): Post {
   return {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     title: t('store.post.defaultTitle'),
     content: DEFAULT_CONTENT,
     history: [
@@ -27,7 +26,7 @@ function normalizePosts(raw: Post[]): Post[] {
     const now = Date.now()
     return {
       ...post,
-      id: post.id ?? uuidv4(),
+      id: post.id ?? crypto.randomUUID(),
       createDatetime: new Date(post.createDatetime ?? now + index),
       updateDatetime: new Date(post.updateDatetime ?? now + index),
       history: post.history ?? [],
@@ -161,7 +160,7 @@ export const usePostStore = defineStore(`post`, () => {
 
   const addPost = (title: string, parentId: string | null = null) => {
     const newPost: Post = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       title,
       content: `# ${title}`,
       history: [

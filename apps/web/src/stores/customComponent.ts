@@ -1,6 +1,5 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
 import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
-import { v4 as uuidv4 } from 'uuid'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -52,7 +51,7 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   function createComponent(params: CreateComponentParams): CustomComponentDef {
     const now = Date.now()
     const def: CustomComponentDef = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name: params.name,
       description: params.description,
       template: params.template,

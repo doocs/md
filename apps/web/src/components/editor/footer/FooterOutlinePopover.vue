@@ -24,6 +24,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   jump: [line: number]
+  dismiss: []
 }>()
 
 const { t } = useI18n()
@@ -78,6 +79,7 @@ function handleOutlineKeydown(event: KeyboardEvent) {
   if (key === `Escape`) {
     isOutlineOpen.value = false
     event.preventDefault()
+    emit(`dismiss`)
     return
   }
 

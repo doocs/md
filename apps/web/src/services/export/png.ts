@@ -1,6 +1,5 @@
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
-import { toPng } from 'html-to-image'
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import {
   applyExportLayout,
@@ -71,6 +70,7 @@ export async function exportPNG(
 
   try {
     await delay(100)
+    const { toPng } = await import(`html-to-image`)
     const url = await toPng(offScreen.el, {
       backgroundColor: getPngCaptureBackgroundColor(),
       skipFonts: true,

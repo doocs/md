@@ -1,5 +1,4 @@
 import type { CreateTemplateParams, Template, UpdateTemplateParams } from '@md/shared'
-import { v4 as uuidv4 } from 'uuid'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -29,7 +28,7 @@ export const useTemplateStore = defineStore(`template`, () => {
   function createTemplate(params: CreateTemplateParams): Template {
     const now = Date.now()
     const newTemplate: Template = {
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name: params.name,
       content: params.content,
       description: params.description,
@@ -169,7 +168,7 @@ export const useTemplateStore = defineStore(`template`, () => {
           // ID 重复，生成新 ID
           templates.value.push({
             ...importedTemplate,
-            id: uuidv4(),
+            id: crypto.randomUUID(),
           })
         }
         else {

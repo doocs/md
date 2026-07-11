@@ -3,7 +3,6 @@ import { Compartment, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { history, markdownSetup, replaceDocumentWithoutHistory, resetEditorHistory, theme } from '@md/shared/editor'
 import { toBase64 } from '@md/shared/utils/fileHelpers'
-import imageCompression from 'browser-image-compression'
 import { defineAsyncComponent } from 'vue'
 import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
@@ -201,6 +200,7 @@ function uploaded(imageUrl: string) {
 }
 
 async function compressImage(file: File) {
+  const { default: imageCompression } = await import(`browser-image-compression`)
   const options = {
     maxSizeMB: 1,
     maxWidthOrHeight: 1920,

@@ -1,5 +1,4 @@
 import { toBase64 } from '@md/shared/utils/fileHelpers'
-import SparkMD5 from 'spark-md5'
 import { ref } from 'vue'
 import { t } from '@/i18n/translate'
 import { fileUpload } from '@/services/upload'
@@ -22,24 +21,11 @@ export function useImageUploader() {
     await store.setJSON(STORAGE_KEY, map)
   }
 
-  // 计算 Blob/File 的 MD5
-  const calculateHash = (file: Blob): Promise<string> => {
-    return new Promise((resolve, reject) => {
-      const fileReader = new FileReader()
-      const spark = new SparkMD5.ArrayBuffer()
-
-      fileReader.onload = (e) => {
-        if (e.target?.result) {
-          spark.append(e.target.result as ArrayBuffer)
-          resolve(spark.end())
-        }
-        else {
-          reject(new Error(t('store.uploader.fileReadFailed')))
-        }
-      }
-      fileReader.onerror = () => reject(new Error(t('store.uploader.fileReadError')))
-      fileReader.readAsArrayBuffer(file)
-    })
+  // 计算 Blob/File 的 SHA-256（Web Crypto，替代 spark-md5）
+  const calculateHash = async (file: Blob): Promise<string> => {
+    const buffer = await file.arrayBuffer()
+    const digest = await crypto.subtle.digest(`SHA-256`, buffer)
+    return Array.from(new Uint8Array(digest), b => b.toString(16).padStart(2, `0`)).join(``)
   }
 
   // URL 转 File (需注意 CORS)

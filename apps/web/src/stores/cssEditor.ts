@@ -4,7 +4,6 @@ import { EditorView as CMEditorView } from '@codemirror/view'
 import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
-import { v4 as uuidv4 } from 'uuid'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -51,7 +50,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     // 如果没有任何 tab，初始化默认方案
     if (cssContentConfig.value.tabs.length === 0) {
-      const defaultId = uuidv4()
+      const defaultId = crypto.randomUUID()
       cssContentConfig.value.tabs = [{
         id: defaultId,
         title: t('store.cssEditor.schemeDefault'),
@@ -66,7 +65,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     cssContentConfig.value.tabs = cssContentConfig.value.tabs.map((tab, index) => ({
       ...tab,
-      id: tab.id ?? uuidv4(),
+      id: tab.id ?? crypto.randomUUID(),
       createDatetime: tab.createDatetime ?? new Date(now.getTime() + index),
       updateDatetime: tab.updateDatetime ?? new Date(now.getTime() + index),
     }))
@@ -86,7 +85,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     if (!tab) {
       // Fallback: if tabs are empty or corrupted, create a default tab
       if (cssContentConfig.value.tabs.length === 0) {
-        const defaultId = uuidv4()
+        const defaultId = crypto.randomUUID()
         const now = new Date()
         cssContentConfig.value.tabs = [{
           id: defaultId,
@@ -154,7 +153,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
     const content = initialContent || DEFAULT_CSS_CONTENT
     const now = new Date()
     cssContentConfig.value.tabs.push({
-      id: uuidv4(),
+      id: crypto.randomUUID(),
       name,
       title: name,
       content,
@@ -173,7 +172,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
   // 重置 CSS 配置
   const resetCssConfig = () => {
-    const defaultId = uuidv4()
+    const defaultId = crypto.randomUUID()
     cssContentConfig.value = {
       active: defaultId,
       tabs: [
