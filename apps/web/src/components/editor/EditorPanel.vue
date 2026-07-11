@@ -11,6 +11,7 @@ import { useImageUploader } from '@/composables/useImageUploader'
 import { completeInitialPreviewBoot } from '@/composables/useInitialPreviewBoot'
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
+import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { formatLocalDateTime } from '@/i18n/translate'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
@@ -685,6 +686,7 @@ defineExpose({
         id="editor"
         ref="editorRef"
         class="codemirror-container mathjax-ignore"
+        :lang="CONTENT_FONT_LANG"
       />
     </EditorContextMenu>
   </div>
