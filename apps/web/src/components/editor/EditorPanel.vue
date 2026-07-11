@@ -34,7 +34,7 @@ const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
-const { editorRefresh } = useEditorRefresh()
+const { editorRefresh, scheduleEditorRefresh } = useEditorRefresh()
 
 const {
   visible: slashVisible,
@@ -79,7 +79,7 @@ const historyCompartment = new Compartment()
 function editorPlaceholder() {
   return placeholder(t(`codemirror.contentPlaceholder`))
 }
-const changeTimer = ref<ReturnType<typeof setTimeout>>()
+const persistTimer = ref<ReturnType<typeof setTimeout>>()
 
 const editorRef = useTemplateRef<HTMLDivElement>(`editorRef`)
 const codeMirrorWrapper = useTemplateRef<HTMLDivElement>(`codeMirrorWrapper`)
@@ -469,9 +469,9 @@ function createFormTextArea(dom: HTMLDivElement) {
       themeCompartment.of(theme(isDark.value)),
       EditorView.updateListener.of((update) => {
         if (update.docChanged) {
-          clearTimeout(changeTimer.value)
-          changeTimer.value = setTimeout(() => {
-            editorRefresh()
+          scheduleEditorRefresh()
+          clearTimeout(persistTimer.value)
+          persistTimer.value = setTimeout(() => {
             commitEditorContentToPost()
           }, 300)
         }
@@ -512,8 +512,8 @@ async function preloadMathJaxIfNeeded(content: string) {
 let postSwitchGeneration = 0
 
 function flushEditorContentToPostAtIndex(index: number) {
-  clearTimeout(changeTimer.value)
-  changeTimer.value = undefined
+  clearTimeout(persistTimer.value)
+  persistTimer.value = undefined
   if (!codeMirrorView.value || index < 0)
     return
 
@@ -644,7 +644,7 @@ onUnmounted(() => {
   editorStore.unregisterContentFlush()
   window.removeEventListener(MATHJAX_READY_EVENT, handleMathJaxReady)
   clearTimeout(historyTimer.value)
-  clearTimeout(changeTimer.value)
+  clearTimeout(persistTimer.value)
   document.removeEventListener(`keydown`, handleGlobalKeydown, { capture: false })
 })
 

@@ -113,6 +113,8 @@ export const useThemeStore = defineStore(`theme`, () => {
     const el = document.querySelector(`#hljs`)
 
     if (el) {
+      if (el.getAttribute(`href`) === cssUrl)
+        return
       el.setAttribute(`href`, cssUrl)
     }
     else {
