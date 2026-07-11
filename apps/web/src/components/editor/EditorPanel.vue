@@ -18,6 +18,7 @@ import { validateImageFile } from '@/lib/upload/validate-image'
 import { fileUpload } from '@/services/upload'
 import { store } from '@/storage'
 import { useEditorStore } from '@/stores/editor'
+import { useLocaleStore } from '@/stores/locale'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
@@ -28,6 +29,7 @@ const SidebarAIToolbar = defineAsyncComponent(() => import('@/components/ai/Side
 const { t, locale } = useI18n()
 const uploadHostOptions = useLocalizedUploadHostOptions()
 const editorStore = useEditorStore()
+const localeStore = useLocaleStore()
 const postStore = usePostStore()
 const renderStore = useRenderStore()
 const themeStore = useThemeStore()
@@ -685,6 +687,7 @@ defineExpose({
         id="editor"
         ref="editorRef"
         class="codemirror-container mathjax-ignore"
+        :lang="localeStore.contentFontLang"
       />
     </EditorContextMenu>
   </div>

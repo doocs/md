@@ -2,6 +2,7 @@
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
+import { useLocaleStore } from '@/stores/locale'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
@@ -12,6 +13,7 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
+const localeStore = useLocaleStore()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
 
@@ -99,7 +101,13 @@ defineExpose({
             effectivePreviewWidth === 'w-[375px]' ? 'max-w-full' : '',
           ]"
         >
-          <section id="output" class="w-full" @click="onContentClick" v-html="output" />
+          <section
+            id="output"
+            class="w-full"
+            :lang="localeStore.contentFontLang"
+            @click="onContentClick"
+            v-html="output"
+          />
           <div v-if="isCoping" class="loading-mask">
             <div class="loading-mask-box">
               <div class="loading__img" />
