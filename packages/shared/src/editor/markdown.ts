@@ -2,11 +2,11 @@ import { closeBrackets, closeBracketsKeymap } from '@codemirror/autocomplete'
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands'
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown'
 import { foldGutter, foldKeymap } from '@codemirror/language'
-import { languages } from '@codemirror/language-data'
 import { highlightSelectionMatches } from '@codemirror/search'
 import { EditorSelection, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { indentationMarkers } from '@replit/codemirror-indentation-markers'
+import { codeLanguages } from './codeLanguages'
 import { applyHeading, formatBold, formatCode, formatItalic, formatLink, formatOrderedList, formatStrikethrough, formatUnorderedList, redoAction, undoAction } from './format'
 
 /**
@@ -117,7 +117,7 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
     // 语言支持
     markdown({
       base: markdownLanguage,
-      codeLanguages: languages,
+      codeLanguages,
       addKeymap: true,
     }),
 

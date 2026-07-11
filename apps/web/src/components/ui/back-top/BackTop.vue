@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowUpFromLine } from '@lucide/vue'
-import { throttle } from 'es-toolkit'
+import { useThrottleFn } from '@vueuse/core'
 
 type Target = HTMLElement | Window | null
 
@@ -24,14 +24,14 @@ function scrollToTop(e: MouseEvent) {
   props.onClick?.(e)
 }
 
-const throttledScroll = throttle((el: Target) => {
+const throttledScroll = useThrottleFn((el: Target) => {
   if (el instanceof HTMLElement) {
     visible.value = el.scrollTop > visibilityHeight.value
   }
   else {
     visible.value = window.scrollY > visibilityHeight.value
   }
-}, 200, { edges: [`leading`, `trailing`] })
+}, 200, true, true)
 
 function handleScroll() {
   throttledScroll(target.value)
