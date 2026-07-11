@@ -6,6 +6,7 @@ import { isAccountUiEnabled } from '@/services/account/config'
 import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useEditorStore } from '@/stores/editor'
+import { useLocaleStore } from '@/stores/locale'
 import { useUIStore } from '@/stores/ui'
 
 export interface PaletteCommand {
@@ -20,6 +21,7 @@ export interface PaletteCommand {
 export function useCommandPalette() {
   const uiStore = useUIStore()
   const editorStore = useEditorStore()
+  const localeStore = useLocaleStore()
   const { formatContent } = useEditorDocumentActions()
 
   function withEditor(run: (view: EditorView) => void | Promise<void>) {
@@ -86,6 +88,13 @@ export function useCommandPalette() {
         group: t(`commandPalette.group.view`),
         keywords: [`深色`, `浅色`, `主题`, `dark`, `light`, `theme`],
         action: () => { uiStore.toggleDark() },
+      },
+      {
+        id: `toggle-language`,
+        label: t(`commandPalette.toggleLanguage`),
+        group: t(`commandPalette.group.settings`),
+        keywords: [`语言`, `中文`, `英文`, `language`, `locale`, `english`, `chinese`],
+        action: () => { localeStore.cycleLocale() },
       },
       {
         id: `toggle-style-panel`,

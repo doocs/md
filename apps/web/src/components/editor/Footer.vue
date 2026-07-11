@@ -15,6 +15,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 import { useSyncFooterMeta } from '@/composables/useSyncStatusMeta'
+import { getLocaleOption, getNextLocale } from '@/i18n/constants'
 import { formatRelativeTime } from '@/lib/format/relative-time'
 import {
   clampGoToLineValue,
@@ -28,6 +29,7 @@ import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useAuthStore } from '@/stores/auth'
 import { useEditorStore } from '@/stores/editor'
+import { useLocaleStore } from '@/stores/locale'
 import { usePostStore } from '@/stores/post'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
@@ -37,19 +39,30 @@ const editorStore = useEditorStore()
 const postStore = usePostStore()
 const uiStore = useUIStore()
 const authStore = useAuthStore()
+const localeStore = useLocaleStore()
 const { readingTime } = storeToRefs(renderStore)
 const { editor } = storeToRefs(editorStore)
 const { currentPost } = storeToRefs(postStore)
 const { isDark } = storeToRefs(uiStore)
 const { isMobile, viewMode, previewDevice, enableScrollSync } = storeToRefs(uiStore)
 const { isLoggedIn } = storeToRefs(authStore)
+const { locale } = storeToRefs(localeStore)
 const showAccountUi = isAccountUiEnabled()
 const showSyncUi = isSyncUiEnabled()
 const showShareUi = isShareUiEnabled()
 const { syncFooterIcon, syncFooterIconClass, syncTooltip } = useSyncFooterMeta()
 
 const isMoreOpen = ref(false)
-const { t, locale } = useI18n()
+const { t, locale: i18nLocale } = useI18n()
+
+const currentLocaleOption = computed(() => getLocaleOption(locale.value))
+
+const nextLocaleOption = computed(() => getLocaleOption(getNextLocale(locale.value)))
+
+const languageTooltip = computed(() => {
+  void i18nLocale.value
+  return t(`footer.switchToLanguage`, { language: t(nextLocaleOption.value.labelKey) })
+})
 
 const accountTooltip = computed(() => {
   if (!isLoggedIn.value)
@@ -75,6 +88,11 @@ function openShareDialog() {
 function toggleTheme() {
   isMoreOpen.value = false
   uiStore.toggleDark()
+}
+
+function toggleLanguage() {
+  isMoreOpen.value = false
+  localeStore.cycleLocale()
 }
 
 // 快速文档切换器
@@ -719,6 +737,23 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           <Tooltip>
             <TooltipTrigger as-child>
               <button
+                :aria-label="t('footer.toggleLanguage')"
+                class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
+                @click="toggleLanguage"
+              >
+                <span class="min-w-3 text-center text-[10px] font-semibold leading-none tracking-wide">
+                  {{ currentLocaleOption.shortLabel }}
+                </span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
+              <p>{{ languageTooltip }}</p>
+            </TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger as-child>
+              <button
                 :aria-label="t('footer.toggleDarkMode')"
                 class="flex cursor-pointer items-center rounded-md p-1.5 transition-colors hover:bg-accent hover:text-foreground"
                 :class="isDark ? 'text-foreground' : ''"
@@ -779,6 +814,15 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
             >
               <Share2 class="size-3 shrink-0" />
               <span>{{ t('menu.sharePreview') }}</span>
+            </button>
+            <button
+              class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs transition-colors hover:bg-accent"
+              @click="toggleLanguage"
+            >
+              <span class="inline-flex size-3 shrink-0 items-center justify-center text-[10px] font-semibold leading-none">
+                {{ currentLocaleOption.shortLabel }}
+              </span>
+              <span>{{ languageTooltip }}</span>
             </button>
             <button
               class="flex w-full cursor-pointer items-center gap-2 rounded-md px-2.5 py-2 text-left text-xs transition-colors hover:bg-accent"

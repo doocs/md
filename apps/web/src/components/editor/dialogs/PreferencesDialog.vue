@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Settings } from '@lucide/vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
+import PanelSegmented from '@/components/shared/panel-dialog/PanelSegmented.vue'
 import PanelSelect from '@/components/shared/panel-dialog/PanelSelect.vue'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -101,7 +102,7 @@ function setCountStatus(value: boolean) {
               {{ t('preferences.language.hint') }}
             </p>
           </div>
-          <PanelSelect
+          <PanelSegmented
             :model-value="localeStore.locale"
             :options="localeOptions"
             @update:model-value="localeStore.setLocale($event as typeof localeStore.locale)"

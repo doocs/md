@@ -26,6 +26,8 @@ export default {
     enableScrollSync: `Enable scroll sync`,
     lastModified: `Last modified`,
     toggleDarkMode: `Toggle dark mode`,
+    toggleLanguage: `Toggle language`,
+    switchToLanguage: `Switch to {language}`,
   },
   rightSlider: {
     title: `Styles`,
@@ -78,6 +80,7 @@ export default {
       settings: `Settings`,
     },
     openPreferences: `Open preferences`,
+    toggleLanguage: `Toggle language`,
     viewEdit: `View: Edit`,
     viewSplit: `View: Split`,
     viewPreview: `View: Preview`,

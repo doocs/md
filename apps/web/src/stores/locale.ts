@@ -1,5 +1,5 @@
 import type { AppLocale } from '@/i18n/types'
-import { LOCALE_STORAGE_KEY } from '@/i18n/constants'
+import { getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
 import { detectInitialLocale } from '@/i18n/detect'
 import { getAppI18n } from '@/i18n/index'
 import enUS from '@/i18n/messages/en-US'
@@ -57,8 +57,14 @@ export const useLocaleStore = defineStore(`locale`, () => {
     locale.value = value
   }
 
+  /** 按 SUPPORTED_LOCALES 顺序循环切换到下一语言 */
+  function cycleLocale() {
+    locale.value = getNextLocale(locale.value)
+  }
+
   return {
     locale,
     setLocale,
+    cycleLocale,
   }
 })
