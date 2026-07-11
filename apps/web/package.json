@@ -31,6 +31,8 @@
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1085.0",
     "@aws-sdk/s3-request-presigner": "^3.1085.0",
+    "@codemirror/autocomplete": "^6.20.3",
+    "@codemirror/language": "^6.12.4",
     "@codemirror/state": "catalog:",
     "@codemirror/view": "catalog:",
     "@lucide/vue": "^1.24.0",

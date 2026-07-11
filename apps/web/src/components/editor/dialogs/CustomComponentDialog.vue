@@ -3,14 +3,15 @@ import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
 import type { CustomComponentFormPayload } from './CustomComponentForm.vue'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
-import { escapeHtml, previewComponent } from '@md/core'
-import { sanitizeHtml } from '@md/core/utils'
+import { escapeHtml } from '@md/core'
 import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
+import { buildComponentSnippet, missingRequiredProps } from '@/lib/component-snippet'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
 import { useMpAccountsStore } from '@/stores/mpAccounts'
 import { useUIStore } from '@/stores/ui'
+import ComponentPropFill from './ComponentPropFill.vue'
 import CustomComponentForm from './CustomComponentForm.vue'
 
 const { t } = useI18n()
@@ -118,8 +119,43 @@ function onImportFile(event: Event) {
   reader.readAsText(file)
 }
 
+const activeComponentTab = ref<'builtin' | 'custom'>('builtin')
+const expandedId = ref<string | null>(null)
+const fillValues = reactive<Record<string, Record<string, string>>>({})
+const copiedId = ref<string | null>(null)
+
+watch(activeComponentTab, () => {
+  expandedId.value = null
+})
+
+function toggleExpand(id: string) {
+  expandedId.value = expandedId.value === id ? null : id
+}
+
+function onFillValues(id: string, values: Record<string, string>) {
+  fillValues[id] = values
+}
+
+/** Use filled values only while that component panel is expanded. */
+function activeFillValues(def: CustomComponentDef): Record<string, string> | undefined {
+  if (expandedId.value !== def.id)
+    return undefined
+  return fillValues[def.id]
+}
+
 function insertSnippet(def: CustomComponentDef) {
-  const snippet = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
+  // `def` is already localized for built-ins (from localizedBuiltinComponents)
+  const values = activeFillValues(def)
+  if (values) {
+    const missing = missingRequiredProps(def, values)
+    if (missing.length) {
+      toast.error(t('component.requiredEmpty', { props: missing.join(', ') }))
+      return
+    }
+  }
+  const snippet = values
+    ? buildComponentSnippet(def, values)
+    : (def.example || componentStore.buildSnippet(def))
   editorStore.insertAtCursor(snippet)
   toast.success(t('component.insertSuccess', { name: def.name }))
   toggleShowComponentDialog(false)
@@ -137,43 +173,22 @@ function onUpdate(val: boolean) {
   if (!val) {
     toggleShowComponentDialog(false)
     isShowForm.value = false
+    expandedId.value = null
   }
-}
-
-const activeComponentTab = ref<'builtin' | 'custom'>('builtin')
-const expandedId = ref<string | null>(null)
-
-watch(activeComponentTab, () => {
-  expandedId.value = null
-})
-
-function toggleExpand(id: string) {
-  expandedId.value = expandedId.value === id ? null : id
-}
-
-function parseExampleProps(example: string): Record<string, string> {
-  const result: Record<string, string> = {}
-  for (const m of example.matchAll(/(\w[\w-]*)=(?:"([^"]*)"|'([^']*)')/g)) {
-    result[m[1]] = m[2] !== undefined ? m[2] : (m[3] ?? '')
-  }
-  return result
-}
-
-function getComponentPreview(def: CustomComponentDef): string {
-  const snippet = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
-  const propsOverride = parseExampleProps(snippet)
-  const raw = previewComponent(def, propsOverride)
-  return sanitizeHtml(raw)
-}
-
-const copiedId = ref<string | null>(null)
-
-function findBuiltinDef(id: string) {
-  return componentStore.builtInComponents.find(c => c.id === id)
 }
 
 async function copySnippet(def: CustomComponentDef) {
-  const text = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
+  const values = activeFillValues(def)
+  if (values) {
+    const missing = missingRequiredProps(def, values)
+    if (missing.length) {
+      toast.error(t('component.requiredEmpty', { props: missing.join(', ') }))
+      return
+    }
+  }
+  const text = values
+    ? buildComponentSnippet(def, values)
+    : (def.example || componentStore.buildSnippet(def))
   try {
     await navigator.clipboard.writeText(text)
     copiedId.value = def.id
@@ -435,32 +450,30 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       </div>
                     </div>
 
-                    <div>
-                      <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        {{ t('common.preview') }}
-                      </p>
-                      <div
-                        class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
-                        v-html="getComponentPreview(def)"
-                      />
-                    </div>
+                    <ComponentPropFill
+                      :def="def"
+                      @update:values="(v) => onFillValues(def.id, v)"
+                    />
 
-                    <div>
-                      <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        {{ t('component.example') }}
-                      </p>
-                      <div class="relative group">
-                        <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                          @click="copySnippet(def)"
-                        >
-                          <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
-                          <Copy v-else class="size-3 text-muted-foreground" />
-                        </Button>
-                      </div>
+                    <div class="flex items-center gap-2">
+                      <Button
+                        variant="default"
+                        size="sm"
+                        class="h-7 px-2.5 text-xs gap-1"
+                        @click="insertSnippet(def)"
+                      >
+                        <Zap class="size-3" />
+                        {{ t('component.insertWithValues') }}
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        class="size-7 text-muted-foreground"
+                        @click="copySnippet(def)"
+                      >
+                        <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
+                        <Copy v-else class="size-3" />
+                      </Button>
                     </div>
 
                     <div v-if="isMpProfile(def)" class="border-t pt-3 space-y-2">
@@ -714,40 +727,22 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           </div>
                         </div>
                       </div>
-                      <div v-else>
-                        <p class="text-xs text-muted-foreground italic">
-                          {{ t('component.noPropsDefined') }}
-                        </p>
-                      </div>
 
-                      <div>
-                        <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                          {{ t('common.preview') }}
-                        </p>
-                        <div
-                          class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
-                          v-html="getComponentPreview(def)"
-                        />
-                      </div>
+                      <ComponentPropFill
+                        :def="def"
+                        @update:values="(v) => onFillValues(def.id, v)"
+                      />
 
-                      <div>
-                        <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                          {{ t('component.example') }}
-                        </p>
-                        <div class="relative group">
-                          <pre class="text-xs font-mono bg-muted rounded-lg px-3 py-2.5 overflow-x-auto text-foreground/80 pr-10 leading-relaxed"><code>{{ def.example || componentStore.buildSnippet(def) }}</code></pre>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            class="absolute right-1.5 top-1.5 size-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                            @click="copySnippet(def)"
-                          >
-                            <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
-                            <Copy v-else class="size-3 text-muted-foreground" />
-                          </Button>
-                        </div>
-                      </div>
                       <div class="flex items-center gap-2 pt-1 border-t">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          class="h-7 px-2.5 text-xs gap-1"
+                          @click="insertSnippet(def)"
+                        >
+                          <Zap class="size-3" />
+                          {{ t('component.insertWithValues') }}
+                        </Button>
                         <Button
                           variant="outline"
                           size="sm"

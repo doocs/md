@@ -1,6 +1,7 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
 import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
 import { t } from '@/i18n/translate'
+import { buildComponentSnippet } from '@/lib/component-snippet'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -82,26 +83,8 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   }
 
   /** Build a Markdown usage snippet; uses `example` when set, otherwise derives placeholders from prop types. */
-  function buildSnippet(def: CustomComponentDef): string {
-    if (def.example)
-      return def.example
-    const propsStr = def.props
-      .map((p) => {
-        let placeholder: string
-        if (p.default !== undefined && p.default !== ``)
-          placeholder = p.default
-        else if (p.type === `array`)
-          placeholder = `[]`
-        else if (p.type === `boolean`)
-          placeholder = `true`
-        else if (p.type === `number`)
-          placeholder = `0`
-        else
-          placeholder = p.name
-        return `${p.name}="${placeholder}"`
-      })
-      .join(` `)
-    return `<${def.name}${propsStr ? ` ${propsStr}` : ``} />`
+  function buildSnippet(def: CustomComponentDef, values?: Record<string, string>): string {
+    return buildComponentSnippet(def, values)
   }
 
   return {
