@@ -11,13 +11,17 @@
       "@md/shared/*": ["../shared/src/*"]
     },
     "resolveJsonModule": true,
+    "types": ["node"],
     "strict": true,
     "noEmit": true,
-    "outDir": "./dist",
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*.ts"],
+  "include": [
+    "src/**/*.ts",
+    "../shared/src/global.d.ts",
+    "../shared/src/types/raw-imports.d.ts"
+  ],
   "exclude": ["node_modules", "dist"]
 }

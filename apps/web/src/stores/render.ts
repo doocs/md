@@ -5,6 +5,12 @@ import { useCustomComponentStore } from './customComponent'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
 
+export interface RenderOptions {
+  themeMode?: 'light' | 'dark'
+  /** Bypass fingerprint skip (export / clipboard / forced refresh) */
+  force?: boolean
+}
+
 /**
  * 渲染 Store
  * 负责 Markdown 渲染、HTML 输出、标题提取等
@@ -29,6 +35,7 @@ export const useRenderStore = defineStore(`render`, () => {
 
   // 渲染器实例（延迟初始化）
   let renderer: ReturnType<typeof initRenderer> | null = null
+  let lastFingerprint = ``
 
   /**
    * 初始化渲染器（新主题系统）
@@ -39,6 +46,7 @@ export const useRenderStore = defineStore(`render`, () => {
     isShowLineNumber?: boolean
   }) => {
     renderer = initRenderer(options || {})
+    lastFingerprint = ``
     return renderer
   }
 
@@ -68,6 +76,30 @@ export const useRenderStore = defineStore(`render`, () => {
     katexLoading: t(`store.render.katexLoading`),
   })
 
+  function buildFingerprint(
+    content: string,
+    themeMode: 'light' | 'dark',
+    themeStore: ReturnType<typeof useThemeStore>,
+    componentStore: ReturnType<typeof useCustomComponentStore>,
+  ): string {
+    const componentKeys = Object.keys(componentStore.registry).sort().join(`,`)
+    return [
+      content,
+      themeMode,
+      themeStore.isCiteStatus ? `1` : `0`,
+      themeStore.legend,
+      themeStore.isCountStatus ? `1` : `0`,
+      themeStore.isMacCodeBlock ? `1` : `0`,
+      themeStore.isShowLineNumber ? `1` : `0`,
+      componentKeys,
+      t(`store.count.summary`, { words: `{words}`, minutes: `{minutes}` }),
+      t(`store.render.footnoteTitle`),
+      t(`store.render.unknownComponent`),
+      t(`store.render.katexLoading`),
+      t(`store.diagram.mermaidLoading`),
+    ].join(`\u0001`)
+  }
+
   // 提取标题
   const extractTitles = () => {
     const div = document.createElement(`div`)
@@ -89,7 +121,7 @@ export const useRenderStore = defineStore(`render`, () => {
   }
 
   // 渲染内容
-  const render = (content: string, options?: { themeMode?: 'light' | 'dark' }) => {
+  const render = (content: string, options?: RenderOptions) => {
     if (!renderer) {
       throw new Error(`Renderer not initialized. Call initRendererInstance first.`)
     }
@@ -98,6 +130,10 @@ export const useRenderStore = defineStore(`render`, () => {
     const uiStore = useUIStore()
     const componentStore = useCustomComponentStore()
     const themeMode = options?.themeMode ?? (uiStore.isDark ? `dark` : `light`)
+    const fingerprint = buildFingerprint(content, themeMode, themeStore, componentStore)
+
+    if (!options?.force && fingerprint === lastFingerprint)
+      return output.value
 
     // 重置渲染器配置
     // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
@@ -127,6 +163,7 @@ export const useRenderStore = defineStore(`render`, () => {
 
     // 提取标题
     extractTitles()
+    lastFingerprint = fingerprint
 
     return output.value
   }

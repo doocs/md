@@ -95,6 +95,7 @@
     "watch": "node scripts/copy-runtime-deps.mjs && webpack --watch",
     "build": "webpack --mode production --devtool hidden-source-map && node scripts/copy-runtime-deps.mjs",
     "package": "vsce package --no-dependencies --allow-package-secrets github",
+    "type-check": "tsc --noEmit",
     "test": "npm run build && node --import tsx/esm scripts/smoke-test.mjs && node scripts/verify-preview.mjs && node scripts/verify-activate.mjs && node scripts/verify-vsix-deps.mjs"
   },
   "dependencies": {

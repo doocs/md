@@ -40,7 +40,7 @@ export async function processClipboardContent(primaryColor: string) {
   const rerenderForLight = uiStore.isDark
 
   if (rerenderForLight)
-    renderStore.render(content, { themeMode: wechatThemeMode })
+    renderStore.render(content, { themeMode: wechatThemeMode, force: true })
 
   const previewReady = await waitForPreviewReady(undefined, { themeMode: wechatThemeMode })
 
@@ -142,6 +142,6 @@ export async function processClipboardContent(primaryColor: string) {
   }
   finally {
     if (rerenderForLight)
-      renderStore.render(content, { themeMode: `dark` })
+      renderStore.render(content, { themeMode: `dark`, force: true })
   }
 }

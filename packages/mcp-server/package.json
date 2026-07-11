@@ -9,7 +9,8 @@
   },
   "scripts": {
     "start": "node --import tsx/esm run.mjs",
-    "dev": "node --import tsx/esm --watch run.mjs"
+    "dev": "node --import tsx/esm --watch run.mjs",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@md/core": "workspace:*",
