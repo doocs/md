@@ -266,6 +266,7 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
                 :max-size="!isMobile && isOpenRightSlider ? 60 : 0"
                 collapsible
                 :collapsed-size="0"
+                @collapse="isOpenRightSlider = false"
               >
                 <RightSlider v-if="!isMobile && isOpenRightSlider" />
               </ResizablePanel>
