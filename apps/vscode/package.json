@@ -101,16 +101,16 @@
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
-    "isomorphic-dompurify": "^3.18.0"
+    "isomorphic-dompurify": "catalog:"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
+    "@types/node": "catalog:",
     "@types/vscode": "^1.125.0",
     "@types/webpack": "^5.28.5",
     "@vscode/vsce": "^3.9.2",
     "ts-loader": "^9.6.2",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
-    "tsx": "^4.23.0",
+    "tsx": "catalog:",
     "webpack": "^5.108.4",
     "webpack-cli": "^7.2.1"
   }

@@ -17,10 +17,10 @@
     "hono": "^4.12.29"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "5.20260711.1",
-    "@types/node": "^26.1.1",
-    "typescript": "~6.0.3",
-    "vitest": "^4.1.10",
-    "wrangler": "^4.110.0"
+    "@cloudflare/workers-types": "catalog:",
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:",
+    "wrangler": "catalog:"
   }
 }
