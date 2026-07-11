@@ -77,7 +77,7 @@ function getStrokeWidth(el: Element): number {
 function getStrokeColor(el: Element): string {
   return el.getAttribute(`stroke`)
     ?? el.getAttribute(`fill`)
-    ?? `#333333`
+    ?? `currentColor`
 }
 
 function appendFallbackArrow(
@@ -277,28 +277,142 @@ function isMathFormulaSvg(svg: SVGSVGElement): boolean {
   return svg.closest(`.katex-inline, .katex-block, mjx-container`) != null
 }
 
-const WECHAT_MATH_FILL = `#333333`
+/**
+ * Parse #rgb / #rrggbb / rgb() / rgba() / named black|white into [r,g,b].
+ * Returns null for currentColor, none, url(...), or unparseable values.
+ */
+function parseCssColor(value: string): [number, number, number] | null {
+  const raw = value.trim().toLowerCase()
+  if (!raw || raw === `none` || raw === `currentcolor` || raw === `transparent` || raw.startsWith(`url(`))
+    return null
+  if (raw === `black`)
+    return [0, 0, 0]
+  if (raw === `white`)
+    return [255, 255, 255]
 
-/** Keep MathJax SVG intact but force readable colors for WeChat paste. */
+  const hex = raw.match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i)
+  if (hex) {
+    const h = hex[1]
+    if (h.length === 3) {
+      return [
+        Number.parseInt(h[0] + h[0], 16),
+        Number.parseInt(h[1] + h[1], 16),
+        Number.parseInt(h[2] + h[2], 16),
+      ]
+    }
+    return [
+      Number.parseInt(h.slice(0, 2), 16),
+      Number.parseInt(h.slice(2, 4), 16),
+      Number.parseInt(h.slice(4, 6), 16),
+    ]
+  }
+
+  const rgb = raw.match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)/)
+  if (rgb) {
+    return [
+      Math.min(255, Number.parseFloat(rgb[1])),
+      Math.min(255, Number.parseFloat(rgb[2])),
+      Math.min(255, Number.parseFloat(rgb[3])),
+    ]
+  }
+
+  return null
+}
+
+function relativeLuminance([r, g, b]: [number, number, number]): number {
+  const toLinear = (c: number) => {
+    const s = c / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * toLinear(r) + 0.7152 * toLinear(g) + 0.0722 * toLinear(b)
+}
+
+/** True for near-gray colors (text/line ink), false for chromatic borders/fills. */
+function isNearGrayscale([r, g, b]: [number, number, number]): boolean {
+  return Math.max(r, g, b) - Math.min(r, g, b) <= 24
+}
+
+/**
+ * Dark grayscale ink (text / default edges) that becomes unreadable on WeChat
+ * dark-mode page background. Chromatic colors (e.g. Mermaid node borders) are kept.
+ */
+function isDarkInkColor(value: string): boolean {
+  const rgb = parseCssColor(value)
+  if (!rgb || !isNearGrayscale(rgb))
+    return false
+  return relativeLuminance(rgb) < 0.35
+}
+
+function remapPresentationColor(value: string | null): string | null {
+  if (!value)
+    return null
+  if (value.trim().toLowerCase() === `currentcolor` || isDarkInkColor(value))
+    return `currentColor`
+  return null
+}
+
+function remapSvgNodeInkToCurrentColor(node: Element) {
+  for (const attr of [`fill`, `stroke`] as const) {
+    const remapped = remapPresentationColor(node.getAttribute(attr))
+    if (remapped)
+      node.setAttribute(attr, remapped)
+  }
+
+  const style = node.getAttribute(`style`)
+  if (!style)
+    return
+
+  let changed = false
+  const next = style
+    .split(`;`)
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map((part) => {
+      const colon = part.indexOf(`:`)
+      if (colon === -1)
+        return part
+      const key = part.slice(0, colon).trim().toLowerCase()
+      if (key !== `fill` && key !== `stroke`)
+        return part
+      const val = part.slice(colon + 1).trim()
+      const remapped = remapPresentationColor(val)
+      if (!remapped)
+        return part
+      changed = true
+      return `${key}: ${remapped}`
+    })
+    .join(`; `)
+
+  if (changed)
+    node.setAttribute(`style`, `${next};`)
+}
+
+/**
+ * Keep MathJax SVG intact; use currentColor so glyphs follow WeChat text color
+ * (including reader dark mode). Do not bake in #333333.
+ */
 export function prepareMathFormulasForWeChat(root: ParentNode) {
   root.querySelectorAll<HTMLElement>(`.katex-inline, .katex-block`).forEach((wrapper) => {
-    wrapper.style.color = WECHAT_MATH_FILL
+    wrapper.style.removeProperty(`color`)
   })
 
   root.querySelectorAll<SVGSVGElement>(`.katex-inline svg, .katex-block svg, mjx-container svg`).forEach((svg) => {
-    svg.style.color = WECHAT_MATH_FILL
-    if (!svg.getAttribute(`fill`) || svg.getAttribute(`fill`) === `currentColor`)
-      svg.setAttribute(`fill`, WECHAT_MATH_FILL)
+    svg.style.removeProperty(`color`)
+    const fill = svg.getAttribute(`fill`)
+    if (!fill || fill === `currentColor` || isDarkInkColor(fill))
+      svg.setAttribute(`fill`, `currentColor`)
 
-    svg.querySelectorAll<SVGElement>(`path, rect, use, g`).forEach((node) => {
-      const fill = node.getAttribute(`fill`)
-      if (fill === `currentColor` || fill === `#fff` || fill === `#ffffff` || fill === `white`)
-        node.setAttribute(`fill`, WECHAT_MATH_FILL)
-      const stroke = node.getAttribute(`stroke`)
-      if (stroke === `currentColor` || stroke === `#fff` || stroke === `#ffffff` || stroke === `white`)
-        node.setAttribute(`stroke`, WECHAT_MATH_FILL)
-    })
+    svg.querySelectorAll(`path, rect, use, g`).forEach(remapSvgNodeInkToCurrentColor)
   })
+}
+
+/**
+ * Remap dark fill/stroke on diagram SVGs to currentColor so Mermaid / PlantUML /
+ * infographic ink stays readable when WeChat reader is in dark mode.
+ */
+export function remapDiagramInkToCurrentColor(svg: SVGSVGElement) {
+  remapSvgNodeInkToCurrentColor(svg)
+  svg.querySelectorAll(`*`).forEach(remapSvgNodeInkToCurrentColor)
 }
 
 function isHiddenPlantUmlHelper(el: Element): boolean {
@@ -575,6 +689,7 @@ export function sanitizeSvgForWeChat(svg: SVGSVGElement, options?: SanitizeSvgOp
 
   expandMarkers(svg)
   inlinePresentationAttributes(svg)
+  remapDiagramInkToCurrentColor(svg)
 
   if (isPlantuml) {
     tightenPlantUmlViewBox(svg)

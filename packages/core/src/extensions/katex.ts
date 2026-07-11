@@ -73,6 +73,15 @@ function createRenderer(
       svg.style.width = width || ``
     }
 
+    const firstG = svg.querySelector(`g`)
+    if (firstG) {
+      // Inline style + attributes: WeChat reader dark mode follows currentColor with text
+      firstG.style.fill = `currentColor`
+      firstG.style.stroke = `currentColor`
+      firstG.setAttribute(`fill`, `currentColor`)
+      firstG.setAttribute(`stroke`, `currentColor`)
+    }
+
     if (!display) {
       return `<span class="katex-inline" data-math-display="false" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</span>`
     }

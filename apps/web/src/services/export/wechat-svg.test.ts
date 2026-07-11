@@ -2,6 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import {
   prepareMathFormulasForWeChat,
+  remapDiagramInkToCurrentColor,
   sanitizeSvgForWeChat,
   sanitizeSvgsForWeChat,
 } from './wechat-svg'
@@ -38,6 +39,7 @@ describe(`sanitizeSvgForWeChat`, () => {
     expect(svg.querySelector(`line`)?.getAttribute(`marker-end`)).toBeNull()
     expect(svg.querySelector(`path, polygon`)).not.toBeNull()
     expect(svg.querySelector(`#arrow`)).toBeNull()
+    expect(svg.querySelector(`line`)?.getAttribute(`stroke`)).toBe(`currentColor`)
 
     svg.remove()
   })
@@ -320,20 +322,46 @@ describe(`sanitizeSvgsForWeChat`, () => {
 })
 
 describe(`prepareMathFormulasForWeChat`, () => {
-  it(`forces readable fill on formula SVGs`, () => {
+  it(`keeps currentColor so formulas follow WeChat text color in dark mode`, () => {
     const root = document.createElement(`div`)
     root.innerHTML = `
       <span class="katex-inline" style="color: #ffffff;">
         <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor">
           <path fill="currentColor" d="M0 0h10v10H0z"></path>
+          <path fill="#333333" d="M10 0h10v10H10z"></path>
         </svg>
       </span>
     `
     prepareMathFormulasForWeChat(root)
 
     const wrapper = root.querySelector(`.katex-inline`) as HTMLElement
-    const path = root.querySelector(`path`) as SVGPathElement
-    expect(wrapper.style.color).toBe(`rgb(51, 51, 51)`)
-    expect(path.getAttribute(`fill`)).toBe(`#333333`)
+    const paths = root.querySelectorAll(`path`)
+    expect(wrapper.style.color).toBe(``)
+    expect(paths[0].getAttribute(`fill`)).toBe(`currentColor`)
+    expect(paths[1].getAttribute(`fill`)).toBe(`currentColor`)
+  })
+})
+
+describe(`remapDiagramInkToCurrentColor`, () => {
+  it(`converts dark grayscale stroke/fill to currentColor and keeps chromatic borders`, () => {
+    const svg = document.createElementNS(`http://www.w3.org/2000/svg`, `svg`)
+    svg.innerHTML = `
+      <rect fill="#ffffff" stroke="#333333" width="100" height="40"></rect>
+      <rect fill="#ECECFF" stroke="#9370DB" width="80" height="30"></rect>
+      <text fill="#262626">Label</text>
+      <path stroke="rgb(51, 51, 51)" fill="#ECECFF" d="M0 0h10v10H0z"></path>
+    `
+    remapDiagramInkToCurrentColor(svg)
+
+    const rects = svg.querySelectorAll(`rect`)
+    const text = svg.querySelector(`text`)!
+    const path = svg.querySelector(`path`)!
+    expect(rects[0].getAttribute(`fill`)).toBe(`#ffffff`)
+    expect(rects[0].getAttribute(`stroke`)).toBe(`currentColor`)
+    expect(rects[1].getAttribute(`fill`)).toBe(`#ECECFF`)
+    expect(rects[1].getAttribute(`stroke`)).toBe(`#9370DB`)
+    expect(text.getAttribute(`fill`)).toBe(`currentColor`)
+    expect(path.getAttribute(`stroke`)).toBe(`currentColor`)
+    expect(path.getAttribute(`fill`)).toBe(`#ECECFF`)
   })
 })
