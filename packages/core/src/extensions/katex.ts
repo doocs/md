@@ -75,8 +75,11 @@ function createRenderer(
 
     const firstG = svg.querySelector(`g`)
     if (firstG) {
+      // Inline style + attributes: WeChat reader dark mode follows currentColor with text
       firstG.style.fill = `currentColor`
       firstG.style.stroke = `currentColor`
+      firstG.setAttribute(`fill`, `currentColor`)
+      firstG.setAttribute(`stroke`, `currentColor`)
     }
 
     if (!display) {

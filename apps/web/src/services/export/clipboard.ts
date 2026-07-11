@@ -19,8 +19,8 @@ async function mergeCss(html: string): Promise<string> {
 
 /**
  * Prepare clipboard HTML for WeChat.
- * Diagrams are always exported in light theme (WeChat does not remap SVG colors;
- * dual-theme @media/class wrappers violate WeChat SVG constraints).
+ * Diagrams are exported in light theme structure, but dark ink colors are remapped
+ * to currentColor so WeChat reader dark mode can follow text color.
  */
 export async function processClipboardContent(primaryColor: string) {
   const outputElement = document.getElementById(`output`)
@@ -106,7 +106,7 @@ export async function processClipboardContent(primaryColor: string) {
     clipboardDiv.innerHTML = clipboardDiv.innerHTML
       .replace(
         /<tspan([^>]*)>/g,
-        `<tspan$1 style="fill: #333333 !important; color: #333333 !important; stroke: none !important;">`,
+        `<tspan$1 style="fill: currentColor !important; color: currentColor !important; stroke: none !important;">`,
       )
 
     clipboardDiv.querySelectorAll(`.infographic-diagram`).forEach((diagram) => {
