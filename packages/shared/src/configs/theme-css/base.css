@@ -40,11 +40,10 @@ section blockquote {
 #output table,
 section table {
   border-collapse: collapse;
+  min-width: 100%;
 }
 
-#output th,
-#output td,
-section th,
-section td {
-  border: 1px solid var(--md-border-color, #e0e0e0);
+.mermaid-diagram .nodeLabel p {
+  color: unset !important;
+  letter-spacing: unset !important;
 }

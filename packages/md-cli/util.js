@@ -1,3 +1,8 @@
+import FormData from 'form-data'
+import process from 'node:process'
+import util from 'node:util'
+import crypto from 'node:crypto'
+
 /**
  * Custom console colors.
  * https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
