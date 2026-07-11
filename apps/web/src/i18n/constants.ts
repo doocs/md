@@ -4,6 +4,13 @@ export const LOCALE_STORAGE_KEY = `locale`
 
 export const DEFAULT_LOCALE: AppLocale = `zh-CN`
 
+/**
+ * Fixed BCP 47 tag on editor/preview so system-font fallback stays stable when
+ * `html[lang]` follows the UI locale. Use `und` (undetermined) instead of a
+ * concrete locale so assistive tech is not told the wrong content language.
+ */
+export const CONTENT_FONT_LANG = `und` as const
+
 export const SUPPORTED_LOCALES: AppLocale[] = [`zh-CN`, `zh-TW`, `en-US`, `ja-JP`]
 
 export const LOCALE_OPTIONS: LocaleOption[] = [

@@ -1,5 +1,5 @@
 import type { AppLocale } from '@/i18n/types'
-import { DEFAULT_LOCALE, getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
+import { getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
 import { detectInitialLocale } from '@/i18n/detect'
 import { getAppI18n } from '@/i18n/index'
 import enUS from '@/i18n/messages/en-US'
@@ -47,15 +47,6 @@ function setI18nLocale(value: AppLocale) {
 export const useLocaleStore = defineStore(`locale`, () => {
   const locale = store.reactive<AppLocale>(LOCALE_STORAGE_KEY, detectInitialLocale())
 
-  /**
-   * Fixed lang for editor/preview font matching.
-   * `html[lang]` follows the UI locale for a11y, but system fonts
-   * (`-apple-system`, `BlinkMacSystemFont`, generic `monospace`) resolve
-   * differently per lang — keep content lang constant so UI language
-   * never changes markdown editor/preview typefaces.
-   */
-  const contentFontLang = DEFAULT_LOCALE
-
   watch(
     locale,
     (value) => {
@@ -77,7 +68,6 @@ export const useLocaleStore = defineStore(`locale`, () => {
 
   return {
     locale,
-    contentFontLang,
     setLocale,
     cycleLocale,
   }

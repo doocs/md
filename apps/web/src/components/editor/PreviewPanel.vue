@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
+import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
-import { useLocaleStore } from '@/stores/locale'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
@@ -13,7 +13,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-const localeStore = useLocaleStore()
 const renderStore = useRenderStore()
 const uiStore = useUIStore()
 
@@ -104,7 +103,7 @@ defineExpose({
           <section
             id="output"
             class="w-full"
-            :lang="localeStore.contentFontLang"
+            :lang="CONTENT_FONT_LANG"
             @click="onContentClick"
             v-html="output"
           />
