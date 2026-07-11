@@ -437,7 +437,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
                     <div>
                       <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                        {{ t('component.previewLabel') }}
+                        {{ t('common.preview') }}
                       </p>
                       <div
                         class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
@@ -722,7 +722,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
                       <div>
                         <p class="text-xs font-medium text-muted-foreground mb-1.5">
-                          {{ t('component.previewLabel') }}
+                          {{ t('common.preview') }}
                         </p>
                         <div
                           class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
