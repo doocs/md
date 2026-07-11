@@ -14,7 +14,7 @@ const PROTECTED_SPAN_REGEX = /<span data-md-protected="(\d+)"><\/span>/g
  * 使用占位符方案：在 sanitize 前保护特定内容，sanitize 后还原
  * 注意：HTML 注释会被 DOMPurify 移除，所以使用 span 元素作为占位符
  */
-function sanitizeHtml(html: string): string {
+export function sanitizeHtml(html: string): string {
   const protectedContents: string[] = []
 
   // 保护 infographic-diagram（使用注释标记定界，避免嵌套 div 问题）

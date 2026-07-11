@@ -43,8 +43,36 @@ describe('initRenderer', () => {
     const { html, readingTime } = renderMarkdown(`# Hi`, renderer)
     const output = postProcessHtml(html, readingTime, renderer)
 
-    expect(output).toContain(`字数`)
+    expect(output).toContain(`words`)
     expect(output).toContain(`Hi`)
+  })
+
+  it('uses injected renderMessages for footnotes and unknown components', () => {
+    const renderer = initRenderer({
+      citeStatus: true,
+      renderMessages: {
+        footnoteTitle: `引用リンク`,
+        unknownComponent: `不明: {name}`,
+        katexLoading: `数式読込中`,
+      },
+    })
+
+    const withCite = renderMarkdown(`[Doocs](https://github.com/doocs)`, renderer)
+    const withCiteHtml = postProcessHtml(withCite.html, withCite.readingTime, renderer)
+    expect(withCiteHtml).toContain(`引用リンク`)
+
+    const unknown = renderMarkdown(`<FakeWidget foo="1" />`, renderer)
+    expect(unknown.html).toContain(`[不明: FakeWidget]`)
+  })
+
+  it('uses injected countMessages summary template', () => {
+    const renderer = initRenderer({
+      countStatus: true,
+      countMessages: { summary: `単語 {words} / {minutes} 分` },
+    })
+    const { html, readingTime } = renderMarkdown(`# Hi`, renderer)
+    const output = postProcessHtml(html, readingTime, renderer)
+    expect(output).toMatch(/単語 \d+ \/ \d+ 分/)
   })
 
   it('renders single-line block formula as katex-block without paragraph wrapper', () => {

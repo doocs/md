@@ -406,9 +406,19 @@ export function getBuiltInRegistry(): ComponentRegistry {
  *
  * 组件名必须以大写字母开头（PascalCase）以与普通 HTML 标签区分。
  */
-export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedExtension {
+const DEFAULT_UNKNOWN_COMPONENT = `Unknown component: {name}`
+
+export function markedComponent(
+  getRegistry?: () => ComponentRegistry,
+  getRenderMessages?: () => { unknownComponent?: string } | undefined,
+): MarkedExtension {
   function resolveRegistry(): ComponentRegistry {
     return getRegistry ? getRegistry() : _registry
+  }
+
+  function formatUnknownComponent(name: string): string {
+    const template = getRenderMessages?.()?.unknownComponent || DEFAULT_UNKNOWN_COMPONENT
+    return template.split(`{name}`).join(name)
   }
 
   function findLineEnd(src: string, from: number): number {
@@ -578,7 +588,7 @@ export function markedComponent(getRegistry?: () => ComponentRegistry): MarkedEx
           const def = resolveRegistry()[name]
           if (!def) {
             // 未知组件，保留原始文本并给出提示
-            return `<p style="color:#f00;font-size:12px;">[未知组件: ${name}]</p>\n`
+            return `<p style="color:#f00;font-size:12px;">[${formatUnknownComponent(name)}]</p>\n`
           }
           const props = parseProps(propsStr)
           // 将内部子内容作为保留的 children prop 传入（原始 HTML，不转义）

@@ -21,6 +21,16 @@ export interface CountMessages {
   summary: string
 }
 
+/** 渲染管线中的通用 UI 文案（Web 端按 locale 注入） */
+export interface RenderMessages {
+  /** 文末引用链接标题 */
+  footnoteTitle: string
+  /** 未知自定义组件提示，支持 `{name}` 占位符 */
+  unknownComponent: string
+  /** 块级公式加载中占位 */
+  katexLoading: string
+}
+
 export interface IOpts {
   legend?: string
   citeStatus?: boolean
@@ -34,6 +44,8 @@ export interface IOpts {
   diagramMessages?: DiagramMessages
   /** 阅读时长统计文案（Web 端按 locale 注入） */
   countMessages?: CountMessages
+  /** 脚注 / 未知组件 / 公式加载等文案（Web 端按 locale 注入） */
+  renderMessages?: RenderMessages
 }
 
 export interface IConfigOption<VT = string> {

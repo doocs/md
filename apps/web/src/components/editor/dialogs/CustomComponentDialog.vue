@@ -3,7 +3,7 @@ import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@m
 import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
 import { escapeHtml, previewComponent } from '@md/core'
-import DOMPurify from 'isomorphic-dompurify'
+import { sanitizeHtml } from '@md/core/utils'
 import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
@@ -194,7 +194,7 @@ const previewHtml = computed(() => {
   }
   try {
     const raw = previewComponent(tmpDef, propValues)
-    return DOMPurify.sanitize(raw, { ADD_TAGS: [`mp-common-profile`] })
+    return sanitizeHtml(raw)
   }
   catch {
     return ''

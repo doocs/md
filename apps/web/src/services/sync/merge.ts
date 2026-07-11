@@ -35,19 +35,20 @@ function docToPost(doc: SyncDocument): Post {
   }
 }
 
-/** 把败方内容并入胜方历史，避免数据丢失（按内容去重） */
-function mergeHistory(winner: Post, loserContent: string, loserDatetime: number): void {
+/** 把败方内容并入胜方历史，避免数据丢失（按内容去重）。有新增时返回 true。 */
+function mergeHistory(winner: Post, loserContent: string, loserDatetime: number): boolean {
   if (!loserContent)
-    return
+    return false
   const history: PostHistory[] = winner.history ?? (winner.history = [])
   const exists = history.some(h => h.content === loserContent)
     || winner.content === loserContent
   if (exists)
-    return
+    return false
   history.push({
     datetime: formatLocalDateTime(new Date(loserDatetime)),
     content: loserContent,
   })
+  return true
 }
 
 export interface MergeResult {
@@ -97,8 +98,8 @@ export function mergeRemoteIntoLocal(localPosts: Post[], remoteDocs: SyncDocumen
     else {
       // 本地较新（或同时）：保留本地，远端内容并入历史兜底
       if (!doc.deleted && doc.content !== local.content) {
-        mergeHistory(local, doc.content, remoteMs)
-        changed = true
+        if (mergeHistory(local, doc.content, remoteMs))
+          changed = true
       }
     }
   }

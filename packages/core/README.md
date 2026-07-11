@@ -41,8 +41,8 @@ const html = postProcessHtml(renderMarkdown(renderer, markdown))
 - **marked** — Markdown 解析
 - **highlight.js** — 代码高亮
 - **mermaid / @antv/infographic** — 图表（按需加载仍建议在消费方做 code-splitting）
-- **isomorphic-dompurify** — HTML 净化
-- **juice** — CSS 内联（在 `postProcessHtml` 流程中使用）
+- **isomorphic-dompurify** — HTML 净化（`sanitizeHtml`）
+- **juice** — CSS 内联（仅 Web 端复制到微信时使用，不在本包内）
 
 ## 相关文档
 

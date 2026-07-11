@@ -1,7 +1,6 @@
-import { markedAlert, MDKatex } from '@md/core'
+import { generatePureHTML } from '@md/core/utils'
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
-import { Marked } from 'marked'
 import { waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { EXPORT_LAYOUT_CSS } from './apply-export-layout'
 import { getHtmlContent } from './html-content'
@@ -32,15 +31,7 @@ export async function exportHTML(title: string = `untitled`) {
   downloadFile(fullHtml, `${sanitizeTitle(title)}.html`, `text/html`)
 }
 
-/** 生成无样式 HTML */
-export async function generatePureHTML(raw: string): Promise<string> {
-  const markedInstance = new Marked()
-  markedInstance.use(markedAlert({ withoutStyle: true }))
-  markedInstance.use(
-    MDKatex({ nonStandard: true }, false),
-  )
-  return await markedInstance.parse(raw)
-}
+export { generatePureHTML }
 
 /** 导出无样式 HTML 文件 */
 export async function exportPureHTML(raw: string, title: string = `untitled`) {
