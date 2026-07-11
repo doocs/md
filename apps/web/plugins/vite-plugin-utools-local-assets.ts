@@ -18,7 +18,7 @@ async function downloadMathJaxTexSvg(targetDir: string) {
 }
 
 /**
- * Vite 插件：在 uTools 构建时将 MathJax 从 doocs CDN 下载为本地资源
+ * Vite plugin: download MathJax from doocs CDN as a local asset for uTools builds.
  */
 export function utoolsLocalAssetsPlugin(): Plugin {
   const isUTools = process.env.SERVER_ENV === `UTOOLS`

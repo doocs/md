@@ -3,12 +3,12 @@ import type { IOpts } from './common'
 import type { FrontMatterData } from './front-matter'
 
 export interface RendererAPI {
-  /* —— 生命周期 —— */
+  /* Lifecycle */
   reset: (newOpts: Partial<IOpts>) => void
   setOptions: (newOpts: Partial<IOpts>) => void
   getOpts: () => IOpts
 
-  /* —— Markdown 处理 —— */
+  /* Markdown */
   parseFrontMatterAndContent: (markdown: string) => {
     yamlData: FrontMatterData
     markdownContent: string
@@ -16,7 +16,7 @@ export interface RendererAPI {
   }
   renderMarkdownToHtml: (markdown: string) => string
 
-  /* —— HTML 拼装 —— */
+  /* HTML assembly */
   buildReadingTime: (reading: ReadTimeResults) => string
   buildFootnotes: () => string
   buildAddition: () => string

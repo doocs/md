@@ -9,13 +9,11 @@ const uiStore = useUIStore()
 
 const { isShowImportMdDialog } = storeToRefs(uiStore)
 
-// 当前选中的 tab
 const activeTab = ref<'url' | 'file'>(`file`)
 
-// ==================== 检测本地图片路径 ====================
 /**
- * 从 Markdown 内容中检测本地图片路径
- * 排除 http/https URL、data URI 和空路径
+ * Detect local image paths in Markdown content
+ * Exclude http/https URLs, data URIs, and empty paths
  */
 function detectLocalImagePaths(content: string): string[] {
   const regex = /!\[[^\]]*\]\((?!https?:\/\/|data:)([^)]+)\)/g
@@ -32,26 +30,23 @@ function detectLocalImagePaths(content: string): string[] {
 }
 
 /**
- * 导入内容，如果包含本地图片则弹出上传对话框
+ * Import content; open upload dialog when local images are present
  */
 async function importContent(title: string, content: string) {
   const localPaths = detectLocalImagePaths(content)
   if (localPaths.length === 0) {
-    // 没有本地图片，直接导入
     postStore.addPost(title)
     postStore.updatePostContent(postStore.currentPostId, content)
     closeDialog()
     return
   }
 
-  // 有本地图片，弹出上传对话框
   uiStore.localImageUploadData = {
     markdownContent: content,
     detectedPaths: localPaths,
   }
   uiStore.isShowLocalImageUpload = true
 
-  // 等待上传对话框处理完成
   await new Promise<void>((resolve) => {
     const unwatch = watch(
       () => uiStore.localImageUploadData,
@@ -59,12 +54,10 @@ async function importContent(title: string, content: string) {
         if (data && data.processed) {
           unwatch()
           if (data.skipUpload) {
-            // 用户选择跳过，按原样导入
             postStore.addPost(title)
             postStore.updatePostContent(postStore.currentPostId, content)
           }
           else {
-            // 用户已上传并应用，使用替换后的内容
             postStore.addPost(title)
             postStore.updatePostContent(postStore.currentPostId, data!.markdownContent)
           }
@@ -75,11 +68,9 @@ async function importContent(title: string, content: string) {
     )
   })
 
-  // 清理
   uiStore.localImageUploadData = null
 }
 
-// ==================== 网络链接导入 ====================
 const url = ref(``)
 const isUrlLoading = ref(false)
 const urlError = ref(``)
@@ -87,7 +78,7 @@ let abortController: AbortController | null = null
 
 const ANYTHING_MD_API = `https://anything-md.doocs.org/`
 
-/** 判断链接是否直接指向 Markdown 文件 */
+/** Whether the URL points directly to a Markdown file */
 function isMarkdownUrl(rawUrl: string): boolean {
   try {
     const { pathname } = new URL(rawUrl)
@@ -98,7 +89,7 @@ function isMarkdownUrl(rawUrl: string): boolean {
   }
 }
 
-/** 直接获取 Markdown 文件内容 */
+/** Fetch Markdown file content directly */
 async function fetchMarkdownFile(rawUrl: string, signal: AbortSignal): Promise<string> {
   const response = await fetch(rawUrl, { signal })
   if (!response.ok) {
@@ -111,7 +102,7 @@ async function fetchMarkdownFile(rawUrl: string, signal: AbortSignal): Promise<s
   return content
 }
 
-/** 通过 Anything-MD 将网页转换为 Markdown */
+/** Convert web page to Markdown via Anything-MD */
 async function fetchViaAnythingMd(rawUrl: string, signal: AbortSignal): Promise<string> {
   const response = await fetch(ANYTHING_MD_API, {
     method: `POST`,
@@ -162,7 +153,6 @@ async function importFromUrl() {
       ? await fetchMarkdownFile(rawUrl, signal)
       : await fetchViaAnythingMd(rawUrl, signal)
 
-    // 从 URL 中提取标题
     const urlTitle = (() => {
       try {
         const { pathname } = new URL(rawUrl)
@@ -185,7 +175,6 @@ async function importFromUrl() {
   }
 }
 
-// ==================== 本地文件导入 ====================
 const isDragover = ref(false)
 const { open: openFileDialog, reset: resetFileDialog, onChange: onFileChange } = useFileDialog({
   accept: `.md,.markdown,.txt`,
@@ -248,7 +237,6 @@ async function readAndImportFiles(files: File[]) {
   }
 }
 
-// ==================== 对话框控制 ====================
 function closeDialog() {
   abortController?.abort()
   abortController = null
@@ -266,7 +254,6 @@ function onOpenChange(val: boolean) {
   }
 }
 
-// URL 参数 open 传入的链接：打开对话框时自动填入并执行导入
 watch(isShowImportMdDialog, (visible) => {
   if (!visible || !uiStore.importMdOpenUrl)
     return
@@ -305,7 +292,6 @@ watch(isShowImportMdDialog, (visible) => {
           </TabsTrigger>
         </TabsList>
 
-        <!-- 本地文件导入 -->
         <TabsContent value="file" class="mt-4">
           <div
             class="relative flex h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
@@ -328,7 +314,6 @@ watch(isShowImportMdDialog, (visible) => {
           </div>
         </TabsContent>
 
-        <!-- 网络链接导入 -->
         <TabsContent value="url" class="mt-4">
           <div class="space-y-4">
             <div class="space-y-2">

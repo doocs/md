@@ -20,7 +20,6 @@ function resetVal() {
   tableData.value = {}
 }
 
-// 插入表格
 function insertTable() {
   const table = createTable({
     rows: rowNum.value,

@@ -1,8 +1,8 @@
 /**
- * 导出 / 分享 / 独立预览的 shell 变量。
- * 这些变量原本由 Web App 的全局样式（index.css 的 :root）提供，主题 CSS 通过
- * hsl(var(--foreground)) / var(--blockquote-background) 引用它们。脱离 App 后
- * 需手动补上，否则表格边框、引用块背景等会因变量未定义而失效。
+ * Shell CSS variables for export / share / standalone preview.
+ * Normally provided by the app global styles (:root in index.css); theme CSS references
+ * hsl(var(--foreground)) / var(--blockquote-background). Outside the app they must be
+ * inlined or table borders, blockquote backgrounds, etc. break.
  */
 export const SHARE_SHELL_VARS_CSS = `:root {
   --foreground: 0 0% 3.9%;
@@ -33,7 +33,7 @@ function scopeThemeCss(cssContent: string, scope: string): string {
   return css
 }
 
-/** 复制/导出：剥离 #output 前缀，使 juice 能匹配片段内元素（无 body/#output 祖先） */
+/** Strip #output scope so juice matches fragment nodes without a body/#output ancestor. */
 function stripOutputScope(cssContent: string): string {
   let css = cssContent
   css = css.replace(/#output\s*\{/g, `body {`)
@@ -46,7 +46,7 @@ function getThemeStyles(): string {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
 
   if (!themeStyle || !themeStyle.textContent) {
-    console.warn('[getThemeStyles] 未找到主题样式')
+    console.warn('[getThemeStyles] theme styles not found')
     return ``
   }
 
@@ -54,11 +54,11 @@ function getThemeStyles(): string {
   return `<style>${cssContent}</style>`
 }
 
-/** 分享页专用样式（固定浅色，作用域到 .share-content） */
+/** Share page styles (fixed light theme, scoped to .share-content). */
 export async function getShareExportStyles(): Promise<string> {
   const themeStyle = document.querySelector(`#md-theme`) as HTMLStyleElement
   if (!themeStyle?.textContent) {
-    console.warn('[getShareExportStyles] 未找到主题样式')
+    console.warn('[getShareExportStyles] theme styles not found')
     return ``
   }
 
@@ -74,7 +74,7 @@ export async function getShareExportStyles(): Promise<string> {
   return parts.join(``)
 }
 
-/** 获取需要添加的样式（导出 / 分享页使用） */
+/** Styles bundled for export and share pages. */
 export async function getExportStyles(): Promise<string> {
   return getStylesToAdd()
 }

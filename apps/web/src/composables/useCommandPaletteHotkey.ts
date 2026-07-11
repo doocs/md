@@ -1,6 +1,6 @@
 import { useUIStore } from '@/stores/ui'
 
-/** 注册命令面板全局快捷键 Mod+Shift+P */
+/** Register global command palette shortcut Mod+Shift+P */
 export function useCommandPaletteHotkey() {
   const uiStore = useUIStore()
 

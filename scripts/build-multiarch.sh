@@ -30,7 +30,6 @@ for app_ver in "$RELEASE_DIR"/*; do
     echo "    VER_GOLANG: $VER_GOLANG"
     echo "    VER_ALPINE: $VER_ALPINE"
 
-    # 构建 base 镜像
     if [ -f "$app_ver/Dockerfile.base" ]; then
         echo "📦 Building base image: $REPO_NAME:${VER_APP}-assets"
         docker buildx build \
@@ -42,7 +41,6 @@ for app_ver in "$RELEASE_DIR"/*; do
             "$app_ver"
     fi
 
-    # 构建 nginx 镜像
     if [ -f "$app_ver/Dockerfile.nginx" ]; then
         echo "📦 Building nginx image: $REPO_NAME:${VER_APP}-nginx"
         docker buildx build \
@@ -55,7 +53,6 @@ for app_ver in "$RELEASE_DIR"/*; do
             "$app_ver"
     fi
 
-    # 构建 standalone 镜像
     if [ -f "$app_ver/Dockerfile.standalone" ]; then
         echo "📦 Building standalone image: $REPO_NAME:${VER_APP}"
         docker buildx build \
@@ -68,7 +65,6 @@ for app_ver in "$RELEASE_DIR"/*; do
             "$app_ver"
     fi
 
-    # 构建 static 镜像
     if [ -f "$app_ver/Dockerfile.static" ]; then
         echo "📦 Building static image: $REPO_NAME:${VER_APP}-static"
         docker buildx build \

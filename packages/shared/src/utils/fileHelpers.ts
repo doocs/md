@@ -1,9 +1,4 @@
-/**
- * 通用文件下载函数
- * @param content - 文件内容
- * @param filename - 文件名
- * @param mimeType - MIME 类型，默认为 text/plain
- */
+/** Trigger a browser download for the given content. */
 export function downloadFile(content: string, filename: string, mimeType: string = `text/plain`) {
   if (typeof document === `undefined`) {
     throw new TypeError(`downloadFile can only be used in browser environment`)
@@ -14,7 +9,6 @@ export function downloadFile(content: string, filename: string, mimeType: string
   downLink.style.display = `none`
   let objectUrl: string | null = null
 
-  // 检查是否是 base64 data URL
   if (content.startsWith(`data:`) || content.startsWith(`blob:`)) {
     downLink.href = content
   }
@@ -31,17 +25,12 @@ export function downloadFile(content: string, filename: string, mimeType: string
   downLink.click()
   document.body.removeChild(downLink)
 
-  // 如果是 blob URL，释放内存
   if (objectUrl) {
     URL.revokeObjectURL(objectUrl)
   }
 }
 
-/**
- * 将文件转换为 Base64 格式
- * @param file - 要转换的文件
- * @returns Base64 字符串的 Promise
- */
+/** Read a Blob as a Base64 string (data URL payload only). */
 export function toBase64(file: Blob): Promise<string> {
   return new Promise<string>((resolve, reject) => {
     const reader = new FileReader()
@@ -51,14 +40,7 @@ export function toBase64(file: Blob): Promise<string> {
   })
 }
 
-/**
- * 根据数据生成 Markdown 表格
- * @param options - 表格选项
- * @param options.data - 表格数据对象
- * @param options.rows - 表格行数
- * @param options.cols - 表格列数
- * @returns 生成的 Markdown 表格字符串
- */
+/** Build a Markdown table from keyed cell data. */
 export function createTable({ data, rows, cols }: {
   data: { [k: string]: string }
   rows: number

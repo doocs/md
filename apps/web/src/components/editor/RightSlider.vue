@@ -39,29 +39,26 @@ const {
 
 const { scheduleEditorRefresh, editorRefresh } = useEditorRefresh()
 
-// 标题样式选择器状态
 const selectedHeadingLevel = ref<HeadingLevel>(`h2`)
 const selectedHeadingStyle = computed({
   get: () => themeStore.getHeadingStyle(selectedHeadingLevel.value),
   set: (val: HeadingStyleType) => {
     themeStore.setHeadingStyle(selectedHeadingLevel.value, val)
     if (val === `custom`) {
-      // 打开 CSS 编辑器并滚动到对应标题区域
       uiStore.isShowCssEditor = true
-      // 等待 CSS 编辑器打开后再滚动
       nextTick(() => {
         setTimeout(() => {
           cssEditorStore.scrollToHeading(selectedHeadingLevel.value)
         }, 100)
       })
     }
-    // 无论选择预设还是自定义，都立即应用主题，确保标题样式及时恢复/更新
+    // Apply theme immediately for preset or custom to restore heading styles
     themeStore.applyCurrentTheme()
     scheduleEditorRefresh()
   },
 })
 
-// reka-ui SelectValue 默认缓存选项 textContent，语言切换时需显式渲染本地化标签
+// reka-ui SelectValue caches textContent; re-render localized labels on locale change
 const selectedHeadingStyleLabel = computed(() =>
   localizedStyleOptions.value.headingStyleOptions
     .find(option => option.value === selectedHeadingStyle.value)
@@ -70,31 +67,30 @@ const selectedHeadingStyleLabel = computed(() =>
 
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
 
-// Theme change handlers
 function themeChanged(newTheme: keyof typeof themeMap) {
   themeStore.theme = newTheme
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
 
 function fontChanged(fonts: string) {
   themeStore.fontFamily = fonts
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
 
 function sizeChanged(size: string) {
   themeStore.fontSize = size
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
 
 function colorChanged(newColor: string) {
   themeStore.primaryColor = newColor
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
@@ -128,14 +124,14 @@ function citeStatusChanged() {
 
 function useIndentChanged() {
   themeStore.isUseIndent = !themeStore.isUseIndent
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
 
 function useJustifyChanged() {
   themeStore.isUseJustify = !themeStore.isUseJustify
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
 }
@@ -189,18 +185,14 @@ function resetStyleConfirm() {
   })
 }
 
-// 控制是否启用动画
 const enableAnimation = ref(false)
 
-// 监听 RightSlider 开关状态变化
 watch(isOpenRightSlider, () => {
   if (isMobile.value) {
-    // 在移动端，用户操作时启用动画
     enableAnimation.value = true
   }
 })
 
-// 监听设备类型变化，重置动画状态
 watch(isMobile, () => {
   enableAnimation.value = false
 })
@@ -209,14 +201,13 @@ const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsC
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
-// 右侧栏收窄时，主题色只显示色块
+// Show color swatch only when right sidebar is narrow
 const colorGridRef = useTemplateRef<HTMLElement | undefined>(`colorGridRef`)
 const { width: colorGridWidth } = useElementSize(colorGridRef)
 const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth.value < 280)
 </script>
 
 <template>
-  <!-- 移动端遮罩层 -->
   <div
     v-if="isMobile && isOpenRightSlider"
     class="fixed inset-0 bg-black/50 z-40"
@@ -235,7 +226,6 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
       class="h-full space-y-4 overflow-auto p-4"
       :class="{ 'pt-0': isMobile }"
     >
-      <!-- 移动端标题栏 -->
       <div v-if="isMobile" class="sticky top-0 z-10 -mx-4 mb-4 border-b bg-background px-4 pb-3 pt-[max(0.5rem,env(safe-area-inset-top,0px))]">
         <div aria-hidden="true" class="mx-auto mb-2 h-1 w-10 rounded-full bg-muted-foreground/25" />
         <div class="flex items-center justify-between">
@@ -428,7 +418,6 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
 </template>
 
 <style scoped>
-/* 移动端右侧栏动画 - 只有添加了 animate 类才启用 */
 .mobile-right-drawer.animate {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }

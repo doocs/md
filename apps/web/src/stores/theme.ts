@@ -6,11 +6,10 @@ import { addPrefix } from '@/storage/prefix'
 import { useCssEditorStore } from '@/stores/cssEditor'
 
 /**
- * 主题和样式配置 Store
- * 负责管理所有与主题、字体、颜色相关的配置
+ * Theme and style configuration.
  *
- * 每个主题拥有独立的配置（primaryColor、fontFamily、fontSize、codeBlockTheme、
- * headingStyles、isShowLineNumber、isMacCodeBlock），切换主题时自动加载对应配置。
+ * Each theme has its own settings (primaryColor, fontFamily, fontSize, codeBlockTheme,
+ * headingStyles, isShowLineNumber, isMacCodeBlock); switching themes loads the matching config.
  */
 export const useThemeStore = defineStore(`theme`, () => {
   const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)

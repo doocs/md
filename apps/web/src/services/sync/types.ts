@@ -1,6 +1,6 @@
 /**
- * 云同步前后端共享契约（与 @md/api 保持一致）。
- * 时间字段统一为 epoch 毫秒。
+ * Cloud sync contract shared with backend (aligned with @md/api).
+ * Timestamps are epoch milliseconds.
  */
 
 import type { UserPlan } from '@/services/account/types'
@@ -20,7 +20,7 @@ export interface SyncDocument {
 
 export interface SyncSetting {
   key: string
-  /** localStorage 中的原始字符串值（保持原样回写，避免二次编解码） */
+  /** Raw localStorage string value (written back as-is to avoid double encode/decode). */
   value: string | null
   updatedAt: number
 }

@@ -122,6 +122,7 @@ Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US*
 - **Prettier:** 固定版本 `2.8.8`（通过 `pnpm-workspace.yaml` 的 `overrides` 强制）
 - **Pre-commit 钩子:** `lint-staged` 对所有文件执行 `eslint --fix`
 - 规则：不使用分号，关闭 `no-unused-vars`、`no-console`、`no-debugger`
+- **代码注释：** 统一英文。保留非显而易见的 why / 约束 / 兼容性说明；删除复述下一行代码的噪音注释。勿改动 `i18n/messages` 等用户可见文案。
 
 ## 依赖管理
 

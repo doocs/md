@@ -26,7 +26,7 @@ function syncDocumentLocale(locale: AppLocale) {
     description.setAttribute(`content`, meta.description)
 }
 
-/** 供 index.html 启动屏在 IndexedDB 就绪前同步读取 */
+/** Sync locale to localStorage for index.html splash before IndexedDB is ready. */
 function syncLocaleBootCache(locale: AppLocale) {
   try {
     localStorage.setItem(LOCALE_STORAGE_KEY, locale)
@@ -61,7 +61,7 @@ export const useLocaleStore = defineStore(`locale`, () => {
     locale.value = value
   }
 
-  /** 按 SUPPORTED_LOCALES 顺序循环切换到下一语言 */
+  /** Cycle to the next locale in SUPPORTED_LOCALES order. */
   function cycleLocale() {
     locale.value = getNextLocale(locale.value)
   }

@@ -1,7 +1,7 @@
 import { prefix } from '@md/shared/configs'
 import { addPrefix } from '@/storage/prefix'
 
-/** IndexedDB 数据库名 */
+/** IndexedDB database name */
 export const DB_NAME = `doocs-md`
 export const DB_VERSION = 2
 
@@ -14,10 +14,10 @@ export const STORE_META = `meta`
 export const MIGRATION_V1_KEY = addPrefix(`storage_migrated_v1`)
 export const LOCALSTORAGE_CLEANED_KEY = addPrefix(`storage_localstorage_cleaned_v1`)
 
-/** localStorage 中本应用写入的 key 前缀（MD__） */
+/** localStorage key prefix written by this app (MD__) */
 export const LOCALSTORAGE_KEY_PREFIX = `${prefix}__`
 
-/** 未加 MD__ 前缀、但仍属于本应用的 localStorage key */
+/** App localStorage keys without the MD__ prefix */
 export const UNPREFIXED_APP_KEYS = new Set([
   `isCiteStatus`,
   `isCountStatus`,
@@ -39,11 +39,11 @@ export const UNPREFIXED_APP_KEYS = new Set([
   `formCustomConfig`,
 ])
 
-/** 文档相关 settings key（仅存 IDB settings，不存 documents 表） */
+/** Document-related settings keys (IDB settings only, not the documents table) */
 export const KEY_CURRENT_POST_ID = addPrefix(`current_post_id`)
 export const KEY_SORT_MODE = addPrefix(`sort_mode`)
 
-/** 旧版 localStorage 中的 posts 整包 key（仅迁移用） */
+/** Legacy localStorage posts bundle key (migration only) */
 export const LEGACY_POSTS_KEY = addPrefix(`posts`)
 
 const SECRET_SUFFIXES = [`Config`] as const
@@ -68,21 +68,21 @@ const CACHE_EXACT_KEYS = new Set([
 
 const CACHE_PREFIXES = [`ai_conversation_`] as const
 
-/** 图床 / AI 密钥等敏感配置 */
+/** Image host / AI secret configuration keys */
 export function isSecretKey(key: string): boolean {
   if (SECRET_SUFFIXES.some(s => key.endsWith(s)))
     return true
   return SECRET_PREFIXES.some(p => key.startsWith(p))
 }
 
-/** 可清除的缓存数据 */
+/** Clearable cache data keys */
 export function isCacheKey(key: string): boolean {
   if (CACHE_EXACT_KEYS.has(key))
     return true
   return CACHE_PREFIXES.some(p => key.startsWith(p))
 }
 
-/** 选择 IndexedDB object store */
+/** IndexedDB object store names */
 export function resolveStoreName(key: string): typeof STORE_SETTINGS | typeof STORE_SECRETS | typeof STORE_CACHE {
   if (isSecretKey(key))
     return STORE_SECRETS
@@ -91,10 +91,10 @@ export function resolveStoreName(key: string): typeof STORE_SETTINGS | typeof ST
   return STORE_SETTINGS
 }
 
-/** legacy theme keys（迁移后删除） */
+/** Legacy theme keys (removed after migration) */
 export const LEGACY_THEME_KEYS = [`fonts`, `size`, `color`, `codeBlockTheme`, `headingStyles`, `isMacCodeBlock`, `isShowLineNumber`] as const
 
-/** 是否为本应用写入的 localStorage key（迁移后可安全删除） */
+/** Whether a localStorage key belongs to this app (safe to delete after migration) */
 export function isAppLocalStorageKey(key: string): boolean {
   if (key.startsWith(LOCALSTORAGE_KEY_PREFIX))
     return true
@@ -113,8 +113,8 @@ export const KEY_THEME_SETTINGS = addPrefix(`themeSettings`)
 
 export const KEY_MP_PROFILE_MIGRATED = addPrefix(`mp_profile_migrated`)
 
-/** 图片 hash 缓存上限 */
+/** Max entries in image hash cache */
 export const MAX_IMAGE_MAP_ENTRIES = 500
 
-/** AI 生成图缓存上限 */
+/** Max entries in AI-generated image cache */
 export const MAX_AI_IMAGE_ENTRIES = 50

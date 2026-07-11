@@ -2,14 +2,14 @@ import type { ActivateProResponse, PullResponse, PushRequest, PushResponse } fro
 import { MdApiClient } from '@/services/account/client'
 import { isAccountConfigured } from '@/services/account/config'
 
-/** 爱发电创作者主页，用于 Pro 升级跳转 */
+/** Afdian creator page URL for Pro upgrade. */
 export const AFDIAN_PAGE_URL = (import.meta.env.VITE_AFDIAN_PAGE_URL ?? ``).replace(/\/$/, ``)
 
 export function isSyncConfigured(): boolean {
   return isAccountConfigured()
 }
 
-/** 是否在 UI 中展示云同步入口 */
+/** Whether to show cloud sync entry in UI. */
 export function isSyncUiEnabled(): boolean {
   const flag = import.meta.env.VITE_SYNC_UI_ENABLED
   if (flag === `false` || flag === `0`)

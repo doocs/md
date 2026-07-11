@@ -23,7 +23,7 @@ function getExtensionRuntimeId(): string | undefined {
   return g.browser?.runtime?.id ?? g.chrome?.runtime?.id
 }
 
-/** 是否在浏览器扩展页面内运行（chrome-extension:// / moz-extension://） */
+/** Running inside a browser extension page (chrome-extension:// / moz-extension://). */
 export function isExtensionContext(): boolean {
   if (!EXTENSION_PROTOCOLS.has(window.location.protocol))
     return false
@@ -53,7 +53,7 @@ function isOAuthFlowCancelled(error: unknown): boolean {
   return /cancell?ed|did not approve|closed|aborted/i.test(message)
 }
 
-/** 通过 chrome.identity / browser.identity 在扩展内完成 OAuth，不离开当前页面 */
+/** OAuth via chrome.identity / browser.identity without leaving the extension page. */
 export async function loginViaExtensionIdentity(): Promise<ExtensionLoginResult> {
   const identity = getIdentityApi()
   if (!identity || !MD_API_URL)

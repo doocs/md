@@ -106,6 +106,7 @@ pnpm web dev
 - 遵循项目自带的 **ESLint**、**Prettier** 与 **Stylelint** 配置。
 - 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
+- **代码注释统一使用英文。** 只写非显而易见的 why / 约束 / 坑；删除复述代码的噪音注释。用户可见文案（i18n）不受此限制。
 
 ## 提交规范
 

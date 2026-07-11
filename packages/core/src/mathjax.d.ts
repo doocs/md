@@ -1,6 +1,5 @@
 /**
- * 类型声明：MathJax 全局变量
- * MathJax 通过 <script> 标签加载到 window 上，无官方 TypeScript 声明
+ * MathJax global on window (loaded via <script>; no official TypeScript types).
  */
 
 interface MathJaxDocument {

@@ -7,7 +7,7 @@ export interface GetHtmlContentOptions {
   staticLayout?: boolean
 }
 
-/** 获取 HTML 内容 */
+/** Get export HTML content. */
 export function getHtmlContent(options?: GetHtmlContentOptions): string {
   const element = document.querySelector(`#output`)
   if (!element)

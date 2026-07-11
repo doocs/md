@@ -38,10 +38,7 @@ function postSignature(post: Post): string {
   return `${post.id}:${post.title}:${post.content.length}:${post.updateDatetime}:${post.parentId ?? ``}:${post.history?.length ?? 0}:${post.collapsed ? 1 : 0}`
 }
 
-/**
- * 文章管理 Store
- * 负责管理文章列表、当前文章、文章 CRUD 操作
- */
+/** Post list, current post, and CRUD operations. */
 export const usePostStore = defineStore(`post`, () => {
   const loaded = getLoadedDocuments()
   const posts = ref<Post[]>(
@@ -61,7 +58,7 @@ export const usePostStore = defineStore(`post`, () => {
     await documentRepo.savePost(post)
   }, 500)
 
-  /** 删除等关键操作立即落盘，避免防抖未完成时刷新导致数据回弹 */
+  /** Flush immediately on delete etc. so a refresh before debounce finishes does not restore stale data. */
   async function persistImmediately(): Promise<void> {
     persistAll.cancel()
     persistOne.cancel()

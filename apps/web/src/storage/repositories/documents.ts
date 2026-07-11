@@ -38,7 +38,7 @@ let cachedPosts: Post[] | null = null
 let useLegacyStorage = false
 let writeQueue: Promise<void> = Promise.resolve()
 
-/** IndexedDB 不可用时，回退到 localStorage 整包存储 */
+/** Fallback to localStorage bundle when IndexedDB is unavailable. */
 export function setUseLegacyDocumentStorage(enabled: boolean): void {
   useLegacyStorage = enabled
 }

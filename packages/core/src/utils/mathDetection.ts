@@ -1,15 +1,15 @@
 export const inlineRule = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1(?=[\s?!.,:？！。，：]|$)/
 export const inlineRuleNonStandard = /^(\${1,2})(?!\$)((?:\\.|[^\\\n])*?(?:\\.|[^\\\n$]))\1/
-/** 块级公式：换行写法 `$$\n...\n$$` */
+/** Block math: multiline `$$\n...\n$$` */
 export const blockRuleMultiline = /^\s{0,3}(\${1,2})[ \t]*\n([\s\S]+?)\n\s{0,3}\1[ \t]*(?:\n|$)/
-/** 块级公式：单行写法 `$$...$$`（独占一行，仅双美元符） */
+/** Block math: single-line `$$...$$` (line-only, double dollars) */
 export const blockRuleSingleLine = /^\s{0,3}(\$\$)([^\n]+)\1[ \t]*(?:\n|$)/
 
 export function matchBlockKatex(src: string): RegExpMatchArray | null {
   return src.match(blockRuleMultiline) ?? src.match(blockRuleSingleLine)
 }
 
-/** @deprecated 使用 matchBlockKatex；保留导出以兼容旧引用 */
+/** @deprecated Use matchBlockKatex; kept for backward compatibility */
 export const blockRule = blockRuleMultiline
 
 function contentHasBlockKatex(content: string): boolean {
@@ -64,10 +64,7 @@ export function findInlineKatexStart(src: string, nonStandard: boolean, ruleReg:
   }
 }
 
-/**
- * 检测 Markdown 是否包含会被 MDKatex 识别的公式。
- * 默认 nonStandard=true，与 renderer-impl 配置一致。
- */
+/** Whether content contains math recognized by MDKatex (default nonStandard=true, same as renderer-impl). */
 export function contentHasMath(content: string, nonStandard = true): boolean {
   if (contentHasBlockKatex(content))
     return true
@@ -80,7 +77,7 @@ export function contentHasMath(content: string, nonStandard = true): boolean {
   return findInlineKatexStart(content, nonStandard, ruleReg) !== undefined
 }
 
-/** 移除 inline 公式前因 breaks 产生的多余换行 */
+/** Strip extra <br> before inline katex caused by marked breaks */
 export function stripBreakBeforeInlineKatex(html: string): string {
   return html.replace(/<br\s*\/?>\s*(?=<span class="katex-inline)/gi, ``)
 }

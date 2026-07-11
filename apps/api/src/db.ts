@@ -40,8 +40,8 @@ function rowToDocument(row: DocumentRow): SyncDocument {
 }
 
 function rowToSetting(row: SettingRow): SyncSetting {
-  // 与前端契约一致：value 仅可能是 string | null。
-  // DB 存的是 JSON.stringify 后的字符串，非字符串结果（异常数据）一律回退。
+  // Frontend contract: value is string | null only.
+  // DB stores JSON.stringify output; non-string parse results fall back to null.
   let value: string | null = null
   try {
     const parsed = JSON.parse(row.value)
@@ -77,7 +77,7 @@ export async function getUserById(db: D1Database, id: string): Promise<UserRow |
   return db.prepare(`SELECT * FROM users WHERE id = ?`).bind(id).first<UserRow>()
 }
 
-/** 拉取 cursor 之后变更的文档与设置 */
+/** Fetch documents and settings changed after cursor. */
 export async function pullChanges(
   env: Env,
   userId: string,
@@ -116,8 +116,8 @@ export async function pullChanges(
 }
 
 /**
- * 推入客户端变更，按 update_datetime 做 last-write-wins。
- * 返回服务端最终更新过（即客户端较新）的记录，以及新游标。
+ * Push client changes with last-write-wins on update_datetime.
+ * Returns records accepted by the server and the new cursor.
  */
 export async function pushChanges(
   env: Env,
@@ -133,7 +133,7 @@ export async function pushChanges(
       .bind(userId, doc.id)
       .first<{ update_datetime: number }>()
 
-    // LWW：仅当客户端版本更新（或不存在）时写入
+    // LWW: write only when the client version is newer (or the row does not exist)
     if (existing && existing.update_datetime >= doc.updateDatetime)
       continue
 
@@ -188,8 +188,8 @@ export async function pushChanges(
       .run()
   }
 
-  // 返回本次写入（被接受）的记录，并以服务端时钟作为新游标。
-  // 客户端约定先 pull 再 push，因此服务端较新的记录已在 pull 阶段下发。
+  // Return accepted records with server clock as the new cursor.
+  // Clients pull before push, so server-newer records were already sent during pull.
   const accepted = await pullChanges(env, userId, now - 1)
   return { documents: accepted.documents, settings: accepted.settings, maxCursor: now }
 }

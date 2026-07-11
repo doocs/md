@@ -16,32 +16,26 @@ const uiStore = useUIStore()
 
 const { toggleShowTemplateDialog } = uiStore
 
-// 搜索关键词
 const searchKeyword = ref('')
 
-// 搜索结果
 const filteredTemplates = computed(() => {
   return templateStore.searchTemplates(searchKeyword.value)
 })
 
-// 是否显示新建/编辑模板表单
 const isShowForm = ref(false)
 const formMode = ref<'create' | 'edit'>('create')
 const editingTemplateId = ref<string>('')
 
-// 表单数据
 const formData = reactive({
   name: '',
   description: '',
   content: '',
 })
 
-// 表单验证错误
 const formErrors = reactive({
   name: '',
 })
 
-// 打开创建模板表单
 function openCreateForm() {
   formMode.value = 'create'
   formData.name = ''
@@ -51,7 +45,6 @@ function openCreateForm() {
   isShowForm.value = true
 }
 
-// 打开编辑模板表单
 function openEditForm(template: Template) {
   formMode.value = 'edit'
   editingTemplateId.value = template.id
@@ -62,7 +55,6 @@ function openEditForm(template: Template) {
   isShowForm.value = true
 }
 
-// 验证表单
 function validateForm(): boolean {
   formErrors.name = ''
 
@@ -79,7 +71,6 @@ function validateForm(): boolean {
   return true
 }
 
-// 保存模板
 function saveTemplate() {
   if (!validateForm())
     return
@@ -102,12 +93,10 @@ function saveTemplate() {
   isShowForm.value = false
 }
 
-// 取消表单
 function cancelForm() {
   isShowForm.value = false
 }
 
-// 应用模板到当前文章
 function applyTemplate(template: Template) {
   const currentPost = postStore.currentPost
   if (currentPost) {
@@ -122,7 +111,6 @@ function applyTemplate(template: Template) {
   toggleShowTemplateDialog(false)
 }
 
-// 在光标位置插入模板
 function insertTemplate(template: Template) {
   editorStore.insertAtCursor(template.content)
 
@@ -135,7 +123,6 @@ function insertTemplate(template: Template) {
   toggleShowTemplateDialog(false)
 }
 
-// 打开删除确认对话框
 function openDeleteConfirm(template: Template) {
   confirmStore.confirm({
     title: t('template.confirmDelete'),
@@ -144,7 +131,6 @@ function openDeleteConfirm(template: Template) {
   })
 }
 
-// 格式化日期
 function formatDate(timestamp: number): string {
   const date = new Date(timestamp)
   return date.toLocaleString(locale.value, {
@@ -156,7 +142,6 @@ function formatDate(timestamp: number): string {
   })
 }
 
-// 对话框关闭回调
 function onUpdate(val: boolean) {
   if (!val) {
     toggleShowTemplateDialog(false)
@@ -178,9 +163,7 @@ function onUpdate(val: boolean) {
         </DialogDescription>
       </DialogHeader>
 
-      <!-- 主体内容区域 -->
       <div class="flex-1 overflow-auto px-6 py-4">
-        <!-- 新建/编辑表单 -->
         <div v-if="isShowForm" class="space-y-4 mb-6 p-4 border rounded-lg bg-muted/30">
           <div class="flex items-center justify-between">
             <h3 class="text-lg font-semibold">
@@ -189,7 +172,6 @@ function onUpdate(val: boolean) {
           </div>
 
           <div class="space-y-4">
-            <!-- 模板名称 -->
             <div class="space-y-2">
               <Label for="template-name">{{ t('template.nameLabel') }}</Label>
               <Input
@@ -203,7 +185,6 @@ function onUpdate(val: boolean) {
               </p>
             </div>
 
-            <!-- 模板描述 -->
             <div class="space-y-2">
               <Label for="template-description">{{ t('template.descLabel') }}</Label>
               <Textarea
@@ -214,7 +195,6 @@ function onUpdate(val: boolean) {
               />
             </div>
 
-            <!-- 模板内容编辑 -->
             <div class="space-y-2">
               <Label for="template-content">{{ t('template.contentLabel') }}</Label>
               <Textarea
@@ -226,7 +206,6 @@ function onUpdate(val: boolean) {
             </div>
           </div>
 
-          <!-- 表单操作按钮 -->
           <div class="flex gap-2 justify-end">
             <Button variant="outline" @click="cancelForm">
               {{ t('common.cancel') }}
@@ -237,7 +216,6 @@ function onUpdate(val: boolean) {
           </div>
         </div>
 
-        <!-- 搜索栏和新建按钮 -->
         <div v-if="!isShowForm" class="flex gap-2 mb-4">
           <div class="relative flex-1">
             <Search class="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
@@ -253,9 +231,7 @@ function onUpdate(val: boolean) {
           </Button>
         </div>
 
-        <!-- 模板列表 -->
         <div v-if="!isShowForm" class="space-y-3">
-          <!-- 空状态 -->
           <div v-if="filteredTemplates.length === 0" class="text-center py-12">
             <Package class="mx-auto size-12 text-muted-foreground mb-4" />
             <p class="text-muted-foreground mb-2">
@@ -266,14 +242,12 @@ function onUpdate(val: boolean) {
             </p>
           </div>
 
-          <!-- 模板卡片列表 -->
           <div
             v-for="template in filteredTemplates"
             :key="template.id"
             class="border rounded-lg p-4 hover:bg-muted/50 transition-colors"
           >
             <div class="flex items-start justify-between gap-4">
-              <!-- 模板信息 -->
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-2">
                   <FileText class="size-4 text-muted-foreground flex-shrink-0" />
@@ -298,7 +272,6 @@ function onUpdate(val: boolean) {
                 </div>
               </div>
 
-              <!-- 操作按钮 -->
               <div class="flex gap-1 flex-shrink-0">
                 <Button
                   variant="outline"

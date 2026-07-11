@@ -1,12 +1,8 @@
 import type { EditorView } from '@codemirror/view'
 import { t } from '@/i18n/translate'
 
-/**
- * 编辑器 Store
- * 负责管理 CodeMirror 编辑器实例和基础操作
- */
+/** CodeMirror editor instance and basic document operations. */
 export const useEditorStore = defineStore(`editor`, () => {
-  // 内容编辑器实例
   const editor = ref<EditorView | null>(null)
 
   let flushPendingContent: (() => void) | null = null
@@ -19,12 +15,11 @@ export const useEditorStore = defineStore(`editor`, () => {
     flushPendingContent = null
   }
 
-  /** 将编辑器中尚未防抖落盘的内容同步到 post store（刷新前调用） */
+  /** Sync debounced editor content to post store (call before page refresh). */
   function flushContentToPostStore() {
     flushPendingContent?.()
   }
 
-  // 格式化文档
   const formatContent = async () => {
     if (!editor.value)
       return
@@ -37,7 +32,6 @@ export const useEditorStore = defineStore(`editor`, () => {
     return doc
   }
 
-  // 导入默认文档
   const importContent = (content: string) => {
     if (!editor.value)
       return
@@ -47,7 +41,6 @@ export const useEditorStore = defineStore(`editor`, () => {
     })
   }
 
-  // 清空内容
   const clearContent = () => {
     if (!editor.value)
       return
@@ -58,12 +51,10 @@ export const useEditorStore = defineStore(`editor`, () => {
     toast.success(t('store.editor.contentCleared'))
   }
 
-  // 获取当前内容
   const getContent = () => {
     return editor.value?.state.doc.toString() ?? ``
   }
 
-  // 获取选中的文本
   const getSelection = () => {
     if (!editor.value)
       return ``
@@ -72,7 +63,6 @@ export const useEditorStore = defineStore(`editor`, () => {
     return editor.value.state.doc.sliceString(selection.from, selection.to)
   }
 
-  // 替换选中的文本
   const replaceSelection = (text: string) => {
     if (!editor.value)
       return
@@ -112,7 +102,6 @@ export const useEditorStore = defineStore(`editor`, () => {
     return true
   }
 
-  // 在光标位置插入文本
   const insertAtCursor = (text: string) => {
     if (!editor.value)
       return

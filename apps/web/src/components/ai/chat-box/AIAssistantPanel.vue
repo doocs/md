@@ -429,7 +429,6 @@ async function sendMessage() {
     <DialogContent
       class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl"
     >
-      <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>{{ t('ai.chat.title') }}</DialogTitle>
@@ -520,7 +519,6 @@ async function sendMessage() {
         </DialogDescription>
       </DialogHeader>
 
-      <!-- ============ 快捷指令 ============ -->
       <div
         v-if="!configVisible"
         class="mb-3 flex flex-wrap gap-2 overflow-x-auto pb-1"
@@ -553,18 +551,15 @@ async function sendMessage() {
           <Plus class="h-4 w-4" />
         </Button>
 
-        <!-- 指令管理弹窗 -->
         <QuickCommandManager v-model:open="cmdMgrOpen" />
       </div>
 
-      <!-- ============ 参数配置面板 ============ -->
       <AIConfig
         v-if="configVisible"
         class="mb-4 w-full border rounded-md p-4"
         @saved="handleConfigSaved"
       />
 
-      <!-- ============ 聊天内容 ============ -->
       <div
         v-if="!configVisible"
         class="custom-scroll space-y-3 chat-container mb-4 flex-1 overflow-y-auto pr-2"
@@ -581,12 +576,10 @@ async function sendMessage() {
               ? 'bg-black text-white dark:bg-primary dark:text-primary-foreground'
               : 'bg-gray-100 text-gray-800 dark:bg-muted/60 dark:text-muted-foreground'"
           >
-            <!-- reasoning -->
             <div v-if="msg.reasoning" class="text-muted-foreground mb-1 italic">
               {{ msg.reasoning }}
             </div>
 
-            <!-- 消息内容 -->
             <div
               class="whitespace-pre-wrap"
               :class="msg.content ? '' : 'animate-pulse text-muted-foreground'"
@@ -597,7 +590,6 @@ async function sendMessage() {
               }}
             </div>
 
-            <!-- 工具按钮 -->
             <div
               class="mt-1 flex"
               :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
@@ -645,7 +637,6 @@ async function sendMessage() {
         </div>
       </div>
 
-      <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative mt-2">
         <div
           class="bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
@@ -659,7 +650,6 @@ async function sendMessage() {
             @keydown="handleKeydown"
           />
 
-          <!-- 引用全文按钮 -->
           <Button
             size="sm"
             variant="outline"
@@ -676,7 +666,6 @@ async function sendMessage() {
             <span class="text-xs">{{ t('ai.chat.quoteFullText') }}</span>
           </Button>
 
-          <!-- 发送 / 暂停按钮 -->
           <Button
             :disabled="!input.trim() && !loading"
             size="icon"
@@ -705,23 +694,19 @@ async function sendMessage() {
   --safe-bottom: env(safe-area-inset-bottom);
 }
 
-/* 聊天容器底部内边距，适配安全区 */
 .chat-container {
   padding-bottom: calc(1rem + var(--safe-bottom));
 }
 
-/* 让代码块可横向滚动 */
 .chat-container pre {
   overflow-x: auto;
 }
 
-/* highlight.js 暗黑主题适配 */
 .dark .hljs {
   background: #0d1117 !important;
   color: #c9d1d9 !important;
 }
 
-/* 自定义滚动条 */
 @media (pointer: coarse) {
   .custom-scroll::-webkit-scrollbar {
     width: 3px;

@@ -1,4 +1,4 @@
-/** 分享页 favicon（静态文件见 public/images/） */
+/** Share page favicon (static file in public/images/) */
 export const SHARE_FAVICON_PATH = `/images/favicon-32x32.png`
 
 export function sharePageFaviconLink(): string {

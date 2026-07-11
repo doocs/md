@@ -1,6 +1,6 @@
 import { useUIStore } from '@/stores/ui'
 
-/** 注册偏好设置全局快捷键 Mod+, */
+/** Register global preferences shortcut Mod+, */
 export function usePreferencesHotkey() {
   const uiStore = useUIStore()
 

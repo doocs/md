@@ -8,16 +8,16 @@ const MERMAID_PLACEHOLDER_REGEX = /<!--mermaid-start-->[\s\S]*?<!--mermaid-end--
 const PROTECTED_SPAN_REGEX = /<span data-md-protected="(\d+)"><\/span>/g
 
 /**
- * DOMPurify v3.1.7+ 会强制移除 foreignObject 内容
+ * DOMPurify v3.1.7+ strips foreignObject content.
  * https://github.com/kkomelin/isomorphic-dompurify/pull/290
  * https://github.com/cure53/DOMPurify/issues/1152
- * 使用占位符方案：在 sanitize 前保护特定内容，sanitize 后还原
- * 注意：HTML 注释会被 DOMPurify 移除，所以使用 span 元素作为占位符
+ * Use placeholders: protect before sanitize, restore after.
+ * HTML comments are removed by DOMPurify, so span placeholders are used instead.
  */
 export function sanitizeHtml(html: string): string {
   const protectedContents: string[] = []
 
-  // 保护 infographic-diagram（使用注释标记定界，避免嵌套 div 问题）
+  // Protect infographic blocks (comment delimiters avoid nested-div issues)
   html = html.replace(
     INFOGRAPHIC_PLACEHOLDER_REGEX,
     (match) => {
@@ -26,7 +26,7 @@ export function sanitizeHtml(html: string): string {
     },
   )
 
-  // 保护 mermaid-diagram（使用注释标记定界，避免嵌套 div 问题）
+  // Protect mermaid blocks (comment delimiters avoid nested-div issues)
   html = html.replace(
     MERMAID_PLACEHOLDER_REGEX,
     (match) => {
@@ -35,10 +35,8 @@ export function sanitizeHtml(html: string): string {
     },
   )
 
-  // XSS 处理
   html = DOMPurify.sanitize(html, { ADD_TAGS: [`mp-common-profile`] })
 
-  // 还原被保护的内容
   html = html.replace(
     PROTECTED_SPAN_REGEX,
     (_, i) => protectedContents[Number(i)],
@@ -47,14 +45,7 @@ export function sanitizeHtml(html: string): string {
   return html
 }
 
-/**
- * 渲染 Markdown 内容
- * @param raw - 原始 markdown 字符串
- * @param renderer - 渲染器 API
- * @returns 渲染结果，包含 HTML 和阅读时间
- */
 export function renderMarkdown(raw: string, renderer: RendererAPI) {
-  // 解析 front-matter 和正文
   const { markdownContent, readingTime }
     = renderer.parseFrontMatterAndContent(raw)
 
@@ -65,20 +56,10 @@ export function renderMarkdown(raw: string, renderer: RendererAPI) {
   return { html, readingTime }
 }
 
-/**
- * 后处理 HTML 内容
- * @param baseHtml - 基础 HTML 字符串
- * @param reading - 阅读时间结果
- * @param renderer - 渲染器 API
- * @returns 处理后的 HTML 字符串
- */
 export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, renderer: RendererAPI): string {
-  // 阅读时间及字数统计
   let html = baseHtml
   html = renderer.buildReadingTime(reading) + html
-  // 引用脚注
   html += renderer.buildFootnotes()
-  // 附加的一些 style
   html += renderer.buildAddition()
   html += `
     <style>
@@ -94,16 +75,9 @@ export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, rend
       }
     </style>
   `
-  // 包裹 HTML
   return renderer.createContainer(html)
 }
 
-/**
- * 修改 HTML 内容
- * @param content - 原始内容
- * @param renderer - 渲染器 API
- * @returns 修改后的 HTML 字符串
- */
 export function modifyHtmlContent(content: string, renderer: RendererAPI): string {
   const {
     markdownContent,

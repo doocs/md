@@ -1,29 +1,17 @@
-/**
- * 主题导出工具
- * 导出合并后的主题CSS
- */
+/** Export merged theme CSS to a downloadable file */
 
 import type { CSSVariableConfig } from './cssVariables'
 import { downloadFile } from '@md/shared/utils'
 import { generateCSSVariables } from './cssVariables'
 
-/**
- * 导出合并后的主题CSS
- * @param customCSS - 用户自定义的CSS内容
- * @param baseThemeCSS - 基础主题CSS
- * @param config - 配置项
- * @param fileName - 导出文件名
- */
 export function exportMergedTheme(
   customCSS: string,
   baseThemeCSS: string,
   config: CSSVariableConfig,
   fileName: string,
 ) {
-  // 1. 生成 CSS 变量
   const variablesCSS = generateCSSVariables(config)
 
-  // 2. 拼接完整 CSS
   const mergedCSS = [
     `/**`,
     ` * MD 主题导出`,

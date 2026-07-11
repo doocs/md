@@ -6,11 +6,11 @@ interface ConfirmOptions {
   description?: string
   cancelText?: string
   confirmText?: string
-  /** 确认按钮使用红色 destructive 样式 */
+  /** Use destructive (red) style for the confirm button. */
   destructive?: boolean
-  /** 确认回调 */
+  /** Confirm callback. */
   onConfirm?: () => void | Promise<void>
-  /** 取消回调（可选） */
+  /** Optional cancel callback. */
   onCancel?: () => void
 }
 

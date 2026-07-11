@@ -239,7 +239,6 @@ onUnmounted(() => {
       @contextmenu.capture.prevent.stop
     >
       <div class="slash-scroll-wrap">
-        <!-- 搜索模式：统一列表 -->
         <div
           v-if="isFiltering"
           ref="scrollRef"
@@ -282,7 +281,6 @@ onUnmounted(() => {
           </div>
         </div>
 
-        <!-- 默认模式：分区紧凑布局 -->
         <div
           v-else
           ref="scrollRef"

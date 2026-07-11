@@ -95,13 +95,11 @@ function toggleLanguage() {
   localeStore.cycleLocale()
 }
 
-// 光标位置
 const cursorLine = ref(1)
 const cursorCol = ref(1)
 const selectionLength = ref(0)
 const totalLines = ref(1)
 
-// Go-to-Line
 const isGoToLineActive = ref(false)
 const goToLineInput = ref(``)
 const goToLineRef = ref<HTMLInputElement | null>(null)
@@ -127,10 +125,8 @@ function cancelGoToLine() {
   editor.value?.focus()
 }
 
-// 监听编辑器变化，更新光标位置
 const attachedViews = new WeakSet()
 
-// 大纲 & 面包屑
 const breadcrumbs = ref<MarkdownHeading[]>([])
 const allHeadings = ref<MarkdownHeading[]>([])
 
@@ -155,7 +151,6 @@ watch(editor, (view) => {
 
   attachedViews.add(view)
 
-  // 初始化一次
   updateCursorInfo(view as EditorView, { rebuildHeadings: true })
 
   const extension = EditorView.updateListener.of((update) => {
@@ -172,7 +167,6 @@ watch(editor, (view) => {
   })
 }, { immediate: true })
 
-// 切换文章时立即刷新光标及统计信息
 watch(currentPost, () => {
   nextTick(() => {
     if (editor.value) {
@@ -211,7 +205,6 @@ watch(() => uiStore.goToLineRequest, () => {
   openGoToLine()
 })
 
-// 上次保存时间
 const savedTimeAgo = computed(() => {
   void locale.value
   if (!currentPost.value?.updateDatetime)
@@ -219,7 +212,7 @@ const savedTimeAgo = computed(() => {
   return formatRelativeTime(currentPost.value.updateDatetime)
 })
 
-// 每 10 秒刷新一次相对时间（页面不可见时暂停）
+// Refresh relative time every 10s (paused when page hidden)
 const refreshKey = ref(0)
 const REFRESH_INTERVAL_MS = 10_000
 let refreshTimer: ReturnType<typeof setInterval> | null = null
@@ -238,7 +231,7 @@ onUnmounted(() => {
     clearInterval(refreshTimer)
 })
 
-// 强制 computed 依赖 refreshKey 与 locale
+// Force computed to depend on refreshKey and locale
 const displaySavedTime = computed(() => {
   // eslint-disable-next-line ts/no-unused-expressions
   refreshKey.value
@@ -246,7 +239,6 @@ const displaySavedTime = computed(() => {
   return savedTimeAgo.value
 })
 
-// 右侧统计项
 const stats = computed(() => [
   { icon: Pilcrow, value: readingTime.value.words, tooltip: t(`footer.wordCount`) },
   { icon: Type, value: readingTime.value.chars, tooltip: t(`footer.charCount`) },
@@ -263,7 +255,7 @@ const viewModes = computed(() =>
   isMobile.value ? allViewModes.value.filter(m => m.key !== `split`) : allViewModes.value,
 )
 
-// 是否显示设备切换（双屏/预览模式 + 非真实移动端）
+// Show device toggle in split/preview mode on non-mobile
 const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.value)
 </script>
 
@@ -272,9 +264,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
     class="flex select-none items-center overflow-hidden px-3 py-1 text-xs text-muted-foreground max-md:px-4 max-md:py-1.5 max-md:pb-[max(0.375rem,env(safe-area-inset-bottom,0px))]"
   >
     <TooltipProvider :delay-duration="300">
-      <!-- 左侧：光标位置 & 选区 -->
       <div class="flex shrink-0 items-center gap-2 sm:gap-3">
-        <!-- Go-to-Line 内联输入 -->
         <span v-if="isGoToLineActive" class="flex items-center gap-1">
           <Keyboard class="size-3 opacity-60" />
           <input
@@ -310,13 +300,11 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         </span>
       </div>
 
-      <!-- 文档切换器 -->
       <FooterDocumentSwitcher
         :current-title="currentPost?.title"
         @select="switchToPost"
       />
 
-      <!-- 大纲视图 -->
       <FooterOutlinePopover
         :breadcrumbs="breadcrumbs"
         :headings="allHeadings"
@@ -325,12 +313,9 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         @dismiss="onOutlineDismiss"
       />
 
-      <!-- 桌面端占位 flex-1 -->
       <div class="hidden min-w-0 flex-1 sm:block" />
 
-      <!-- 右侧：统计信息 -->
       <div class="ml-auto flex shrink-0 items-center gap-2.5 sm:gap-3.5">
-        <!-- 视图模式切换 -->
         <div class="flex items-center gap-0.5 rounded-md border border-border/60 p-0.5">
           <Tooltip v-for="mode in viewModes" :key="mode.key">
             <TooltipTrigger as-child>
@@ -351,7 +336,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           </Tooltip>
         </div>
 
-        <!-- 设备切换（双屏/预览下可用，真实移动端隐藏） -->
         <Tooltip v-if="!isMobile">
           <TooltipTrigger as-child>
             <button
@@ -371,7 +355,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           </TooltipContent>
         </Tooltip>
 
-        <!-- 同步滚动（双屏模式下可用，真实移动端隐藏） -->
         <Tooltip v-if="!isMobile && viewMode === 'split'">
           <TooltipTrigger as-child>
             <button
@@ -392,7 +375,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
 
         <span class="hidden text-border sm:block">·</span>
 
-        <!-- 保存状态（小屏隐藏） -->
         <Tooltip v-if="displaySavedTime">
           <TooltipTrigger as-child>
             <span class="hidden cursor-default items-center gap-1 opacity-70 transition-opacity hover:opacity-100 sm:flex">
@@ -407,7 +389,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
 
         <span class="hidden text-border sm:block">·</span>
 
-        <!-- 统计项（小屏隐藏） -->
         <Tooltip v-for="stat in stats" :key="stat.tooltip">
           <TooltipTrigger as-child>
             <span class="hidden cursor-default items-center gap-1 tabular-nums sm:flex">
@@ -422,7 +403,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
 
         <span class="hidden text-border sm:block">·</span>
 
-        <!-- 账户 & 同步 & 分享 & 主题（桌面端） -->
         <div class="hidden items-center gap-0.5 sm:flex">
           <template v-if="showAccountUi">
             <Tooltip>
@@ -522,7 +502,6 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
           </Tooltip>
         </div>
 
-        <!-- 移动端：更多操作 -->
         <Popover v-model:open="isMoreOpen">
           <PopoverTriggerPrimitive as-child>
             <button

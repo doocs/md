@@ -39,20 +39,17 @@ export function markedSlider(): MarkedExtension {
             const alt = altMatch[1] || ``
             const src = srcMatch[1] || ``
 
-            // 新主题系统：不再需要内联样式
             return { src, alt }
           })
 
-          // 使用微信公众号兼容的滑动容器布局
-          // 使用微信支持的section标签和特殊样式组合
-
+          // WeChat-compatible horizontal scroll: section tags + overflow-x scroll
           return `
             <section style="box-sizing: border-box; font-size: 16px;">
               <section data-role="outer" style="font-family: 微软雅黑; font-size: 16px;">
                 <section data-role="paragraph" style="margin: 0px auto; box-sizing: border-box; width: 100%;">
                   <section style="margin: 0px auto; text-align: center;">
                     <section style="display: inline-block; width: 100%;">
-                      <!-- 微信公众号支持的滑动图片容器 -->
+                      <!-- WeChat-compatible horizontal scroll image container -->
                       <section style="overflow-x: scroll; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%; text-align: center;">
                         ${images.map((img: { src: string, alt: string }, _index: number) => `<section style="display: inline-block; width: 100%; margin-right: 0; vertical-align: top;">
                           <img src="${img.src}" alt="${img.alt}" title="${img.alt}" style="width: 100%; height: auto; border-radius: 4px; vertical-align: top;"/>

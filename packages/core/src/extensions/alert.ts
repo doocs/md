@@ -14,17 +14,14 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   const resolvedVariants = resolveVariants(variants)
 
   /**
-   * 解析名称对应的变体配置。
-   * 命中内置类型（大小写不敏感）→ 返回该配置；
-   * 未命中（含任意自定义名称、中文等）→ 返回 null，走默认兜底样式。
+   * Resolve variant by name (case-insensitive built-in match).
+   * Unknown/custom names (including CJK) return null → default fallback styles.
    */
   function resolveVariant(name: string): AlertVariantItem | null {
     const lower = name.toLowerCase()
     return resolvedVariants.find(v => v.type.toLowerCase() === lower) ?? null
   }
 
-  // 提取公共的元数据构建逻辑。
-  // name：原始名称；matchedVariant：命中的内置变体（未命中为 null）；customTitle：同行自定义标题
   function buildMeta(name: string, matchedVariant: AlertVariantItem | null, customTitle?: string, fromContainer = false) {
     const variant = matchedVariant ? matchedVariant.type : `custom`
     const defaultTitle = matchedVariant
@@ -43,15 +40,12 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
     }
   }
 
-  // 提取公共的渲染逻辑
   const renderAlert: AlertRendererFn = function (this: AlertRendererThis, token: AlertToken) {
     const { meta, tokens = [] } = token
     const text = this.parser.parse(tokens)
-    // 新主题系统：使用 CSS 选择器而非内联样式
     let tmpl = `<blockquote class="${meta.className} ${meta.className}-${meta.variant}">\n`
     tmpl += `<p class="${meta.titleClassName} alert-title-${meta.variant}">`
     if (!withoutStyle) {
-      // 给 SVG 添加 class，通过 CSS 控制颜色
       tmpl += meta.icon.replace(
         `<svg`,
         `<svg class="alert-icon-${meta.variant}"`,
@@ -70,7 +64,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
       if (token.type !== `blockquote`)
         return
 
-      // 通用匹配任意 [!名称]（含未知/中文名称）及同行可选自定义标题
+      // Match [!name] with optional custom title on the same line (any name, including CJK)
       const headerMatch = /^\[!([^\]\n]+)\][ \t]*([^\n]*)/.exec(token.text)
       if (!headerMatch)
         return
@@ -84,10 +78,10 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
         meta: buildMeta(name, matchedVariant, customTitle),
       })
 
-      // 从正文首段移除「[!名称] 自定义标题」所在的首个物理行。
-      // 标题可能含行内 Markdown（如 *强调*），会被拆成多个 inline token；首行结束于
-      // 硬换行（br token）或软换行（文本 token 内的 \n），需要兼顾两种情况，
-      // 否则会把标题内容泄漏到正文，或误删正文。
+      // Strip the first physical line ([!name] + optional title) from the first paragraph.
+      // Title may contain inline Markdown (*emphasis*) split across tokens; line ends at
+      // a hard break (br token) or soft break (\\n inside a text token). Handle both or
+      // title leaks into body or body gets deleted.
       const firstLine = token.tokens?.[0] as Tokens.Paragraph | undefined
       const inlineTokens = firstLine?.tokens
       if (inlineTokens?.length) {
@@ -95,13 +89,11 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
         for (let i = 0; i < inlineTokens.length; i++) {
           const t = inlineTokens[i]
           if (t.type === `br`) {
-            // 硬换行：删除首行全部 token（含 br）
             inlineTokens.splice(0, i + 1)
             stripped = true
             break
           }
           if (t.type === `text` && t.raw.includes(`\n`)) {
-            // 软换行：该文本 token 跨越行边界，删除其前的 token 并裁掉首行部分
             const textToken = t as Tokens.Text
             const restRaw = textToken.raw.slice(textToken.raw.indexOf(`\n`) + 1)
             const nlInText = textToken.text.indexOf(`\n`)
@@ -115,7 +107,6 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
             break
           }
         }
-        // 未发现换行：整段即首行（仅标记与标题，无正文），整段删除
         if (!stripped || inlineTokens.length === 0)
           token.tokens?.shift()
       }
@@ -133,7 +124,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
           return src.match(/^:::/)?.index
         },
         tokenizer(src, _tokens) {
-          // 名称支持任意非空白字符（含中文）；同行可跟自定义标题
+          // Name: any non-whitespace (incl. CJK); optional custom title on same line
           // eslint-disable-next-line regexp/no-super-linear-backtracking
           const match = /^:::[ \t]*(\S+)[ \t]*([^\n]*)\n([\s\S]*?)\n:::/.exec(src)
 
@@ -156,7 +147,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
   }
 }
 
-// 学术环境（定理、定义等）共用的图标
+// Shared icons for academic environments (theorem, definition, etc.)
 const ICON_THEOREM = `<svg class="octicon octicon-light-bulb" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 1.5c-2.363 0-4 1.69-4 3.75 0 .984.424 1.625.984 2.304l.214.253c.223.264.47.556.673.848.284.411.537.896.621 1.49a.75.75 0 0 1-1.484.211c-.04-.282-.163-.547-.37-.847a8.456 8.456 0 0 0-.542-.68c-.084-.1-.173-.205-.268-.32C3.201 7.75 2.5 6.766 2.5 5.25 2.5 2.31 4.863 0 8 0s5.5 2.31 5.5 5.25c0 1.516-.701 2.5-1.328 3.259-.095.115-.184.22-.268.319-.207.245-.383.453-.541.681-.208.3-.33.565-.37.847a.751.751 0 0 1-1.485-.212c.084-.593.337-1.078.621-1.489.203-.292.45-.584.673-.848.075-.088.147-.173.213-.253.561-.679.985-1.32.985-2.304 0-2.06-1.637-3.75-4-3.75ZM5.75 12h4.5a.75.75 0 0 1 0 1.5h-4.5a.75.75 0 0 1 0-1.5ZM6 15.25a.75.75 0 0 1 .75-.75h2.5a.75.75 0 0 1 0 1.5h-2.5a.75.75 0 0 1-.75-.75Z"></path></svg>`
 const ICON_DEFINITION = `<svg class="octicon octicon-book" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M0 1.75A.75.75 0 0 1 .75 1h4.253c1.227 0 2.317.59 3 1.501A3.743 3.743 0 0 1 11.006 1h4.245a.75.75 0 0 1 .75.75v10.5a.75.75 0 0 1-.75.75h-4.507a2.25 2.25 0 0 0-1.591.659l-.622.621a.75.75 0 0 1-1.06 0l-.622-.621A2.25 2.25 0 0 0 5.258 13H.75a.75.75 0 0 1-.75-.75Zm7.251 10.324.004-5.073-.002-2.253A2.25 2.25 0 0 0 5.003 2.5H1.5v9h3.757a3.75 3.75 0 0 1 1.994.574ZM8.755 4.75l-.004 7.322a3.752 3.752 0 0 1 1.992-.572H14.5v-9h-3.495a2.25 2.25 0 0 0-2.25 2.25Z"></path></svg>`
 const ICON_PROOF = `<svg class="octicon octicon-check-circle" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M8 16A8 8 0 1 1 8 0a8 8 0 0 1 0 16Zm3.78-9.72a.751.751 0 0 0-.018-1.042.751.751 0 0 0-1.042-.018L6.75 9.19 5.28 7.72a.751.751 0 0 0-1.042.018.751.751 0 0 0-.018 1.042l2 2a.75.75 0 0 0 1.06 0Z"></path></svg>`
@@ -281,7 +272,7 @@ const defaultAlertVariant: AlertVariantItem[] = [
     title: `Cite`,
     icon: `<svg class="octicon octicon-quote" style="margin-right: 0.25em;" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M1.75 2h12.5c.966 0 1.75.784 1.75 1.75v8.5A1.75 1.75 0 0 1 14.25 14H1.75A1.75 1.75 0 0 1 0 12.25v-8.5C0 2.784.784 2 1.75 2ZM1.5 12.25c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25v-8.5a.25.25 0 0 0-.25-.25H1.75a.25.25 0 0 0-.25.25ZM4 5.25a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5A.75.75 0 0 1 4 5.25Zm0 4a.75.75 0 0 1 .75-.75h6.5a.75.75 0 0 1 0 1.5h-6.5a.75.75 0 0 1-.75-.75Z"></path></svg>`,
   },
-  // ==================== 学术环境（定理、引理、定义等） ====================
+  // Academic environments (theorem, lemma, definition, etc.)
   {
     type: `theorem`,
     title: `Theorem`,

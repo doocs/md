@@ -1,15 +1,9 @@
 /**
- * CSS 选择器映射表
- * 将旧的自定义选择器映射到新的规范类名（kebab-case）
- * 实现向后兼容
+ * Legacy selector → kebab-case class mapping for backward compatibility
  */
 
-/**
- * 选择器映射表
- * 旧选择器 → 新类名
- */
 export const SELECTOR_MAPPING: Record<string, string> = {
-  // GFM Alert 相关
+  // GFM alerts
   blockquote_note: `markdown-alert-note`,
   blockquote_tip: `markdown-alert-tip`,
   blockquote_info: `markdown-alert-info`,
@@ -93,15 +87,15 @@ export const SELECTOR_MAPPING: Record<string, string> = {
   blockquote_p_quote: `alert-content-quote`,
   blockquote_p_cite: `alert-content-cite`,
 
-  // 代码相关
+  // Code blocks
   code_pre: `code-block`,
   codespan: `code-inline`,
 
-  // KaTeX 公式
+  // KaTeX
   inline_katex: `katex-inline`,
   block_katex: `katex-block`,
 
-  // Markup 标记
+  // Markup extensions
   markup_highlight: `markup-highlight`,
   markup_underline: `markup-underline`,
   markup_wavyline: `markup-wavyline`,

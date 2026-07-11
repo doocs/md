@@ -95,7 +95,6 @@ function openReplace() {
 </script>
 
 <template>
-  <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
       {{ t('menu.edit') }}
@@ -204,7 +203,6 @@ function openReplace() {
     </MenubarSubContent>
   </MenubarSub>
 
-  <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
       {{ t('menu.edit') }}

@@ -44,31 +44,30 @@ const {
 
 const { isDark } = storeToRefs(uiStore)
 
-// Theme change handlers
 function themeChanged(newTheme: keyof typeof themeMap) {
   themeStore.theme = newTheme
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   editorRefresh()
 }
 
 function fontChanged(fonts: string) {
   themeStore.fontFamily = fonts
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   editorRefresh()
 }
 
 function sizeChanged(size: string) {
   themeStore.fontSize = size
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   editorRefresh()
 }
 
 function colorChanged(newColor: string) {
   themeStore.primaryColor = newColor
-  // 使用新主题系统
+
   themeStore.applyCurrentTheme()
   editorRefresh()
 }
@@ -108,7 +107,6 @@ function showPicker() {
   colorPicker.value?.show()
 }
 
-// 自定义CSS样式
 function customStyle() {
   toggleShowCssEditor()
 }
@@ -119,7 +117,6 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 </script>
 
 <template>
-  <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
       {{ t('menu.style') }}
@@ -209,7 +206,6 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
     </MenubarSubContent>
   </MenubarSub>
 
-  <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
       {{ t('menu.style') }}

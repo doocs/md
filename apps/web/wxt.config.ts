@@ -53,7 +53,7 @@ export default defineConfig({
       `https://*.githubusercontent.com/*`,
       `https://*.gitee.com/*`,
       `https://*.weixin.qq.com/*`,
-      // 微信公众号图片
+      // WeChat public account images (qpic CDN)
       `https://*.qpic.cn/*`,
       `https://www.plantuml.com/*`,
     ],

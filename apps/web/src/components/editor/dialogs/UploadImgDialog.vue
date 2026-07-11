@@ -32,7 +32,6 @@ async function githubSubmit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// 阿里云
 const aliOSSSchema = computed(() => toTypedSchema(yup.object({
   accessKeyId: yup.string().required(t(`upload.validation.accessKeyIdRequired`)),
   accessKeySecret: yup.string().required(t(`upload.validation.accessKeySecretRequired`)),
@@ -58,7 +57,6 @@ async function aliOSSSubmit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// 腾讯云
 const txCOSSchema = computed(() => toTypedSchema(yup.object({
   secretId: yup.string().required(t(`upload.validation.secretIdRequired`)),
   secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
@@ -82,7 +80,6 @@ async function txCOSSubmit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// 七牛云
 const qiniuSchema = computed(() => toTypedSchema(yup.object({
   accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
   secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
@@ -158,7 +155,6 @@ async function s3Submit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// Telegram 图床
 const telegramSchema = computed(() => toTypedSchema(
   yup.object({
     token: yup.string().required(t(`upload.validation.botTokenRequired`)),
@@ -173,17 +169,16 @@ async function telegramSubmit(values: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// 公众号
-// 当前是否为网页（http/https 协议）
+// Whether running on http/https
 const isWebsite = window.location.protocol.startsWith(`http`)
 
-// Cloudflare Workers 环境
+// Cloudflare Workers environment
 const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 
-// 插件模式运行（如 chrome-extension://）
+// Extension context (e.g. chrome-extension://)
 const isPluginMode = !isWebsite
 
-// 是否需要填写 proxyOrigin（只在 非插件 且 非CF页面 时需要）
+// Whether proxyOrigin is required (non-extension, non-CF page only)
 const isProxyRequired = computed(() => {
   return !isPluginMode && !isCfWorkers
 })
@@ -239,7 +234,6 @@ async function r2Submit(formValues: GenericObject) {
   toast.success(t(`common.saveSuccess`))
 }
 
-// 又拍云
 const upyunSchema = computed(() => toTypedSchema(
   yup.object({
     bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
@@ -304,7 +298,6 @@ async function changeImgHost() {
 }
 
 async function changeCompression() {
-  // reactive 会自动保存，不需要手动操作
 }
 
 async function beforeImageUpload(file: File) {
@@ -975,7 +968,6 @@ function onTabScroll(e: WheelEvent) {
         <TabsContent value="mp" class="flex-1 flex flex-col overflow-hidden">
           <Form :validation-schema="mpSchema" :initial-values="mpConfig" class="flex flex-col flex-1 overflow-hidden" @submit="mpSubmit">
             <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-              <!-- 只有在需要代理时才显示 proxyOrigin 字段 -->
               <Field
                 v-if="isProxyRequired"
                 v-slot="{ field, errorMessage }"

@@ -4,7 +4,7 @@ import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
-/** 捕获浅色模式分享快照（编辑器处于深色模式时会临时按浅色重渲染） */
+/** Capture a light-theme share snapshot (re-renders temporarily if editor is in dark mode). */
 export async function captureShareSnapshot(): Promise<{ bodyHtml: string, stylesHtml: string }> {
   const renderStore = useRenderStore()
   const editorStore = useEditorStore()

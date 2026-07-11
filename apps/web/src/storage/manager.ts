@@ -9,9 +9,7 @@ import { trimCacheValue } from '@/storage/repositories/cache'
 export { IndexedDBEngine, LocalStorageEngine, RestfulStorageEngine }
 export type { StorageEngine }
 
-/**
- * 统一存储管理器
- */
+/** Unified storage manager. */
 class StorageManager {
   private engine: StorageEngine = new LocalStorageEngine()
 
@@ -23,7 +21,7 @@ class StorageManager {
     return this.engine
   }
 
-  /** 同步读取（initStorage 预加载后可用） */
+  /** Sync read (available after initStorage preload). */
   getSync(key: string): string | null {
     if (this.engine.getSync)
       return this.engine.getSync(key)

@@ -8,7 +8,7 @@
 
 .dark {
   .container {
-    // CodeMirror v6 兼容
+    // CodeMirror v6 compatibility
     .cm-editor,
     .CodeMirror-wrap {
       background-color: @nightCodeMirrorColor;
@@ -36,7 +36,7 @@
   }
 }
 
-// CodeMirror v5 兼容样式
+// CodeMirror v5 compatibility styles
 .CodeMirror {
   padding-bottom: 0;
   height: 100% !important;
@@ -59,7 +59,7 @@
   box-sizing: border-box;
 }
 
-// CodeMirror v6 样式
+// CodeMirror v6 styles
 .cm-editor {
   height: 100% !important;
   font-size: 16px;
@@ -69,9 +69,9 @@
     overflow-x: auto !important;
     overflow-y: auto !important;
 
-    // 只隐藏 x 方向的滚动条
+    // Hide horizontal scrollbar only
     &::-webkit-scrollbar:horizontal {
-      display: none; /* Chrome/Safari/Webkit - 横向滚动条 */
+      display: none;
     }
   }
 
@@ -108,7 +108,7 @@
   font-style: normal !important;
 }
 
-// CodeMirror v6 折叠装订线样式
+// CodeMirror v6 fold gutter styles
 .cm-foldGutter {
   .cm-gutterElement {
     cursor: pointer;

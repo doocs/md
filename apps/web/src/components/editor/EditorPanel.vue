@@ -355,7 +355,6 @@ function mdLocalToRemote() {
 // --- Image paste handler for CodeMirror ---
 function createPasteHandler() {
   return (event: ClipboardEvent, view: EditorView) => {
-    // 1. 处理剪贴板中的文件 (截图/复制文件)
     if (event.clipboardData?.items && [...event.clipboardData.items].some(item => item.kind === 'file')) {
       if (isImgLoading.value) {
         return true
@@ -378,7 +377,6 @@ function createPasteHandler() {
       return true
     }
 
-    // 2. 处理剪贴板中的文本 (检测 Markdown 图片链接)
     const text = event.clipboardData?.getData('text/plain')
     if (text) {
       const mdImgRegex = /!\[(.*?)\]\((https?:\/\/[^)]+)\)/g
@@ -609,7 +607,7 @@ watch(currentPostIndex, (newIndex, oldIndex) => {
   syncEditorToPostContent(post.content)
 })
 
-/** 云端同步等外部写入 posts 时，当前文章 index 不变也需刷新编辑器 */
+/** Refresh editor when posts change externally (e.g. cloud sync) even if index is unchanged */
 watch(
   () => currentPost.value?.content,
   (content) => {
@@ -619,7 +617,6 @@ watch(
   },
 )
 
-// 历史记录的定时器
 const historyTimer = ref<ReturnType<typeof setTimeout>>()
 onMounted(() => {
   historyTimer.value = setInterval(() => {

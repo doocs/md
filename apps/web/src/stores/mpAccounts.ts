@@ -11,14 +11,14 @@ export interface MpAccount {
   logo: string
   desc: string
   /**
-   * 1: 公众号
-   * 2: 服务号
+   * 1: subscription account
+   * 2: service account
    */
   serviceType: `1` | `2`
   /**
-   * 0: 无标识
-   * 1: 个人认证
-   * 2: 企业认证
+   * 0: unverified
+   * 1: personal verification
+   * 2: enterprise verification
    */
   verify: `0` | `1` | `2`
 }

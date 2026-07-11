@@ -9,9 +9,6 @@ import { indentationMarkers } from '@replit/codemirror-indentation-markers'
 import { codeLanguages } from './codeLanguages'
 import { applyHeading, formatBold, formatCode, formatItalic, formatLink, formatOrderedList, formatStrikethrough, formatUnorderedList, redoAction, undoAction } from './format'
 
-/**
- * Markdown 格式化处理函数
- */
 async function formatMarkdown(view: EditorView) {
   const content = view.state.doc.toString()
   const { formatDoc } = await import('../utils/formatDoc')
@@ -21,11 +18,8 @@ async function formatMarkdown(view: EditorView) {
   })
 }
 
-/**
- * 在光标位置插入缩进（空格）
- */
 function insertTabAtCursor(view: EditorView): boolean {
-  const spaces = `  ` // 2 个空格作为缩进
+  const spaces = `  `
   const changes = view.state.changeByRange(range => ({
     changes: { from: range.from, to: range.to, insert: spaces },
     range: EditorSelection.range(range.from + spaces.length, range.from + spaces.length),
@@ -39,35 +33,25 @@ interface MarkdownKeymapOptions {
   onReplace?: (view: EditorView) => void
   onGoToLine?: (view: EditorView) => void
   placeholder?: string
-  /** 为 true 时不注入 history()，由调用方通过 Compartment 管理（便于切换文档时清空撤销栈） */
+  /** When true, omit history(); caller manages undo via Compartment (e.g. clear stack on doc switch) */
   withoutHistory?: boolean
 }
 
-/**
- * Markdown 编辑器的快捷键映射
- *
- * @param options - 配置选项
- * @param options.onSearch - 搜索回调（可选）
- */
 export function markdownKeymap(options?: MarkdownKeymapOptions) {
   const { onSearch, onReplace, onGoToLine } = options || {}
 
   return keymap.of([
-    // Tab 键在光标位置插入缩进
     { key: `Tab`, run: insertTabAtCursor },
 
-    // 撤销/重做
     { key: `Mod-z`, run: undoAction },
     { key: `Mod-y`, run: redoAction },
 
-    // 文本格式
     { key: `Mod-b`, run: (view) => { formatBold(view); return true } },
     { key: `Mod-i`, run: (view) => { formatItalic(view); return true } },
     { key: `Mod-d`, run: (view) => { formatStrikethrough(view); return true } },
     { key: `Mod-k`, run: (view) => { formatLink(view); return true } },
     { key: `Mod-e`, run: (view) => { formatCode(view); return true } },
 
-    // 标题（使用 Mod-1 到 Mod-6）
     { key: `Mod-1`, run: (view) => { applyHeading(view, 1); return true } },
     { key: `Mod-2`, run: (view) => { applyHeading(view, 2); return true } },
     { key: `Mod-3`, run: (view) => { applyHeading(view, 3); return true } },
@@ -75,15 +59,12 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
     { key: `Mod-5`, run: (view) => { applyHeading(view, 5); return true } },
     { key: `Mod-6`, run: (view) => { applyHeading(view, 6); return true } },
 
-    // 列表
     { key: `Mod-u`, run: (view) => { formatUnorderedList(view); return true } },
     { key: `Mod-o`, run: (view) => { formatOrderedList(view); return true } },
 
-    // 搜索和替换（可选）
     ...(onSearch ? [{ key: `Mod-f`, run: (view: EditorView) => { onSearch(view); return true } }] : []),
     ...(onReplace ? [{ key: `Mod-h`, run: (view: EditorView) => { onReplace(view); return true } }] : []),
 
-    // 格式化
     { key: `Shift-Alt-f`, run: (view: EditorView) => { formatMarkdown(view); return true } },
 
     ...(onGoToLine
@@ -92,42 +73,28 @@ export function markdownKeymap(options?: MarkdownKeymapOptions) {
   ])
 }
 
-/**
- * Markdown 编辑器的基础扩展集合
- * 包含语言支持、历史记录、括号匹配等基础功能
- *
- * 主题请使用统一的 theme() 函数，从 './themes' 导入
- *
- * @param options - 配置选项（可选）
- * @param options.onSearch - 搜索回调，触发快捷键 Mod-f
- *
- */
+/** Markdown editor extensions. Import theme() from './themes' for theming. */
 export function markdownSetup(options?: MarkdownKeymapOptions) {
   const { placeholder: placeholderText, withoutHistory } = options || {}
 
   return [
-    // 基础功能
     ...(withoutHistory ? [] : [history()]),
     highlightSelectionMatches(),
     closeBrackets(),
 
-    // 缩进标记
     indentationMarkers(),
 
-    // 语言支持
     markdown({
       base: markdownLanguage,
       codeLanguages,
       addKeymap: true,
     }),
 
-    // Markdown 快捷键（高优先级，优先于默认快捷键）
+    // Higher priority than default keymap
     Prec.high(markdownKeymap(options)),
 
-    // 折叠功能
     foldGutter(),
 
-    // 默认快捷键
     keymap.of([
       ...defaultKeymap,
       ...historyKeymap,
@@ -135,7 +102,6 @@ export function markdownSetup(options?: MarkdownKeymapOptions) {
       ...foldKeymap,
     ]),
 
-    // 编辑器配置
     EditorView.lineWrapping,
     EditorState.allowMultipleSelections.of(true),
 

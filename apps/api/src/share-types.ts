@@ -17,19 +17,19 @@ export interface ShareHtmlSnapshot {
 
 export type SharePasswordMode = `none` | `custom` | `auto`
 
-/** Pro 可选：1 天 / 7 天 / 30 天 / 永不过期；免费用户固定 1 天 */
+/** Pro: 1d / 7d / 30d / never; free users are fixed to 1 day */
 export type ShareExpiresMode = `1d` | `7d` | `30d` | `never`
 
 export interface CreateShareRequest {
-  /** 前端文章 id，同一用户同一篇文章重复分享时链接不变 */
+  /** Frontend post id; re-sharing the same post keeps the same link */
   postId: string
   title?: string
   htmlSnapshot: ShareHtmlSnapshot
-  /** 无密码 / 自定义密码 / 系统随机生成 */
+  /** No password / custom password / system-generated password */
   passwordMode?: SharePasswordMode
-  /** passwordMode=custom 时必填 */
+  /** Required when passwordMode=custom */
   password?: string
-  /** 链接有效期，Pro 用户可选；免费用户忽略并固定 1 天 */
+  /** Link expiry; Pro users may choose; free users are always capped at 1 day */
   expiresMode?: ShareExpiresMode
 }
 
@@ -37,11 +37,11 @@ export interface CreateShareResponse {
   id: string
   url: string
   expiresAt: number | null
-  /** true 表示更新了已有分享，false 表示首次创建 */
+  /** true if an existing share was updated; false if newly created */
   updated: boolean
-  /** 是否启用了访问密码 */
+  /** Whether access password protection is enabled */
   protected: boolean
-  /** 仅 passwordMode=auto 时返回系统生成的明文密码 */
+  /** Plaintext password returned only when passwordMode=auto */
   password?: string
 }
 

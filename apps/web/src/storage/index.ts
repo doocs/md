@@ -35,7 +35,7 @@ async function initLegacyFallback(reason: string): Promise<void> {
   initComplete = true
 }
 
-/** 初始化 IndexedDB 存储（在 createApp 之前 await） */
+/** Initialize IndexedDB storage (await before createApp). */
 export function initStorage(): Promise<void> {
   if (readyPromise)
     return readyPromise

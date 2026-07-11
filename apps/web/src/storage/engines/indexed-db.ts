@@ -7,8 +7,8 @@ import { isStorageQuotaError, warnStorageQuota } from '@/storage/quota'
 type StoreName = ReturnType<typeof resolveStoreName>
 
 /**
- * IndexedDB KV 引擎：settings / secrets / cache 三个 store。
- * 内存 cache 在 preload 后支持同步读，供 store.reactive 首屏初始化。
+ * IndexedDB KV engine: settings / secrets / cache stores.
+ * In-memory cache enables sync reads after preload for store.reactive boot.
  */
 export class IndexedDBEngine implements StorageEngine {
   private cache = new Map<string, string>()
@@ -132,7 +132,7 @@ export class LocalStorageEngine implements StorageEngine {
   }
 }
 
-/** RESTful API 存储引擎 - 用于远程存储（保留扩展点） */
+/** REST API storage engine for remote storage (extension point). */
 export class RestfulStorageEngine implements StorageEngine {
   constructor(
     private baseURL: string,

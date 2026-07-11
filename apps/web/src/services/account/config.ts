@@ -1,18 +1,18 @@
-/** md-api 后端地址（云同步、账户登录等共用） */
+/** md-api base URL (cloud sync, account login, etc.). */
 export const MD_API_URL = (
   import.meta.env.VITE_MD_API_URL
     ?? import.meta.env.VITE_SYNC_API_URL
     ?? ``
 ).replace(/\/$/, ``)
 
-/** OAuth 回跳 fragment 参数名 */
+/** OAuth redirect fragment parameter name. */
 export const OAUTH_TOKEN_HASH_KEY = `account_token`
 
 export function isAccountConfigured(): boolean {
   return Boolean(MD_API_URL)
 }
 
-/** 是否在 UI 展示账户入口（登录/账户信息） */
+/** Whether to show account entry in UI (login / profile). */
 export function isAccountUiEnabled(): boolean {
   const flag = import.meta.env.VITE_ACCOUNT_UI_ENABLED
   if (flag === `false` || flag === `0`)
@@ -20,7 +20,7 @@ export function isAccountUiEnabled(): boolean {
   return isAccountConfigured()
 }
 
-/** 发起 GitHub 登录 */
+/** Start GitHub OAuth login. */
 export function gotoLogin(): void {
   const entry = `${window.location.origin}${window.location.pathname}`
   const redirect = encodeURIComponent(entry)

@@ -38,7 +38,6 @@ const form = ref<Post>({
 
 const allowPost = computed(() => extensionInstalled.value && allAccounts.value.some(a => a.checked && a.loggedIn))
 
-// 平台分类配置
 const platformCategories = [
   {
     id: `media`,
@@ -54,7 +53,7 @@ const platformCategories = [
   },
 ]
 
-// 分类折叠状态（默认折叠云平台及开发者社区）
+// Category collapse state (cloud/dev collapsed by default)
 const collapsedCategories = ref<Set<string>>(new Set([`cloud`]))
 
 function toggleCategory(categoryName: string) {
@@ -66,7 +65,6 @@ function toggleCategory(categoryName: string) {
   }
 }
 
-// 按分类获取账号
 const accountsByCategory = computed(() => {
   return platformCategories.map(category => ({
     id: category.id,
@@ -77,20 +75,18 @@ const accountsByCategory = computed(() => {
   }))
 })
 
-// 判断分类是否全选（只考虑已登录的账号）
+// Whether category is fully selected (logged-in only)
 function isCategoryAllSelected(accounts: PostAccount[]) {
   const loggedInAccounts = accounts.filter(a => a.loggedIn)
   return loggedInAccounts.length > 0 && loggedInAccounts.every(a => a.checked)
 }
 
-// 判断分类是否部分选中
 function isCategoryIndeterminate(accounts: PostAccount[]) {
   const loggedInAccounts = accounts.filter(a => a.loggedIn)
   const checkedCount = loggedInAccounts.filter(a => a.checked).length
   return checkedCount > 0 && checkedCount < loggedInAccounts.length
 }
 
-// 切换分类全选
 function toggleCategorySelectAll(accounts: PostAccount[]) {
   const loggedInAccounts = accounts.filter(a => a.loggedIn)
   const allSelected = loggedInAccounts.every(a => a.checked)
@@ -98,9 +94,9 @@ function toggleCategorySelectAll(accounts: PostAccount[]) {
 }
 
 async function prePost() {
-  // 如果扩展已安装且还没有账号数据，则开始检测
+  // Start detection when extension installed but no account data
   if (extensionInstalled.value && allAccounts.value.length === 0) {
-    // 不 await，让检测在后台进行
+    // Fire-and-forget; detection runs in background
     startLoginDetection()
   }
 
@@ -127,7 +123,6 @@ async function prePost() {
     }
   }
   catch {
-    // 静默失败
   }
   finally {
     form.value = {
@@ -136,7 +131,6 @@ async function prePost() {
   }
 }
 
-// 监听对话框打开，自动加载数据
 watch(dialogVisible, (newVal) => {
   if (newVal) {
     prePost()
@@ -151,25 +145,24 @@ declare global {
   }
 }
 
-// 获取初始平台列表（不带登录状态，用于立即显示）
+// Initial platform list without login state for instant display
 function getInitialPlatforms(): PostAccount[] {
   if (window.$cose !== undefined && typeof window.$cose.getPlatforms === 'function') {
     return window.$cose.getPlatforms().map((p: any) => ({
       ...p,
       checked: false,
       loggedIn: false,
-      isChecking: true, // 标记正在检测中
+      isChecking: true,
     }))
   }
   return []
 }
 
-// 开始登录检测（异步，不阻塞 UI，渐进式更新）
+// Async login check with progressive UI updates
 function startLoginDetection() {
   if (window.$cose === undefined)
     return
 
-  // 立即显示平台列表（带检测中状态）
   const initialPlatforms = getInitialPlatforms()
   if (initialPlatforms.length > 0) {
     allAccounts.value = initialPlatforms
@@ -178,7 +171,7 @@ function startLoginDetection() {
   isCheckingLogin.value = true
   let hasReceivedAny = false
 
-  // 设置超时机制：如果 15 秒内没有任何响应，则停止检测
+  // Stop detection after 15s with no response
   const LOGIN_CHECK_TIMEOUT_MS = 15000
   const timeoutId = setTimeout(() => {
     if (!hasReceivedAny) {
@@ -187,20 +180,16 @@ function startLoginDetection() {
     }
   }, LOGIN_CHECK_TIMEOUT_MS)
 
-  // 检查是否支持渐进式 API
   if (typeof window.$cose.getAccountsProgressive === 'function') {
-    // 使用渐进式 API：每个平台检测完成后立即更新 UI
     window.$cose.getAccountsProgressive(
-      // onProgress: 每个平台完成时调用
       (account: PostAccount, _completed: number, _total: number) => {
         hasReceivedAny = true
-        // 更新对应平台的状态
+
         const idx = allAccounts.value.findIndex(a => a.type === account.type)
         if (idx !== -1) {
           allAccounts.value[idx] = { ...account, checked: false, isChecking: false }
         }
       },
-      // onComplete: 所有平台完成时调用
       () => {
         clearTimeout(timeoutId)
         isCheckingLogin.value = false
@@ -208,7 +197,7 @@ function startLoginDetection() {
     )
   }
   else {
-    // 回退到原有 API
+    // Fallback to legacy API
     window.$cose.getAccounts((resp: PostAccount[]) => {
       hasReceivedAny = true
       clearTimeout(timeoutId)
@@ -218,17 +207,15 @@ function startLoginDetection() {
   }
 }
 
-// 兼容旧的 getAccounts 调用（checkExtension 使用）
+// Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
   return new Promise((resolve) => {
     startLoginDetection()
-    // 立即 resolve，不等待检测完成
     resolve()
   })
 }
 
 function post() {
-  // 从 allAccounts 获取用户选择的平台（checkbox 绑定在 allAccounts 上）
   form.value.accounts = allAccounts.value.filter(a => a.checked && a.loggedIn)
   postTaskDialogVisible.value = true
   dialogVisible.value = false
@@ -287,11 +274,11 @@ function onAvatarError(account: PostAccount, event: Event) {
 function checkExtension() {
   if (window.$cose !== undefined) {
     extensionInstalled.value = true
-    getAccounts() // 立即开始登录检测
+    getAccounts()
     return
   }
 
-  // 如果插件还没加载，5秒内每 500ms 检查一次
+  // Poll every 500ms for 5s if extension not loaded
   const EXTENSION_CHECK_INTERVAL_MS = 500
   const MAX_EXTENSION_CHECKS = 10
   let count = 0
@@ -437,12 +424,10 @@ onBeforeMount(() => {
                         class="inline-block h-[16px] w-[16px] shrink-0"
                       >
                       <span class="truncate text-sm font-medium">{{ account.title }}</span>
-                      <!-- 检测中：显示转圈动画 -->
                       <template v-if="account.isChecking">
                         <Loader2 class="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />
                         <span class="text-xs text-muted-foreground">{{ t('postInfo.checking') }}</span>
                       </template>
-                      <!-- 已登录：显示头像和用户名 -->
                       <template v-else-if="account.loggedIn">
                         <img
                           v-if="account.avatar"
@@ -453,7 +438,6 @@ onBeforeMount(() => {
                         >
                         <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
                       </template>
-                      <!-- 未登录：显示登录链接 -->
                       <Primitive
                         v-else
                         as="a"

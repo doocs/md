@@ -12,10 +12,7 @@ import {
 } from '@md/shared/editor'
 import { unref } from 'vue'
 
-/**
- * 编辑器格式化操作 composable
- * 使用泛型和 unref 来支持任意类型的 ref（包括 readonly ref）
- */
+/** Editor formatting actions; generic unref supports readonly refs. */
 export function useEditorFormat<T extends { value: any }>(editor: T) {
   function addFormat(cmd: string) {
     const editorView = unref(editor) as EditorView

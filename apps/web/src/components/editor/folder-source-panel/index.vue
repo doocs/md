@@ -22,7 +22,6 @@ const { setCurrentFilePath } = useFolderFileSync()
 
 const { isMobile, isOpenFolderPanel } = storeToRefs(uiStore)
 
-// 控制是否启用动画
 const enableAnimation = ref(false)
 
 watch(isOpenFolderPanel, () => {
@@ -53,15 +52,14 @@ function handleToggleExpand(path: string) {
   else {
     expandedPaths.value.add(path)
   }
-  // 触发响应式更新
+
   expandedPaths.value = new Set(expandedPaths.value)
 }
 
 async function handleSelectFolder() {
   await folderSourceStore.selectFolder()
-  // 等待下一个 tick，确保 fileTree 已经更新
   await nextTick()
-  // 展开根节点
+
   if (fileTree.value.length > 0) {
     expandedPaths.value.add(fileTree.value[0].path)
   }
@@ -82,14 +80,11 @@ function handleCloseFolder() {
 async function handleOpenFile(node: any) {
   try {
     const content = await folderSourceStore.readFile(node.path)
-    // 从文件名中提取标题（移除 .md 扩展名）
     const title = node.name.replace(/\.md$/i, ``)
 
-    // 创建新文章并设置内容
     postStore.addPost(title)
     postStore.updatePostContent(postStore.currentPostId, content)
 
-    // 记录当前文件路径以便自动同步
     setCurrentFilePath(node.path)
 
     toast.success(t('folder.fileLoaded', { name: node.name }))
@@ -101,7 +96,6 @@ async function handleOpenFile(node: any) {
 </script>
 
 <template>
-  <!-- 移动端遮罩层 -->
   <Transition name="fade">
     <div
       v-if="isMobile && isOpenFolderPanel"
@@ -118,7 +112,6 @@ async function handleOpenFile(node: any) {
     }"
     :style="isMobile ? { transform: isOpenFolderPanel ? 'translateX(0)' : 'translateX(-100%)' } : undefined"
   >
-    <!-- 头部工具栏 -->
     <div class="panel-header sticky top-0 z-10 bg-background border-b p-2">
       <div class="flex items-center justify-between mb-2">
         <h3 class="text-sm font-semibold flex items-center gap-2">
@@ -148,7 +141,6 @@ async function handleOpenFile(node: any) {
         </div>
       </div>
 
-      <!-- 操作按钮 -->
       <div class="flex gap-1">
         <Button
           variant="outline"
@@ -175,9 +167,7 @@ async function handleOpenFile(node: any) {
       </div>
     </div>
 
-    <!-- 内容区域 -->
     <div class="panel-content flex-1 overflow-y-auto p-2">
-      <!-- 不支持 API 的提示 -->
       <div
         v-if="!isFileSystemAPISupported"
         class="flex flex-col items-center justify-center h-full text-center p-4 text-muted-foreground"
@@ -191,7 +181,6 @@ async function handleOpenFile(node: any) {
         </p>
       </div>
 
-      <!-- 加载中 -->
       <div
         v-else-if="isLoading"
         class="flex flex-col items-center justify-center h-full"
@@ -202,7 +191,6 @@ async function handleOpenFile(node: any) {
         </p>
       </div>
 
-      <!-- 错误提示 -->
       <div
         v-else-if="loadError"
         class="flex flex-col items-center justify-center h-full text-center p-4 text-destructive"
@@ -212,7 +200,6 @@ async function handleOpenFile(node: any) {
         </p>
       </div>
 
-      <!-- 空状态 -->
       <div
         v-else-if="!currentFolderHandle"
         class="flex flex-col items-center justify-center h-full text-center p-4 text-muted-foreground"
@@ -226,7 +213,6 @@ async function handleOpenFile(node: any) {
         </p>
       </div>
 
-      <!-- 文件树 -->
       <div v-else class="file-tree-container">
         <div class="text-xs text-muted-foreground mb-2 px-2">
           {{ currentFolderHandle.name }}
@@ -260,12 +246,10 @@ async function handleOpenFile(node: any) {
   min-height: 100%;
 }
 
-/* 移动端侧边栏动画 */
 .animate-slider {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 遮罩动画 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 200ms ease;

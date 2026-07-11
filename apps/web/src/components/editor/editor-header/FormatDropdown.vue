@@ -81,13 +81,11 @@ function textColorChanged(color: string) {
 </script>
 
 <template>
-  <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
       {{ t('menu.format') }}
     </MenubarSubTrigger>
     <MenubarSubContent class="min-w-64">
-      <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />
         {{ t('menu.bold') }}
@@ -152,7 +150,6 @@ function textColorChanged(color: string) {
 
       <MenubarSeparator />
 
-      <!-- 标题和列表 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Heading1 class="mr-2 h-4 w-4" />
@@ -203,13 +200,11 @@ function textColorChanged(color: string) {
     </MenubarSubContent>
   </MenubarSub>
 
-  <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
       {{ t('menu.format') }}
     </MenubarTrigger>
     <MenubarContent class="min-w-64" align="start">
-      <!-- 文本格式化 -->
       <MenubarItem @click="addFormat(`${ctrlKey}-B`)">
         <Bold class="mr-2 h-4 w-4" />
         {{ t('menu.bold') }}
@@ -274,7 +269,6 @@ function textColorChanged(color: string) {
 
       <MenubarSeparator />
 
-      <!-- 标题和列表 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Heading1 class="mr-2 h-4 w-4" />

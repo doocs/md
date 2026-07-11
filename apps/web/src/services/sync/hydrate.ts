@@ -50,7 +50,7 @@ async function refreshPreview(keys: Set<string>): Promise<void> {
   renderStore.render(editorStore.getContent())
 }
 
-/** 将已写入本地存储的远端设置同步到各 Pinia Store，无需整页刷新 */
+/** Hydrate Pinia stores from remote settings already written to local storage (no full reload). */
 export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void> {
   if (!appliedKeys.length)
     return

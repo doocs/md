@@ -23,7 +23,7 @@ export default {
     return proxyResponse
   },
 }
-// 设置 CORS 头部
+
 function setCorsHeaders(headers) {
   headers.set(`Access-Control-Allow-Origin`, `*`)
   headers.set(`Access-Control-Allow-Methods`, `GET, POST, PUT, DELETE`)

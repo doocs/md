@@ -1,6 +1,4 @@
-/**
- * 类型声明：支持 ?raw 后缀的文件导入
- */
+/** Module declarations for ?raw file imports */
 
 declare module '*.css?raw' {
   const content: string

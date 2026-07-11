@@ -6,7 +6,6 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { useQuickCommandsStore } from '@/stores/quickCommands'
 
-/* ---------- 弹窗开关 ---------- */
 const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
@@ -14,7 +13,6 @@ const dialogOpen = ref(props.open)
 watch(() => props.open, v => (dialogOpen.value = v))
 watch(dialogOpen, v => emit(`update:open`, v))
 
-/* ---------- store & 新增 ---------- */
 const store = useQuickCommandsStore()
 const { t } = useI18n()
 const label = ref(``)
@@ -28,7 +26,6 @@ function addCmd() {
   template.value = ``
 }
 
-/* ---------- 编辑 ---------- */
 const editingId = ref<string | null>(null)
 const editLabel = ref(``)
 const editTemplate = ref(``)
@@ -58,14 +55,12 @@ function saveEdit() {
         <DialogTitle>{{ t('ai.quickCommand.title') }}</DialogTitle>
       </DialogHeader>
 
-      <!-- 列表：独立滚动区域 -->
       <div class="space-y-4 flex-1 overflow-y-auto pr-1">
         <div
           v-for="cmd in store.commands"
           :key="cmd.id"
           class="flex flex-col gap-2 border rounded-md p-3"
         >
-          <!-- 编辑态 -->
           <template v-if="editingId === cmd.id">
             <Input v-model="editLabel" :placeholder="t('ai.quickCommand.namePlaceholder')" />
             <Textarea
@@ -83,7 +78,6 @@ function saveEdit() {
             </div>
           </template>
 
-          <!-- 查看态 -->
           <template v-else>
             <div class="flex items-center justify-between">
               <span class="break-all text-sm">{{ cmd.label }}</span>
@@ -100,7 +94,6 @@ function saveEdit() {
         </div>
       </div>
 
-      <!-- 新增表单：固定在滚动区下方 -->
       <div class="space-y-2 mt-4 border rounded-md p-3">
         <Input v-model="label" :placeholder="t('ai.quickCommand.nameExamplePlaceholder')" />
         <Textarea

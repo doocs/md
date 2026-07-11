@@ -63,8 +63,8 @@ function createRenderer(
     const width = svg.style[`min-width`] || svg.getAttribute(`width`)
     svg.removeAttribute(`width`)
 
-    // 行内公式对齐 https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
-    // 直接覆盖 style 会覆盖 MathJax 的样式，需要逐个属性设置
+    // Inline math vertical align: https://groups.google.com/g/mathjax-users/c/zThKffrrCvE?pli=1
+    // Set properties individually; assigning style overwrites MathJax defaults
 
     if (withStyle) {
       svg.style.display = `initial`
@@ -74,7 +74,6 @@ function createRenderer(
     }
 
     if (!display) {
-      // 新主题系统：使用 class 而非内联样式
       return `<span class="katex-inline" data-math-display="false" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</span>`
     }
 

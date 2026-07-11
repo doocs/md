@@ -1,12 +1,8 @@
-/**
- * 清理文件标题，移除非法字符
- * @param title - 原始标题
- * @returns 清理后的安全标题
- */
+/** Sanitize a title for use as a filename (strip illegal characters). */
 export function sanitizeTitle(title: string) {
   const MAX_FILENAME_LENGTH = 100
 
-  // Windows 禁止字符，包含所有平台非法字符合集
+  // Windows-forbidden chars; superset of illegal chars on other platforms
   const INVALID_CHARS = /[\\/:*?"<>|]/g
 
   if (!INVALID_CHARS.test(title) && title.length <= MAX_FILENAME_LENGTH) {
@@ -21,29 +17,18 @@ export function sanitizeTitle(title: string) {
   return safe || `untitled`
 }
 
-/**
- * 移除左边多余空格
- * @param str - 要处理的字符串
- * @returns 处理后的字符串
- */
+/** Remove common leading indentation from every line. */
 export function removeLeft(str: string) {
   const lines = str.split(`\n`)
-  // 获取应该删除的空白符数量
   const minSpaceNum = lines
     .filter(item => item.trim())
     .map(item => (item.match(/(^\s+)?/)!)[0].length)
     .sort((a, b) => a - b)[0]
-  // 删除空白符
   return lines.map(item => item.slice(minSpaceNum)).join(`\n`)
 }
 
-/**
- * 检查图片文件是否符合要求
- * @param file - 要检查的文件
- * @returns 检查结果
- */
+/** Validate image file type and size for WeChat upload limits. */
 export function checkImage(file: File) {
-  // 检查文件名后缀
   const isValidSuffix = /\.(?:gif|pjp|jfif|jpe|pjpeg|jpe?g|png|webp)$/i.test(file.name)
   if (!isValidSuffix) {
     return {
@@ -52,7 +37,6 @@ export function checkImage(file: File) {
     }
   }
 
-  // 检查文件大小
   const maxSizeMB = 10
   if (file.size > maxSizeMB * 1024 * 1024) {
     return {

@@ -51,7 +51,6 @@ function buildCacheKey(code: string, themeMode?: DiagramThemeMode): string {
   return simpleHash(`${code}-${diagramCacheThemeSuffix(themeMode)}`)
 }
 
-// key -> svg（LRU 缓存，上限 50 条）
 const svgCache = createSVGCache(50)
 
 async function renderMermaidSvg(code: string, themeMode?: DiagramThemeMode): Promise<string> {

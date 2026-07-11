@@ -98,7 +98,7 @@ export function useSyncStatusMeta(options?: { errorHint?: `detail` | `generic` }
   }
 }
 
-/** Footer 云同步图标：依赖登录态，与弹窗内 meta 分离 */
+/** Footer cloud-sync icon: login-gated, separate from dialog meta. */
 export function useSyncFooterMeta() {
   const authStore = useAuthStore()
   const { isLoggedIn } = storeToRefs(authStore)

@@ -5,7 +5,7 @@ import { EXPORT_LAYOUT_CSS } from './apply-export-layout'
 import { getHtmlContent } from './html-content'
 import { getStylesToAdd, SHARE_SHELL_VARS_CSS } from './share-styles'
 
-/** 导出 PDF 文档（新主题系统） */
+/** Export PDF document (current theme system). */
 export async function exportPDF(title: string = `untitled`) {
   await waitForPreviewReady()
   const htmlStr = getHtmlContent({ staticLayout: true })
@@ -22,14 +22,14 @@ export async function exportPDF(title: string = `untitled`) {
   ${stylesToAdd}
   <style>${EXPORT_LAYOUT_CSS}</style>
   <style>
-    /* 强制打印背景颜色和图片 */
+    /* Force print backgrounds and images */
     * {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
 
-    /* 打印页面设置 */
+    /* @page margin boxes */
     @page {
       @top-center {
         content: "${safeTitle}";

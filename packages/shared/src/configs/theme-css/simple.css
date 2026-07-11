@@ -1,9 +1,8 @@
 /**
- * MD 简洁主题 (@okooo5km)
- * 简洁现代的设计风格
+ * MD simple theme (@okooo5km) — minimal modern layout
  */
 
-/* ==================== 标题样式 ==================== */
+/* Headings */
 h1 {
   padding: 0.5em 1em;
   font-size: calc(var(--md-font-size) * 1.4);
@@ -44,7 +43,7 @@ h6 {
   border-radius: 6px;
 }
 
-/* ==================== 引用块 ==================== */
+/* Blockquote */
 blockquote {
   font-style: italic;
   padding: 1em 1em 1em 2em;
@@ -54,7 +53,7 @@ blockquote {
   border-right: 0.2px solid rgba(0, 0, 0, 0.04);
 }
 
-/* GFM Alert 样式覆盖 */
+/* GFM alert overrides */
 .markdown-alert-note,
 .markdown-alert-tip,
 .markdown-alert-info,
@@ -64,14 +63,14 @@ blockquote {
   font-style: italic;
 }
 
-/* ==================== 行内代码 ==================== */
+/* Inline code */
 .codespan {
   font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
   border-radius: 6px;
   border: 1px solid color-mix(in srgb, var(--md-primary-color) 15%, transparent);
 }
 
-/* ==================== 代码块 ==================== */
+/* Code blocks */
 pre.code__pre,
 .hljs.code__pre {
   border: 1px solid rgba(0, 0, 0, 0.04);
@@ -82,7 +81,7 @@ pre.code__pre > code,
   font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
 }
 
-/* ==================== 图片 ==================== */
+/* Images */
 img {
   border-radius: 8px;
   border: 1px solid rgba(0, 0, 0, 0.04);
@@ -95,7 +94,7 @@ figcaption,
   font-size: 0.8em;
 }
 
-/* ==================== 列表 ==================== */
+/* Lists */
 ol {
   padding-left: 1.5em;
 }
@@ -109,7 +108,7 @@ li {
   margin: 0.5em 8px;
 }
 
-/* ==================== 分隔线 ==================== */
+/* Horizontal rules */
 hr {
   height: 1px;
   border: none;
@@ -117,13 +116,13 @@ hr {
   background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
 }
 
-/* ==================== 强调 ==================== */
+/* Emphasis */
 em {
   font-style: italic;
   font-size: inherit;
 }
 
-/* ==================== 链接 ==================== */
+/* Links */
 a {
   color: #576b95;
   text-decoration: none;
