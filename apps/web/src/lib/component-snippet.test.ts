@@ -5,6 +5,7 @@ import {
   buildComponentSnippet,
   formatAttr,
   getInitialPropValues,
+  missingRequiredProps,
   parseExampleProps,
 } from './component-snippet'
 
@@ -89,13 +90,31 @@ describe(`getInitialPropValues`, () => {
         { name: `a`, default: `1` },
         { name: `b`, type: `boolean` },
         { name: `c`, required: true },
+        { name: `d` },
       ],
     }
     expect(getInitialPropValues(def)).toEqual({
       a: `1`,
       b: `true`,
-      c: `c`,
+      c: ``,
+      d: `d`,
     })
+  })
+})
+
+describe(`missingRequiredProps`, () => {
+  it(`flags empty required props`, () => {
+    expect(missingRequiredProps(tipDef, {
+      type: `info`,
+      content: `  `,
+    })).toEqual([`content`])
+  })
+
+  it(`passes when required props are filled`, () => {
+    expect(missingRequiredProps(tipDef, {
+      type: `info`,
+      content: `hi`,
+    })).toEqual([])
   })
 })
 

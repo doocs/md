@@ -5,7 +5,7 @@ import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
 import { escapeHtml } from '@md/core'
 import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
-import { buildComponentSnippet } from '@/lib/component-snippet'
+import { buildComponentSnippet, missingRequiredProps } from '@/lib/component-snippet'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
@@ -132,10 +132,6 @@ function toggleExpand(id: string) {
   expandedId.value = expandedId.value === id ? null : id
 }
 
-function findBuiltinDef(id: string) {
-  return componentStore.builtInComponents.find(c => c.id === id)
-}
-
 function onFillValues(id: string, values: Record<string, string>) {
   fillValues[id] = values
 }
@@ -148,20 +144,18 @@ function activeFillValues(def: CustomComponentDef): Record<string, string> | und
 }
 
 function insertSnippet(def: CustomComponentDef) {
-  const resolved = def.builtIn ? findBuiltinDef(def.id) ?? def : def
+  // `def` is already localized for built-ins (from localizedBuiltinComponents)
   const values = activeFillValues(def)
   if (values) {
-    const missing = resolved.props
-      .filter(p => p.required && !(values[p.name] ?? ``).trim())
-      .map(p => p.name)
+    const missing = missingRequiredProps(def, values)
     if (missing.length) {
       toast.error(t('component.requiredEmpty', { props: missing.join(', ') }))
       return
     }
   }
   const snippet = values
-    ? buildComponentSnippet(resolved, values)
-    : (def.example || componentStore.buildSnippet(resolved))
+    ? buildComponentSnippet(def, values)
+    : (def.example || componentStore.buildSnippet(def))
   editorStore.insertAtCursor(snippet)
   toast.success(t('component.insertSuccess', { name: def.name }))
   toggleShowComponentDialog(false)
@@ -184,11 +178,17 @@ function onUpdate(val: boolean) {
 }
 
 async function copySnippet(def: CustomComponentDef) {
-  const resolved = def.builtIn ? findBuiltinDef(def.id) ?? def : def
   const values = activeFillValues(def)
+  if (values) {
+    const missing = missingRequiredProps(def, values)
+    if (missing.length) {
+      toast.error(t('component.requiredEmpty', { props: missing.join(', ') }))
+      return
+    }
+  }
   const text = values
-    ? buildComponentSnippet(resolved, values)
-    : (def.example || componentStore.buildSnippet(resolved))
+    ? buildComponentSnippet(def, values)
+    : (def.example || componentStore.buildSnippet(def))
   try {
     await navigator.clipboard.writeText(text)
     copiedId.value = def.id

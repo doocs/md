@@ -52,14 +52,29 @@ export function formatAttr(name: string, value: string): string {
 /** Initial form values: defaults/placeholders, then overlay example props when present. */
 export function getInitialPropValues(def: CustomComponentDef): Record<string, string> {
   const values: Record<string, string> = {}
-  for (const p of def.props)
-    values[p.name] = placeholderForProp(p)
+  for (const p of def.props) {
+    // Required props without a default start empty so insert validation can catch them
+    if (p.required && (p.default === undefined || p.default === ``))
+      values[p.name] = ``
+    else
+      values[p.name] = placeholderForProp(p)
+  }
 
   if (def.example) {
     const fromExample = parseExampleProps(def.example)
     Object.assign(values, fromExample)
   }
   return values
+}
+
+/** Required props that are still empty (after trim). */
+export function missingRequiredProps(
+  def: CustomComponentDef,
+  values: Record<string, string>,
+): string[] {
+  return def.props
+    .filter(p => p.required && !(values[p.name] ?? ``).trim())
+    .map(p => p.name)
 }
 
 /**
