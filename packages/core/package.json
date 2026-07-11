@@ -23,14 +23,14 @@
     "fflate": "^0.8.3",
     "front-matter": "^4.0.2",
     "highlight.js": "^11.11.1",
-    "isomorphic-dompurify": "^3.18.0",
-    "marked": "^18.0.6",
+    "isomorphic-dompurify": "catalog:",
+    "marked": "catalog:",
     "mermaid": "^11.16.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*",
     "jsdom": "^29.1.1",
-    "typescript": "~6.0.3",
-    "vitest": "^4.1.10"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

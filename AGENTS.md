@@ -130,12 +130,14 @@ Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US*
 
 ### 升级依赖
 
-1. **Prettier 必须固定在 `2.8.8`** — 通过 `pnpm-workspace.yaml` 的 `overrides.prettier` 强制
-2. **Patch 文件：** 如果打了 patch 的依赖升级了，必须同步更新 `patches/` 中对应的 patch 文件：
-   - `@codemirror/view` → `patches/@codemirror__view@6.43.4.patch`（导出 `MeasureRequest` 接口，修复 macOS 上 Alt+Shift 快捷键处理）
-   - `juice` → `patches/juice@12.1.0.patch`（为 `parseCSS` 返回值增加空值检查）
-3. 更新 `pnpm-workspace.yaml` 中的 `patchedDependencies` 以匹配新版本
-4. 运行 `pnpm install` 重新生成 `pnpm-lock.yaml`
+1. **共享版本用 catalog** — 跨包共用的工具链版本集中在 `pnpm-workspace.yaml` 的 `catalog`（`typescript`、`vitest`、`wrangler`、`@types/node`、`marked`、`@codemirror/state|view` 等）；各 `package.json` 用 `"catalog:"` 引用，改版本只改 catalog 一处。包专属依赖可继续写版本号（`pnpm/json-enforce-catalog` 已关闭）
+2. **Prettier 必须固定在 `2.8.8`** — 通过 catalog + `overrides.prettier` 强制
+3. **Patch 文件：** 如果打了 patch 的依赖升级了，必须同步更新 `patches/` 中对应的 patch 文件：
+   - `@codemirror/view` → `patches/@codemirror__view@6.43.6.patch`（导出 `MeasureRequest` 接口，修复 macOS 上 Alt+Shift 快捷键处理）
+   - `front-matter` → `patches/front-matter@4.0.2.patch`
+   - `juice` → `patches/juice@12.1.1.patch`（为 `parseCSS` 返回值增加空值检查）
+4. 更新 `pnpm-workspace.yaml` 中的 `patchedDependencies` 以匹配新版本
+5. 运行 `pnpm install` 重新生成 `pnpm-lock.yaml`；可用 `pnpm dedupe` 收敛可合并的间接依赖
 
 ### 安全覆盖
 

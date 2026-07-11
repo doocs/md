@@ -9,8 +9,17 @@ packages:
   - packages/*
 
 overrides:
-  '@codemirror/state': 6.7.1
-  '@codemirror/view': 6.43.6
+  '@codemirror/state': 'catalog:'
+  '@codemirror/view': 'catalog:'
+  # Keep typescript-eslint on one patch line (eslint-plugin-command otherwise pulls 8.60.x).
+  '@typescript-eslint/parser': ^8.63.0
+  '@typescript-eslint/project-service': ^8.63.0
+  '@typescript-eslint/scope-manager': ^8.63.0
+  '@typescript-eslint/tsconfig-utils': ^8.63.0
+  '@typescript-eslint/types': ^8.63.0
+  '@typescript-eslint/typescript-estree': ^8.63.0
+  '@typescript-eslint/utils': ^8.63.0
+  '@typescript-eslint/visitor-keys': ^8.63.0
   '@webext-core/isolated-element': 1.1.4
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.5'
@@ -35,7 +44,7 @@ overrides:
   minimatch@^10: ^10.2.5
   minimatch@^5: ^10.2.5
   minimatch@^9: ^10.2.5
-  prettier: 2.8.8
+  prettier: 'catalog:'
   qs: ^6.15.3
   querystring: npm:qs@^6.15.3
   semver: ^7.8.5
@@ -67,6 +76,22 @@ patchedDependencies:
   '@codemirror/view@6.43.6': patches/@codemirror__view@6.43.6.patch
   front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.1: patches/juice@12.1.1.patch
+
+# Shared direct-dep versions across the monorepo (reference with `catalog:`).
+catalog:
+  '@cloudflare/workers-types': ^5.20260711.1
+  '@codemirror/state': 6.7.1
+  '@codemirror/view': 6.43.6
+  '@types/node': ^26.1.1
+  isomorphic-dompurify: ^3.18.0
+  marked: ^18.0.6
+  prettier: 2.8.8
+  shx: ^0.4.0
+  tsx: ^4.23.0
+  typescript: ~6.0.3
+  vitest: ^4.1.10
+  wrangler: ^4.110.0
+
 peerDependencyRules:
   allowedVersions:
     vite: '8'

@@ -16,11 +16,11 @@
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@modelcontextprotocol/sdk": "^1.29.0",
-    "tsx": "^4.23.0",
+    "tsx": "catalog:",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@types/node": "^26.1.1",
-    "typescript": "~6.0.3"
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
   }
 }

@@ -15,5 +15,7 @@ export default antfu({
     'e18e/prefer-static-regex': `off`,
     'ts/no-namespace': `off`,
     'style/max-statements-per-line': `off`,
+    // Catalog is for shared toolchain versions only; package-specific deps stay inline.
+    'pnpm/json-enforce-catalog': `off`,
   },
 })

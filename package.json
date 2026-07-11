@@ -35,20 +35,16 @@
     "utools:package": "node ./scripts/package-utools.mjs",
     "link-claude-skills": "node ./scripts/link-claude-skills.mjs"
   },
-  "dependencies": {
-    "@codemirror/state": "6.7.1",
-    "@codemirror/view": "6.43.6"
-  },
   "devDependencies": {
     "@antfu/eslint-config": "9.1.0",
-    "@types/node": "^26.1.1",
+    "@types/node": "catalog:",
     "archiver": "^8.0.0",
     "eslint": "^10.7.0",
     "eslint-plugin-format": "^2.0.1",
-    "prettier": "2.8.8",
-    "shx": "^0.4.0",
+    "prettier": "catalog:",
+    "shx": "catalog:",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "~6.0.3"
+    "typescript": "catalog:"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
