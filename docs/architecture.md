@@ -76,7 +76,7 @@ Pinia stores 按领域划分：
 - `useThemeStore` — 主题与样式（含 per-theme 配置持久化）
 - `useRenderStore` — 渲染结果与目录标题
 - `useUIStore` — 布局、对话框、视图模式
-- `useLocaleStore` — 界面语言（zh-CN / en-US），同步 `document.title` 与 i18n 实例
+- `useLocaleStore` — 界面语言（zh-CN / zh-TW / en-US / ja-JP），同步 `document.title` 与 i18n 实例
 - `useSyncStore` / `useAuthStore` — 云同步与账户
 - `useConfirmStore` — 全局确认对话框（`components/shared/confirm-dialog/`）
 

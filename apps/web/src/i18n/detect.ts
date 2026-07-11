@@ -1,18 +1,26 @@
 import type { AppLocale } from './types'
 import { store } from '@/storage'
-import { DEFAULT_LOCALE, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from './constants'
+import { DEFAULT_LOCALE, isAppLocale, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from './constants'
 
 function normalizeLocale(value: string | null | undefined): AppLocale | null {
   if (!value)
     return null
 
-  if (value === `zh-CN` || value === `en-US`)
+  if (isAppLocale(value))
     return value
 
-  if (value.startsWith(`zh`))
+  const lower = value.toLowerCase()
+
+  if (lower === `zh-tw` || lower === `zh-hk` || lower === `zh-mo` || lower.startsWith(`zh-hant`))
+    return `zh-TW`
+
+  if (lower.startsWith(`zh`))
     return `zh-CN`
 
-  if (value.startsWith(`en`))
+  if (lower.startsWith(`ja`))
+    return `ja-JP`
+
+  if (lower.startsWith(`en`))
     return `en-US`
 
   return null

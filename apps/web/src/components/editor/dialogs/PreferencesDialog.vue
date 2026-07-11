@@ -2,7 +2,6 @@
 import type { AppLocale } from '@/i18n/types'
 import { Settings } from '@lucide/vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
-import PanelSegmented from '@/components/shared/panel-dialog/PanelSegmented.vue'
 import PanelSelect from '@/components/shared/panel-dialog/PanelSelect.vue'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -108,7 +107,7 @@ function onLocaleChange(value: string) {
               {{ t('preferences.language.hint') }}
             </p>
           </div>
-          <PanelSegmented
+          <PanelSelect
             :model-value="localeStore.locale"
             :options="localeOptions"
             @update:model-value="onLocaleChange"

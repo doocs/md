@@ -3,7 +3,9 @@ import type { AppLocale } from './types'
 import { createI18n } from 'vue-i18n'
 import { DEFAULT_LOCALE } from './constants'
 import enUS from './messages/en-US/index'
+import jaJP from './messages/ja-JP/index'
 import zhCN from './messages/zh-CN/index'
+import zhTW from './messages/zh-TW/index'
 
 export function setupI18n(locale: AppLocale = DEFAULT_LOCALE): I18n {
   return createI18n({
@@ -12,7 +14,9 @@ export function setupI18n(locale: AppLocale = DEFAULT_LOCALE): I18n {
     fallbackLocale: DEFAULT_LOCALE,
     messages: {
       'zh-CN': zhCN,
+      'zh-TW': zhTW,
       'en-US': enUS,
+      'ja-JP': jaJP,
     },
   })
 }

@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils'
 
 const props = defineProps<{
   modelValue: string
-  options: readonly { value: string, label: string }[]
+  options: readonly { value: string, label: string, ariaLabel?: string }[]
   class?: HTMLAttributes[`class`]
 }>()
 
@@ -90,7 +90,9 @@ function onKeydown(event: KeyboardEvent) {
       :data-value="option.value"
       :aria-checked="modelValue === option.value"
       :tabindex="activeValue === option.value ? 0 : -1"
-      class="inline-flex h-full items-center justify-center whitespace-nowrap rounded-sm px-3 text-sm font-medium transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+      :aria-label="option.ariaLabel"
+      :title="option.ariaLabel"
+      class="inline-flex h-full min-w-0 shrink-0 items-center justify-center whitespace-nowrap rounded-sm px-3 text-sm font-medium transition-all focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       :class="modelValue === option.value
         ? 'bg-background text-foreground shadow-xs'
         : 'hover:text-foreground'"
