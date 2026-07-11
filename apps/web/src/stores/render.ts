@@ -35,7 +35,8 @@ export const useRenderStore = defineStore(`render`, () => {
 
   // 渲染器实例（延迟初始化）
   let renderer: ReturnType<typeof initRenderer> | null = null
-  let lastFingerprint = ``
+  let lastOptionsFingerprint = ``
+  let lastContent = ``
 
   /**
    * 初始化渲染器（新主题系统）
@@ -46,7 +47,8 @@ export const useRenderStore = defineStore(`render`, () => {
     isShowLineNumber?: boolean
   }) => {
     renderer = initRenderer(options || {})
-    lastFingerprint = ``
+    lastOptionsFingerprint = ``
+    lastContent = ``
     return renderer
   }
 
@@ -76,22 +78,37 @@ export const useRenderStore = defineStore(`render`, () => {
     katexLoading: t(`store.render.katexLoading`),
   })
 
-  function buildFingerprint(
-    content: string,
+  function buildComponentFingerprint(
+    componentStore: ReturnType<typeof useCustomComponentStore>,
+  ): string {
+    return Object.keys(componentStore.registry)
+      .sort()
+      .map((name) => {
+        const def = componentStore.registry[name]
+        return [
+          name,
+          def.updatedAt ?? 0,
+          def.template,
+          JSON.stringify(def.props ?? []),
+        ].join(`\u0002`)
+      })
+      .join(`\u0001`)
+  }
+
+  /** Fingerprint of render options only — content is compared by reference/equality separately. */
+  function buildOptionsFingerprint(
     themeMode: 'light' | 'dark',
     themeStore: ReturnType<typeof useThemeStore>,
     componentStore: ReturnType<typeof useCustomComponentStore>,
   ): string {
-    const componentKeys = Object.keys(componentStore.registry).sort().join(`,`)
     return [
-      content,
       themeMode,
       themeStore.isCiteStatus ? `1` : `0`,
       themeStore.legend,
       themeStore.isCountStatus ? `1` : `0`,
       themeStore.isMacCodeBlock ? `1` : `0`,
       themeStore.isShowLineNumber ? `1` : `0`,
-      componentKeys,
+      buildComponentFingerprint(componentStore),
       t(`store.count.summary`, { words: `{words}`, minutes: `{minutes}` }),
       t(`store.render.footnoteTitle`),
       t(`store.render.unknownComponent`),
@@ -130,9 +147,9 @@ export const useRenderStore = defineStore(`render`, () => {
     const uiStore = useUIStore()
     const componentStore = useCustomComponentStore()
     const themeMode = options?.themeMode ?? (uiStore.isDark ? `dark` : `light`)
-    const fingerprint = buildFingerprint(content, themeMode, themeStore, componentStore)
+    const optionsFingerprint = buildOptionsFingerprint(themeMode, themeStore, componentStore)
 
-    if (!options?.force && fingerprint === lastFingerprint)
+    if (!options?.force && content === lastContent && optionsFingerprint === lastOptionsFingerprint)
       return output.value
 
     // 重置渲染器配置
@@ -163,7 +180,8 @@ export const useRenderStore = defineStore(`render`, () => {
 
     // 提取标题
     extractTitles()
-    lastFingerprint = fingerprint
+    lastContent = content
+    lastOptionsFingerprint = optionsFingerprint
 
     return output.value
   }

@@ -318,6 +318,7 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         :headings="allHeadings"
         :active-heading-line="activeHeadingLine"
         @jump="jumpToHeading"
+        @dismiss="() => nextTick(() => editor.value?.focus())"
       />
 
       <!-- 桌面端占位 flex-1 -->

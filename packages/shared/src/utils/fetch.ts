@@ -67,19 +67,24 @@ async function request<T = unknown>(config: RequestConfig): Promise<T> {
   }
 }
 
-function createMethod(method: string) {
+function createDataMethod(method: string) {
   return <T = unknown>(url: string, data?: unknown, config?: Omit<RequestConfig, `url` | `method` | `data`>) =>
     request<T>({ ...config, url, method, data })
+}
+
+function createConfigMethod(method: string) {
+  return <T = unknown>(url: string, config?: Omit<RequestConfig, `url` | `method`>) =>
+    request<T>({ ...config, url, method })
 }
 
 interface FetchCallable {
   // Two type params kept for call-site compatibility (request body / response)
   <_TReq = unknown, TRes = unknown>(config: RequestConfig): Promise<TRes>
   <_TReq = unknown, TRes = unknown>(url: string, config?: RequestConfig): Promise<TRes>
-  get: <T = unknown>(url: string, config?: Omit<RequestConfig, `url` | `method` | `data`>) => Promise<T>
+  get: <T = unknown>(url: string, config?: Omit<RequestConfig, `url` | `method`>) => Promise<T>
   post: <T = unknown>(url: string, data?: unknown, config?: Omit<RequestConfig, `url` | `method` | `data`>) => Promise<T>
   put: <T = unknown>(url: string, data?: unknown, config?: Omit<RequestConfig, `url` | `method` | `data`>) => Promise<T>
-  delete: <T = unknown>(url: string, config?: Omit<RequestConfig, `url` | `method` | `data`>) => Promise<T>
+  delete: <T = unknown>(url: string, config?: Omit<RequestConfig, `url` | `method`>) => Promise<T>
   patch: <T = unknown>(url: string, data?: unknown, config?: Omit<RequestConfig, `url` | `method` | `data`>) => Promise<T>
   request: typeof request
 }
@@ -93,11 +98,11 @@ const service = (async function fetchLike(
   return request(urlOrConfig)
 }) as FetchCallable
 
-service.get = createMethod(`GET`)
-service.post = createMethod(`POST`)
-service.put = createMethod(`PUT`)
-service.delete = createMethod(`DELETE`)
-service.patch = createMethod(`PATCH`)
+service.get = createConfigMethod(`GET`)
+service.post = createDataMethod(`POST`)
+service.put = createDataMethod(`PUT`)
+service.delete = createConfigMethod(`DELETE`)
+service.patch = createDataMethod(`PATCH`)
 service.request = request
 
 export default service

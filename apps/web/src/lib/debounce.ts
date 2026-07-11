@@ -1,4 +1,6 @@
-type DebouncedFn<T extends (...args: never[]) => unknown> = ((
+type AnyFn = (...args: any[]) => any
+
+type DebouncedFn<T extends AnyFn> = ((
   ...args: Parameters<T>
 ) => void) & {
   cancel: () => void
@@ -8,7 +10,7 @@ type DebouncedFn<T extends (...args: never[]) => unknown> = ((
 /**
  * Lightweight debounce with cancel/flush (VueUse 14's useDebounceFn no longer exposes these).
  */
-export function debounce<T extends (...args: never[]) => unknown>(fn: T, ms: number): DebouncedFn<T> {
+export function debounce<T extends AnyFn>(fn: T, ms: number): DebouncedFn<T> {
   let timer: ReturnType<typeof setTimeout> | undefined
   let lastArgs: Parameters<T> | undefined
 
