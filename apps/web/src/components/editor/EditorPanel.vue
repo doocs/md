@@ -6,9 +6,11 @@ import { toBase64 } from '@md/shared/utils/fileHelpers'
 import { defineAsyncComponent } from 'vue'
 import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
 import { SearchTab } from '@/components/ui/search-tab'
+import { createComponentCompletionExtension } from '@/composables/useComponentCompletion'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useImageUploader } from '@/composables/useImageUploader'
 import { completeInitialPreviewBoot } from '@/composables/useInitialPreviewBoot'
+import { useLocalizedAllComponents } from '@/composables/useLocalizedBuiltinComponents'
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
@@ -33,6 +35,7 @@ const postStore = usePostStore()
 const renderStore = useRenderStore()
 const themeStore = useThemeStore()
 const uiStore = useUIStore()
+const localizedAllComponents = useLocalizedAllComponents()
 const { upload } = useImageUploader()
 const { editorRefresh, scheduleEditorRefresh } = useEditorRefresh()
 
@@ -479,6 +482,7 @@ function createFormTextArea(dom: HTMLDivElement) {
         paste: createPasteHandler(),
       }),
       ...createSlashExtension(() => codeMirrorView.value),
+      ...createComponentCompletionExtension(() => localizedAllComponents.value),
     ],
   })
 

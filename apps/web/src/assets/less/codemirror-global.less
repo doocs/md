@@ -1,3 +1,4 @@
+/* Legacy CodeMirror 5 hint styles (kept for any leftover consumers) */
 .CodeMirror-hints {
   position: absolute;
   z-index: 10;
@@ -32,9 +33,244 @@
 }
 
 .search-match {
-  background-color: #ffeb3b; /* All match highlights*/
+  background-color: #ffeb3b;
 }
 
 .current-match {
-  background-color: #ff5722; /* Current match highlight*/
+  background-color: #ff5722;
+}
+
+/*
+ * Component autocomplete — visual tokens aligned with SlashCommandMenu
+ * (rounded-md + shadow-md + popover surface + list-item / icon pattern)
+ */
+.cm-tooltip.md-completion-tooltip,
+.cm-tooltip.cm-tooltip-autocomplete.md-completion-tooltip {
+  z-index: 9999 !important;
+  box-sizing: border-box !important;
+  width: 260px;
+  max-width: calc(100vw - 24px) !important;
+  padding: 0 !important;
+  border: 1px solid hsl(var(--border) / 0.8) !important;
+  border-radius: calc(var(--radius) - 2px) !important; /* = rounded-md */
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  /* = shadow-md */
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  overflow: hidden;
+  font-family: inherit !important;
+  animation: md-completion-in 0.12s ease;
+}
+
+@keyframes md-completion-in {
+  from {
+    opacity: 0;
+    transform: translateY(-4px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cm-tooltip.md-completion-tooltip .cm-tooltip-arrow:before,
+.cm-tooltip.md-completion-tooltip .cm-tooltip-arrow:after {
+  display: none !important;
+}
+
+.cm-tooltip.md-completion-tooltip ul[role='listbox'],
+.cm-tooltip.cm-tooltip-autocomplete.md-completion-tooltip > ul {
+  margin: 0 !important;
+  padding: 8px !important;
+  max-height: min(320px, 45vh);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.cm-tooltip.md-completion-tooltip ul[role='listbox']::-webkit-scrollbar {
+  display: none;
+}
+
+/* Section title — same as .slash-section-title */
+.cm-tooltip.md-completion-tooltip .md-completion-section,
+.cm-tooltip.md-completion-tooltip li.md-completion-section {
+  display: list-item !important;
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 4px 6px !important;
+  min-height: 0 !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: normal;
+  text-transform: none;
+  color: hsl(var(--muted-foreground)) !important;
+  pointer-events: none;
+  user-select: none;
+  cursor: default;
+}
+
+.cm-tooltip.md-completion-tooltip .md-completion-section:not(:first-child),
+.cm-tooltip.md-completion-tooltip li.md-completion-section:not(:first-child) {
+  margin-top: 10px !important;
+  padding-top: 10px !important;
+  border-top: 1px solid hsl(var(--border) / 0.6) !important;
+}
+
+.cm-tooltip.md-completion-tooltip li.md-completion-section::before {
+  display: none !important;
+}
+
+/* Option — same as .slash-list-item */
+.cm-tooltip.md-completion-tooltip li[role='option'],
+.cm-tooltip.md-completion-tooltip .md-completion-option {
+  display: grid !important;
+  grid-template-columns: 28px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  grid-template-areas:
+    'icon label'
+    'icon detail';
+  column-gap: 10px;
+  row-gap: 1px;
+  align-items: center;
+  box-sizing: border-box !important;
+  width: 100%;
+  margin: 0 !important;
+  padding: 7px 8px !important;
+  border: 1px solid transparent !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  color: hsl(var(--foreground)) !important;
+  line-height: 1.2 !important;
+  text-align: left;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.12s;
+}
+
+.cm-tooltip.md-completion-tooltip li[role='option']:not(:has(.cm-completionDetail)) {
+  grid-template-rows: auto;
+  grid-template-areas: 'icon label';
+}
+
+.cm-tooltip.md-completion-tooltip li[role='option']:hover,
+.cm-tooltip.md-completion-tooltip .md-completion-option:hover {
+  background: hsl(var(--accent) / 0.65) !important;
+}
+
+.cm-tooltip.md-completion-tooltip li[aria-selected='true'],
+.cm-tooltip.md-completion-tooltip .md-completion-option[aria-selected='true'] {
+  background: hsl(var(--accent)) !important;
+  color: hsl(var(--accent-foreground)) !important;
+  border-color: hsl(var(--primary) / 0.25) !important;
+}
+
+/* Icon — same as .slash-list-icon */
+.md-completion-icon {
+  grid-area: icon;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  flex-shrink: 0;
+  background: hsl(var(--muted) / 0.55);
+  color: hsl(var(--foreground));
+}
+
+.md-completion-icon svg {
+  display: block;
+  width: 14px;
+  height: 14px;
+}
+
+.cm-tooltip.md-completion-tooltip li[aria-selected='true'] .md-completion-icon {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}
+
+/* Label — same as .slash-list-label */
+.cm-tooltip.md-completion-tooltip .cm-completionLabel {
+  grid-area: label;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: inherit !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  color: inherit !important;
+}
+
+.cm-tooltip.md-completion-tooltip .cm-completionMatchedText {
+  text-decoration: none !important;
+  font-weight: 600 !important;
+  color: inherit !important;
+  background: transparent;
+  padding: 0;
+}
+
+/* Detail — same as .slash-list-group */
+.cm-tooltip.md-completion-tooltip .cm-completionDetail {
+  grid-area: detail;
+  min-width: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: normal !important;
+  font-size: 10px !important;
+  font-weight: 400 !important;
+  line-height: 1.3 !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.cm-tooltip.md-completion-tooltip li[aria-selected='true'] .cm-completionDetail {
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.cm-tooltip.cm-completionInfo {
+  max-width: min(260px, calc(100vw - 24px)) !important;
+  padding: 8px 10px !important;
+  border: 1px solid hsl(var(--border) / 0.8) !important;
+  border-radius: calc(var(--radius) - 2px) !important;
+  background-color: hsl(var(--popover)) !important;
+  color: hsl(var(--popover-foreground)) !important;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1) !important;
+  font-size: 12px !important;
+  line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+  .cm-tooltip.md-completion-tooltip,
+  .cm-tooltip.cm-tooltip-autocomplete.md-completion-tooltip {
+    width: min(260px, calc(100vw - 24px));
+  }
+
+  .cm-tooltip.md-completion-tooltip ul[role='listbox'],
+  .cm-tooltip.cm-tooltip-autocomplete.md-completion-tooltip > ul {
+    max-height: min(280px, 40vh);
+  }
+
+  .cm-tooltip.md-completion-tooltip li[role='option'],
+  .cm-tooltip.md-completion-tooltip .md-completion-option {
+    min-height: 44px;
+    padding: 8px !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cm-tooltip.md-completion-tooltip,
+  .cm-tooltip.cm-tooltip-autocomplete.md-completion-tooltip {
+    animation: none;
+  }
 }
