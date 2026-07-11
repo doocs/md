@@ -73,6 +73,12 @@ function createRenderer(
       svg.style.width = width || ``
     }
 
+    const firstG = svg.querySelector(`g`)
+    if (firstG) {
+      firstG.style.fill = `currentColor`
+      firstG.style.stroke = `currentColor`
+    }
+
     if (!display) {
       return `<span class="katex-inline" data-math-display="false" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</span>`
     }
