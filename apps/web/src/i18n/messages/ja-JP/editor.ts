@@ -415,7 +415,7 @@ export default {
     configureImgHost: `先に {host} 画像ホストの設定を行ってください`,
     uploadUnknownError: `不明な画像アップロードエラー`,
     uploadSuccess: `画像をアップロードしました`,
-    reuploading: `⏳ 再アップロード中...`,
+    reuploading: `再アップロード中...`,
     reuploadFailed: `再アップロードに失敗しました。元のリンクを保持します。`,
   },
   localImage: {

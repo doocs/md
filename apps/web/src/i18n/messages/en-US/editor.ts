@@ -415,7 +415,7 @@ export default {
     configureImgHost: `Configure {host} image host settings first`,
     uploadUnknownError: `Unknown image upload error`,
     uploadSuccess: `Image uploaded successfully`,
-    reuploading: `⏳ Re-uploading...`,
+    reuploading: `Re-uploading...`,
     reuploadFailed: `Re-upload failed. Original link kept.`,
   },
   localImage: {

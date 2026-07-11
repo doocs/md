@@ -415,7 +415,7 @@ export default {
     configureImgHost: `請先配置 {host} 圖床引數`,
     uploadUnknownError: `上傳圖片未知異常`,
     uploadSuccess: `圖片上傳成功`,
-    reuploading: `⏳ 轉存中...`,
+    reuploading: `轉存中...`,
     reuploadFailed: `圖片轉存失敗，已保留原連結`,
   },
   localImage: {

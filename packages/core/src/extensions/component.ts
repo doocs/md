@@ -95,7 +95,7 @@ export const BUILT_IN_COMPONENTS: CustomComponentDef[] = [
       { name: `caption`, description: `表格标题（可选）` },
     ],
     template: ``,
-    example: `<TableBlock headers='["名称","版本","状态"]' rows='[["Vue","3.x","✅ 稳定"],["Vite","8.x","✅ 稳定"],["pnpm","10.x","✅ 稳定"]]' caption="技术栈清单" />`,
+    example: `<TableBlock headers='["名称","版本","状态"]' rows='[["Vue","3.x","稳定"],["Vite","8.x","稳定"],["pnpm","10.x","稳定"]]' caption="技术栈清单" />`,
   },
   {
     id: `builtin-info-grid`,
