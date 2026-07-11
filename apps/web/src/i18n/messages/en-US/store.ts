@@ -94,6 +94,11 @@ export default {
   count: {
     summary: `{words} words, about {minutes} min read`,
   },
+  render: {
+    footnoteTitle: `References`,
+    unknownComponent: `Unknown component: {name}`,
+    katexLoading: `Loading formula…`,
+  },
   popup: {
     mustRead: `Before you start`,
     mpHostIntro: `To use the WeChat Official Account media library as an image host, complete the following setup:`,

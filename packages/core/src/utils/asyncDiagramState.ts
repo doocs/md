@@ -10,13 +10,14 @@ export const MD_DIAGRAM_STATE = {
 
 export type MdDiagramState = typeof MD_DIAGRAM_STATE[keyof typeof MD_DIAGRAM_STATE]
 
+/** Locale-neutral English fallbacks; Web injects localized strings via IOpts. */
 export const DEFAULT_DIAGRAM_MESSAGES: DiagramMessages = {
-  mermaidLoading: `正在加载 Mermaid...`,
-  mermaidError: `Mermaid 渲染失败: {detail}`,
-  plantumlLoading: `正在加载 PlantUML 图表...`,
-  plantumlError: `PlantUML 图表加载失败`,
-  infographicLoading: `正在加载 Infographic...`,
-  infographicError: `Infographic 渲染失败: {detail}`,
+  mermaidLoading: `Loading Mermaid…`,
+  mermaidError: `Mermaid render failed: {detail}`,
+  plantumlLoading: `Loading PlantUML diagram…`,
+  plantumlError: `Failed to load PlantUML diagram`,
+  infographicLoading: `Loading infographic…`,
+  infographicError: `Infographic render failed: {detail}`,
 }
 
 export function diagramStateAttr(state: MdDiagramState): string {

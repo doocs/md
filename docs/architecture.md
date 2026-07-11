@@ -38,10 +38,11 @@ apps (web / vscode / mcp-server)
 ```
 Markdown 原文
   → @md/core (marked + 自定义扩展)
-  → juice 内联 CSS（微信兼容）
   → isomorphic-dompurify 净化
   → 注入主题 CSS 变量 (@md/core/theme)
-  → HTML 输出（预览 / 复制到公众号）
+  → HTML 输出（预览）
+  → juice 内联 CSS（仅复制到微信时，在 `@md/web` 导出层）
+  → 剪贴板 HTML（公众号）
 ```
 
 Web 端入口：

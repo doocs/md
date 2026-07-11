@@ -62,6 +62,12 @@ export const useRenderStore = defineStore(`render`, () => {
     }),
   })
 
+  const buildRenderMessages = () => ({
+    footnoteTitle: t(`store.render.footnoteTitle`),
+    unknownComponent: t(`store.render.unknownComponent`),
+    katexLoading: t(`store.render.katexLoading`),
+  })
+
   // 提取标题
   const extractTitles = () => {
     const div = document.createElement(`div`)
@@ -105,6 +111,7 @@ export const useRenderStore = defineStore(`render`, () => {
       components: componentStore.registry,
       diagramMessages: buildDiagramMessages(),
       countMessages: buildCountMessages(),
+      renderMessages: buildRenderMessages(),
     })
 
     // 渲染 Markdown

@@ -94,6 +94,11 @@ export default {
   count: {
     summary: `{words} 語、約 {minutes} 分で読めます`,
   },
+  render: {
+    footnoteTitle: `参考文献`,
+    unknownComponent: `不明なコンポーネント: {name}`,
+    katexLoading: `数式を読み込み中…`,
+  },
   popup: {
     mustRead: `ご利用前に`,
     mpHostIntro: `微信公式アカウントの素材ライブラリを画像ホストとして使うには、次の設定が必要です:`,

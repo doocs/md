@@ -40,6 +40,6 @@ describe(`isAsyncDiagramPending`, () => {
 describe(`formatDiagramMessage`, () => {
   it(`replaces detail placeholder`, () => {
     expect(formatDiagramMessage(DEFAULT_DIAGRAM_MESSAGES.mermaidError, `bad syntax`))
-      .toBe(`Mermaid 渲染失败: bad syntax`)
+      .toBe(`Mermaid render failed: bad syntax`)
   })
 })

@@ -34,7 +34,9 @@ const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
-const DEFAULT_COUNT_SUMMARY = `字数 {words}，阅读大约需 {minutes} 分钟`
+/** Locale-neutral English fallbacks; Web injects localized strings via IOpts. */
+const DEFAULT_COUNT_SUMMARY = `{words} words, about {minutes} min read`
+const DEFAULT_FOOTNOTE_TITLE = `References`
 
 const ADDITION_STYLE = `
     <style>
@@ -267,8 +269,9 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       return ``
     }
 
+    const footnoteTitle = opts.renderMessages?.footnoteTitle || DEFAULT_FOOTNOTE_TITLE
     return (
-      styledContent(`h4`, `引用链接`)
+      styledContent(`h4`, footnoteTitle)
       + styledContent(`footnotes`, buildFootnoteArray(footnotes), `p`)
     )
   }
@@ -461,12 +464,18 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   markdownParser.use({ renderer })
   // 新主题系统：扩展不再需要 styles 参数
   // 通过闭包传入注册表 getter，避免直接依赖全局状态
-  markdownParser.use(markedComponent(() => opts.components ?? getBuiltInRegistry()))
+  markdownParser.use(markedComponent(
+    () => opts.components ?? getBuiltInRegistry(),
+    () => opts.renderMessages,
+  ))
   markdownParser.use(markedMarkup())
   markdownParser.use(markedToc())
   markdownParser.use(markedSlider())
   markdownParser.use(markedAlert({}))
-  markdownParser.use(MDKatex({ nonStandard: true }, true))
+  markdownParser.use(MDKatex({
+    nonStandard: true,
+    getKatexLoadingMessage: () => opts.renderMessages?.katexLoading,
+  }, true))
   markdownParser.use(markedFootnotes())
   markdownParser.use(markedMermaid(() => ({
     themeMode: opts.themeMode,

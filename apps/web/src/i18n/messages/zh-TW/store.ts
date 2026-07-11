@@ -94,6 +94,11 @@ export default {
   count: {
     summary: `字數 {words}，閱讀大約需 {minutes} 分鐘`,
   },
+  render: {
+    footnoteTitle: `引用連結`,
+    unknownComponent: `未知元件: {name}`,
+    katexLoading: `正在載入公式…`,
+  },
   popup: {
     mustRead: `使用必讀`,
     mpHostIntro: `如果您希望使用微信公眾號素材庫作為圖床功能，需要進行以下配置：`,
