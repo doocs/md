@@ -1,5 +1,5 @@
 import type { Post } from '@/types/post'
-import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { getDefaultContent } from '@/assets/example/default-content'
 import { formatLocalDateTime, t } from '@/i18n/translate'
 import { debounce } from '@/lib/debounce'
 import { documentRepo, getLoadedDocuments, store } from '@/storage'
@@ -9,12 +9,13 @@ import { useEditorStore } from '@/stores/editor'
 export type { Post } from '@/types/post'
 
 function createDefaultPost(): Post {
+  const content = getDefaultContent()
   return {
     id: crypto.randomUUID(),
     title: t('store.post.defaultTitle'),
-    content: DEFAULT_CONTENT,
+    content,
     history: [
-      { datetime: formatLocalDateTime(), content: DEFAULT_CONTENT },
+      { datetime: formatLocalDateTime(), content },
     ],
     createDatetime: new Date(),
     updateDatetime: new Date(),
