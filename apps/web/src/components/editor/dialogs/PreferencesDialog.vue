@@ -1,12 +1,14 @@
 <script setup lang="ts">
+import type { AppLocale } from '@/i18n/types'
 import { Settings } from '@lucide/vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
+import PanelSegmented from '@/components/shared/panel-dialog/PanelSegmented.vue'
 import PanelSelect from '@/components/shared/panel-dialog/PanelSelect.vue'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
-import { LOCALE_OPTIONS } from '@/i18n/constants'
+import { LOCALE_OPTIONS, SUPPORTED_LOCALES } from '@/i18n/constants'
 import { useLocaleStore } from '@/stores/locale'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
@@ -70,6 +72,11 @@ function setCountStatus(value: boolean) {
   isCountStatus.value = value
   editorRefresh()
 }
+
+function onLocaleChange(value: string) {
+  if ((SUPPORTED_LOCALES as readonly string[]).includes(value))
+    localeStore.setLocale(value as AppLocale)
+}
 </script>
 
 <template>
@@ -101,10 +108,10 @@ function setCountStatus(value: boolean) {
               {{ t('preferences.language.hint') }}
             </p>
           </div>
-          <PanelSelect
+          <PanelSegmented
             :model-value="localeStore.locale"
             :options="localeOptions"
-            @update:model-value="localeStore.setLocale($event as typeof localeStore.locale)"
+            @update:model-value="onLocaleChange"
           />
         </div>
 
