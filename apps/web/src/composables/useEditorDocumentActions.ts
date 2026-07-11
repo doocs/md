@@ -1,4 +1,4 @@
-import DEFAULT_CONTENT from '@/assets/example/markdown.md?raw'
+import { getDefaultContent } from '@/assets/example/default-content'
 import { t } from '@/i18n/translate'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
@@ -15,7 +15,7 @@ export function useEditorDocumentActions() {
   }
 
   function resetContent() {
-    editorStore.importContent(DEFAULT_CONTENT)
+    editorStore.importContent(getDefaultContent())
     toast.success(t('store.editor.contentReset'))
   }
 
