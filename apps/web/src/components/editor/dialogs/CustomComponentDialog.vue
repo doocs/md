@@ -3,7 +3,8 @@ import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
 import type { CustomComponentFormPayload } from './CustomComponentForm.vue'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
-import { escapeHtml } from '@md/core'
+import { escapeHtml, previewComponent } from '@md/core'
+import { sanitizeHtml } from '@md/core/utils'
 import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCustomComponentStore } from '@/stores/customComponent'
@@ -148,6 +149,21 @@ watch(activeComponentTab, () => {
 
 function toggleExpand(id: string) {
   expandedId.value = expandedId.value === id ? null : id
+}
+
+function parseExampleProps(example: string): Record<string, string> {
+  const result: Record<string, string> = {}
+  for (const m of example.matchAll(/(\w[\w-]*)=(?:"([^"]*)"|'([^']*)')/g)) {
+    result[m[1]] = m[2] !== undefined ? m[2] : (m[3] ?? '')
+  }
+  return result
+}
+
+function getComponentPreview(def: CustomComponentDef): string {
+  const snippet = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
+  const propsOverride = parseExampleProps(snippet)
+  const raw = previewComponent(def, propsOverride)
+  return sanitizeHtml(raw)
 }
 
 const copiedId = ref<string | null>(null)
@@ -417,6 +433,16 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           </div>
                         </div>
                       </div>
+                    </div>
+
+                    <div>
+                      <p class="text-xs font-medium text-muted-foreground mb-1.5">
+                        {{ t('component.previewLabel') }}
+                      </p>
+                      <div
+                        class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
+                        v-html="getComponentPreview(def)"
+                      />
                     </div>
 
                     <div>
@@ -692,6 +718,16 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         <p class="text-xs text-muted-foreground italic">
                           {{ t('component.noPropsDefined') }}
                         </p>
+                      </div>
+
+                      <div>
+                        <p class="text-xs font-medium text-muted-foreground mb-1.5">
+                          {{ t('component.previewLabel') }}
+                        </p>
+                        <div
+                          class="rounded-lg border bg-background px-3 py-2.5 text-sm leading-relaxed overflow-auto max-h-48"
+                          v-html="getComponentPreview(def)"
+                        />
                       </div>
 
                       <div>
