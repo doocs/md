@@ -57,7 +57,7 @@ async function createOffScreenPreviewElement(
   }
 }
 
-/** 导出 PNG 卡片图片 */
+/** Export PNG card image. */
 export async function exportPNG(
   title: string = `untitled`,
   options: { previewDevice: `desktop` | `mobile` },

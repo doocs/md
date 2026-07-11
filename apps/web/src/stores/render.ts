@@ -11,37 +11,27 @@ export interface RenderOptions {
   force?: boolean
 }
 
-/**
- * 渲染 Store
- * 负责 Markdown 渲染、HTML 输出、标题提取等
- */
+/** Markdown rendering, HTML output, and heading extraction. */
 export const useRenderStore = defineStore(`render`, () => {
-  // 输出的 HTML
   const output = ref(``)
 
-  // 阅读时间统计
   const readingTime = reactive({
     chars: 0,
     words: 0,
     minutes: 0,
   })
 
-  // 文章标题列表（用于生成目录）
   const titleList = ref<{
     url: string
     title: string
     level: number
   }[]>([])
 
-  // 渲染器实例（延迟初始化）
   let renderer: ReturnType<typeof initRenderer> | null = null
   let lastOptionsFingerprint = ``
   let lastContent = ``
 
-  /**
-   * 初始化渲染器（新主题系统）
-   * 主题样式通过 useThemeStore().applyCurrentTheme() 注入到 <style> 标签
-   */
+  /** Init renderer; theme CSS is injected via useThemeStore().applyCurrentTheme(). */
   const initRendererInstance = (options?: {
     isMacCodeBlock?: boolean
     isShowLineNumber?: boolean
@@ -52,7 +42,6 @@ export const useRenderStore = defineStore(`render`, () => {
     return renderer
   }
 
-  // 获取渲染器
   const getRenderer = () => renderer
 
   const buildDiagramMessages = () => ({
@@ -65,7 +54,7 @@ export const useRenderStore = defineStore(`render`, () => {
   })
 
   const buildCountMessages = () => ({
-    // 保留占位符，交由 core 层替换为具体数值。
+    // Keep placeholders; core replaces them with actual counts.
     summary: t(`store.count.summary`, {
       words: `{words}`,
       minutes: `{minutes}`,
@@ -117,7 +106,6 @@ export const useRenderStore = defineStore(`render`, () => {
     ].join(`\u0001`)
   }
 
-  // 提取标题
   const extractTitles = () => {
     const div = document.createElement(`div`)
     div.innerHTML = output.value
@@ -137,7 +125,6 @@ export const useRenderStore = defineStore(`render`, () => {
     output.value = div.innerHTML
   }
 
-  // 渲染内容
   const render = (content: string, options?: RenderOptions) => {
     if (!renderer) {
       throw new Error(`Renderer not initialized. Call initRendererInstance first.`)
@@ -152,8 +139,7 @@ export const useRenderStore = defineStore(`render`, () => {
     if (!options?.force && content === lastContent && optionsFingerprint === lastOptionsFingerprint)
       return output.value
 
-    // 重置渲染器配置
-    // 注意：isUseIndent 和 isUseJustify 通过 CSS 变量处理，不需要传递给渲染器
+    // isUseIndent / isUseJustify are applied via CSS variables, not renderer options
     renderer.reset({
       citeStatus: themeStore.isCiteStatus,
       legend: themeStore.legend,
@@ -167,18 +153,14 @@ export const useRenderStore = defineStore(`render`, () => {
       renderMessages: buildRenderMessages(),
     })
 
-    // 渲染 Markdown
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(content, renderer)
 
-    // 更新统计信息
     readingTime.chars = content.length
     readingTime.words = readingTimeResult.words
     readingTime.minutes = Math.ceil(readingTimeResult.minutes)
 
-    // 后处理 HTML
     output.value = postProcessHtml(baseHtml, readingTimeResult, renderer)
 
-    // 提取标题
     extractTitles()
     lastContent = content
     lastOptionsFingerprint = optionsFingerprint

@@ -11,7 +11,7 @@ export const SYNC_RATE_LIMIT = {
   pro: 300,
 } as const
 
-/** 每天分享（新建或更新）次数上限；`pro: null` 表示不限 */
+/** Daily share create/update limit; `pro: null` means unlimited */
 export const SHARE_CREATE_LIMIT: Record<UserPlan, number | null> = {
   free: 2,
   pro: null,
@@ -26,12 +26,12 @@ export function parseGithubLoginFromRemark(remark: string): string | null {
   if (!trimmed)
     return null
 
-  // 支持纯用户名，或「github:用户名」形式
+  // Plain username or `github:username`
   const match = trimmed.match(/^(?:github\s*[:：]\s*)?([a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?)$/i)
   if (match)
     return normalizeGithubLogin(match[1])
 
-  // 备注中第一个像 GitHub 用户名的 token
+  // First token in the remark that looks like a GitHub username
   const token = trimmed.split(/[\s,，;；]+/).find(part => /^[a-z0-9](?:[a-z0-9-]{0,37}[a-z0-9])?$/i.test(part))
   return token ? normalizeGithubLogin(token) : null
 }

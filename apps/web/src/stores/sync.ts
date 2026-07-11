@@ -32,10 +32,7 @@ function writeSyncedIds(ids: string[]): void {
   safeSetItem(SYNCED_IDS_KEY, JSON.stringify(ids))
 }
 
-/**
- * 云同步 Store
- * 负责同步状态机、手动/自动同步编排、上次同步时间
- */
+/** Cloud sync: state machine, manual/auto sync orchestration, last sync time. */
 export const useSyncStore = defineStore(`sync`, () => {
   const authStore = useAuthStore()
   const postStore = usePostStore()

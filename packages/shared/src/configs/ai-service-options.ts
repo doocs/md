@@ -364,7 +364,7 @@ export const serviceOptions: ServiceOption[] = [
   },
 ]
 
-// 图片模型
+// Image generation models
 export const imageServiceOptions: ImageServiceOption[] = [
   {
     value: `default`,

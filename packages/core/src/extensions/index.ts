@@ -1,4 +1,3 @@
-// Markdown 扩展导出
 export * from './alert'
 export * from './component'
 export * from './diagram-theme'

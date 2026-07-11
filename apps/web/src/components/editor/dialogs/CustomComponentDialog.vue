@@ -22,9 +22,6 @@ const uiStore = useUIStore()
 
 const { toggleShowComponentDialog } = uiStore
 
-// ──────────────────────────────────────────────
-// 表单状态
-// ──────────────────────────────────────────────
 const isShowForm = ref(false)
 const formMode = ref<'create' | 'edit'>('create')
 const editingId = ref('')
@@ -58,9 +55,6 @@ function onFormCancel() {
   isShowForm.value = false
 }
 
-// ──────────────────────────────────────────────
-// 导入 / 导出
-// ──────────────────────────────────────────────
 function exportComponents() {
   const data = JSON.stringify(componentStore.userComponents, null, 2)
   const blob = new Blob([data], { type: 'application/json' })
@@ -117,16 +111,12 @@ function onImportFile(event: Event) {
     catch {
       toast.error(t('component.importFailed'))
     }
-    // reset input so the same file can be re-imported
     if (importFileRef.value)
       importFileRef.value.value = ''
   }
   reader.readAsText(file)
 }
 
-// ──────────────────────────────────────────────
-// 列表操作
-// ──────────────────────────────────────────────
 function insertSnippet(def: CustomComponentDef) {
   const snippet = def.example || componentStore.buildSnippet(def.builtIn ? findBuiltinDef(def.id) ?? def : def)
   editorStore.insertAtCursor(snippet)
@@ -149,9 +139,6 @@ function onUpdate(val: boolean) {
   }
 }
 
-// ──────────────────────────────────────────────
-// 展开/折叠详情
-// ──────────────────────────────────────────────
 const activeComponentTab = ref<'builtin' | 'custom'>('builtin')
 const expandedId = ref<string | null>(null)
 
@@ -163,9 +150,6 @@ function toggleExpand(id: string) {
   expandedId.value = expandedId.value === id ? null : id
 }
 
-// ──────────────────────────────────────────────
-// 复制代码片段
-// ──────────────────────────────────────────────
 const copiedId = ref<string | null>(null)
 
 function findBuiltinDef(id: string) {
@@ -184,7 +168,6 @@ async function copySnippet(def: CustomComponentDef) {
   }
 }
 
-// 类型颜色标签
 function propTypeBadge(prop: ComponentPropDef) {
   if (prop.required)
     return { label: t('component.required'), class: 'bg-red-50 text-red-600 border-red-200' }
@@ -193,9 +176,7 @@ function propTypeBadge(prop: ComponentPropDef) {
   return { label: t('component.optional'), class: 'bg-muted text-muted-foreground border-border' }
 }
 
-// ──────────────────────────────────────────────
-// MpProfile 公众号名片集成
-// ──────────────────────────────────────────────
+// MpProfile WeChat card integration
 const isShowMpAccountConfig = ref(false)
 const editingMpAccountId = ref<string | null>(null)
 
@@ -245,7 +226,6 @@ function deleteMpAccount(account: MpAccount) {
   })
 }
 
-// 当对话框打开且携带 target 时，自动展开对应的内置组件
 watch(() => uiStore.isShowComponentDialog, (val) => {
   if (val && uiStore.componentDialogTarget) {
     const target = uiStore.componentDialogTarget
@@ -277,7 +257,6 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
       </DialogHeader>
 
       <div class="flex-1 overflow-y-auto px-4 sm:px-6 py-4 space-y-6">
-        <!-- ─── 新建/编辑表单 ─── -->
         <CustomComponentForm
           v-if="isShowForm"
           :mode="formMode"
@@ -286,7 +265,6 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
           @cancel="onFormCancel"
         />
 
-        <!-- ─── 组件列表 ─── -->
         <div v-if="!isShowForm">
           <Tabs v-model="activeComponentTab" class="w-full">
             <TabsList class="grid w-full grid-cols-2">

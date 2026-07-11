@@ -33,10 +33,8 @@ const currentMatchPosition = computed(() => {
   return matchPositions.value[indexOfMatch.value]
 })
 
-// 定义高亮样式的 StateEffect
 const setSearchHighlights = StateEffect.define<DecorationSet>()
 
-// 创建搜索高亮的 StateField（需要在编辑器初始化时添加）
 const searchHighlightField = StateField.define<DecorationSet>({
   create() {
     return Decoration.none
@@ -52,11 +50,8 @@ const searchHighlightField = StateField.define<DecorationSet>({
   provide: f => EditorView.decorations.from(f),
 })
 
-// 在组件挂载时动态添加 searchHighlightField
 onMounted(() => {
-  // 检查编辑器是否已经有这个 field
   if (!props.editorView.state.field(searchHighlightField, false)) {
-    // 动态添加 extension
     props.editorView.dispatch({
       effects: StateEffect.appendConfig.of(searchHighlightField),
     })
@@ -90,16 +85,16 @@ watch(showSearchTab, async () => {
     selectionRange.value = null
   }
   else {
-    // 如果有选中文本，自动启用 find in selection
+    // Auto-enable find-in-selection when text is selected
     const selection = props.editorView.state.selection.main
     if (!selection.empty) {
       findInSelection.value = true
       selectionRange.value = { from: selection.from, to: selection.to }
     }
     markMatch()
-    // 等待DOM更新后聚焦输入框，但不触发编辑器失焦
+    // Focus search input after DOM update without losing editor selection
     await nextTick()
-    // 使用 setTimeout 确保编辑器的选区不会因为输入框聚焦而丢失
+    // setTimeout keeps editor selection when input focuses
     setTimeout(() => {
       searchInputRef.value?.focus()
       searchInputRef.value?.select()
@@ -108,17 +103,14 @@ watch(showSearchTab, async () => {
 })
 
 function clearAllMarks() {
-  // 清除所有搜索高亮
   props.editorView.dispatch({
     effects: setSearchHighlights.of(Decoration.none),
   })
 }
 
 function markMatch() {
-  // 清除旧的高亮
   const decorations: any[] = []
 
-  // 为所有匹配项添加高亮装饰
   matchPositions.value.forEach((match, idx) => {
     const from = match[0]
     const to = match[1]
@@ -127,7 +119,6 @@ function markMatch() {
     const fromPos = fromLine.from + from.ch
     const toPos = toLine.from + to.ch
 
-    // 当前选中的匹配项使用不同的样式
     const isCurrentMatch = idx === indexOfMatch.value
     const mark = Decoration.mark({
       class: isCurrentMatch ? `cm-searchMatch-selected` : `cm-searchMatch`,
@@ -136,13 +127,11 @@ function markMatch() {
     decorations.push(mark.range(fromPos, toPos))
   })
 
-  // 应用装饰
   const decorationSet = Decoration.set(decorations, true)
   props.editorView.dispatch({
     effects: setSearchHighlights.of(decorationSet),
   })
 
-  // 滚动到当前匹配位置
   if (matchPositions.value[indexOfMatch.value]?.[0]) {
     const pos = matchPositions.value[indexOfMatch.value][0]
     const docLine = props.editorView.state.doc.line(pos.line + 1)
@@ -158,7 +147,6 @@ function findAllMatches() {
   if (!searchWord.value || !showSearchTab.value)
     return
 
-  // 确定搜索范围
   let searchFrom = 0
   let searchTo = props.editorView.state.doc.length
   if (findInSelection.value && selectionRange.value) {
@@ -253,18 +241,16 @@ function toggleCaseSensitive() {
 
 function toggleFindInSelection() {
   if (!findInSelection.value) {
-    // 启用时，保存当前选区
     const selection = props.editorView.state.selection.main
     if (!selection.empty) {
       selectionRange.value = { from: selection.from, to: selection.to }
     }
     else {
-      // 如果没有选区，使用整个文档
+      // Use full document when selection is empty
       selectionRange.value = { from: 0, to: props.editorView.state.doc.length }
     }
   }
   else {
-    // 禁用时，清除选区
     selectionRange.value = null
   }
   findInSelection.value = !findInSelection.value
@@ -336,7 +322,7 @@ function handleReplaceAll() {
   if (!currentMatchPosition.value)
     return
 
-  // 从后往前替换，避免位置偏移
+  // Replace from end to start to avoid position drift
   const sortedPositions = [...matchPositions.value].sort((a, b) => {
     if (a[0].line !== b[0].line) {
       return b[0].line - a[0].line
@@ -384,7 +370,7 @@ function setSearchWord(word: string) {
 }
 
 /**
- * 打开搜索面板并展开替换功能
+ * Open search panel with replace expanded
  */
 function setSearchWithReplace(word: string) {
   searchWord.value = word
@@ -401,14 +387,13 @@ function setSearchWithReplace(word: string) {
 }
 
 onUnmounted(() => {
-  // 清理搜索高亮
   clearAllMarks()
 })
 
 /**
- * 检查是否有匹配项
- * 返回 false 表示没有匹配项
- * 返回 true 表示有匹配项
+ * Check whether any matches exist
+ * Returns false when there are no matches
+ * Returns true when matches exist
  */
 function checkMatchNumber(): boolean {
   return numberOfMatches.value > 0
@@ -430,7 +415,6 @@ defineExpose({
       class="bg-background absolute right-0 top-0 z-50 flex max-w-[calc(100%-1rem)] gap-1 rounded-lg border px-2 py-1 shadow-md transition-all"
       :class="showReplace ? 'items-start' : 'items-center'"
     >
-      <!-- 折叠/展开按钮 -->
       <Button
         variant="ghost"
         :title="t('search.toggleReplace')"
@@ -441,9 +425,7 @@ defineExpose({
         <component :is="showReplace ? ChevronDown : ChevronRight" class="h-3.5 w-3.5" />
       </Button>
 
-      <!-- 查找 / 替换主体 -->
       <div class="grid min-w-0 flex-1 grid-cols-[1fr_auto] items-center gap-0.5">
-        <!-- 查找行 -->
         <div class="relative min-w-0">
           <Input
             ref="searchInputRef"
@@ -524,7 +506,6 @@ defineExpose({
           </Button>
         </div>
 
-        <!-- 替换行（可折叠） -->
         <template v-if="showReplace">
           <textarea
             v-model="replaceWord"
@@ -575,7 +556,6 @@ defineExpose({
 </style>
 
 <style lang="less">
-/* 搜索匹配项高亮样式（全局，不使用 scoped） */
 .cm-searchMatch {
   background-color: rgba(255, 237, 100, 0.4);
   border-radius: 2px;
@@ -589,7 +569,6 @@ defineExpose({
   font-weight: 500;
 }
 
-/* 暗色主题适配 */
 .dark .cm-searchMatch {
   background-color: rgba(255, 235, 59, 0.3);
   box-shadow: 0 0 0 1px rgba(255, 235, 59, 0.4);

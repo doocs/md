@@ -49,7 +49,6 @@ const tabs = computed(() => [
   { value: `export`, label: t('editorState.exportTab') },
 ] as const)
 
-// 使用响应式对象存储状态和选中状态
 const storeStates = ref<{
   data: Record<string, any>
   selected: Record<string, boolean>
@@ -58,16 +57,13 @@ const storeStates = ref<{
   selected: {},
 })
 
-// 获取状态并初始化选中状态
 function getAllStoreStates() {
   return {
-    // UI store 的状态
     isDark: uiStore.isDark,
     isOpenRightSlider: uiStore.isOpenRightSlider,
     isOpenPostSlider: uiStore.isOpenPostSlider,
     showAIToolbox: uiStore.showAIToolbox,
 
-    // Theme store 的状态
     theme: themeStore.theme,
     fontFamily: themeStore.fontFamily,
     fontSize: themeStore.fontSize,
@@ -81,19 +77,15 @@ function getAllStoreStates() {
     isUseIndent: themeStore.isUseIndent,
     isUseJustify: themeStore.isUseJustify,
 
-    // Post store 的状态
     currentPostId: postStore.currentPostId,
     currentPostIndex: postStore.currentPostIndex,
     posts: postStore.posts,
 
-    // CSS Editor store 的状态
     cssContentConfig: cssEditorStore.cssContentConfig,
 
-    // Render store 的状态
     titleList: renderStore.titleList,
     readingTime: renderStore.readingTime,
 
-    // Display store 的状态
     isShowCssEditor: uiStore.isShowCssEditor,
     isShowInsertFormDialog: uiStore.isShowInsertFormDialog,
     isShowUploadImgDialog: uiStore.isShowUploadImgDialog,
@@ -108,7 +100,7 @@ async function fetchStoreStates() {
     storeStates.value = {
       data: states,
       selected: Object.keys(states).reduce((acc, key) => {
-        acc[key] = true // 默认全部选中
+        acc[key] = true
         return acc
       }, {} as Record<string, boolean>),
     }
@@ -117,7 +109,6 @@ async function fetchStoreStates() {
   }
 }
 
-// 计算属性：根据选中状态过滤后的JSON
 const filteredExportJSON = computed(() => {
   if (!storeStates.value.data)
     return {}
@@ -130,7 +121,6 @@ const filteredExportJSON = computed(() => {
   }, {} as Record<string, any>)
 })
 
-// 导入的配置数据
 const importStates = ref<{
   data: Record<string, any>
   selected: Record<string, boolean>
@@ -167,7 +157,6 @@ function exportSelectedConfig() {
   dialogOpen.value = false
 }
 
-// 处理最大化弹窗预览代码
 const isMaximized = ref(false)
 const currentMaximizedJSON = computed(() => {
   if (activeName.value === `export`) {
@@ -194,7 +183,6 @@ async function copyToClipboard(text: string) {
   }
 }
 
-// 处理文件导入
 const fileInputRef = ref<HTMLInputElement | null>(null)
 
 function triggerFileInput() {
@@ -213,13 +201,12 @@ function handleFileImport(event: Event) {
     try {
       const content = e.target?.result as string
       const importedData = JSON.parse(content) as Record<string, any>
-      // 检查导入的数据是否符合预期
+
       if (typeof importedData !== `object` || Array.isArray(importedData)) {
         toast.error(t('editorState.importFormatError'))
         return
       }
 
-      // 过滤导入的数据项，只接受允许的项，与getLable函数对应
       const allowedKeys = Object.keys(storeStates.value.data).concat(Object.keys(importStates.value.data))
       const filteredData = Object.keys(importedData).reduce((acc, key) => {
         if (allowedKeys.includes(key)) {
@@ -227,17 +214,17 @@ function handleFileImport(event: Event) {
         }
         return acc
       }, {} as Record<string, any>)
-      // 检查导入的数据是否符合预期
+
       if (Object.keys(filteredData).length === 0) {
         toast.error(t('editorState.importNoApplicable'))
         return
       }
 
-      originalImportData.value = importedData // 保存原始导入数据
+      originalImportData.value = importedData
       importStates.value = {
         data: importedData,
         selected: Object.keys(importedData).reduce((acc, key) => {
-          acc[key] = true // 默认全部选中
+          acc[key] = true
           return acc
         }, {} as Record<string, boolean>),
       }
@@ -249,10 +236,9 @@ function handleFileImport(event: Event) {
   }
 
   reader.readAsText(file)
-  input.value = `` // 重置input，允许重复选择同一文件
+  input.value = ``
 }
 
-// 应用导入的配置
 function applyImportedConfig() {
   if (!filteredImportJSON.value)
     return
@@ -261,7 +247,6 @@ function applyImportedConfig() {
     if (importStates.value.selected[key] && importStates.value.data?.[key] !== undefined) {
       const value = importStates.value.data[key]
 
-      // UI store 的状态
       if (key === `isDark`)
         uiStore.isDark = value
       else if (key === `isOpenRightSlider`)
@@ -271,7 +256,6 @@ function applyImportedConfig() {
       else if (key === `showAIToolbox`)
         uiStore.showAIToolbox = value
 
-      // Theme store 的状态
       else if (key === `theme`)
         themeStore.theme = value
       else if (key === `fontFamily`)
@@ -297,7 +281,6 @@ function applyImportedConfig() {
       else if (key === `isUseJustify`)
         themeStore.isUseJustify = value
 
-      // Post store 的状态
       else if (key === `currentPostId`)
         postStore.currentPostId = value
       else if (key === `currentPostIndex`)
@@ -305,17 +288,14 @@ function applyImportedConfig() {
       else if (key === `posts`)
         postStore.replacePosts(value)
 
-      // CSS Editor store 的状态
       else if (key === `cssContentConfig`)
         cssEditorStore.cssContentConfig = value
 
-      // Render store 的状态
       else if (key === `titleList`)
         renderStore.titleList = value
       else if (key === `readingTime`)
         renderStore.readingTime = value
 
-      // Display store 的状态
       else if (key === `isShowCssEditor`)
         uiStore.isShowCssEditor = value
       else if (key === `isShowInsertFormDialog`)

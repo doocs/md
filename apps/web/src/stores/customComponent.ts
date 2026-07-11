@@ -5,36 +5,27 @@ import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
 /**
- * 自定义组件管理 Store
+ * Custom component store.
  *
- * 用户可定义 JSX 风格的组件，在 Markdown 中使用：
- *   <QRCodeBlock url="https://example.com" text="扫码访问" />
+ * Users define JSX-style components for Markdown, e.g.:
+ *   <QRCodeBlock url="https://example.com" text="Scan to visit" />
  *
- * 内置组件随系统提供，用户组件持久化到 localStorage。
- * 合并后的注册表传递给渲染器使用。
+ * Built-in components ship with the app; user components persist to localStorage.
+ * The merged registry is passed to the renderer.
  */
 export const useCustomComponentStore = defineStore(`customComponent`, () => {
-  // ==================== 状态 ====================
-
-  /** 用户自定义组件列表（持久化） */
   const userComponents = store.reactive<CustomComponentDef[]>(addPrefix(`custom_components`), [])
 
-  // ==================== 计算属性 ====================
-
-  /** 内置组件列表（只读） */
   const builtInComponents = computed(() => BUILT_IN_COMPONENTS)
 
-  /** 所有组件（内置 + 用户，用户组件可覆盖内置组件名） */
   const allComponents = computed<CustomComponentDef[]>(() => {
     const builtInMap = new Map(BUILT_IN_COMPONENTS.map(c => [c.name, c]))
-    // 用户组件覆盖同名内置组件
     for (const c of userComponents.value) {
       builtInMap.set(c.name, c)
     }
     return [...builtInMap.values()]
   })
 
-  /** 渲染器使用的注册表 */
   const registry = computed<ComponentRegistry>(() => {
     const base = getBuiltInRegistry()
     for (const c of userComponents.value) {
@@ -43,11 +34,6 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
     return base
   })
 
-  // ==================== 方法 ====================
-
-  /**
-   * 创建新的用户组件
-   */
   function createComponent(params: CreateComponentParams): CustomComponentDef {
     const now = Date.now()
     const def: CustomComponentDef = {
@@ -64,9 +50,6 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
     return def
   }
 
-  /**
-   * 更新用户组件
-   */
   function updateComponent(id: string, params: UpdateComponentParams): boolean {
     const idx = userComponents.value.findIndex(c => c.id === id)
     if (idx === -1) {
@@ -82,9 +65,6 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
     return true
   }
 
-  /**
-   * 删除用户组件（不能删除内置组件）
-   */
   function deleteComponent(id: string): boolean {
     const idx = userComponents.value.findIndex(c => c.id === id)
     if (idx === -1) {
@@ -97,17 +77,11 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
     return true
   }
 
-  /**
-   * 根据 ID 查找用户组件
-   */
   function getComponentById(id: string): CustomComponentDef | undefined {
     return userComponents.value.find(c => c.id === id)
   }
 
-  /**
-   * 生成该组件的 Markdown 使用示例字符串
-   * 优先使用 example 字段；否则自动构造，根据 prop.type 生成合适的占位值
-   */
+  /** Build a Markdown usage snippet; uses `example` when set, otherwise derives placeholders from prop types. */
   function buildSnippet(def: CustomComponentDef): string {
     if (def.example)
       return def.example
@@ -131,13 +105,10 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   }
 
   return {
-    // State
     userComponents,
-    // Computed
     builtInComponents,
     allComponents,
     registry,
-    // Actions
     createComponent,
     updateComponent,
     deleteComponent,

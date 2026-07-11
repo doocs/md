@@ -3,28 +3,16 @@ import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
-/**
- * 模板管理 Store
- * 负责管理 Markdown 模板的增删改查
- */
+/** Markdown template CRUD. */
 export const useTemplateStore = defineStore(`template`, () => {
-  // ==================== 状态 ====================
-  // 模板列表 - 使用响应式存储，自动持久化到 localStorage
   const templates = store.reactive<Template[]>(addPrefix(`templates`), [])
 
-  // ==================== 计算属性 ====================
-  // 按创建时间倒序排列的模板列表
   const sortedTemplates = computed(() => {
     return [...templates.value].sort((a, b) => b.createdAt - a.createdAt)
   })
 
-  // 模板总数
   const templateCount = computed(() => templates.value.length)
 
-  // ==================== 方法 ====================
-  /**
-   * 创建新模板
-   */
   function createTemplate(params: CreateTemplateParams): Template {
     const now = Date.now()
     const newTemplate: Template = {
@@ -42,16 +30,10 @@ export const useTemplateStore = defineStore(`template`, () => {
     return newTemplate
   }
 
-  /**
-   * 根据 ID 获取模板
-   */
   function getTemplateById(id: string): Template | undefined {
     return templates.value.find(t => t.id === id)
   }
 
-  /**
-   * 更新模板
-   */
   function updateTemplate(id: string, params: UpdateTemplateParams): boolean {
     const index = templates.value.findIndex(t => t.id === id)
     if (index === -1) {
@@ -69,9 +51,6 @@ export const useTemplateStore = defineStore(`template`, () => {
     return true
   }
 
-  /**
-   * 删除模板
-   */
   function deleteTemplate(id: string): boolean {
     const index = templates.value.findIndex(t => t.id === id)
     if (index === -1) {
@@ -85,9 +64,6 @@ export const useTemplateStore = defineStore(`template`, () => {
     return true
   }
 
-  /**
-   * 根据名称搜索模板
-   */
   function searchTemplates(keyword: string): Template[] {
     if (!keyword.trim()) {
       return sortedTemplates.value
@@ -103,9 +79,6 @@ export const useTemplateStore = defineStore(`template`, () => {
     })
   }
 
-  /**
-   * 批量删除模板
-   */
   function deleteTemplates(ids: string[]): number {
     let deletedCount = 0
     ids.forEach((id) => {
@@ -123,25 +96,16 @@ export const useTemplateStore = defineStore(`template`, () => {
     return deletedCount
   }
 
-  /**
-   * 清空所有模板
-   */
   function clearAllTemplates(): void {
     const count = templates.value.length
     templates.value = []
     toast.success(t('store.template.allCleared', { count }))
   }
 
-  /**
-   * 导出所有模板为 JSON
-   */
   function exportTemplates(): string {
     return JSON.stringify(templates.value, null, 2)
   }
 
-  /**
-   * 从 JSON 导入模板
-   */
   function importTemplates(jsonData: string): boolean {
     try {
       const importedTemplates = JSON.parse(jsonData) as Template[]
@@ -151,7 +115,6 @@ export const useTemplateStore = defineStore(`template`, () => {
         return false
       }
 
-      // 验证每个模板的必需字段
       const validTemplates = importedTemplates.filter((t) => {
         return t.id && t.name && t.content && t.createdAt && t.updatedAt
       })
@@ -161,11 +124,9 @@ export const useTemplateStore = defineStore(`template`, () => {
         return false
       }
 
-      // 合并模板（避免 ID 重复）
       validTemplates.forEach((importedTemplate) => {
         const existingIndex = templates.value.findIndex(t => t.id === importedTemplate.id)
         if (existingIndex !== -1) {
-          // ID 重复，生成新 ID
           templates.value.push({
             ...importedTemplate,
             id: crypto.randomUUID(),
@@ -187,14 +148,9 @@ export const useTemplateStore = defineStore(`template`, () => {
   }
 
   return {
-    // 状态
     templates,
-
-    // 计算属性
     sortedTemplates,
     templateCount,
-
-    // 方法
     createTemplate,
     getTemplateById,
     updateTemplate,

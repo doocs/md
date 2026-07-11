@@ -8,8 +8,8 @@ const EDITOR_REFRESH_DEBOUNCE_MS = 300
 const EDITOR_REFRESH_MAX_WAIT_MS = 800
 
 /**
- * 触发编辑器预览重渲染（应用当前主题与样式配置）。
- * scheduleEditorRefresh 用于连续输入/调样式时合并多次渲染（debounce + max-wait）。
+ * Trigger editor preview re-render (current theme and style config).
+ * scheduleEditorRefresh coalesces rapid edits via debounce + max-wait.
  */
 export function useEditorRefresh(options?: {
   debounceMs?: number

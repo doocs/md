@@ -1,9 +1,8 @@
 /**
- * MD 优雅主题 (@brzhang)
- * 在默认主题基础上添加优雅的视觉效果
+ * MD grace theme (@brzhang) — refinements on default
  */
 
-/* ==================== 标题样式 ==================== */
+/* Headings */
 h1 {
   padding: 0.5em 1em;
   border-bottom: 2px solid var(--md-primary-color);
@@ -37,7 +36,7 @@ h6 {
   font-size: var(--md-font-size);
 }
 
-/* ==================== 引用块 ==================== */
+/* Blockquote */
 blockquote {
   font-style: italic;
   padding: 1em 1em 1em 2em;
@@ -52,13 +51,13 @@ blockquote {
   font-style: italic;
 }
 
-/* ==================== 行内代码 ==================== */
+/* Inline code */
 .codespan {
   font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
 }
 
-/* ==================== 代码块 ==================== */
+/* Code blocks */
 pre.code__pre,
 .hljs.code__pre {
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
@@ -69,7 +68,7 @@ pre.code__pre > code,
   font-family: 'Fira Code', Menlo, Operator Mono, Consolas, Monaco, monospace;
 }
 
-/* ==================== 图片 ==================== */
+/* Images */
 img {
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -82,7 +81,7 @@ figcaption,
   font-size: 0.8em;
 }
 
-/* ==================== 列表 ==================== */
+/* Lists */
 ol {
   padding-left: 1.5em;
 }
@@ -96,7 +95,7 @@ li {
   margin: 0.5em 8px;
 }
 
-/* ==================== 分隔线 ==================== */
+/* Horizontal rules */
 hr {
   height: 1px;
   border: none;
@@ -104,7 +103,7 @@ hr {
   background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
 }
 
-/* ==================== 表格 ==================== */
+/* Tables */
 table {
   border-collapse: separate;
   border-spacing: 0;
@@ -123,13 +122,13 @@ td {
   padding: 0.5em 1em;
 }
 
-/* ==================== 强调 ==================== */
+/* Emphasis */
 em {
   font-style: italic;
   font-size: inherit;
 }
 
-/* ==================== 链接 ==================== */
+/* Links */
 a {
   color: #576b95;
   text-decoration: none;

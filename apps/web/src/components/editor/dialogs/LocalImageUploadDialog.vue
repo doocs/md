@@ -16,7 +16,7 @@ const { t } = useI18n()
 const uiStore = useUIStore()
 const { upload } = useImageUploader()
 
-// 批次上传状态（覆盖整个上传循环）
+// Batch upload state (covers the entire upload loop)
 const isUploading = ref(false)
 
 const isDialogOpen = computed({
@@ -26,18 +26,14 @@ const isDialogOpen = computed({
   },
 })
 
-// 用户勾选要上传的路径
 const selectedPaths = ref<Set<string>>(new Set())
 
-// 上传进度
 const progressValue = ref(0)
 const uploadResults = ref<Record<string, string>>({})
 const uploadErrors = ref<Record<string, string>>({})
 
-// 用户选择的文件夹中的文件列表
 const folderFiles = ref<File[]>([])
 
-// 匹配状态
 const matchedCount = computed(() => {
   let count = 0
   for (const path of selectedPaths.value) {
@@ -47,12 +43,10 @@ const matchedCount = computed(() => {
   return count
 })
 
-// 是否已有上传结果（成功或失败）
 const hasUploadAttempt = computed(() =>
   Object.keys(uploadResults.value).length > 0 || Object.keys(uploadErrors.value).length > 0,
 )
 
-// 是否全部上传成功（选中的图片都有结果且无报错）
 const isAllUploaded = computed(() => {
   const paths = Array.from(selectedPaths.value)
   return paths.length > 0 && paths.every(p => uploadResults.value[p] && !uploadErrors.value[p])
@@ -68,7 +62,6 @@ watch(() => uiStore.localImageUploadData, (data) => {
   }
 }, { immediate: true })
 
-// 选择包含图片的文件夹
 function handleFolderSelect(event: Event) {
   const files = (event.target as HTMLInputElement).files
   if (!files || files.length === 0)
@@ -76,7 +69,6 @@ function handleFolderSelect(event: Event) {
 
   folderFiles.value = Array.from(files)
 
-  // 自动选中已匹配的路径
   for (const path of selectedPaths.value) {
     if (!findMatchedFile(path)) {
       selectedPaths.value.delete(path)
@@ -88,23 +80,22 @@ function handleFolderSelect(event: Event) {
     }
   }
 
-  // 重置 input
   ;(event.target as HTMLInputElement).value = ''
 }
 
 /**
- * 根据路径从文件夹文件中查找匹配的文件
+ * Find a matching file in the folder for a path
  */
 function findMatchedFile(path: string): File | undefined {
   const pathFileName = path.split(/[/\\]/).pop()!.toLowerCase()
   const fileArray = folderFiles.value
 
-  // 第一轮：精确匹配文件名
+  // Round 1: exact filename match
   for (const file of fileArray) {
     if (file.name.toLowerCase() === pathFileName)
       return file
   }
-  // 第二轮：去扩展名匹配
+  // Round 2: match without extension
   const pathBase = pathFileName.replace(/\.[^.]+$/, '')
   for (const file of fileArray) {
     const fileBase = file.name.toLowerCase().replace(/\.[^.]+$/, '')
@@ -114,7 +105,6 @@ function findMatchedFile(path: string): File | undefined {
   return undefined
 }
 
-// 开始上传
 async function handleUpload() {
   if (!uiStore.localImageUploadData)
     return
@@ -126,7 +116,6 @@ async function handleUpload() {
     return
   }
 
-  // 检查未匹配的
   const unmatched = pathsToUpload.filter(p => !findMatchedFile(p))
   if (unmatched.length > 0) {
     toast.error(t('localImage.notFoundInFolder', { paths: unmatched.join(', ') }))
@@ -138,7 +127,7 @@ async function handleUpload() {
   uploadErrors.value = {}
   isUploading.value = true
 
-  // 文件 → URL 缓存，避免同文件重复上传
+  // File-to-URL cache to avoid re-uploading the same file
   const fileUrlMap = new WeakMap<File, string>()
 
   for (let i = 0; i < pathsToUpload.length; i++) {
@@ -160,12 +149,11 @@ async function handleUpload() {
   isUploading.value = false
 }
 
-// 关闭并应用
 function handleApply() {
   if (!uiStore.localImageUploadData)
     return
 
-  // 仅替换图片语法 `![alt](path)` 中的路径为上传后的 URL
+  // Replace only image syntax `![alt](path)` paths with uploaded URLs
   let content = uiStore.localImageUploadData.markdownContent
   for (const [path, url] of Object.entries(uploadResults.value)) {
     const escaped = path.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
@@ -182,7 +170,6 @@ function handleApply() {
   isDialogOpen.value = false
 }
 
-// 关闭并跳过上传
 function handleSkip() {
   if (uiStore.localImageUploadData) {
     uiStore.localImageUploadData = {
@@ -213,7 +200,6 @@ function onOpenChange(val: boolean) {
       </DialogHeader>
 
       <div v-if="uiStore.localImageUploadData" class="space-y-4">
-        <!-- 图片路径列表 -->
         <div class="rounded-md border">
           <div class="flex items-center justify-between border-b px-4 py-2">
             <span class="text-sm font-medium">
@@ -252,10 +238,8 @@ function onOpenChange(val: boolean) {
           </div>
         </div>
 
-        <!-- 进度条 -->
         <Progress v-if="isUploading || progressValue > 0" :model-value="progressValue" class="h-1.5" />
 
-        <!-- 选择文件夹按钮 -->
         <label v-if="!isAllUploaded" class="block">
           <input
             type="file"
@@ -271,7 +255,6 @@ function onOpenChange(val: boolean) {
           </Button>
         </label>
 
-        <!-- 底部操作区 -->
         <div v-if="isAllUploaded" class="flex justify-end pt-2">
           <Button @click="handleApply">
             {{ t('common.done') }}

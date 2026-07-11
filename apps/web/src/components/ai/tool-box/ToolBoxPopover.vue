@@ -19,7 +19,6 @@ import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/us
 import useAIConfigStore from '@/stores/aiConfig'
 import { useEditorStore } from '@/stores/editor'
 
-/* -------------------- props / emits -------------------- */
 const props = defineProps<{
   open: boolean
   selectedText: string
@@ -27,7 +26,6 @@ const props = defineProps<{
 }>()
 const emit = defineEmits([`update:open`])
 
-/* -------------------- reactive state -------------------- */
 const configVisible = ref(false)
 const dialogVisible = ref(props.open)
 const message = ref(``)
@@ -40,11 +38,9 @@ const selectedAction = ref<
 const currentText = ref(``)
 const error = ref(``)
 
-/* -------------------- store & refs -------------------- */
 const editorStore = useEditorStore()
 const resultContainer = ref<HTMLElement | null>(null)
 
-/* -------------------- dialog state sync -------------------- */
 watch(() => props.open, (val) => {
   dialogVisible.value = val
   if (val && props.selectedText.trim()) {
@@ -54,13 +50,11 @@ watch(() => props.open, (val) => {
 })
 watch(dialogVisible, val => emit(`update:open`, val))
 
-/* -------------------- AI config -------------------- */
 const AIConfigStore = useAIConfigStore()
 const { apiKey, endpoint, model, temperature, maxToken, type }
   = storeToRefs(AIConfigStore)
 const { t } = useI18n()
 
-/* -------------------- action options -------------------- */
 interface ActionOption {
   value: string
   label: string
@@ -106,7 +100,6 @@ const actionOptions = computed<ActionOption[]>(() => [
   { value: `custom`, label: t('ai.toolbox.actions.custom.label'), defaultPrompt: `` },
 ])
 
-/* -------------------- watchers -------------------- */
 watch(message, async () => {
   await nextTick()
   resultContainer.value?.scrollTo({ top: resultContainer.value.scrollHeight })
@@ -117,7 +110,6 @@ watch(selectedAction, (val) => {
     customPrompts.value = []
 })
 
-// 当 dialogVisible 且 props.selectedText 变更时，更新原文并重置状态
 watch(
   () => props.selectedText,
   (val) => {
@@ -128,7 +120,6 @@ watch(
   },
 )
 
-/* -------------------- prompt handlers -------------------- */
 function addPrompt(e: KeyboardEvent) {
   const input = e.target as HTMLInputElement
   const prompt = input.value.trim()
@@ -151,7 +142,6 @@ function resetState() {
   abortAI()
 }
 
-/* -------------------- AI call -------------------- */
 async function runAIAction() {
   const text = currentText.value.trim()
   if (!text || loading.value)
@@ -204,20 +194,17 @@ async function runAIAction() {
   }
 }
 
-/* -------------------- abort handler -------------------- */
 function stopAI() {
   if (loading.value) {
     abortAI()
   }
 }
 
-/* -------------------- actions -------------------- */
 function replaceText() {
   const editorView = toRaw(editorStore.editor!)!
   const selection = editorView.state.selection.main
   editorView.dispatch(editorView.state.replaceSelection(message.value))
 
-  // 选中替换后的文本
   const newSelection = editorView.state.selection.main
   editorView.dispatch({
     selection: { anchor: selection.from, head: newSelection.head },
@@ -247,7 +234,6 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
     <DialogContent
       class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-2xl overflow-hidden p-0"
     >
-      <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start px-6 pt-6 pb-4">
         <div class="space-x-1 flex items-center">
           <DialogTitle>{{ t('ai.toolbox.title') }}</DialogTitle>
@@ -265,17 +251,13 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         </div>
       </DialogHeader>
 
-      <!-- ============ 内容区域 ============ -->
-      <!-- config panel -->
       <AIConfig
         v-if="configVisible"
         class="border-border mx-6 mb-4 w-auto border rounded-md p-4"
         @saved="() => (configVisible = false)"
       />
 
-      <!-- main content -->
       <div v-else class="custom-scroll space-y-3 flex-1 overflow-y-auto px-6 pb-3">
-        <!-- action selector -->
         <div>
           <div class="mb-1.5 text-sm font-medium">
             {{ t('ai.toolbox.selectAction') }}
@@ -298,7 +280,6 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
           </Select>
         </div>
 
-        <!-- original text -->
         <div>
           <div class="mb-1.5 text-sm font-medium">
             {{ t('ai.toolbox.originalText') }}
@@ -310,7 +291,6 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
           </div>
         </div>
 
-        <!-- custom prompts -->
         <div v-if="selectedAction === 'custom'">
           <div class="mb-1.5 text-sm font-medium">
             {{ t('ai.toolbox.customPrompt') }}
@@ -339,12 +319,10 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
           </div>
         </div>
 
-        <!-- error -->
         <div v-if="error" class="min-h-[20px] flex items-center text-xs text-red-500">
           {{ error }}
         </div>
 
-        <!-- result -->
         <div v-if="message">
           <div class="mb-1.5 text-sm font-medium">
             {{ t('ai.toolbox.result') }}
@@ -358,7 +336,6 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
         </div>
       </div>
 
-      <!-- ============ 底部按钮 ============ -->
       <div v-if="!configVisible" class="flex justify-end gap-2 px-6 py-3.5 mt-auto">
         <Button v-if="loading" variant="secondary" @click="stopAI">
           <Pause class="mr-1 h-4 w-4" /> {{ t('ai.toolbox.stop') }}

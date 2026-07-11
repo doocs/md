@@ -36,7 +36,6 @@ function openTemplateDialog() {
   toggleShowTemplateDialog(true)
 }
 
-// Export functions
 function exportEditorContent2HTML() {
   exportStore.exportEditorContent2HTML()
 }
@@ -59,13 +58,11 @@ function exportEditorContent2PDF() {
 </script>
 
 <template>
-  <!-- 作为 MenubarSub 使用 -->
   <MenubarSub v-if="asSub">
     <MenubarSubTrigger>
       {{ t('menu.file') }}
     </MenubarSubTrigger>
     <MenubarSubContent class="min-w-56">
-      <!-- 本地文件夹 -->
       <MenubarItem @click="isOpenFolderPanel = !isOpenFolderPanel">
         <FolderOpen class="mr-2 size-4" />
         {{ t('menu.localFolder') }}
@@ -73,7 +70,6 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 导入子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Upload class="mr-2 size-4" />
@@ -87,7 +83,6 @@ function exportEditorContent2PDF() {
         </MenubarSubContent>
       </MenubarSub>
 
-      <!-- 导出子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Download class="mr-2 size-4" />
@@ -121,13 +116,11 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 模板管理 -->
       <MenubarItem @click="openTemplateDialog()">
         <Package class="mr-2 size-4" />
         {{ t('menu.templateManage') }}
       </MenubarItem>
 
-      <!-- 内容管理 -->
       <MenubarItem @click="isOpenPostSlider = !isOpenPostSlider">
         <FolderKanban class="mr-2 size-4" />
         {{ t('menu.contentManage') }}
@@ -135,12 +128,10 @@ function exportEditorContent2PDF() {
 
       <template v-if="showSyncUi || showShareUi">
         <MenubarSeparator />
-        <!-- 云同步 -->
         <MenubarItem v-if="showSyncUi" @click="toggleShowSyncDialog(true)">
           <Cloud class="mr-2 size-4" />
           {{ t('menu.cloudSync') }}
         </MenubarItem>
-        <!-- 分享预览 -->
         <MenubarItem v-if="showShareUi" @click="openShareDialog()">
           <Share2 class="mr-2 size-4" />
           {{ t('menu.sharePreview') }}
@@ -149,13 +140,11 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 偏好设置 -->
       <MenubarItem @click="openPreferencesDialog()">
         <Settings class="mr-2 size-4" />
         {{ t('menu.preferences') }}
       </MenubarItem>
 
-      <!-- 导入/导出配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         {{ t('menu.importExportConfig') }}
@@ -163,13 +152,11 @@ function exportEditorContent2PDF() {
     </MenubarSubContent>
   </MenubarSub>
 
-  <!-- 作为 MenubarMenu 使用（默认） -->
   <MenubarMenu v-else>
     <MenubarTrigger>
       {{ t('menu.file') }}
     </MenubarTrigger>
     <MenubarContent class="min-w-56" align="start">
-      <!-- 本地文件夹 -->
       <MenubarItem @click="isOpenFolderPanel = !isOpenFolderPanel">
         <FolderOpen class="mr-2 size-4" />
         {{ t('menu.localFolder') }}
@@ -177,7 +164,6 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 导入子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Upload class="mr-2 size-4" />
@@ -191,7 +177,6 @@ function exportEditorContent2PDF() {
         </MenubarSubContent>
       </MenubarSub>
 
-      <!-- 导出子菜单 -->
       <MenubarSub>
         <MenubarSubTrigger>
           <Download class="mr-2 size-4" />
@@ -225,13 +210,11 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 模板管理 -->
       <MenubarItem @click="openTemplateDialog()">
         <Package class="mr-2 size-4" />
         {{ t('menu.templateManage') }}
       </MenubarItem>
 
-      <!-- 内容管理 -->
       <MenubarItem @click="isOpenPostSlider = !isOpenPostSlider">
         <FolderKanban class="mr-2 size-4" />
         {{ t('menu.contentManage') }}
@@ -239,12 +222,10 @@ function exportEditorContent2PDF() {
 
       <template v-if="showSyncUi || showShareUi">
         <MenubarSeparator />
-        <!-- 云同步 -->
         <MenubarItem v-if="showSyncUi" @click="toggleShowSyncDialog(true)">
           <Cloud class="mr-2 size-4" />
           {{ t('menu.cloudSync') }}
         </MenubarItem>
-        <!-- 分享预览 -->
         <MenubarItem v-if="showShareUi" @click="openShareDialog()">
           <Share2 class="mr-2 size-4" />
           {{ t('menu.sharePreview') }}
@@ -253,13 +234,11 @@ function exportEditorContent2PDF() {
 
       <MenubarSeparator />
 
-      <!-- 偏好设置 -->
       <MenubarItem @click="openPreferencesDialog()">
         <Settings class="mr-2 size-4" />
         {{ t('menu.preferences') }}
       </MenubarItem>
 
-      <!-- 导入/导出配置 -->
       <MenubarItem @click="openEditorStateDialog()">
         <FileCog class="mr-2 size-4" />
         {{ t('menu.importExportConfig') }}

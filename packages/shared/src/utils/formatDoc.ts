@@ -44,12 +44,7 @@ function resolveParserPlugin(module: ParserBabelModule | ParserMarkdownModule | 
   return (module as { default?: unknown }).default ?? module
 }
 
-/**
- * 格式化文档内容
- * @param content - 要格式化的内容
- * @param type - 内容类型，决定使用的解析器，默认为 'markdown'
- * @returns 格式化后的内容
- */
+/** Format content with Prettier (markdown, css, or javascript). */
 export async function formatDoc(content: string, type: FormatDocType = `markdown`): Promise<string> {
   const { prettier, parserBabel, parserMarkdown, parserPostcss } = await loadPrettier(type)
   const parser = type === `css` ? `css` : type === `javascript` ? `babel` : `markdown`

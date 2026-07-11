@@ -1,15 +1,14 @@
 /**
- * 组件暗色模式 CSS 变量注入
+ * Dark-mode CSS variables for built-in components.
  *
- * 使用独立样式元素（id="md-comp-dark"），不会被 getThemeStyles() 读取，
- * 因此不会污染复制到微信公众号的 HTML 剪贴板内容。
+ * Injected as <style id="md-comp-dark">; not read by getThemeStyles(), so clipboard
+ * HTML copied to WeChat stays unpolluted.
  *
- * 暗色变量通过 .dark 选择器激活（Tailwind 暗色模式将 .dark 挂载在 <html> 上），
- * 自动覆盖 #output 预览区和组件对话框预览区，无需分别处理。
+ * Vars activate under .dark (Tailwind on <html>), covering #output and component preview.
  *
- * 组件内联样式使用 var(--md-comp-xxx, lightFallback) 格式：
- *   - 编辑器暗色模式：.dark 选择器激活深色变量 → 深色显示 ✓
- *   - 复制到微信（不含此样式元素）：变量未定义 → 使用浅色回退值 ✓
+ * Inline styles use var(--md-comp-xxx, lightFallback):
+ *   - Editor dark: .dark sets dark vars
+ *   - WeChat paste (no style tag): undefined vars → light fallbacks
  */
 
 const COMP_DARK_VARS_CSS = `.dark {
@@ -23,10 +22,7 @@ const COMP_DARK_VARS_CSS = `.dark {
   --md-comp-border-light: #333;
 }`
 
-/**
- * 初始化组件暗色模式 CSS 变量（页面加载时调用一次）。
- * 注入 <style id="md-comp-dark"> 到 <head>，通过 .dark 选择器在暗色模式自动激活。
- */
+/** Inject component dark vars once on page load (<style id="md-comp-dark">). */
 export function initComponentDarkVars(): void {
   if (typeof document === `undefined`)
     return

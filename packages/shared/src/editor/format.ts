@@ -8,9 +8,6 @@ interface ToggleFormatOptions {
   afterInsertCursorOffset?: number
 }
 
-/**
- * 切换格式（加粗、斜体、删除线等）
- */
 export function toggleFormat(
   view: EditorView,
   {
@@ -45,9 +42,6 @@ export function toggleFormat(
   }
 }
 
-/**
- * 应用标题级别
- */
 export function applyHeading(view: EditorView, level: number) {
   const ranges = view.state.selection.ranges
   const changes: Array<{ from: number, to: number, insert: string }> = []
@@ -60,7 +54,6 @@ export function applyHeading(view: EditorView, level: number) {
     for (let lineNum = fromLine.number; lineNum <= toLine.number; lineNum++) {
       const line = view.state.doc.line(lineNum)
       const text = view.state.doc.sliceString(line.from, line.to)
-      // 去掉已有的 # 前缀（1~6 个）+ 空格
       const cleaned = text.replace(/^#{1,6}\s+/, ``).trimStart()
       const heading = headingPrefix + cleaned
 
@@ -74,7 +67,6 @@ export function applyHeading(view: EditorView, level: number) {
 
   if (changes.length > 0) {
     const firstLine = view.state.doc.lineAt(ranges[0].from)
-    // 计算光标应该在的位置：行首 + 标题前缀长度（如 "# " = 2）
     const newCursorPos = firstLine.from + headingPrefix.length
 
     view.dispatch({
@@ -84,9 +76,6 @@ export function applyHeading(view: EditorView, level: number) {
   }
 }
 
-/**
- * 便捷格式化函数
- */
 export function formatBold(view: EditorView) {
   toggleFormat(view, {
     prefix: `**`,
@@ -132,9 +121,6 @@ export function formatCode(view: EditorView) {
   })
 }
 
-/**
- * 设置文字颜色
- */
 export function formatColor(view: EditorView, color: string) {
   const selection = view.state.selection.main
   const selected = view.state.doc.sliceString(selection.from, selection.to)
@@ -181,9 +167,6 @@ export function formatOrderedList(view: EditorView) {
   view.dispatch(view.state.replaceSelection(updated))
 }
 
-/**
- * 撤销/重做
- */
 export function undoAction(view: EditorView): boolean {
   return undo(view)
 }

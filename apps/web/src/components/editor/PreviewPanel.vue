@@ -244,7 +244,6 @@ defineExpose({
   opacity: 0.7;
 }
 
-/* Dark mode */
 .output_night .diagram-download-btn {
   background: rgba(30, 32, 38, 0.88);
   border-color: rgba(255, 255, 255, 0.1);

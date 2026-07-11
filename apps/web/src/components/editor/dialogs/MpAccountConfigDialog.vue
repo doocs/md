@@ -6,7 +6,7 @@ import * as yup from 'yup'
 
 const props = defineProps<{
   open: boolean
-  /** null = 新建，string = 编辑指定账号 */
+  /** null = create; string = edit account id */
   accountId: string | null
 }>()
 
@@ -27,7 +27,7 @@ const editingAccount = computed<MpAccount | null>(() => {
   return (mpAccountsStore.accounts as MpAccount[]).find(a => a.id === props.accountId) ?? null
 })
 
-/** key 变化时 vee-validate Form 重新初始化 */
+/** Re-init vee-validate Form when key changes */
 const formKey = computed(() => `${props.accountId ?? `new`}-${props.open}`)
 
 const initialValues = computed(() => {

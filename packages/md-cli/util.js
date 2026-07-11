@@ -1,12 +1,7 @@
-import FormData from 'form-data'
-import process from 'node:process'
-import util from 'node:util'
-import crypto from 'node:crypto'
-
 /**
- * 自定义控制台颜色
+ * Custom console colors.
  * https://stackoverflow.com/questions/9781218/how-to-change-node-jss-console-font-color
- * nodejs 内置颜色: https://nodejs.org/api/util.html#util_foreground_colors
+ * Node built-in colors: https://nodejs.org/api/util.html#util_foreground_colors
  */
 function colors() {
   function colorize(color, text) {
@@ -21,34 +16,30 @@ function colors() {
 
   const colorTable = new Proxy(returnValue, {
     get(obj, prop) {
-      // 在没有对应的具名颜色函数时, 返回空函数作为兼容处理
+      // No named color helper: return identity for compatibility
       const res = obj[prop] ? obj[prop] : arg => arg
       return res
     },
   })
 
-  // 取消下行注释, 查看所有的颜色和名字:
+  // Uncomment to list all color names:
   // Object.keys(returnValue).forEach((color) => console.log(returnValue[color](color)))
   return colorTable
 }
 
-/**
- * 解析命令行参数
- * @param {*} arr
- * @returns {Record<string, string | boolean>}
- */
+/** Parse CLI args into key/value (boolean flags, numbers, strings). */
 function parseArgv(arr) {
   return (arr || process.argv.slice(2)).reduce((acc, arg) => {
     let [k, ...v] = arg.split(`=`)
-    v = v.join(`=`) // 把带有 = 的值合并为字符串
-    acc[k] = v === `` // 没有值时, 则表示为 true
+    v = v.join(`=`) // rejoin values that contain =
+    acc[k] = v === `` // bare flag → true
       ? true
       : (
-        /^(true|false)$/.test(v) // 转换指明的 true/false
+        /^(true|false)$/.test(v) // explicit boolean
           ? v === `true`
           : (
             /[\d|.]+/.test(v)
-              ? (Number.isNaN(Number(v)) ? v : Number(v)) // 如果转换为数字失败, 则使用原始字符
+              ? (Number.isNaN(Number(v)) ? v : Number(v)) // keep string if not numeric
               : v
           )
       )
@@ -63,7 +54,7 @@ function dcloud(spaceInfo) {
 
   function sign(data, secret) {
     const hmac = crypto.createHmac(`md5`, secret)
-    // 排序 obj 再转换为 key=val&key=val 的格式
+    // Sort keys, serialize as key=val&key=val
     const str = Object.keys(data).sort().reduce((acc, cur) => `${acc}&${cur}=${data[cur]}`, ``).slice(1)
     hmac.update(str)
     return hmac.digest(`hex`)

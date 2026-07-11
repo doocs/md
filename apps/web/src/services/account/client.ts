@@ -12,7 +12,7 @@ export class ApiError extends Error {
   }
 }
 
-/** md-api 通用客户端（账户、云同步等接口共用鉴权） */
+/** Shared md-api client (account, cloud sync, shared auth). */
 export class MdApiClient {
   constructor(private getToken: () => string | null) {}
 

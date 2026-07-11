@@ -2,9 +2,7 @@ import type { MaybeRefOrGetter } from 'vue'
 import { EditorView } from '@codemirror/view'
 import { useUIStore } from '@/stores/ui'
 
-/**
- * 点击预览区元素时，定位回编辑器对应位置。
- */
+/** Click preview element to jump to the matching editor position. */
 export function useCursorSync(
   codeMirrorViewRef: MaybeRefOrGetter<EditorView | null>,
 ) {
@@ -127,7 +125,7 @@ export function useCursorSync(
     if (!target)
       return
 
-    // 拦截预览区角标 a 标签（以及其他内部锚点链接，如脚注），手动平滑滚动
+    // Intercept footnote/anchor links in preview for smooth scroll
     const linkEl = target.closest(`a`) as HTMLAnchorElement | null
     if (linkEl) {
       const href = linkEl.getAttribute(`href`)

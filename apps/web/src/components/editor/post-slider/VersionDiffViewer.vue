@@ -99,7 +99,6 @@ const lineNumbers = computed(() => {
   })
 })
 
-// ---- minimap ----
 const scrollContainer = ref<HTMLElement | null>(null)
 const minimapRef = ref<HTMLElement | null>(null)
 const viewportTop = ref(0)
@@ -133,21 +132,17 @@ onMounted(() => {
 
 <template>
   <div class="flex flex-col h-full">
-    <!-- 统计 -->
     <div class="flex items-center gap-3 px-3 py-1.5 border-b text-xs text-muted-foreground shrink-0">
       <span class="flex-1" />
       <span class="text-green-600 dark:text-green-400">+{{ stats.ins }}</span>
       <span class="text-red-600 dark:text-red-400">-{{ stats.del }}</span>
     </div>
 
-    <!-- 无差异 -->
     <div v-if="isIdentical" class="flex-1 flex items-center justify-center text-sm text-muted-foreground">
       {{ t('versionDiff.identical') }}
     </div>
 
-    <!-- 差异内容 -->
     <div v-else class="flex-1 flex overflow-hidden">
-      <!-- 主内容 -->
       <div ref="scrollContainer" class="flex-1 overflow-y-auto thin-scrollbar" @scroll="updateViewport">
         <div class="font-mono text-xs leading-5">
           <div
@@ -179,13 +174,11 @@ onMounted(() => {
         </div>
       </div>
 
-      <!-- 缩略图 -->
       <div
         ref="minimapRef"
         class="shrink-0 w-[18px] border-l border-border/50 relative cursor-pointer select-none bg-muted/20"
         @click="onMinimapClick"
       >
-        <!-- 变更标记 -->
         <div class="absolute inset-0 flex flex-col">
           <div
             v-for="(line, idx) in diffLines"
@@ -197,7 +190,6 @@ onMounted(() => {
             }"
           />
         </div>
-        <!-- 视口指示器 -->
         <div
           class="absolute left-0 right-0 border border-foreground/20 bg-foreground/5 rounded-sm pointer-events-none transition-[top,height] duration-100"
           :style="{ top: `${viewportTop}%`, height: `${Math.max(viewportHeight, 4)}%` }"

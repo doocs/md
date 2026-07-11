@@ -1,8 +1,6 @@
 import type { MarkedExtension } from 'marked'
 
-/**
- * marked 插件：支持 [TOC] 语法，自动生成嵌套目录
- */
+/** marked extension: [TOC] syntax for nested table of contents */
 export function markedToc(): MarkedExtension {
   let headings: { text: string, depth: number, index: number }[] = []
 
@@ -26,7 +24,7 @@ export function markedToc(): MarkedExtension {
         name: `toc`,
         level: `block`,
         start(src) {
-          // 只匹配独立一行的 [TOC]，避免误伤
+          // Match [TOC] on its own line only
           const match = src.match(/^\s*\[TOC\]\s*$/m)
           return match ? match.index : undefined
         },

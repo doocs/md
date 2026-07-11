@@ -36,7 +36,7 @@ export function isSvgMarkup(content: string): boolean {
   return content.trimStart().startsWith(`<svg`)
 }
 
-/** 异步图表占位是否仍在等待渲染（与文案语言无关） */
+/** Whether an async diagram placeholder is still awaiting render (locale-independent). */
 export function isAsyncDiagramPending(el: Element): boolean {
   if (!(el instanceof HTMLElement))
     return false

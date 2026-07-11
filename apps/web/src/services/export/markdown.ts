@@ -1,13 +1,13 @@
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
 
-/** 导出原始 Markdown 文档 */
+/** Export raw Markdown document. */
 export function downloadMD(doc: string, title: string = `untitled`) {
   const safeTitle = sanitizeTitle(title)
   downloadFile(doc, `${safeTitle}.md`, `text/markdown;charset=utf-8`)
 }
 
-/** 批量导出多篇文章为 ZIP */
+/** Batch-export multiple posts as a ZIP archive. */
 export async function exportPostsAsZip(posts: Array<{ title: string, content: string }>) {
   const JSZip = (await import(`jszip`)).default
   const zip = new JSZip()

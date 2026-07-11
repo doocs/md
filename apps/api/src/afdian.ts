@@ -72,11 +72,11 @@ export function isAfdianConfigured(env: Env): boolean {
   return Boolean(env.AFDIAN_USER_ID && env.AFDIAN_API_TOKEN)
 }
 
-/** 是否为可开通 Pro 的赞助方案订单（product_type=0 为常规方案） */
+/** Whether the order is eligible for Pro (product_type=0 is a regular plan). */
 export function isProEligibleOrder(env: Env, order: AfdianOrder): boolean {
   if (order.status !== 2)
     return false
-  // 售卖商品（一次性）也允许开通，按 month 字段折算天数
+  // One-time product purchases are also allowed; duration is derived from the month field
   if (order.product_type !== 0 && order.product_type !== 1)
     return false
 

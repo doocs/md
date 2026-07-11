@@ -1,10 +1,10 @@
 /**
- * MD 默认主题（经典主题）
- * 按 Alt/Option + Shift + F 可格式化
- * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
+ * MD default theme (classic).
+ * Format with Alt/Option + Shift + F.
+ * Use var(--md-primary-color) for theme color instead of hard-coded values.
  */
 
-/* ==================== 一级标题 ==================== */
+/* ==================== H1 ==================== */
 h1 {
   display: table;
   padding: 0 1em;
@@ -16,7 +16,7 @@ h1 {
   text-align: center;
 }
 
-/* ==================== 二级标题 ==================== */
+/* ==================== H2 ==================== */
 h2 {
   display: table;
   padding: 0 0.2em;
@@ -28,7 +28,7 @@ h2 {
   text-align: center;
 }
 
-/* ==================== 三级标题 ==================== */
+/* ==================== H3 ==================== */
 h3 {
   padding-left: 8px;
   border-left: 3px solid var(--md-primary-color);
@@ -39,7 +39,7 @@ h3 {
   line-height: 1.2;
 }
 
-/* ==================== 四级标题 ==================== */
+/* ==================== H4 ==================== */
 h4 {
   margin: 2em 8px 0.5em;
   color: var(--md-primary-color);
@@ -47,7 +47,7 @@ h4 {
   font-weight: bold;
 }
 
-/* ==================== 五级标题 ==================== */
+/* ==================== H5 ==================== */
 h5 {
   margin: 1.5em 8px 0.5em;
   color: var(--md-primary-color);
@@ -55,21 +55,21 @@ h5 {
   font-weight: bold;
 }
 
-/* ==================== 六级标题 ==================== */
+/* ==================== H6 ==================== */
 h6 {
   margin: 1.5em 8px 0.5em;
   font-size: calc(var(--md-font-size) * 1);
   color: var(--md-primary-color);
 }
 
-/* ==================== 段落 ==================== */
+/* ==================== Paragraph ==================== */
 p {
   margin: 1.5em 8px;
   letter-spacing: 0.1em;
   color: hsl(var(--foreground));
 }
 
-/* ==================== 引用块 ==================== */
+/* ==================== Blockquote ==================== */
 blockquote {
   font-style: normal;
   padding: 1em;
@@ -88,7 +88,7 @@ blockquote > p {
   margin: 0;
 }
 
-/* ==================== GFM 警告块 ==================== */
+/* ==================== GFM alerts ==================== */
 .alert-title-note,
 .alert-title-tip,
 .alert-title-info,
@@ -200,7 +200,7 @@ blockquote > p {
   color: #9ca3af;
 }
 
-/* GFM Alert SVG 图标颜色 */
+/* GFM alert SVG icon colors */
 .alert-icon-note {
   fill: #478be6;
 }
@@ -271,8 +271,8 @@ blockquote > p {
   fill: #9ca3af;
 }
 
-/* ==================== 学术环境（定理、引理、定义等） ==================== */
-/* 标题颜色 */
+/* ==================== Academic environments (theorem, lemma, definition, …) ==================== */
+/* Title colors */
 .alert-title-theorem,
 .alert-title-lemma,
 .alert-title-corollary,
@@ -298,7 +298,7 @@ blockquote > p {
   color: #c69026;
 }
 
-/* 图标颜色 */
+/* Icon colors */
 .alert-icon-theorem,
 .alert-icon-lemma,
 .alert-icon-corollary,
@@ -324,7 +324,7 @@ blockquote > p {
   fill: #c69026;
 }
 
-/* 盒子描边：学术环境使用完整边框，更接近定理环境的视觉效果 */
+/* Full border on academic boxes (theorem-style appearance) */
 .markdown-alert-theorem,
 .markdown-alert-lemma,
 .markdown-alert-corollary,
@@ -355,7 +355,7 @@ blockquote > p {
   border-left: 4px solid #c69026;
 }
 
-/* 自定义/未知名称的兜底样式：无图标，使用主题主色 */
+/* Fallback for custom/unknown names: no icon, theme primary color */
 .alert-title-custom {
   color: var(--md-primary-color);
 }
@@ -364,7 +364,7 @@ blockquote > p {
   border-left: 4px solid var(--md-primary-color);
 }
 
-/* 学术环境正文使用斜体，符合数学写作惯例 */
+/* Italic body text in academic environments (math convention) */
 .markdown-alert-theorem > :not(.markdown-alert-title),
 .markdown-alert-lemma > :not(.markdown-alert-title),
 .markdown-alert-corollary > :not(.markdown-alert-title),
@@ -376,7 +376,7 @@ blockquote > p {
   font-style: italic;
 }
 
-/* ==================== 代码块 ==================== */
+/* ==================== Code blocks ==================== */
 pre.code__pre,
 .hljs.code__pre {
   font-size: 90%;
@@ -387,7 +387,7 @@ pre.code__pre,
   margin: 10px 8px;
 }
 
-/* ==================== 图片 ==================== */
+/* ==================== Images ==================== */
 img {
   display: block;
   max-width: 100%;
@@ -395,7 +395,7 @@ img {
   border-radius: 4px;
 }
 
-/* ==================== 列表 ==================== */
+/* ==================== Lists ==================== */
 ol {
   padding-left: 1em;
   margin-left: 0;
@@ -415,15 +415,15 @@ li {
   color: hsl(var(--foreground));
 }
 
-/* ==================== 脚注 ==================== */
-/* footnotes 在 buildFootnotes() 中渲染为 <p> 标签 */
+/* Footnotes */
+/* footnotes rendered as <p> in buildFootnotes() */
 p.footnotes {
   margin: 0.5em 8px;
   font-size: 80%;
   color: hsl(var(--foreground));
 }
 
-/* ==================== 图表 ==================== */
+/* Diagrams */
 figure {
   margin: 1.5em 8px;
   color: hsl(var(--foreground));
@@ -436,7 +436,7 @@ figcaption,
   font-size: 0.8em;
 }
 
-/* ==================== 分隔线 ==================== */
+/* ==================== Horizontal rules ==================== */
 hr {
   border-style: solid;
   border-width: 2px 0 0;
@@ -449,7 +449,7 @@ hr {
   margin: 1.5em 0;
 }
 
-/* ==================== 行内代码 ==================== */
+/* Inline code */
 .codespan {
   font-size: 90%;
   color: var(--md-primary-color);
@@ -459,7 +459,7 @@ hr {
   border: 1px solid color-mix(in srgb, var(--md-primary-color) 20%, transparent);
 }
 
-/* 代码块内的 code 标签需要特殊处理（覆盖行内 code 样式） */
+/* code inside pre (override inline code) */
 pre.code__pre > code,
 .hljs.code__pre > code {
   display: -webkit-box;
@@ -472,26 +472,26 @@ pre.code__pre > code,
   margin: 0;
 }
 
-/* ==================== 强调 ==================== */
+/* Emphasis */
 em {
   font-style: italic;
   font-size: inherit;
 }
 
-/* ==================== 链接 ==================== */
+/* ==================== Links ==================== */
 a {
   color: #576b95;
   text-decoration: none;
 }
 
-/* ==================== 粗体 ==================== */
+/* ==================== Bold ==================== */
 strong {
   color: var(--md-primary-color);
   font-weight: bold;
   font-size: inherit;
 }
 
-/* ==================== 表格 ==================== */
+/* ==================== Tables ==================== */
 table {
   color: hsl(var(--foreground));
 }
@@ -516,7 +516,7 @@ td {
   word-break: keep-all;
 }
 
-/* ==================== KaTeX 公式 ==================== */
+/* ==================== KaTeX ==================== */
 .katex-inline {
   max-width: 100%;
   overflow-x: auto;
@@ -545,7 +545,7 @@ td {
   opacity: 0.75;
 }
 
-/* ==================== 标记高亮 ==================== */
+/* ==================== Markup highlight ==================== */
 .markup-highlight {
   background-color: var(--md-primary-color);
   padding: 2px 4px;

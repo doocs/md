@@ -3,7 +3,7 @@ import { isStorageQuotaError, parseStoredValue, warnStorageQuota } from '@/stora
 
 export { isStorageQuotaError, parseStoredValue, warnStorageQuota }
 
-/** 同步读取（initStorage 完成后走 IndexedDB 内存缓存） */
+/** Sync read (uses in-memory cache after initStorage). */
 export function safeGetItem(key: string): string | null {
   try {
     if (store.supportsSyncRead())
@@ -16,7 +16,7 @@ export function safeGetItem(key: string): string | null {
   }
 }
 
-/** 写入存储（异步持久化，同步更新内存缓存） */
+/** Write storage (async persist, sync memory cache update). */
 export function safeSetItem(key: string, value: string): boolean {
   try {
     void store.set(key, value)

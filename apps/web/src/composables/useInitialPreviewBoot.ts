@@ -11,7 +11,7 @@ function delay(ms: number) {
   return new Promise<void>(resolve => window.setTimeout(resolve, ms))
 }
 
-/** 等待 PreviewPanel 挂载并将 #output 写入 DOM */
+/** Wait for PreviewPanel mount and #output in the DOM. */
 async function waitForOutputElement(timeoutMs = OUTPUT_WAIT_TIMEOUT_MS) {
   const deadline = Date.now() + timeoutMs
   while (Date.now() < deadline) {
@@ -23,7 +23,7 @@ async function waitForOutputElement(timeoutMs = OUTPUT_WAIT_TIMEOUT_MS) {
   return document.getElementById(`output`)
 }
 
-/** 首次 Markdown 渲染进预览区后，等待异步图表/公式就绪再关闭启动屏 */
+/** After first preview render, wait for async diagrams/math before dismissing loader. */
 export async function completeInitialPreviewBoot() {
   if (initialPreviewBootstrapped)
     return

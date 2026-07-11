@@ -12,7 +12,7 @@ body {
   overflow: hidden;
 }
 
-// 抵消下拉菜单开启时带来的样式
+// Undo pointer-events override from open dropdown menus
 body {
   pointer-events: initial !important;
 }
@@ -37,18 +37,16 @@ body {
   background-color: #424242;
 }
 
-// Utools 模式下隐藏所有滚动条
+// Hide scrollbars in uTools mode
 .is-utools {
   ::-webkit-scrollbar {
     display: none;
   }
 
-  // Firefox
   * {
     scrollbar-width: none;
   }
 
-  // IE and Edge
   * {
     -ms-overflow-style: none;
   }

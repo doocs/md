@@ -1,6 +1,6 @@
 import { MAX_AI_IMAGE_ENTRIES, MAX_IMAGE_MAP_ENTRIES } from '@/storage/keys'
 
-/** 裁剪 JSON 对象 map，保留最近 maxEntries 条 */
+/** Trim JSON object map to the most recent maxEntries entries. */
 export function trimRecordMap(raw: string, maxEntries: number): string {
   try {
     const map = JSON.parse(raw) as Record<string, string>
@@ -19,7 +19,7 @@ export function trimRecordMap(raw: string, maxEntries: number): string {
   }
 }
 
-/** 裁剪 JSON 数组，保留最近 maxEntries 条 */
+/** Trim JSON array to the most recent maxEntries entries. */
 export function trimArray(raw: string, maxEntries: number): string {
   try {
     const arr = JSON.parse(raw) as unknown[]

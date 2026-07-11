@@ -76,7 +76,7 @@ async function uploadImageViaApi(file: File, token?: string | null): Promise<str
   return data.url
 }
 
-/** 默认图床：经 md-api 上传，登录可选（登录后享更高限流） */
+/** Default image host via md-api; login optional (higher rate limit when logged in). */
 export async function uploadDefaultImage(file: File): Promise<string> {
   if (!isUploadViaApiEnabled())
     throw new Error(t('store.uploader.defaultHostRequiresApi'))

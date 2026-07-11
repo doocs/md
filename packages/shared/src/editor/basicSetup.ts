@@ -63,7 +63,7 @@ export const basicSetup: Extension = (() => [
   crosshairCursor(),
   highlightActiveLine(),
   highlightSelectionMatches(),
-  indentationMarkers(), // 添加缩进标记
+  indentationMarkers(),
   keymap.of([
     ...closeBracketsKeymap,
     ...defaultKeymap,

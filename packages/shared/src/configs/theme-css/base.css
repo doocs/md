@@ -1,9 +1,9 @@
 /**
- * MD 基础主题样式
- * 包含所有元素的基础样式和 CSS 变量定义
+ * MD base theme styles
+ * Base element styles and CSS variable definitions
  */
 
-/* ==================== 容器样式 ==================== */
+/* ==================== Container ==================== */
 section,
 #output .container {
   font-family: var(--md-font-family);
@@ -12,7 +12,6 @@ section,
   text-align: left;
 }
 
-/* 确保 #output 容器应用基础样式 */
 #output {
   font-family: var(--md-font-family);
   font-size: var(--md-font-size);
@@ -20,18 +19,16 @@ section,
   text-align: left;
 }
 
-/* 去除第一个元素的 margin-top */
 #output section > :first-child {
   margin-top: 0 !important;
 }
 
 /*
- * 兜底重置：导出 HTML / 分享页 / VSCode 预览等脱离 Web App 的场景
- * 没有 Tailwind preflight，浏览器 UA 默认样式会冒出来（如
- * blockquote 默认左右各 40px margin、table 默认 border-collapse: separate）。
- * 这里统一重置左右（及顶部）外边距，保证导出结果与预览一致。
- * 垂直间距由主题 blockquote { margin-bottom } 控制，勿在此处 margin: 0 覆盖。
- * section 选择器用于 VSCode 预览（无 #output 容器，内容在 section.container 内）。
+ * Reset for exported HTML / share pages / VSCode preview (no Tailwind preflight).
+ * Browser defaults leak in (e.g. blockquote 40px side margins, table border-collapse: separate).
+ * Reset horizontal (and top) margins so export matches in-app preview.
+ * Vertical spacing comes from theme blockquote { margin-bottom }; do not zero all margins here.
+ * section selector covers VSCode preview (no #output; content in section.container).
  */
 #output blockquote,
 section blockquote {
@@ -43,10 +40,11 @@ section blockquote {
 #output table,
 section table {
   border-collapse: collapse;
-  min-width: 100%;
 }
 
-.mermaid-diagram .nodeLabel p {
-  color: unset !important;
-  letter-spacing: unset !important;
+#output th,
+#output td,
+section th,
+section td {
+  border: 1px solid var(--md-border-color, #e0e0e0);
 }

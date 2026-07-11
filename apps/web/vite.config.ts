@@ -68,7 +68,7 @@ export default defineConfig(({ mode }) => {
     build: {
       rolldownOptions: {
         onwarn(warning, warn) {
-          // @vueuse/core 中的 /* #__PURE__ */ 注释位置不符合 Rolldown 要求，忽略该警告
+          // @vueuse/core /* #__PURE__ */ placement triggers INVALID_ANNOTATION; ignore
           if (warning.code === `INVALID_ANNOTATION` && warning.message?.includes(`@vueuse/core`))
             return
           warn(warning)

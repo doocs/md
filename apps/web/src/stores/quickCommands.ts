@@ -5,7 +5,7 @@ import { store } from '@/storage'
 export interface QuickCommandPersisted {
   id: string
   label: string
-  template: string // 用 {{sel}} 占位
+  template: string // use {{sel}} as selection placeholder
 }
 
 export interface QuickCommandRuntime extends QuickCommandPersisted {
@@ -14,7 +14,6 @@ export interface QuickCommandRuntime extends QuickCommandPersisted {
 
 const STORAGE_KEY = `quick_commands`
 
-// 把持久化的对象转换为可执行的 buildPrompt
 function hydrate(cmd: QuickCommandPersisted): QuickCommandRuntime {
   return {
     ...cmd,

@@ -33,10 +33,8 @@ const { posts, sortMode } = storeToRefs(postStore)
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 
-// 控制是否启用动画
 const enableAnimation = ref(false)
 
-// 监听 PostSlider 开关状态变化
 watch(isOpenPostSlider, (open) => {
   if (!open)
     postSliderMenu.closeMenu()
@@ -44,13 +42,11 @@ watch(isOpenPostSlider, (open) => {
     enableAnimation.value = true
 })
 
-// 监听设备类型变化，重置动画状态
 watch(isMobile, () => {
   enableAnimation.value = false
   postSliderMenu.closeMenu()
 })
 
-/* ============ 新增内容 ============ */
 const parentId = ref<string | null>(null)
 const isOpenAddDialog = ref(false)
 const addPostInputVal = ref(``)
@@ -79,7 +75,6 @@ function openCreatePostDialog() {
   isOpenAddDialog.value = true
 }
 
-/* ============ 重命名 / 删除 / 历史 对象 ============ */
 const editId = ref<string | null>(null)
 const isOpenEditDialog = ref(false)
 const renamePostInputVal = ref(``)
@@ -133,7 +128,6 @@ function delPost() {
   toast.success(t('post.deleteSuccess'))
 }
 
-/* ============ 历史记录 ============ */
 const isOpenHistoryDialog = ref(false)
 const currentPostId = ref<string | null>(null)
 const currentHistoryIndex = ref(0)
@@ -153,7 +147,7 @@ const currentHistoryList = computed(() => {
   return postStore.getPostById(currentPostId.value!)?.history ?? []
 })
 
-// 当选中版本与对比目标冲突时，自动调整对比目标
+// Auto-adjust diff target when it conflicts with selected version
 watch(currentHistoryIndex, (idx) => {
   if (Number(compareTargetIndex.value) === idx) {
     const len = currentHistoryList.value.length
@@ -187,7 +181,6 @@ function confirmRestoreHistory() {
   })
 }
 
-/* ============ 全局搜索与替换 ============ */
 const isSearching = ref(false)
 const searchQuery = ref(``)
 const searchInputRef = ref<HTMLInputElement | null>(null)
@@ -397,7 +390,6 @@ function replaceAll() {
     toast.success(t('post.replacedCount', { count }))
 }
 
-/* ============ 排序 ============ */
 const sortedPosts = computed(() => {
   return [...posts.value].sort((a, b) => {
     switch (sortMode.value) {
@@ -412,18 +404,15 @@ const sortedPosts = computed(() => {
       case `create-new-old`:
         return +new Date(b.createDatetime) - +new Date(a.createDatetime)
       default:
-        /* create-old-new */
         return +new Date(a.createDatetime) - +new Date(b.createDatetime)
     }
   })
 })
 
-/* ============ 拖拽功能 ============ */
 const dragover = ref(false)
 const dragSourceId = ref<string | null>(null)
 const dropTargetId = ref<string | null>(null)
 
-/* ============ 选择模式 ============ */
 const isSelectMode = ref(false)
 const selectedPostIds = ref<string[]>([])
 
@@ -476,7 +465,6 @@ async function exportSelected() {
   selectedPostIds.value = []
 }
 
-/* ============ 批量导入 / 导出全部 ============ */
 function openImportDialog() {
   postSliderMenu.closeMenu()
   toggleShowImportMdDialog(true)
@@ -517,14 +505,12 @@ function openBatchDelConfirm() {
   })
 }
 
-/* ============ 批量复制 ============ */
 function duplicateSelected() {
   if (!selectedPostIds.value.length)
     return
   selectedPostIds.value.forEach((id) => {
     const p = postStore.getPostById(id)!
     postStore.addPost(`${p.title} ${t('post.copySuffix')}`, p.parentId ?? null)
-    // 覆盖刚创建的那篇内容
     const newPost = posts.value[posts.value.length - 1]
     postStore.updatePostContent(newPost.id, p.content)
   })
@@ -533,7 +519,6 @@ function duplicateSelected() {
   selectedPostIds.value = []
 }
 
-/* ============ 合并为一篇 ============ */
 const isOpenMergeDialog = ref(false)
 const mergeTitle = ref(``)
 
@@ -568,7 +553,7 @@ function handleDrop(targetId: string | null) {
     return
   }
 
-  // 递归检索 ID，是不是父文件拖拽到了子文件上面
+  // Check if parent was dropped onto its own descendant
   const isParent = (id: string | null | undefined) => {
     if (!id) {
       return false
@@ -608,7 +593,6 @@ function handleDragEnd() {
 </script>
 
 <template>
-  <!-- 移动端遮罩层 -->
   <Transition name="fade">
     <div
       v-if="isMobile && isOpenPostSlider"
@@ -617,7 +601,6 @@ function handleDragEnd() {
     />
   </Transition>
 
-  <!-- 侧栏容器 -->
   <div
     class="h-full w-full overflow-hidden"
     :class="{
@@ -641,7 +624,6 @@ function handleDragEnd() {
       @dragover="handleDragOver"
       @drop.prevent="handleDrop(null)"
     >
-      <!-- 标题栏 -->
       <div
         class="flex items-center shrink-0 bg-background flex-nowrap"
         :class="isMobile
@@ -660,7 +642,6 @@ function handleDragEnd() {
         <span class="flex-1 min-w-0" />
 
         <div class="flex shrink-0 items-center gap-0.5">
-          <!-- 搜索 -->
           <button
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="[
@@ -672,7 +653,6 @@ function handleDragEnd() {
             <Search class="size-4" />
           </button>
 
-          <!-- 多选 -->
           <button
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="[
@@ -685,7 +665,6 @@ function handleDragEnd() {
             <CheckSquare class="size-4" />
           </button>
 
-          <!-- 批量导入（移动端快捷入口，桌面端在更多菜单中） -->
           <button
             v-if="isMobile"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 size-8"
@@ -695,7 +674,6 @@ function handleDragEnd() {
             <Upload class="size-4" />
           </button>
 
-          <!-- 新增 -->
           <button
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="isMobile ? 'size-8' : 'size-7'"
@@ -704,7 +682,6 @@ function handleDragEnd() {
             <Plus class="size-4" />
           </button>
 
-          <!-- 更多操作 -->
           <DropdownMenu :open="headerMenuOpen" @update:open="onHeaderMenuOpenChange">
             <DropdownMenuTrigger as-child>
               <button
@@ -762,7 +739,6 @@ function handleDragEnd() {
             </DropdownMenuContent>
           </DropdownMenu>
 
-          <!-- 关闭（移动端全屏抽屉） -->
           <button
             v-if="isMobile"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 ml-0.5 size-8"
@@ -773,7 +749,6 @@ function handleDragEnd() {
         </div>
       </div>
 
-      <!-- 搜索栏 -->
       <div v-if="isSearching" class="px-2 pb-1.5 shrink-0 space-y-1">
         <div class="relative">
           <input
@@ -810,7 +785,6 @@ function handleDragEnd() {
           </div>
         </div>
 
-        <!-- 替换栏 -->
         <div class="relative">
           <textarea
             v-model="replaceQuery"
@@ -840,9 +814,7 @@ function handleDragEnd() {
         </div>
       </div>
 
-      <!-- 搜索结果 -->
       <div v-if="isSearching && searchQuery.trim()" class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
-        <!-- 匹配统计 -->
         <div v-if="totalMatches > 0" class="px-2 py-1 text-xs text-muted-foreground/60">
           {{ t('post.matchStats', { matches: totalMatches, posts: searchResults.length }) }}
         </div>
@@ -886,7 +858,6 @@ function handleDragEnd() {
         </div>
       </div>
 
-      <!-- 内容列表 -->
       <div v-else class="flex-1 overflow-y-auto px-1.5 py-0.5 thin-scrollbar">
         <PostItem
           v-if="sortedPosts.length"
@@ -909,7 +880,6 @@ function handleDragEnd() {
           :select="selectProps"
         />
 
-        <!-- 空状态 -->
         <div v-else class="flex flex-col items-center justify-center gap-4 py-20 px-6">
           <div class="flex items-center justify-center size-12 rounded-xl bg-muted/50">
             <FileText class="size-6 text-muted-foreground/40" />
@@ -925,7 +895,6 @@ function handleDragEnd() {
         </div>
       </div>
 
-      <!-- 选择模式底部操作栏 -->
       <Transition name="slide-up">
         <div
           v-if="isSelectMode"
@@ -934,7 +903,6 @@ function handleDragEnd() {
             ? 'pb-[max(0.75rem,env(safe-area-inset-bottom,0px))]'
             : 'pb-3'"
         >
-          <!-- 选中信息行 -->
           <div class="flex items-center justify-between text-xs">
             <span class="text-muted-foreground">
               {{ t('post.selectedCount') }}
@@ -954,9 +922,7 @@ function handleDragEnd() {
               </button>
             </div>
           </div>
-          <!-- 操作工具栏 -->
           <div class="flex">
-            <!-- 导出 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="t('common.export')"
@@ -967,7 +933,6 @@ function handleDragEnd() {
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
               </svg>
             </button>
-            <!-- 复制 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="t('common.copy')"
@@ -978,7 +943,6 @@ function handleDragEnd() {
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
             </button>
-            <!-- 合并 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length < 2 ? t('post.mergeMinTwo') : t('common.merge')"
@@ -989,9 +953,7 @@ function handleDragEnd() {
                 <path d="M8 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3" /><path d="M16 6h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" /><line x1="12" y1="2" x2="12" y2="22" />
               </svg>
             </button>
-            <!-- 分隔 -->
             <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
-            <!-- 删除 -->
             <button
               class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length >= posts.length ? t('post.keepOnePost') : t('common.delete')"
@@ -1008,7 +970,6 @@ function handleDragEnd() {
     </nav>
   </div>
 
-  <!-- 新增弹窗 -->
   <Dialog v-model:open="isOpenAddDialog">
     <DialogContent>
       <DialogHeader>
@@ -1024,7 +985,6 @@ function handleDragEnd() {
     </DialogContent>
   </Dialog>
 
-  <!-- 重命名弹窗 -->
   <Dialog v-model:open="isOpenEditDialog">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
@@ -1043,7 +1003,6 @@ function handleDragEnd() {
     </DialogContent>
   </Dialog>
 
-  <!-- 删除确认 -->
   <AlertDialog v-model:open="isOpenDelPostConfirmDialog">
     <AlertDialogContent>
       <AlertDialogHeader>
@@ -1073,7 +1032,6 @@ function handleDragEnd() {
     </AlertDialogContent>
   </AlertDialog>
 
-  <!-- 合并弹窗 -->
   <Dialog v-model:open="isOpenMergeDialog">
     <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
@@ -1092,7 +1050,6 @@ function handleDragEnd() {
     </DialogContent>
   </Dialog>
 
-  <!-- 历史记录 -->
   <Dialog v-model:open="isOpenHistoryDialog">
     <DialogContent class="sm:max-w-4xl">
       <DialogHeader>
@@ -1101,7 +1058,6 @@ function handleDragEnd() {
       </DialogHeader>
 
       <div class="h-[50vh] flex gap-3">
-        <!-- 左侧时间轴 -->
         <ul class="w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
           <li
             v-for="(item, idx) in currentHistoryList"
@@ -1116,7 +1072,6 @@ function handleDragEnd() {
 
         <Separator orientation="vertical" />
 
-        <!-- 右侧内容（带 Tabs） -->
         <div class="flex-1 flex flex-col overflow-hidden">
           <Tabs v-model="historyViewMode" class="flex flex-col h-full">
             <TabsList class="shrink-0 w-fit">
@@ -1177,12 +1132,10 @@ function handleDragEnd() {
 </template>
 
 <style scoped>
-/* 移动端侧边栏动画 */
 .animate-slider {
   transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 细滚动条 — 默认隐藏，hover 时显示 */
 .thin-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: transparent transparent;
@@ -1191,7 +1144,6 @@ function handleDragEnd() {
   scrollbar-color: hsl(var(--border)) transparent;
 }
 
-/* 遮罩动画 */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 200ms ease;
@@ -1202,7 +1154,6 @@ function handleDragEnd() {
   opacity: 0;
 }
 
-/* 底部操作栏动画 */
 .slide-up-enter-active,
 .slide-up-leave-active {
   transition: transform 200ms ease, opacity 200ms ease;

@@ -1,7 +1,4 @@
-/**
- * 类型声明：prettier v2.8.8 缺少 TypeScript 声明
- * 为 prettier/standalone 和各 parser 子路径提供模块声明
- */
+/** Type declarations for prettier v2.8.8 (no bundled @types) */
 
 declare module 'prettier/standalone' {
   import type { Plugin } from 'prettier'

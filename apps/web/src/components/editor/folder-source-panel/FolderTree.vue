@@ -46,7 +46,6 @@ function handleToggleClick(node: FileSystemNode, event: MouseEvent) {
 <template>
   <div class="folder-tree">
     <template v-for="node in nodes" :key="node.path">
-      <!-- 节点本身 -->
       <div
         class="tree-node"
         :class="{
@@ -57,7 +56,6 @@ function handleToggleClick(node: FileSystemNode, event: MouseEvent) {
         :style="{ paddingLeft: `${level * 16 + 8}px` }"
         @click="handleNodeClick(node, $event)"
       >
-        <!-- 展开/折叠图标 -->
         <span
           v-if="node.type === 'directory'"
           class="toggle-icon"
@@ -68,20 +66,17 @@ function handleToggleClick(node: FileSystemNode, event: MouseEvent) {
         </span>
         <span v-else class="toggle-icon-placeholder" />
 
-        <!-- 文件/文件夹图标 -->
         <span class="node-icon">
           <Folder v-if="node.type === 'directory' && !isExpanded(node.path)" class="h-4 w-4" />
           <FolderOpen v-else-if="node.type === 'directory' && isExpanded(node.path)" class="h-4 w-4" />
           <File v-else class="h-4 w-4" />
         </span>
 
-        <!-- 节点名称 -->
         <span class="node-name" :title="node.name">
           {{ node.name }}
         </span>
       </div>
 
-      <!-- 递归渲染子节点（紧接在父节点之后） -->
       <FolderTree
         v-if="node.type === 'directory' && isExpanded(node.path) && node.children"
         :nodes="node.children"

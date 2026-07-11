@@ -2,7 +2,7 @@ import { t } from '@/i18n/translate'
 
 let lastQuotaWarnAt = 0
 
-/** 本地存储配额不足时提示（5 秒内去重） */
+/** Warn when local storage quota is low (deduped within 5s). */
 export function warnStorageQuota(): void {
   const now = Date.now()
   if (now - lastQuotaWarnAt < 5000)

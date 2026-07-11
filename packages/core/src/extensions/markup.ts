@@ -2,16 +2,10 @@ import type { MarkedExtension } from 'marked'
 import type { MarkupHighlightToken, MarkupUnderlineToken, MarkupWavylineToken } from '../types/marked-tokens'
 import { asTextTokenRenderer } from '../types/marked-tokens'
 
-/**
- * 扩展标记语法：
- * - 高亮: ==文本==
- * - 下划线: ++文本++
- * - 波浪线: ~文本~
- */
+/** Extended markup: ==highlight==, ++underline++, ~wavyline~ */
 export function markedMarkup(): MarkedExtension {
   return {
     extensions: [
-      // 高亮语法 ==文本==
       {
         name: `markup_highlight`,
         level: `inline`,
@@ -34,7 +28,6 @@ export function markedMarkup(): MarkedExtension {
         }),
       },
 
-      // 下划线语法 ++文本++
       {
         name: `markup_underline`,
         level: `inline`,
@@ -57,7 +50,6 @@ export function markedMarkup(): MarkedExtension {
         }),
       },
 
-      // 波浪线语法 ~文本~
       {
         name: `markup_wavyline`,
         level: `inline`,

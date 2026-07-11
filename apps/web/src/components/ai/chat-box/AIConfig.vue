@@ -6,38 +6,28 @@ import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/us
 import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIConfigStore from '@/stores/aiConfig'
 
-/* -------------------------- 基础数据 -------------------------- */
-
 const emit = defineEmits([`saved`])
 
 const AIConfigStore = useAIConfigStore()
 const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
 const { t } = useI18n()
 
-/** UI 状态 */
 const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
 const localizedAIServices = useLocalizedAIServiceOptions()
 
-/** 当前服务信息 */
 const currentService = computed(
   () => localizedAIServices.value.serviceOptions.find(s => s.value === type.value)
     || localizedAIServices.value.serviceOptions[0],
 )
 
-/* -------------------------- 监听 -------------------------- */
-
-// 监听服务类型变化，清空测试结果
 watch(type, () => {
   testResult.value = ``
 })
 
-// 监听模型变化，清空测试结果
 watch(model, () => {
   testResult.value = ``
 })
-
-/* -------------------------- 操作 -------------------------- */
 
 function saveConfig(emitEvent = true) {
   if (emitEvent) {
@@ -106,7 +96,6 @@ async function testConnection() {
       {{ t('ai.config.title') }}
     </div>
 
-    <!-- 服务类型 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.serviceType') }}</Label>
       <Select v-model="type">
@@ -127,7 +116,6 @@ async function testConnection() {
       </Select>
     </div>
 
-    <!-- API 端点 -->
     <div v-if="type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.apiEndpoint') }}</Label>
       <Input
@@ -137,7 +125,6 @@ async function testConnection() {
       />
     </div>
 
-    <!-- API 密钥，仅非 default 显示 -->
     <div v-if="type !== DEFAULT_SERVICE_TYPE">
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.apiKey') }}</Label>
       <PasswordInput
@@ -147,7 +134,6 @@ async function testConnection() {
       />
     </div>
 
-    <!-- 模型名称 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
       <Select v-if="currentService.models.length > 0" v-model="model">
@@ -174,7 +160,6 @@ async function testConnection() {
       />
     </div>
 
-    <!-- 温度 temperature -->
     <div>
       <Label class="mb-1 flex items-center gap-1 text-sm font-medium">
         {{ t('ai.config.temperature') }}
@@ -200,7 +185,6 @@ async function testConnection() {
       />
     </div>
 
-    <!-- 最大 Token 数 -->
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.maxTokens') }}</Label>
       <Input
@@ -213,7 +197,6 @@ async function testConnection() {
       />
     </div>
 
-    <!-- 操作按钮区域 -->
     <div class="mt-2 flex flex-col gap-2 sm:flex-row">
       <Button size="sm" @click="saveConfig">
         {{ t('common.save') }}
@@ -231,7 +214,6 @@ async function testConnection() {
       </Button>
     </div>
 
-    <!-- 测试结果显示 -->
     <div v-if="testResult" class="mt-1 text-xs text-gray-500">
       {{ testResult }}
     </div>
@@ -245,7 +227,6 @@ async function testConnection() {
   width: 6px;
 }
 @media (pointer: coarse) {
-  /* 触屏设备更细 */
   .custom-scroll::-webkit-scrollbar {
     width: 3px;
   }

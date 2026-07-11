@@ -29,50 +29,43 @@ import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 import AIImageConfig from './AIImageConfig.vue'
 
-/* ---------- 组件属性 ---------- */
 const props = defineProps<{ open: boolean }>()
 
 const emit = defineEmits([`update:open`])
 
 const { t } = useI18n()
 
-/** 图片链接有效期：1小时（毫秒） */
+/** Image URL expiry: 1 hour (ms) */
 const EXPIRY_TIME = 60 * 60 * 1000
 
-/* ---------- 编辑器引用 ---------- */
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 const uiStore = useUIStore()
 const { toggleAIDialog } = uiStore
 
-/* ---------- 弹窗开关 ---------- */
 const dialogVisible = ref(props.open)
 watch(() => props.open, (val) => {
   dialogVisible.value = val
-  // 每次打开面板时检查并清理过期图片
   if (val) {
     cleanExpiredImages()
   }
 })
 watch(dialogVisible, val => emit(`update:open`, val))
 
-/* ---------- 状态管理 ---------- */
 const configVisible = ref(false)
 const loading = ref(false)
 const prompt = ref<string>(``)
 const generatedImages = ref<string[]>([])
-const imagePrompts = ref<string[]>([]) // 存储每张图片对应的prompt
-const imageTimestamps = ref<number[]>([]) // 存储每张图片的生成时间戳
+const imagePrompts = ref<string[]>([])
+const imageTimestamps = ref<number[]>([])
 const abortController = ref<AbortController | null>(null)
 const currentImageIndex = ref(0)
-const currentTime = ref(Date.now()) // 用于实时显示图片剩余有效期
+const currentTime = ref(Date.now())
 let timerIntervalId: ReturnType<typeof setInterval> | null = null
 
-/* ---------- AI 配置 ---------- */
 const AIImageConfigStore = useAIImageConfigStore()
 const { apiKey, endpoint, model, type, size, quality, style } = storeToRefs(AIImageConfigStore)
 
-/* ---------- 过期检查函数 ---------- */
 function isImageExpired(timestamp: number): boolean {
   return Date.now() - timestamp > EXPIRY_TIME
 }
@@ -81,14 +74,13 @@ async function cleanExpiredImages() {
   const images = await store.getJSON<string[]>(`ai_generated_images`, [])
   const timestamps = await store.getJSON<number[]>(`ai_image_timestamps`, [])
 
-  // 没有数据则无需清理
   if (images.length === 0) {
     return
   }
 
   const prompts = await store.getJSON<string[]>(`ai_image_prompts`, [])
 
-  // 如果没有时间戳数据，说明是旧版本，默认清除所有数据
+  // Missing timestamps (legacy data); clear all
   if (timestamps.length === 0) {
     generatedImages.value = []
     imagePrompts.value = []
@@ -99,7 +91,6 @@ async function cleanExpiredImages() {
     return
   }
 
-  // 过滤掉过期的图片
   const validIndices: number[] = []
   timestamps.forEach((timestamp: number, index: number) => {
     if (!isImageExpired(timestamp)) {
@@ -111,12 +102,10 @@ async function cleanExpiredImages() {
   const validPrompts = validIndices.map(i => prompts[i] || ``).filter((_, index) => validImages[index])
   const validTimestamps = validIndices.map(i => timestamps[i]).filter(Boolean)
 
-  // 更新数据
   generatedImages.value = validImages
   imagePrompts.value = validPrompts
   imageTimestamps.value = validTimestamps
 
-  // 如果有数据被清除，更新存储
   if (validImages.length < images.length) {
     if (validImages.length > 0) {
       await store.setJSON(`ai_generated_images`, validImages)
@@ -131,12 +120,9 @@ async function cleanExpiredImages() {
   }
 }
 
-/* ---------- 初始数据 & 定时器 ---------- */
 onMounted(async () => {
-  // 先进行过期检查和清理
   await cleanExpiredImages()
 
-  // 确保数组长度一致
   const imagesLength = generatedImages.value.length
   const promptsLength = imagePrompts.value.length
   const timestampsLength = imageTimestamps.value.length
@@ -144,7 +130,7 @@ onMounted(async () => {
   const maxLength = Math.max(imagesLength, promptsLength, timestampsLength)
 
   if (imagesLength < maxLength) {
-    // 如果图片少于其他数组，说明数据不一致，清除所有数据
+    // Image count mismatch; clear inconsistent data
     generatedImages.value = []
     imagePrompts.value = []
     imageTimestamps.value = []
@@ -153,7 +139,6 @@ onMounted(async () => {
     await store.remove(`ai_image_timestamps`)
   }
   else {
-    // 补齐较短的数组
     if (promptsLength < imagesLength) {
       imagePrompts.value = [...imagePrompts.value, ...Array.from<string>({ length: imagesLength - promptsLength }).fill(``)]
     }
@@ -162,8 +147,7 @@ onMounted(async () => {
     }
   }
 
-  // 每秒更新当前时间（用于实时显示剩余有效期）
-  // 每30秒顺带清理一次已过期的图片
+  // Also purge expired images every 30s
   let tick = 0
   timerIntervalId = setInterval(() => {
     currentTime.value = Date.now()
@@ -181,15 +165,12 @@ onBeforeUnmount(() => {
   }
 })
 
-/* ---------- 事件处理 ---------- */
 function handleConfigSaved() {
   configVisible.value = false
 }
 
 function switchToChat() {
-  // 先关闭当前文生图对话框
   emit(`update:open`, false)
-  // 然后打开聊天对话框
   setTimeout(() => {
     toggleAIDialog(true)
   }, 100)
@@ -205,7 +186,6 @@ function handleKeydown(e: KeyboardEvent) {
   }
 }
 
-/* ---------- 生成图像（核心） ---------- */
 async function doGenerateImage(promptText: string, clearInput = false) {
   if (!promptText.trim() || loading.value)
     return
@@ -225,7 +205,7 @@ async function doGenerateImage(promptText: string, clearInput = false) {
       n: 1,
     }
 
-    // 只对 DALL-E 模型添加额外参数
+    // Add extra params only for DALL-E models
     if (model.value.includes(`dall-e`)) {
       payload.quality = quality.value
       payload.style = style.value
@@ -249,7 +229,6 @@ async function doGenerateImage(promptText: string, clearInput = false) {
       const imageUrl = data.data[0].url || data.data[0].b64_json
 
       if (imageUrl) {
-        // 如果是 base64 格式，转换为 data URL
         const finalUrl = imageUrl.startsWith(`data:`) || imageUrl.startsWith(`http`)
           ? imageUrl
           : `data:image/png;base64,${imageUrl}`
@@ -257,11 +236,11 @@ async function doGenerateImage(promptText: string, clearInput = false) {
         const currentTimestamp = Date.now()
 
         generatedImages.value.unshift(finalUrl)
-        imagePrompts.value.unshift(promptText.trim()) // 保存对应的prompt
-        imageTimestamps.value.unshift(currentTimestamp) // 保存生成时间戳
+        imagePrompts.value.unshift(promptText.trim())
+        imageTimestamps.value.unshift(currentTimestamp)
         currentImageIndex.value = 0
 
-        // 限制存储的图片数量，避免占用过多存储空间
+        // Cap stored images to limit storage use
         if (generatedImages.value.length > 20) {
           generatedImages.value = generatedImages.value.slice(0, 20)
           imagePrompts.value = imagePrompts.value.slice(0, 20)
@@ -272,7 +251,6 @@ async function doGenerateImage(promptText: string, clearInput = false) {
         await store.setJSON(`ai_image_prompts`, imagePrompts.value)
         await store.setJSON(`ai_image_timestamps`, imageTimestamps.value)
 
-        // 清空输入框
         if (clearInput)
           prompt.value = ``
       }
@@ -292,7 +270,6 @@ async function doGenerateImage(promptText: string, clearInput = false) {
   }
 }
 
-/* ---------- 生成图像 ---------- */
 async function generateImage() {
   if (!prompt.value.trim() || loading.value)
     return
@@ -300,7 +277,6 @@ async function generateImage() {
   await doGenerateImage(prompt.value, true)
 }
 
-/* ---------- 取消生成 ---------- */
 function cancelGeneration() {
   if (abortController.value) {
     abortController.value.abort()
@@ -309,7 +285,6 @@ function cancelGeneration() {
   loading.value = false
 }
 
-/* ---------- 清空图像 ---------- */
 async function clearImages() {
   generatedImages.value = []
   imagePrompts.value = []
@@ -320,7 +295,6 @@ async function clearImages() {
   await store.remove(`ai_image_timestamps`)
 }
 
-/* ---------- 下载图像 ---------- */
 async function downloadImage(imageUrl: string, index: number) {
   try {
     const response = await fetch(imageUrl)
@@ -332,7 +306,6 @@ async function downloadImage(imageUrl: string, index: number) {
     const a = document.createElement(`a`)
     a.href = url
 
-    // 生成包含prompt信息的文件名
     const relatedPrompt = imagePrompts.value[index] || ``
     const promptPart = relatedPrompt
       ? relatedPrompt.substring(0, 20).replace(/[^\w\s-]/g, ``).replace(/\s+/g, `-`)
@@ -350,7 +323,6 @@ async function downloadImage(imageUrl: string, index: number) {
   }
 }
 
-/* ---------- 复制图像URL ---------- */
 async function copyImageUrl(imageUrl: string) {
   try {
     await copyPlain(imageUrl)
@@ -361,25 +333,16 @@ async function copyImageUrl(imageUrl: string) {
   }
 }
 
-/* ---------- 重新生成 ---------- */
 function regenerateImage() {
-  // 使用当前图片对应的prompt
   const currentPrompt = imagePrompts.value[currentImageIndex.value]
-  if (currentPrompt) {
-    // 直接使用当前图片的prompt生成，不修改输入框内容
+  if (currentPrompt)
     regenerateWithPrompt(currentPrompt)
-  }
-  else {
-    // No prompt available, silently skip
-  }
 }
 
-/* ---------- 使用指定prompt重新生成 ---------- */
 async function regenerateWithPrompt(promptText: string) {
   await doGenerateImage(promptText)
 }
 
-/* ---------- 切换图像 ---------- */
 function previousImage() {
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--
@@ -392,36 +355,29 @@ function nextImage() {
   }
 }
 
-/* ---------- 插入图像到光标位置 ---------- */
 function insertImageToCursor(imageUrl: string) {
   if (!editor.value)
     return
 
   try {
-    // 获取当前图片对应的prompt
     const imagePrompt = imagePrompts.value[currentImageIndex.value] || ``
 
-    // 生成简洁的alt文本
     const altText = imagePrompt.trim()
       ? imagePrompt.trim().substring(0, 30).replace(/\n/g, ` `)
       : t(`ai.image.aiGeneratedAlt`)
 
-    // 生成Markdown图片语法
     const markdownImage = `![${altText}](${imageUrl})`
 
-    // 获取当前光标位置并插入
     const pos = editor.value.state.selection.main.head
     editor.value.dispatch({
       changes: { from: pos, insert: markdownImage },
       selection: { anchor: pos + markdownImage.length },
     })
 
-    // 聚焦编辑器
     editor.value.focus()
 
     toast.success(t(`ai.image.insertedToEditor`))
 
-    // 关闭弹窗
     dialogVisible.value = false
   }
   catch {
@@ -429,7 +385,6 @@ function insertImageToCursor(imageUrl: string) {
   }
 }
 
-/* ---------- 查看大图 ---------- */
 const previewImageUrl = ref('')
 const previewOverlayRef = ref<HTMLDivElement | null>(null)
 
@@ -452,13 +407,11 @@ function closePreview() {
   previewImageUrl.value = ''
 }
 
-/* ---------- 时间相关函数 ---------- */
 function getTimeRemaining(index: number): string {
   if (!imageTimestamps.value[index]) {
     return t(`common.unknown`)
   }
 
-  // EXPIRY_TIME 来自模块顶层常量
   const timestamp = imageTimestamps.value[index]
   const elapsed = currentTime.value - timestamp
   const remaining = EXPIRY_TIME - elapsed
@@ -483,7 +436,6 @@ function getTimeRemainingClass(index: number): string {
     return `text-muted-foreground`
   }
 
-  // EXPIRY_TIME 来自模块顶层常量
   const timestamp = imageTimestamps.value[index]
   const elapsed = currentTime.value - timestamp
   const remaining = EXPIRY_TIME - elapsed
@@ -491,10 +443,10 @@ function getTimeRemainingClass(index: number): string {
   if (remaining <= 0) {
     return `text-red-500 font-medium`
   }
-  else if (remaining < 10 * 60 * 1000) { // 少于10分钟
+  else if (remaining < 10 * 60 * 1000) { // less than 10 minutes
     return `text-orange-500 font-medium`
   }
-  else if (remaining < 30 * 60 * 1000) { // 少于30分钟
+  else if (remaining < 30 * 60 * 1000) { // less than 30 minutes
     return `text-yellow-600`
   }
   else {
@@ -508,7 +460,6 @@ function getTimeRemainingClass(index: number): string {
     <DialogContent
       class="bg-card text-card-foreground flex flex-col w-[95vw] max-h-[90vh] sm:max-h-[85vh] sm:max-w-4xl overflow-y-auto"
     >
-      <!-- ============ 头部 ============ -->
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
           <DialogTitle>{{ t('ai.image.title') }}</DialogTitle>
@@ -549,7 +500,6 @@ function getTimeRemainingClass(index: number): string {
         </DialogDescription>
       </DialogHeader>
 
-      <!-- ============ 参数配置面板 ============ -->
       <div
         v-if="configVisible"
         class="mb-4 w-full border rounded-md p-4 max-h-[60vh] overflow-y-auto flex-shrink-0"
@@ -557,12 +507,10 @@ function getTimeRemainingClass(index: number): string {
         <AIImageConfig @saved="handleConfigSaved" />
       </div>
 
-      <!-- ============ 图像展示区域 ============ -->
       <div
         v-if="!configVisible && (loading || generatedImages.length > 0)"
         class="flex flex-col space-y-4 flex-shrink-0"
       >
-        <!-- 图像显示 -->
         <div class="flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg min-h-[250px] sm:min-h-[300px]">
           <div v-if="loading" class="flex flex-col items-center gap-4">
             <Loader2 class="h-8 w-8 animate-spin text-primary" />
@@ -579,7 +527,6 @@ function getTimeRemainingClass(index: number): string {
           </div>
 
           <div v-else-if="generatedImages.length > 0" class="w-full flex flex-col space-y-3">
-            <!-- 图像导航 -->
             <div v-if="generatedImages.length > 1" class="flex items-center justify-between p-2 bg-muted/20 rounded">
               <Button
                 variant="outline"
@@ -602,7 +549,6 @@ function getTimeRemainingClass(index: number): string {
               </Button>
             </div>
 
-            <!-- 图像显示 -->
             <div class="flex items-center justify-center p-2 sm:p-4">
               <div class="relative group cursor-pointer max-w-lg inline-flex justify-center" @click="viewFullImage(generatedImages[currentImageIndex])">
                 <img
@@ -610,7 +556,6 @@ function getTimeRemainingClass(index: number): string {
                   :alt="t('ai.image.generatedImageAlt', { n: currentImageIndex + 1 })"
                   class="max-w-full h-[300px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
                 >
-                <!-- 点击查看大图提示 -->
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
                   <div class="bg-black/70 text-white px-3 py-1 rounded-md text-sm">
                     {{ t('ai.image.clickToViewLarge') }}
@@ -619,12 +564,10 @@ function getTimeRemainingClass(index: number): string {
               </div>
             </div>
 
-            <!-- 图像信息 -->
             <div class="px-2 sm:px-4 py-2 bg-muted/10 rounded space-y-1">
               <p class="text-xs text-muted-foreground text-center">
                 {{ t('ai.image.size') }}: {{ size }}
               </p>
-              <!-- 提示词 -->
               <div class="text-xs text-muted-foreground break-words text-center">
                 <span class="font-medium">{{ t('ai.image.prompt') }}:</span>
                 <span class="ml-1">{{ imagePrompts[currentImageIndex] || t('ai.image.noPrompt') }}</span>
@@ -638,7 +581,6 @@ function getTimeRemainingClass(index: number): string {
               </div>
             </div>
 
-            <!-- 图像操作按钮 -->
             <div class="flex flex-wrap justify-center gap-2 p-2 sm:p-4 bg-muted/20 border-t border-border rounded-b-lg">
               <Button
                 variant="outline"
@@ -681,7 +623,6 @@ function getTimeRemainingClass(index: number): string {
         </div>
       </div>
 
-      <!-- ============ 输入框 ============ -->
       <div v-if="!configVisible" class="relative flex-shrink-0 mt-auto">
         <div
           class="bg-background border-border flex flex-col items-baseline gap-2 border rounded-xl px-3 py-2 pr-12 shadow-inner"
@@ -694,7 +635,6 @@ function getTimeRemainingClass(index: number): string {
             @keydown="handleKeydown"
           />
 
-          <!-- 生成按钮 -->
           <Button
             :disabled="!prompt.trim() && !loading"
             size="icon"
@@ -715,7 +655,6 @@ function getTimeRemainingClass(index: number): string {
     </DialogContent>
   </Dialog>
 
-  <!-- ============ 图片预览遮罩 ============ -->
   <Teleport to="body">
     <div
       v-if="previewImageUrl"
@@ -755,7 +694,6 @@ function getTimeRemainingClass(index: number): string {
   width: 6px;
 }
 @media (pointer: coarse) {
-  /* 触屏设备更细 */
   .custom-scroll::-webkit-scrollbar {
     width: 3px;
   }

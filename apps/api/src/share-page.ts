@@ -132,7 +132,7 @@ function ensureShareFooterStyles(html: string): string {
   return html.replace(`</style>`, `${SHARE_FOOTER_STYLES}\n  </style>`)
 }
 
-/** 将快照 HTML 中的 footer 占位符替换为分享者与阅读数（兼容旧版 footer） */
+/** Replace footer placeholders in snapshot HTML with author and view count (legacy footers supported) */
 export function injectShareFooter(
   html: string,
   author: ShareFooterAuthor,

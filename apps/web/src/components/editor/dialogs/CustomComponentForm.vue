@@ -187,7 +187,6 @@ function getPropDefaultPlaceholder(type: string): string {
       {{ mode === 'create' ? t('component.create') : t('component.edit') }}
     </h3>
 
-    <!-- 组件名称 -->
     <div class="space-y-1.5">
       <Label for="comp-name">
         {{ t('component.nameLabel') }}
@@ -205,7 +204,6 @@ function getPropDefaultPlaceholder(type: string): string {
       </p>
     </div>
 
-    <!-- 组件描述 -->
     <div class="space-y-1.5">
       <Label for="comp-desc">{{ t('component.descLabel') }}</Label>
       <Input
@@ -215,7 +213,6 @@ function getPropDefaultPlaceholder(type: string): string {
       />
     </div>
 
-    <!-- Props 定义 -->
     <div class="space-y-2">
       <div class="flex items-center justify-between">
         <Label>{{ t('component.propsLabel') }}</Label>
@@ -225,7 +222,6 @@ function getPropDefaultPlaceholder(type: string): string {
         </Button>
       </div>
       <template v-if="propRows.length > 0">
-        <!-- 桌面端：网格表头 -->
         <div class="hidden sm:grid grid-cols-13 gap-2 px-1">
           <span class="col-span-3 text-xs text-muted-foreground">{{ t('component.propName') }}</span>
           <span class="col-span-2 text-xs text-muted-foreground">{{ t('component.propType') }}</span>
@@ -299,7 +295,6 @@ function getPropDefaultPlaceholder(type: string): string {
       </p>
     </div>
 
-    <!-- HTML 模板 -->
     <div class="space-y-1.5">
       <Label for="comp-template">
         {{ t('component.htmlTemplate') }}
@@ -323,7 +318,6 @@ function getPropDefaultPlaceholder(type: string): string {
       </div>
     </div>
 
-    <!-- 实时预览 -->
     <div v-if="formData.template.trim()" class="space-y-1.5">
       <div class="flex items-center justify-between">
         <Label class="text-muted-foreground">{{ t('component.previewLabel') }}</Label>

@@ -1,6 +1,3 @@
-/**
- * 文件系统节点接口
- */
 import { t } from '@/i18n/translate'
 
 export interface FileSystemNode {
@@ -11,64 +8,47 @@ export interface FileSystemNode {
   handle?: FileSystemFileHandle | FileSystemDirectoryHandle
 }
 
-/**
- * 运行时文件夹信息（包含 handle，仅在内存中）
- */
+/** Runtime folder info (includes handle; kept in memory only). */
 interface RuntimeFolderInfo {
   id: string
   name: string
   handle: FileSystemDirectoryHandle
 }
 
-/**
- * Safely extract a message from an unknown error value.
- */
 function getErrorMessage(error: unknown): string {
   if (error instanceof Error)
     return error.message
   return String(error)
 }
 
-/**
- * Safely extract the error name from an unknown error value.
- */
 function getErrorName(error: unknown): string {
   if (error instanceof Error)
     return error.name
   return `UnknownError`
 }
 
-/**
- * 本地文件夹源 Store
- * 负责管理本地文件夹的访问、文件树结构和文件读写
- */
+/** Local folder source: File System Access API, file tree, read/write. */
 export const useFolderSourceStore = defineStore(`folderSource`, () => {
-  // 内存中的运行时文件夹信息（不持久化）
   const runtimeFolderMap = new Map<string, RuntimeFolderInfo>()
 
-  // 当前激活的文件夹 ID（不持久化）
   const currentFolderId = ref<string | null>(null)
 
-  // 当前文件夹的文件树（不持久化，因为包含不可序列化的 handle）
+  // Not persisted: tree nodes hold non-serializable handles
   const fileTree = ref<FileSystemNode[]>([])
 
-  // 选中的文件路径
   const selectedFilePath = ref<string>(``)
 
-  // 是否正在加载
   const isLoading = ref(false)
 
-  // 加载错误信息
   const loadError = ref<string>(``)
 
-  // 当前运行时文件夹
   const currentRuntimeFolder = computed(() => {
     if (!currentFolderId.value)
       return null
     return runtimeFolderMap.get(currentFolderId.value) || null
   })
 
-  // 兼容旧代码的属性
+  /** @deprecated Legacy shape for older callers */
   const folderHandles = computed(() => {
     return Array.from(runtimeFolderMap.values()).map(folder => ({
       id: folder.id,
@@ -78,6 +58,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }))
   })
 
+  /** @deprecated Legacy shape for older callers */
   const currentFolderHandle = computed(() => {
     if (!currentRuntimeFolder.value)
       return null
@@ -89,17 +70,13 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }
   })
 
-  // 兼容：savedFolders 返回空数组
+  /** @deprecated Always returns []; folders are not persisted */
   const savedFolders = ref<any[]>([])
 
-  // 检查浏览器是否支持 File System Access API
   const isFileSystemAPISupported = computed(() => {
     return typeof window !== `undefined` && `showDirectoryPicker` in window
   })
 
-  /**
-   * 选择并打开本地文件夹
-   */
   async function selectFolder() {
     if (!isFileSystemAPISupported.value) {
       toast.error(t('store.folder.apiNotSupported'))
@@ -115,24 +92,20 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
         startIn: `documents`,
       })
 
-      // 请求权限
       const permission = await handle.requestPermission({ mode: `readwrite` })
       if (permission !== `granted`) {
         toast.error(t('store.folder.permissionDenied'))
         return
       }
 
-      // 检查是否已经打开过这个文件夹
       let folderId: string
       const existingFolder = Array.from(runtimeFolderMap.values()).find(f => f.name === handle.name)
 
       if (existingFolder) {
         folderId = existingFolder.id
-        // 更新 handle
         existingFolder.handle = handle
       }
       else {
-        // 创建新文件夹信息
         folderId = generateFolderId()
         const folderInfo: RuntimeFolderInfo = {
           id: folderId,
@@ -144,14 +117,12 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
 
       currentFolderId.value = folderId
 
-      // 加载文件树
       await loadFileTree(handle)
 
       toast.success(t('store.folder.opened', { name: handle.name }))
     }
     catch (error: unknown) {
       if (getErrorName(error) === `AbortError`) {
-        // 用户取消了选择
         return
       }
       const msg = getErrorMessage(error)
@@ -163,11 +134,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }
   }
 
-  /**
-   * 关闭当前文件夹，同时释放内存中的句柄引用
-   */
   function closeFolder() {
-    // 释放当前文件夹的句柄引用，避免内存泄漏
     if (currentFolderId.value) {
       runtimeFolderMap.delete(currentFolderId.value)
     }
@@ -176,21 +143,14 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     selectedFilePath.value = ``
   }
 
-  /**
-   * 从列表中移除文件夹
-   */
   function removeFolder(folderId: string) {
     runtimeFolderMap.delete(folderId)
 
-    // 如果关闭的是当前文件夹，清空当前状态
     if (currentFolderId.value === folderId) {
       closeFolder()
     }
   }
 
-  /**
-   * 加载文件树
-   */
   async function loadFileTree(handle: FileSystemDirectoryHandle): Promise<void> {
     try {
       const tree = await buildFileTree(handle, handle.name)
@@ -202,9 +162,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }
   }
 
-  /**
-   * 递归构建文件树
-   */
   async function buildFileTree(
     handle: FileSystemDirectoryHandle,
     path: string,
@@ -221,7 +178,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       for await (const entry of handle.values()) {
         const entryPath = `${path}/${entry.name}`
         if (entry.kind === `file`) {
-          // 只添加 Markdown 文件
           if (entry.name.toLowerCase().endsWith(`.md`)) {
             node.children!.push({
               name: entry.name,
@@ -232,13 +188,12 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
           }
         }
         else if (entry.kind === `directory`) {
-          // 递归处理子目录
           const childNode = await buildFileTree(entry as FileSystemDirectoryHandle, entryPath)
           node.children!.push(childNode)
         }
       }
 
-      // 排序：目录在前，文件在后，按名称排序
+      // Directories first, then files, sorted by name
       node.children!.sort((a, b) => {
         if (a.type !== b.type) {
           return a.type === `directory` ? -1 : 1
@@ -247,22 +202,18 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       })
     }
     catch (error: unknown) {
-      console.error(`读取目录失败: ${path}`, getErrorMessage(error))
+      console.error(`Failed to read directory: ${path}`, getErrorMessage(error))
     }
 
     return node
   }
 
-  /**
-   * 读取文件内容
-   */
   async function readFile(filePath: string): Promise<string> {
     if (!currentRuntimeFolder.value) {
       throw new Error(t('store.folder.noFolderSelected'))
     }
 
     try {
-      // 直接从文件树中查找节点
       const node = findNodeByPath(fileTree.value, filePath)
       if (!node) {
         throw new Error(t('store.folder.fileNotFound', { path: filePath }))
@@ -272,7 +223,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
         throw new Error(t('store.folder.notAFile', { path: filePath }))
       }
 
-      // 使用节点中存储的文件句柄
       const fileHandle = node.handle as FileSystemFileHandle
       const file = await fileHandle.getFile()
       return await file.text()
@@ -283,49 +233,38 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }
   }
 
-  /**
-   * 写入文件内容
-   */
   async function writeFile(filePath: string, content: string): Promise<void> {
     if (!currentRuntimeFolder.value) {
       throw new Error(t('store.folder.noFolderSelected'))
     }
 
     try {
-      // 解析路径，找到对应的目录句柄
-      const pathParts = filePath.split(`/`).slice(1) // 移除第一部分（文件夹名）
+      const pathParts = filePath.split(`/`).slice(1) // drop root folder segment
       let currentHandle = currentRuntimeFolder.value.handle as FileSystemDirectoryHandle
 
-      // 遍历路径，创建不存在的目录
       for (let i = 0; i < pathParts.length - 1; i++) {
         const dirName = pathParts[i]
         try {
           currentHandle = await currentHandle.getDirectoryHandle(dirName)
         }
         catch {
-          // 目录不存在，创建它
           currentHandle = await currentHandle.getDirectoryHandle(dirName, { create: true })
         }
       }
 
-      // 获取或创建文件句柄
       const fileName = pathParts[pathParts.length - 1]
       const fileHandle = await currentHandle.getFileHandle(fileName, { create: true })
 
-      // 写入内容
       const writable = await fileHandle.createWritable()
       await writable.write(content)
       await writable.close()
     }
     catch (error: unknown) {
-      console.error(`保存文件失败: ${getErrorMessage(error)}`)
+      console.error(`Failed to save file: ${getErrorMessage(error)}`)
       throw error
     }
   }
 
-  /**
-   * 在文件树中查找节点
-   */
   function findNodeByPath(nodes: FileSystemNode[], path: string): FileSystemNode | null {
     for (const node of nodes) {
       if (node.path === path) {
@@ -340,9 +279,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     return null
   }
 
-  /**
-   * 获取所有 Markdown 文件列表
-   */
   function getAllMarkdownFiles(nodes: FileSystemNode[] = fileTree.value): FileSystemNode[] {
     const files: FileSystemNode[] = []
     for (const node of nodes) {
@@ -356,27 +292,19 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     return files
   }
 
-  /**
-   * 生成文件夹 ID
-   */
   function generateFolderId(): string {
     return `folder_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
   }
 
   return {
-    // State
-    folderHandles, // 兼容旧代码
-    currentFolderHandle, // 兼容旧代码
+    folderHandles,
+    currentFolderHandle,
     savedFolders,
     fileTree,
     selectedFilePath,
     isLoading,
     loadError,
-
-    // Computed
     isFileSystemAPISupported,
-
-    // Actions
     selectFolder,
     closeFolder,
     removeFolder,

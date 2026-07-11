@@ -43,12 +43,12 @@ function isMathStillLoading(output: HTMLElement): boolean {
   return false
 }
 
-/** 等待预览区异步图表与公式渲染完成；超时返回 false */
+/** Wait for async diagrams and math in preview; returns false on timeout. */
 export async function waitForPreviewReady(
   timeoutMs = PREVIEW_READY_TIMEOUT_MS,
   options?: WaitForPreviewReadyOptions,
 ): Promise<boolean> {
-  // 等待 Vue 将 renderStore.output 同步到 #output，避免检测到旧 DOM 后提前返回
+  // Wait for Vue to sync renderStore.output into #output (avoid stale DOM)
   await nextTick()
   await nextTick()
 
@@ -72,7 +72,7 @@ export async function waitForPreviewReady(
   return !isDiagramStillLoading(output) && !isMathStillLoading(output)
 }
 
-/** 移除仍未渲染完成的占位内容，避免复制/导出时出现「正在加载…」文案 */
+/** Strip unresolved async placeholders so copy/export omit loading text. */
 export function stripUnresolvedAsyncPlaceholders(root: ParentNode) {
   root.querySelectorAll<HTMLElement>(ASYNC_DIAGRAM_SELECTOR).forEach((el) => {
     if (el.querySelector(`svg, img`))

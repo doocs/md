@@ -21,7 +21,6 @@ interface InfographicOptions {
 
 type InfographicOptionsSource = InfographicOptions | (() => InfographicOptions | undefined)
 
-// key -> svg（LRU 缓存，上限 50 条）
 const svgCache = createSVGCache(50)
 const pendingMeta = new Map<string, { code: string, options?: InfographicOptions }>()
 const inFlight = new Set<string>()
@@ -199,7 +198,7 @@ async function renderInfographic(containerId: string, code: string, cacheKey: st
   }
 }
 
-/** 预览区 DOM 更新后，将缓存 SVG 写入占位节点或重试未完成的渲染 */
+/** After preview DOM updates, write cached SVG into placeholders or retry pending renders. */
 export function hydratePendingInfographicDiagrams(root: ParentNode, options?: InfographicOptions) {
   if (typeof window === `undefined`)
     return

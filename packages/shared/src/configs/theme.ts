@@ -1,7 +1,6 @@
 import type { IConfigOption } from '../types'
 import type { ThemeName } from './theme-css'
 
-// 导出 CSS 主题（新主题系统）
 export { baseCSSContent, themeMap, type ThemeName } from './theme-css'
 
 export const themeOptionsMap = {
