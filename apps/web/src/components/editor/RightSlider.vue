@@ -61,6 +61,13 @@ const selectedHeadingStyle = computed({
   },
 })
 
+// reka-ui SelectValue 默认缓存选项 textContent，语言切换时需显式渲染本地化标签
+const selectedHeadingStyleLabel = computed(() =>
+  localizedStyleOptions.value.headingStyleOptions
+    .find(option => option.value === selectedHeadingStyle.value)
+    ?.label,
+)
+
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
 
 // Theme change handlers
@@ -343,7 +350,9 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
           </Select>
           <Select v-model="selectedHeadingStyle">
             <SelectTrigger class="flex-1">
-              <SelectValue :placeholder="t('rightSlider.selectStyle')" />
+              <SelectValue :placeholder="t('rightSlider.selectStyle')">
+                {{ selectedHeadingStyleLabel }}
+              </SelectValue>
             </SelectTrigger>
             <SelectContent>
               <SelectItem v-for="{ label, value } in localizedStyleOptions.headingStyleOptions" :key="value" :value="value">
