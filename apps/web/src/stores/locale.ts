@@ -3,12 +3,16 @@ import { getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
 import { detectInitialLocale } from '@/i18n/detect'
 import { getAppI18n } from '@/i18n/index'
 import enUS from '@/i18n/messages/en-US'
+import jaJP from '@/i18n/messages/ja-JP'
 import zhCN from '@/i18n/messages/zh-CN'
+import zhTW from '@/i18n/messages/zh-TW'
 import { store } from '@/storage'
 
 const META_BY_LOCALE = {
   'zh-CN': zhCN.meta,
+  'zh-TW': zhTW.meta,
   'en-US': enUS.meta,
+  'ja-JP': jaJP.meta,
 } as const
 
 function syncDocumentLocale(locale: AppLocale) {

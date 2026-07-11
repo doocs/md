@@ -2,7 +2,9 @@ export default {
   locale: {
     label: `语言`,
     zhCN: `简体中文`,
+    zhTW: `繁體中文`,
     enUS: `English`,
+    jaJP: `日本語`,
   },
   meta: {
     title: `微信 Markdown 编辑器 | Doocs`,

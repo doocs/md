@@ -1,4 +1,5 @@
 import { storeToRefs } from 'pinia'
+import { isAppLocale } from '@/i18n/constants'
 import { store } from '@/storage/manager'
 import { addPrefix } from '@/storage/prefix'
 import { parseStoredValue } from '@/storage/quota'
@@ -90,7 +91,7 @@ export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void
 
   if (keys.has(`locale`)) {
     const raw = store.getSync(`locale`)
-    if (raw === `zh-CN` || raw === `en-US`)
+    if (isAppLocale(raw))
       useLocaleStore().setLocale(raw)
   }
 

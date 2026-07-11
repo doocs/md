@@ -34,7 +34,7 @@ async function startServer() {
 
       const { spaceId, clientSecret } = arg
       if (spaceId && clientSecret) {
-        console.log(`${colors.green('✅ 云存储已配置，可通过自定义代码上传图片')}`)
+        console.log(`${colors.green('云存储已配置，可通过自定义代码上传图片')}`)
       }
     })
 

@@ -1,12 +1,19 @@
 import { browser, defineBackground } from '#imports'
 import { detectInitialLocale } from '@/i18n/detect'
 import enUS from '@/i18n/messages/en-US/store'
+import jaJP from '@/i18n/messages/ja-JP/store'
 import zhCN from '@/i18n/messages/zh-CN/store'
+import zhTW from '@/i18n/messages/zh-TW/store'
+
+const EXTENSION_TITLE_BY_LOCALE = {
+  'zh-CN': zhCN.extension.editorTitle,
+  'zh-TW': zhTW.extension.editorTitle,
+  'en-US': enUS.extension.editorTitle,
+  'ja-JP': jaJP.extension.editorTitle,
+} as const
 
 function getExtensionTitle(): string {
-  return detectInitialLocale() === `en-US`
-    ? enUS.extension.editorTitle
-    : zhCN.extension.editorTitle
+  return EXTENSION_TITLE_BY_LOCALE[detectInitialLocale()]
 }
 
 export default defineBackground({
