@@ -130,8 +130,8 @@ Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US*
 
 ### 升级依赖
 
-1. **共享版本用 catalog** — 跨包共用的工具链版本集中在 `pnpm-workspace.yaml` 的 `catalog`（`typescript`、`vitest`、`wrangler`、`@types/node`、`marked`、`@codemirror/state|view` 等）；各 `package.json` 用 `"catalog:"` 引用，改版本只改 catalog 一处。包专属依赖可继续写版本号（`pnpm/json-enforce-catalog` 已关闭）
-2. **Prettier 必须固定在 `2.8.8`** — 通过 catalog + `overrides.prettier` 强制
+1. **共享版本用 catalog** — 跨包共用的工具链版本集中在 `pnpm-workspace.yaml` 的 `catalog`（`typescript`、`vitest`、`wrangler`、`@types/node`、`marked`、`@codemirror/state|view` 等）；workspace 内各 `package.json` 用 `"catalog:"` 引用。**仓库根 `package.json` 因 `private: false` 可被 npm 消费，须写普通 semver，勿用 `catalog:`。**包专属依赖可继续写版本号（`pnpm/json-enforce-catalog` 已关闭）
+2. **Prettier 必须固定在 `2.8.8`** — 通过 catalog + `overrides.prettier` 强制（根 package 直接写 `2.8.8`）
 3. **Patch 文件：** 如果打了 patch 的依赖升级了，必须同步更新 `patches/` 中对应的 patch 文件：
    - `@codemirror/view` → `patches/@codemirror__view@6.43.6.patch`（导出 `MeasureRequest` 接口，修复 macOS 上 Alt+Shift 快捷键处理）
    - `front-matter` → `patches/front-matter@4.0.2.patch`

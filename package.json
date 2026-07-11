@@ -37,14 +37,14 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "9.1.0",
-    "@types/node": "catalog:",
+    "@types/node": "^26.1.1",
     "archiver": "^8.0.0",
     "eslint": "^10.7.0",
     "eslint-plugin-format": "^2.0.1",
-    "prettier": "catalog:",
-    "shx": "catalog:",
+    "prettier": "2.8.8",
+    "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
-    "typescript": "catalog:"
+    "typescript": "~6.0.3"
   },
   "simple-git-hooks": {
     "pre-commit": "npx lint-staged"
