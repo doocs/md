@@ -58,9 +58,9 @@ export interface MigrationResult {
 }
 
 /**
- * ??????? localStorage ???? IndexedDB ??????
- * @param explicitKeys ??????? key??????????? key
- * @returns ??? key ??
+ * 迁移完成后清理 localStorage 中已迁入 IndexedDB 的应用数据。
+ * @param explicitKeys 本次迁移涉及的 key；省略则扫描所有本应用 key
+ * @returns 删除的 key 数量
  */
 export function cleanupMigratedLocalStorage(explicitKeys?: string[]): number {
   const candidates = new Set<string>()
@@ -218,7 +218,7 @@ export async function migrateMpProfile(engine: IndexedDBEngine): Promise<void> {
 }
 
 /**
- * ? localStorage ???? IndexedDB???????????
+ * 将 localStorage 全量迁入 IndexedDB（首次启动执行一次）。
  */
 export async function migrateFromLocalStorage(engine: IndexedDBEngine): Promise<MigrationResult> {
   const keysToMigrate: string[] = []
@@ -261,7 +261,7 @@ export async function migrateFromLocalStorage(engine: IndexedDBEngine): Promise<
   }
 }
 
-/** ?? cache store */
+/** 清除 cache store */
 export async function clearCacheStore(): Promise<void> {
   const db = await getDatabase()
   await db.clear(STORE_CACHE)

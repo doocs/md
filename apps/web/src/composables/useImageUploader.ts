@@ -21,7 +21,7 @@ export function useImageUploader() {
     await store.setJSON(STORAGE_KEY, map)
   }
 
-  // SHA-256 content hash (Web Crypto; replaces spark-md5)
+  // 计算 Blob/File 的 SHA-256（Web Crypto，替代 spark-md5）
   const calculateHash = async (file: Blob): Promise<string> => {
     const buffer = await file.arrayBuffer()
     const digest = await crypto.subtle.digest(`SHA-256`, buffer)
