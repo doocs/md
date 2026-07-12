@@ -275,7 +275,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
 <template>
   <Dialog :open="uiStore.isShowComponentDialog" @update:open="onUpdate">
-    <DialogContent class="sm:max-w-4xl max-h-[92vh] flex flex-col p-0 gap-0">
+    <DialogContent class="sm:max-w-4xl h-[80vh] flex flex-col p-0 gap-0">
       <DialogHeader class="px-4 sm:px-6 pt-5 pb-4 border-b shrink-0">
         <DialogTitle class="flex items-center gap-2 text-base">
           <Blocks class="size-4.5" />
