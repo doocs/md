@@ -4,7 +4,6 @@ import { FileText, Loader2, Printer } from '@lucide/vue'
 import { storeToRefs } from 'pinia'
 import { computed, ref } from 'vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
-import PanelSegmented from '@/components/shared/panel-dialog/PanelSegmented.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -34,32 +33,38 @@ const dialogOpen = computed({
 const isExporting = ref(false)
 
 const pageNumberFormatOptions = computed(() => [
-  { value: `nOfM`, label: t(`pdfExport.pageNumberFormat.nOfM`) },
-  { value: `n`, label: t(`pdfExport.pageNumberFormat.n`) },
+  { value: `nOfM` as const, label: t(`pdfExport.pageNumberFormat.nOfM`) },
+  { value: `n` as const, label: t(`pdfExport.pageNumberFormat.n`) },
 ])
 
 const pageNumberPositionOptions = computed(() => [
-  { value: `bottomLeft`, label: t(`pdfExport.pageNumberPosition.bottomLeft`) },
-  { value: `bottomCenter`, label: t(`pdfExport.pageNumberPosition.bottomCenter`) },
-  { value: `bottomRight`, label: t(`pdfExport.pageNumberPosition.bottomRight`) },
+  { value: `bottomLeft` as const, label: t(`pdfExport.pageNumberPosition.bottomLeft`) },
+  { value: `bottomCenter` as const, label: t(`pdfExport.pageNumberPosition.bottomCenter`) },
+  { value: `bottomRight` as const, label: t(`pdfExport.pageNumberPosition.bottomRight`) },
 ])
 
 const marginsOptions = computed(() => [
-  { value: `compact`, label: t(`pdfExport.margins.compact`) },
-  { value: `default`, label: t(`pdfExport.margins.default`) },
-  { value: `comfortable`, label: t(`pdfExport.margins.comfortable`) },
+  { value: `compact` as const, label: t(`pdfExport.margins.compact`) },
+  { value: `default` as const, label: t(`pdfExport.margins.default`) },
+  { value: `comfortable` as const, label: t(`pdfExport.margins.comfortable`) },
 ])
 
-function setPageNumberFormat(value: string) {
-  pdfExportOptions.value.pageNumberFormat = value as PdfPageNumberFormat
+function optionButtonClass(active: boolean) {
+  return active
+    ? `border-primary bg-primary/5 font-medium text-primary ring-1 ring-primary/20`
+    : `text-muted-foreground hover:bg-muted/50`
 }
 
-function setPageNumberPosition(value: string) {
-  pdfExportOptions.value.pageNumberPosition = value as PdfPageNumberPosition
+function setPageNumberFormat(value: PdfPageNumberFormat) {
+  pdfExportOptions.value.pageNumberFormat = value
 }
 
-function setMargins(value: string) {
-  pdfExportOptions.value.margins = value as PdfMargins
+function setPageNumberPosition(value: PdfPageNumberPosition) {
+  pdfExportOptions.value.pageNumberPosition = value
+}
+
+function setMargins(value: PdfMargins) {
+  pdfExportOptions.value.margins = value
 }
 
 async function handleExport() {
@@ -105,23 +110,51 @@ async function handleExport() {
 
       <template v-if="pdfExportOptions.showPageNumbers">
         <div class="space-y-2 border-b py-3">
-          <Label class="text-sm">{{ t('pdfExport.pageNumberFormat.label') }}</Label>
-          <PanelSegmented
-            class="flex h-auto min-h-10 w-full flex-wrap"
-            :model-value="pdfExportOptions.pageNumberFormat"
-            :options="pageNumberFormatOptions"
-            @update:model-value="setPageNumberFormat"
-          />
+          <Label id="pdf-page-number-format-label" class="text-sm">
+            {{ t('pdfExport.pageNumberFormat.label') }}
+          </Label>
+          <div
+            role="radiogroup"
+            aria-labelledby="pdf-page-number-format-label"
+            class="flex flex-wrap gap-2"
+          >
+            <button
+              v-for="option in pageNumberFormatOptions"
+              :key="option.value"
+              type="button"
+              role="radio"
+              :aria-checked="pdfExportOptions.pageNumberFormat === option.value"
+              class="rounded-md border px-3 py-1.5 text-sm transition-colors"
+              :class="optionButtonClass(pdfExportOptions.pageNumberFormat === option.value)"
+              @click="setPageNumberFormat(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
         </div>
 
         <div class="space-y-2 border-b py-3">
-          <Label class="text-sm">{{ t('pdfExport.pageNumberPosition.label') }}</Label>
-          <PanelSegmented
-            class="flex w-full"
-            :model-value="pdfExportOptions.pageNumberPosition"
-            :options="pageNumberPositionOptions"
-            @update:model-value="setPageNumberPosition"
-          />
+          <Label id="pdf-page-number-position-label" class="text-sm">
+            {{ t('pdfExport.pageNumberPosition.label') }}
+          </Label>
+          <div
+            role="radiogroup"
+            aria-labelledby="pdf-page-number-position-label"
+            class="flex flex-wrap gap-2"
+          >
+            <button
+              v-for="option in pageNumberPositionOptions"
+              :key="option.value"
+              type="button"
+              role="radio"
+              :aria-checked="pdfExportOptions.pageNumberPosition === option.value"
+              class="rounded-md border px-3 py-1.5 text-sm transition-colors"
+              :class="optionButtonClass(pdfExportOptions.pageNumberPosition === option.value)"
+              @click="setPageNumberPosition(option.value)"
+            >
+              {{ option.label }}
+            </button>
+          </div>
         </div>
       </template>
 
@@ -156,13 +189,25 @@ async function handleExport() {
       </div>
 
       <div class="space-y-2 py-3">
-        <Label class="text-sm">{{ t('pdfExport.margins.label') }}</Label>
-        <PanelSegmented
-          class="flex w-full"
-          :model-value="pdfExportOptions.margins"
-          :options="marginsOptions"
-          @update:model-value="setMargins"
-        />
+        <Label id="pdf-margins-label" class="text-sm">{{ t('pdfExport.margins.label') }}</Label>
+        <div
+          role="radiogroup"
+          aria-labelledby="pdf-margins-label"
+          class="flex flex-wrap gap-2"
+        >
+          <button
+            v-for="option in marginsOptions"
+            :key="option.value"
+            type="button"
+            role="radio"
+            :aria-checked="pdfExportOptions.margins === option.value"
+            class="rounded-md border px-3 py-1.5 text-sm transition-colors"
+            :class="optionButtonClass(pdfExportOptions.margins === option.value)"
+            @click="setMargins(option.value)"
+          >
+            {{ option.label }}
+          </button>
+        </div>
       </div>
     </div>
 
