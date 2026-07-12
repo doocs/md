@@ -275,7 +275,7 @@ export default {
     },
     siteFooter: {
       label: `Site footer`,
-      hint: `Show the current site URL in the footer`,
+      hint: `Show {url} in the footer`,
     },
     margins: {
       label: `Margins`,

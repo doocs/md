@@ -12,7 +12,12 @@ vi.mock(`@/i18n/translate`, () => ({
   },
 }))
 
-const { buildPageCss, normalizePdfExportOptions, resolvePdfSiteFooterUrl } = await import(`./pdf`)
+const {
+  buildPageCss,
+  normalizePdfExportOptions,
+  PDF_SITE_FOOTER_FALLBACK_URL,
+  resolvePdfSiteFooterUrl,
+} = await import(`./pdf`)
 
 function options(partial: Partial<PdfExportOptions> = {}): PdfExportOptions {
   return { ...DEFAULT_PDF_EXPORT_OPTIONS, ...partial }
@@ -54,7 +59,7 @@ describe(`resolvePdfSiteFooterUrl`, () => {
 
   it(`falls back outside http(s) contexts`, () => {
     expect(resolvePdfSiteFooterUrl({ protocol: `chrome-extension:`, origin: `chrome-extension://abc` }))
-      .toBe(`https://md.doocs.org`)
+      .toBe(PDF_SITE_FOOTER_FALLBACK_URL)
   })
 })
 
@@ -129,6 +134,17 @@ describe(`buildPageCss`, () => {
       `https://example.com`,
     )
     expect(css).toContain(`https://example.com`)
+    expect(css).toContain(`@bottom-left`)
+  })
+
+  it(`collapses empty bottom-edge boxes so the site URL can grow`, () => {
+    const css = buildPageCss(
+      options({ showSiteFooter: true, showPageNumbers: true, pageNumberPosition: `bottomRight` }),
+      `t`,
+      `http://localhost:5173`,
+    )
+    expect(css).toContain(`content: "http://localhost:5173"`)
+    expect(css).toMatch(/@bottom-center \{\s*content: "";\s*width: 0;/)
   })
 
   it(`uses nOfM page footer format by default`, () => {
@@ -151,13 +167,14 @@ describe(`buildPageCss`, () => {
       .toContain(`@bottom-right {\n        content: "Page`)
   })
 
-  it(`prefers page numbers over site footer when both use bottom-left`, () => {
+  it(`moves site footer when page numbers occupy bottom-left`, () => {
     const css = buildPageCss(options({
       showPageNumbers: true,
       pageNumberPosition: `bottomLeft`,
       showSiteFooter: true,
     }), `t`, `https://example.com`)
     expect(css).toContain(`counter(page)`)
-    expect(css).not.toContain(`example.com`)
+    expect(css).toContain(`https://example.com`)
+    expect(css).toMatch(/@bottom-center \{\s*content: "https:\/\/example\.com"/)
   })
 })

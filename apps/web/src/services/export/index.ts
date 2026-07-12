@@ -7,6 +7,7 @@ export {
   DEFAULT_PDF_EXPORT_OPTIONS,
   exportPDF,
   normalizePdfExportOptions,
+  PDF_SITE_FOOTER_FALLBACK_URL,
   type PdfExportOptions,
   type PdfMargins,
   type PdfPageNumberFormat,

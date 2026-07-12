@@ -40,13 +40,16 @@ const MARGIN_VALUES: Record<PdfMargins, string> = {
 /** Gap between chrome text (header / page number) and article content. */
 const CHROME_CONTENT_GAP = `0.5cm`
 
+/** Fallback when the app is not served over http(s) (extension / file). */
+export const PDF_SITE_FOOTER_FALLBACK_URL = `https://md.doocs.org`
+
 /** Prefer the current http(s) origin; fall back for extension / file contexts. */
 export function resolvePdfSiteFooterUrl(
   locationLike: Pick<Location, `protocol` | `origin`> = window.location,
 ): string {
   if (locationLike.protocol === `http:` || locationLike.protocol === `https:`)
     return locationLike.origin
-  return `https://md.doocs.org`
+  return PDF_SITE_FOOTER_FALLBACK_URL
 }
 
 function escapeCssQuotedString(value: string): string {
@@ -58,6 +61,9 @@ const PAGE_NUMBER_BOX: Record<PdfPageNumberPosition, string> = {
   bottomCenter: `@bottom-center`,
   bottomRight: `@bottom-right`,
 }
+
+/** Boxes that share horizontal space on the bottom margin edge (flex-like). */
+const BOTTOM_EDGE_BOXES = [`@bottom-left`, `@bottom-center`, `@bottom-right`] as const
 
 /** All 16 CSS page margin boxes (Chrome 131+). */
 const ALL_MARGIN_BOXES = [
@@ -119,6 +125,31 @@ function marginBoxRule(
       }`
 }
 
+/** Empty boxes still suppress UA chrome; width:0 avoids stealing flex space from neighbors. */
+function emptyMarginBoxRule(box: string, collapseWidth: boolean): string {
+  const extras = collapseWidth
+    ? `
+        width: 0;
+        max-width: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;`
+    : ``
+  return marginBoxRule(box, `""`, extras)
+}
+
+/**
+ * Pick a free bottom box for the site URL.
+ * Prefer left; if page numbers occupy left, use center (or right if center is taken).
+ */
+function resolveSiteFooterBox(pageBox: string | null): string | null {
+  for (const box of BOTTOM_EDGE_BOXES) {
+    if (box !== pageBox)
+      return box
+  }
+  return null
+}
+
 /** Strip unknown/legacy fields (e.g. paperSize) and fill missing keys. */
 export function normalizePdfExportOptions(
   input?: Partial<PdfExportOptions> | null,
@@ -149,9 +180,8 @@ export function normalizePdfExportOptions(
 /**
  * Build `@page` CSS from export options.
  * Unclaimed margin boxes get `content: ""` so Chromium does not fill in defaults.
- * Top/bottom always keep a content inset (never flush to the page edge). When chrome
- * is present on an edge, that edge uses the fuller preset height and chrome text is
- * aligned toward the content with a consistent gap.
+ * Empty bottom-edge siblings collapse to width 0 so a long site URL can grow (Chrome
+ * shares bottom-left/center/right like flex; empty "" boxes otherwise steal space).
  */
 export function buildPageCss(
   options: PdfExportOptions,
@@ -165,11 +195,10 @@ export function buildPageCss(
   const pageBox = resolved.showPageNumbers
     ? PAGE_NUMBER_BOX[resolved.pageNumberPosition]
     : null
+  const siteBox = resolved.showSiteFooter ? resolveSiteFooterBox(pageBox) : null
 
-  // Prefer page numbers when they share the same box as the site footer.
-  const showSiteFooter = resolved.showSiteFooter && pageBox !== `@bottom-left`
   const needsTop = resolved.showTitleHeader
-  const needsBottom = Boolean(resolved.showPageNumbers || showSiteFooter)
+  const needsBottom = Boolean(pageBox || siteBox)
 
   // Side inset doubles as the "no chrome" top/bottom inset so content never flush-cuts.
   const contentEdge = sides.left
@@ -194,15 +223,16 @@ export function buildPageCss(
     ))
   }
 
-  if (showSiteFooter) {
-    claimed.set(`@bottom-left`, marginBoxRule(
-      `@bottom-left`,
+  if (siteBox) {
+    claimed.set(siteBox, marginBoxRule(
+      siteBox,
       `"${safeSiteUrl}"`,
       `
         font-size: 10px;
         color: #999;
         vertical-align: top;
-        padding-top: ${CHROME_CONTENT_GAP};`,
+        padding-top: ${CHROME_CONTENT_GAP};
+        white-space: nowrap;`,
     ))
   }
 
@@ -217,13 +247,20 @@ export function buildPageCss(
         font-size: 10px;
         color: #999;
         vertical-align: top;
-        padding-top: ${CHROME_CONTENT_GAP};`,
+        padding-top: ${CHROME_CONTENT_GAP};
+        white-space: nowrap;`,
     ))
   }
 
-  const boxes = ALL_MARGIN_BOXES.map(box =>
-    claimed.get(box) ?? marginBoxRule(box, `""`),
-  )
+  const boxes = ALL_MARGIN_BOXES.map((box) => {
+    const real = claimed.get(box)
+    if (real)
+      return real
+    // Collapse empty bottom-edge siblings so real footer text can grow.
+    const collapseWidth = (BOTTOM_EDGE_BOXES as readonly string[]).includes(box)
+      && Boolean(siteBox || pageBox)
+    return emptyMarginBoxRule(box, collapseWidth)
+  })
 
   return `
     @page {

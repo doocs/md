@@ -7,7 +7,7 @@ import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { normalizePdfExportOptions } from '@/services/export'
+import { normalizePdfExportOptions, resolvePdfSiteFooterUrl } from '@/services/export'
 import { useExportStore } from '@/stores/export'
 import { useUIStore } from '@/stores/ui'
 
@@ -31,6 +31,8 @@ const dialogOpen = computed({
 })
 
 const isExporting = ref(false)
+
+const siteFooterUrl = computed(() => resolvePdfSiteFooterUrl())
 
 const pageNumberFormatOptions = computed(() => [
   { value: `nOfM` as const, label: t(`pdfExport.pageNumberFormat.nOfM`) },
@@ -176,8 +178,8 @@ async function handleExport() {
       <div class="flex items-center justify-between gap-4 border-b py-3">
         <div class="min-w-0 space-y-0.5">
           <Label for="pdf-site-footer">{{ t('pdfExport.siteFooter.label') }}</Label>
-          <p class="text-xs text-muted-foreground">
-            {{ t('pdfExport.siteFooter.hint') }}
+          <p class="truncate text-xs text-muted-foreground" :title="siteFooterUrl">
+            {{ t('pdfExport.siteFooter.hint', { url: siteFooterUrl }) }}
           </p>
         </div>
         <Switch

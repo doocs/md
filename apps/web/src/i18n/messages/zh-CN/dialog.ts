@@ -275,7 +275,7 @@ export default {
     },
     siteFooter: {
       label: `页脚站点`,
-      hint: `在页脚显示当前站点地址`,
+      hint: `在页脚显示 {url}`,
     },
     margins: {
       label: `页边距`,
