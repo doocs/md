@@ -24,6 +24,7 @@ export default {
     edit: `编辑`,
     delete: `删除`,
     close: `关闭`,
+    more: `更多`,
     copy: `复制`,
     reset: `重置`,
     clear: `清空`,

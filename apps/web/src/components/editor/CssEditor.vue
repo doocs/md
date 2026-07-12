@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import type { ThemeName } from '@md/shared/configs'
-import { Check, CheckSquare, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
+import { Check, CheckSquare, CircleHelp, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
 import { exportMergedTheme } from '@md/core'
-import { themeMap } from '@md/shared'
+import { getDefaultCustomTheme, themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
+import { CONTENT_FONT_LANG } from '@/i18n/constants'
+import { getLocale } from '@/i18n/translate'
 import { copyPlain } from '@/lib/browser/clipboard'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
@@ -102,6 +104,7 @@ function editTabName() {
 }
 
 const isOpenAddDialog = ref(false)
+const isOpenTipsDialog = ref(false)
 
 const addInputVal = ref(``)
 const baseThemeForNew = ref<'blank' | 'default' | 'grace' | 'simple'>('blank')
@@ -114,7 +117,7 @@ async function addTab() {
 
   let initialContent = ''
   if (baseThemeForNew.value === 'blank') {
-    initialContent = ''
+    initialContent = getDefaultCustomTheme(getLocale())
   }
   else {
     initialContent = themeMap[baseThemeForNew.value]
@@ -416,27 +419,38 @@ function exportCurrentTheme() {
       <div class="flex items-center shrink-0">
         <button
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          :title="t('cssEditor.newTitle')"
           @click="addHandler"
         >
           <Plus class="size-3.5" />
         </button>
 
-        <button
-          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-          @click="openViewThemeDialog"
-        >
-          <Eye class="size-3.5" />
-        </button>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <button
+              class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+              :title="t('common.more')"
+            >
+              <Ellipsis class="size-3.5" />
+            </button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" class="w-48">
+            <DropdownMenuItem @click="openViewThemeDialog">
+              <Eye class="mr-2 size-4" /> {{ t('cssEditor.viewBuiltinTitle') }}
+            </DropdownMenuItem>
+            <DropdownMenuItem @click="exportCurrentTheme">
+              <Download class="mr-2 size-4" /> {{ t('common.export') }}
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem @click="isOpenTipsDialog = true">
+              <CircleHelp class="mr-2 size-4" /> {{ t('cssEditor.tipsTitle') }}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
 
         <button
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
-          @click="exportCurrentTheme"
-        >
-          <Download class="size-3.5" />
-        </button>
-
-        <button
-          class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
+          :title="t('common.close')"
           @click="uiStore.isShowCssEditor = false"
         >
           <X class="size-3.5" />
@@ -444,7 +458,7 @@ function exportCurrentTheme() {
       </div>
     </div>
 
-    <div class="flex-1 min-h-0">
+    <div class="flex-1 min-h-0" :lang="CONTENT_FONT_LANG">
       <textarea
         id="cssEditor"
         type="textarea"
@@ -599,6 +613,34 @@ function exportCurrentTheme() {
           </Button>
           <Button @click="editTabName">
             {{ t('common.save') }}
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    <Dialog v-model:open="isOpenTipsDialog">
+      <DialogContent class="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>{{ t('cssEditor.tipsTitle') }}</DialogTitle>
+        </DialogHeader>
+        <div class="space-y-3 text-sm text-muted-foreground leading-relaxed">
+          <p>{{ t('cssEditor.editorHint') }}</p>
+          <p>
+            <i18n-t keypath="cssEditor.shareThemeHint" tag="span">
+              <template #link>
+                <a
+                  href="https://github.com/doocs/md/discussions/426"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-foreground hover:text-primary underline-offset-2 hover:underline"
+                >{{ t('cssEditor.shareThemeLinkText') }}</a>
+              </template>
+            </i18n-t>
+          </p>
+        </div>
+        <DialogFooter>
+          <Button @click="isOpenTipsDialog = false">
+            {{ t('common.close') }}
           </Button>
         </DialogFooter>
       </DialogContent>

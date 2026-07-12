@@ -1,22 +1,12 @@
-/**
- * 按 Alt/Option + Shift + F 可格式化
- * 如需使用主题色，请使用 var(--md-primary-color) 代替颜色值
- * 如：color: var(--md-primary-color);
- * 新主题系统已全面支持 CSS 写法，你可以 F12 打开控制台查看具体的类名及标签
- *
- * 召集令：如果你有好看的主题样式，欢迎分享，让更多人能够使用到你的主题。
- * 提交区：https://github.com/doocs/md/discussions/426
- */
-
-/* 全局变量定义 */
+/* Global variables */
 :root {
 }
 
-/* 根容器 */
+/* Root container */
 .container {
 }
 
-/* 标题样式 */
+/* Headings */
 h1 {
 }
 
@@ -35,7 +25,7 @@ h5 {
 h6 {
 }
 
-/* 段落和文本 */
+/* Paragraphs and text */
 p {
 }
 
@@ -45,29 +35,29 @@ strong {
 em {
 }
 
-/* 引用块 */
+/* Blockquote */
 blockquote {
 }
 
 blockquote > p {
 }
 
-/* 代码 */
-/* 行内代码 */
+/* Code */
+/* Inline code */
 .codespan {
 }
 
-/* 代码块容器 */
+/* Code block container */
 pre.code__pre,
 .hljs.code__pre {
 }
 
-/* 代码块内的 code */
+/* Code inside code block */
 pre.code__pre > code,
 .hljs.code__pre > code {
 }
 
-/* 列表 */
+/* Lists */
 ol {
 }
 
@@ -77,7 +67,7 @@ ul {
 li {
 }
 
-/* 表格 */
+/* Tables */
 table {
 }
 
@@ -90,22 +80,22 @@ th {
 td {
 }
 
-/* 其他元素 */
+/* Other elements */
 img {
 }
 
 hr {
 }
 
-/* 分隔线变体：--- */
+/* Horizontal rule variant: --- */
 hr.hr-dash {
 }
 
-/* 分隔线变体：*** */
+/* Horizontal rule variant: *** */
 hr.hr-star {
 }
 
-/* 分隔线变体：___ */
+/* Horizontal rule variant: ___ */
 hr.hr-underscore {
 }
 
@@ -115,28 +105,28 @@ figure {
 figcaption {
 }
 
-/* KaTeX 公式 */
+/* KaTeX */
 .katex-inline {
 }
 
 .katex-block {
 }
 
-/* Markup 标记 */
-/* 高亮 ==文本== */
+/* Markup */
+/* Highlight ==text== */
 .markup-highlight {
 }
 
-/* 下划线 ++文本++ */
+/* Underline ++text++ */
 .markup-underline {
 }
 
-/* 波浪线 ~文本~ */
+/* Wavy underline ~text~ */
 .markup-wavyline {
 }
 
-/* GFM Alert 警告块 */
-/* Alert 标题 */
+/* GFM Alert */
+/* Alert titles */
 .alert-title-note {
 }
 
@@ -209,7 +199,7 @@ figcaption {
 .alert-title-cite {
 }
 
-/* Alert SVG 图标 */
+/* Alert SVG icons */
 .alert-icon-note {
 }
 
@@ -228,7 +218,7 @@ figcaption {
 .alert-icon-caution {
 }
 
-/* Obsidian-style Callout SVG 图标 */
+/* Obsidian-style Callout SVG icons */
 .alert-icon-abstract {
 }
 

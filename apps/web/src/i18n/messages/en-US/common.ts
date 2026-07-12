@@ -24,6 +24,7 @@ export default {
     edit: `Edit`,
     delete: `Delete`,
     close: `Close`,
+    more: `More`,
     copy: `Copy`,
     reset: `Reset`,
     clear: `Clear`,

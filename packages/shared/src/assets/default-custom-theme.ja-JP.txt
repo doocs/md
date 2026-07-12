@@ -1,0 +1,274 @@
+/* グローバル変数 */
+:root {
+}
+
+/* ルートコンテナ */
+.container {
+}
+
+/* 見出し */
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+h4 {
+}
+
+h5 {
+}
+
+h6 {
+}
+
+/* 段落とテキスト */
+p {
+}
+
+strong {
+}
+
+em {
+}
+
+/* 引用 */
+blockquote {
+}
+
+blockquote > p {
+}
+
+/* コード */
+/* インラインコード */
+.codespan {
+}
+
+/* コードブロックコンテナ */
+pre.code__pre,
+.hljs.code__pre {
+}
+
+/* コードブロック内の code */
+pre.code__pre > code,
+.hljs.code__pre > code {
+}
+
+/* リスト */
+ol {
+}
+
+ul {
+}
+
+li {
+}
+
+/* テーブル */
+table {
+}
+
+thead {
+}
+
+th {
+}
+
+td {
+}
+
+/* その他の要素 */
+img {
+}
+
+hr {
+}
+
+/* 区切り線バリアント：--- */
+hr.hr-dash {
+}
+
+/* 区切り線バリアント：*** */
+hr.hr-star {
+}
+
+/* 区切り線バリアント：___ */
+hr.hr-underscore {
+}
+
+figure {
+}
+
+figcaption {
+}
+
+/* KaTeX 数式 */
+.katex-inline {
+}
+
+.katex-block {
+}
+
+/* Markup */
+/* ハイライト ==text== */
+.markup-highlight {
+}
+
+/* 下線 ++text++ */
+.markup-underline {
+}
+
+/* 波線 ~text~ */
+.markup-wavyline {
+}
+
+/* GFM Alert */
+/* Alert タイトル */
+.alert-title-note {
+}
+
+.alert-title-tip {
+}
+
+.alert-title-info {
+}
+
+.alert-title-important {
+}
+
+.alert-title-warning {
+}
+
+.alert-title-caution {
+}
+
+.alert-title-abstract {
+}
+
+.alert-title-summary {
+}
+
+.alert-title-tldr {
+}
+
+.alert-title-todo {
+}
+
+.alert-title-success {
+}
+
+.alert-title-done {
+}
+
+.alert-title-question {
+}
+
+.alert-title-help {
+}
+
+.alert-title-faq {
+}
+
+.alert-title-failure {
+}
+
+.alert-title-fail {
+}
+
+.alert-title-missing {
+}
+
+.alert-title-danger {
+}
+
+.alert-title-error {
+}
+
+.alert-title-bug {
+}
+
+.alert-title-example {
+}
+
+.alert-title-quote {
+}
+
+.alert-title-cite {
+}
+
+/* Alert SVG アイコン */
+.alert-icon-note {
+}
+
+.alert-icon-tip {
+}
+
+.alert-icon-info {
+}
+
+.alert-icon-important {
+}
+
+.alert-icon-warning {
+}
+
+.alert-icon-caution {
+}
+
+/* Obsidian-style Callout SVG アイコン */
+.alert-icon-abstract {
+}
+
+.alert-icon-summary {
+}
+
+.alert-icon-tldr {
+}
+
+.alert-icon-todo {
+}
+
+.alert-icon-success {
+}
+
+.alert-icon-done {
+}
+
+.alert-icon-question {
+}
+
+.alert-icon-help {
+}
+
+.alert-icon-faq {
+}
+
+.alert-icon-failure {
+}
+
+.alert-icon-fail {
+}
+
+.alert-icon-missing {
+}
+
+.alert-icon-danger {
+}
+
+.alert-icon-error {
+}
+
+.alert-icon-bug {
+}
+
+.alert-icon-example {
+}
+
+.alert-icon-quote {
+}
+
+.alert-icon-cite {
+}
