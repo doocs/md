@@ -251,4 +251,38 @@ export default {
       hint: `Show word count and reading time at the top of the preview`,
     },
   },
+  pdfExport: {
+    title: `Export PDF`,
+    description: `Configure headers, footers, and layout, then save as PDF via the browser print dialog. Disabled slots are occupied with empty strings so the browser does not fill in its defaults.`,
+    pageNumbers: {
+      label: `Page numbers`,
+      hint: `Show page numbers in the footer`,
+    },
+    pageNumberFormat: {
+      label: `Page number format`,
+      nOfM: `Page N of M`,
+      n: `Page number only`,
+    },
+    pageNumberPosition: {
+      label: `Page number position`,
+      bottomLeft: `Bottom left`,
+      bottomCenter: `Bottom center`,
+      bottomRight: `Bottom right`,
+    },
+    titleHeader: {
+      label: `Title header`,
+      hint: `Show the article title in the header`,
+    },
+    siteFooter: {
+      label: `Site footer`,
+      hint: `Show {url} in the footer`,
+    },
+    margins: {
+      label: `Margins`,
+      compact: `Compact`,
+      default: `Default`,
+      comfortable: `Comfortable`,
+    },
+    export: `Print / Save as PDF`,
+  },
 }

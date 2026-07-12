@@ -251,4 +251,38 @@ export default {
       hint: `プレビュー上部に文字数と読了時間を表示`,
     },
   },
+  pdfExport: {
+    title: `PDF をエクスポート`,
+    description: `ヘッダー・フッターとレイアウトを設定し、ブラウザの印刷ダイアログから PDF として保存します。オフにした項目は空文字で枠を確保し、ブラウザ既定のヘッダー/フッターが入らないようにします。`,
+    pageNumbers: {
+      label: `ページ番号`,
+      hint: `フッターにページ番号を表示`,
+    },
+    pageNumberFormat: {
+      label: `ページ番号の形式`,
+      nOfM: `N / M ページ`,
+      n: `ページ番号のみ`,
+    },
+    pageNumberPosition: {
+      label: `ページ番号の位置`,
+      bottomLeft: `左下`,
+      bottomCenter: `中央`,
+      bottomRight: `右下`,
+    },
+    titleHeader: {
+      label: `タイトルヘッダー`,
+      hint: `ヘッダーに記事タイトルを表示`,
+    },
+    siteFooter: {
+      label: `サイトフッター`,
+      hint: `フッターに {url} を表示`,
+    },
+    margins: {
+      label: `余白`,
+      compact: `コンパクト`,
+      default: `標準`,
+      comfortable: `ゆったり`,
+    },
+    export: `印刷 / PDF として保存`,
+  },
 }

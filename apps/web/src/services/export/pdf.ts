@@ -5,13 +5,281 @@ import { EXPORT_LAYOUT_CSS } from './apply-export-layout'
 import { getHtmlContent } from './html-content'
 import { getStylesToAdd, SHARE_SHELL_VARS_CSS } from './share-styles'
 
+export type PdfPageNumberFormat = `nOfM` | `n`
+export type PdfPageNumberPosition = `bottomLeft` | `bottomCenter` | `bottomRight`
+export type PdfMargins = `compact` | `default` | `comfortable`
+
+export interface PdfExportOptions {
+  showPageNumbers: boolean
+  pageNumberFormat: PdfPageNumberFormat
+  pageNumberPosition: PdfPageNumberPosition
+  showTitleHeader: boolean
+  showSiteFooter: boolean
+  margins: PdfMargins
+}
+
+export const DEFAULT_PDF_EXPORT_OPTIONS: PdfExportOptions = {
+  showPageNumbers: true,
+  pageNumberFormat: `nOfM`,
+  pageNumberPosition: `bottomRight`,
+  showTitleHeader: true,
+  showSiteFooter: true,
+  margins: `default`,
+}
+
+const PAGE_NUMBER_FORMATS = new Set<PdfPageNumberFormat>([`nOfM`, `n`])
+const PAGE_NUMBER_POSITIONS = new Set<PdfPageNumberPosition>([`bottomLeft`, `bottomCenter`, `bottomRight`])
+const MARGIN_PRESETS = new Set<PdfMargins>([`compact`, `default`, `comfortable`])
+
+const MARGIN_VALUES: Record<PdfMargins, string> = {
+  compact: `1cm`,
+  default: `1.5cm 1cm 2cm 1cm`,
+  comfortable: `2cm 1.5cm 2.5cm 1.5cm`,
+}
+
+/** Gap between chrome text (header / page number) and article content. */
+const CHROME_CONTENT_GAP = `0.5cm`
+
+/** Fallback when the app is not served over http(s) (extension / file). */
+export const PDF_SITE_FOOTER_FALLBACK_URL = `https://md.doocs.org`
+
+/** Prefer the current http(s) origin; fall back for extension / file contexts. */
+export function resolvePdfSiteFooterUrl(
+  locationLike: Pick<Location, `protocol` | `origin`> = window.location,
+): string {
+  if (locationLike.protocol === `http:` || locationLike.protocol === `https:`)
+    return locationLike.origin
+  return PDF_SITE_FOOTER_FALLBACK_URL
+}
+
+function escapeCssQuotedString(value: string): string {
+  return value.replace(/\\/g, `\\\\`).replace(/"/g, `\\"`)
+}
+
+const PAGE_NUMBER_BOX: Record<PdfPageNumberPosition, string> = {
+  bottomLeft: `@bottom-left`,
+  bottomCenter: `@bottom-center`,
+  bottomRight: `@bottom-right`,
+}
+
+/** Boxes that share horizontal space on the bottom margin edge (flex-like). */
+const BOTTOM_EDGE_BOXES = [`@bottom-left`, `@bottom-center`, `@bottom-right`] as const
+
+/** All 16 CSS page margin boxes (Chrome 131+). */
+const ALL_MARGIN_BOXES = [
+  `@top-left-corner`,
+  `@top-left`,
+  `@top-center`,
+  `@top-right`,
+  `@top-right-corner`,
+  `@bottom-left-corner`,
+  `@bottom-left`,
+  `@bottom-center`,
+  `@bottom-right`,
+  `@bottom-right-corner`,
+  `@left-top`,
+  `@left-middle`,
+  `@left-bottom`,
+  `@right-top`,
+  `@right-middle`,
+  `@right-bottom`,
+] as const
+
+interface MarginSides {
+  top: string
+  right: string
+  bottom: string
+  left: string
+}
+
+function resolveMarginSides(margins: PdfMargins): MarginSides {
+  const parts = MARGIN_VALUES[margins].trim().split(/\s+/)
+  if (parts.length === 1) {
+    return { top: parts[0], right: parts[0], bottom: parts[0], left: parts[0] }
+  }
+  if (parts.length === 2) {
+    return { top: parts[0], right: parts[1], bottom: parts[0], left: parts[1] }
+  }
+  if (parts.length === 3) {
+    return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[1] }
+  }
+  return { top: parts[0], right: parts[1], bottom: parts[2], left: parts[3] }
+}
+
+function formatSides({ top, right, bottom, left }: MarginSides): string {
+  if (top === right && right === bottom && bottom === left)
+    return top
+  if (top === bottom && right === left)
+    return `${top} ${right}`
+  return `${top} ${right} ${bottom} ${left}`
+}
+
+function marginBoxRule(
+  box: string,
+  content: string,
+  extras: string = ``,
+): string {
+  return `
+      ${box} {
+        content: ${content};${extras}
+      }`
+}
+
+/** Empty boxes still suppress UA chrome; width:0 avoids stealing flex space from neighbors. */
+function emptyMarginBoxRule(box: string, collapseWidth: boolean): string {
+  const extras = collapseWidth
+    ? `
+        width: 0;
+        max-width: 0;
+        padding: 0;
+        margin: 0;
+        overflow: hidden;`
+    : ``
+  return marginBoxRule(box, `""`, extras)
+}
+
+/**
+ * Pick a free bottom box for the site URL.
+ * Prefer left; if page numbers occupy left, use center (or right if center is taken).
+ */
+function resolveSiteFooterBox(pageBox: string | null): string | null {
+  for (const box of BOTTOM_EDGE_BOXES) {
+    if (box !== pageBox)
+      return box
+  }
+  return null
+}
+
+/** Strip unknown/legacy fields (e.g. paperSize) and fill missing keys. */
+export function normalizePdfExportOptions(
+  input?: Partial<PdfExportOptions> | null,
+): PdfExportOptions {
+  const src = input ?? {}
+  return {
+    showPageNumbers: typeof src.showPageNumbers === `boolean`
+      ? src.showPageNumbers
+      : DEFAULT_PDF_EXPORT_OPTIONS.showPageNumbers,
+    pageNumberFormat: PAGE_NUMBER_FORMATS.has(src.pageNumberFormat as PdfPageNumberFormat)
+      ? src.pageNumberFormat as PdfPageNumberFormat
+      : DEFAULT_PDF_EXPORT_OPTIONS.pageNumberFormat,
+    pageNumberPosition: PAGE_NUMBER_POSITIONS.has(src.pageNumberPosition as PdfPageNumberPosition)
+      ? src.pageNumberPosition as PdfPageNumberPosition
+      : DEFAULT_PDF_EXPORT_OPTIONS.pageNumberPosition,
+    showTitleHeader: typeof src.showTitleHeader === `boolean`
+      ? src.showTitleHeader
+      : DEFAULT_PDF_EXPORT_OPTIONS.showTitleHeader,
+    showSiteFooter: typeof src.showSiteFooter === `boolean`
+      ? src.showSiteFooter
+      : DEFAULT_PDF_EXPORT_OPTIONS.showSiteFooter,
+    margins: MARGIN_PRESETS.has(src.margins as PdfMargins)
+      ? src.margins as PdfMargins
+      : DEFAULT_PDF_EXPORT_OPTIONS.margins,
+  }
+}
+
+/**
+ * Build `@page` CSS from export options.
+ * Unclaimed margin boxes get `content: ""` so Chromium does not fill in defaults.
+ * Empty bottom-edge siblings collapse to width 0 so a long site URL can grow (Chrome
+ * shares bottom-left/center/right like flex; empty "" boxes otherwise steal space).
+ */
+export function buildPageCss(
+  options: PdfExportOptions,
+  title: string,
+  siteUrl: string = resolvePdfSiteFooterUrl(),
+): string {
+  const resolved = normalizePdfExportOptions(options)
+  const safeTitle = sanitizeTitle(title)
+  const safeSiteUrl = escapeCssQuotedString(siteUrl)
+  const sides = resolveMarginSides(resolved.margins)
+  const pageBox = resolved.showPageNumbers
+    ? PAGE_NUMBER_BOX[resolved.pageNumberPosition]
+    : null
+  const siteBox = resolved.showSiteFooter ? resolveSiteFooterBox(pageBox) : null
+
+  const needsTop = resolved.showTitleHeader
+  const needsBottom = Boolean(pageBox || siteBox)
+
+  // Side inset doubles as the "no chrome" top/bottom inset so content never flush-cuts.
+  const contentEdge = sides.left
+  const pageMargin: MarginSides = {
+    top: needsTop ? sides.top : contentEdge,
+    right: sides.right,
+    bottom: needsBottom ? sides.bottom : contentEdge,
+    left: sides.left,
+  }
+
+  const claimed = new Map<string, string>()
+
+  if (resolved.showTitleHeader) {
+    claimed.set(`@top-center`, marginBoxRule(
+      `@top-center`,
+      `"${safeTitle}"`,
+      `
+        font-size: 12px;
+        color: #666;
+        vertical-align: bottom;
+        padding-bottom: ${CHROME_CONTENT_GAP};`,
+    ))
+  }
+
+  if (siteBox) {
+    claimed.set(siteBox, marginBoxRule(
+      siteBox,
+      `"${safeSiteUrl}"`,
+      `
+        font-size: 10px;
+        color: #999;
+        vertical-align: top;
+        padding-top: ${CHROME_CONTENT_GAP};
+        white-space: nowrap;`,
+    ))
+  }
+
+  if (resolved.showPageNumbers && pageBox) {
+    const pageFooter = resolved.pageNumberFormat === `n`
+      ? t(`store.pdf.pageFooterN`)
+      : t(`store.pdf.pageFooter`)
+    claimed.set(pageBox, marginBoxRule(
+      pageBox,
+      `"${pageFooter}"`,
+      `
+        font-size: 10px;
+        color: #999;
+        vertical-align: top;
+        padding-top: ${CHROME_CONTENT_GAP};
+        white-space: nowrap;`,
+    ))
+  }
+
+  const boxes = ALL_MARGIN_BOXES.map((box) => {
+    const real = claimed.get(box)
+    if (real)
+      return real
+    // Collapse empty bottom-edge siblings so real footer text can grow.
+    const collapseWidth = (BOTTOM_EDGE_BOXES as readonly string[]).includes(box)
+      && Boolean(siteBox || pageBox)
+    return emptyMarginBoxRule(box, collapseWidth)
+  })
+
+  return `
+    @page {
+      margin: ${formatSides(pageMargin)};${boxes.join(``)}
+    }
+
+    html, body {
+      margin: 0;
+    }`
+}
+
 /** Export PDF document (current theme system). */
-export async function exportPDF(title: string = `untitled`) {
+export async function exportPDF(title: string = `untitled`, options?: Partial<PdfExportOptions>) {
   await waitForPreviewReady()
   const htmlStr = getHtmlContent({ staticLayout: true })
   const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
-  const pageFooter = t('store.pdf.pageFooter')
+  const resolved = normalizePdfExportOptions(options)
+  const pageCss = buildPageCss(resolved, title, resolvePdfSiteFooterUrl())
 
   const printHtml = `<!DOCTYPE html>
 <html>
@@ -22,35 +290,13 @@ export async function exportPDF(title: string = `untitled`) {
   ${stylesToAdd}
   <style>${EXPORT_LAYOUT_CSS}</style>
   <style>
-    /* Force print backgrounds and images */
     * {
       -webkit-print-color-adjust: exact !important;
       print-color-adjust: exact !important;
       color-adjust: exact !important;
     }
 
-    /* @page margin boxes */
-    @page {
-      @top-center {
-        content: "${safeTitle}";
-        font-size: 12px;
-        color: #666;
-      }
-      @bottom-left {
-        content: "https://md.doocs.org";
-        font-size: 10px;
-        color: #999;
-      }
-      @bottom-right {
-        content: "${pageFooter}";
-        font-size: 10px;
-        color: #999;
-      }
-    }
-
-    @media print {
-      body { margin: 0; }
-    }
+    ${pageCss}
   </style>
 </head>
 <body>
@@ -59,15 +305,20 @@ export async function exportPDF(title: string = `untitled`) {
   </div>
 </body>
 </html>`
+
+  // Blob URL avoids "about:srcdoc" if browser headers ever leak through.
+  const blob = new Blob([printHtml], { type: `text/html` })
+  const url = URL.createObjectURL(blob)
+
   const iframe = document.createElement(`iframe`)
   iframe.style.cssText = `position:fixed;width:0;height:0;top:-9999px;left:-9999px;border:none;`
-  iframe.srcdoc = printHtml
+  iframe.src = url
   document.body.appendChild(iframe)
 
   const removeIframe = () => {
-    if (iframe.parentNode) {
+    URL.revokeObjectURL(url)
+    if (iframe.parentNode)
       document.body.removeChild(iframe)
-    }
   }
 
   iframe.onload = () => {

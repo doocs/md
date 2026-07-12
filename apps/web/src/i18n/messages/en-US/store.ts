@@ -73,6 +73,7 @@ export default {
   },
   pdf: {
     pageFooter: `Page " counter(page) " of " counter(pages) "`,
+    pageFooterN: `" counter(page) "`,
   },
   relativeTime: {
     justNow: `Just now`,

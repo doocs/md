@@ -251,4 +251,38 @@ export default {
       hint: `在預覽文章頂部顯示字數與閱讀時間`,
     },
   },
+  pdfExport: {
+    title: `匯出 PDF`,
+    description: `設定頁首頁尾與版式後，透過瀏覽器列印對話框另存為 PDF。關閉的項目會以空白佔位，避免瀏覽器填入預設頁首頁尾。`,
+    pageNumbers: {
+      label: `頁碼`,
+      hint: `在頁尾顯示頁碼`,
+    },
+    pageNumberFormat: {
+      label: `頁碼格式`,
+      nOfM: `第 N 頁，共 M 頁`,
+      n: `僅頁碼`,
+    },
+    pageNumberPosition: {
+      label: `頁碼位置`,
+      bottomLeft: `左下`,
+      bottomCenter: `置中`,
+      bottomRight: `右下`,
+    },
+    titleHeader: {
+      label: `頁首標題`,
+      hint: `在頁首顯示文章標題`,
+    },
+    siteFooter: {
+      label: `頁尾站點`,
+      hint: `在頁尾顯示 {url}`,
+    },
+    margins: {
+      label: `頁邊距`,
+      compact: `緊湊`,
+      default: `預設`,
+      comfortable: `寬鬆`,
+    },
+    export: `列印 / 另存為 PDF`,
+  },
 }

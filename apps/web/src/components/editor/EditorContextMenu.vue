@@ -110,7 +110,7 @@ function exportEditorContent2HTML() {
 }
 
 function exportEditorContent2PDF() {
-  exportStore.exportEditorContent2PDF()
+  uiStore.openPdfExportDialog()
 }
 
 function exportEditorContent2MD() {

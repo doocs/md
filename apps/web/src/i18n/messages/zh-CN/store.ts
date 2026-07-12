@@ -73,6 +73,7 @@ export default {
   },
   pdf: {
     pageFooter: `第 " counter(page) " 页，共 " counter(pages) " 页`,
+    pageFooterN: `" counter(page) "`,
   },
   relativeTime: {
     justNow: `刚刚`,

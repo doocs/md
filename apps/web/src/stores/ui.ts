@@ -1,3 +1,5 @@
+import type { PdfExportOptions } from '@/services/export'
+import { DEFAULT_PDF_EXPORT_OPTIONS, normalizePdfExportOptions } from '@/services/export'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
@@ -112,6 +114,19 @@ export const useUIStore = defineStore(`ui`, () => {
   function openShareDialog(options?: { tab?: `create` | `manage` }) {
     shareDialogInitialTab.value = options?.tab ?? `create`
     isShowShareDialog.value = true
+  }
+
+  const isShowPdfExportDialog = ref(false)
+
+  const pdfExportOptions = store.reactive<PdfExportOptions>(
+    `pdfExportOptions`,
+    { ...DEFAULT_PDF_EXPORT_OPTIONS },
+  )
+
+  function openPdfExportDialog() {
+    // Drop legacy fields (e.g. paperSize) and backfill newly added keys.
+    pdfExportOptions.value = normalizePdfExportOptions(pdfExportOptions.value)
+    isShowPdfExportDialog.value = true
   }
 
   const isShowAboutDialog = ref(false)
@@ -241,6 +256,9 @@ export const useUIStore = defineStore(`ui`, () => {
     isShowShareDialog,
     shareDialogInitialTab,
     openShareDialog,
+    isShowPdfExportDialog,
+    openPdfExportDialog,
+    pdfExportOptions,
     isShowAboutDialog,
     toggleShowAboutDialog,
     isShowFundDialog,
