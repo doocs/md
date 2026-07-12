@@ -12,7 +12,7 @@ vi.mock(`@/i18n/translate`, () => ({
   },
 }))
 
-const { buildPageCss, normalizePdfExportOptions } = await import(`./pdf`)
+const { buildPageCss, normalizePdfExportOptions, resolvePdfSiteFooterUrl } = await import(`./pdf`)
 
 function options(partial: Partial<PdfExportOptions> = {}): PdfExportOptions {
   return { ...DEFAULT_PDF_EXPORT_OPTIONS, ...partial }
@@ -44,13 +44,27 @@ describe(`normalizePdfExportOptions`, () => {
   })
 })
 
+describe(`resolvePdfSiteFooterUrl`, () => {
+  it(`uses origin for http(s) pages`, () => {
+    expect(resolvePdfSiteFooterUrl({ protocol: `https:`, origin: `https://md.doocs.org` }))
+      .toBe(`https://md.doocs.org`)
+    expect(resolvePdfSiteFooterUrl({ protocol: `http:`, origin: `http://localhost:5173` }))
+      .toBe(`http://localhost:5173`)
+  })
+
+  it(`falls back outside http(s) contexts`, () => {
+    expect(resolvePdfSiteFooterUrl({ protocol: `chrome-extension:`, origin: `chrome-extension://abc` }))
+      .toBe(`https://md.doocs.org`)
+  })
+})
+
 describe(`buildPageCss`, () => {
   beforeEach(() => {
     vi.clearAllMocks()
   })
 
   it(`uses preset margins with chrome aligned toward content`, () => {
-    const css = buildPageCss(options(), `My Title`)
+    const css = buildPageCss(options(), `My Title`, `https://example.com`)
     expect(css).toContain(`margin: 1.5cm 1cm 2cm 1cm`)
     expect(css).toContain(`vertical-align: bottom`)
     expect(css).toContain(`vertical-align: top`)
@@ -59,8 +73,9 @@ describe(`buildPageCss`, () => {
   })
 
   it(`maps margin presets`, () => {
-    expect(buildPageCss(options({ margins: `compact` }), `t`)).toContain(`margin: 1cm`)
-    expect(buildPageCss(options({ margins: `comfortable` }), `t`))
+    expect(buildPageCss(options({ margins: `compact` }), `t`, `https://example.com`))
+      .toContain(`margin: 1cm`)
+    expect(buildPageCss(options({ margins: `comfortable` }), `t`, `https://example.com`))
       .toContain(`margin: 2cm 1.5cm 2.5cm 1.5cm`)
   })
 
@@ -70,13 +85,12 @@ describe(`buildPageCss`, () => {
       showSiteFooter: false,
       showTitleHeader: false,
       margins: `default`,
-    }), `t`)
-    // top/bottom fall back to the horizontal inset (1cm), not 0
+    }), `t`, `https://example.com`)
     expect(css).toContain(`margin: 1cm`)
     expect(css).toContain(`content: "";`)
     expect(css).not.toContain(`content: none`)
     expect(css).not.toContain(`counter(page)`)
-    expect(css).not.toContain(`md.doocs.org`)
+    expect(css).not.toContain(`example.com`)
   })
 
   it(`keeps top content inset when only footer chrome is on`, () => {
@@ -85,7 +99,7 @@ describe(`buildPageCss`, () => {
       showPageNumbers: true,
       showSiteFooter: false,
       margins: `default`,
-    }), `t`)
+    }), `t`, `https://example.com`)
     expect(css).toContain(`margin: 1cm 1cm 2cm 1cm`)
     expect(css).toContain(`vertical-align: top`)
     expect(css).toContain(`padding-top: 0.5cm`)
@@ -97,39 +111,43 @@ describe(`buildPageCss`, () => {
       showPageNumbers: false,
       showSiteFooter: false,
       margins: `default`,
-    }), `t`)
+    }), `t`, `https://example.com`)
     expect(css).toContain(`margin: 1.5cm 1cm 1cm 1cm`)
     expect(css).toContain(`vertical-align: bottom`)
     expect(css).toContain(`padding-bottom: 0.5cm`)
   })
 
   it(`puts title in top-center when enabled`, () => {
-    const css = buildPageCss(options({ showTitleHeader: true }), `Hello "World"`)
+    const css = buildPageCss(options({ showTitleHeader: true }), `Hello "World"`, `https://example.com`)
     expect(css).toContain(`content: "Hello _World_"`)
   })
 
-  it(`puts site footer in bottom-left when enabled`, () => {
-    const css = buildPageCss(options({ showSiteFooter: true, showPageNumbers: false }), `t`)
-    expect(css).toContain(`https://md.doocs.org`)
+  it(`puts the provided site URL in the footer when enabled`, () => {
+    const css = buildPageCss(
+      options({ showSiteFooter: true, showPageNumbers: false }),
+      `t`,
+      `https://example.com`,
+    )
+    expect(css).toContain(`https://example.com`)
   })
 
   it(`uses nOfM page footer format by default`, () => {
-    const css = buildPageCss(options({ showPageNumbers: true, pageNumberFormat: `nOfM` }), `t`)
+    const css = buildPageCss(options({ showPageNumbers: true, pageNumberFormat: `nOfM` }), `t`, `https://example.com`)
     expect(css).toContain(`Page " counter(page) " of " counter(pages) "`)
   })
 
   it(`uses n-only page footer format when selected`, () => {
-    const css = buildPageCss(options({ showPageNumbers: true, pageNumberFormat: `n` }), `t`)
+    const css = buildPageCss(options({ showPageNumbers: true, pageNumberFormat: `n` }), `t`, `https://example.com`)
     expect(css).toContain(`content: "" counter(page) ""`)
     expect(css).not.toContain(`counter(pages)`)
   })
 
   it(`places page numbers at the selected position`, () => {
-    expect(buildPageCss(options({ pageNumberPosition: `bottomLeft` }), `t`))
+    expect(buildPageCss(options({ pageNumberPosition: `bottomLeft` }), `t`, `https://example.com`))
       .toContain(`@bottom-left {\n        content: "Page`)
-    expect(buildPageCss(options({ pageNumberPosition: `bottomCenter` }), `t`))
+    expect(buildPageCss(options({ pageNumberPosition: `bottomCenter` }), `t`, `https://example.com`))
       .toContain(`@bottom-center {\n        content: "Page`)
-    expect(buildPageCss(options({ pageNumberPosition: `bottomRight` }), `t`))
+    expect(buildPageCss(options({ pageNumberPosition: `bottomRight` }), `t`, `https://example.com`))
       .toContain(`@bottom-right {\n        content: "Page`)
   })
 
@@ -138,8 +156,8 @@ describe(`buildPageCss`, () => {
       showPageNumbers: true,
       pageNumberPosition: `bottomLeft`,
       showSiteFooter: true,
-    }), `t`)
+    }), `t`, `https://example.com`)
     expect(css).toContain(`counter(page)`)
-    expect(css).not.toContain(`md.doocs.org`)
+    expect(css).not.toContain(`example.com`)
   })
 })

@@ -275,7 +275,7 @@ export default {
     },
     siteFooter: {
       label: `サイトフッター`,
-      hint: `フッターに md.doocs.org を表示`,
+      hint: `フッターに現在のサイト URL を表示`,
     },
     margins: {
       label: `余白`,

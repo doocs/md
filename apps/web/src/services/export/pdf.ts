@@ -40,6 +40,19 @@ const MARGIN_VALUES: Record<PdfMargins, string> = {
 /** Gap between chrome text (header / page number) and article content. */
 const CHROME_CONTENT_GAP = `0.5cm`
 
+/** Prefer the current http(s) origin; fall back for extension / file contexts. */
+export function resolvePdfSiteFooterUrl(
+  locationLike: Pick<Location, `protocol` | `origin`> = window.location,
+): string {
+  if (locationLike.protocol === `http:` || locationLike.protocol === `https:`)
+    return locationLike.origin
+  return `https://md.doocs.org`
+}
+
+function escapeCssQuotedString(value: string): string {
+  return value.replace(/\\/g, `\\\\`).replace(/"/g, `\\"`)
+}
+
 const PAGE_NUMBER_BOX: Record<PdfPageNumberPosition, string> = {
   bottomLeft: `@bottom-left`,
   bottomCenter: `@bottom-center`,
@@ -140,9 +153,14 @@ export function normalizePdfExportOptions(
  * is present on an edge, that edge uses the fuller preset height and chrome text is
  * aligned toward the content with a consistent gap.
  */
-export function buildPageCss(options: PdfExportOptions, title: string): string {
+export function buildPageCss(
+  options: PdfExportOptions,
+  title: string,
+  siteUrl: string = resolvePdfSiteFooterUrl(),
+): string {
   const resolved = normalizePdfExportOptions(options)
   const safeTitle = sanitizeTitle(title)
+  const safeSiteUrl = escapeCssQuotedString(siteUrl)
   const sides = resolveMarginSides(resolved.margins)
   const pageBox = resolved.showPageNumbers
     ? PAGE_NUMBER_BOX[resolved.pageNumberPosition]
@@ -179,7 +197,7 @@ export function buildPageCss(options: PdfExportOptions, title: string): string {
   if (showSiteFooter) {
     claimed.set(`@bottom-left`, marginBoxRule(
       `@bottom-left`,
-      `"https://md.doocs.org"`,
+      `"${safeSiteUrl}"`,
       `
         font-size: 10px;
         color: #999;
@@ -224,7 +242,7 @@ export async function exportPDF(title: string = `untitled`, options?: Partial<Pd
   const stylesToAdd = await getStylesToAdd()
   const safeTitle = sanitizeTitle(title)
   const resolved = normalizePdfExportOptions(options)
-  const pageCss = buildPageCss(resolved, title)
+  const pageCss = buildPageCss(resolved, title, resolvePdfSiteFooterUrl())
 
   const printHtml = `<!DOCTYPE html>
 <html>

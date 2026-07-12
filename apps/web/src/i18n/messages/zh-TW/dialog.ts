@@ -275,7 +275,7 @@ export default {
     },
     siteFooter: {
       label: `頁尾站點`,
-      hint: `在頁尾顯示 md.doocs.org`,
+      hint: `在頁尾顯示目前站點位址`,
     },
     margins: {
       label: `頁邊距`,

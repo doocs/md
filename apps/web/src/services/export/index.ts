@@ -11,6 +11,7 @@ export {
   type PdfMargins,
   type PdfPageNumberFormat,
   type PdfPageNumberPosition,
+  resolvePdfSiteFooterUrl,
 } from './pdf'
 export { exportPNG } from './png'
 export { getExportStyles, getShareExportStyles } from './share-styles'
