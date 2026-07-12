@@ -82,7 +82,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260711.1
+  '@cloudflare/workers-types': ^5.20260712.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
