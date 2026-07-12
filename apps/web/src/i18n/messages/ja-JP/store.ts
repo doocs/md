@@ -73,6 +73,7 @@ export default {
   },
   pdf: {
     pageFooter: `" counter(page) " / " counter(pages) " ページ`,
+    pageFooterN: `" counter(page) "`,
   },
   relativeTime: {
     justNow: `たった今`,

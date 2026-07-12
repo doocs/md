@@ -1,3 +1,4 @@
+import type { PdfExportOptions } from '@/services/export'
 import {
   downloadMD,
   exportHTML,
@@ -42,12 +43,12 @@ export const useExportStore = defineStore(`export`, () => {
     })
   }
 
-  const exportEditorContent2PDF = async () => {
+  const exportEditorContent2PDF = async (options?: Partial<PdfExportOptions>) => {
     const currentPost = postStore.currentPost
     if (!currentPost)
       return
 
-    await exportPDF(currentPost.title)
+    await exportPDF(currentPost.title, options)
   }
 
   const exportEditorContent2MD = (content: string) => {

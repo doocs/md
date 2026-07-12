@@ -251,4 +251,38 @@ export default {
       hint: `在预览文章顶部显示字数与阅读时间`,
     },
   },
+  pdfExport: {
+    title: `导出 PDF`,
+    description: `配置页眉页脚与版式后，通过浏览器打印对话框另存为 PDF。关闭的项会用空白占位，避免浏览器填入默认页眉页脚。`,
+    pageNumbers: {
+      label: `页码`,
+      hint: `在页脚显示页码`,
+    },
+    pageNumberFormat: {
+      label: `页码格式`,
+      nOfM: `第 N 页，共 M 页`,
+      n: `仅页码`,
+    },
+    pageNumberPosition: {
+      label: `页码位置`,
+      bottomLeft: `左下`,
+      bottomCenter: `居中`,
+      bottomRight: `右下`,
+    },
+    titleHeader: {
+      label: `页眉标题`,
+      hint: `在页眉显示文章标题`,
+    },
+    siteFooter: {
+      label: `页脚站点`,
+      hint: `在页脚显示 md.doocs.org`,
+    },
+    margins: {
+      label: `页边距`,
+      compact: `紧凑`,
+      default: `默认`,
+      comfortable: `宽松`,
+    },
+    export: `打印 / 另存为 PDF`,
+  },
 }
