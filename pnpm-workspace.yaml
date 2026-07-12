@@ -31,7 +31,7 @@ overrides:
   core-js: ^3.49.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
-  dompurify: ^3.4.11
+  dompurify: ^3.4.12
   esbuild: '>=0.28.1'
   flatted@<3.4.0: ^3.4.2
   glob@<8: ^13.0.6
@@ -51,14 +51,14 @@ overrides:
   qs: ^6.15.3
   querystring: npm:qs@^6.15.3
   semver: ^7.8.5
-  serialize-javascript@<7.0.3: ^7.0.5
-  shell-quote: ^1.9.0
+  serialize-javascript@<7.0.3: ^7.0.7
+  shell-quote: ^1.10.0
   source-map@0.8.0-beta.0: 0.7.4
   tinyexec: 1.2.4
   tmp: '>=0.2.7'
   underscore@<1.13.8: 1.13.8
-  undici@^6: ^8.4.1
-  undici@^7: ^8.4.1
+  undici@^6: ^8.7.0
+  undici@^7: ^8.7.0
   uuid: ^14.0.1
   workbox-build>source-map: 0.7.4
   ws@<8.21.0: ^8.21.0
