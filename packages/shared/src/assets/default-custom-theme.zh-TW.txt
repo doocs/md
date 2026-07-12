@@ -1,0 +1,274 @@
+/* 全域變數 */
+:root {
+}
+
+/* 根容器 */
+.container {
+}
+
+/* 標題 */
+h1 {
+}
+
+h2 {
+}
+
+h3 {
+}
+
+h4 {
+}
+
+h5 {
+}
+
+h6 {
+}
+
+/* 段落和文字 */
+p {
+}
+
+strong {
+}
+
+em {
+}
+
+/* 引用塊 */
+blockquote {
+}
+
+blockquote > p {
+}
+
+/* 程式碼 */
+/* 行內程式碼 */
+.codespan {
+}
+
+/* 程式碼塊容器 */
+pre.code__pre,
+.hljs.code__pre {
+}
+
+/* 程式碼塊內的 code */
+pre.code__pre > code,
+.hljs.code__pre > code {
+}
+
+/* 清單 */
+ol {
+}
+
+ul {
+}
+
+li {
+}
+
+/* 表格 */
+table {
+}
+
+thead {
+}
+
+th {
+}
+
+td {
+}
+
+/* 其他元素 */
+img {
+}
+
+hr {
+}
+
+/* 分隔線變體：--- */
+hr.hr-dash {
+}
+
+/* 分隔線變體：*** */
+hr.hr-star {
+}
+
+/* 分隔線變體：___ */
+hr.hr-underscore {
+}
+
+figure {
+}
+
+figcaption {
+}
+
+/* KaTeX 公式 */
+.katex-inline {
+}
+
+.katex-block {
+}
+
+/* Markup 標記 */
+/* 高亮 ==文字== */
+.markup-highlight {
+}
+
+/* 底線 ++文字++ */
+.markup-underline {
+}
+
+/* 波浪線 ~文字~ */
+.markup-wavyline {
+}
+
+/* GFM Alert 警告塊 */
+/* Alert 標題 */
+.alert-title-note {
+}
+
+.alert-title-tip {
+}
+
+.alert-title-info {
+}
+
+.alert-title-important {
+}
+
+.alert-title-warning {
+}
+
+.alert-title-caution {
+}
+
+.alert-title-abstract {
+}
+
+.alert-title-summary {
+}
+
+.alert-title-tldr {
+}
+
+.alert-title-todo {
+}
+
+.alert-title-success {
+}
+
+.alert-title-done {
+}
+
+.alert-title-question {
+}
+
+.alert-title-help {
+}
+
+.alert-title-faq {
+}
+
+.alert-title-failure {
+}
+
+.alert-title-fail {
+}
+
+.alert-title-missing {
+}
+
+.alert-title-danger {
+}
+
+.alert-title-error {
+}
+
+.alert-title-bug {
+}
+
+.alert-title-example {
+}
+
+.alert-title-quote {
+}
+
+.alert-title-cite {
+}
+
+/* Alert SVG 圖示 */
+.alert-icon-note {
+}
+
+.alert-icon-tip {
+}
+
+.alert-icon-info {
+}
+
+.alert-icon-important {
+}
+
+.alert-icon-warning {
+}
+
+.alert-icon-caution {
+}
+
+/* Obsidian-style Callout SVG 圖示 */
+.alert-icon-abstract {
+}
+
+.alert-icon-summary {
+}
+
+.alert-icon-tldr {
+}
+
+.alert-icon-todo {
+}
+
+.alert-icon-success {
+}
+
+.alert-icon-done {
+}
+
+.alert-icon-question {
+}
+
+.alert-icon-help {
+}
+
+.alert-icon-faq {
+}
+
+.alert-icon-failure {
+}
+
+.alert-icon-fail {
+}
+
+.alert-icon-missing {
+}
+
+.alert-icon-danger {
+}
+
+.alert-icon-error {
+}
+
+.alert-icon-bug {
+}
+
+.alert-icon-example {
+}
+
+.alert-icon-quote {
+}
+
+.alert-icon-cite {
+}

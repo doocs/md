@@ -1,14 +1,16 @@
 import type { EditorView } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
-import { cssSetup, DEFAULT_CUSTOM_THEME, theme as editorTheme } from '@md/shared'
+import { cssSetup, theme as editorTheme, getDefaultCustomTheme } from '@md/shared'
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
-import { t } from '@/i18n/translate'
+import { getLocale, t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 
-const DEFAULT_CSS_CONTENT = DEFAULT_CUSTOM_THEME
+function getDefaultCssContent() {
+  return getDefaultCustomTheme(getLocale())
+}
 
 /** CSS editor tab configuration. */
 export interface CssContentConfig {
@@ -47,7 +49,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
         id: defaultId,
         title: t('store.cssEditor.schemeDefault'),
         name: t('store.cssEditor.schemeDefault'),
-        content: DEFAULT_CSS_CONTENT,
+        content: getDefaultCssContent(),
         createDatetime: now,
         updateDatetime: now,
       }]
@@ -81,7 +83,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
           id: defaultId,
           title: t('store.cssEditor.schemeDefault'),
           name: t('store.cssEditor.schemeDefault'),
-          content: DEFAULT_CSS_CONTENT,
+          content: getDefaultCssContent(),
           createDatetime: now,
           updateDatetime: now,
         }]
@@ -132,7 +134,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   }
 
   const addCssContentTab = (name: string, initialContent?: string) => {
-    const content = initialContent || DEFAULT_CSS_CONTENT
+    const content = initialContent ?? getDefaultCssContent()
     const now = new Date()
     cssContentConfig.value.tabs.push({
       id: crypto.randomUUID(),
@@ -152,6 +154,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
   }
 
   const resetCssConfig = () => {
+    const defaultContent = getDefaultCssContent()
     const defaultId = crypto.randomUUID()
     cssContentConfig.value = {
       active: defaultId,
@@ -160,7 +163,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
           id: defaultId,
           title: t('store.cssEditor.schemeDefaultSpaced'),
           name: t('store.cssEditor.schemeDefaultSpaced'),
-          content: DEFAULT_CSS_CONTENT,
+          content: defaultContent,
           createDatetime: new Date(),
           updateDatetime: new Date(),
         },
@@ -169,7 +172,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
 
     if (cssEditor.value) {
       cssEditor.value.dispatch({
-        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: DEFAULT_CSS_CONTENT },
+        changes: { from: 0, to: cssEditor.value.state.doc.length, insert: defaultContent },
       })
     }
   }

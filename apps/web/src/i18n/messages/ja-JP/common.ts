@@ -24,6 +24,7 @@ export default {
     edit: `編集`,
     delete: `削除`,
     close: `閉じる`,
+    more: `その他`,
     copy: `コピー`,
     reset: `リセット`,
     clear: `クリア`,
