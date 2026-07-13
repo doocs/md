@@ -62,7 +62,7 @@ export default {
     originalContent: `原文`,
     versionDiff: `版本對比`,
     compareLabel: `對比：`,
-    restore: `恢 復`,
+    restore: `恢復`,
     restoreArticleDescription: `此操作將用該記錄替換當前文章內容，是否繼續？`,
     addPost: `新增內容`,
     saveAsTemplate: `儲存為模板`,

@@ -99,6 +99,7 @@ export default {
     footnoteTitle: `引用連結`,
     unknownComponent: `未知元件: {name}`,
     katexLoading: `正在載入公式…`,
+    renderFailed: `渲染失敗`,
   },
   popup: {
     mustRead: `使用必讀`,
