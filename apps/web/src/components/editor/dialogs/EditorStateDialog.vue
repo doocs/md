@@ -35,14 +35,6 @@ const postStore = usePostStore()
 const cssEditorStore = useCssEditorStore()
 const renderStore = useRenderStore()
 
-watch(
-  () => props.open,
-  (val) => {
-    if (val)
-      fetchStoreStates()
-  },
-)
-
 const activeName = ref(`import`)
 const tabs = computed(() => [
   { value: `import`, label: t('editorState.importTab') },
@@ -56,6 +48,15 @@ const storeStates = ref<{
   data: {},
   selected: {},
 })
+
+watch(
+  () => props.open,
+  (val) => {
+    if (val)
+      fetchStoreStates()
+  },
+  { immediate: true },
+)
 
 function getAllStoreStates() {
   return {
