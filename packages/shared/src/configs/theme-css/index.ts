@@ -19,5 +19,5 @@ export type BuiltinThemeName = keyof typeof themeMap
 export type ThemeName = BuiltinThemeName | (string & {})
 
 export function isBuiltinThemeName(name: string): name is BuiltinThemeName {
-  return Object.hasOwn(themeMap, name)
+  return Object.keys(themeMap).includes(name)
 }
