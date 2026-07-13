@@ -25,7 +25,8 @@ async function getHljsStyles(): Promise<string> {
   }
 }
 
-function scopeThemeCss(cssContent: string, scope: string): string {
+/** Remap `#output` theme selectors to an isolated preview scope (e.g. history / share). */
+export function scopeThemeCss(cssContent: string, scope: string): string {
   let css = cssContent
   css = css.replace(/#output\s*\{/g, `${scope} {`)
   css = css.replace(/#output\s+/g, `${scope} `)
