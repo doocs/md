@@ -26,7 +26,9 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          version: 11
+          # Pin exact version: pnpm 11.12.0 self-update crashes in action-setup
+          # https://github.com/pnpm/action-setup/issues/276
+          version: 11.11.0
 
       - name: Install dependencies
         run: pnpm install
@@ -50,7 +52,9 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          version: 11
+          # Pin exact version: pnpm 11.12.0 self-update crashes in action-setup
+          # https://github.com/pnpm/action-setup/issues/276
+          version: 11.11.0
 
       - name: Install dependencies
         run: pnpm install
@@ -74,7 +78,9 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v5
         with:
-          version: 11
+          # Pin exact version: pnpm 11.12.0 self-update crashes in action-setup
+          # https://github.com/pnpm/action-setup/issues/276
+          version: 11.11.0
 
       - name: Install dependencies
         run: pnpm install
