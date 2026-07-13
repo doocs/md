@@ -22,7 +22,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: Setup pnpm
-        uses: pnpm/action-setup@v5
+        uses: pnpm/action-setup@v6
         with:
           # Pin exact version: pnpm 11.12.0 self-update crashes in action-setup
           # https://github.com/pnpm/action-setup/issues/276
