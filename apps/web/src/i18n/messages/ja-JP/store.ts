@@ -99,6 +99,7 @@ export default {
     footnoteTitle: `参考文献`,
     unknownComponent: `不明なコンポーネント: {name}`,
     katexLoading: `数式を読み込み中…`,
+    renderFailed: `レンダリングに失敗しました`,
   },
   popup: {
     mustRead: `ご利用前に`,

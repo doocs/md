@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Download, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, Upload, X } from '@lucide/vue'
+import { copyPlain } from '@/lib/browser/clipboard'
 import { downloadMD, exportPostsAsZip } from '@/services/export'
 import { useConfirmStore } from '@/stores/confirm'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
+import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 import {
   getPostSliderDropdownContentProps,
@@ -128,10 +130,12 @@ function delPost() {
   toast.success(t('post.deleteSuccess'))
 }
 
+const renderStore = useRenderStore()
+
 const isOpenHistoryDialog = ref(false)
 const currentPostId = ref<string | null>(null)
 const currentHistoryIndex = ref(0)
-const historyViewMode = ref<'content' | 'diff'>(`content`)
+const historyViewMode = ref<'content' | 'diff' | 'preview'>(`content`)
 const compareTargetIndex = ref(`1`)
 
 function openHistoryDialog(id: string) {
@@ -147,6 +151,18 @@ const currentHistoryList = computed(() => {
   return postStore.getPostById(currentPostId.value!)?.history ?? []
 })
 
+const previewHtml = computed(() => {
+  const content = currentHistoryList.value[currentHistoryIndex.value]?.content ?? ``
+  if (!content)
+    return ``
+  try {
+    return renderStore.render(content, { force: true })
+  }
+  catch {
+    return `<p class="text-muted-foreground text-sm">${t('store.render.renderFailed')}</p>`
+  }
+})
+
 // Auto-adjust diff target when it conflicts with selected version
 watch(currentHistoryIndex, (idx) => {
   if (Number(compareTargetIndex.value) === idx) {
@@ -154,6 +170,14 @@ watch(currentHistoryIndex, (idx) => {
     compareTargetIndex.value = String(idx + 1 < len ? idx + 1 : Math.max(0, idx - 1))
   }
 })
+
+async function copyHistoryContent() {
+  const content = currentHistoryList.value[currentHistoryIndex.value]?.content ?? ``
+  if (!content)
+    return
+  await copyPlain(content)
+  toast.success(t('common.copiedToClipboard'))
+}
 
 function recoverHistory() {
   const post = postStore.getPostById(currentPostId.value!)
@@ -1078,6 +1102,9 @@ function handleDragEnd() {
               <TabsTrigger value="content">
                 {{ t('post.originalContent') }}
               </TabsTrigger>
+              <TabsTrigger value="preview">
+                {{ t('common.preview') }}
+              </TabsTrigger>
               <TabsTrigger value="diff">
                 {{ t('post.versionDiff') }}
               </TabsTrigger>
@@ -1086,6 +1113,20 @@ function handleDragEnd() {
             <TabsContent value="content" class="flex-1 overflow-y-auto mt-2">
               <div class="rounded-lg bg-muted/30 p-4 h-full overflow-y-auto">
                 <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit]">{{ currentHistoryList[currentHistoryIndex]?.content ?? '' }}</pre>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="preview" class="flex-1 overflow-hidden mt-2">
+              <div
+                v-if="previewHtml"
+                class="history-preview-wrapper h-full overflow-y-auto rounded-lg border bg-background"
+              >
+                <div class="preview mx-auto">
+                  <section id="output" class="w-full" v-html="previewHtml" />
+                </div>
+              </div>
+              <div v-else class="flex items-center justify-center h-full rounded-lg border bg-background text-muted-foreground text-sm">
+                {{ t('common.noData') }}
               </div>
             </TabsContent>
 
@@ -1123,6 +1164,9 @@ function handleDragEnd() {
       </div>
 
       <DialogFooter>
+        <Button variant="outline" @click="copyHistoryContent">
+          {{ t('common.copy') }}
+        </Button>
         <Button @click="confirmRestoreHistory">
           {{ t('post.restore') }}
         </Button>
@@ -1163,5 +1207,19 @@ function handleDragEnd() {
 .slide-up-leave-to {
   transform: translateY(100%);
   opacity: 0;
+}
+</style>
+
+<style>
+/* History preview container — mirrors .preview class from app.less (scoped in PreviewPanel) */
+.history-preview-wrapper .preview {
+  position: relative;
+  min-height: 100%;
+  margin: 0 auto;
+  padding: 20px;
+  font-size: 14px;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 </style>

@@ -99,6 +99,7 @@ export default {
     footnoteTitle: `References`,
     unknownComponent: `Unknown component: {name}`,
     katexLoading: `Loading formula…`,
+    renderFailed: `Render failed`,
   },
   popup: {
     mustRead: `Before you start`,
