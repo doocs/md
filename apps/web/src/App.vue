@@ -27,6 +27,7 @@ usePreferencesHotkey()
   <Toaster
     rich-colors
     position="top-center"
+    class="!z-[200]"
     :duration="1200"
     :visible-toasts="1"
     :theme="isDark ? 'dark' : 'light'"

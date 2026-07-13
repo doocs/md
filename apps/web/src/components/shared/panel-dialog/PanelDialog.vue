@@ -31,12 +31,15 @@ const sizeClassMap = {
   '2xl': `sm:max-w-2xl`,
   '3xl': `sm:max-w-3xl`,
   '4xl': `sm:max-w-4xl`,
+  '5xl': `sm:max-w-5xl`,
+  '6xl': `sm:max-w-6xl`,
+  'full': `sm:max-w-[min(96vw,72rem)]`,
 } as const
 
 const dialogContentClass = computed(() => cn(
-  `flex max-h-[min(90vh,100dvh)] flex-col gap-0 overflow-hidden p-0`,
+  `flex max-h-[min(92vh,100dvh)] flex-col gap-0 overflow-hidden p-0`,
   `max-sm:fixed max-sm:inset-x-0 max-sm:bottom-0 max-sm:top-auto max-sm:w-full max-sm:max-w-none`,
-  `max-sm:max-h-[min(88dvh,100dvh)] max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-t-2xl max-sm:rounded-b-none`,
+  `max-sm:max-h-[min(92dvh,100dvh)] max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-t-2xl max-sm:rounded-b-none`,
   `max-sm:border-x-0 max-sm:border-b-0 max-sm:shadow-2xl`,
   `max-sm:pb-[max(1rem,env(safe-area-inset-bottom,0px))]`,
   `max-sm:data-[state=open]:slide-in-from-bottom-4 max-sm:data-[state=closed]:slide-out-to-bottom-4`,
@@ -68,7 +71,7 @@ function onUpdate(val: boolean) {
         </DialogDescription>
       </DialogHeader>
 
-      <div class="min-h-0 flex-1 overflow-y-auto">
+      <div class="flex min-h-0 flex-1 flex-col overflow-y-auto">
         <slot />
       </div>
 

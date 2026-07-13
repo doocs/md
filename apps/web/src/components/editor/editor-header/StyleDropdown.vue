@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import type {
-  themeMap,
+  ThemeName,
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
-import { ALargeSmall, Code, Droplet, FileCode, ImageIcon, Palette, Pipette, RotateCcw, SquareCode, Type } from '@lucide/vue'
+import { ALargeSmall, Code, Droplet, FileCode, ImageIcon, Palette, Pipette, RotateCcw, SquareCode, Store, Type } from '@lucide/vue'
 import {
   codeBlockThemeOptions,
 } from '@md/shared/configs'
 import PickColors from 'vue-pick-colors'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
+import { isMarketplaceUiEnabled } from '@/services/marketplace/client'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useThemeStore } from '@/stores/theme'
@@ -32,6 +33,7 @@ const uiStore = useUIStore()
 const { editorRefresh } = useEditorRefresh()
 
 const { toggleShowCssEditor } = uiStore
+const showMarketplaceUi = isMarketplaceUiEnabled()
 
 const {
   theme,
@@ -44,7 +46,7 @@ const {
 
 const { isDark } = storeToRefs(uiStore)
 
-function themeChanged(newTheme: keyof typeof themeMap) {
+function themeChanged(newTheme: ThemeName) {
   themeStore.theme = newTheme
 
   themeStore.applyCurrentTheme()
@@ -111,6 +113,10 @@ function customStyle() {
   toggleShowCssEditor()
 }
 
+function openMarketplaceDialog() {
+  uiStore.openMarketplaceDialog({ tab: `theme`, view: `discover` })
+}
+
 const pickColorsContainer = useTemplateRef(`pickColorsContainer`)
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
@@ -129,6 +135,10 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         :change="themeChanged"
         :icon="Palette"
       />
+      <MenubarItem v-if="showMarketplaceUi" class="pl-2" @click="openMarketplaceDialog()">
+        <Store class="mr-2 h-4 w-4" />
+        {{ t('menu.marketplace') }}
+      </MenubarItem>
       <MenubarSeparator />
       <StyleOptionMenu
         :title="t('menu.font')"
@@ -218,6 +228,10 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
         :change="themeChanged"
         :icon="Palette"
       />
+      <MenubarItem v-if="showMarketplaceUi" class="pl-2" @click="openMarketplaceDialog()">
+        <Store class="mr-2 h-4 w-4" />
+        {{ t('menu.marketplace') }}
+      </MenubarItem>
       <MenubarSeparator />
       <StyleOptionMenu
         :title="t('menu.font')"

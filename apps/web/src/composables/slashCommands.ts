@@ -11,6 +11,7 @@ import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions
 import { createLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
 import { t } from '@/i18n/translate'
 import { useEditorStore } from '@/stores/editor'
+import { useMarketplaceStore } from '@/stores/marketplace'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
@@ -298,7 +299,8 @@ export function buildSlashCommands(): SlashCommandItem[] {
   ]
 
   const styleCommands: SlashCommandItem[] = (() => {
-    const { themeOptions: localizedThemes, colorOptions: localizedColors } = createLocalizedStyleOptions(t)
+    const installed = useMarketplaceStore().getInstalledThemeOptions()
+    const { themeOptions: localizedThemes, colorOptions: localizedColors } = createLocalizedStyleOptions(t, installed)
     return [
       ...localizedThemes.map(option => createCommand({
         id: `theme-${option.value}`,

@@ -39,6 +39,8 @@ export const SYNC_SETTING_KEYS: string[] = [
   addPrefix(`css_content_config`),
   addPrefix(`templates`),
   addPrefix(`custom_components`),
+  addPrefix(`marketplace_installed_themes`),
+  addPrefix(`marketplace_installed_components`),
   `quick_commands`,
 ]
 

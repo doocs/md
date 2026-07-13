@@ -8,6 +8,7 @@ import { useCssEditorStore } from '@/stores/cssEditor'
 import { useCustomComponentStore } from '@/stores/customComponent'
 import { useEditorStore } from '@/stores/editor'
 import { useLocaleStore } from '@/stores/locale'
+import { useMarketplaceStore } from '@/stores/marketplace'
 import { usePostStore } from '@/stores/post'
 import { useQuickCommandsStore } from '@/stores/quickCommands'
 import { useRenderStore } from '@/stores/render'
@@ -26,6 +27,8 @@ const PREVIEW_REFRESH_KEYS = new Set([
   `previewWidth`,
   addPrefix(`css_content_config`),
   addPrefix(`custom_components`),
+  addPrefix(`marketplace_installed_themes`),
+  addPrefix(`marketplace_installed_components`),
 ])
 
 function hydrateRef<T>(key: string, keys: Set<string>, ref: { value: T }): void {
@@ -103,6 +106,10 @@ export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void
   hydrateRef(addPrefix(`templates`), keys, template.templates)
   hydrateRef(addPrefix(`custom_components`), keys, customComponent.userComponents)
   hydrateRef(addPrefix(`sort_mode`), keys, post.sortMode)
+
+  const marketplace = storeToRefs(useMarketplaceStore())
+  hydrateRef(addPrefix(`marketplace_installed_themes`), keys, marketplace.installedThemes)
+  hydrateRef(addPrefix(`marketplace_installed_components`), keys, marketplace.installedComponents)
 
   if (keys.has(`quick_commands`))
     await quickCommandsStore.reloadFromStorage()

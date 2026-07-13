@@ -104,6 +104,7 @@ export default {
     exportPdf: `PDF`,
     exportPng: `PNG`,
     templateManage: `Templates`,
+    marketplace: `Community Themes`,
     contentManage: `Content`,
     cloudSync: `Sync`,
     sharePreview: `Share`,

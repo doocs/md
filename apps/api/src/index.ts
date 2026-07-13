@@ -3,6 +3,8 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
+import { marketplaceRoutes } from './marketplace'
+import { notificationRoutes } from './notifications'
 import { isAllowedOrigin, isBrowserExtensionOrigin } from './origin'
 import { createShareHandler, deleteShareHandler, listSharesHandler, unlockShareHandler, viewShareHandler } from './share'
 import { SHARE_FAVICON_PATH } from './share-head'
@@ -16,7 +18,7 @@ const app = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 app.use(`*`, async (c, next) => {
   const handler = cors({
     origin: origin => (isAllowedOrigin(c.env, origin) || isBrowserExtensionOrigin(origin) ? origin : null),
-    allowMethods: [`GET`, `POST`, `DELETE`, `OPTIONS`],
+    allowMethods: [`GET`, `POST`, `PATCH`, `DELETE`, `OPTIONS`],
     allowHeaders: [`Authorization`, `Content-Type`],
     credentials: true,
     maxAge: 86400,
@@ -41,6 +43,9 @@ app.post(`/webhooks/afdian/:token`, afdianWebhookHandler)
 app.get(`/s/:shareId`, viewShareHandler)
 app.post(`/s/:shareId/unlock`, unlockShareHandler)
 
+// Theme / component marketplace (public browse + auth publish/admin)
+app.route(`/marketplace`, marketplaceRoutes)
+
 const api = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 api.use(`*`, authMiddleware)
 api.get(`/me`, meHandler)
@@ -50,6 +55,7 @@ api.post(`/sync/activate`, activateHandler)
 api.get(`/share`, listSharesHandler)
 api.post(`/share`, createShareHandler)
 api.delete(`/share/:id`, deleteShareHandler)
+api.route(`/notifications`, notificationRoutes)
 
 app.route(`/`, api)
 
