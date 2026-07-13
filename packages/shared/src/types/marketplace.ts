@@ -85,13 +85,15 @@ export interface InstalledMarketplaceComponent {
   installedAt: number
 }
 
-/** Theme key for marketplace installs: `mp:<uuid>` */
-export function marketplaceThemeKey(marketplaceId: string): string {
+/** Theme key for marketplace installs: `mp:<id>` */
+export type MarketplaceThemeKey = `mp:${string}`
+
+export function marketplaceThemeKey(marketplaceId: string): MarketplaceThemeKey {
   return `mp:${marketplaceId}`
 }
 
-export function isMarketplaceThemeKey(theme: string): boolean {
-  return theme.startsWith(`mp:`)
+export function isMarketplaceThemeKey(theme: string): theme is MarketplaceThemeKey {
+  return theme.startsWith(`mp:`) && theme.length > 3
 }
 
 export function parseMarketplaceThemeId(theme: string): string | null {

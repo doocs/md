@@ -2,7 +2,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import { Check, CheckSquare, CircleHelp, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
 import { exportMergedTheme } from '@md/core'
-import { getDefaultCustomTheme, isBuiltinThemeName, themeMap } from '@md/shared'
+import { getDefaultCustomTheme, isBuiltinThemeName, isMarketplaceThemeKey, themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { getLocale } from '@/i18n/translate'
@@ -10,6 +10,7 @@ import { copyPlain } from '@/lib/browser/clipboard'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
+import { useMarketplaceStore } from '@/stores/marketplace'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
@@ -312,12 +313,19 @@ function exportCurrentTheme() {
 
   const currentThemeName = currentTab.title || currentTab.name
 
-  // Export merged theme (includes default base)
-  const baseTheme = themeStore.theme === `default`
-    ? themeMap.default
-    : isBuiltinThemeName(themeStore.theme)
-      ? `${themeMap.default}\n\n${themeMap[themeStore.theme]}`
-      : themeMap.default
+  // Export merged theme (includes default base + active preview theme)
+  let baseTheme = themeMap.default
+  if (themeStore.theme === `default`) {
+    baseTheme = themeMap.default
+  }
+  else if (isBuiltinThemeName(themeStore.theme)) {
+    baseTheme = `${themeMap.default}\n\n${themeMap[themeStore.theme]}`
+  }
+  else if (isMarketplaceThemeKey(themeStore.theme)) {
+    const marketplaceCss = useMarketplaceStore().getInstalledThemeCss(themeStore.theme)
+    if (marketplaceCss)
+      baseTheme = `${themeMap.default}\n\n${marketplaceCss}`
+  }
 
   exportMergedTheme(
     currentTab.content,

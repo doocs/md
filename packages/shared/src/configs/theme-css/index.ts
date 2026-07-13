@@ -1,5 +1,6 @@
 /** CSS theme strings for JavaScript consumers */
 
+import type { MarketplaceThemeKey } from '../../types/marketplace'
 import baseCSS from './base.css?raw'
 import defaultCSS from './default.css?raw'
 import graceCSS from './grace.css?raw'
@@ -15,8 +16,8 @@ export const themeMap = {
 
 export type BuiltinThemeName = keyof typeof themeMap
 
-/** Built-in theme id, or marketplace theme key (`mp:<uuid>`). */
-export type ThemeName = BuiltinThemeName | (string & {})
+/** Built-in theme id, or marketplace theme key (`mp:<id>`). */
+export type ThemeName = BuiltinThemeName | MarketplaceThemeKey
 
 export function isBuiltinThemeName(name: string): name is BuiltinThemeName {
   return Object.keys(themeMap).includes(name)

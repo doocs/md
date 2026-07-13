@@ -7,6 +7,7 @@ import type {
   MarketplaceItemSummary,
   MarketplaceItemType,
   MarketplaceSort,
+  MarketplaceThemeKey,
 } from '@md/shared'
 import type {
   PublishComponentPayload,
@@ -93,7 +94,7 @@ export const useMarketplaceStore = defineStore(`marketplace`, () => {
     return installedThemes.value[themeKey]?.css
   }
 
-  function getInstalledThemeOptions(): { label: string, value: string, desc: string }[] {
+  function getInstalledThemeOptions(): { label: string, value: MarketplaceThemeKey, desc: string }[] {
     return Object.values(installedThemes.value).map(theme => ({
       label: theme.name,
       value: marketplaceThemeKey(theme.marketplaceId),
