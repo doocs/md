@@ -1239,7 +1239,7 @@ function handleDragEnd() {
         <Button variant="outline" @click="copyHistoryContent">
           {{ t('common.copy') }}
         </Button>
-        <Button @click="confirmRestoreHistory">
+        <Button variant="outline" @click="confirmRestoreHistory">
           {{ t('post.restore') }}
         </Button>
       </DialogFooter>
