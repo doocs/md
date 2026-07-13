@@ -2,7 +2,7 @@
 import type {
   HeadingLevel,
   HeadingStyleType,
-  themeMap,
+  ThemeName,
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
 import { X } from '@lucide/vue'
@@ -67,11 +67,15 @@ const selectedHeadingStyleLabel = computed(() =>
 
 const { isMobile, isOpenRightSlider, isDark } = storeToRefs(uiStore)
 
-function themeChanged(newTheme: keyof typeof themeMap) {
+function themeChanged(newTheme: ThemeName) {
   themeStore.theme = newTheme
 
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
+}
+
+function openThemeMarketplace() {
+  uiStore.openMarketplaceDialog({ tab: `theme`, view: `discover` })
 }
 
 function fontChanged(fonts: string) {
@@ -251,6 +255,14 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
             {{ label }}
           </Button>
         </div>
+        <Button
+          variant="ghost"
+          size="sm"
+          class="h-8 w-full justify-start px-1.5 text-xs text-muted-foreground"
+          @click="openThemeMarketplace"
+        >
+          {{ t('marketplace.exploreThemes') }}
+        </Button>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">

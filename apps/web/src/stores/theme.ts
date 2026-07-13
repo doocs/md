@@ -131,8 +131,16 @@ export const useThemeStore = defineStore(`theme`, () => {
       const cssEditorStore = useCssEditorStore()
       const customCSS = cssEditorStore.getCurrentTabContent()
 
+      // Lazy import avoids Pinia circular init with marketplace store
+      let themeCSS: string | undefined
+      if (String(theme.value).startsWith(`mp:`)) {
+        const { useMarketplaceStore } = await import(`@/stores/marketplace`)
+        themeCSS = useMarketplaceStore().getInstalledThemeCss(String(theme.value))
+      }
+
       await applyTheme({
         themeName: theme.value,
+        themeCSS,
         customCSS,
         variables: {
           primaryColor: primaryColor.value,

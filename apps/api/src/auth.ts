@@ -4,6 +4,7 @@ import { Hono } from 'hono'
 import { deleteCookie, getCookie, setCookie } from 'hono/cookie'
 import { sign, verify } from 'hono/jwt'
 import { getUserById, upsertUser } from './db'
+import { isAdmin } from './marketplace-admin'
 import { defaultOrigin, resolveRedirect } from './origin'
 import { getEffectivePlan } from './plan'
 
@@ -143,5 +144,6 @@ export async function meHandler(c: Context<{ Bindings: Env, Variables: { userId:
     avatar: user.avatar,
     plan,
     planExpiresAt: user.plan_expires_at ?? null,
+    isAdmin: isAdmin(c.env, user.login),
   })
 }

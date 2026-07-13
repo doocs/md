@@ -9,4 +9,6 @@ export interface AccountUser {
   avatar: string | null
   plan: UserPlan
   planExpiresAt: number | null
+  /** Marketplace reviewer (ADMIN_GITHUB_LOGINS) */
+  isAdmin?: boolean
 }

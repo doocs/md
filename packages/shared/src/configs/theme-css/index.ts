@@ -13,4 +13,11 @@ export const themeMap = {
   simple: simpleCSS,
 } as const
 
-export type ThemeName = keyof typeof themeMap
+export type BuiltinThemeName = keyof typeof themeMap
+
+/** Built-in theme id, or marketplace theme key (`mp:<uuid>`). */
+export type ThemeName = BuiltinThemeName | (string & {})
+
+export function isBuiltinThemeName(name: string): name is BuiltinThemeName {
+  return Object.hasOwn(themeMap, name)
+}

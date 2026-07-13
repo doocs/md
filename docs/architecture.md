@@ -4,17 +4,17 @@
 
 ## Monorepo 结构
 
-| 包               | 路径                  | 职责                                                                     |
-| ---------------- | --------------------- | ------------------------------------------------------------------------ |
-| `@md/web`        | `apps/web`            | Vue 3 主应用、WXT 浏览器扩展（Chrome/Firefox）、CF Workers 部署          |
-| `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享链接（Cloudflare Workers + Hono + D1） |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID 为 `doocs.doocs-md`）         |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包壳（构建产物来自 `@md/web`）                              |
-| `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                 |
-| `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                              |
-| `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                     |
-| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                       |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                     |
+| 包               | 路径                  | 职责                                                                                    |
+| ---------------- | --------------------- | --------------------------------------------------------------------------------------- |
+| `@md/web`        | `apps/web`            | Vue 3 主应用、WXT 浏览器扩展（Chrome/Firefox）、CF Workers 部署                         |
+| `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享链接、主题/组件市场（Cloudflare Workers + Hono + D1） |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID 为 `doocs.doocs-md`）                        |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包壳（构建产物来自 `@md/web`）                                             |
+| `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                                |
+| `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                             |
+| `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                    |
+| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                      |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                    |
 
 独立示例（不在 pnpm workspace 内）：
 
@@ -79,16 +79,24 @@ Pinia stores 按领域划分：
 - `useUIStore` — 布局、对话框、视图模式
 - `useLocaleStore` — 界面语言（zh-CN / zh-TW / en-US / ja-JP），同步 `document.title` 与 i18n 实例
 - `useSyncStore` / `useAuthStore` — 云同步与账户
+- `useMarketplaceStore` — 主题/组件市场目录、安装与发布
 - `useConfirmStore` — 全局确认对话框（`components/shared/confirm-dialog/`）
 
 样式变更后通过 `useEditorRefresh()`（`apps/web/src/composables/useEditorRefresh.ts`）触发预览重渲染。
 
 ## 云同步
 
-- **白名单**：`apps/web/src/services/sync/settings.ts` 中的 `SYNC_SETTING_KEYS`
+- **白名单**：`apps/web/src/services/sync/settings.ts` 中的 `SYNC_SETTING_KEYS`（含 `marketplace_installed_themes` / `marketplace_installed_components`）
 - **合并策略**：LWW，元数据存于 `sync_settings_meta`
 - **热更新**：远端设置应用后由 `hydrateSyncedSettings`（`services/sync/hydrate.ts`）写入 Store（含 `locale`），无需刷新页面
 - **用户说明**：见 [cloud-sync.md](./cloud-sync.md)
+
+## 主题 / 组件市场
+
+- **API**：`/marketplace/*`（公开浏览；登录发布；`ADMIN_GITHUB_LOGINS` 审核）
+- **主题包**：安装后以 `mp:<uuid>` 作为独立主题出现在主题选择器；CSS 经 `applyTheme({ themeCSS })` 动态注入
+- **组件包**：安装后写入 `custom_components` 注册表
+- **Web UI**：`MarketplaceDialog`（文件菜单 / 右侧主题栏 / 组件对话框入口）
 
 ## 本地存储
 

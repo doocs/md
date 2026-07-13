@@ -49,6 +49,7 @@ export const useAuthStore = defineStore(`auth`, () => {
         ...me,
         plan: me.plan ?? `free`,
         planExpiresAt: me.planExpiresAt ?? null,
+        isAdmin: Boolean(me.isAdmin),
       }
       return true
     }

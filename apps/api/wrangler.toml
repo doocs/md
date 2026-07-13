@@ -44,6 +44,9 @@ UPLOAD_GITHUB_REPO_LIST = ""
 UPLOAD_GITHUB_BRANCH = "main"
 UPLOAD_GITHUB_USE_CDN = "true"
 
+# 主题/组件市场审核管理员（GitHub login，逗号分隔）
+ADMIN_GITHUB_LOGINS = "yanglbme"
+
 # 以下为敏感变量，请勿写入此文件，使用 `wrangler secret put` 设置：
 #   wrangler secret put GITHUB_CLIENT_ID
 #   wrangler secret put GITHUB_CLIENT_SECRET

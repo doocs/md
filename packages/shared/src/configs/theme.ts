@@ -1,7 +1,13 @@
 import type { IConfigOption } from '../types'
 import type { ThemeName } from './theme-css'
 
-export { baseCSSContent, themeMap, type ThemeName } from './theme-css'
+export {
+  baseCSSContent,
+  type BuiltinThemeName,
+  isBuiltinThemeName,
+  themeMap,
+  type ThemeName,
+} from './theme-css'
 
 export const themeOptionsMap = {
   default: {

@@ -2,7 +2,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import { Check, CheckSquare, CircleHelp, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
 import { exportMergedTheme } from '@md/core'
-import { getDefaultCustomTheme, themeMap } from '@md/shared'
+import { getDefaultCustomTheme, isBuiltinThemeName, themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { getLocale } from '@/i18n/translate'
@@ -315,7 +315,9 @@ function exportCurrentTheme() {
   // Export merged theme (includes default base)
   const baseTheme = themeStore.theme === `default`
     ? themeMap.default
-    : `${themeMap.default}\n\n${themeMap[themeStore.theme]}`
+    : isBuiltinThemeName(themeStore.theme)
+      ? `${themeMap.default}\n\n${themeMap[themeStore.theme]}`
+      : themeMap.default
 
   exportMergedTheme(
     currentTab.content,

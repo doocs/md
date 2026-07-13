@@ -10,6 +10,7 @@ import {
   legendOptions,
   themeOptions,
 } from '@md/shared/configs'
+import { useMarketplaceStore } from '@/stores/marketplace'
 
 type Translate = (key: string) => string
 
@@ -95,13 +96,23 @@ function localizeLegendOptions(t: Translate): IConfigOption[] {
   }))
 }
 
-export function getThemeLabel(t: Translate, theme: ThemeName): string {
+export function getThemeLabel(t: Translate, theme: ThemeName, fallback?: string): string {
+  if (String(theme).startsWith(`mp:`))
+    return fallback || String(theme)
   return t(`styleOptions.theme.${theme}.label`)
 }
 
-export function createLocalizedStyleOptions(t: Translate) {
+export function createLocalizedStyleOptions(
+  t: Translate,
+  installedThemeOptions: IConfigOption<ThemeName>[] = [],
+) {
+  const themeOptionsLocalized = [
+    ...localizeThemeOptions(t),
+    ...installedThemeOptions,
+  ]
+
   return {
-    themeOptions: localizeThemeOptions(t),
+    themeOptions: themeOptionsLocalized,
     fontFamilyOptions: localizeFontFamilyOptions(t),
     fontSizeOptions: localizeFontSizeOptions(t),
     colorOptions: localizeColorOptions(t),
@@ -109,15 +120,22 @@ export function createLocalizedStyleOptions(t: Translate) {
     headingLevelOptions: localizeHeadingLevelOptions(t),
     headingStyleOptions: localizeHeadingStyleOptions(t),
     legendOptions: localizeLegendOptions(t),
-    getThemeLabel: (theme: ThemeName) => getThemeLabel(t, theme),
+    getThemeLabel: (theme: ThemeName) => {
+      const installed = installedThemeOptions.find(o => o.value === theme)
+      return getThemeLabel(t, theme, installed?.label)
+    },
   }
 }
 
 export function useLocalizedStyleOptions() {
   const { t, locale } = useI18n()
+  const marketplaceStore = useMarketplaceStore()
 
   return computed(() => {
     void locale.value
-    return createLocalizedStyleOptions(t)
+    // Depend on installed themes map so options refresh after install/uninstall
+    void marketplaceStore.installedThemes
+    const installed = marketplaceStore.getInstalledThemeOptions() as IConfigOption<ThemeName>[]
+    return createLocalizedStyleOptions(t, installed)
   })
 }

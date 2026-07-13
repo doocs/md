@@ -102,6 +102,21 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowComponentDialog = ref(false)
   const toggleShowComponentDialog = useToggle(isShowComponentDialog)
 
+  const isShowMarketplaceDialog = ref(false)
+  const marketplaceDialogTab = ref<`theme` | `component`>(`theme`)
+  const marketplaceDialogView = ref<`discover` | `installed` | `mine` | `admin` | `publish`>(`discover`)
+
+  function openMarketplaceDialog(options?: {
+    tab?: `theme` | `component`
+    view?: `discover` | `installed` | `mine` | `admin` | `publish`
+  }) {
+    // Component marketplace UI is temporarily disabled; always open themes.
+    void options?.tab
+    marketplaceDialogTab.value = `theme`
+    marketplaceDialogView.value = options?.view ?? `discover`
+    isShowMarketplaceDialog.value = true
+  }
+
   const isShowSyncDialog = ref(false)
   const toggleShowSyncDialog = useToggle(isShowSyncDialog)
 
@@ -249,6 +264,10 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleShowTemplateDialog,
     isShowComponentDialog,
     toggleShowComponentDialog,
+    isShowMarketplaceDialog,
+    marketplaceDialogTab,
+    marketplaceDialogView,
+    openMarketplaceDialog,
     isShowSyncDialog,
     toggleShowSyncDialog,
     isShowAccountDialog,

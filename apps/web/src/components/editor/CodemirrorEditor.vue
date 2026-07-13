@@ -22,6 +22,7 @@ const LocalImageUploadDialog = defineAsyncComponent(() => import('@/components/e
 const FormulaEditorDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/FormulaEditorDialog.vue'))
 const TemplateDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/TemplateDialog.vue'))
 const CustomComponentDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/CustomComponentDialog.vue'))
+const MarketplaceDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/MarketplaceDialog.vue'))
 
 const uiStore = useUIStore()
 
@@ -39,6 +40,7 @@ const {
   isShowFormulaEditorDialog,
   isShowTemplateDialog,
   isShowComponentDialog,
+  isShowMarketplaceDialog,
 } = storeToRefs(uiStore)
 
 const editorPanelCompRef = ref<InstanceType<typeof EditorPanel> | null>(null)
@@ -291,6 +293,8 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
       <TemplateDialog v-if="isShowTemplateDialog" />
 
       <CustomComponentDialog v-if="isShowComponentDialog" />
+
+      <MarketplaceDialog v-if="isShowMarketplaceDialog" />
     </main>
 
     <Footer />

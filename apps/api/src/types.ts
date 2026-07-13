@@ -38,6 +38,8 @@ export interface Env {
   UPLOAD_R2_PUBLIC_URL?: string
   /** R2 image bucket binding (required when UPLOAD_BACKEND=r2) */
   UPLOAD_IMAGES?: R2Bucket
+  /** Comma-separated GitHub logins allowed to review marketplace submissions */
+  ADMIN_GITHUB_LOGINS?: string
 }
 
 export interface JwtPayload {
