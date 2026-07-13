@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "hono": "^4.12.29"
+    "hono": "^4.12.30"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
