@@ -1,8 +1,8 @@
-import type { ThemeName } from '@md/shared/configs/theme'
+import type { BuiltinThemeName } from '@md/shared/configs/theme'
 import { initRenderer } from '@md/core/renderer'
 import { generateCSSVariables } from '@md/core/theme'
 import { modifyHtmlContent } from '@md/core/utils'
-import { baseCSSContent, themeMap } from '@md/shared/configs/theme'
+import { baseCSSContent, isBuiltinThemeName, themeMap } from '@md/shared/configs/theme'
 import { css } from './css'
 
 export interface PreviewOptions {
@@ -10,7 +10,7 @@ export interface PreviewOptions {
   primaryColor: string
   fontFamily: string
   fontSize: string
-  theme: ThemeName
+  theme: BuiltinThemeName | string
   countStatus: boolean
   isMacCodeBlock: boolean
   citeStatus: boolean
@@ -34,7 +34,8 @@ export function buildPreviewHtml(options: PreviewOptions): string {
     isUseJustify: false,
   })
 
-  const themeCSS = themeMap[options.theme]
+  const themeName: BuiltinThemeName = isBuiltinThemeName(options.theme) ? options.theme : `default`
+  const themeCSS = themeMap[themeName]
   const completeCss = `${variables}\n\n${baseCSSContent}\n\n${themeCSS}\n\n${css}`
 
   return wrapHtmlTag(html, completeCss)
