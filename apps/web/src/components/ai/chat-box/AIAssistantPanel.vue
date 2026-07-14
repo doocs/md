@@ -591,10 +591,7 @@ async function sendMessage() {
             </div>
           </div>
 
-          <div
-            class="mt-1 flex gap-1"
-            :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
-          >
+          <div class="mt-1 flex gap-1">
             <Button
               v-if="index > 0 && !(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
               variant="ghost"
