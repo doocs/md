@@ -597,6 +597,7 @@ async function sendMessage() {
               variant="ghost"
               size="icon"
               class="h-5 w-5 p-1"
+              :title="t('ai.chat.copyContent')"
               :aria-label="t('ai.chat.copyContent')"
               @click="copyToClipboard(msg.content, index)"
             >
@@ -611,6 +612,7 @@ async function sendMessage() {
               variant="ghost"
               size="icon"
               class="h-5 w-5 p-1"
+              :title="t('ai.chat.insertDoc')"
               :aria-label="t('ai.chat.insertDoc')"
               @click="insertToDocument(msg.content, index)"
             >
@@ -625,6 +627,7 @@ async function sendMessage() {
               variant="ghost"
               size="icon"
               class="h-5 w-5 p-1"
+              :title="t('ai.chat.regenerate')"
               :aria-label="t('ai.chat.regenerate')"
               @click="regenerateLast"
             >
