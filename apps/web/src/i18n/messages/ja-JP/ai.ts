@@ -113,6 +113,7 @@ export default {
     templatePlaceholder: `{'{'}{'{'}sel{'}'}{'}'} プレースホルダー付きテンプレート`,
     nameExamplePlaceholder: `コマンド名（例: SEO コピーに書き換え）`,
     templateExamplePlaceholder: `{'{'}{'{'}sel{'}'}{'}'} 付きテンプレート、例:\n以下を SEO 向けタイトルに書き換えてください:\n\n{'{'}{'{'}sel{'}'}{'}'}`,
+    builtin: `組み込み`,
     polish: { label: `推敲`, template: `以下を推敲してください:\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toEn: { label: `英語に翻訳`, template: `以下を英語に翻訳してください:\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toZh: { label: `中国語に翻訳`, template: `以下を中国語に翻訳してください:\n\n{'{'}{'{'}sel{'}'}{'}'}` },

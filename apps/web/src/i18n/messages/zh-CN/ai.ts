@@ -113,6 +113,7 @@ export default {
     templatePlaceholder: `模板内容，支持 {'{'}{'{'}sel{'}'}{'}'} 占位`,
     nameExamplePlaceholder: `指令名称 (如：改写为 SEO 文案)`,
     templateExamplePlaceholder: `模板，可用 {'{'}{'{'}sel{'}'}{'}'} 占位，例如：\n请把以下文字改写为 SEO 友好的标题：\n\n{'{'}{'{'}sel{'}'}{'}'}`,
+    builtin: `内置`,
     polish: { label: `润色`, template: `请润色以下内容：\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toEn: { label: `翻译成英文`, template: `请将以下内容翻译为英文：\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toZh: { label: `翻译成中文`, template: `请将以下内容翻译为中文：\n\n{'{'}{'{'}sel{'}'}{'}'}` },

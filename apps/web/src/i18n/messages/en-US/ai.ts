@@ -113,6 +113,7 @@ export default {
     templatePlaceholder: `Template with {'{'}{'{'}sel{'}'}{'}'} placeholder`,
     nameExamplePlaceholder: `Command name (e.g. Rewrite as SEO copy)`,
     templateExamplePlaceholder: `Template with {'{'}{'{'}sel{'}'}{'}'}, e.g.:\nRewrite the following as an SEO-friendly title:\n\n{'{'}{'{'}sel{'}'}{'}'}`,
+    builtin: `Built-in`,
     polish: { label: `Polish`, template: `Please polish the following:\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toEn: { label: `Translate to English`, template: `Please translate the following into English:\n\n{'{'}{'{'}sel{'}'}{'}'}` },
     toZh: { label: `Translate to Chinese`, template: `Please translate the following into Chinese:\n\n{'{'}{'{'}sel{'}'}{'}'}` },
