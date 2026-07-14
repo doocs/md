@@ -88,6 +88,21 @@ const quickCmdStore = useQuickCommandsStore()
 const { t } = useI18n()
 const chatInputRef = ref<{ $el: HTMLTextAreaElement } | null>(null)
 
+function getChatInputEl(): HTMLTextAreaElement | null {
+  const el = chatInputRef.value?.$el
+  return el instanceof HTMLTextAreaElement ? el : null
+}
+
+function focusChatInput() {
+  getChatInputEl()?.focus()
+}
+
+/** Prefer the composer over the first header icon (settings) when the dialog opens. */
+function onOpenAutoFocus(event: Event) {
+  event.preventDefault()
+  nextTick(focusChatInput)
+}
+
 function getSelectedText(): string {
   return editorStore.getSelection()
 }
@@ -97,7 +112,7 @@ function applyQuickCommand(cmd: QuickCommandRuntime) {
   input.value = cmd.buildPrompt(selected)
   historyIndex.value = null
   nextTick(() => {
-    const textarea = chatInputRef.value?.$el
+    const textarea = getChatInputEl()
     textarea?.focus()
     if (textarea) {
       textarea.setSelectionRange(textarea.value.length, textarea.value.length)
@@ -428,6 +443,7 @@ async function sendMessage() {
   <Dialog v-model:open="dialogVisible">
     <DialogContent
       class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl"
+      @open-auto-focus="onOpenAutoFocus"
     >
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
