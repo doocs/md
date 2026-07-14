@@ -11,6 +11,8 @@ updates:
     ignore:
       - dependency-name: vue
       - dependency-name: vite
+      - dependency-name: prettier
+      - dependency-name: mathjax
 
     open-pull-requests-limit: 100
     groups:
