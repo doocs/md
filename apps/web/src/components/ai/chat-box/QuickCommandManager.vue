@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { Textarea } from '@/components/ui/textarea'
 import { useQuickCommandsStore } from '@/stores/quickCommands'
 
@@ -10,8 +11,13 @@ const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
 const dialogOpen = ref(props.open)
+const confirmDeleteId = ref<string | null>(null)
 watch(() => props.open, v => (dialogOpen.value = v))
-watch(dialogOpen, v => emit(`update:open`, v))
+watch(dialogOpen, (v) => {
+  emit(`update:open`, v)
+  if (!v)
+    confirmDeleteId.value = null
+})
 
 const store = useQuickCommandsStore()
 const { t } = useI18n()
@@ -31,6 +37,7 @@ const editLabel = ref(``)
 const editTemplate = ref(``)
 
 function beginEdit(cmd: { id: string, label: string, template: string }) {
+  confirmDeleteId.value = null
   editingId.value = cmd.id
   editLabel.value = cmd.label
   editTemplate.value = cmd.template
@@ -85,9 +92,31 @@ function saveEdit() {
                 <Button variant="ghost" size="xs" @click="beginEdit(cmd)">
                   {{ t('common.edit') }}
                 </Button>
-                <Button variant="outline" size="xs" @click="store.remove(cmd.id)">
-                  {{ t('common.delete') }}
-                </Button>
+                <Popover
+                  :open="confirmDeleteId === cmd.id"
+                  @update:open="v => { if (!v) confirmDeleteId = null }"
+                >
+                  <PopoverTrigger as-child>
+                    <Button variant="outline" size="xs" @click="confirmDeleteId = cmd.id">
+                      {{ t('common.delete') }}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent class="w-auto p-3">
+                    <div class="flex flex-col gap-2">
+                      <p class="text-sm">
+                        {{ t('confirm.deleteItem', { name: cmd.label }) }}
+                      </p>
+                      <div class="flex justify-end gap-2">
+                        <Button size="xs" variant="outline" @click="confirmDeleteId = null">
+                          {{ t('common.cancel') }}
+                        </Button>
+                        <Button size="xs" @click="store.remove(cmd.id); confirmDeleteId = null">
+                          {{ t('common.confirm') }}
+                        </Button>
+                      </div>
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </template>
