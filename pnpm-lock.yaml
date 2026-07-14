@@ -87,9 +87,15 @@ overrides:
   yauzl: ^3.4.0
 
 patchedDependencies:
-  '@codemirror/view@6.43.6': 3dae9f04e5766249aa1cc0903cc8e90878e7b86b5d8334c19319458cce8238cb
-  front-matter@4.0.2: 0b8ab26732d017d28a51b74567fc5a3e349276cd9e94bd77d6885e88af9a887b
-  juice@12.1.1: dcd1f89cb59a233375a0b488e0c0fd2c299ff1c4ef138410f7c3018f3a25186d
+  '@codemirror/view@6.43.6':
+    hash: 3dae9f04e5766249aa1cc0903cc8e90878e7b86b5d8334c19319458cce8238cb
+    path: patches/@codemirror__view@6.43.6.patch
+  front-matter@4.0.2:
+    hash: 0b8ab26732d017d28a51b74567fc5a3e349276cd9e94bd77d6885e88af9a887b
+    path: patches/front-matter@4.0.2.patch
+  juice@12.1.1:
+    hash: dcd1f89cb59a233375a0b488e0c0fd2c299ff1c4ef138410f7c3018f3a25186d
+    path: patches/juice@12.1.1.patch
 
 importers:
 
