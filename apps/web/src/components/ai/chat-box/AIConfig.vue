@@ -91,7 +91,7 @@ async function testConnection() {
 </script>
 
 <template>
-  <div class="custom-scroll space-y-4 max-h-[calc(100dvh-10rem)] overflow-y-auto pr-1 text-xs sm:max-h-none sm:text-sm">
+  <div class="custom-scroll space-y-4 max-h-[calc(100dvh-10rem)] overflow-y-auto text-xs sm:max-h-none sm:text-sm">
     <div class="font-medium">
       {{ t('ai.config.title') }}
     </div>
