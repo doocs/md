@@ -12,17 +12,17 @@ overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
-  '@typescript-eslint/eslint-plugin': 8.63.0
-  '@typescript-eslint/parser': 8.63.0
-  '@typescript-eslint/project-service': 8.63.0
-  '@typescript-eslint/rule-tester': 8.63.0
-  '@typescript-eslint/scope-manager': 8.63.0
-  '@typescript-eslint/tsconfig-utils': 8.63.0
-  '@typescript-eslint/type-utils': 8.63.0
-  '@typescript-eslint/types': 8.63.0
-  '@typescript-eslint/typescript-estree': 8.63.0
-  '@typescript-eslint/utils': 8.63.0
-  '@typescript-eslint/visitor-keys': 8.63.0
+  '@typescript-eslint/eslint-plugin': 8.64.0
+  '@typescript-eslint/parser': 8.64.0
+  '@typescript-eslint/project-service': 8.64.0
+  '@typescript-eslint/rule-tester': 8.64.0
+  '@typescript-eslint/scope-manager': 8.64.0
+  '@typescript-eslint/tsconfig-utils': 8.64.0
+  '@typescript-eslint/type-utils': 8.64.0
+  '@typescript-eslint/types': 8.64.0
+  '@typescript-eslint/typescript-estree': 8.64.0
+  '@typescript-eslint/utils': 8.64.0
+  '@typescript-eslint/visitor-keys': 8.64.0
   '@webext-core/isolated-element': 1.1.4
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.5'
@@ -82,14 +82,14 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260712.1
+  '@cloudflare/workers-types': ^5.20260713.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
   isomorphic-dompurify: ^3.18.0
   marked: ^18.0.6
   prettier: 2.8.8
-  tsx: ^4.23.0
+  tsx: ^4.23.1
   typescript: ~6.0.3
   vitest: ^4.1.10
   wrangler: ^4.110.0
