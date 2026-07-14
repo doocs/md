@@ -90,7 +90,7 @@ catalog:
   marked: ^18.0.6
   prettier: 2.8.8
   tsx: ^4.23.1
-  typescript: ~6.0.3
+  typescript: ~7.0.2
   vitest: ^4.1.10
   wrangler: ^4.110.0
 
