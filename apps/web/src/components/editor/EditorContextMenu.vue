@@ -9,6 +9,7 @@ import {
   FileImage,
   FileText,
   FileUp,
+  FunctionSquare,
   Heading1,
   Heading2,
   Heading3,
@@ -139,7 +140,7 @@ function downloadAsCardImage() {
             {{ t('menu.image') }}
           </ContextMenuItem>
           <ContextMenuItem @click="openFormulaEditor()">
-            <span class="mr-2 inline-flex h-4 w-4 items-center justify-center text-xs font-semibold">ƒ</span>
+            <FunctionSquare class="mr-2 h-4 w-4" />
             {{ t('menu.formula') }}
           </ContextMenuItem>
           <ContextMenuItem @click="toggleShowInsertFormDialog()">
