@@ -88,7 +88,7 @@ catalog:
   '@types/node': ^26.1.1
   isomorphic-dompurify: ^3.18.0
   marked: ^18.0.6
-  prettier: 2.8.8
+  prettier: 3.9.5
   tsx: ^4.23.1
   typescript: ~6.0.3
   vitest: ^4.1.10
