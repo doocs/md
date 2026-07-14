@@ -11,14 +11,18 @@ const props = defineProps<{ open: boolean }>()
 const emit = defineEmits([`update:open`])
 
 const dialogOpen = ref(props.open)
+const confirmDeleteId = ref<string | null>(null)
 watch(() => props.open, v => (dialogOpen.value = v))
-watch(dialogOpen, v => emit(`update:open`, v))
+watch(dialogOpen, (v) => {
+  emit(`update:open`, v)
+  if (!v)
+    confirmDeleteId.value = null
+})
 
 const store = useQuickCommandsStore()
 const { t } = useI18n()
 const label = ref(``)
 const template = ref(``)
-const confirmDeleteId = ref<string | null>(null)
 
 function addCmd() {
   if (!label.value.trim() || !template.value.trim())
@@ -33,6 +37,7 @@ const editLabel = ref(``)
 const editTemplate = ref(``)
 
 function beginEdit(cmd: { id: string, label: string, template: string }) {
+  confirmDeleteId.value = null
   editingId.value = cmd.id
   editLabel.value = cmd.label
   editTemplate.value = cmd.template
