@@ -36,7 +36,9 @@ const editingId = ref<string | null>(null)
 const editLabel = ref(``)
 const editTemplate = ref(``)
 
-function beginEdit(cmd: { id: string, label: string, template: string }) {
+function beginEdit(cmd: { id: string, label: string, template: string, builtin: boolean }) {
+  if (cmd.builtin)
+    return
   confirmDeleteId.value = null
   editingId.value = cmd.id
   editLabel.value = cmd.label
@@ -68,7 +70,7 @@ function saveEdit() {
           :key="cmd.id"
           class="flex flex-col gap-2 border rounded-md p-3"
         >
-          <template v-if="editingId === cmd.id">
+          <template v-if="!cmd.builtin && editingId === cmd.id">
             <Input v-model="editLabel" :placeholder="t('ai.quickCommand.namePlaceholder')" />
             <Textarea
               v-model="editTemplate"
@@ -86,9 +88,17 @@ function saveEdit() {
           </template>
 
           <template v-else>
-            <div class="flex items-center justify-between">
-              <span class="break-all text-sm">{{ cmd.label }}</span>
-              <div class="flex gap-1">
+            <div class="flex items-center justify-between gap-2">
+              <div class="flex min-w-0 items-center gap-2">
+                <span class="break-all text-sm">{{ cmd.label }}</span>
+                <span
+                  v-if="cmd.builtin"
+                  class="bg-muted text-muted-foreground shrink-0 rounded px-1.5 py-0.5 text-[10px] leading-none"
+                >
+                  {{ t('ai.quickCommand.builtin') }}
+                </span>
+              </div>
+              <div v-if="!cmd.builtin" class="flex shrink-0 gap-1">
                 <Button variant="ghost" size="xs" @click="beginEdit(cmd)">
                   {{ t('common.edit') }}
                 </Button>
@@ -119,6 +129,12 @@ function saveEdit() {
                 </Popover>
               </div>
             </div>
+            <p
+              v-if="cmd.builtin"
+              class="text-muted-foreground whitespace-pre-wrap break-all text-xs"
+            >
+              {{ cmd.template }}
+            </p>
           </template>
         </div>
       </div>
