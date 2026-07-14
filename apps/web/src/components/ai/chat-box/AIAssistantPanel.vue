@@ -88,6 +88,21 @@ const quickCmdStore = useQuickCommandsStore()
 const { t } = useI18n()
 const chatInputRef = ref<{ $el: HTMLTextAreaElement } | null>(null)
 
+function getChatInputEl(): HTMLTextAreaElement | null {
+  const el = chatInputRef.value?.$el
+  return el instanceof HTMLTextAreaElement ? el : null
+}
+
+function focusChatInput() {
+  getChatInputEl()?.focus()
+}
+
+/** Prefer the composer over the first header icon (settings) when the dialog opens. */
+function onOpenAutoFocus(event: Event) {
+  event.preventDefault()
+  nextTick(focusChatInput)
+}
+
 function getSelectedText(): string {
   return editorStore.getSelection()
 }
@@ -97,7 +112,7 @@ function applyQuickCommand(cmd: QuickCommandRuntime) {
   input.value = cmd.buildPrompt(selected)
   historyIndex.value = null
   nextTick(() => {
-    const textarea = chatInputRef.value?.$el
+    const textarea = getChatInputEl()
     textarea?.focus()
     if (textarea) {
       textarea.setSelectionRange(textarea.value.length, textarea.value.length)
@@ -428,6 +443,7 @@ async function sendMessage() {
   <Dialog v-model:open="dialogVisible">
     <DialogContent
       class="bg-card text-card-foreground h-dvh max-h-dvh w-full flex flex-col rounded-none shadow-xl sm:max-h-[80vh] sm:max-w-2xl sm:rounded-xl"
+      @open-auto-focus="onOpenAutoFocus"
     >
       <DialogHeader class="space-y-1 flex flex-col items-start">
         <div class="space-x-1 flex items-center">
@@ -567,8 +583,8 @@ async function sendMessage() {
         <div
           v-for="(msg, index) in messages"
           :key="msg.id || index"
-          class="relative flex"
-          :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
+          class="flex flex-col"
+          :class="msg.role === 'user' ? 'items-end' : 'items-start'"
         >
           <div
             class="ring-border/20 max-w-[75%] rounded-2xl px-4 py-2 text-sm leading-relaxed shadow-xs ring-1"
@@ -589,50 +605,50 @@ async function sendMessage() {
                   || (msg.role === 'assistant' && !msg.done ? t('ai.chat.thinking') : '')
               }}
             </div>
+          </div>
 
-            <div
-              class="mt-1 flex"
-              :class="msg.role === 'user' ? 'justify-end' : 'justify-start'"
+          <div class="mt-1 flex gap-1">
+            <Button
+              v-if="index > 0 && !(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
+              variant="ghost"
+              size="icon"
+              class="h-5 w-5 p-1"
+              :title="t('ai.chat.copyContent')"
+              :aria-label="t('ai.chat.copyContent')"
+              @click="copyToClipboard(msg.content, index)"
             >
-              <Button
-                v-if="index > 0 && !(msg.role === 'assistant' && index === messages.length - 1 && !msg.done)"
-                variant="ghost"
-                size="icon"
-                class="ml-0 h-5 w-5 p-1"
-                :aria-label="t('ai.chat.copyContent')"
-                @click="copyToClipboard(msg.content, index)"
-              >
-                <Check
-                  v-if="copiedIndex === index"
-                  class="h-3 w-3 text-green-600"
-                />
-                <Copy v-else class="text-muted-foreground h-3 w-3" />
-              </Button>
-              <Button
-                v-if="msg.role === 'assistant' && (msg.done || index < messages.length - 1) && index > 0"
-                variant="ghost"
-                size="icon"
-                class="ml-1 h-5 w-5 p-1"
-                :aria-label="t('ai.chat.insertDoc')"
-                @click="insertToDocument(msg.content, index)"
-              >
-                <Check
-                  v-if="insertedIndex === index"
-                  class="h-3 w-3 text-green-600"
-                />
-                <FilePlus2 v-else class="text-muted-foreground h-3 w-3" />
-              </Button>
-              <Button
-                v-if="msg.role === 'assistant' && msg.done && index === messages.length - 1"
-                variant="ghost"
-                size="icon"
-                class="ml-1 h-5 w-5 p-1"
-                :aria-label="t('ai.chat.regenerate')"
-                @click="regenerateLast"
-              >
-                <RefreshCcw class="text-muted-foreground h-3 w-3" />
-              </Button>
-            </div>
+              <Check
+                v-if="copiedIndex === index"
+                class="h-3 w-3 text-green-600"
+              />
+              <Copy v-else class="text-muted-foreground h-3 w-3" />
+            </Button>
+            <Button
+              v-if="msg.role === 'assistant' && (msg.done || index < messages.length - 1) && index > 0"
+              variant="ghost"
+              size="icon"
+              class="h-5 w-5 p-1"
+              :title="t('ai.chat.insertDoc')"
+              :aria-label="t('ai.chat.insertDoc')"
+              @click="insertToDocument(msg.content, index)"
+            >
+              <Check
+                v-if="insertedIndex === index"
+                class="h-3 w-3 text-green-600"
+              />
+              <FilePlus2 v-else class="text-muted-foreground h-3 w-3" />
+            </Button>
+            <Button
+              v-if="msg.role === 'assistant' && msg.done && index === messages.length - 1"
+              variant="ghost"
+              size="icon"
+              class="h-5 w-5 p-1"
+              :title="t('ai.chat.regenerate')"
+              :aria-label="t('ai.chat.regenerate')"
+              @click="regenerateLast"
+            >
+              <RefreshCcw class="text-muted-foreground h-3 w-3" />
+            </Button>
           </div>
         </div>
       </div>
