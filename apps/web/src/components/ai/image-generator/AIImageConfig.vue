@@ -125,7 +125,7 @@ const styleOptions = computed(() => [
 
 <template>
   <div class="space-y-4 max-w-full">
-    <div class="text-lg font-semibold border-b pb-2">
+    <div class="font-medium">
       {{ t('ai.imageConfig.title') }}
     </div>
 
