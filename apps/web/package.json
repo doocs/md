@@ -29,8 +29,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1086.0",
-    "@aws-sdk/s3-request-presigner": "^3.1086.0",
+    "@aws-sdk/client-s3": "^3.1087.0",
+    "@aws-sdk/s3-request-presigner": "^3.1087.0",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/language": "^6.12.4",
     "@codemirror/state": "catalog:",
@@ -39,6 +39,7 @@
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@vee-validate/yup": "^4.15.1",
+    "@vue/devtools-api": "^8.1.5",
     "@vueuse/core": "^14.3.0",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
@@ -50,7 +51,7 @@
     "idb": "^8.0.3",
     "jszip": "^3.10.1",
     "juice": "^12.1.1",
-    "pinia": "^3.0.4",
+    "pinia": "^4.0.1",
     "qiniu-js": "^3.4.4",
     "reka-ui": "^2.10.1",
     "tailwind-merge": "^3.6.0",

@@ -61,7 +61,7 @@ overrides:
   undici@^7: ^8.7.0
   uuid: ^14.0.1
   workbox-build>source-map: 0.7.4
-  ws@<8.21.0: ^8.21.0
+  ws@<8.21.0: ^8.21.1
   yauzl: ^3.4.0
 
 allowBuilds:
@@ -79,10 +79,11 @@ patchedDependencies:
   '@codemirror/view@6.43.6': patches/@codemirror__view@6.43.6.patch
   front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.1: patches/juice@12.1.1.patch
+  pinia@4.0.1: patches/pinia@4.0.1.patch
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260714.1
+  '@cloudflare/workers-types': ^5.20260715.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
