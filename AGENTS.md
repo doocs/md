@@ -136,6 +136,7 @@ Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US*
    - `@codemirror/view` → `patches/@codemirror__view@6.43.6.patch`（导出 `MeasureRequest` 接口，修复 macOS 上 Alt+Shift 快捷键处理）
    - `front-matter` → `patches/front-matter@4.0.2.patch`
    - `juice` → `patches/juice@12.1.1.patch`（为 `parseCSS` 返回值增加空值检查）
+   - `pinia` → `patches/pinia@4.0.1.patch`（在 `exports` 中补充 `types`，修复 `vue-tsc --build` 无法解析类型声明；上游修复后可移除）
 4. 更新 `pnpm-workspace.yaml` 中的 `patchedDependencies` 以匹配新版本
 5. 运行 `pnpm install` 重新生成 `pnpm-lock.yaml`；可用 `pnpm dedupe` 收敛可合并的间接依赖
 
