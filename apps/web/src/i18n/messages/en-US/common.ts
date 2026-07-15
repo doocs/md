@@ -71,6 +71,7 @@ export default {
     darkMode: `Dark mode`,
     account: `Account`,
     moreActions: `More actions`,
+    backToTop: `Back to top`,
     expand: `Expand`,
     collapse: `Collapse`,
     accept: `Accept`,
@@ -159,6 +160,7 @@ export default {
     fund: `Support Us`,
   },
   header: {
+    menu: `Menu`,
     copy: `Copy`,
     style: `Style`,
   },

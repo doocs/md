@@ -14,6 +14,7 @@ const props = defineProps<{
   onClick?: (e: MouseEvent) => void
 }>()
 
+const { t } = useI18n()
 const visibilityHeight = ref(props.visibilityHeight ?? 400)
 const visible = ref(false)
 
@@ -54,7 +55,16 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <Button v-if="visible" variant="outline" size="icon" class="absolute z-50 rounded-full border-border/40 bg-background/60 text-muted-foreground/70 backdrop-blur-sm hover:bg-background/80 hover:text-foreground" :style="{ left: `${left}px`, top: `${top}px`, right: `${right}px`, bottom: `${bottom}px` }" @click="scrollToTop">
+  <Button
+    v-if="visible"
+    variant="outline"
+    size="icon"
+    class="absolute z-50 rounded-full border-border/40 bg-background/60 text-muted-foreground/70 backdrop-blur-sm hover:bg-background/80 hover:text-foreground"
+    :style="{ left: `${left}px`, top: `${top}px`, right: `${right}px`, bottom: `${bottom}px` }"
+    :aria-label="t('common.backToTop')"
+    :title="t('common.backToTop')"
+    @click="scrollToTop"
+  >
     <ArrowUpFromLine />
   </Button>
 </template>

@@ -155,17 +155,17 @@ const styleOptions = computed(() => [
         v-model="endpoint"
         type="url"
         class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-        placeholder="https://api.openai.com/v1"
+        :placeholder="t('ai.imageConfig.apiEndpointPlaceholder')"
         :readonly="type !== 'custom'"
       >
     </div>
 
     <div v-if="type !== 'default'">
-      <Label class="mb-1 block text-sm font-medium">API Key</Label>
+      <Label class="mb-1 block text-sm font-medium">{{ t('ai.imageConfig.apiKey') }}</Label>
       <PasswordInput
         v-model="apiKey"
         class="w-full mt-1 focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-        placeholder="sk-..."
+        :placeholder="t('ai.imageConfig.apiKeyPlaceholder')"
       />
     </div>
 

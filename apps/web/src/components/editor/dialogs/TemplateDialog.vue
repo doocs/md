@@ -278,6 +278,7 @@ function onUpdate(val: boolean) {
                   size="icon"
                   class="size-8"
                   :title="t('template.applyTitle')"
+                  :aria-label="t('template.applyTitle')"
                   @click="applyTemplate(template)"
                 >
                   <FileInput class="size-4" />
@@ -287,6 +288,7 @@ function onUpdate(val: boolean) {
                   size="icon"
                   class="size-8"
                   :title="t('template.insertTitle')"
+                  :aria-label="t('template.insertTitle')"
                   @click="insertTemplate(template)"
                 >
                   <FileDown class="size-4" />
@@ -296,6 +298,7 @@ function onUpdate(val: boolean) {
                   size="icon"
                   class="size-8"
                   :title="t('template.editTitle')"
+                  :aria-label="t('template.editTitle')"
                   @click="openEditForm(template)"
                 >
                   <Pencil class="size-4" />
@@ -305,6 +308,7 @@ function onUpdate(val: boolean) {
                   size="icon"
                   class="size-8 text-destructive hover:text-destructive"
                   :title="t('template.deleteTitle')"
+                  :aria-label="t('template.deleteTitle')"
                   @click="openDeleteConfirm(template)"
                 >
                   <Trash2 class="size-4" />

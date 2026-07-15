@@ -731,23 +731,28 @@ function handleDragEnd() {
 
         <div class="flex shrink-0 items-center gap-0.5">
           <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="[
               isMobile ? 'size-8' : 'size-7',
               { 'text-primary bg-primary/10': isSearching },
             ]"
+            :aria-label="t('common.search')"
+            :title="t('common.search')"
             @click="toggleSearch"
           >
             <Search class="size-4" />
           </button>
 
           <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="[
               isMobile ? 'size-8' : 'size-7',
               { 'text-primary bg-primary/10': isSelectMode },
             ]"
             :title="isSelectMode ? t('post.exitSelect') : t('post.multiSelect')"
+            :aria-label="isSelectMode ? t('post.exitSelect') : t('post.multiSelect')"
             @click="toggleSelectMode"
           >
             <CheckSquare class="size-4" />
@@ -755,16 +760,21 @@ function handleDragEnd() {
 
           <button
             v-if="isMobile"
+            type="button"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150 size-8"
             :title="t('post.importMarkdownBatch')"
+            :aria-label="t('post.importMarkdownBatch')"
             @click="openImportDialog"
           >
             <Upload class="size-4" />
           </button>
 
           <button
+            type="button"
             class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
             :class="isMobile ? 'size-8' : 'size-7'"
+            :aria-label="t('post.addPost')"
+            :title="t('post.addPost')"
             @click="openCreatePostDialog"
           >
             <Plus class="size-4" />
@@ -773,8 +783,11 @@ function handleDragEnd() {
           <DropdownMenu :open="headerMenuOpen" @update:open="onHeaderMenuOpenChange">
             <DropdownMenuTrigger as-child>
               <button
+                type="button"
                 class="inline-flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
                 :class="isMobile ? 'size-8' : 'size-7'"
+                :aria-label="t('common.more')"
+                :title="t('common.more')"
               >
                 <Ellipsis class="size-4" />
               </button>
@@ -848,24 +861,31 @@ function handleDragEnd() {
           >
           <div class="absolute right-1.5 top-1/2 -translate-y-1/2 flex items-center gap-0.5">
             <button
+              type="button"
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
               :class="{ 'text-primary bg-primary/10': isRegex }"
               :title="t('post.regex')"
+              :aria-label="t('post.regex')"
               @click="isRegex = !isRegex"
             >
               <Regex class="size-3" />
             </button>
             <button
+              type="button"
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
               :class="{ 'text-primary bg-primary/10': isCaseSensitive }"
               :title="t('post.caseSensitive')"
+              :aria-label="t('post.caseSensitive')"
               @click="isCaseSensitive = !isCaseSensitive"
             >
               <span class="text-[10px] font-bold">Aa</span>
             </button>
             <button
               v-if="searchQuery"
+              type="button"
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors"
+              :aria-label="t('common.clear')"
+              :title="t('common.clear')"
               @click="searchQuery = ''"
             >
               <X class="size-3" />
@@ -883,16 +903,20 @@ function handleDragEnd() {
           />
           <div class="absolute right-1.5 top-1.5 flex items-center gap-0.5">
             <button
+              type="button"
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
               :title="t('post.replaceOne')"
+              :aria-label="t('post.replaceOne')"
               :disabled="!searchQuery || totalMatches === 0"
               @click="replaceFirst"
             >
               <Replace class="size-3" />
             </button>
             <button
+              type="button"
               class="inline-flex items-center justify-center size-5 rounded text-muted-foreground/50 hover:text-foreground transition-colors disabled:opacity-35"
               :title="t('post.replaceAll')"
+              :aria-label="t('post.replaceAll')"
               :disabled="!searchQuery || totalMatches === 0"
               @click="replaceAll"
             >
@@ -1012,39 +1036,47 @@ function handleDragEnd() {
           </div>
           <div class="flex">
             <button
+              type="button"
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="t('common.export')"
+              :aria-label="t('common.export')"
               :disabled="!selectedPostIds.length"
               @click="exportSelected"
             >
-              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline points="7 10 12 15 17 10" /><line x1="12" y1="15" x2="12" y2="3" />
               </svg>
             </button>
             <button
+              type="button"
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="t('common.copy')"
+              :aria-label="t('common.copy')"
               :disabled="!selectedPostIds.length"
               @click="duplicateSelected"
             >
-              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
               </svg>
             </button>
             <button
+              type="button"
               class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length < 2 ? t('post.mergeMinTwo') : t('common.merge')"
+              :aria-label="selectedPostIds.length < 2 ? t('post.mergeMinTwo') : t('common.merge')"
               :disabled="selectedPostIds.length < 2"
               @click="openMergeDialog"
             >
-              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M8 6H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h3" /><path d="M16 6h3a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2h-3" /><line x1="12" y1="2" x2="12" y2="22" />
               </svg>
             </button>
             <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
             <button
+              type="button"
               class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
               :title="selectedPostIds.length >= posts.length ? t('post.keepOnePost') : t('common.delete')"
+              :aria-label="selectedPostIds.length >= posts.length ? t('post.keepOnePost') : t('common.delete')"
               :disabled="!selectedPostIds.length || selectedPostIds.length >= posts.length"
               @click="openBatchDelConfirm()"
             >

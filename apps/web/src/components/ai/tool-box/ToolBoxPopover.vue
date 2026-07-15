@@ -304,7 +304,10 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
               >
                 <span>{{ prompt }}</span>
                 <button
+                  type="button"
                   class="hover:bg-muted/60 h-4 w-4 flex items-center justify-center rounded-full"
+                  :aria-label="t('common.delete')"
+                  :title="t('common.delete')"
                   @click="removePrompt(index)"
                 >
                   <X class="h-3 w-3" />

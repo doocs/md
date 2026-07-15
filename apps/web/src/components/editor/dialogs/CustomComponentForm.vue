@@ -279,6 +279,8 @@ function getPropDefaultPlaceholder(type: string): string {
                 variant="ghost"
                 size="icon"
                 class="size-7 text-muted-foreground hover:text-red-500"
+                :aria-label="t('common.delete')"
+                :title="t('common.delete')"
                 @click="removePropRow(idx)"
               >
                 <Trash2 class="size-3.5" />

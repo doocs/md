@@ -550,10 +550,19 @@ function getTimeRemainingClass(index: number): string {
             </div>
 
             <div class="flex items-center justify-center p-2 sm:p-4">
-              <div class="relative group cursor-pointer max-w-lg inline-flex justify-center" @click="viewFullImage(generatedImages[currentImageIndex])">
+              <div
+                role="button"
+                tabindex="0"
+                class="relative group cursor-pointer max-w-lg inline-flex justify-center"
+                :aria-label="t('ai.image.clickToViewLarge')"
+                @click="viewFullImage(generatedImages[currentImageIndex])"
+                @keydown.enter.prevent="viewFullImage(generatedImages[currentImageIndex])"
+                @keydown.space.prevent="viewFullImage(generatedImages[currentImageIndex])"
+              >
                 <img
                   :src="generatedImages[currentImageIndex]"
-                  :alt="t('ai.image.generatedImageAlt', { n: currentImageIndex + 1 })"
+                  alt=""
+                  aria-hidden="true"
                   class="max-w-full h-[300px] object-contain rounded-lg shadow-lg border border-border transition-transform hover:scale-105"
                 >
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 rounded-lg flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">

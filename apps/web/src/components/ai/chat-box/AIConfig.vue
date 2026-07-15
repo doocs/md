@@ -129,7 +129,7 @@ async function testConnection() {
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.apiKey') }}</Label>
       <PasswordInput
         v-model="apiKey"
-        placeholder="sk-..."
+        :placeholder="t('ai.config.apiKeyPlaceholder')"
         class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
       />
     </div>

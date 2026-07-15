@@ -312,6 +312,7 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
             ]"
             variant="outline"
             :title="label"
+            :aria-label="label"
             @click="colorChanged(value)"
           >
             <span
