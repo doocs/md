@@ -16,17 +16,18 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org/
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
           # Pin exact version: pnpm 11.12.0 self-update crashes in action-setup
           # https://github.com/pnpm/action-setup/issues/276
           version: 11.11.0
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org/
+          cache: pnpm
 
       - name: Update npm
         run: npm install -g npm@latest

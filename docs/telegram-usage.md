@@ -8,7 +8,7 @@ Telegram 图床需要两个参数：**Bot Token** 和 **Chat ID**。
 
 - 在 Telegram 里搜索并打开机器人大号 [@BotFather](https://t.me/BotFather)。
 - 发送 `/newbot`，然后按照提示给你的机器人取个名字和用户名（唯一的以 “bot” 结尾的用户名）。
-- 完成后，BotFather 会返回一段类似 `123456789:ABCdefGHIjkl-MNOPqrSTUvwxYZ` 的字符串，这就是你的 **Bot Token**，复制保存到 `telegramConfig.token`。
+- 完成后，BotFather 会返回一段 Bot Token（形如 `数字:字母数字串`），复制保存到 `telegramConfig.token`。
 
 ### 2. 获取 Chat ID
 
