@@ -415,8 +415,6 @@ export default {
     cssPlaceholder: `Your custom CSS here`,
     tipsTitle: `Tips`,
     editorHint: `Press Alt/Option + Shift + F to format. Use var(--md-primary-color) for the theme color, e.g. color: var(--md-primary-color);. Open “View built-in themes” to inspect class names.`,
-    shareThemeHint: `Have a nice theme? Share it so others can use it: {link}`,
-    shareThemeLinkText: `Discussions`,
     selectedUnit: `items`,
     deleteSchemeMinOne: `Keep at least one scheme`,
   },
