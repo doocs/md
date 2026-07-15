@@ -49,16 +49,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
   })
 
   /** @deprecated Legacy shape for older callers */
-  const folderHandles = computed(() => {
-    return Array.from(runtimeFolderMap.values()).map(folder => ({
-      id: folder.id,
-      name: folder.name,
-      handle: folder.handle,
-      permission: true,
-    }))
-  })
-
-  /** @deprecated Legacy shape for older callers */
   const currentFolderHandle = computed(() => {
     if (!currentRuntimeFolder.value)
       return null
@@ -69,9 +59,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       permission: true,
     }
   })
-
-  /** @deprecated Always returns []; folders are not persisted */
-  const savedFolders = ref<any[]>([])
 
   const isFileSystemAPISupported = computed(() => {
     return typeof window !== `undefined` && `showDirectoryPicker` in window
@@ -297,9 +284,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
   }
 
   return {
-    folderHandles,
     currentFolderHandle,
-    savedFolders,
     fileTree,
     selectedFilePath,
     isLoading,

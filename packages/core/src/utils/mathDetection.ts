@@ -9,9 +9,6 @@ export function matchBlockKatex(src: string): RegExpMatchArray | null {
   return src.match(blockRuleMultiline) ?? src.match(blockRuleSingleLine)
 }
 
-/** @deprecated Use matchBlockKatex; kept for backward compatibility */
-export const blockRule = blockRuleMultiline
-
 function contentHasBlockKatex(content: string): boolean {
   for (let i = 0; i <= content.length; i++) {
     if (i > 0 && content[i - 1] !== '\n')
