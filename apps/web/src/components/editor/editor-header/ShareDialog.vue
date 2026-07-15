@@ -482,11 +482,11 @@ watch(isProUser, (pro) => {
                   readonly
                   class="font-mono text-xs"
                 />
-                <Button variant="outline" size="icon" @click="copyText(shareUrl, 'link')">
+                <Button variant="outline" size="icon" :aria-label="t('share.copyLink')" :title="t('share.copyLink')" @click="copyText(shareUrl, 'link')">
                   <Check v-if="copiedLink" class="size-4 text-green-600" />
                   <Copy v-else class="size-4" />
                 </Button>
-                <Button variant="outline" size="icon" @click="openSharePage">
+                <Button variant="outline" size="icon" :aria-label="t('share.openPreview')" :title="t('share.openPreview')" @click="openSharePage">
                   <ExternalLink class="size-4" />
                 </Button>
               </div>
@@ -501,7 +501,7 @@ watch(isProUser, (pro) => {
                   readonly
                   class="font-mono text-xs"
                 />
-                <Button variant="outline" size="icon" @click="copyText(sharePassword, 'password')">
+                <Button variant="outline" size="icon" :aria-label="t('share.copyPassword')" :title="t('share.copyPassword')" @click="copyText(sharePassword, 'password')">
                   <Check v-if="copiedPassword" class="size-4 text-green-600" />
                   <Copy v-else class="size-4" />
                 </Button>
@@ -542,7 +542,9 @@ watch(isProUser, (pro) => {
               size="icon"
               class="shrink-0"
               :title="t('share.refreshList')"
+              :aria-label="t('share.refreshList')"
               :disabled="isLoadingList"
+              :aria-busy="isLoadingList"
               @click="loadShareList"
             >
               <Loader2 v-if="isLoadingList" class="size-4 animate-spin" />
@@ -583,10 +585,10 @@ watch(isProUser, (pro) => {
               </div>
               <template #trailing>
                 <div class="flex shrink-0 flex-wrap items-center justify-end gap-0.5">
-                  <Button variant="ghost" size="icon" :title="t('share.copyLink')" @click="copyText(share.url, 'link')">
+                  <Button variant="ghost" size="icon" :title="t('share.copyLink')" :aria-label="t('share.copyLink')" @click="copyText(share.url, 'link')">
                     <Copy class="size-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" :title="t('share.openPreview')" @click="openShareUrl(share.url)">
+                  <Button variant="ghost" size="icon" :title="t('share.openPreview')" :aria-label="t('share.openPreview')" @click="openShareUrl(share.url)">
                     <ExternalLink class="size-4" />
                   </Button>
                   <Button
@@ -594,7 +596,9 @@ watch(isProUser, (pro) => {
                     size="icon"
                     class="text-destructive hover:text-destructive"
                     :title="t('share.revokeShare')"
+                    :aria-label="t('share.revokeShare')"
                     :disabled="revokingId === share.id"
+                    :aria-busy="revokingId === share.id"
                     @click="confirmRevokeShare(share)"
                   >
                     <Loader2 v-if="revokingId === share.id" class="size-4 animate-spin" />

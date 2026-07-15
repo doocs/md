@@ -183,20 +183,23 @@ function cancelInlineRename() {
         </span>
 
         <button
-          v-if="!isSelectMode"
+          v-if="!isSelectMode && isHasChild(post.id)"
           type="button"
-          class="flex shrink-0 items-center justify-center size-5 rounded text-muted-foreground/50 transition-colors duration-150"
-          :class="{
-            'hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5': isHasChild(post.id),
-            'invisible': !isHasChild(post.id),
-          }"
-          @click.stop="isHasChild(post.id) && togglePostExpanded(post.id)"
+          class="flex shrink-0 items-center justify-center size-5 rounded text-muted-foreground/50 transition-colors duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+          :aria-label="post.collapsed ? t('common.expand') : t('common.collapse')"
+          :aria-expanded="!post.collapsed"
+          @click.stop="togglePostExpanded(post.id)"
         >
           <ChevronRight
             class="size-3.5 transition-transform duration-200 ease-out"
             :class="{ 'rotate-90': !post.collapsed }"
           />
         </button>
+        <span
+          v-else-if="!isSelectMode"
+          class="size-5 shrink-0"
+          aria-hidden="true"
+        />
 
         <input
           v-if="inlineEditId === post.id"
@@ -225,6 +228,8 @@ function cancelInlineRename() {
             type="button"
             class="flex shrink-0 items-center justify-center size-6 rounded-md text-muted-foreground/40 transition-all duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:opacity-100 data-[state=open]:text-foreground"
             :class="isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
+            :aria-label="t('common.moreActions')"
+            :title="t('common.moreActions')"
             @click.stop
           >
             <Ellipsis class="size-4" />

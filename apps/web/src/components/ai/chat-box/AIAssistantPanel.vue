@@ -512,6 +512,8 @@ async function sendMessage() {
                   variant="ghost"
                   size="icon"
                   class="h-6 w-6 flex-shrink-0"
+                  :aria-label="t('common.delete')"
+                  :title="t('common.delete')"
                   @click.stop="deleteConversation(conv.id)"
                 >
                   <Trash2 class="h-3 w-3" />
@@ -562,6 +564,7 @@ async function sendMessage() {
           variant="ghost"
           size="sm"
           :title="t('ai.chat.manageCommands')"
+          :aria-label="t('ai.chat.manageCommands')"
           @click="cmdMgrOpen = true"
         >
           <Plus class="h-4 w-4" />

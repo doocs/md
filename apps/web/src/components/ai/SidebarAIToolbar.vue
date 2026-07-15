@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Bot, Image as ImageIcon, Settings2, Wand2 } from '@lucide/vue'
+import { Bot, Image as ImageIcon, Wand2 } from '@lucide/vue'
 import { defineAsyncComponent } from 'vue'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
@@ -176,12 +176,18 @@ onMounted(() => {
   >
     <div
       v-if="!isExpanded"
+      role="button"
+      tabindex="0"
       class="w-5 h-16 bg-gradient-to-b from-blue-500/90 to-purple-500/90 hover:from-blue-600/95 hover:to-purple-600/95 dark:from-blue-400/90 dark:to-purple-400/90 dark:hover:from-blue-500/95 dark:hover:to-purple-500/95 backdrop-blur-lg border-l border-y border-blue-300/50 dark:border-blue-600/50 cursor-pointer transition-all duration-200 flex items-center justify-center rounded-l-lg shadow-lg group utools-sidebar-edge"
       :class="{ 'animate-pulse-hint': showSelectionHint }"
       :title="t('ai.toolbar.expand')"
+      :aria-label="t('ai.toolbar.expand')"
+      :aria-expanded="false"
       @click="toggleExpanded"
+      @keydown.enter.prevent="toggleExpanded"
+      @keydown.space.prevent="toggleExpanded"
     >
-      <Settings2 class="h-4 w-4 text-white drop-shadow-sm group-hover:scale-110 transition-transform duration-200" />
+      <Bot class="h-4 w-4 text-white drop-shadow-sm group-hover:scale-110 transition-transform duration-200" />
 
       <Transition name="hint-fade">
         <div
@@ -206,8 +212,10 @@ onMounted(() => {
       <div class="flex flex-col py-2 gap-2">
         <div class="flex flex-col items-center gap-1 px-1">
           <button
+            type="button"
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             :title="t('ai.toolbar.assistant')"
+            :aria-label="t('ai.toolbar.assistant')"
             @click="openAIChat"
           >
             <Bot class="h-4 w-4" />
@@ -224,8 +232,10 @@ onMounted(() => {
 
         <div class="flex flex-col items-center gap-1 px-1">
           <button
+            type="button"
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             :title="t('ai.toolbar.imageGen')"
+            :aria-label="t('ai.toolbar.imageGen')"
             @click="openAIImageGenerator"
           >
             <ImageIcon class="h-4 w-4" />
@@ -242,8 +252,10 @@ onMounted(() => {
 
         <div v-if="hasSelectedText && isExpanded" class="flex flex-col items-center gap-1 px-1">
           <button
+            type="button"
             class="group relative w-7 h-7 rounded-lg bg-gradient-to-br from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white shadow-md hover:shadow-lg transform hover:scale-105 active:scale-95 transition-all duration-200 flex items-center justify-center utools-ai-button"
             :title="t('ai.toolbar.toolbox')"
+            :aria-label="t('ai.toolbar.toolbox')"
             @click="openAIToolBox"
           >
             <Wand2 class="h-4 w-4" />

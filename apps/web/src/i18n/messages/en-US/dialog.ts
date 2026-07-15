@@ -55,6 +55,7 @@ export default {
     expiresOn: `Expires {date}`,
     passwordProtected: `Password protected`,
     copyLink: `Copy link`,
+    copyPassword: `Copy password`,
     openPreview: `Open preview`,
     revokeShare: `Revoke share`,
     untitled: `Untitled`,

@@ -16,6 +16,8 @@ import { cn } from '@/lib/utils'
 const props = defineProps<DialogContentProps & { class?: HTMLAttributes[`class`] }>()
 const emits = defineEmits<DialogContentEmits>()
 
+const { t } = useI18n()
+
 const delegatedProps = computed(() => {
   const { class: _, ...delegated } = props
 
@@ -53,7 +55,7 @@ const contentBindings = useDialogContentA11yBindings(forwarded)
           class="hover:bg-secondary absolute right-3 top-3 rounded-md p-0.5 transition-colors"
         >
           <X class="h-4 w-4" />
-          <span class="sr-only">Close</span>
+          <span class="sr-only">{{ t('common.close') }}</span>
         </DialogClose>
       </DialogContent>
     </DialogOverlay>

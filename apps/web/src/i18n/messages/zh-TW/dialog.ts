@@ -55,6 +55,7 @@ export default {
     expiresOn: `{date} 過期`,
     passwordProtected: `已設密碼`,
     copyLink: `複製連結`,
+    copyPassword: `複製密碼`,
     openPreview: `開啟預覽`,
     revokeShare: `取消分享`,
     untitled: `無標題`,

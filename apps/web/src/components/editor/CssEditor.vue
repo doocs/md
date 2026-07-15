@@ -428,8 +428,10 @@ function exportCurrentTheme() {
 
       <div class="flex items-center shrink-0">
         <button
+          type="button"
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
           :title="t('cssEditor.newTitle')"
+          :aria-label="t('cssEditor.newTitle')"
           @click="addHandler"
         >
           <Plus class="size-3.5" />
@@ -438,8 +440,10 @@ function exportCurrentTheme() {
         <DropdownMenu>
           <DropdownMenuTrigger as-child>
             <button
+              type="button"
               class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
               :title="t('common.more')"
+              :aria-label="t('common.more')"
             >
               <Ellipsis class="size-3.5" />
             </button>
@@ -459,8 +463,10 @@ function exportCurrentTheme() {
         </DropdownMenu>
 
         <button
+          type="button"
           class="inline-flex items-center justify-center size-7 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors duration-150"
           :title="t('common.close')"
+          :aria-label="t('common.close')"
           @click="uiStore.isShowCssEditor = false"
         >
           <X class="size-3.5" />
@@ -502,8 +508,10 @@ function exportCurrentTheme() {
         </div>
         <div class="flex">
           <button
+            type="button"
             class="flex flex-1 items-center justify-center rounded-md py-2 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground disabled:pointer-events-none disabled:opacity-35"
             :title="t('common.export')"
+            :aria-label="t('common.export')"
             :disabled="!selectedIds.length"
             @click="cssEditorStore.batchExportTabs"
           >
@@ -511,8 +519,10 @@ function exportCurrentTheme() {
           </button>
           <div class="mx-1 self-center h-5 w-px bg-border/60 shrink-0" />
           <button
+            type="button"
             class="flex flex-1 items-center justify-center rounded-md py-2 text-destructive/60 transition-colors hover:bg-destructive/8 hover:text-destructive disabled:pointer-events-none disabled:opacity-35"
             :title="selectedIds.length >= cssContentConfig.tabs.length ? t('cssEditor.deleteSchemeMinOne') : t('common.delete')"
+            :aria-label="selectedIds.length >= cssContentConfig.tabs.length ? t('cssEditor.deleteSchemeMinOne') : t('common.delete')"
             :disabled="!selectedIds.length || selectedIds.length >= cssContentConfig.tabs.length"
             @click="openBatchDelConfirm()"
           >

@@ -71,6 +71,7 @@ export default {
     darkMode: `深色模式`,
     account: `帳戶`,
     moreActions: `更多操作`,
+    backToTop: `回到頂部`,
     expand: `展開`,
     collapse: `收起`,
     accept: `接受`,
@@ -159,6 +160,7 @@ export default {
     fund: `讚賞`,
   },
   header: {
+    menu: `選單`,
     copy: `複製`,
     style: `樣式`,
   },

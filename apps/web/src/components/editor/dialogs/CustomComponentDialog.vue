@@ -352,6 +352,8 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                       variant="ghost"
                       size="icon"
                       class="size-7 text-muted-foreground"
+                      :aria-label="expandedId === def.id ? t('common.collapse') : t('common.expand')"
+                      :aria-expanded="expandedId === def.id"
                       @click="toggleExpand(def.id)"
                     >
                       <ChevronDown
@@ -469,6 +471,8 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         variant="ghost"
                         size="icon"
                         class="size-7 text-muted-foreground"
+                        :aria-label="t('common.copy')"
+                        :title="t('common.copy')"
                         @click="copySnippet(def)"
                       >
                         <Check v-if="copiedId === def.id" class="size-3 text-green-500" />
@@ -518,7 +522,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           <TooltipProvider :delay-duration="300">
                             <Tooltip>
                               <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-primary hover:text-primary" @click="insertMpAccount(account)">
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-primary hover:text-primary" :aria-label="t('common.insert')" @click="insertMpAccount(account)">
                                   <Zap class="size-3" />
                                 </Button>
                               </TooltipTrigger>
@@ -530,7 +534,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           <TooltipProvider :delay-duration="300">
                             <Tooltip>
                               <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-muted-foreground" @click="openEditMpAccount(account.id)">
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-muted-foreground" :aria-label="t('common.edit')" @click="openEditMpAccount(account.id)">
                                   <Pencil class="size-3" />
                                 </Button>
                               </TooltipTrigger>
@@ -542,7 +546,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                           <TooltipProvider :delay-duration="300">
                             <Tooltip>
                               <TooltipTrigger as-child>
-                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-destructive hover:text-destructive" @click="deleteMpAccount(account)">
+                                <Button variant="ghost" size="icon" class="size-6 shrink-0 text-destructive hover:text-destructive" :aria-label="t('common.delete')" @click="deleteMpAccount(account)">
                                   <Trash2 class="size-3" />
                                 </Button>
                               </TooltipTrigger>
@@ -630,6 +634,8 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         variant="ghost"
                         size="icon"
                         class="size-7 text-muted-foreground"
+                        :aria-label="expandedId === def.id ? t('common.collapse') : t('common.expand')"
+                        :aria-expanded="expandedId === def.id"
                         @click="toggleExpand(def.id)"
                       >
                         <ChevronDown

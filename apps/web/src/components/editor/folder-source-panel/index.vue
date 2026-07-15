@@ -125,6 +125,7 @@ async function handleOpenFile(node: any) {
             size="sm"
             class="h-7 w-7 p-0"
             :title="t('folder.closeFolder')"
+            :aria-label="t('folder.closeFolder')"
             @click="handleCloseFolder"
           >
             <FolderClosed class="h-3 w-3" />
@@ -134,6 +135,7 @@ async function handleOpenFile(node: any) {
             size="sm"
             class="h-7 w-7 p-0"
             :title="t('folder.closePanel')"
+            :aria-label="t('folder.closePanel')"
             @click="isOpenFolderPanel = false"
           >
             <X class="h-3 w-3" />
@@ -160,6 +162,9 @@ async function handleOpenFile(node: any) {
           size="sm"
           class="text-xs"
           :disabled="isLoading"
+          :aria-label="t('common.refresh')"
+          :title="t('common.refresh')"
+          :aria-busy="isLoading"
           @click="handleRefreshFolder"
         >
           <RefreshCw class="h-3 w-3" :class="{ 'animate-spin': isLoading }" />

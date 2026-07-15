@@ -600,8 +600,13 @@ watch(
             selectedDetail && marketplaceDialogView !== 'publish' ? 'max-lg:hidden' : '',
           ]"
         >
-          <div v-if="loading" class="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground">
-            <LoaderCircle class="size-4 animate-spin" />
+          <div
+            v-if="loading"
+            role="status"
+            class="flex items-center justify-center gap-2 py-16 text-sm text-muted-foreground"
+          >
+            <LoaderCircle class="size-4 animate-spin" aria-hidden="true" />
+            <span class="sr-only">{{ t('common.loading') }}</span>
           </div>
 
           <!-- Discover -->
@@ -696,6 +701,8 @@ watch(
                   size="sm"
                   variant="ghost"
                   class="h-8 text-destructive"
+                  :aria-label="t('marketplace.uninstall')"
+                  :title="t('marketplace.uninstall')"
                   @click="onUninstallTheme(theme.marketplaceId, theme.name)"
                 >
                   <Trash2 class="size-3.5" />
@@ -749,10 +756,10 @@ watch(
                     {{ item.slug }} · {{ t('marketplace.version', { version: item.version }) }}
                   </div>
                 </div>
-                <Button size="sm" variant="ghost" class="h-8" @click.stop="goEdit(item)">
+                <Button size="sm" variant="ghost" class="h-8" :aria-label="t('common.edit')" :title="t('common.edit')" @click.stop="goEdit(item)">
                   <Pencil class="size-3.5" />
                 </Button>
-                <Button size="sm" variant="ghost" class="h-8 text-destructive" @click.stop="onDeleteMine(item)">
+                <Button size="sm" variant="ghost" class="h-8 text-destructive" :aria-label="t('common.delete')" :title="t('common.delete')" @click.stop="onDeleteMine(item)">
                   <Trash2 class="size-3.5" />
                 </Button>
               </div>

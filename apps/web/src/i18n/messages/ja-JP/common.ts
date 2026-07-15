@@ -71,6 +71,7 @@ export default {
     darkMode: `ダークモード`,
     account: `アカウント`,
     moreActions: `その他の操作`,
+    backToTop: `トップに戻る`,
     expand: `展開`,
     collapse: `折りたたむ`,
     accept: `採用`,
@@ -159,6 +160,7 @@ export default {
     fund: `サポート`,
   },
   header: {
+    menu: `メニュー`,
     copy: `コピー`,
     style: `スタイル`,
   },

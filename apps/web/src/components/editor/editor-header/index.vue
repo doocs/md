@@ -242,8 +242,8 @@ function copyToWeChat() {
     <div class="md:hidden">
       <Menubar class="menubar border-0 p-0">
         <MenubarMenu>
-          <MenubarTrigger class="p-0">
-            <Button variant="outline" size="icon">
+          <MenubarTrigger class="p-0" :aria-label="t('header.menu')">
+            <Button variant="outline" size="icon" tabindex="-1" aria-hidden="true">
               <Menu class="size-4" />
             </Button>
           </MenubarTrigger>
@@ -264,6 +264,7 @@ function copyToWeChat() {
         variant="outline"
         class="h-9"
         :disabled="isCopying"
+        :aria-busy="isCopying"
         @click="copyToWeChat"
       >
         <Loader2 v-if="isCopying" class="mr-2 h-4 w-4 animate-spin" />

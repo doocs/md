@@ -55,6 +55,7 @@ export default {
     expiresOn: `{date} に期限切れ`,
     passwordProtected: `パスワード保護`,
     copyLink: `リンクをコピー`,
+    copyPassword: `パスワードをコピー`,
     openPreview: `プレビューを開く`,
     revokeShare: `共有を取り消し`,
     untitled: `無題`,

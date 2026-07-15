@@ -109,7 +109,9 @@ function handleOutlineKeydown(event: KeyboardEvent) {
       <Tooltip>
         <TooltipTrigger as-child>
           <button
+            type="button"
             class="ml-1 flex min-w-0 cursor-pointer items-center gap-1.5 rounded px-1 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:mx-3 sm:px-1.5"
+            :aria-label="t('footer.outline')"
             @click="isOutlineOpen = !isOutlineOpen"
           >
             <ListTree class="size-3.5 shrink-0 opacity-60 sm:size-3" />
