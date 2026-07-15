@@ -415,8 +415,6 @@ export default {
     cssPlaceholder: `在此編寫自訂 CSS`,
     tipsTitle: `使用提示`,
     editorHint: `按 Alt/Option + Shift + F 可格式化。主題色請使用 var(--md-primary-color)，例如 color: var(--md-primary-color);。可從「檢視內建主題樣式」對照類名。`,
-    shareThemeHint: `歡迎分享好看的主題樣式，讓更多人用到：{link}`,
-    shareThemeLinkText: `Discussions`,
     selectedUnit: `個`,
     deleteSchemeMinOne: `至少保留一個方案`,
   },

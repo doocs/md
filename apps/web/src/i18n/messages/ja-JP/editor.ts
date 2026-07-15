@@ -415,8 +415,6 @@ export default {
     cssPlaceholder: `カスタム CSS をここに入力`,
     tipsTitle: `ヒント`,
     editorHint: `Alt/Option + Shift + F でフォーマットできます。テーマ色は var(--md-primary-color) を使ってください（例: color: var(--md-primary-color);）。「組み込みテーマを表示」からクラス名を確認できます。`,
-    shareThemeHint: `素敵なテーマがあれば共有してください: {link}`,
-    shareThemeLinkText: `Discussions`,
     selectedUnit: `件`,
     deleteSchemeMinOne: `少なくとも 1 つのスキームを残してください`,
   },

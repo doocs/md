@@ -635,18 +635,6 @@ function exportCurrentTheme() {
         </DialogHeader>
         <div class="space-y-3 text-sm text-muted-foreground leading-relaxed">
           <p>{{ t('cssEditor.editorHint') }}</p>
-          <p>
-            <i18n-t keypath="cssEditor.shareThemeHint" tag="span">
-              <template #link>
-                <a
-                  href="https://github.com/doocs/md/discussions/426"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-foreground hover:text-primary underline-offset-2 hover:underline"
-                >{{ t('cssEditor.shareThemeLinkText') }}</a>
-              </template>
-            </i18n-t>
-          </p>
         </div>
         <DialogFooter>
           <Button @click="isOpenTipsDialog = false">
