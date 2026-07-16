@@ -444,5 +444,7 @@ export default {
   },
   versionDiff: {
     identical: `両バージョンは同一です`,
+    showAll: `すべて`,
+    showDiffOnly: `差分`,
   },
 }
