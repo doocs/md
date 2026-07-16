@@ -93,7 +93,7 @@ function toggleTheme() {
 
 function toggleLanguage() {
   isMoreOpen.value = false
-  localeStore.cycleLocale()
+  void localeStore.cycleLocale()
 }
 
 const cursorLine = ref(1)

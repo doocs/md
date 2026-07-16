@@ -4,8 +4,8 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import { setAppI18n, setupI18n } from '@/i18n'
 import { mergeRemoteIntoLocal, postToDoc, toMs } from './merge'
 
-beforeAll(() => {
-  setAppI18n(setupI18n(`en-US`))
+beforeAll(async () => {
+  setAppI18n(await setupI18n(`en-US`))
 })
 
 function makePost(overrides: Partial<Post> & Pick<Post, 'id'>): Post {

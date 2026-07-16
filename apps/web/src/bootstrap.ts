@@ -15,7 +15,7 @@ export async function bootstrap(): Promise<void> {
   setupComponents()
   await initStorage()
 
-  const i18n = setupI18n(detectInitialLocale())
+  const i18n = await setupI18n(detectInitialLocale())
   setAppI18n(i18n)
 
   const app = createApp(AppRoot)

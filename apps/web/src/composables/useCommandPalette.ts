@@ -94,7 +94,7 @@ export function useCommandPalette() {
         label: t(`commandPalette.toggleLanguage`),
         group: t(`commandPalette.group.settings`),
         keywords: [`语言`, `中文`, `英文`, `language`, `locale`, `english`, `chinese`],
-        action: () => { localeStore.cycleLocale() },
+        action: () => { void localeStore.cycleLocale() },
       },
       {
         id: `toggle-style-panel`,
