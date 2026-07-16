@@ -2,6 +2,7 @@ import type { S3ClientConfig } from '@aws-sdk/client-s3'
 import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
+import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { uploadDefaultImage } from '@/services/upload/client'
 import { store } from '@/storage'
@@ -14,10 +15,6 @@ let cryptoJsPromise: Promise<CryptoJSModule> | null = null
 function loadCryptoJS() {
   cryptoJsPromise ??= import(`crypto-js`)
   return cryptoJsPromise
-}
-
-function uuidv4() {
-  return crypto.randomUUID()
 }
 
 /**

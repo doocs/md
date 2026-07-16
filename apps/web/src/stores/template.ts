@@ -1,4 +1,5 @@
 import type { CreateTemplateParams, Template, UpdateTemplateParams } from '@md/shared'
+import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -16,7 +17,7 @@ export const useTemplateStore = defineStore(`template`, () => {
   function createTemplate(params: CreateTemplateParams): Template {
     const now = Date.now()
     const newTemplate: Template = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       name: params.name,
       content: params.content,
       description: params.description,
@@ -129,7 +130,7 @@ export const useTemplateStore = defineStore(`template`, () => {
         if (existingIndex !== -1) {
           templates.value.push({
             ...importedTemplate,
-            id: crypto.randomUUID(),
+            id: uuidv4(),
           })
         }
         else {

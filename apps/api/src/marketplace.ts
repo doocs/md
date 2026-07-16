@@ -33,6 +33,7 @@ import {
   resolveAdminUserIds,
 } from './notifications-db'
 import { getEffectivePlan } from './plan'
+import { uuidv4 } from './uuid'
 
 const MARKETPLACE_PUBLISH_LIMIT = {
   free: 5,
@@ -247,7 +248,7 @@ async function publishHandler(
     return c.json({ error: validated.error }, 400)
 
   const now = Date.now()
-  const id = crypto.randomUUID()
+  const id = uuidv4()
 
   try {
     await insertMarketplaceItem(c.env.DB, {

@@ -59,7 +59,7 @@ overrides:
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.7.0
   undici@^7: ^8.7.0
-  uuid: ^14.0.1
+  uuid: 'catalog:'
   workbox-build>source-map: 0.7.4
   ws@<8.21.0: ^8.21.1
   yauzl: ^3.4.0
@@ -91,6 +91,7 @@ catalog:
   prettier: 2.8.8
   tsx: ^4.23.1
   typescript: ~6.0.3
+  uuid: ^14.0.1
   vitest: ^4.1.10
   wrangler: ^4.111.0
 

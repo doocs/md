@@ -1,3 +1,5 @@
+import { uuidv4 } from './uuid'
+
 const MIME_TO_EXT: Record<string, string> = {
   'image/jpeg': `jpg`,
   'image/jpg': `jpg`,
@@ -50,5 +52,5 @@ export function resolveImageExtension(filename: string, mimeType: string): strin
 
 export function buildDatedObjectKey(filename: string, mimeType: string): string {
   const ext = resolveImageExtension(filename, mimeType)
-  return `${Date.now()}-${crypto.randomUUID()}.${ext}`
+  return `${Date.now()}-${uuidv4()}.${ext}`
 }

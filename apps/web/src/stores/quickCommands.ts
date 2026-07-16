@@ -1,3 +1,4 @@
+import { uuidv4 } from '@md/shared/utils/uuid'
 import { computed, ref, watch } from 'vue'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
@@ -101,7 +102,7 @@ export const useQuickCommandsStore = defineStore(`quickCommands`, () => {
   }
 
   function add(label: string, template: string) {
-    const id = crypto.randomUUID()
+    const id = uuidv4()
     customCommands.value.push({ id, label, template })
   }
 
