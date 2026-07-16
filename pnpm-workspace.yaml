@@ -79,7 +79,6 @@ patchedDependencies:
   '@codemirror/view@6.43.6': patches/@codemirror__view@6.43.6.patch
   front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.1: patches/juice@12.1.1.patch
-  pinia@4.0.1: patches/pinia@4.0.1.patch
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
@@ -93,7 +92,7 @@ catalog:
   tsx: ^4.23.1
   typescript: ~6.0.3
   vitest: ^4.1.10
-  wrangler: ^4.110.0
+  wrangler: ^4.111.0
 
 peerDependencyRules:
   allowedVersions:
