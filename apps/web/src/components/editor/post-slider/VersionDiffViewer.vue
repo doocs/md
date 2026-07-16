@@ -101,6 +101,18 @@ const lineNumbers = computed(() => {
   })
 })
 
+const showAll = ref(false)
+
+const visibleLines = computed(() => {
+  const all = diffLines.value.map((line, idx) => ({
+    line,
+    lineNo: lineNumbers.value[idx],
+  }))
+  if (showAll.value)
+    return all
+  return all.filter(({ line }) => line.rowType !== `equal`)
+})
+
 const scrollContainer = ref<HTMLElement | null>(null)
 const minimapRef = ref<HTMLElement | null>(null)
 const viewportTop = ref(0)
@@ -136,6 +148,24 @@ onMounted(() => {
   <div class="flex flex-col h-full">
     <div class="flex items-center gap-3 px-3 py-1.5 border-b text-xs text-muted-foreground shrink-0">
       <span class="flex-1" />
+      <div class="inline-flex items-center rounded-md border p-0.5">
+        <button
+          type="button"
+          class="px-2 py-0.5 rounded-sm transition-colors"
+          :class="!showAll ? 'bg-primary text-primary-foreground' : 'hover:text-foreground'"
+          @click="showAll = false"
+        >
+          {{ t('versionDiff.showDiffOnly') }}
+        </button>
+        <button
+          type="button"
+          class="px-2 py-0.5 rounded-sm transition-colors"
+          :class="showAll ? 'bg-primary text-primary-foreground' : 'hover:text-foreground'"
+          @click="showAll = true"
+        >
+          {{ t('versionDiff.showAll') }}
+        </button>
+      </div>
       <span class="text-green-600 dark:text-green-400">+{{ stats.ins }}</span>
       <span class="text-red-600 dark:text-red-400">-{{ stats.del }}</span>
     </div>
@@ -148,7 +178,7 @@ onMounted(() => {
       <div ref="scrollContainer" class="flex-1 overflow-y-auto thin-scrollbar" @scroll="updateViewport">
         <div class="font-mono text-xs leading-5">
           <div
-            v-for="(line, idx) in diffLines"
+            v-for="({ line, lineNo }, idx) in visibleLines"
             :key="idx"
             class="flex"
             :class="{
@@ -159,11 +189,11 @@ onMounted(() => {
             <span
               class="select-none shrink-0 w-8 text-right pr-1 text-muted-foreground/30"
               :class="{ 'text-red-500/40': line.rowType === 'delete' }"
-            >{{ lineNumbers[idx].old ?? '' }}</span>
+            >{{ lineNo.old ?? '' }}</span>
             <span
               class="select-none shrink-0 w-8 text-right pr-1.5 text-muted-foreground/30 border-r border-border/50"
               :class="{ 'text-green-500/40': line.rowType === 'insert' }"
-            >{{ lineNumbers[idx].new ?? '' }}</span>
+            >{{ lineNo.new ?? '' }}</span>
             <span
               class="select-none shrink-0 w-5 text-center text-muted-foreground/40"
               :class="{
@@ -183,7 +213,7 @@ onMounted(() => {
       >
         <div class="absolute inset-0 flex flex-col">
           <div
-            v-for="(line, idx) in diffLines"
+            v-for="({ line }, idx) in visibleLines"
             :key="idx"
             class="flex-1 min-h-px"
             :class="{

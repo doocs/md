@@ -444,5 +444,7 @@ export default {
   },
   versionDiff: {
     identical: `兩個版本內容完全相同`,
+    showAll: `全部`,
+    showDiffOnly: `差異`,
   },
 }

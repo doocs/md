@@ -444,5 +444,7 @@ export default {
   },
   versionDiff: {
     identical: `Both versions are identical`,
+    showAll: `All`,
+    showDiffOnly: `Diff`,
   },
 }
