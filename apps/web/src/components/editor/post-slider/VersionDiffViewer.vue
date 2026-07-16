@@ -27,9 +27,11 @@ const diffLines = computed<DiffLine[]>(() => {
   const lines: DiffLine[] = []
   let currentSpans: DiffSpan[] = []
 
-  function pushLine() {
-    if (currentSpans.length === 0)
+  function pushLine(defaultType: DiffSpan['type'] = `equal`) {
+    if (currentSpans.length === 0) {
+      lines.push({ rowType: defaultType, spans: [] })
       return
+    }
     const types = new Set(currentSpans.map(s => s.type))
     types.delete(`equal`)
     const rowType: DiffLine['rowType']
@@ -55,7 +57,7 @@ const diffLines = computed<DiffLine[]>(() => {
     const subLines = text.split(`\n`)
     for (let i = 0; i < subLines.length; i++) {
       if (i > 0)
-        pushLine()
+        pushLine(type)
       const seg = subLines[i]
       if (seg.length > 0)
         currentSpans.push({ type, text: seg })
