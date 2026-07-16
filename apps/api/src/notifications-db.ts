@@ -1,6 +1,7 @@
 import type { Env } from './types'
 import { getAdminLogins } from './marketplace-admin'
 import { getUserByGithubLogin } from './plan'
+import { uuidv4 } from './uuid'
 
 export type NotificationType
   = `marketplace_pending`
@@ -102,7 +103,7 @@ export async function notifyUsers(
            VALUES (?, ?, ?, ?, NULL, ?)`,
         )
         .bind(
-          crypto.randomUUID(),
+          uuidv4(),
           userId,
           input.type,
           JSON.stringify(input.payload),

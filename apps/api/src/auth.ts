@@ -7,6 +7,7 @@ import { getUserById, upsertUser } from './db'
 import { isAdmin } from './marketplace-admin'
 import { defaultOrigin, resolveRedirect } from './origin'
 import { getEffectivePlan } from './plan'
+import { uuidv4 } from './uuid'
 
 const STATE_COOKIE = `md_oauth_state`
 const REDIRECT_COOKIE = `md_oauth_redirect`
@@ -45,7 +46,7 @@ export const authRoutes = new Hono<{ Bindings: Env }>()
 
 // Step 1: redirect to GitHub authorization
 authRoutes.get(`/github`, (c) => {
-  const state = crypto.randomUUID()
+  const state = uuidv4()
   const isHttps = new URL(c.req.url).protocol === `https:`
   const cookieOpts = {
     httpOnly: true,
@@ -113,7 +114,7 @@ authRoutes.get(`/github/callback`, async (c) => {
     .prepare(`SELECT id FROM users WHERE github_id = ?`)
     .bind(gh.id)
     .first<{ id: string }>()
-  const userId = existing?.id ?? crypto.randomUUID()
+  const userId = existing?.id ?? uuidv4()
 
   await upsertUser(c.env.DB, {
     id: userId,

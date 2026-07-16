@@ -1,3 +1,4 @@
+import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -37,7 +38,7 @@ export const useMpAccountsStore = defineStore(`mpAccounts`, () => {
 
   function addAccount(data?: Partial<Omit<MpAccount, 'id'>>): MpAccount {
     const newAccount: MpAccount = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       mpId: data?.mpId ?? ``,
       name: data?.name ?? t('store.mpAccount.newAccount'),
       logo: data?.logo ?? ``,

@@ -17,6 +17,8 @@
     "./editor/*": "./src/editor/*.ts"
   },
   "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
     "type-check": "tsc --noEmit"
   },
   "peerDependencies": {
@@ -46,10 +48,13 @@
     "@codemirror/view": "catalog:",
     "@fsegurai/codemirror-theme-vscode-dark": "^6.2.6",
     "@fsegurai/codemirror-theme-vscode-light": "^6.2.6",
-    "@replit/codemirror-indentation-markers": "^6.5.3"
+    "@replit/codemirror-indentation-markers": "^6.5.3",
+    "uuid": "catalog:"
   },
   "devDependencies": {
     "@md/config": "workspace:*",
-    "marked": "catalog:"
+    "marked": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

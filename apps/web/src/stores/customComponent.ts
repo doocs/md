@@ -1,5 +1,6 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
 import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
+import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { buildComponentSnippet } from '@/lib/component-snippet'
 import { store } from '@/storage'
@@ -38,7 +39,7 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   function createComponent(params: CreateComponentParams): CustomComponentDef {
     const now = Date.now()
     const def: CustomComponentDef = {
-      id: crypto.randomUUID(),
+      id: uuidv4(),
       name: params.name,
       description: params.description,
       template: params.template,
