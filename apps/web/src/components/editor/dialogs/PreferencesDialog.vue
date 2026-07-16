@@ -74,7 +74,7 @@ function setCountStatus(value: boolean) {
 
 function onLocaleChange(value: string) {
   if ((SUPPORTED_LOCALES as readonly string[]).includes(value))
-    localeStore.setLocale(value as AppLocale)
+    void localeStore.setLocale(value as AppLocale)
 }
 </script>
 

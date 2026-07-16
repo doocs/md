@@ -23,8 +23,8 @@ function ctx(doc: string, explicit = false, pos = doc.length) {
   return new CompletionContext(state, pos, explicit)
 }
 
-beforeAll(() => {
-  setAppI18n(setupI18n(`zh-CN`))
+beforeAll(async () => {
+  setAppI18n(await setupI18n(`zh-CN`))
 })
 
 describe(`createComponentCompletionSource`, () => {

@@ -1,29 +1,17 @@
 import type { AppLocale } from '@/i18n/types'
 import { getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
 import { detectInitialLocale } from '@/i18n/detect'
-import { getAppI18n } from '@/i18n/index'
-import enUS from '@/i18n/messages/en-US'
-import jaJP from '@/i18n/messages/ja-JP'
-import zhCN from '@/i18n/messages/zh-CN'
-import zhTW from '@/i18n/messages/zh-TW'
+import { ensureLocaleMessages, getAppI18n } from '@/i18n/index'
+import { t } from '@/i18n/translate'
 import { store } from '@/storage'
-
-const META_BY_LOCALE = {
-  'zh-CN': zhCN.meta,
-  'zh-TW': zhTW.meta,
-  'en-US': enUS.meta,
-  'ja-JP': jaJP.meta,
-} as const
 
 function syncDocumentLocale(locale: AppLocale) {
   document.documentElement.lang = locale
-
-  const meta = META_BY_LOCALE[locale]
-  document.title = meta.title
+  document.title = t(`meta.title`)
 
   const description = document.querySelector(`meta[name="description"]`)
   if (description)
-    description.setAttribute(`content`, meta.description)
+    description.setAttribute(`content`, t(`meta.description`))
 }
 
 /** Sync locale to localStorage for index.html splash before IndexedDB is ready. */
@@ -57,13 +45,14 @@ export const useLocaleStore = defineStore(`locale`, () => {
     { immediate: true },
   )
 
-  function setLocale(value: AppLocale) {
+  async function setLocale(value: AppLocale) {
+    await ensureLocaleMessages(getAppI18n(), value)
     locale.value = value
   }
 
   /** Cycle to the next locale in SUPPORTED_LOCALES order. */
-  function cycleLocale() {
-    locale.value = getNextLocale(locale.value)
+  async function cycleLocale() {
+    await setLocale(getNextLocale(locale.value))
   }
 
   return {

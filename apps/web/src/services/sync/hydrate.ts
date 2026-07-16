@@ -95,7 +95,7 @@ export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void
   if (keys.has(`locale`)) {
     const raw = store.getSync(`locale`)
     if (isAppLocale(raw))
-      useLocaleStore().setLocale(raw)
+      await useLocaleStore().setLocale(raw)
   }
 
   hydrateRef(`openai_type`, keys, aiConfig.type)

@@ -6,7 +6,10 @@ import App from './App.vue'
 import '@/assets/index.css'
 import '@/assets/less/theme.less'
 
-const i18n = setupI18n(detectInitialLocale())
-setAppI18n(i18n)
+async function main() {
+  const i18n = await setupI18n(detectInitialLocale())
+  setAppI18n(i18n)
+  createApp(App).use(i18n).mount(`#app`)
+}
 
-createApp(App).use(i18n).mount(`#app`)
+void main()
