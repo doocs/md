@@ -3,6 +3,7 @@ import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Download, Ellipsis, FileTe
 import { initRenderer } from '@md/core'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
+import { formatLocalDateTime } from '@/i18n/translate'
 import { copyPlain } from '@/lib/browser/clipboard'
 import { downloadMD, exportPostsAsZip } from '@/services/export'
 import { scopeThemeCss } from '@/services/export/share-styles'
@@ -18,8 +19,13 @@ import {
   updatePostSliderMenuOpen,
 } from './postSliderMenu'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const confirmStore = useConfirmStore()
+
+function formatHistoryDatetime(datetime: number | string) {
+  void locale.value
+  return formatLocalDateTime(datetime)
+}
 const uiStore = useUIStore()
 const { isDark, isMobile, isOpenPostSlider } = storeToRefs(uiStore)
 const { toggleShowImportMdDialog } = uiStore
@@ -1181,12 +1187,12 @@ function handleDragEnd() {
         <ul class="w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
           <li
             v-for="(item, idx) in currentHistoryList"
-            :key="item.datetime"
+            :key="idx"
             class="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground"
             :class="{ 'bg-primary/8 text-primary font-medium': currentHistoryIndex === idx }"
             @click="currentHistoryIndex = idx"
           >
-            <span class="text-xs leading-snug">{{ item.datetime }}</span>
+            <span class="text-xs leading-snug">{{ formatHistoryDatetime(item.datetime) }}</span>
           </li>
         </ul>
 
@@ -1248,12 +1254,12 @@ function handleDragEnd() {
                       :value="String(idx)"
                       :disabled="idx === currentHistoryIndex"
                     >
-                      {{ item.datetime }}
+                      {{ formatHistoryDatetime(item.datetime) }}
                     </SelectItem>
                   </SelectContent>
                 </Select>
                 <span>→</span>
-                <span class="font-medium text-foreground">{{ currentHistoryList[currentHistoryIndex]?.datetime ?? '' }}</span>
+                <span class="font-medium text-foreground">{{ currentHistoryList[currentHistoryIndex] ? formatHistoryDatetime(currentHistoryList[currentHistoryIndex].datetime) : '' }}</span>
               </div>
 
               <div class="flex-1 overflow-hidden rounded-lg border h-[calc(100%-2.5rem)]">

@@ -1,5 +1,9 @@
 export interface PostHistory {
-  datetime: string
+  /**
+   * Epoch milliseconds for new entries.
+   * Legacy locale/ISO strings may remain when they cannot be parsed reliably.
+   */
+  datetime: number | string
   content: string
 }
 

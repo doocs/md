@@ -14,7 +14,7 @@ export interface StoredDocument {
   id: string
   title: string
   content: string
-  history: { datetime: string, content: string }[]
+  history: { datetime: number | string, content: string }[]
   createDatetime: string
   updateDatetime: string
   parentId?: string | null

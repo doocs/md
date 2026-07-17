@@ -103,7 +103,10 @@ describe(`mergeRemoteIntoLocal`, () => {
     const { posts, changed } = mergeRemoteIntoLocal(local, remote)
     expect(changed).toBe(true)
     expect(posts[0].content).toBe(`remote-new`)
-    expect(posts[0].history.some(h => h.content === `local-old`)).toBe(true)
+    const entry = posts[0].history.find(h => h.content === `local-old`)
+    expect(entry).toBeTruthy()
+    expect(typeof entry!.datetime).toBe(`number`)
+    expect(entry!.datetime).toBe(Date.parse(`2024-01-01T00:00:00.000Z`))
   })
 
   it(`removes local post when newer remote is soft-deleted`, () => {
@@ -145,7 +148,7 @@ describe(`mergeRemoteIntoLocal`, () => {
       id: `shared`,
       content: `same`,
       updateDatetime: new Date(`2024-03-01T00:00:00.000Z`),
-      history: [{ datetime: `2024-01-01 00:00:00`, content: `remote-old` }],
+      history: [{ datetime: Date.parse(`2024-01-01T00:00:00.000Z`), content: `remote-old` }],
     })]
     const remote = [makeDoc({
       id: `shared`,
@@ -156,6 +159,23 @@ describe(`mergeRemoteIntoLocal`, () => {
     const { posts, changed } = mergeRemoteIntoLocal(local, remote)
     expect(changed).toBe(false)
     expect(posts[0].history.filter(h => h.content === `remote-old`)).toHaveLength(1)
+  })
+
+  it(`coerces legacy string history datetimes from remote without writing epoch 0`, () => {
+    const local = [makePost({ id: `shared`, content: `local` })]
+    const remote = [makeDoc({
+      id: `shared-new`,
+      content: `from-cloud`,
+      history: [
+        { datetime: `2024-01-01T00:00:00.000Z`, content: `iso` },
+        { datetime: `not-a-date`, content: `unparseable` },
+      ],
+    })]
+
+    const { posts } = mergeRemoteIntoLocal(local, remote)
+    const imported = posts.find(p => p.id === `shared-new`)!
+    expect(imported.history[0].datetime).toBe(Date.parse(`2024-01-01T00:00:00.000Z`))
+    expect(imported.history[1].datetime).toBe(`not-a-date`)
   })
 
   it(`preserves local collapsed state when remote wins`, () => {

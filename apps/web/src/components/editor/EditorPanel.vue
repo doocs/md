@@ -14,7 +14,7 @@ import { useLocalizedAllComponents } from '@/composables/useLocalizedBuiltinComp
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
-import { formatLocalDateTime } from '@/i18n/translate'
+import { toStoredDateTime } from '@/lib/format/datetime'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { validateImageFile } from '@/lib/upload/validate-image'
@@ -635,7 +635,7 @@ onMounted(() => {
     currentPost.history ??= []
     currentPost.history.unshift({
       content: currentPost.content,
-      datetime: formatLocalDateTime(),
+      datetime: toStoredDateTime(),
     })
 
     currentPost.history.length = Math.min(currentPost.history.length, 10)
