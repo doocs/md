@@ -273,7 +273,7 @@ export default {
     completionSectionComponents: `Components`,
     completionSectionProps: `Props`,
     savedAccounts: `Saved accounts`,
-    noAccounts: `No saved accounts. Click "Add" to create one.`,
+    noAccounts: `No saved accounts. Click "New" to create one.`,
     noCustom: `No custom components. Click "New" above to create one.`,
     noPropsDefined: `No props defined for this component`,
     noContent: `(empty)`,

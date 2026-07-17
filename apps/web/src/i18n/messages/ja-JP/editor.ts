@@ -273,7 +273,7 @@ export default {
     completionSectionComponents: `コンポーネント`,
     completionSectionProps: `プロパティ`,
     savedAccounts: `保存済みアカウント`,
-    noAccounts: `保存済みアカウントがありません。「追加」をクリックして作成してください。`,
+    noAccounts: `保存済みアカウントがありません。「新規」をクリックして作成してください。`,
     noCustom: `カスタムコンポーネントがありません。上の「新規」をクリックして作成してください。`,
     noPropsDefined: `このコンポーネントに Props が定義されていません`,
     noContent: `（空）`,
