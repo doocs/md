@@ -739,7 +739,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
                         @update:values="(v) => onFillValues(def.id, v)"
                       />
 
-                      <div class="flex items-center gap-2 pt-1 border-t">
+                      <div class="flex items-center gap-2">
                         <Button
                           variant="default"
                           size="sm"
