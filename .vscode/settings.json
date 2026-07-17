@@ -45,5 +45,14 @@
     "scss",
     "pcss",
     "postcss"
-  ]
+  ],
+
+  // i18n Ally
+  "i18n-ally.sourceLanguage": "zh-CN",
+  "i18n-ally.localesPaths": ["apps/web/src/i18n/messages"],
+  "i18n-ally.keystyle": "nested",
+  "i18n-ally.enabledFrameworks": ["vue"],
+  "i18n-ally.enabledParsers": ["ts"],
+  "i18n-ally.annotations": true,
+  "i18n-ally.keysInUse": ["apps/web/src/**/*.vue", "apps/web/src/**/*.ts"]
 }
