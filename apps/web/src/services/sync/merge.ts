@@ -1,12 +1,9 @@
 import type { SyncDocument } from './types'
 import type { Post, PostHistory } from '@/types/post'
-import { formatLocalDateTime } from '@/i18n/translate'
+import { normalizePostHistory, parseStoredDateTime } from '@/lib/format/datetime'
 
 export function toMs(value: Date | string | number | undefined): number {
-  if (value == null)
-    return 0
-  const ms = value instanceof Date ? value.getTime() : new Date(value).getTime()
-  return Number.isFinite(ms) ? ms : 0
+  return parseStoredDateTime(value) ?? 0
 }
 
 export function postToDoc(post: Post): SyncDocument {
@@ -15,7 +12,7 @@ export function postToDoc(post: Post): SyncDocument {
     title: post.title,
     content: post.content,
     parentId: post.parentId ?? null,
-    history: post.history ?? [],
+    history: normalizePostHistory(post.history),
     createDatetime: toMs(post.createDatetime),
     updateDatetime: toMs(post.updateDatetime),
     deleted: false,
@@ -27,7 +24,7 @@ function docToPost(doc: SyncDocument): Post {
     id: doc.id,
     title: doc.title,
     content: doc.content,
-    history: doc.history ?? [],
+    history: normalizePostHistory(doc.history),
     createDatetime: new Date(doc.createDatetime),
     updateDatetime: new Date(doc.updateDatetime),
     parentId: doc.parentId ?? null,
@@ -45,7 +42,7 @@ function mergeHistory(winner: Post, loserContent: string, loserDatetime: number)
   if (exists)
     return false
   history.push({
-    datetime: formatLocalDateTime(new Date(loserDatetime)),
+    datetime: loserDatetime,
     content: loserContent,
   })
   return true

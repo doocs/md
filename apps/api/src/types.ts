@@ -65,7 +65,11 @@ export interface SyncDocument {
   title: string
   content: string
   parentId: string | null
-  history: { datetime: string, content: string }[]
+  /**
+   * history.datetime is epoch ms for new data.
+   * Legacy clients / older sync payloads may still use locale or ISO strings.
+   */
+  history: { datetime: number | string, content: string }[]
   createDatetime: number
   updateDatetime: number
   deleted: boolean

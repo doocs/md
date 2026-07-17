@@ -13,6 +13,13 @@ export function getLocale(): AppLocale {
   return (typeof current === `string` ? current : current.value) as AppLocale
 }
 
-export function formatLocalDateTime(date: Date = new Date()): string {
-  return date.toLocaleString(getLocale())
+/**
+ * Format a date for display using the current UI locale.
+ * Accepts epoch ms, Date, ISO strings, and legacy locale-formatted strings.
+ */
+export function formatLocalDateTime(date: Date | string | number = new Date()): string {
+  const d = date instanceof Date ? date : new Date(date)
+  if (Number.isNaN(d.getTime()))
+    return String(date)
+  return d.toLocaleString(getLocale())
 }

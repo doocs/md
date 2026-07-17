@@ -1,5 +1,6 @@
 import type { StoredDocument } from '@/storage/db'
 import type { Post } from '@/types/post'
+import { normalizePostHistory } from '@/lib/format/datetime'
 import { getDatabase } from '@/storage/db'
 import { LEGACY_POSTS_KEY, STORE_DOCUMENTS } from '@/storage/keys'
 import { store } from '@/storage/manager'
@@ -10,10 +11,7 @@ function toStored(post: Post): StoredDocument {
     id: post.id,
     title: post.title,
     content: post.content,
-    history: (post.history ?? []).map(({ datetime, content }) => ({
-      datetime: String(datetime),
-      content: String(content),
-    })),
+    history: normalizePostHistory(post.history),
     createDatetime: new Date(post.createDatetime).toISOString(),
     updateDatetime: new Date(post.updateDatetime).toISOString(),
     parentId: post.parentId ?? null,
@@ -26,7 +24,7 @@ function fromStored(doc: StoredDocument): Post {
     id: doc.id,
     title: doc.title,
     content: doc.content,
-    history: doc.history ?? [],
+    history: normalizePostHistory(doc.history),
     createDatetime: new Date(doc.createDatetime),
     updateDatetime: new Date(doc.updateDatetime),
     parentId: doc.parentId ?? null,
@@ -73,7 +71,7 @@ async function loadFromLegacy(): Promise<Post[]> {
       ...post,
       createDatetime: new Date(post.createDatetime ?? Date.now() + index),
       updateDatetime: new Date(post.updateDatetime ?? Date.now() + index),
-      history: post.history ?? [],
+      history: normalizePostHistory(post.history),
     }))
   }
   catch {
