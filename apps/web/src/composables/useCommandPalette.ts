@@ -244,7 +244,7 @@ export function useCommandPalette() {
     return commands
   }
 
-  const paletteShortcutLabel = `${ctrlSign} ${shiftSign} P`
+  const paletteShortcutLabel = `${ctrlSign} ${shiftSign} .`
 
   return {
     buildCommands,

@@ -20,7 +20,7 @@ export function buildKeyboardShortcutCategories(): ShortcutCategory[] {
     {
       title: t(`keyboard.category.general`),
       items: [
-        { label: t(`menu.commandPalette`), keys: mod(shiftSign, `P`) },
+        { label: t(`menu.commandPalette`), keys: mod(shiftSign, `.`) },
         { label: t(`menu.preferences`), keys: mod(`,`) },
         { label: t(`keyboard.slashCommand`), keys: [`/`] },
         { label: t(`keyboard.closeSearchPanel`), keys: [`Esc`] },
