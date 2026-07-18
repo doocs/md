@@ -24,6 +24,8 @@ overrides:
   '@typescript-eslint/utils': 8.64.0
   '@typescript-eslint/visitor-keys': 8.64.0
   '@webext-core/isolated-element': 1.1.4
+  # CVE-2026-39244 / GHSA-xcpc-8h2w-3j85 (dependabot/311): firefox-profile pins ~0.5.x
+  adm-zip: ^0.6.0
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.5'
   bn.js@^5: ^5.2.5
@@ -82,7 +84,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260717.1
+  '@cloudflare/workers-types': ^5.20260718.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
