@@ -70,7 +70,7 @@
     "@types/diff-match-patch": "^1.0.36",
     "@vitejs/plugin-vue": "^6.0.8",
     "cross-env": "^10.1.0",
-    "less": "^4.6.7",
+    "less": "^4.7.0",
     "linkedom": "^0.18.13",
     "npm-run-all2": "^9.0.2",
     "ohash": "^2.0.11",
