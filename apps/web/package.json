@@ -27,8 +27,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1090.0",
-    "@aws-sdk/s3-request-presigner": "^3.1090.0",
+    "@aws-sdk/client-s3": "^3.1091.0",
+    "@aws-sdk/s3-request-presigner": "^3.1091.0",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/language": "^6.12.4",
     "@codemirror/state": "catalog:",
@@ -55,7 +55,7 @@
     "tailwind-merge": "^3.6.0",
     "vee-validate": "^4.15.1",
     "vue": "^3.5.40",
-    "vue-i18n": "^11.4.6",
+    "vue-i18n": "^11.4.7",
     "vue-pick-colors": "^1.8.0",
     "vue-sonner": "^2.0.9",
     "yup": "^1.7.1"
