@@ -84,7 +84,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260721.1
+  '@cloudflare/workers-types': ^5.20260722.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
@@ -95,7 +95,7 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.1
   vitest: ^4.1.10
-  wrangler: ^4.112.0
+  wrangler: ^4.113.0
 
 peerDependencyRules:
   allowedVersions:

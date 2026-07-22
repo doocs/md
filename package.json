@@ -36,12 +36,12 @@
     "link-claude-skills": "node ./scripts/link-claude-skills.mjs"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "9.1.0",
+    "@antfu/eslint-config": "9.2.0",
     "@types/node": "^26.1.1",
     "archiver": "^8.0.0",
     "eslint": "^10.7.0",
     "eslint-plugin-format": "^2.0.1",
-    "lint-staged": "^17.1.0",
+    "lint-staged": "^17.1.1",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
     "simple-git-hooks": "^2.13.1",
