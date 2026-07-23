@@ -11,6 +11,8 @@ packages:
 overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
+  # GHSA-frvp-7c67-39w9 (dependabot/312): @modelcontextprotocol/sdk pins ^1.19.9; fix only in 2.0.5+
+  '@hono/node-server': ^2.0.5
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
   '@typescript-eslint/eslint-plugin': 8.65.0
   '@typescript-eslint/parser': 8.65.0
@@ -35,6 +37,8 @@ overrides:
   crypto-browserify: npm:empty-module@0.0.2
   dompurify: ^3.4.12
   esbuild: '>=0.28.1'
+  # CVE-2026-16221 / GHSA-v2hh-gcrm-f6hx (dependabot/314): ajv pins fast-uri ^3.0.1
+  fast-uri: ^3.1.4
   flatted@<3.4.0: ^3.4.2
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
@@ -54,6 +58,8 @@ overrides:
   querystring: npm:qs@^6.15.3
   semver: ^7.8.5
   serialize-javascript@<7.0.3: ^7.0.7
+  # GHSA sharp/libvips (dependabot/313): miniflare/wrangler pin sharp 0.34.5
+  sharp: ^0.35.0
   shell-quote: ^1.10.0
   source-map@0.8.0-beta.0: 0.7.4
   tinyexec: 1.2.4
@@ -84,7 +90,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260722.1
+  '@cloudflare/workers-types': ^5.20260723.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
   '@types/node': ^26.1.1
