@@ -34,6 +34,7 @@ catalogs:
 overrides:
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.6
+  '@hono/node-server': ^2.0.5
   '@typescript-eslint/eslint-plugin': 8.65.0
   '@typescript-eslint/parser': 8.65.0
   '@typescript-eslint/project-service': 8.65.0
@@ -46,7 +47,6 @@ overrides:
   '@typescript-eslint/utils': 8.65.0
   '@typescript-eslint/visitor-keys': 8.65.0
   '@webext-core/isolated-element': 1.1.4
-  '@hono/node-server': ^2.0.5
   adm-zip: ^0.6.0
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.5'
@@ -62,7 +62,6 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
   ini: '>=7.0.0'
   js-yaml: ^4.3.0
   jsdom>undici: ^7.25.0

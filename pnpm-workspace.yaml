@@ -43,7 +43,6 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  inflight: npm:@hishprorg/voluptates-laborum@^2.0.0
   ini: '>=7.0.0'
   js-yaml: ^4.3.0
   jsdom>undici: ^7.25.0
