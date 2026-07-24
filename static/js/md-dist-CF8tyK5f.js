@@ -1,0 +1,1 @@
+import{$ as e,K as t,U as n,V as r,Z as i,et as a,o}from"./md-codemirror-C6KRopTN.js";var s=r.define({name:`json`,parser:o.configure({props:[a.add({Object:t({except:/^\s*\}/}),Array:t({except:/^\s*\]/})}),e.add({"Object Array":i})]}),languageData:{closeBrackets:{brackets:[`[`,`{`,`"`]},indentOnInput:/^\s*[\}\]]$/}});function c(){return new n(s)}export{c as json};

@@ -1,0 +1,1 @@
+import{ft as e,y as t}from"./md-vendor_vue-CUlChmnE.js";import{s as n}from"./md-utils-BzGhODsY.js";import{T as r}from"./md-Teleport-B0uVJkgo.js";var i=n(`chevron-up`,[[`path`,{d:`m18 15-6-6-6 6`,key:`153udz`}]]);function a(n){let i=r({nonce:e()});return t(()=>n?.value||i.nonce?.value)}export{i as n,a as t};
