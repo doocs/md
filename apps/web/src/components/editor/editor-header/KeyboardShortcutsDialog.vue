@@ -2,7 +2,6 @@
 import { Keyboard } from '@lucide/vue'
 import { computed } from 'vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
-import { useCommandPalette } from '@/composables/useCommandPalette'
 import { buildKeyboardShortcutCategories } from '@/configs/keyboard-shortcuts'
 
 const props = defineProps<{
@@ -14,7 +13,6 @@ const emit = defineEmits<{
 }>()
 
 const { t, locale } = useI18n()
-const { paletteShortcutLabel } = useCommandPalette()
 
 const shortcutCategories = computed(() => {
   void locale.value
@@ -31,7 +29,6 @@ const dialogOpen = computed({
   <PanelDialog
     v-model:open="dialogOpen"
     :title="t('menu.keyboardShortcuts')"
-    :description="t('keyboard.description', { shortcut: paletteShortcutLabel })"
     :icon="Keyboard"
     size="2xl"
   >

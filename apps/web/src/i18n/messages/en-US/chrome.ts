@@ -110,7 +110,6 @@ export default {
     formulaBlock: `Formula`,
   },
   keyboard: {
-    description: `Command palette: {shortcut}`,
     category: {
       general: `General`,
       edit: `Edit`,
