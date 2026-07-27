@@ -97,7 +97,7 @@ async function copySyntax(syntax: string) {
           v-for="cat in syntaxCategories"
           :key="cat.id"
           :value="cat.id"
-          class="mt-4 max-h-[min(50vh,24rem)] space-y-3 overflow-y-auto"
+          class="mt-4 h-[min(55vh,28rem)] space-y-3 overflow-y-auto"
         >
           <div
             v-for="item in cat.items"
