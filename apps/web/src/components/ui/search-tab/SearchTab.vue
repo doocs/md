@@ -81,6 +81,7 @@ watch([indexOfMatch, matchPositions], () => {
 watch(showSearchTab, async () => {
   if (!showSearchTab.value) {
     clearAllMarks()
+    showReplace.value = false
     findInSelection.value = false
     selectionRange.value = null
   }
