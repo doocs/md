@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ThemeName } from '@md/shared/configs'
 import { Check, CheckSquare, CircleHelp, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
-import { exportMergedTheme } from '@md/core'
+import { exportMergedTheme, hljs } from '@md/core'
 import { getDefaultCustomTheme, isBuiltinThemeName, isMarketplaceThemeKey, themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
@@ -175,6 +175,7 @@ function addHandler() {
 
 const isOpenViewThemeDialog = ref(false)
 const selectedViewTheme = ref<'default' | 'grace' | 'simple'>('default')
+const highlightedCSS = computed(() => hljs.highlight(themeMap[selectedViewTheme.value], { language: `css` }).value)
 
 const contextMenuTargetId = ref<string | null>(null)
 const showContextMenu = ref(false)
@@ -686,7 +687,7 @@ function exportCurrentTheme() {
         </div>
 
         <div class="flex-1 min-h-0 border rounded-lg overflow-auto">
-          <pre class="h-full overflow-auto p-4 bg-muted text-sm"><code>{{ themeMap[selectedViewTheme] }}</code></pre>
+          <pre class="h-full overflow-auto bg-muted text-sm"><code class="hljs" v-html="highlightedCSS" /></pre>
         </div>
       </div>
 
