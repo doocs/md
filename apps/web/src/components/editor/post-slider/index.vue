@@ -1188,10 +1188,17 @@ function handleDragEnd() {
           <li
             v-for="(item, idx) in currentHistoryList"
             :key="idx"
-            class="flex cursor-pointer items-center rounded-lg px-3 py-2.5 text-muted-foreground transition-colors duration-150 hover:bg-accent hover:text-accent-foreground"
-            :class="{ 'bg-primary/8 text-primary font-medium': currentHistoryIndex === idx }"
+            class="relative flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors duration-150"
+            :class="{
+              'bg-accent text-accent-foreground': currentHistoryIndex === idx,
+              'text-foreground/70 hover:text-foreground hover:bg-accent/50': currentHistoryIndex !== idx,
+            }"
             @click="currentHistoryIndex = idx"
           >
+            <span
+              v-if="currentHistoryIndex === idx"
+              class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
+            />
             <span class="text-xs leading-snug">{{ formatHistoryDatetime(item.datetime) }}</span>
           </li>
         </ul>
