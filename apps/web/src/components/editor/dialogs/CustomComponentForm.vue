@@ -241,23 +241,25 @@ function getPropDefaultPlaceholder(type: string): string {
             </div>
             <div class="w-full sm:col-span-2 flex gap-1 items-center">
               <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propType') }}</span>
-              <select
-                v-model="row.type"
-                class="h-8 w-full rounded-md border bg-background px-2 text-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              >
-                <option value="string">
-                  string
-                </option>
-                <option value="number">
-                  number
-                </option>
-                <option value="boolean">
-                  boolean
-                </option>
-                <option value="array">
-                  array
-                </option>
-              </select>
+              <Select v-model="row.type">
+                <SelectTrigger class="h-8 text-sm w-full" :aria-label="t('component.propType')">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="string">
+                    string
+                  </SelectItem>
+                  <SelectItem value="number">
+                    number
+                  </SelectItem>
+                  <SelectItem value="boolean">
+                    boolean
+                  </SelectItem>
+                  <SelectItem value="array">
+                    array
+                  </SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <div class="w-full sm:col-span-4 flex gap-1 items-center">
               <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propDesc') }}</span>
