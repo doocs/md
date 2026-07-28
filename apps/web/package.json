@@ -27,8 +27,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.1095.0",
-    "@aws-sdk/s3-request-presigner": "^3.1095.0",
+    "@aws-sdk/client-s3": "^3.1096.0",
+    "@aws-sdk/s3-request-presigner": "^3.1096.0",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/language": "^6.12.4",
     "@codemirror/state": "catalog:",
@@ -70,7 +70,7 @@
     "@types/diff-match-patch": "^1.0.36",
     "@vitejs/plugin-vue": "^6.0.8",
     "cross-env": "^10.1.0",
-    "less": "^4.8.0",
+    "less": "^4.8.1",
     "linkedom": "^0.18.13",
     "npm-run-all2": "^9.0.2",
     "ohash": "^2.0.11",
@@ -85,6 +85,6 @@
     "vitest": "catalog:",
     "vue-tsc": "^3.3.8",
     "wrangler": "catalog:",
-    "wxt": "^0.20.27"
+    "wxt": "^0.21.1"
   }
 }
