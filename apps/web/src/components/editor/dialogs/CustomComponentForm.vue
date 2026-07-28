@@ -242,7 +242,7 @@ function getPropDefaultPlaceholder(type: string): string {
             <div class="w-full sm:col-span-2 flex gap-1 items-center">
               <span class="text-xs text-muted-foreground sm:hidden w-12 shrink-0">{{ t('component.propType') }}</span>
               <Select v-model="row.type">
-                <SelectTrigger class="h-8 text-sm w-full">
+                <SelectTrigger class="h-8 text-sm w-full" :aria-label="t('component.propType')">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
