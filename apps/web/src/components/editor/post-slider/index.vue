@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Download, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, Upload, X } from '@lucide/vue'
-import { initRenderer } from '@md/core'
+import { hljs, initRenderer } from '@md/core'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { formatLocalDateTime } from '@/i18n/translate'
@@ -165,6 +165,11 @@ function openHistoryDialog(id: string) {
 
 const currentHistoryList = computed(() => {
   return postStore.getPostById(currentPostId.value!)?.history ?? []
+})
+
+const highlightedMarkdown = computed(() => {
+  const content = currentHistoryList.value[currentHistoryIndex.value]?.content ?? ''
+  return hljs.highlight(content, { language: `markdown` }).value
 })
 
 /** Isolated renderer — must not call useRenderStore().render() (mutates live PreviewPanel). */
@@ -1213,8 +1218,8 @@ function handleDragEnd() {
             </TabsList>
 
             <TabsContent value="content" class="flex-1 overflow-y-auto mt-2">
-              <div class="rounded-lg bg-muted/30 p-4 h-full overflow-y-auto">
-                <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit]">{{ currentHistoryList[currentHistoryIndex]?.content ?? '' }}</pre>
+              <div class="rounded-lg h-full overflow-y-auto">
+                <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit] h-full"><code class="hljs h-full" v-html="highlightedMarkdown" /></pre>
               </div>
             </TabsContent>
 
