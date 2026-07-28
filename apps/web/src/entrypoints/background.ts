@@ -6,10 +6,10 @@ import zhCN from '@/i18n/messages/zh-CN/store'
 import zhTW from '@/i18n/messages/zh-TW/store'
 
 const EXTENSION_TITLE_BY_LOCALE = {
-  'zh-CN': zhCN.extension.editorTitle,
-  'zh-TW': zhTW.extension.editorTitle,
-  'en-US': enUS.extension.editorTitle,
-  'ja-JP': jaJP.extension.editorTitle,
+  'zh-CN': zhCN.store.extension.editorTitle,
+  'zh-TW': zhTW.store.extension.editorTitle,
+  'en-US': enUS.store.extension.editorTitle,
+  'ja-JP': jaJP.store.extension.editorTitle,
 } as const
 
 function getExtensionTitle(): string {

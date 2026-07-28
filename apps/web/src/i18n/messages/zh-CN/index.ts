@@ -15,7 +15,7 @@ export default {
   ...editor,
   ...marketplace,
   ...notifications,
-  ai,
-  upload,
-  store,
+  ...ai,
+  ...upload,
+  ...store,
 }
