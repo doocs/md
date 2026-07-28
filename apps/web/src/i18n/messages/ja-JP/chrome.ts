@@ -110,7 +110,6 @@ export default {
     formulaBlock: `数式`,
   },
   keyboard: {
-    description: `コマンドパレット: {shortcut}`,
     category: {
       general: `一般`,
       edit: `編集`,
