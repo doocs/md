@@ -98,7 +98,7 @@ function submit(formValues: any) {
       >
         <div class="flex-1 overflow-y-auto p-1 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden flex flex-col">
           <Field v-slot="{ field, errorMessage }" name="mpId">
-            <FormItem :label="t('mpAccount.idLabel')" required :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.idLabel')" required :error="errorMessage" :width="110">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -115,7 +115,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="name">
-            <FormItem :label="t('mpAccount.nameLabel')" required :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.nameLabel')" required :error="errorMessage" :width="110">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -125,7 +125,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="logo">
-            <FormItem :label="t('mpAccount.logoLabel')" :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.logoLabel')" :error="errorMessage" :width="110">
               <Input
                 v-bind="field"
                 v-model.trim="field.value"
@@ -135,7 +135,7 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="desc">
-            <FormItem :label="t('mpAccount.descLabel')" :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.descLabel')" :error="errorMessage" :width="110">
               <Textarea
                 v-bind="field"
                 v-model.trim="field.value"
@@ -147,13 +147,13 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="serviceType">
-            <FormItem :label="t('mpAccount.typeLabel')" required :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.typeLabel')" required :error="errorMessage" :width="110">
               <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
-                <div class="inline-flex items-center space-x-2 w-20">
+                <div class="inline-flex items-center space-x-2">
                   <RadioGroupItem id="mp-cfg-type-1" value="1" />
                   <Label for="mp-cfg-type-1">{{ t('mpAccount.typeOfficial') }}</Label>
                 </div>
-                <div class="inline-flex items-center space-x-2 w-20">
+                <div class="inline-flex items-center space-x-2">
                   <RadioGroupItem id="mp-cfg-type-2" value="2" />
                   <Label for="mp-cfg-type-2">{{ t('mpAccount.typeService') }}</Label>
                 </div>
@@ -162,17 +162,17 @@ function submit(formValues: any) {
           </Field>
 
           <Field v-slot="{ field, errorMessage }" name="verify">
-            <FormItem :label="t('mpAccount.verifyLabel')" required :error="errorMessage" :width="50">
+            <FormItem :label="t('mpAccount.verifyLabel')" required :error="errorMessage" :width="110">
               <RadioGroup class="flex gap-5" v-bind="field" :default-value="field.value">
-                <div class="inline-flex items-center space-x-2 w-20">
+                <div class="inline-flex items-center space-x-2">
                   <RadioGroupItem id="mp-cfg-verify-0" value="0" />
                   <Label for="mp-cfg-verify-0">{{ t('mpAccount.verifyNone') }}</Label>
                 </div>
-                <div class="inline-flex items-center space-x-2 w-20">
+                <div class="inline-flex items-center space-x-2">
                   <RadioGroupItem id="mp-cfg-verify-1" value="1" />
                   <Label for="mp-cfg-verify-1">{{ t('mpAccount.verifyPersonal') }}</Label>
                 </div>
-                <div class="inline-flex items-center space-x-2 w-20">
+                <div class="inline-flex items-center space-x-2">
                   <RadioGroupItem id="mp-cfg-verify-2" value="2" />
                   <Label for="mp-cfg-verify-2">{{ t('mpAccount.verifyEnterprise') }}</Label>
                 </div>
