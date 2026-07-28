@@ -226,7 +226,7 @@ function cancelInlineRename() {
         <DropdownMenuTrigger as-child>
           <button
             type="button"
-            class="flex shrink-0 items-center justify-center size-6 rounded-md text-muted-foreground/40 transition-all duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:opacity-100 data-[state=open]:text-foreground"
+            class="flex shrink-0 items-center justify-center size-5 rounded-md text-muted-foreground/40 transition-all duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:opacity-100 data-[state=open]:text-foreground"
             :class="isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
             :aria-label="t('common.moreActions')"
             :title="t('common.moreActions')"
