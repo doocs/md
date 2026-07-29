@@ -29,7 +29,7 @@
   },
   "devDependencies": {
     "@md/config": "workspace:*",
-    "jsdom": "^29.1.1",
+    "jsdom": "^30.0.0",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }
