@@ -8,9 +8,9 @@
   "scripts": {
     "start": "pnpm run dev",
     "dev": "vite",
-    "build": "run-p type-check \"build:only {@}\" --",
+    "build": "run-s \"build:only {@}\" type-check --",
     "build:only": "vite build",
-    "build:h5-netlify": "run-p type-check \"build:h5-netlify:only {@}\" --",
+    "build:h5-netlify": "run-s \"build:h5-netlify:only {@}\" type-check --",
     "build:h5-netlify:only": "cross-env SERVER_ENV=NETLIFY vite build",
     "build:utools": "cross-env SERVER_ENV=UTOOLS vite build --mode utools --outDir ../utools/dist --emptyOutDir",
     "build:analyze": "cross-env ANALYZE=true vite build",
