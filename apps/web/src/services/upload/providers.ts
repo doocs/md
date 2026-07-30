@@ -447,6 +447,11 @@ async function getMpToken(appID: string, appsecret: string, proxyOrigin?: string
     await store.setJSON(`mpToken:${appID}`, tokenInfo)
     return res.access_token
   }
+  // Surface WeChat error detail (e.g. errcode 40164: egress IP not in the
+  // MP platform IP whitelist) to make misconfiguration diagnosable
+  if (res.errcode) {
+    throw new Error(`${t(`upload.provider.accessTokenFailed`)}: [${res.errcode}] ${res.errmsg}`)
+  }
   return ``
 }
 const isCfWorkers = import.meta.env.CF_WORKERS === `1`
@@ -481,10 +486,11 @@ async function mpFileUpload(file: File) {
     url = url.replace(`https://api.weixin.qq.com`, proxyOrigin)
   }
 
-  const res = await fetch<any, { url: string }>(url, requestOptions)
+  const res = await fetch<any, { url?: string, errcode?: number, errmsg?: string }>(url, requestOptions)
 
   if (!res.url) {
-    throw new Error(t(`upload.provider.uploadNoUrl`))
+    const detail = res.errcode ? `: [${res.errcode}] ${res.errmsg}` : ``
+    throw new Error(t(`upload.provider.uploadNoUrl`) + detail)
   }
 
   let imageUrl = res.url
