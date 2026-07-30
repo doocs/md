@@ -6,6 +6,21 @@ export interface RequestConfig {
   timeout?: number
 }
 
+// Some APIs (e.g. WeChat media/uploadimg) return a JSON body with a
+// text/plain Content-Type. Mirror axios's forcedJSONParsing behavior so
+// such responses are still parsed into objects.
+function tryParseJson(text: string): unknown {
+  const trimmed = text.trim()
+  if (!trimmed.startsWith(`{`) && !trimmed.startsWith(`[`))
+    return text
+  try {
+    return JSON.parse(trimmed)
+  }
+  catch {
+    return text
+  }
+}
+
 async function request<T = unknown>(config: RequestConfig): Promise<T> {
   const method = (config.method || `GET`).toUpperCase()
   const url = config.url || ``
@@ -45,7 +60,7 @@ async function request<T = unknown>(config: RequestConfig): Promise<T> {
     const contentType = res.headers.get(`content-type`) || ``
     const data = contentType.includes(`application/json`)
       ? await res.json()
-      : await res.text()
+      : tryParseJson(await res.text())
 
     if (!res.ok) {
       const err = Object.assign(new Error(`Request failed with status ${res.status}`), {
