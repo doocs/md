@@ -11,9 +11,18 @@ export function downloadMD(doc: string, title: string = `untitled`) {
 export async function exportPostsAsZip(posts: Array<{ title: string, content: string }>) {
   const JSZip = (await import(`jszip`)).default
   const zip = new JSZip()
+  const usedNames = new Set<string>()
   posts.forEach(({ title, content }) => {
     const safeTitle = sanitizeTitle(title)
-    zip.file(`${safeTitle}.md`, content)
+    let filename = `${safeTitle}.md`
+    if (usedNames.has(filename)) {
+      let counter = 1
+      while (usedNames.has(`${safeTitle}-${counter}.md`))
+        counter++
+      filename = `${safeTitle}-${counter}.md`
+    }
+    usedNames.add(filename)
+    zip.file(filename, content)
   })
   const blob = await zip.generateAsync({ type: `blob` })
   const date = new Date().toISOString().slice(0, 10)
