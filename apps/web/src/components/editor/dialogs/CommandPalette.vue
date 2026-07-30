@@ -19,6 +19,7 @@ const { buildCommands } = useCommandPalette()
 const query = ref(``)
 const activeIndex = ref(0)
 const inputRef = ref<HTMLInputElement | null>(null)
+const scrollContainerRef = ref<HTMLDivElement | null>(null)
 
 const allCommands = computed(() => {
   void locale.value
@@ -59,6 +60,18 @@ watch(isShowCommandPalette, (open) => {
 
 watch(filteredCommands, () => {
   activeIndex.value = 0
+})
+
+watch(activeIndex, () => {
+  nextTick(() => {
+    const container = scrollContainerRef.value
+    if (!container)
+      return
+    const activeEl = container.querySelector('[data-active="true"]')
+    if (activeEl) {
+      activeEl.scrollIntoView({ block: 'nearest' })
+    }
+  })
 })
 
 function close() {
@@ -139,7 +152,7 @@ function isActive(groupIdx: number, cmdIdx: number) {
         >
       </div>
 
-      <div class="max-h-[min(52vh,24rem)] overflow-y-auto p-1">
+      <div ref="scrollContainerRef" class="max-h-[min(52vh,24rem)] overflow-y-auto p-1">
         <template v-if="groupedCommands.length">
           <template v-for="([group, items], groupIdx) in groupedCommands" :key="group">
             <p class="px-2 py-1.5 text-xs font-medium text-muted-foreground">
@@ -151,6 +164,7 @@ function isActive(groupIdx: number, cmdIdx: number) {
               type="button"
               class="flex w-full cursor-pointer items-center justify-between rounded-md px-2 py-2 text-left text-sm transition-colors"
               :class="isActive(groupIdx, cmdIdx) ? 'bg-accent text-accent-foreground' : 'hover:bg-accent/60'"
+              :data-active="isActive(groupIdx, cmdIdx)"
               @mouseenter="activeIndex = getFlatIndex(groupIdx, cmdIdx)"
               @click="runCommand(cmd)"
             >
