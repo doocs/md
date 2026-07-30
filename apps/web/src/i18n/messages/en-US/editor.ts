@@ -92,7 +92,7 @@ export default {
     jsonPreview: `JSON preview`,
     exportSelected: `Export selected`,
     importJson: `Import JSON config file`,
-    selectJsonFile: `Click to select a JSON file`,
+    jsonDropHint: `Click to select or drag and drop a JSON file here`,
     jsonFormatHint: `Supported format: .json`,
     selectImportItems: `Select settings to import`,
     importFirst: `Import a JSON file first`,

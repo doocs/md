@@ -92,7 +92,7 @@ export default {
     jsonPreview: `当前 JSON 预览`,
     exportSelected: `导出选中配置`,
     importJson: `导入 JSON 配置文件`,
-    selectJsonFile: `点击选择 JSON 文件`,
+    jsonDropHint: `点击选择或拖拽 JSON 文件到此处`,
     jsonFormatHint: `支持格式: .json`,
     selectImportItems: `选择要导入的配置项`,
     importFirst: `请先导入 JSON 文件`,
