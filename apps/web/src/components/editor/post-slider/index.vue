@@ -1252,7 +1252,7 @@ function handleDragEnd() {
               </div>
             </TabsContent>
 
-            <TabsContent value="diff" class="flex-1 overflow-hidden mt-2">
+            <TabsContent value="diff" class="flex-1 overflow-hidden mt-2 pt-1">
               <div class="flex items-center gap-2 mb-2 text-xs text-muted-foreground shrink-0">
                 <span>{{ t('post.compareLabel') }}</span>
                 <Select v-model="compareTargetIndex">
