@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Post, PostAccount } from '@md/shared/types'
-import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus, Send } from '@lucide/vue'
+import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus } from '@lucide/vue'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'reka-ui'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -307,7 +307,6 @@ onBeforeMount(() => {
     <Dialog v-model:open="dialogVisible" @update:open="onUpdate">
       <DialogTrigger>
         <Button v-if="!isMobile" variant="outline" class="h-9">
-          <Send class="mr-2 h-4 w-4" />
           {{ t('postInfo.publish') }}
         </Button>
       </DialogTrigger>

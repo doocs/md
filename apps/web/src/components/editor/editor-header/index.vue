@@ -262,26 +262,28 @@ function copyToWeChat() {
     <div class="flex flex-wrap items-center gap-2">
       <Button
         variant="outline"
-        class="h-9"
+        class="h-9 max-md:w-9 max-md:px-0"
         :disabled="isCopying"
         :aria-busy="isCopying"
+        :aria-label="t('header.copy')"
         @click="copyToWeChat"
       >
-        <Loader2 v-if="isCopying" class="mr-2 h-4 w-4 animate-spin" />
-        <Copy v-else class="mr-2 h-4 w-4" />
-        <span>{{ t('header.copy') }}</span>
+        <Loader2 v-if="isCopying" class="h-4 w-4 animate-spin md:mr-2" />
+        <Copy v-else class="h-4 w-4 md:hidden" />
+        <span class="max-md:hidden">{{ t('header.copy') }}</span>
       </Button>
 
       <PostInfo class="hidden md:inline-flex" />
 
       <Button
         variant="outline"
-        class="h-9"
+        class="h-9 max-md:w-9 max-md:px-0"
         :class="{ 'bg-accent text-accent-foreground': isOpenRightSlider }"
+        :aria-label="t('header.style')"
         @click="isOpenRightSlider = !isOpenRightSlider"
       >
-        <Palette class="mr-2 h-4 w-4" />
-        <span>{{ t('header.style') }}</span>
+        <Palette class="h-4 w-4 md:hidden" />
+        <span class="max-md:hidden">{{ t('header.style') }}</span>
       </Button>
     </div>
   </header>
