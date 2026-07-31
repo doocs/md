@@ -92,7 +92,7 @@ export default {
     jsonPreview: `JSON プレビュー`,
     exportSelected: `選択した項目をエクスポート`,
     importJson: `JSON 設定ファイルをインポート`,
-    selectJsonFile: `クリックして JSON ファイルを選択`,
+    jsonDropHint: `クリックするか、JSON ファイルをここにドラッグ＆ドロップ`,
     jsonFormatHint: `対応形式: .json`,
     selectImportItems: `インポートする設定を選択`,
     importFirst: `先に JSON ファイルをインポートしてください`,

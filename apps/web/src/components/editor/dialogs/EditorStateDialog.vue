@@ -185,17 +185,13 @@ async function copyToClipboard(text: string) {
 }
 
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const isDragover = ref(false)
 
 function triggerFileInput() {
   fileInputRef.value?.click()
 }
 
-function handleFileImport(event: Event) {
-  const input = event.target as HTMLInputElement
-  if (!input.files?.length)
-    return
-
-  const file = input.files[0]
+function processJSONFile(file: File) {
   const reader = new FileReader()
 
   reader.onload = (e) => {
@@ -237,7 +233,33 @@ function handleFileImport(event: Event) {
   }
 
   reader.readAsText(file)
+}
+
+function handleFileImport(event: Event) {
+  const input = event.target as HTMLInputElement
+  if (!input.files?.length)
+    return
+
+  processJSONFile(input.files[0])
   input.value = ``
+}
+
+function handleDrop(event: DragEvent) {
+  event.preventDefault()
+  isDragover.value = false
+
+  const file = event.dataTransfer?.files?.[0]
+  if (!file) {
+    toast.error(t('editorState.importFormatError'))
+    return
+  }
+
+  if (!file.name.endsWith(`.json`)) {
+    toast.error(t('editorState.importFormatError'))
+    return
+  }
+
+  processJSONFile(file)
 }
 
 function applyImportedConfig() {
@@ -406,21 +428,23 @@ function applyImportedConfig() {
               <div class="min-h-0 flex-1 p-2">
                 <div
                   v-if="!originalImportData"
-                  class="flex h-full min-h-[10rem] flex-col items-center justify-center rounded-lg border-2 border-dashed border-border"
+                  class="flex h-full min-h-[10rem] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
+                  :class="{
+                    'border-primary bg-primary/5': isDragover,
+                    'border-border hover:bg-muted': !isDragover,
+                  }"
+                  @click="triggerFileInput"
+                  @dragover.prevent="isDragover = true"
+                  @dragleave.prevent="isDragover = false"
+                  @drop="handleDrop"
                 >
-                  <button
-                    type="button"
-                    class="flex h-full w-full flex-col cursor-pointer items-center justify-center rounded-lg hover:bg-muted"
-                    @click="triggerFileInput"
-                  >
-                    <UploadCloud class="mb-2 size-12 text-muted-foreground sm:size-16" />
-                    <span class="text-sm text-muted-foreground">
-                      {{ t('editorState.selectJsonFile') }}
-                    </span>
-                    <span class="mt-1 text-xs text-muted-foreground/60">
-                      {{ t('editorState.jsonFormatHint') }}
-                    </span>
-                  </button>
+                  <UploadCloud class="mb-2 size-12 text-muted-foreground sm:size-16" />
+                  <span class="text-sm text-muted-foreground">
+                    {{ t('editorState.jsonDropHint') }}
+                  </span>
+                  <span class="mt-1 text-xs text-muted-foreground/60">
+                    {{ t('editorState.jsonFormatHint') }}
+                  </span>
                 </div>
                 <div v-else class="h-full overflow-auto">
                   <pre class="text-left text-xs text-muted-foreground sm:text-sm">{{ JSON.stringify(filteredImportJSON, null, 2) }}</pre>
