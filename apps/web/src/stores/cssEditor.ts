@@ -1,7 +1,8 @@
 import type { EditorView } from '@codemirror/view'
 import { Compartment, EditorState } from '@codemirror/state'
 import { EditorView as CMEditorView } from '@codemirror/view'
-import { cssSetup, theme as editorTheme, getDefaultCustomTheme } from '@md/shared'
+import { theme as editorTheme, getDefaultCustomTheme } from '@md/shared'
+import { cssSetup } from '@md/shared/editor/css'
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
 import { uuidv4 } from '@md/shared/utils/uuid'
@@ -323,16 +324,15 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       }
     }
     else {
-      const { default: JSZip } = await import('jszip')
-      const zip = new JSZip()
+      const { strToU8, zipSync } = await import('fflate')
+      const files: Record<string, Uint8Array> = {}
       selectedIds.forEach((id) => {
         const tab = cssContentConfig.value.tabs.find(t => t.id === id)
         if (tab) {
-          zip.file(`${sanitizeTitle(tab.title)}.css`, tab.content)
+          files[`${sanitizeTitle(tab.title)}.css`] = strToU8(tab.content)
         }
       })
-      const blob = await zip.generateAsync({ type: `blob` })
-      const url = URL.createObjectURL(blob)
+      const url = URL.createObjectURL(new Blob([zipSync(files)], { type: `application/zip` }))
       downloadFile(url, `css-schemes.zip`)
       URL.revokeObjectURL(url)
     }
