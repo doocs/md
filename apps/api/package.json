@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "hono": "^4.12.33",
-    "uuid": "^14.0.1"
+    "uuid": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "catalog:",
