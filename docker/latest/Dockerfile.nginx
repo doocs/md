@@ -1,4 +1,4 @@
-ARG VER_NGX="1.21.6-alpine"
+ARG VER_NGX="1.30.4-alpine"
 
 FROM --platform=$BUILDPLATFORM doocs/md:latest-assets AS assets
 FROM --platform=$TARGETPLATFORM nginx:${VER_NGX}
