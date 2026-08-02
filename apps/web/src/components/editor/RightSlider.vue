@@ -205,15 +205,18 @@ const pickColorsContainer = useTemplateRef<HTMLElement | undefined>(`pickColorsC
 const format = ref<Format>(`rgb`)
 const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 
+// Grid width below which option buttons switch to compact blocks
+const COMPACT_GRID_WIDTH = 280
+
 // Show color swatch only when right sidebar is narrow
 const colorGridRef = useTemplateRef<HTMLElement | undefined>(`colorGridRef`)
 const { width: colorGridWidth } = useElementSize(colorGridRef)
-const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth.value < 280)
+const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth.value < COMPACT_GRID_WIDTH)
 
 // Shrink theme buttons to compact blocks when right sidebar is narrow
 const themeGridRef = useTemplateRef<HTMLElement | undefined>(`themeGridRef`)
 const { width: themeGridWidth } = useElementSize(themeGridRef)
-const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth.value < 280)
+const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth.value < COMPACT_GRID_WIDTH)
 </script>
 
 <template>
