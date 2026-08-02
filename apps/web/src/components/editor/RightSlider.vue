@@ -209,6 +209,11 @@ const formatOptions = ref<Format[]>([`rgb`, `hex`, `hsl`, `hsv`])
 const colorGridRef = useTemplateRef<HTMLElement | undefined>(`colorGridRef`)
 const { width: colorGridWidth } = useElementSize(colorGridRef)
 const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth.value < 280)
+
+// Shrink theme buttons to compact blocks when right sidebar is narrow
+const themeGridRef = useTemplateRef<HTMLElement | undefined>(`themeGridRef`)
+const { width: themeGridWidth } = useElementSize(themeGridRef)
+const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth.value < 280)
 </script>
 
 <template>
@@ -246,13 +251,27 @@ const isColorCompact = computed(() => colorGridWidth.value > 0 && colorGridWidth
         <h2 class="text-sm font-medium">
           {{ t('menu.theme') }}
         </h2>
-        <div class="grid grid-cols-3 gap-2">
+        <div
+          ref="themeGridRef"
+          class="grid gap-2"
+          :class="isThemeCompact ? 'grid-cols-4 sm:grid-cols-5' : 'grid-cols-3'"
+        >
           <Button
-            v-for="{ label, value } in localizedStyleOptions.themeOptions" :key="value" class="h-auto w-full px-1.5 py-2 text-xs whitespace-nowrap" variant="outline" :class="{
-              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': theme === value,
-            }" @click="themeChanged(value)"
+            v-for="{ label, value } in localizedStyleOptions.themeOptions"
+            :key="value"
+            class="h-auto w-full text-xs whitespace-nowrap"
+            :class="[
+              isThemeCompact ? 'justify-center px-1 py-2' : 'px-1.5 py-2',
+              {
+                'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': theme === value,
+              },
+            ]"
+            variant="outline"
+            :title="label"
+            :aria-label="label"
+            @click="themeChanged(value)"
           >
-            {{ label }}
+            <span :class="{ 'min-w-0 truncate': isThemeCompact }">{{ label }}</span>
           </Button>
         </div>
         <Button
