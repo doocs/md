@@ -24,8 +24,8 @@ export async function exportPostsAsZip(posts: Array<{ title: string, content: st
     usedNames.add(filename)
     files[filename] = strToU8(content)
   })
-  const data = await new Promise<Uint8Array>((resolve, reject) =>
-    zip(files, (err, out) => (err ? reject(err) : resolve(out))))
+  const data = await new Promise<Uint8Array<ArrayBuffer>>((resolve, reject) =>
+    zip(files, (err, out) => (err ? reject(err) : resolve(out as Uint8Array<ArrayBuffer>))))
   const blob = new Blob([data], { type: `application/zip` })
   const date = new Date().toISOString().slice(0, 10)
   const url = URL.createObjectURL(blob)

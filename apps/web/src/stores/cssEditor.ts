@@ -332,8 +332,8 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
           files[`${sanitizeTitle(tab.title)}.css`] = strToU8(tab.content)
         }
       })
-      const data = await new Promise<Uint8Array>((resolve, reject) =>
-        zip(files, (err, out) => (err ? reject(err) : resolve(out))))
+      const data = await new Promise<Uint8Array<ArrayBuffer>>((resolve, reject) =>
+        zip(files, (err, out) => (err ? reject(err) : resolve(out as Uint8Array<ArrayBuffer>))))
       const url = URL.createObjectURL(new Blob([data], { type: `application/zip` }))
       downloadFile(url, `css-schemes.zip`)
       URL.revokeObjectURL(url)
