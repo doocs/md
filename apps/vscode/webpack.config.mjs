@@ -21,11 +21,17 @@ export default function config() {
       path: path.resolve(currentDir, `dist`),
       filename: `[name].js`,
       libraryTarget: `commonjs2`,
+      // Remove stale async chunks from previous builds; without this they
+      // accumulate in dist/ and get packaged into the vsix.
+      clean: true,
     },
     externals: {
       'vscode': `commonjs vscode`,
       // Shipped in runtime/node_modules for --no-dependencies vsix packaging.
       'isomorphic-dompurify': `commonjs ../runtime/node_modules/isomorphic-dompurify`,
+      // Keep the renderer as a separate bundle loaded on demand; webpack would
+      // otherwise rewrite the createRequire call and inline it into extension.js.
+      './previewRenderer': `commonjs ./previewRenderer`,
     },
     resolve: {
       extensions: [`.ts`, `.js`],

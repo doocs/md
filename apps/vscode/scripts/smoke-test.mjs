@@ -43,7 +43,8 @@ runCase(`citeStatus enabled`, { citeStatus: true }, [
 ])
 
 runCase(`countStatus enabled`, { countStatus: true }, [
-  [`includes reading stats`, html => /阅读|分钟|字/.test(html)],
+  // Core fallbacks are locale-neutral English; the web app injects localized strings.
+  [`includes reading stats`, html => /words.*min read|阅读|分钟|字/.test(html)],
 ])
 
 runCase(`mac code block`, { isMacCodeBlock: true }, [
