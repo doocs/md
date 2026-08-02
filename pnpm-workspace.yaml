@@ -96,7 +96,7 @@ catalog:
   isomorphic-dompurify: ^3.21.0
   marked: ^18.0.7
   prettier: 2.8.8
-  tsx: ^4.23.1
+  tsx: ^4.23.2
   typescript: ~6.0.3
   uuid: ^14.0.1
   vitest: ^4.1.10
