@@ -324,7 +324,7 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
       }
     }
     else {
-      const { strToU8, zipSync } = await import('fflate')
+      const { strToU8, zip } = await import('fflate')
       const files: Record<string, Uint8Array> = {}
       selectedIds.forEach((id) => {
         const tab = cssContentConfig.value.tabs.find(t => t.id === id)
@@ -332,7 +332,9 @@ export const useCssEditorStore = defineStore(`cssEditor`, () => {
           files[`${sanitizeTitle(tab.title)}.css`] = strToU8(tab.content)
         }
       })
-      const url = URL.createObjectURL(new Blob([zipSync(files)], { type: `application/zip` }))
+      const data = await new Promise<Uint8Array>((resolve, reject) =>
+        zip(files, (err, out) => (err ? reject(err) : resolve(out))))
+      const url = URL.createObjectURL(new Blob([data], { type: `application/zip` }))
       downloadFile(url, `css-schemes.zip`)
       URL.revokeObjectURL(url)
     }
