@@ -9,9 +9,9 @@ export function downloadMD(doc: string, title: string = `untitled`) {
 
 /** Batch-export multiple posts as a ZIP archive. */
 export async function exportPostsAsZip(posts: Array<{ title: string, content: string }>) {
-  const JSZip = (await import(`jszip`)).default
-  const zip = new JSZip()
+  const { strToU8, zip } = await import(`fflate`)
   const usedNames = new Set<string>()
+  const files: Record<string, Uint8Array> = {}
   posts.forEach(({ title, content }) => {
     const safeTitle = sanitizeTitle(title)
     let filename = `${safeTitle}.md`
@@ -22,9 +22,11 @@ export async function exportPostsAsZip(posts: Array<{ title: string, content: st
       filename = `${safeTitle}-${counter}.md`
     }
     usedNames.add(filename)
-    zip.file(filename, content)
+    files[filename] = strToU8(content)
   })
-  const blob = await zip.generateAsync({ type: `blob` })
+  const data = await new Promise<Uint8Array<ArrayBuffer>>((resolve, reject) =>
+    zip(files, (err, out) => (err ? reject(err) : resolve(out as Uint8Array<ArrayBuffer>))))
+  const blob = new Blob([data], { type: `application/zip` })
   const date = new Date().toISOString().slice(0, 10)
   const url = URL.createObjectURL(blob)
   const a = document.createElement(`a`)

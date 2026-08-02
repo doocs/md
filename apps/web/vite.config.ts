@@ -1,7 +1,6 @@
 import type { Plugin } from 'vite'
-import path from 'node:path'
-
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
 import { visualizer } from 'rollup-plugin-visualizer'
@@ -11,7 +10,7 @@ import { defineConfig, loadEnv } from 'vite'
 import { VitePluginRadar } from 'vite-plugin-radar'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
-import { utoolsLocalAssetsPlugin } from './plugins/vite-plugin-utools-local-assets'
+import { utoolsLocalAssetsPlugin } from './plugins/vite-plugin-utools-local-assets.ts'
 
 const isNetlify = process.env.SERVER_ENV === `NETLIFY`
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
@@ -38,14 +37,20 @@ function manualChunks(id: string): string | undefined {
   if (id.includes(`@codemirror/lang-`) && !id.includes(`@codemirror/lang-markdown`))
     return
 
-  // Core CodeMirror stack (+ @lezer); keep together for caching
-  if (id.includes(`codemirror`) || id.includes(`@lezer`))
+  // Core CodeMirror stack; keep together for caching.
+  // Only core @lezer packages belong here — language grammars (@lezer/cpp,
+  // @lezer/python, …) must follow their lazy LanguageDescription.load() chunks.
+  if (id.includes(`codemirror`))
+    return `codemirror`
+  if (/[\\/]@lezer[\\/](?:common|lr|highlight|markdown|html)[\\/]/.test(id))
     return `codemirror`
 
   // prettier / highlight are large and already loaded via dedicated entry points
   if (id.includes(`prettier`))
     return `prettier`
-  if (id.includes(`highlight.js`))
+  // Match the package root only: `*-highlight.js` files (e.g. @antv/infographic's
+  // select-highlight.js) would otherwise drag their dep subgraph onto the entry.
+  if (/[\\/]node_modules[\\/]highlight\.js[\\/]/.test(id))
     return `highlight`
 
   // Do not force-chunk mermaid / katex / aws-sdk / etc.
@@ -103,7 +108,7 @@ export default defineConfig(({ mode }) => {
       isUTools && utoolsLocalAssetsPlugin(),
     ],
     resolve: {
-      alias: { '@': path.resolve(__dirname, `./src`) },
+      alias: { '@': fileURLToPath(new URL(`./src`, import.meta.url)) },
       dedupe: [`@codemirror/state`, `@codemirror/view`],
     },
     css: { devSourcemap: true },
