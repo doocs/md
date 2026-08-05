@@ -25,7 +25,7 @@
     "highlight.js": "^11.11.1",
     "isomorphic-dompurify": "catalog:",
     "marked": "catalog:",
-    "mermaid": "^11.16.0"
+    "mermaid": "^11.16.1"
   },
   "devDependencies": {
     "@md/config": "workspace:*",

@@ -1,5 +1,5 @@
 diff --git a/lib/inline.js b/lib/inline.js
-index c40534e..8fd7584 100644
+index c40534e208d98f748bd3d05173d1063e5b8289cc..8fd75841d1c44b433eee877dc183871fc15173de 100644
 --- a/lib/inline.js
 +++ b/lib/inline.js
 @@ -132,7 +132,10 @@ export default function makeJuiceClient(juiceClient) {
@@ -12,5 +12,5 @@ index c40534e..8fd7584 100644
 +              addProps(parsedInlineStyle[0][1], new utils.Selector('<style>', true));
 +            }
            }
-
+ 
            // store reference to an element we need to compile style="" attr for
