@@ -1,8 +1,8 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index 5b817f884f2d71ca946c6eae13f91b3a3c97e7a5..d8c23593c592882737f70c95dd612490d1653245 100644
+index 0fb53bd177b2ba028c445574bc40134f3686e555..7fde56e7ab7c3ff2f1ae783eeb6259c8594a2bff 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9197,7 +9197,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9204,7 +9204,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -39,10 +39,10 @@ index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index 55d638d50f454d4cd9d508262446135791915cb0..238a93c78dda0d0e97d2f99094d40c3f63a33728 100644
+index 2507607388dd6f50deabe6b13133a3583103ac11..0ba959432970c3fabad30ddbadf9f47478e21ee8 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9192,7 +9192,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9199,7 +9199,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters

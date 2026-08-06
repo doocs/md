@@ -14,7 +14,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "hono": "^4.12.33",
+    "hono": "^4.13.0",
     "uuid": "catalog:"
   },
   "devDependencies": {
