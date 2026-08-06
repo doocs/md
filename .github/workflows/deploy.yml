@@ -27,7 +27,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 11.18.0
+          version: 11.20.0
 
       - name: Install dependencies
         run: pnpm install
@@ -87,7 +87,7 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
-          version: 11.18.0
+          version: 11.20.0
 
       - name: Install dependencies
         run: pnpm install
