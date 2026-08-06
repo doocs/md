@@ -43,6 +43,8 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
+  # CVE-2026-69207 / GHSA-8j4g-w8fx-2239 (dependabot/317): @modelcontextprotocol/sdk pins hono 4.12.33
+  hono: ^4.13.0
   ini: '>=7.0.0'
   js-yaml: ^4.3.0
   jsdom>undici: ^7.25.0
