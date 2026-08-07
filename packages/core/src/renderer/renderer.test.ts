@@ -108,6 +108,15 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     ])
   })
 
+  it('decodes named and numeric entities in heading text like textContent', () => {
+    const renderer = initRenderer({})
+    renderMarkdown(`# Fish &amp; Chips &mdash; &#x2026; &nbsp;end`, renderer)
+
+    expect(renderer.getHeadings()).toEqual([
+      { level: 1, text: `Fish & Chips — … \u00A0end` },
+    ])
+  })
+
   it('includes the footnote title after postProcessHtml', () => {
     const renderer = initRenderer({
       citeStatus: true,

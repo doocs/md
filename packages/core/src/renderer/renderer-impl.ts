@@ -3,6 +3,7 @@ import type { FrontMatterData } from '@md/shared/types/front-matter'
 import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import type { RendererObject, Tokens } from 'marked'
 import readingTime from '@md/shared/utils/readingTime'
+import { decodeHTML } from 'entities'
 import frontMatter from 'front-matter'
 import hljs from 'highlight.js/lib/core'
 import { Marked } from 'marked'
@@ -33,21 +34,11 @@ const DOUBLE_QUOTE_REGEX = /"/g
 const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const HTML_TAG_REGEX = /<[^>]*>/g
-const HTML_ENTITY_REGEX = /&(?:amp|lt|gt|quot|#39|nbsp);/g
-const HTML_ENTITIES: Record<string, string> = {
-  '&amp;': `&`,
-  '&lt;': `<`,
-  '&gt;': `>`,
-  '&quot;': `"`,
-  '&#39;': `'`,
-  '&nbsp;': ` `,
-}
 
 /** Plain text of inline heading HTML, mirroring what `textContent` would yield. */
 function stripInlineHtml(html: string): string {
-  return html
-    .replace(HTML_TAG_REGEX, ``)
-    .replace(HTML_ENTITY_REGEX, entity => HTML_ENTITIES[entity] ?? entity)
+  // decodeHTML handles every named/numeric entity, matching DOM textContent.
+  return decodeHTML(html.replace(HTML_TAG_REGEX, ``))
 }
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
