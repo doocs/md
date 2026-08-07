@@ -27,8 +27,6 @@ function colors() {
     },
   })
 
-  // Uncomment to list all color names:
-  // Object.keys(returnValue).forEach((color) => console.log(returnValue[color](color)))
   return colorTable
 }
 

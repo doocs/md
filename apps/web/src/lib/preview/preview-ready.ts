@@ -5,6 +5,7 @@ import {
   MD_DIAGRAM_STATE_ATTR,
 } from '@md/core'
 import { nextTick } from 'vue'
+import { delay } from '@/lib/delay'
 
 const PREVIEW_READY_TIMEOUT_MS = 20_000
 const PREVIEW_POLL_INTERVAL_MS = 250
@@ -12,10 +13,6 @@ const ASYNC_DIAGRAM_SELECTOR = `.mermaid-diagram, .plantuml-diagram, .infographi
 
 export interface WaitForPreviewReadyOptions {
   themeMode?: `light` | `dark`
-}
-
-function delay(ms: number) {
-  return new Promise<void>(resolve => window.setTimeout(resolve, ms))
 }
 
 function resolveInfographicOptions(options?: WaitForPreviewReadyOptions) {

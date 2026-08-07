@@ -39,24 +39,3 @@ export function toBase64(file: Blob): Promise<string> {
     reader.onerror = error => reject(error)
   })
 }
-
-/** Build a Markdown table from keyed cell data. */
-export function createTable({ data, rows, cols }: {
-  data: { [k: string]: string }
-  rows: number
-  cols: number
-}): string {
-  let table = ``
-  for (let i = 0; i < rows + 2; ++i) {
-    table += `| `
-    const currRow = []
-    for (let j = 0; j < cols; ++j) {
-      const rowIdx = i > 1 ? i - 1 : i
-      currRow.push(i === 1 ? `---` : data[`k_${rowIdx}_${j}`] || `     `)
-    }
-    table += currRow.join(` | `)
-    table += ` |\n`
-  }
-
-  return table
-}

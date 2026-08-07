@@ -4,15 +4,6 @@ export interface FormulaInput {
   sourceRaw: string | null
 }
 
-export function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, `&amp;`)
-    .replace(/</g, `&lt;`)
-    .replace(/>/g, `&gt;`)
-    .replace(/"/g, `&quot;`)
-    .replace(/'/g, `&#39;`)
-}
-
 export function unwrapFormula(text: string): FormulaInput {
   let current = text.trim()
   let displayMode = false

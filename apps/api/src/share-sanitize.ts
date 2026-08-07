@@ -1,3 +1,12 @@
+/** Escape text for interpolation into share-page HTML (text or double-quoted attr). */
+export function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, `&amp;`)
+    .replace(/</g, `&lt;`)
+    .replace(/>/g, `&gt;`)
+    .replace(/"/g, `&quot;`)
+}
+
 /** CSP for read-only share pages (no scripts, inline styles only). */
 export const SHARE_PAGE_CSP = [
   `default-src 'self'`,
