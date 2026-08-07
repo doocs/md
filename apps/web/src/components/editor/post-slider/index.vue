@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import { CheckSquare, ChevronsDownUp, ChevronsUpDown, Download, Ellipsis, FileText, Plus, Regex, Replace, ReplaceAll, Search, Upload, X } from '@lucide/vue'
-import { hljs, initRenderer } from '@md/core'
-import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { formatLocalDateTime } from '@/i18n/translate'
 import { copyPlain } from '@/lib/browser/clipboard'
@@ -22,6 +20,10 @@ import {
 
 const { t, locale } = useI18n()
 const confirmStore = useConfirmStore()
+
+// Overrides the auto-imported component so diff-match-patch stays out of this
+// chunk and only loads when the diff tab is first shown.
+const VersionDiffViewer = defineAsyncComponent(() => import('./VersionDiffViewer.vue'))
 
 function formatHistoryDatetime(datetime: number | string) {
   void locale.value
@@ -153,7 +155,44 @@ const compareTargetIndex = ref(`1`)
 
 const HISTORY_PREVIEW_SCOPE = `#history-preview-output`
 const styleTag = `style` as const
-let historyRenderer: ReturnType<typeof initRenderer> | null = null
+
+interface HistoryCoreModules {
+  hljs: (typeof import('@md/core'))[`hljs`]
+  initRenderer: (typeof import('@md/core'))[`initRenderer`]
+  renderMarkdown: (typeof import('@md/core/utils'))[`renderMarkdown`]
+  postProcessHtml: (typeof import('@md/core/utils'))[`postProcessHtml`]
+}
+
+// The history dialog pulls in the whole @md/core renderer stack + hljs. Load it
+// on demand so opening the post slider doesn't pay that cost (notably the cold
+// on-demand transform in vite dev).
+const coreModules = shallowRef<HistoryCoreModules | null>(null)
+const coreModulesFailed = ref(false)
+let coreModulesPromise: Promise<HistoryCoreModules> | null = null
+
+function ensureCoreModules(): Promise<HistoryCoreModules> {
+  coreModulesPromise ??= Promise.all([import('@md/core'), import('@md/core/utils')])
+    .then(([core, coreUtils]) => {
+      const modules: HistoryCoreModules = {
+        hljs: core.hljs,
+        initRenderer: core.initRenderer,
+        renderMarkdown: coreUtils.renderMarkdown,
+        postProcessHtml: coreUtils.postProcessHtml,
+      }
+      coreModules.value = modules
+      coreModulesFailed.value = false
+      return modules
+    })
+    .catch((error) => {
+      // Allow a later retry (e.g. transient network failure on the chunk).
+      coreModulesPromise = null
+      coreModulesFailed.value = true
+      throw error
+    })
+  return coreModulesPromise
+}
+
+let historyRenderer: ReturnType<HistoryCoreModules[`initRenderer`]> | null = null
 
 function openHistoryDialog(id: string) {
   postSliderMenu.closeMenu()
@@ -162,6 +201,9 @@ function openHistoryDialog(id: string) {
   historyViewMode.value = `content`
   compareTargetIndex.value = `1`
   isOpenHistoryDialog.value = true
+  void ensureCoreModules().catch((error) => {
+    console.error(`[PostSlider] Failed to load history renderer modules:`, error)
+  })
 }
 
 const currentHistoryList = computed(() => {
@@ -170,13 +212,20 @@ const currentHistoryList = computed(() => {
 
 const highlightedMarkdown = computed(() => {
   const content = currentHistoryList.value[currentHistoryIndex.value]?.content ?? ''
-  return hljs.highlight(content, { language: `markdown` }).value
+  const core = coreModules.value
+  // Plain text until the highlighter chunk arrives; recomputes once it does.
+  if (!core)
+    return content
+  return core.hljs.highlight(content, { language: `markdown` }).value
 })
 
 /** Isolated renderer — must not call useRenderStore().render() (mutates live PreviewPanel). */
 function renderHistoryContent(content: string): string {
+  const core = coreModules.value
+  if (!core)
+    return ``
   if (!historyRenderer)
-    historyRenderer = initRenderer({})
+    historyRenderer = core.initRenderer({})
 
   historyRenderer.reset({
     citeStatus: themeStore.isCiteStatus,
@@ -207,8 +256,8 @@ function renderHistoryContent(content: string): string {
     },
   })
 
-  const { html, readingTime } = renderMarkdown(content, historyRenderer)
-  return postProcessHtml(html, readingTime, historyRenderer)
+  const { html, readingTime } = core.renderMarkdown(content, historyRenderer)
+  return core.postProcessHtml(html, readingTime, historyRenderer)
 }
 
 const previewHtml = computed(() => {
@@ -223,6 +272,19 @@ const previewHtml = computed(() => {
   catch {
     return `<p class="text-muted-foreground text-sm">${t('store.render.renderFailed')}</p>`
   }
+})
+
+const hasHistoryContent = computed(() => {
+  return Boolean(currentHistoryList.value[currentHistoryIndex.value]?.content)
+})
+
+/** Distinguishes "no version content" from "renderer chunk still loading / failed". */
+const previewFallbackText = computed(() => {
+  if (!hasHistoryContent.value)
+    return t(`common.noData`)
+  if (coreModulesFailed.value)
+    return t(`store.render.renderFailed`)
+  return t(`common.loading`)
 })
 
 const historyPreviewCss = computed(() => {
@@ -423,6 +485,20 @@ const sortedPosts = computed(() => {
         return +new Date(a.createDatetime) - +new Date(b.createDatetime)
     }
   })
+})
+
+// Group once so each tree level does O(1) lookup instead of filtering the whole list per node.
+const postChildrenMap = computed(() => {
+  const map = new Map<string | null, typeof posts.value>()
+  for (const post of sortedPosts.value) {
+    const key = post.parentId ?? null
+    const children = map.get(key)
+    if (children)
+      children.push(post)
+    else
+      map.set(key, [post])
+  }
+  return map
 })
 
 const dragover = ref(false)
@@ -863,7 +939,7 @@ function handleDragEnd() {
             v-for="result in searchResults"
             :key="result.id"
             type="button"
-            class="group relative flex w-full cursor-pointer flex-col gap-0.5 rounded-lg px-2 py-[7px] text-left text-[13px] leading-snug transition-all duration-150 ease-out"
+            class="search-result-item group relative flex w-full cursor-pointer flex-col gap-0.5 rounded-lg px-2 py-[7px] text-left text-[13px] leading-snug transition-all duration-150 ease-out"
             :class="{
               'bg-accent text-accent-foreground font-medium': postStore.currentPostId === result.id,
               'text-foreground/70 hover:text-foreground hover:bg-accent/50': postStore.currentPostId !== result.id,
@@ -903,7 +979,7 @@ function handleDragEnd() {
         <PostItem
           v-if="sortedPosts.length"
           :parent-id="null"
-          :sorted-posts="sortedPosts"
+          :children-map="postChildrenMap"
           :actions="{
             startRenamePost,
             openHistoryDialog,
@@ -1106,7 +1182,7 @@ function handleDragEnd() {
         <DialogDescription>{{ t('post.historyDescription') }}</DialogDescription>
       </DialogHeader>
 
-      <div class="h-[50vh] flex gap-3">
+      <div class="h-[50vh] flex gap-3 w-full min-w-0">
         <ul class="w-[104px] sm:w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
           <li v-for="(item, idx) in currentHistoryList" :key="idx">
             <button
@@ -1129,8 +1205,8 @@ function handleDragEnd() {
 
         <Separator orientation="vertical" />
 
-        <div class="flex-1 flex flex-col overflow-hidden">
-          <Tabs v-model="historyViewMode" class="flex flex-col h-full">
+        <div class="flex-1 flex flex-col overflow-hidden min-w-0">
+          <Tabs v-model="historyViewMode" class="flex flex-col h-full min-w-0 min-h-0">
             <TabsList class="shrink-0 w-fit">
               <TabsTrigger value="content">
                 {{ t('post.originalContent') }}
@@ -1143,16 +1219,16 @@ function handleDragEnd() {
               </TabsTrigger>
             </TabsList>
 
-            <TabsContent value="content" class="flex-1 overflow-y-auto mt-2">
+            <TabsContent value="content" class="flex-1 min-w-0 min-h-0 overflow-y-auto mt-2">
               <div class="rounded-lg h-full overflow-y-auto">
                 <pre class="whitespace-pre-wrap text-sm leading-relaxed break-all font-[inherit] h-full"><code class="hljs h-full" v-html="highlightedMarkdown" /></pre>
               </div>
             </TabsContent>
 
-            <TabsContent value="preview" class="flex-1 overflow-hidden mt-2">
+            <TabsContent value="preview" class="flex-1 min-w-0 min-h-0 overflow-hidden mt-2">
               <div
                 v-if="previewHtml"
-                class="history-preview-wrapper h-full overflow-y-auto rounded-lg border bg-background"
+                class="history-preview-wrapper h-full overflow-y-auto overflow-x-hidden rounded-lg border bg-background"
               >
                 <div class="preview mx-auto">
                   <component :is="styleTag" v-if="historyPreviewCss">
@@ -1167,11 +1243,11 @@ function handleDragEnd() {
                 </div>
               </div>
               <div v-else class="flex items-center justify-center h-full rounded-lg border bg-background text-muted-foreground text-sm">
-                {{ t('common.noData') }}
+                {{ previewFallbackText }}
               </div>
             </TabsContent>
 
-            <TabsContent value="diff" class="flex-1 overflow-hidden mt-2 pt-1">
+            <TabsContent value="diff" class="flex-1 min-w-0 min-h-0 overflow-hidden mt-2 pt-1">
               <div class="flex items-center gap-2 mb-2 text-xs text-muted-foreground shrink-0">
                 <span>{{ t('post.compareLabel') }}</span>
                 <Select v-model="compareTargetIndex">
@@ -1229,6 +1305,12 @@ function handleDragEnd() {
   scrollbar-color: hsl(var(--border)) transparent;
 }
 
+/* Skip rendering off-screen search hits in long result lists. */
+.search-result-item {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 48px;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 200ms ease;
@@ -1256,11 +1338,24 @@ function handleDragEnd() {
 .history-preview-wrapper .preview {
   position: relative;
   min-height: 100%;
+  max-width: 100%;
   margin: 0 auto;
   padding: 20px;
   font-size: 14px;
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
+}
+
+/* Defensive clamps: rendered diagrams/SVGs carry fixed pixel widths, and wide
+   tables must scroll inside their own box instead of stretching the dialog. */
+.history-preview-wrapper .preview svg {
+  max-width: 100%;
+}
+
+.history-preview-wrapper .preview table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
 }
 </style>
