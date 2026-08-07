@@ -30,6 +30,7 @@ import {
   Wand2,
 } from '@lucide/vue'
 import { altSign, headingLevels as baseHeadingLevels, ctrlKey, ctrlSign, shiftSign } from '@md/shared/configs'
+import { findMarkdownTableAt } from '@md/shared/utils/table'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { useEditorFormat } from '@/composables/useEditorFormat'
 import { copyPlain, readPlainFromClipboard } from '@/lib/browser/clipboard'
@@ -52,11 +53,49 @@ const uiStore = useUIStore()
 const { t } = useI18n()
 
 const {
-  toggleShowInsertFormDialog,
+  openTableEditDialog,
   toggleShowUploadImgDialog,
   toggleShowImportMdDialog,
   toggleShowComponentDialog,
 } = uiStore
+
+const isContextTargetInTable = ref(false)
+const contextMenuPos = ref<number | null>(null)
+
+/**
+ * Right-click does not reliably move the caret, so judge "edit table" by the
+ * clicked point rather than the stale cursor. Capture-phase listener runs
+ * before reka-ui's open handling; it also moves the caret to the clicked
+ * position (standard editor behavior, skipped inside an active selection) so
+ * the dialog afterwards opens for the clicked table.
+ */
+function onContextMenuCapture(event: MouseEvent) {
+  const view = toRaw(editorStore.editor)
+  if (!view || !view.contentDOM.contains(event.target as Node))
+    return
+  const pos = view.posAtCoords({ x: event.clientX, y: event.clientY })
+  contextMenuPos.value = pos
+  if (pos == null)
+    return
+  const { from, to } = view.state.selection.main
+  if (pos < from || pos > to)
+    view.dispatch({ selection: { anchor: pos } })
+}
+
+onMounted(() => document.addEventListener(`contextmenu`, onContextMenuCapture, true))
+onUnmounted(() => document.removeEventListener(`contextmenu`, onContextMenuCapture, true))
+
+function onMenuOpen(open: boolean) {
+  if (!open) {
+    contextMenuPos.value = null
+    return
+  }
+  const view = toRaw(editorStore.editor)
+  const pos = contextMenuPos.value ?? view?.state.selection.main.head
+  isContextTargetInTable.value = view != null && pos != null
+    ? findMarkdownTableAt(view.state.doc.toString(), pos) !== null
+    : false
+}
 
 const { editor } = storeToRefs(editorStore)
 
@@ -124,11 +163,18 @@ function downloadAsCardImage() {
 </script>
 
 <template>
-  <ContextMenu>
+  <ContextMenu @update:open="onMenuOpen">
     <ContextMenuTrigger>
       <slot />
     </ContextMenuTrigger>
     <ContextMenuContent class="w-64 max-h-[80vh] overflow-y-auto">
+      <template v-if="isContextTargetInTable">
+        <ContextMenuItem @click="openTableEditDialog()">
+          <Table class="mr-2 h-4 w-4" />
+          {{ t('tableEditor.titleEdit') }}
+        </ContextMenuItem>
+        <ContextMenuSeparator />
+      </template>
       <ContextMenuSub>
         <ContextMenuSubTrigger>
           <Import class="mr-2 h-4 w-4" />
@@ -143,7 +189,7 @@ function downloadAsCardImage() {
             <FunctionSquare class="mr-2 h-4 w-4" />
             {{ t('menu.formula') }}
           </ContextMenuItem>
-          <ContextMenuItem @click="toggleShowInsertFormDialog()">
+          <ContextMenuItem @click="openTableEditDialog()">
             <Table class="mr-2 h-4 w-4" />
             {{ t('menu.table') }}
           </ContextMenuItem>

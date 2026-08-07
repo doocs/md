@@ -15,7 +15,7 @@ const { t } = useI18n()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
-const { toggleShowInsertFormDialog, toggleShowUploadImgDialog, toggleShowComponentDialog } = uiStore
+const { openTableEditDialog, toggleShowUploadImgDialog, toggleShowComponentDialog } = uiStore
 
 function openFormulaEditor() {
   const selection = normalizeFormulaInput(editorStore.getSelection())
@@ -40,7 +40,7 @@ function openFormulaEditor() {
         <FunctionSquare class="mr-2 h-4 w-4" />
         {{ t('menu.formula') }}
       </MenubarItem>
-      <MenubarItem @click="toggleShowInsertFormDialog()">
+      <MenubarItem @click="openTableEditDialog()">
         <Table class="mr-2 h-4 w-4" />
         {{ t('menu.table') }}
       </MenubarItem>
@@ -64,7 +64,7 @@ function openFormulaEditor() {
         <FunctionSquare class="mr-2 h-4 w-4" />
         {{ t('menu.formula') }}
       </MenubarItem>
-      <MenubarItem @click="toggleShowInsertFormDialog()">
+      <MenubarItem @click="openTableEditDialog()">
         <Table class="mr-2 h-4 w-4" />
         {{ t('menu.table') }}
       </MenubarItem>

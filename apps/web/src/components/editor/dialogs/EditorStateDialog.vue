@@ -88,7 +88,7 @@ function getAllStoreStates() {
     readingTime: renderStore.readingTime,
 
     isShowCssEditor: uiStore.isShowCssEditor,
-    isShowInsertFormDialog: uiStore.isShowInsertFormDialog,
+    isShowTableEditDialog: uiStore.isShowTableEditDialog,
     isShowUploadImgDialog: uiStore.isShowUploadImgDialog,
     aiDialogVisible: uiStore.aiDialogVisible,
     aiImageDialogVisible: uiStore.aiImageDialogVisible,
@@ -321,8 +321,8 @@ function applyImportedConfig() {
 
       else if (key === `isShowCssEditor`)
         uiStore.isShowCssEditor = value
-      else if (key === `isShowInsertFormDialog`)
-        uiStore.isShowInsertFormDialog = value
+      else if (key === `isShowTableEditDialog`)
+        uiStore.isShowTableEditDialog = value
       else if (key === `isShowUploadImgDialog`)
         uiStore.isShowUploadImgDialog = value
       else if (key === `aiDialogVisible`)

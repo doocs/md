@@ -193,7 +193,7 @@ export function useCommandPalette() {
         label: t(`commandPalette.insertTable`),
         group: t(`commandPalette.group.insert`),
         keywords: [`表格`, `table`],
-        action: () => { uiStore.toggleShowInsertFormDialog(true) },
+        action: () => uiStore.openTableEditDialog(),
       },
       {
         id: `insert-formula`,

@@ -50,8 +50,15 @@ export const useUIStore = defineStore(`ui`, () => {
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
   const toggleShowCssEditor = useToggle(isShowCssEditor)
 
-  const isShowInsertFormDialog = ref(false)
-  const toggleShowInsertFormDialog = useToggle(isShowInsertFormDialog)
+  const isShowTableEditDialog = ref(false)
+
+  function openTableEditDialog() {
+    isShowTableEditDialog.value = true
+  }
+
+  function closeTableEditDialog() {
+    isShowTableEditDialog.value = false
+  }
 
   const isShowUploadImgDialog = ref(false)
   const toggleShowUploadImgDialog = useToggle(isShowUploadImgDialog)
@@ -244,8 +251,9 @@ export const useUIStore = defineStore(`ui`, () => {
 
     isShowCssEditor,
     toggleShowCssEditor,
-    isShowInsertFormDialog,
-    toggleShowInsertFormDialog,
+    isShowTableEditDialog,
+    openTableEditDialog,
+    closeTableEditDialog,
     isShowUploadImgDialog,
     toggleShowUploadImgDialog,
     isShowFormulaEditorDialog,
