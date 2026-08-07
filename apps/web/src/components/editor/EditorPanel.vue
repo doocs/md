@@ -324,7 +324,11 @@ async function uploadMdImg({
 }
 
 function mdLocalToRemote() {
-  const dom = codeMirrorWrapper.value!
+  // The async onMounted callback can resolve after an HMR remount, where the
+  // template ref of the stale instance is already null.
+  const dom = codeMirrorWrapper.value
+  if (!dom)
+    return
 
   dom.ondragover = evt => evt.preventDefault()
   dom.ondrop = async (evt) => {
