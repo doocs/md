@@ -379,6 +379,9 @@ importers:
       '@md/shared':
         specifier: workspace:*
         version: link:../shared
+      entities:
+        specifier: ^8.0.0
+        version: 8.0.0
       fflate:
         specifier: ^0.8.3
         version: 0.8.3

@@ -180,7 +180,7 @@ onMounted(() => {
           <div
             v-for="({ line, lineNo }, idx) in visibleLines"
             :key="idx"
-            class="flex"
+            class="diff-line flex"
             :class="{
               'bg-green-500/8': line.rowType === 'insert',
               'bg-red-500/8': line.rowType === 'delete',
@@ -230,3 +230,11 @@ onMounted(() => {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Skip layout/paint for off-screen lines; long docs can yield thousands of rows. */
+.diff-line {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20px;
+}
+</style>

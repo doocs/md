@@ -42,7 +42,8 @@ export interface PostItemActions {
 
 export interface PostItemProps {
   parentId: string | null
-  sortedPosts: Post[]
+  /** Posts grouped by parent id (`null` = root), pre-sorted. */
+  childrenMap: Map<string | null, Post[]>
   actions: PostItemActions
   drag: PostItemDragState
   select?: PostItemSelectState

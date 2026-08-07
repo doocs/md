@@ -68,8 +68,11 @@ function togglePostExpanded(postId: string) {
   }
 }
 
+const EMPTY_CHILDREN: Post[] = []
+const childPosts = computed(() => props.childrenMap.get(props.parentId ?? null) ?? EMPTY_CHILDREN)
+
 function isHasChild(postId: string) {
-  return props.sortedPosts.some(p => p.parentId === postId)
+  return (props.childrenMap.get(postId)?.length ?? 0) > 0
 }
 
 function saveAsTemplate(postId: string) {
@@ -140,7 +143,12 @@ function cancelInlineRename() {
 </script>
 
 <template>
-  <div v-for="post in props.sortedPosts.filter(p => (props.parentId == null && p.parentId == null) || p.parentId === props.parentId)" :key="post.id">
+  <div
+    v-for="post in childPosts"
+    :key="post.id"
+    class="post-tree-node"
+    :class="{ 'drag-in-progress': drag.dragSourceId !== null }"
+  >
     <div
       class="post-item group relative flex w-full items-center gap-1 rounded-lg px-2 py-[7px] text-[13px] leading-snug transition-all duration-150 ease-out"
       :class="{
@@ -290,7 +298,7 @@ function cancelInlineRename() {
     >
       <PostItem
         :parent-id="post.id"
-        :sorted-posts="props.sortedPosts"
+        :children-map="props.childrenMap"
         :actions="actions"
         :drag="drag"
         :select="select"
@@ -298,3 +306,16 @@ function cancelInlineRename() {
     </div>
   </div>
 </template>
+
+<style scoped>
+/* Let the browser skip off-screen subtrees; `auto` keeps the last rendered size. */
+.post-tree-node {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 32px;
+}
+
+/* Dragging needs hit testing on every node, incl. those skipped while off-screen. */
+.post-tree-node.drag-in-progress {
+  content-visibility: visible;
+}
+</style>
