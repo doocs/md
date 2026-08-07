@@ -5,6 +5,7 @@ import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { formatLocalDateTime } from '@/i18n/translate'
 import { copyPlain } from '@/lib/browser/clipboard'
+import { getSearchRegex, scanPosts } from '@/lib/search-posts'
 import { downloadMD, exportPostsAsZip } from '@/services/export'
 import { scopeThemeCss } from '@/services/export/share-styles'
 import { useConfirmStore } from '@/stores/confirm'
@@ -263,6 +264,7 @@ function recoverHistory() {
 
   const content = post.history[currentHistoryIndex.value].content
   post.content = content
+  post.updateDatetime = new Date()
   const ed = toRaw(editor.value!)
   ed.dispatch({
     changes: { from: 0, to: ed.state.doc.length, insert: content },
@@ -308,109 +310,21 @@ function closeSearch() {
   showReplace.value = false
 }
 
-interface HighlightPart {
-  text: string
-  highlight: boolean
-}
+// Debounced so each keystroke does not synchronously scan every post body.
+const debouncedSearchQuery = refDebounced(searchQuery, 250)
 
-function getSearchRegex(query: string): RegExp | null {
-  if (!query.trim())
-    return null
-  try {
-    if (isRegex.value) {
-      return new RegExp(query, `gm${isCaseSensitive.value ? `` : `i`}`)
-    }
-    const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`)
-    return new RegExp(escaped, `gm${isCaseSensitive.value ? `` : `i`}`)
-  }
-  catch {
-    return null
-  }
-}
+const searchScan = computed(() =>
+  scanPosts(posts.value, debouncedSearchQuery.value, {
+    isRegex: isRegex.value,
+    isCaseSensitive: isCaseSensitive.value,
+  }),
+)
 
-function highlightParts(text: string, query: string): HighlightPart[] {
-  if (!query)
-    return [{ text, highlight: false }]
-  const regex = getSearchRegex(query)
-  if (!regex)
-    return [{ text, highlight: false }]
-  const parts: HighlightPart[] = []
-  let lastIndex = 0
-  let match = regex.exec(text)
-  while (match !== null) {
-    if (match.index > lastIndex)
-      parts.push({ text: text.slice(lastIndex, match.index), highlight: false })
-    parts.push({ text: match[0], highlight: true })
-    lastIndex = match.index + match[0].length
-    if (match[0].length === 0)
-      regex.lastIndex++
-    match = regex.exec(text)
-  }
-  if (lastIndex < text.length)
-    parts.push({ text: text.slice(lastIndex), highlight: false })
-  return parts
-}
-
-function getContentSnippet(content: string, query: string): string {
-  if (!query.trim())
-    return ``
-  const regex = getSearchRegex(query)
-  if (!regex)
-    return ``
-  const match = regex.exec(content)
-  if (!match)
-    return ``
-  const idx = match.index
-  const matchLen = match[0].length
-  const start = Math.max(0, idx - 20)
-  const end = Math.min(content.length, idx + matchLen + 40)
-  let snippet = content.slice(start, end).replace(/\n/g, ` `)
-  if (start > 0)
-    snippet = `…${snippet}`
-  if (end < content.length)
-    snippet = `${snippet}…`
-  return snippet
-}
-
-const searchResults = computed(() => {
-  const q = searchQuery.value.trim()
-  if (!q)
-    return []
-  const regex = getSearchRegex(q)
-  if (!regex)
-    return []
-  return posts.value
-    .filter(post => regex.test(post.title) || regex.test(post.content))
-    .map((post) => {
-      const snippet = getContentSnippet(post.content, searchQuery.value.trim())
-      return {
-        ...post,
-        titleParts: highlightParts(post.title, searchQuery.value.trim()),
-        snippetParts: snippet ? highlightParts(snippet, searchQuery.value.trim()) : [],
-      }
-    })
-})
-
-const totalMatches = computed(() => {
-  const q = searchQuery.value.trim()
-  if (!q)
-    return 0
-  const regex = getSearchRegex(q)
-  if (!regex)
-    return 0
-  let count = 0
-  posts.value.forEach((post) => {
-    const titleMatches = (post.title.match(regex) || []).length
-    regex.lastIndex = 0
-    const contentMatches = (post.content.match(regex) || []).length
-    regex.lastIndex = 0
-    count += titleMatches + contentMatches
-  })
-  return count
-})
+const searchResults = computed(() => searchScan.value.results)
+const totalMatches = computed(() => searchScan.value.totalMatches)
 
 function replaceInText(text: string, search: string, replace: string): string {
-  const regex = getSearchRegex(search)
+  const regex = getSearchRegex(search, { isRegex: isRegex.value, isCaseSensitive: isCaseSensitive.value })
   if (!regex)
     return text
   return text.replace(regex, replace)
@@ -427,7 +341,7 @@ function replaceFirst() {
   const q = searchQuery.value.trim()
   if (!q)
     return
-  const regex = getSearchRegex(q)
+  const regex = getSearchRegex(q, { isRegex: isRegex.value, isCaseSensitive: isCaseSensitive.value })
   if (!regex)
     return
   for (const post of posts.value) {
@@ -458,7 +372,7 @@ function replaceAll() {
   const q = searchQuery.value.trim()
   if (!q)
     return
-  const regex = getSearchRegex(q)
+  const regex = getSearchRegex(q, { isRegex: isRegex.value, isCaseSensitive: isCaseSensitive.value })
   if (!regex)
     return
   let count = 0
@@ -942,10 +856,11 @@ function handleDragEnd() {
           {{ t('post.matchStats', { matches: totalMatches, posts: searchResults.length }) }}
         </div>
         <template v-if="searchResults.length">
-          <a
+          <button
             v-for="result in searchResults"
             :key="result.id"
-            class="group relative flex w-full cursor-pointer flex-col gap-0.5 rounded-lg px-2 py-[7px] text-[13px] leading-snug transition-all duration-150 ease-out"
+            type="button"
+            class="group relative flex w-full cursor-pointer flex-col gap-0.5 rounded-lg px-2 py-[7px] text-left text-[13px] leading-snug transition-all duration-150 ease-out"
             :class="{
               'bg-accent text-accent-foreground font-medium': postStore.currentPostId === result.id,
               'text-foreground/70 hover:text-foreground hover:bg-accent/50': postStore.currentPostId !== result.id,
@@ -971,7 +886,7 @@ function handleDragEnd() {
                 <span v-else>{{ part.text }}</span>
               </template>
             </span>
-          </a>
+          </button>
         </template>
         <div v-else class="flex flex-col items-center justify-center gap-2 py-12 px-6">
           <Search class="size-5 text-muted-foreground/30" />
@@ -1189,22 +1104,23 @@ function handleDragEnd() {
       </DialogHeader>
 
       <div class="h-[50vh] flex gap-3">
-        <ul class="w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
-          <li
-            v-for="(item, idx) in currentHistoryList"
-            :key="idx"
-            class="relative flex cursor-pointer items-center rounded-lg px-3 py-2.5 transition-colors duration-150"
-            :class="{
-              'bg-accent text-accent-foreground': currentHistoryIndex === idx,
-              'text-foreground/70 hover:text-foreground hover:bg-accent/50': currentHistoryIndex !== idx,
-            }"
-            @click="currentHistoryIndex = idx"
-          >
-            <span
-              v-if="currentHistoryIndex === idx"
-              class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
-            />
-            <span class="text-xs leading-snug">{{ formatHistoryDatetime(item.datetime) }}</span>
+        <ul class="w-[104px] sm:w-[160px] shrink-0 space-y-0.5 overflow-y-auto thin-scrollbar">
+          <li v-for="(item, idx) in currentHistoryList" :key="idx">
+            <button
+              type="button"
+              class="relative flex w-full cursor-pointer items-center rounded-lg px-3 py-2.5 text-left transition-colors duration-150"
+              :class="{
+                'bg-accent text-accent-foreground': currentHistoryIndex === idx,
+                'text-foreground/70 hover:text-foreground hover:bg-accent/50': currentHistoryIndex !== idx,
+              }"
+              @click="currentHistoryIndex = idx"
+            >
+              <span
+                v-if="currentHistoryIndex === idx"
+                class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
+              />
+              <span class="text-xs leading-snug">{{ formatHistoryDatetime(item.datetime) }}</span>
+            </button>
           </li>
         </ul>
 
