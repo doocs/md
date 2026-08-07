@@ -123,13 +123,19 @@ type ResizablePanelRef = Ref<InstanceType<typeof ResizablePanel> | null>
 /**
  * reka-ui's imperative resize() throws when the group layout does not include
  * the panel yet (mount / HMR remount / constraint-change race). Defer past the
- * current flush and swallow the residual failure — a skipped resize is harmless
+ * whole Vue flush with rAF — nextTick still runs inside the flush, where
+ * setLayout re-queues SplitterGroup's own update and Vue aborts with
+ * "Maximum recursive updates exceeded". Skip no-op resizes so imperative
+ * calls cannot start a constraint cascade; a skipped resize is harmless
  * because the min/max/default-size props still drive the layout.
  */
 function resizePanelSafely(panelRef: ResizablePanelRef, size: number) {
-  nextTick(() => {
+  requestAnimationFrame(() => {
     try {
-      panelRef.value?.resize(size)
+      const panel = panelRef.value
+      if (!panel || Math.abs(panel.getSize() - size) < 0.01)
+        return
+      panel.resize(size)
     }
     catch {
       // Panel not registered in the group layout yet; props still apply.
