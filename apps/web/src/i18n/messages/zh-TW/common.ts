@@ -54,6 +54,7 @@ export default {
     selectAll: `全選`,
     deselectAll: `取消全選`,
     selected: `已選`,
+    selectPost: `選擇「{title}」`,
     unit: `個`,
     yes: `是`,
     no: `否`,

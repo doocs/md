@@ -43,8 +43,9 @@ public/upload/**
 package-lock.json
 yarn.lock
 # pnpm-lock.yaml
-auto-imports.d.ts
-components.d.ts
+# NOTE: apps/web/auto-imports.d.ts and components.d.ts are committed on
+# purpose — the CI type-check job runs vue-tsc without a prior vite build,
+# so the generated globals must exist in a clean checkout.
 
 .wxt
 .output

@@ -1,5 +1,6 @@
 import type { SyncDocument } from '@/services/sync/types'
 import { t } from '@/i18n/translate'
+import { postSignature } from '@/lib/post-signature'
 import { ApiError } from '@/services/account/client'
 import { isSyncConfigured } from '@/services/sync/client'
 import { hydrateSyncedSettings } from '@/services/sync/hydrate'
@@ -171,10 +172,12 @@ export const useSyncStore = defineStore(`sync`, () => {
     if (!SYNC_PRO_ENABLED || autoSyncWatcherStarted)
       return
     autoSyncWatcherStarted = true
+    // Shallow per-post signatures instead of a deep watch: only fires when a
+    // field that matters for sync actually changes, and never deep-traverses
+    // post bodies or history entries on every edit.
     watch(
-      () => postStore.posts,
+      () => postStore.posts.map(postSignature),
       () => scheduleAutoSync(),
-      { deep: true },
     )
     watch(syncDebounceMs, () => {
       if (autoSyncEnabled.value)

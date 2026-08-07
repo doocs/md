@@ -26,24 +26,3 @@ export function removeLeft(str: string) {
     .sort((a, b) => a - b)[0]
   return lines.map(item => item.slice(minSpaceNum)).join(`\n`)
 }
-
-/** Validate image file type and size for WeChat upload limits. */
-export function checkImage(file: File) {
-  const isValidSuffix = /\.(?:gif|pjp|jfif|jpe|pjpeg|jpe?g|png|webp)$/i.test(file.name)
-  if (!isValidSuffix) {
-    return {
-      ok: false,
-      msg: `请上传 GIF/JPG/JPEG/PNG/WEBP 格式的图片`,
-    }
-  }
-
-  const maxSizeMB = 10
-  if (file.size > maxSizeMB * 1024 * 1024) {
-    return {
-      ok: false,
-      msg: `由于公众号限制，图片大小不能超过 ${maxSizeMB}M`,
-    }
-  }
-
-  return { ok: true, msg: `` }
-}

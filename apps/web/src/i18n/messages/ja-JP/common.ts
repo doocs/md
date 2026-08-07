@@ -54,6 +54,7 @@ export default {
     selectAll: `すべて選択`,
     deselectAll: `選択解除`,
     selected: `選択中`,
+    selectPost: `「{title}」を選択`,
     unit: `件`,
     yes: `はい`,
     no: `いいえ`,

@@ -282,11 +282,11 @@ const showDeviceToggle = computed(() => viewMode.value !== `edit` && !isMobile.v
         </span>
         <Tooltip v-else>
           <TooltipTrigger as-child>
-            <span class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
+            <button type="button" class="flex cursor-pointer items-center gap-1 tabular-nums transition-colors hover:text-foreground" @click="openGoToLine">
               <Keyboard class="size-3 opacity-60" />
               <span class="hidden sm:inline">{{ t('footer.lineCol', { line: cursorLine, col: cursorCol }) }}</span>
               <span class="sm:hidden">{{ cursorLine }}:{{ cursorCol }}</span>
-            </span>
+            </button>
           </TooltipTrigger>
           <TooltipContent side="top" :side-offset="6" class="text-xs text-muted-foreground">
             <p>{{ t('footer.cursorPosition', { total: totalLines }) }}</p>

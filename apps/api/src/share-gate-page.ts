@@ -1,15 +1,7 @@
 import type { ShareFooterAuthor } from './share-page'
 import { sharePageFaviconLink } from './share-head'
 import { buildShareAuthorHtml } from './share-page'
-import { sharePageCspMeta } from './share-sanitize'
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, `&amp;`)
-    .replace(/</g, `&lt;`)
-    .replace(/>/g, `&gt;`)
-    .replace(/"/g, `&quot;`)
-}
+import { escapeHtml, sharePageCspMeta } from './share-sanitize'
 
 export function buildShareGateHtml(
   shareId: string,

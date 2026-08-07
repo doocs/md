@@ -158,49 +158,59 @@ function cancelInlineRename() {
         class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-4 rounded-r-full bg-primary"
       />
 
+      <span
+        v-if="isSelectMode"
+        role="checkbox"
+        :aria-checked="selectedIds?.includes(post.id) ?? false"
+        :aria-label="t('common.selectPost', { title: post.title })"
+        tabindex="0"
+        class="flex shrink-0 cursor-pointer items-center justify-center size-5"
+        @click.stop="onToggleSelect?.(post.id)"
+        @keydown.enter.stop.prevent="onToggleSelect?.(post.id)"
+        @keydown.space.stop.prevent="onToggleSelect?.(post.id)"
+      >
+        <span
+          class="flex items-center justify-center size-4 rounded border transition-colors duration-150"
+          :class="selectedIds?.includes(post.id)
+            ? 'bg-primary border-primary text-primary-foreground'
+            : 'border-border bg-background'"
+        >
+          <svg v-if="selectedIds?.includes(post.id)" class="size-2.5" viewBox="0 0 10 10" fill="none">
+            <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </span>
+      </span>
+
+      <button
+        v-if="!isSelectMode && isHasChild(post.id)"
+        type="button"
+        class="flex shrink-0 items-center justify-center size-5 rounded text-muted-foreground/50 transition-colors duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
+        :aria-label="post.collapsed ? t('common.expand') : t('common.collapse')"
+        :aria-expanded="!post.collapsed"
+        @click.stop="togglePostExpanded(post.id)"
+      >
+        <ChevronRight
+          class="size-3.5 transition-transform duration-200 ease-out"
+          :class="{ 'rotate-90': !post.collapsed }"
+        />
+      </button>
+      <span
+        v-else-if="!isSelectMode"
+        class="size-5 shrink-0"
+        aria-hidden="true"
+      />
+
       <div
+        role="button"
+        tabindex="0"
         class="flex min-w-0 flex-1 cursor-pointer items-center gap-1"
         :draggable="!isSelectMode && inlineEditId !== post.id"
         @dragstart="!isSelectMode && handleDragStart(post.id, $event)"
         @dragend="drag.handleDragEnd"
         @click="handleRowClick(post.id)"
+        @keydown.enter.self.prevent="handleRowClick(post.id)"
+        @keydown.space.self.prevent="handleRowClick(post.id)"
       >
-        <span
-          v-if="isSelectMode"
-          class="flex shrink-0 items-center justify-center size-5"
-          @click.stop="onToggleSelect?.(post.id)"
-        >
-          <span
-            class="flex items-center justify-center size-4 rounded border transition-colors duration-150"
-            :class="selectedIds?.includes(post.id)
-              ? 'bg-primary border-primary text-primary-foreground'
-              : 'border-border bg-background'"
-          >
-            <svg v-if="selectedIds?.includes(post.id)" class="size-2.5" viewBox="0 0 10 10" fill="none">
-              <path d="M1.5 5L4 7.5L8.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-          </span>
-        </span>
-
-        <button
-          v-if="!isSelectMode && isHasChild(post.id)"
-          type="button"
-          class="flex shrink-0 items-center justify-center size-5 rounded text-muted-foreground/50 transition-colors duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5"
-          :aria-label="post.collapsed ? t('common.expand') : t('common.collapse')"
-          :aria-expanded="!post.collapsed"
-          @click.stop="togglePostExpanded(post.id)"
-        >
-          <ChevronRight
-            class="size-3.5 transition-transform duration-200 ease-out"
-            :class="{ 'rotate-90': !post.collapsed }"
-          />
-        </button>
-        <span
-          v-else-if="!isSelectMode"
-          class="size-5 shrink-0"
-          aria-hidden="true"
-        />
-
         <input
           v-if="inlineEditId === post.id"
           :ref="setInlineInputRef"
@@ -227,7 +237,7 @@ function cancelInlineRename() {
           <button
             type="button"
             class="flex shrink-0 items-center justify-center size-5 rounded-md text-muted-foreground/40 transition-all duration-150 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 data-[state=open]:opacity-100 data-[state=open]:text-foreground"
-            :class="isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'"
+            :class="isMobile ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 focus-visible:opacity-100'"
             :aria-label="t('common.moreActions')"
             :title="t('common.moreActions')"
             @click.stop

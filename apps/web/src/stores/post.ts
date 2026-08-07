@@ -4,6 +4,7 @@ import { getDefaultContent } from '@/assets/example/default-content'
 import { t } from '@/i18n/translate'
 import { debounce } from '@/lib/debounce'
 import { normalizePostHistory, toStoredDateTime } from '@/lib/format/datetime'
+import { postSignature } from '@/lib/post-signature'
 import { documentRepo, getLoadedDocuments, store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
 import { useEditorStore } from '@/stores/editor'
@@ -37,10 +38,6 @@ function normalizePosts(raw: Post[]): Post[] {
   })
 }
 
-function postSignature(post: Post): string {
-  return `${post.id}:${post.title}:${post.content.length}:${post.updateDatetime}:${post.parentId ?? ``}:${post.history?.length ?? 0}:${post.collapsed ? 1 : 0}`
-}
-
 /** Post list, current post, and CRUD operations. */
 export const usePostStore = defineStore(`post`, () => {
   const loaded = getLoadedDocuments()
@@ -57,41 +54,62 @@ export const usePostStore = defineStore(`post`, () => {
     await documentRepo.saveAll(snapshot)
   }, 500)
 
-  const persistOne = debounce(async (post: Post) => {
-    await documentRepo.savePost(post)
+  /**
+   * Ids of posts changed since the last flush. A single debounced savePost
+   * would drop an earlier post when two different posts change within one
+   * debounce window (the shared timer keeps only the latest argument), so
+   * ids are collected first and every changed post is flushed.
+   */
+  const dirtyPostIds = new Set<string>()
+
+  const persistDirty = debounce(async () => {
+    const ids = [...dirtyPostIds]
+    dirtyPostIds.clear()
+    if (ids.length === 0)
+      return
+    if (ids.length === 1) {
+      const post = posts.value.find(p => p.id === ids[0])
+      // The post may have been deleted while the debounce was pending.
+      if (post)
+        await documentRepo.savePost(post)
+      return
+    }
+    await documentRepo.saveAll([...posts.value])
   }, 500)
 
   /** Flush immediately on delete etc. so a refresh before debounce finishes does not restore stale data. */
   async function persistImmediately(): Promise<void> {
     persistAll.cancel()
-    persistOne.cancel()
+    persistDirty.cancel()
+    dirtyPostIds.clear()
     await documentRepo.saveAll([...posts.value])
   }
 
+  // Watching per-post signatures instead of a deep watch on `posts`: the
+  // signature read is shallow (no traversal into history entry bodies), so
+  // each editor content commit no longer deep-traverses every post. A
+  // signature change at index i implies posts.value[i] changed.
   watch(
-    posts,
-    (value, oldValue) => {
+    () => posts.value.map(postSignature),
+    (signatures, oldSignatures) => {
       if (!persistReady)
         return
 
-      if (!oldValue || value.length !== oldValue.length) {
-        persistAll([...value])
+      if (!oldSignatures || signatures.length !== oldSignatures.length) {
+        persistAll([...posts.value])
         return
       }
 
-      const changed: Post[] = []
-      for (const post of value) {
-        const prev = oldValue.find(p => p.id === post.id)
-        if (!prev || postSignature(prev) !== postSignature(post))
-          changed.push(post)
+      let changed = false
+      for (let i = 0; i < signatures.length; i++) {
+        if (signatures[i] !== oldSignatures[i]) {
+          dirtyPostIds.add(posts.value[i].id)
+          changed = true
+        }
       }
-
-      if (changed.length === 1)
-        persistOne(changed[0])
-      else if (changed.length > 0)
-        persistAll([...value])
+      if (changed)
+        persistDirty()
     },
-    { deep: true },
   )
 
   onBeforeMount(() => {
@@ -112,7 +130,7 @@ export const usePostStore = defineStore(`post`, () => {
     const flushToDisk = () => {
       editorStore.flushContentToPostStore()
       persistAll.flush()
-      persistOne.flush()
+      persistDirty.flush()
       void persistImmediately()
     }
 
@@ -133,14 +151,16 @@ export const usePostStore = defineStore(`post`, () => {
 
   function replacePosts(nextPosts: Post[]) {
     persistAll.cancel()
-    persistOne.cancel()
+    persistDirty.cancel()
+    dirtyPostIds.clear()
     posts.value = normalizePosts(nextPosts)
     void documentRepo.saveAll(posts.value)
   }
 
   async function replacePostsAndPersist(nextPosts: Post[]): Promise<void> {
     persistAll.cancel()
-    persistOne.cancel()
+    persistDirty.cancel()
+    dirtyPostIds.clear()
     posts.value = normalizePosts(nextPosts)
     await documentRepo.saveAll(posts.value)
   }

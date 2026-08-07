@@ -1,13 +1,5 @@
 import { sharePageFaviconLink } from './share-head'
-import { sharePageCspMeta } from './share-sanitize'
-
-function escapeHtml(text: string): string {
-  return text
-    .replace(/&/g, `&amp;`)
-    .replace(/</g, `&lt;`)
-    .replace(/>/g, `&gt;`)
-    .replace(/"/g, `&quot;`)
-}
+import { escapeHtml, sharePageCspMeta } from './share-sanitize'
 
 export const SHARE_VIEW_COUNT_PLACEHOLDER = `{{SHARE_VIEW_COUNT}}`
 export const SHARE_AUTHOR_PLACEHOLDER = `{{SHARE_AUTHOR}}`

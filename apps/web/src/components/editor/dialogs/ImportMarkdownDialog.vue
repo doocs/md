@@ -294,12 +294,16 @@ watch(isShowImportMdDialog, (visible) => {
 
         <TabsContent value="file" class="mt-4">
           <div
+            role="button"
+            tabindex="0"
             class="relative flex h-40 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
             :class="{
               'border-primary bg-primary/5': isDragover,
               'border-muted-foreground/25 hover:border-muted-foreground/50': !isDragover,
             }"
             @click="openFileDialog()"
+            @keydown.enter.prevent="openFileDialog()"
+            @keydown.space.prevent="openFileDialog()"
             @dragover.prevent="isDragover = true"
             @dragleave.prevent="isDragover = false"
             @drop="handleDrop"

@@ -2,6 +2,7 @@
 import { Copy, Loader2, Menu, Palette } from '@lucide/vue'
 import { defineAsyncComponent } from 'vue'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
+import { delay } from '@/lib/delay'
 import { generatePureHTML, processClipboardContent } from '@/services/export'
 import { useEditorStore } from '@/stores/editor'
 import { useExportStore } from '@/stores/export'
@@ -45,8 +46,6 @@ const isCopying = ref(false)
 const { copy: copyContent } = useClipboard({
   legacy: true,
 })
-
-const delay = (ms: number) => new Promise<void>(resolve => window.setTimeout(resolve, ms))
 
 const normalizeErrorMessage = (error: unknown) => (error instanceof Error ? error.message : String(error))
 

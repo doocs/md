@@ -54,6 +54,7 @@ export default {
     selectAll: `Select all`,
     deselectAll: `Deselect all`,
     selected: `Selected`,
+    selectPost: `Select "{title}"`,
     unit: `items`,
     yes: `Yes`,
     no: `No`,

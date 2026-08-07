@@ -102,9 +102,13 @@ async function copySyntax(syntax: string) {
           <div
             v-for="item in cat.items"
             :key="item.name"
+            role="button"
+            tabindex="0"
             class="cursor-pointer rounded-lg border p-3 transition-colors hover:bg-accent/50"
             :class="copiedSyntax === item.syntax ? 'border-primary bg-primary/5 ring-1 ring-primary/20' : ''"
             @click="copySyntax(item.syntax)"
+            @keydown.enter.prevent="copySyntax(item.syntax)"
+            @keydown.space.prevent="copySyntax(item.syntax)"
           >
             <div class="mb-2 flex items-center justify-between">
               <span class="text-sm font-medium">{{ item.name }}</span>

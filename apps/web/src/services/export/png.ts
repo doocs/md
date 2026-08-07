@@ -1,5 +1,6 @@
 import { sanitizeTitle } from '@md/shared/utils/basicHelpers'
 import { downloadFile } from '@md/shared/utils/fileHelpers'
+import { delay } from '@/lib/delay'
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import {
   applyExportLayout,
@@ -7,10 +8,6 @@ import {
   getPngCaptureStyles,
   PNG_CAPTURE_ROOT_CLASS,
 } from './apply-export-layout'
-
-function delay(ms: number) {
-  return new Promise<void>(resolve => window.setTimeout(resolve, ms))
-}
 
 async function createOffScreenPreviewElement(
   previewDevice: `desktop` | `mobile`,

@@ -384,10 +384,15 @@ function applyImportedConfig() {
             <div class="flex min-h-[12rem] flex-col overflow-hidden rounded-lg border border-border lg:min-h-[24rem] lg:max-h-[24rem]">
               <p class="relative shrink-0 border-b border-border bg-muted/50 p-2 text-sm font-medium text-muted-foreground">
                 <span>{{ t('editorState.jsonPreview') }}</span>
-                <Expand
+                <button
+                  type="button"
                   class="absolute right-2 top-2 cursor-pointer rounded p-1 text-muted-foreground hover:bg-muted"
+                  :aria-label="t('editorState.fullscreenPreview')"
+                  :title="t('editorState.fullscreenPreview')"
                   @click="isMaximized = true"
-                />
+                >
+                  <Expand class="size-4" />
+                </button>
               </p>
               <div class="min-h-0 flex-1 overflow-auto p-2">
                 <pre class="text-left text-xs text-muted-foreground sm:text-sm">{{ JSON.stringify(filteredExportJSON, null, 2) }}</pre>
@@ -419,21 +424,30 @@ function applyImportedConfig() {
             <div class="flex min-h-[12rem] flex-col overflow-hidden rounded-lg border border-border lg:min-h-[24rem] lg:max-h-[24rem]">
               <p class="relative shrink-0 border-b border-border bg-muted/50 p-2 text-sm font-medium text-muted-foreground">
                 <span>{{ t('editorState.importJson') }}</span>
-                <Expand
+                <button
                   v-if="originalImportData"
+                  type="button"
                   class="absolute right-2 top-2 cursor-pointer rounded p-1 text-muted-foreground hover:bg-muted"
+                  :aria-label="t('editorState.fullscreenPreview')"
+                  :title="t('editorState.fullscreenPreview')"
                   @click="isMaximized = true"
-                />
+                >
+                  <Expand class="size-4" />
+                </button>
               </p>
               <div class="min-h-0 flex-1 p-2">
                 <div
                   v-if="!originalImportData"
+                  role="button"
+                  tabindex="0"
                   class="flex h-full min-h-[10rem] cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors"
                   :class="{
                     'border-primary bg-primary/5': isDragover,
                     'border-border hover:bg-muted': !isDragover,
                   }"
                   @click="triggerFileInput"
+                  @keydown.enter.prevent="triggerFileInput"
+                  @keydown.space.prevent="triggerFileInput"
                   @dragover.prevent="isDragover = true"
                   @dragleave.prevent="isDragover = false"
                   @drop="handleDrop"
