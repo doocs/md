@@ -231,10 +231,10 @@ export function buildSlashCommands(): SlashCommandItem[] {
       id: `table`,
       label: t(`menu.table`),
       group: `common`,
-      keywords: [`table`, `表格`, `grid`],
+      keywords: [`table`, `表格`, `biaoge`, `grid`],
       icon: `table`,
       action: () => {
-        uiStore.toggleShowInsertFormDialog()
+        uiStore.openTableEditDialog()
       },
     }),
     createCommand({

@@ -177,6 +177,17 @@ defineExpose({
 
 <style>
 /* Diagram download overlay — unscoped to affect v-html content */
+/* Preview-table pointer cursor lives here (not in theme CSS) so juice never
+   inlines it into the copied WeChat HTML. Blockquote tables are excluded
+   because click-to-edit skips them (prefixes cannot be round-tripped). */
+#output .preview-table {
+  cursor: pointer;
+}
+
+#output blockquote .preview-table {
+  cursor: inherit;
+}
+
 .mermaid-diagram,
 .plantuml-diagram {
   position: relative;

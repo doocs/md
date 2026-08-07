@@ -1,5 +1,6 @@
 import type { MaybeRefOrGetter } from 'vue'
 import { EditorView } from '@codemirror/view'
+import { findAllMarkdownTables } from '@md/shared/utils/table'
 import { useUIStore } from '@/stores/ui'
 
 /** Click preview element to jump to the matching editor position. */
@@ -120,6 +121,46 @@ export function useCursorSync(
     }
   }
 
+  /**
+   * Map a preview table cell to the source position of its table row.
+   * Every GFM table renders as `table.preview-table` in document order, so
+   * the Nth preview table corresponds to the Nth source table block — no
+   * cell-text matching (which breaks on duplicate, empty, or `<br>` cells).
+   * Blockquote tables are excluded on both sides because their `>` prefixes
+   * cannot be round-tripped by the visual editor.
+   */
+  function findTableRowPosInEditor(tableEl: HTMLTableElement, rowEl: HTMLTableRowElement | null) {
+    const view = getEditorView()
+    if (!view)
+      return null
+    const output = tableEl.closest(`#output`)
+    if (!output)
+      return null
+
+    const tables = Array.from(output.querySelectorAll(`table.preview-table`))
+      .filter(el => !el.closest(`blockquote`))
+    const index = tables.indexOf(tableEl)
+    if (index === -1)
+      return null
+
+    const range = findAllMarkdownTables(view.state.doc.toString())[index]
+    if (!range)
+      return null
+
+    if (!rowEl)
+      return range.from
+    // Header row maps to line 0; body row N maps to line N+2 (skip delimiter).
+    const lines = range.text.split(`\n`)
+    const siblings = rowEl.parentElement?.children ?? []
+    const lineIndex = rowEl.parentElement?.tagName === `THEAD`
+      ? 0
+      : Math.min(Array.prototype.indexOf.call(siblings, rowEl) + 2, lines.length - 1)
+    let pos = range.from
+    for (let i = 0; i < lineIndex; i++)
+      pos += lines[i].length + 1
+    return pos
+  }
+
   function handlePreviewContentClick(event: MouseEvent) {
     const target = event.target as HTMLElement | null
     if (!target)
@@ -162,6 +203,24 @@ export function useCursorSync(
       const display = formulaEl.getAttribute(`data-math-display`) === `true`
       uiStore.openFormulaEditor({ value: raw, displayMode: display, sourceRaw: raw })
       return
+    }
+
+    // Single click on a preview table cell opens the visual table editor,
+    // mirroring the formula interaction above.
+    const tableCellEl = target.closest(`td,th`) as HTMLElement | null
+    const tableEl = tableCellEl?.closest(`table.preview-table`) as HTMLTableElement | null
+    if (tableCellEl && tableEl && !tableEl.closest(`blockquote`)) {
+      const rowEl = tableCellEl.closest(`tr`) as HTMLTableRowElement | null
+      const pos = findTableRowPosInEditor(tableEl, rowEl)
+      const view = getEditorView()
+      if (pos != null && view) {
+        view.dispatch({
+          selection: { anchor: pos },
+          effects: EditorView.scrollIntoView(pos, { y: `center` }),
+        })
+        uiStore.openTableEditDialog()
+        return
+      }
     }
 
     const block = target.closest(`h1,h2,h3,h4,h5,h6,p,li,blockquote,pre,td,th,img`) as HTMLElement | null

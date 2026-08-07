@@ -27,7 +27,7 @@ export const storeLabels: Record<string, string> = {
   titleList: `titleList`,
   readingTime: `readingTime`,
   isShowCssEditor: `isShowCssEditor`,
-  isShowInsertFormDialog: `isShowInsertFormDialog`,
+  isShowTableEditDialog: `isShowTableEditDialog`,
   isShowInsertMpCardDialog: `isShowInsertMpCardDialog`,
   isShowUploadImgDialog: `isShowUploadImgDialog`,
   aiDialogVisible: `aiDialogVisible`,
