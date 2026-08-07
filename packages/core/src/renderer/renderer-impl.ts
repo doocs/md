@@ -1,4 +1,4 @@
-import type { IOpts, RendererAPI } from '@md/shared/types'
+import type { CollectedHeading, IOpts, RendererAPI } from '@md/shared/types'
 import type { FrontMatterData } from '@md/shared/types/front-matter'
 import type { ReadTimeResults } from '@md/shared/utils/readingTime'
 import type { RendererObject, Tokens } from 'marked'
@@ -32,6 +32,23 @@ export { hljs }
 const DOUBLE_QUOTE_REGEX = /"/g
 const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
+const HTML_TAG_REGEX = /<[^>]*>/g
+const HTML_ENTITY_REGEX = /&(?:amp|lt|gt|quot|#39|nbsp);/g
+const HTML_ENTITIES: Record<string, string> = {
+  '&amp;': `&`,
+  '&lt;': `<`,
+  '&gt;': `>`,
+  '&quot;': `"`,
+  '&#39;': `'`,
+  '&nbsp;': ` `,
+}
+
+/** Plain text of inline heading HTML, mirroring what `textContent` would yield. */
+function stripInlineHtml(html: string): string {
+  return html
+    .replace(HTML_TAG_REGEX, ``)
+    .replace(HTML_ENTITY_REGEX, entity => HTML_ENTITIES[entity] ?? entity)
+}
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
 /** Locale-neutral English fallbacks; Web injects localized strings via IOpts. */
@@ -187,6 +204,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   let footnoteIndex: number = 0
   const listOrderedStack: boolean[] = []
   const listCounters: number[] = []
+  const headings: CollectedHeading[] = []
   const markdownParser = new Marked()
 
   markdownParser.setOptions({
@@ -200,7 +218,11 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
   function styledContent(styleLabel: string, content: string, tagName?: string, style?: string): string {
     const tag = tagName ?? styleLabel
     const className = `${styleLabel.replace(UNDERSCORE_REGEX, `-`)}`
-    const headingAttr = HEADING_TAG_REGEX.test(tag) ? ` data-heading="true"` : ``
+    const isHeading = HEADING_TAG_REGEX.test(tag)
+    // Collect headings during render so consumers (outline/TOC) don't need a DOM pass.
+    if (isHeading)
+      headings.push({ level: Number(tag.slice(1)), text: stripInlineHtml(content) })
+    const headingAttr = isHeading ? ` data-heading="true"` : ``
     const styleAttr = style ? ` style="${style}"` : ``
     return `<${tag} class="${className}"${headingAttr}${styleAttr}>${content}</${tag}>`
   }
@@ -220,6 +242,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     footnoteIndex = 0
     listOrderedStack.length = 0
     listCounters.length = 0
+    headings.length = 0
     setOptions(newOpts)
   }
 
@@ -487,6 +510,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     createContainer(content: string) {
       return styledContent(`container`, content, `section`)
     },
+    getHeadings: () => [...headings],
     getOpts,
   }
 }

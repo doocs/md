@@ -190,6 +190,14 @@ onMounted(() => {
   redistributePanelSizes()
   if (!isMobile.value && isOpenPostSlider.value)
     resizePanelSafely(postSliderPanelRef, 20)
+
+  // Warm up the async post-slider chunk while idle: fetches the chunk in prod,
+  // and in dev finishes the on-demand transform before the user opens the panel.
+  const preloadPostSlider = () => { void import('@/components/editor/post-slider/index.vue') }
+  if (typeof window.requestIdleCallback === `function`)
+    window.requestIdleCallback(() => preloadPostSlider())
+  else
+    setTimeout(preloadPostSlider, 3000)
 })
 
 const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading) ?? false)

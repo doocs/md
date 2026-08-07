@@ -31,6 +31,7 @@ let initComplete = false
 async function initLegacyFallback(reason: string): Promise<void> {
   console.warn(`[Storage] ${reason} — using localStorage fallback`)
   setUseLegacyDocumentStorage(true)
+  await store.restorePendingWrites()
   await documentRepo.loadAll()
   initComplete = true
 }
@@ -73,6 +74,7 @@ export function initStorage(): Promise<void> {
       }
 
       store.setEngine(engine)
+      await store.restorePendingWrites()
       await documentRepo.loadAll()
       initComplete = true
     }

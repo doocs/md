@@ -96,4 +96,40 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     expect(html).toContain(`\\tag{1}`)
     expect(html).not.toMatch(/<p[^>]*>\s*<section class="katex-block"/)
   })
+
+  it('collects headings in document order with plain text', () => {
+    const renderer = initRenderer({})
+    renderMarkdown(`# Title\n\n## Sub \`code\` & **bold**\n\nBody\n\n### Third`, renderer)
+
+    expect(renderer.getHeadings()).toEqual([
+      { level: 1, text: `Title` },
+      { level: 2, text: `Sub code & bold` },
+      { level: 3, text: `Third` },
+    ])
+  })
+
+  it('includes the footnote title after postProcessHtml', () => {
+    const renderer = initRenderer({
+      citeStatus: true,
+      renderMessages: { footnoteTitle: `脚注`, unknownComponent: ``, katexLoading: `` },
+    })
+    const { html, readingTime } = renderMarkdown(`# Doc\n\n[link](https://example.com)`, renderer)
+    postProcessHtml(html, readingTime, renderer)
+
+    const headings = renderer.getHeadings()
+    expect(headings[0]).toEqual({ level: 1, text: `Doc` })
+    expect(headings[headings.length - 1]).toEqual({ level: 4, text: `脚注` })
+  })
+
+  it('clears collected headings on reset', () => {
+    const renderer = initRenderer({})
+    renderMarkdown(`# Old`, renderer)
+    expect(renderer.getHeadings()).toHaveLength(1)
+
+    renderer.reset({})
+    expect(renderer.getHeadings()).toHaveLength(0)
+
+    renderMarkdown(`## New`, renderer)
+    expect(renderer.getHeadings()).toEqual([{ level: 2, text: `New` }])
+  })
 })

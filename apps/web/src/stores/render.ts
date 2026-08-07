@@ -108,27 +108,19 @@ export const useRenderStore = defineStore(`render`, () => {
 
   /**
    * Inject heading anchor ids (`#0`, `#1`, …) used by outline navigation and
-   * collect the title list in a single parse. Runs before `output` is
-   * assigned so the preview updates once instead of twice.
+   * fill the title list from headings collected during render. Pure string
+   * work — no DOM parse/serialize round-trip per render.
    */
   const extractTitles = (html: string): string => {
-    const div = document.createElement(`div`)
-    div.innerHTML = html
-    const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
+    const headings = renderer!.getHeadings()
+    titleList.value = headings.map((heading, i) => ({
+      url: `#${i}`,
+      title: heading.text,
+      level: heading.level,
+    }))
 
-    const titles: typeof titleList.value = []
     let i = 0
-    for (const item of list) {
-      item.setAttribute(`id`, `${i}`)
-      titles.push({
-        url: `#${i}`,
-        title: `${item.textContent}`,
-        level: Number(item.tagName.slice(1)),
-      })
-      i++
-    }
-    titleList.value = titles
-    return div.innerHTML
+    return html.replace(/data-heading="true"/g, () => `data-heading="true" id="${i++}"`)
   }
 
   const render = (content: string, options?: RenderOptions) => {

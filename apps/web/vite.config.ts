@@ -111,6 +111,11 @@ export default defineConfig(({ mode }) => {
       alias: { '@': fileURLToPath(new URL(`./src`, import.meta.url)) },
       dedupe: [`@codemirror/state`, `@codemirror/view`],
     },
+    // Pre-bundle CJS deps that live behind lazily-mounted components; otherwise
+    // the dev server discovers them on first interaction and force-reloads the page.
+    optimizeDeps: {
+      include: [`diff-match-patch`],
+    },
     css: { devSourcemap: true },
     build: {
       rolldownOptions: {
