@@ -1,0 +1,1 @@
+import{s as e}from"./md-utils-B378dSnJ.js";var t=e(`chevron-right`,[[`path`,{d:`m9 18 6-6-6-6`,key:`mthhwq`}]]);export{t};

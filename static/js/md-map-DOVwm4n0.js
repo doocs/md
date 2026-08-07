@@ -1,0 +1,1 @@
+import{J as e,P as t,q as n}from"./md-isArrayLikeObject-DAE2nXMg.js";import{c as r,u as i}from"./md-graphlib-KGCHG5wu.js";function a(e,n){var i=-1,a=t(e)?Array(e.length):[];return r(e,function(e,t,r){a[++i]=n(e,t,r)}),a}function o(t,r){return(n(t)?e:a)(t,i(r,3))}export{a as n,o as t};

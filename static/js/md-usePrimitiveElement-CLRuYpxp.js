@@ -1,0 +1,1 @@
+import{dt as e,v as t}from"./md-vendor_vue-B11HoLf8.js";import{r as n}from"./md-vendor_vueuse-BXy9GvFq.js";function r(){let r=e();return{primitiveElement:r,currentElement:t(()=>[`#text`,`#comment`].includes(r.value?.$el.nodeName)?r.value?.$el.nextElementSibling:n(r))}}export{r as t};
