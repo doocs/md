@@ -106,23 +106,29 @@ export const useRenderStore = defineStore(`render`, () => {
     ].join(`\u0001`)
   }
 
-  const extractTitles = () => {
+  /**
+   * Inject heading anchor ids (`#0`, `#1`, …) used by outline navigation and
+   * collect the title list in a single parse. Runs before `output` is
+   * assigned so the preview updates once instead of twice.
+   */
+  const extractTitles = (html: string): string => {
     const div = document.createElement(`div`)
-    div.innerHTML = output.value
+    div.innerHTML = html
     const list = div.querySelectorAll<HTMLElement>(`[data-heading]`)
 
-    titleList.value = []
+    const titles: typeof titleList.value = []
     let i = 0
     for (const item of list) {
       item.setAttribute(`id`, `${i}`)
-      titleList.value.push({
+      titles.push({
         url: `#${i}`,
         title: `${item.textContent}`,
         level: Number(item.tagName.slice(1)),
       })
       i++
     }
-    output.value = div.innerHTML
+    titleList.value = titles
+    return div.innerHTML
   }
 
   const render = (content: string, options?: RenderOptions) => {
@@ -159,9 +165,8 @@ export const useRenderStore = defineStore(`render`, () => {
     readingTime.words = readingTimeResult.words
     readingTime.minutes = Math.ceil(readingTimeResult.minutes)
 
-    output.value = postProcessHtml(baseHtml, readingTimeResult, renderer)
+    output.value = extractTitles(postProcessHtml(baseHtml, readingTimeResult, renderer))
 
-    extractTitles()
     lastContent = content
     lastOptionsFingerprint = optionsFingerprint
 
@@ -178,6 +183,5 @@ export const useRenderStore = defineStore(`render`, () => {
     initRendererInstance,
     getRenderer,
     render,
-    extractTitles,
   }
 })
