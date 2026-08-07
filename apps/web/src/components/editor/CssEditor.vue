@@ -362,49 +362,53 @@ function exportCurrentTheme() {
         <div
           v-for="item in cssContentConfig.tabs"
           :key="item.id"
-          role="tab"
-          :aria-selected="cssContentConfig.active === item.id && !isSelectMode"
-          :tabindex="inlineEditId === item.id ? -1 : 0"
-          class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
-          :class="[
-            cssContentConfig.active === item.id && !isSelectMode ? 'css-tab-active text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
-            isSelectMode && selectedIds.includes(item.id) ? 'bg-accent text-accent-foreground' : '',
-          ]"
-          @click="handleTabClick(item.id)"
-          @keydown.enter.prevent="handleTabClick(item.id)"
-          @keydown.space.prevent="handleTabClick(item.id)"
-          @dblclick.stop="startInlineRename(item)"
-          @contextmenu="onContextMenu($event, item.id)"
+          class="group/tab relative flex items-center shrink-0 h-full"
         >
-          <span
-            v-if="isSelectMode"
-            class="inline-flex items-center justify-center size-4 rounded border transition-colors mr-1"
-            :class="selectedIds.includes(item.id) ? 'bg-primary border-primary text-primary-foreground' : 'border-border'"
+          <div
+            role="tab"
+            :aria-selected="cssContentConfig.active === item.id && !isSelectMode"
+            :tabindex="inlineEditId === item.id ? -1 : 0"
+            class="relative flex items-center gap-1.5 h-full px-3 text-xs transition-colors duration-150"
+            :class="[
+              cssContentConfig.active === item.id && !isSelectMode ? 'css-tab-active text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
+              isSelectMode && selectedIds.includes(item.id) ? 'bg-accent text-accent-foreground' : '',
+            ]"
+            @click="handleTabClick(item.id)"
+            @keydown.enter.prevent="handleTabClick(item.id)"
+            @keydown.space.prevent="handleTabClick(item.id)"
+            @dblclick.stop="startInlineRename(item)"
+            @contextmenu="onContextMenu($event, item.id)"
           >
-            <Check v-if="selectedIds.includes(item.id)" class="size-3" />
-          </span>
-          <input
-            v-if="inlineEditId === item.id"
-            :ref="setInlineInputRef"
-            v-model="inlineEditVal"
-            class="w-[80px] bg-transparent outline-none border-b border-primary text-xs"
-            @click.stop
-            @keyup.enter="commitInlineRename"
-            @keyup.escape="cancelInlineRename"
-            @blur="commitInlineRename"
-          >
-          <span v-else class="truncate max-w-[100px]">{{ item.title }}</span>
+            <span
+              v-if="isSelectMode"
+              class="inline-flex items-center justify-center size-4 rounded border transition-colors mr-1"
+              :class="selectedIds.includes(item.id) ? 'bg-primary border-primary text-primary-foreground' : 'border-border'"
+            >
+              <Check v-if="selectedIds.includes(item.id)" class="size-3" />
+            </span>
+            <input
+              v-if="inlineEditId === item.id"
+              :ref="setInlineInputRef"
+              v-model="inlineEditVal"
+              class="w-[80px] bg-transparent outline-none border-b border-primary text-xs"
+              @click.stop
+              @keyup.enter="commitInlineRename"
+              @keyup.escape="cancelInlineRename"
+              @blur="commitInlineRename"
+            >
+            <span v-else class="truncate max-w-[100px]">{{ item.title }}</span>
 
-          <span
-            v-if="cssContentConfig.active === item.id && !isSelectMode"
-            class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
-          />
+            <span
+              v-if="cssContentConfig.active === item.id && !isSelectMode"
+              class="absolute bottom-0 left-2 right-2 h-[2px] rounded-full bg-primary"
+            />
+          </div>
 
           <DropdownMenu v-if="cssContentConfig.active === item.id && !isSelectMode">
             <DropdownMenuTrigger as-child>
               <button
                 type="button"
-                class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
+                class="-ml-2 mr-1 inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
                 :aria-label="t('common.moreActions')"
                 :title="t('common.moreActions')"
                 @click.stop

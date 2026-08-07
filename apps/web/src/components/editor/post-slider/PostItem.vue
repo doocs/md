@@ -162,6 +162,7 @@ function cancelInlineRename() {
         v-if="isSelectMode"
         role="checkbox"
         :aria-checked="selectedIds?.includes(post.id) ?? false"
+        :aria-label="t('common.selectPost', { title: post.title })"
         tabindex="0"
         class="flex shrink-0 cursor-pointer items-center justify-center size-5"
         @click.stop="onToggleSelect?.(post.id)"

@@ -57,9 +57,21 @@ describe(`highlightParts`, () => {
     expect(highlightParts(`hello`, `xyz`)).toEqual([{ text: `hello`, highlight: false }])
   })
 
-  it(`does not loop forever on zero-width regex matches`, () => {
+  it(`does not loop forever or emit empty highlights on zero-width matches`, () => {
     const parts = highlightParts(`bbb`, `a*`, { isRegex: true })
-    expect(parts.map(p => p.text).join(``)).toBe(`bbb`)
+    expect(parts).toEqual([{ text: `bbb`, highlight: false }])
+  })
+
+  it(`skips zero-width matches but still highlights real ones`, () => {
+    const parts = highlightParts(`banana`, `a*`, { isRegex: true })
+    expect(parts).toEqual([
+      { text: `b`, highlight: false },
+      { text: `a`, highlight: true },
+      { text: `n`, highlight: false },
+      { text: `a`, highlight: true },
+      { text: `n`, highlight: false },
+      { text: `a`, highlight: true },
+    ])
   })
 })
 
@@ -80,6 +92,11 @@ describe(`getContentSnippet`, () => {
 
   it(`returns empty string when content has no match`, () => {
     expect(getContentSnippet(`nothing here`, `needle`)).toBe(``)
+  })
+
+  it(`returns empty string when only zero-width matches exist`, () => {
+    expect(getContentSnippet(`abc`, `^`, { isRegex: true })).toBe(``)
+    expect(getContentSnippet(`abc`, `\\b`, { isRegex: true })).toBe(``)
   })
 })
 
@@ -131,6 +148,22 @@ describe(`scanPosts`, () => {
   it(`supports regex queries`, () => {
     const posts = [makePost({ id: `1`, content: `a1 a2 a3` })]
     const scan = scanPosts(posts, `a\\d`, { isRegex: true })
+    expect(scan.totalMatches).toBe(3)
+  })
+
+  it(`ignores zero-width matches from empty-matching patterns`, () => {
+    const posts = [makePost({ id: `1`, title: `bbb`, content: `ccc` })]
+    // `a*` matches the empty string everywhere; without filtering, every post
+    // would appear as a match with O(length) counts.
+    expect(scanPosts(posts, `a*`, { isRegex: true }).totalMatches).toBe(0)
+    expect(scanPosts(posts, `a*`, { isRegex: true }).results).toEqual([])
+    expect(scanPosts(posts, `^`, { isRegex: true }).totalMatches).toBe(0)
+    expect(scanPosts(posts, `\\b`, { isRegex: true }).totalMatches).toBe(0)
+  })
+
+  it(`counts only real matches for partially zero-width patterns`, () => {
+    const posts = [makePost({ id: `1`, title: `banana`, content: `` })]
+    const scan = scanPosts(posts, `a*`, { isRegex: true })
     expect(scan.totalMatches).toBe(3)
   })
 })

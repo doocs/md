@@ -44,12 +44,17 @@ export function highlightParts(text: string, query: string, options: SearchOptio
   let lastIndex = 0
   let match = regex.exec(text)
   while (match !== null) {
+    if (match[0].length === 0) {
+      // Skip zero-width matches (`\b`, `^`, `a*` on other text): advance past
+      // them to avoid an infinite loop, but never emit an empty highlight.
+      regex.lastIndex++
+      match = regex.exec(text)
+      continue
+    }
     if (match.index > lastIndex)
       parts.push({ text: text.slice(lastIndex, match.index), highlight: false })
     parts.push({ text: match[0], highlight: true })
     lastIndex = match.index + match[0].length
-    if (match[0].length === 0)
-      regex.lastIndex++
     match = regex.exec(text)
   }
   if (lastIndex < text.length)
@@ -63,7 +68,13 @@ export function getContentSnippet(content: string, query: string, options: Searc
   const regex = getSearchRegex(query, options)
   if (!regex)
     return ``
-  const match = regex.exec(content)
+  // Find the first non-zero-width match; a zero-width-only pattern (e.g. `^`)
+  // should not produce a misleading snippet at position 0.
+  let match = regex.exec(content)
+  while (match !== null && match[0].length === 0) {
+    regex.lastIndex++
+    match = regex.exec(content)
+  }
   if (!match)
     return ``
   const idx = match.index
@@ -95,9 +106,12 @@ export function scanPosts(posts: Post[], query: string, options: SearchOptions =
   let totalMatches = 0
   for (const post of posts) {
     // String.match with a global regex always scans from the start, avoiding
-    // the stale-lastIndex pitfalls of repeated RegExp.test calls.
-    const titleMatches = post.title.match(regex)?.length ?? 0
-    const contentMatches = post.content.match(regex)?.length ?? 0
+    // the stale-lastIndex pitfalls of repeated RegExp.test calls. Zero-width
+    // matches are ignored so patterns that can match the empty string (`a*`,
+    // `^`, `\b`) neither mark every post as matched nor inflate the count to
+    // O(content length).
+    const titleMatches = (post.title.match(regex) ?? []).filter(m => m.length > 0).length
+    const contentMatches = (post.content.match(regex) ?? []).filter(m => m.length > 0).length
     totalMatches += titleMatches + contentMatches
     if (titleMatches + contentMatches === 0)
       continue

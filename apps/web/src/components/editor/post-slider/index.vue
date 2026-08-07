@@ -327,7 +327,10 @@ function replaceInText(text: string, search: string, replace: string): string {
   const regex = getSearchRegex(search, { isRegex: isRegex.value, isCaseSensitive: isCaseSensitive.value })
   if (!regex)
     return text
-  return text.replace(regex, replace)
+  // Skip zero-width matches so empty-matching patterns (`a*`, `\b`) do not
+  // insert the replacement at every position. The callback form also inserts
+  // the replacement literally instead of interpreting `$` patterns.
+  return text.replace(regex, m => (m.length > 0 ? replace : m))
 }
 
 function autoResizeReplace(e: Event) {
@@ -378,9 +381,9 @@ function replaceAll() {
   let count = 0
   posts.value.forEach((post) => {
     regex.lastIndex = 0
-    const titleMatches = (post.title.match(regex) || []).length
+    const titleMatches = (post.title.match(regex) || []).filter(m => m.length > 0).length
     regex.lastIndex = 0
-    const contentMatches = (post.content.match(regex) || []).length
+    const contentMatches = (post.content.match(regex) || []).filter(m => m.length > 0).length
     if (titleMatches > 0) {
       regex.lastIndex = 0
       postStore.renamePost(post.id, replaceInText(post.title, q, replaceQuery.value))
