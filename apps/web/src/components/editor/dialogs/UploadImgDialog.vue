@@ -440,11 +440,15 @@ function onTabScroll(e: WheelEvent) {
           </div>
 
           <div
+            role="button"
+            tabindex="0"
             class="bg-clip-padding mt-4 h-50 relative flex flex-col cursor-pointer items-center justify-evenly border-2 rounded border-dashed transition-colors hover:border-gray-700 hover:bg-gray-400/50 dark:hover:border-gray-200 dark:hover:bg-gray-500/50"
             :class="{
               'border-gray-700 bg-gray-400/50 dark:border-gray-200 dark:bg-gray-500/50': dragover,
             }"
             @click="open()"
+            @keydown.enter.prevent="open()"
+            @keydown.space.prevent="open()"
             @drop.prevent="onDrop"
             @dragover.prevent="dragover = true"
             @dragleave.prevent="dragover = false"
@@ -456,7 +460,7 @@ function onTabScroll(e: WheelEvent) {
               <strong>{{ t('upload.clickToUpload') }}</strong>
             </p>
             <div v-if="imageUrl" class="absolute left-0 right-0 h-full w-full flex items-center justify-center bg-white dark:bg-black">
-              <img :src="imageUrl" class="max-h-40 object-contain">
+              <img :src="imageUrl" class="max-h-40 object-contain" :alt="t('common.preview')">
             </div>
           </div>
         </TabsContent>

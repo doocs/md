@@ -358,16 +358,21 @@ function exportCurrentTheme() {
     :style="isMobile ? { transform: uiStore.isShowCssEditor ? 'translateX(0)' : 'translateX(100%)' } : undefined"
   >
     <div class="flex items-center h-9 px-2 shrink-0 border-b border-border">
-      <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full">
+      <div class="flex-1 flex items-center gap-0 overflow-x-auto custom-scrollbar min-w-0 h-full" role="tablist">
         <div
           v-for="item in cssContentConfig.tabs"
           :key="item.id"
+          role="tab"
+          :aria-selected="cssContentConfig.active === item.id && !isSelectMode"
+          :tabindex="inlineEditId === item.id ? -1 : 0"
           class="group/tab relative flex items-center gap-1.5 shrink-0 h-full px-3 text-xs transition-colors duration-150"
           :class="[
             cssContentConfig.active === item.id && !isSelectMode ? 'css-tab-active text-foreground font-medium' : 'text-muted-foreground hover:text-foreground',
             isSelectMode && selectedIds.includes(item.id) ? 'bg-accent text-accent-foreground' : '',
           ]"
           @click="handleTabClick(item.id)"
+          @keydown.enter.prevent="handleTabClick(item.id)"
+          @keydown.space.prevent="handleTabClick(item.id)"
           @dblclick.stop="startInlineRename(item)"
           @contextmenu="onContextMenu($event, item.id)"
         >
@@ -397,12 +402,15 @@ function exportCurrentTheme() {
 
           <DropdownMenu v-if="cssContentConfig.active === item.id && !isSelectMode">
             <DropdownMenuTrigger as-child>
-              <span
+              <button
+                type="button"
                 class="inline-flex items-center justify-center size-4 rounded text-muted-foreground/60 hover:text-foreground hover:bg-black/5 dark:hover:bg-white/10 transition-colors duration-100 cursor-pointer"
+                :aria-label="t('common.moreActions')"
+                :title="t('common.moreActions')"
                 @click.stop
               >
                 <Ellipsis class="size-3" />
-              </span>
+              </button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" class="w-32">
               <DropdownMenuItem @click.stop="rename(item.name)">

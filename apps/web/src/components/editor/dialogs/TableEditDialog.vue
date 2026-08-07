@@ -313,8 +313,9 @@ function onUpdate(open: boolean) {
                   <button
                     v-if="colCount > 1"
                     type="button"
-                    class="hover:bg-destructive/10 hover:text-destructive rounded p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                    class="hover:bg-destructive/10 hover:text-destructive rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                     :title="t('tableEditor.deleteCol')"
+                    :aria-label="t('tableEditor.deleteCol')"
                     @click="removeCol(c - 1)"
                   >
                     <X class="h-3.5 w-3.5" />
@@ -342,8 +343,9 @@ function onUpdate(open: boolean) {
                 <button
                   v-if="rows.length > 1"
                   type="button"
-                  class="hover:bg-destructive/10 hover:text-destructive rounded p-1 opacity-0 transition-opacity group-hover:opacity-100"
+                  class="hover:bg-destructive/10 hover:text-destructive rounded p-1 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                   :title="t('tableEditor.deleteRow')"
+                  :aria-label="t('tableEditor.deleteRow')"
                   @click="removeRow(r)"
                 >
                   <Trash2 class="h-3.5 w-3.5" />

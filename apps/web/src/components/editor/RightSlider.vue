@@ -244,7 +244,7 @@ const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth
           <h2 class="text-lg font-semibold">
             {{ t('rightSlider.title') }}
           </h2>
-          <Button variant="ghost" size="sm" @click="isOpenRightSlider = false">
+          <Button variant="ghost" size="sm" :aria-label="t('common.close')" :title="t('common.close')" @click="isOpenRightSlider = false">
             <X class="h-4 w-4" />
           </Button>
         </div>
