@@ -213,9 +213,16 @@ const currentHistoryList = computed(() => {
 const highlightedMarkdown = computed(() => {
   const content = currentHistoryList.value[currentHistoryIndex.value]?.content ?? ''
   const core = coreModules.value
-  // Plain text until the highlighter chunk arrives; recomputes once it does.
-  if (!core)
+  // Rendered via v-html: escape raw markdown until the highlighter chunk
+  // arrives, so source like `<tag>` can't be parsed as HTML.
+  if (!core) {
     return content
+      .replace(/&/g, `&amp;`)
+      .replace(/</g, `&lt;`)
+      .replace(/>/g, `&gt;`)
+      .replace(/"/g, `&quot;`)
+      .replace(/'/g, `&#39;`)
+  }
   return core.hljs.highlight(content, { language: `markdown` }).value
 })
 
