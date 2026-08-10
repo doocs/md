@@ -6,16 +6,8 @@ import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { uploadDefaultImage } from '@/services/upload/client'
 import { store } from '@/storage'
+import { loadCryptoJS } from './crypto-js-compat'
 import { loadS3Sdk } from './s3-sdk'
-
-type CryptoJSModule = typeof import('crypto-js')
-
-let cryptoJsPromise: Promise<CryptoJSModule> | null = null
-
-function loadCryptoJS() {
-  cryptoJsPromise ??= import(`crypto-js`)
-  return cryptoJsPromise
-}
 
 /**
  * Safely parse JSON string, returns parsed result or throws a descriptive error
