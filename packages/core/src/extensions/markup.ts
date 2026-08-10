@@ -26,6 +26,18 @@ function followsWordChar(tokens: Token[] | undefined): boolean {
   return WORD_CHAR.test(prevInlineChar(tokens))
 }
 
+// Regex lookbehind throws at parse time in JS engines without support (older
+// WebViews) and would take down the whole renderer, so boundaries are enforced
+// with plain scans/character classes instead of `(?<!...)`/`(?<=...)`.
+function boundaryStart(src: string, delimiter: RegExp): number | undefined {
+  const rule = new RegExp(delimiter.source, `g`)
+  for (let match = rule.exec(src); match !== null; match = rule.exec(src)) {
+    if (!WORD_CHAR.test(src.charAt(match.index - 1))) {
+      return match.index
+    }
+  }
+}
+
 /** Extended markup: ==highlight==, ++underline++, ~wavyline~ */
 export function markedMarkup(): MarkedExtension {
   return {
@@ -34,13 +46,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_highlight`,
         level: `inline`,
         start(src: string) {
-          return src.match(/(?<![A-Z0-9])==(?!=)/i)?.index
+          return boundaryStart(src, /==(?!=)/)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {
             return
           }
-          const rule = /^==(?=\S)((?:[^=]|=(?!=))+)(?<=\S)==/
+          const rule = /^==(?=\S)((?:[^=]|=(?!=))*[^\s=])==/
           const match = rule.exec(src)
           if (match) {
             return {
@@ -59,13 +71,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_underline`,
         level: `inline`,
         start(src: string) {
-          return src.match(/(?<![A-Z0-9])\+\+(?!\+)/i)?.index
+          return boundaryStart(src, /\+\+(?!\+)/)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {
             return
           }
-          const rule = /^\+\+(?=\S)((?:[^+]|\+(?!\+))+)(?<=\S)\+\+/
+          const rule = /^\+\+(?=\S)((?:[^+]|\+(?!\+))*[^\s+])\+\+/
           const match = rule.exec(src)
           if (match) {
             return {
@@ -84,13 +96,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_wavyline`,
         level: `inline`,
         start(src: string) {
-          return src.match(/(?<![A-Z0-9])~(?!~)/i)?.index
+          return boundaryStart(src, /~(?!~)/)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {
             return
           }
-          const rule = /^~(?=\S)([^~\n]+)(?<=\S)~(?!~)/
+          const rule = /^~(?=\S)([^~\n]*[^\s~])~(?!~)/
           const match = rule.exec(src)
           if (match) {
             return {
