@@ -1,6 +1,30 @@
-import type { MarkedExtension } from 'marked'
+import type { MarkedExtension, Token } from 'marked'
 import type { MarkupHighlightToken, MarkupUnderlineToken, MarkupWavylineToken } from '../types/marked-tokens'
 import { asTextTokenRenderer } from '../types/marked-tokens'
+
+// ASCII-only on purpose: `C++`/`x==1`/`v1~2` must stay literal, while CJK
+// intraword usage like `把++重点++标出` should keep rendering.
+const WORD_CHAR = /[A-Z0-9]/i
+
+// Inline tokenizers only see `src` from the candidate position on, so the left
+// boundary is recovered from the already-tokenized inline tokens instead.
+function prevInlineChar(tokens: Token[] | undefined): string {
+  const last = tokens?.[tokens.length - 1]
+  if (!last) {
+    return ``
+  }
+  const nested = (last as { tokens?: Token[] }).tokens
+  if (Array.isArray(nested) && nested.length > 0) {
+    return prevInlineChar(nested)
+  }
+  const text = (last as { text?: string }).text ?? last.raw ?? ``
+  return text.charAt(text.length - 1)
+}
+
+/** Opening delimiter must not directly follow a word char (blocks `C++`). */
+function followsWordChar(tokens: Token[] | undefined): boolean {
+  return WORD_CHAR.test(prevInlineChar(tokens))
+}
 
 /** Extended markup: ==highlight==, ++underline++, ~wavyline~ */
 export function markedMarkup(): MarkedExtension {
@@ -10,10 +34,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_highlight`,
         level: `inline`,
         start(src: string) {
-          return src.match(/==(?!=)/)?.index
+          return src.match(/(?<![A-Z0-9])==(?!=)/i)?.index
         },
-        tokenizer(src: string) {
-          const rule = /^==((?:[^=]|=(?!=))+)==/
+        tokenizer(src: string, tokens: Token[]) {
+          if (followsWordChar(tokens)) {
+            return
+          }
+          const rule = /^==(?=\S)((?:[^=]|=(?!=))+)(?<=\S)==/
           const match = rule.exec(src)
           if (match) {
             return {
@@ -32,10 +59,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_underline`,
         level: `inline`,
         start(src: string) {
-          return src.match(/\+\+(?!\+)/)?.index
+          return src.match(/(?<![A-Z0-9])\+\+(?!\+)/i)?.index
         },
-        tokenizer(src: string) {
-          const rule = /^\+\+((?:[^+]|\+(?!\+))+)\+\+/
+        tokenizer(src: string, tokens: Token[]) {
+          if (followsWordChar(tokens)) {
+            return
+          }
+          const rule = /^\+\+(?=\S)((?:[^+]|\+(?!\+))+)(?<=\S)\+\+/
           const match = rule.exec(src)
           if (match) {
             return {
@@ -54,10 +84,13 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_wavyline`,
         level: `inline`,
         start(src: string) {
-          return src.match(/~(?!~)/)?.index
+          return src.match(/(?<![A-Z0-9])~(?!~)/i)?.index
         },
-        tokenizer(src: string) {
-          const rule = /^~([^~\n]+)~(?!~)/
+        tokenizer(src: string, tokens: Token[]) {
+          if (followsWordChar(tokens)) {
+            return
+          }
+          const rule = /^~(?=\S)([^~\n]+)(?<=\S)~(?!~)/
           const match = rule.exec(src)
           if (match) {
             return {

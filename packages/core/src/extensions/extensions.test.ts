@@ -100,6 +100,40 @@ describe(`markup extension`, () => {
     expect(html).toContain(`ul`)
     expect(html).toContain(`wv`)
   })
+
+  it(`keeps C++ as literal text instead of pairing the pluses`, () => {
+    const html = render(`C++是最好的语言，C++是最好的语言`)
+
+    expect(html).not.toContain(`markup-underline`)
+    expect(html).toContain(`C++是最好的语言，C++是最好的语言`)
+  })
+
+  it(`keeps delimiters attached to word chars as literal text`, () => {
+    expect(render(`x==1==y`)).not.toContain(`markup-highlight`)
+    expect(render(`v1~2~3`)).not.toContain(`markup-wavyline`)
+    expect(render(`C++17`)).toContain(`C++17`)
+  })
+
+  it(`keeps delimiters after a word-char token as literal text`, () => {
+    const html = render(`**C**++不是下划线++`)
+
+    expect(html).toContain(`<strong class="strong">C</strong>`)
+    expect(html).not.toContain(`markup-underline`)
+  })
+
+  it(`rejects content wrapped in whitespace`, () => {
+    expect(render(`++ 文字 ++`)).not.toContain(`markup-underline`)
+    expect(render(`a == b == c`)).not.toContain(`markup-highlight`)
+    expect(render(`~ 文字 ~`)).not.toContain(`markup-wavyline`)
+  })
+
+  it(`still renders intraword CJK markup`, () => {
+    const html = render(`把++重点++标出==高亮==和~波浪~`)
+
+    expect(html).toContain(`class="markup-underline"`)
+    expect(html).toContain(`class="markup-highlight"`)
+    expect(html).toContain(`class="markup-wavyline"`)
+  })
 })
 
 describe(`slider extension`, () => {
