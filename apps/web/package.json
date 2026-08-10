@@ -33,7 +33,7 @@
     "@codemirror/language": "^6.12.4",
     "@codemirror/state": "catalog:",
     "@codemirror/view": "catalog:",
-    "@lucide/vue": "^1.30.0",
+    "@lucide/vue": "^1.31.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@vee-validate/yup": "^4.15.1",
