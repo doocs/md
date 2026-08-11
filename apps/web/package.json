@@ -61,7 +61,7 @@
     "yup": "^1.7.1"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.51.2",
+    "@cloudflare/vite-plugin": "1.51.1",
     "@cloudflare/workers-types": "catalog:",
     "@md/config": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
