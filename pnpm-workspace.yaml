@@ -91,14 +91,14 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260809.1
+  '@cloudflare/workers-types': ^5.20260810.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.8
   '@types/node': ^26.2.0
   isomorphic-dompurify: ^3.22.0
   marked: ^18.0.9
   prettier: 2.8.8
-  tsx: ^4.23.11
+  tsx: ^4.23.12
   typescript: ~6.0.3
   uuid: ^14.0.1
   vitest: ^4.1.10
