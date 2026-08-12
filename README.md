@@ -143,11 +143,11 @@ docker run -d -p 8080:80 doocs/md:latest
 
 ## Star 趋势
 
-<a href="https://www.star-history.com/?repos=doocs%2Fmd&type=date&legend=top-left">
+<a href="https://star-history.dera.page/#doocs/md&type=date&legend=top-left">
  <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
+   <source media="(prefers-color-scheme: dark)" srcset="https://star-history.dera.page/svg?repos=doocs/md&type=date&theme=dark&legend=top-left" />
+   <source media="(prefers-color-scheme: light)" srcset="https://star-history.dera.page/svg?repos=doocs/md&type=date&legend=top-left" />
+   <img alt="Star History Chart" src="https://star-history.dera.page/svg?repos=doocs/md&type=date&legend=top-left" />
  </picture>
 </a>
 
