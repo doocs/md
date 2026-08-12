@@ -144,13 +144,7 @@ Then open http://localhost:8080 in your browser. For more details on the Docker 
 
 ## Star History
 
-<a href="https://www.star-history.com/?repos=doocs%2Fmd&type=date&legend=top-left">
- <picture>
-   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&theme=dark&legend=top-left" />
-   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
-   <img alt="Star History Chart" src="https://api.star-history.com/chart?repos=doocs/md&type=date&legend=top-left" />
- </picture>
-</a>
+<a href="https://github.com/doocs/md/stargazers" target="_blank"><img src="./images/starcharts.svg" alt="Stargazers over time" /></a>
 
 ## Who's Using It
 
