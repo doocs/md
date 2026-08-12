@@ -62,7 +62,7 @@ function onWrapperContextMenuCapture(e: MouseEvent) {
 }
 
 const { editor } = storeToRefs(editorStore)
-const { isDark } = storeToRefs(uiStore)
+const { isDark, showAIToolbox } = storeToRefs(uiStore)
 const { posts, currentPostIndex, currentPost } = storeToRefs(postStore)
 const {
   isMobile,
@@ -685,6 +685,7 @@ defineExpose({
       @close="closeSlashMenu()"
     />
     <SidebarAIToolbar
+      v-if="showAIToolbox"
       :is-mobile="isMobile"
       :show-editor="showEditor"
     />
