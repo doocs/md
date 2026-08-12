@@ -1,0 +1,19 @@
+name: update-starcharts
+
+on:
+  schedule:
+    - cron: "0 0/12 * * *"
+  workflow_dispatch:
+
+jobs:
+  update-readme:
+    name: Generate starcharts
+    runs-on: ubuntu-latest
+    if: github.repository == 'doocs/md'
+    steps:
+      - uses: MaoLongLong/actions-starcharts@main
+        with:
+          github_token: ${{ secrets.DOOCS_BOT_ACTION_TOKEN }}
+          svg_path: images/starcharts.svg
+          commit_message: "chore: auto update starcharts"
+          stars_change: ${{ secrets.STARS_CHANGE }}
