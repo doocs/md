@@ -4,6 +4,7 @@ import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from 
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { setupEmojiHydration } from '@/lib/preview/emoji-hydrate'
+import { setupFolderImageHydration } from '@/lib/preview/folder-image-hydrate'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
@@ -51,6 +52,7 @@ watch(viewMode, () => {
 
 let diagramOverlay: DiagramDownloadOverlay | null = null
 let emojiCleanup: (() => void) | null = null
+let folderCleanup: (() => void) | null = null
 
 // Pause bar injection for the entire duration of isCoping so that
 // processClipboardContent mutations never re-inject bars, and resume
@@ -70,6 +72,7 @@ onMounted(() => {
     if (outputEl) {
       diagramOverlay = setupDiagramDownloadOverlay(outputEl)
       emojiCleanup = setupEmojiHydration(outputEl)
+      folderCleanup = setupFolderImageHydration(outputEl)
       hydratePreviewDiagrams()
     }
   })
@@ -78,6 +81,7 @@ onMounted(() => {
 onUnmounted(() => {
   diagramOverlay?.cleanup()
   emojiCleanup?.()
+  folderCleanup?.()
 })
 
 defineExpose({

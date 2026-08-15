@@ -42,6 +42,7 @@ export default {
       fileNotFound: `ファイルが見つかりません: {path}`,
       notAFile: `ファイルではありません: {path}`,
       readFailed: `ファイルの読み込みに失敗しました: {message}`,
+      imageResolveFailed: `画像の解決に失敗しました: {path}`,
     },
     mpAccount: {
       newAccount: `新しいアカウント`,

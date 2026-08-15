@@ -36,8 +36,6 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
   // Not persisted: tree nodes hold non-serializable handles
   const fileTree = ref<FileSystemNode[]>([])
 
-  const selectedFilePath = ref<string>(``)
-
   const isLoading = ref(false)
 
   const loadError = ref<string>(``)
@@ -91,6 +89,9 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
       if (existingFolder) {
         folderId = existingFolder.id
         existingFolder.handle = handle
+        // Same folder name but fresh handle — stale blob URLs from the previous
+        // authorization must not be reused.
+        clearFolderImageCache()
       }
       else {
         folderId = generateFolderId()
@@ -127,7 +128,7 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     }
     currentFolderId.value = null
     fileTree.value = []
-    selectedFilePath.value = ``
+    clearFolderImageCache()
   }
 
   function removeFolder(folderId: string) {
@@ -283,10 +284,43 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     return `folder_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`
   }
 
+  // In-memory cache mapping `(mdFilePath, relPath)` to its object URL. Both
+  // segments are required: image resolution is relative to the markdown file's
+  // directory, so two different `.md` files using the same relative src must
+  // not share an entry.
+  const folderImageBlobCache = new Map<string, string>()
+
+  function folderImageCacheKey(mdFilePath: string, relPath: string): string {
+    return `${mdFilePath} ${relPath}`
+  }
+
+  /** Synchronous lookup used by the renderer's `folderImageResolver`. */
+  function resolveFolderImageSync(mdFilePath: string, relPath: string): string {
+    if (!mdFilePath)
+      return ``
+    return folderImageBlobCache.get(folderImageCacheKey(mdFilePath, relPath)) ?? ``
+  }
+
+  /** Add or replace a cached blob URL for a (mdFilePath, relPath) pair. */
+  function setFolderImageBlobUrl(mdFilePath: string, relPath: string, blobUrl: string): void {
+    const key = folderImageCacheKey(mdFilePath, relPath)
+    const prev = folderImageBlobCache.get(key)
+    if (prev && prev !== blobUrl)
+      URL.revokeObjectURL(prev)
+    folderImageBlobCache.set(key, blobUrl)
+  }
+
+  /** Revoke every cached URL — called when the folder handle is replaced or closed. */
+  function clearFolderImageCache(): void {
+    for (const url of folderImageBlobCache.values())
+      URL.revokeObjectURL(url)
+    folderImageBlobCache.clear()
+  }
+
   return {
     currentFolderHandle,
+    currentRuntimeFolder,
     fileTree,
-    selectedFilePath,
     isLoading,
     loadError,
     isFileSystemAPISupported,
@@ -298,5 +332,8 @@ export const useFolderSourceStore = defineStore(`folderSource`, () => {
     writeFile,
     findNodeByPath,
     getAllMarkdownFiles,
+    resolveFolderImageSync,
+    setFolderImageBlobUrl,
+    clearFolderImageCache,
   }
 })

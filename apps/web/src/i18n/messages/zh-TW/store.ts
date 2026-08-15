@@ -42,6 +42,7 @@ export default {
       fileNotFound: `檔案不存在: {path}`,
       notAFile: `不是檔案: {path}`,
       readFailed: `讀取檔案失敗: {message}`,
+      imageResolveFailed: `解析圖片失敗: {path}`,
     },
     mpAccount: {
       newAccount: `新賬號`,

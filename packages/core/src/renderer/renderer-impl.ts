@@ -37,6 +37,8 @@ const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const HTML_TAG_REGEX = /<[^>]*>/g
 const ASSET_URL_REGEX = /^asset:\/*([^\s/]+)\/*$/
+/** Schemes that are never treated as local folder image references. */
+const ABSOLUTE_IMAGE_SCHEME_REGEX = /^(?:https?:|data:|asset:|file:|#|\/\/)/i
 
 function parseAssetId(href: string): string | null {
   return ASSET_URL_REGEX.exec(href)?.[1] ?? null
@@ -46,6 +48,14 @@ function parseAssetId(href: string): string | null {
 function stripInlineHtml(html: string): string {
   // decodeHTML handles every named/numeric entity, matching DOM textContent.
   return decodeHTML(html.replace(HTML_TAG_REGEX, ``))
+}
+
+/**
+ * True when an image href should be resolved against the local folder rather
+ * than treated as a remote URL or one of the in-app custom schemes.
+ */
+function isRelativeImage(href: string): boolean {
+  return Boolean(href) && !ABSOLUTE_IMAGE_SCHEME_REGEX.test(href)
 }
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
@@ -403,6 +413,14 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       const newText = opts.legend ? transform(opts.legend, altText, title, href) : ``
       const subText = newText ? styledContent(`figcaption`, newText) : ``
       const titleAttr = title ? ` title="${title}"` : ``
+
+      // Local-folder images resolve from the directory of the source Markdown
+      // file. Unresolved images stay as placeholders for asynchronous hydration.
+      if (opts.folderSourcePath && opts.folderImageResolver && isRelativeImage(href)) {
+        const resolved = opts.folderImageResolver(opts.folderSourcePath, href)
+        const src = resolved || `about:blank`
+        return `<figure><img src="${src}" data-folder-src="${href}" class="md-folder-img"${titleAttr}${widthAttr}${heightAttr}${styleAttr} alt="${altText}"/>${subText}</figure>`
+      }
 
       // Content-addressed images inserted from the emoji panel as
       // `![name](asset://<id>)`. Resolve to a cached blob URL at render time;

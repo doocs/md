@@ -262,6 +262,17 @@ export const usePostStore = defineStore(`post`, () => {
     }
   }
 
+  /** Attach the source-file path of a local folder file to a post. */
+  const setPostSourceFilePath = (id: string, filePath: string | null) => {
+    const post = getPostById(id)
+    if (!post)
+      return
+    if (filePath)
+      post.sourceFilePath = filePath
+    else
+      delete post.sourceFilePath
+  }
+
   const collapseAllPosts = () => {
     posts.value.forEach((post) => {
       post.collapsed = true
@@ -287,6 +298,7 @@ export const usePostStore = defineStore(`post`, () => {
     delPost,
     updatePostParentId,
     updatePostContent,
+    setPostSourceFilePath,
     collapseAllPosts,
     expandAllPosts,
     replacePosts,

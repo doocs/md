@@ -42,6 +42,7 @@ export default {
       fileNotFound: `File not found: {path}`,
       notAFile: `Not a file: {path}`,
       readFailed: `Failed to read file: {message}`,
+      imageResolveFailed: `Failed to resolve image: {path}`,
     },
     mpAccount: {
       newAccount: `New account`,

@@ -3,6 +3,8 @@ import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { t } from '@/i18n/translate'
 import { resolveAssetUrl } from '@/services/emoji/urlResolver'
 import { useCustomComponentStore } from './customComponent'
+import { useFolderSourceStore } from './folderSource'
+import { usePostStore } from './post'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
 
@@ -80,9 +82,9 @@ export const useRenderStore = defineStore(`render`, () => {
           def.updatedAt ?? 0,
           def.template,
           JSON.stringify(def.props ?? []),
-        ].join(`\u0002`)
+        ].join(``)
       })
-      .join(`\u0001`)
+      .join(``)
   }
 
   /** Fingerprint of render options only — content is compared by reference/equality separately. */
@@ -104,7 +106,7 @@ export const useRenderStore = defineStore(`render`, () => {
       t(`store.render.unknownComponent`),
       t(`store.render.katexLoading`),
       t(`store.diagram.mermaidLoading`),
-    ].join(`\u0001`)
+    ].join(``)
   }
 
   /**
@@ -132,8 +134,15 @@ export const useRenderStore = defineStore(`render`, () => {
     const themeStore = useThemeStore()
     const uiStore = useUIStore()
     const componentStore = useCustomComponentStore()
+    const folderSourceStore = useFolderSourceStore()
+    const postStore = usePostStore()
     const themeMode = options?.themeMode ?? (uiStore.isDark ? `dark` : `light`)
     const optionsFingerprint = buildOptionsFingerprint(themeMode, themeStore, componentStore)
+
+    // The current post is sourced from a local folder iff it carries a
+    // `sourceFilePath`. The renderer reads this to decide whether to treat
+    // relative image srcs as folder images; absent → fall through to default.
+    const mdFilePath = postStore.currentPost?.sourceFilePath ?? ``
 
     if (!options?.force && content === lastContent && optionsFingerprint === lastOptionsFingerprint)
       return output.value
@@ -151,6 +160,9 @@ export const useRenderStore = defineStore(`render`, () => {
       countMessages: buildCountMessages(),
       renderMessages: buildRenderMessages(),
       assetResolver: resolveAssetUrl,
+      folderSourcePath: mdFilePath,
+      folderImageResolver: (sourcePath: string, relPath: string) =>
+        folderSourceStore.resolveFolderImageSync(sourcePath, relPath),
     })
 
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(content, renderer)
