@@ -1,4 +1,4 @@
-name: update-starcharts
+name: Update Starcharts
 
 on:
   schedule:
@@ -7,11 +7,12 @@ on:
 
 jobs:
   update-readme:
-    name: Generate starcharts
+    name: Generate Starcharts
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
-      - uses: MaoLongLong/actions-starcharts@main
+      - name: Generate Starcharts
+        uses: MaoLongLong/actions-starcharts@main
         with:
           github_token: ${{ secrets.DOOCS_BOT_ACTION_TOKEN }}
           svg_path: images/starcharts.svg

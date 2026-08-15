@@ -18,16 +18,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+      - name: Set up pnpm
+        uses: pnpm/setup@v2
         with:
-          version: 11.20.0
-
-      - name: Set up node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
+          version: 11.21.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -43,16 +40,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+      - name: Set up pnpm
+        uses: pnpm/setup@v2
         with:
-          version: 11.20.0
-
-      - name: Set up node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
+          version: 11.21.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -68,16 +62,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
+      - name: Set up pnpm
+        uses: pnpm/setup@v2
         with:
-          version: 11.20.0
-
-      - name: Set up node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          cache: pnpm
+          version: 11.21.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile

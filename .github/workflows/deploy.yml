@@ -19,15 +19,13 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Set up node
-        uses: actions/setup-node@v7
+      - name: Set up pnpm
+        uses: pnpm/setup@v2
         with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11.20.0
+          version: 11.21.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install
@@ -79,15 +77,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
 
-      - name: Set up node
-        uses: actions/setup-node@v7
+      - name: Set up pnpm
+        uses: pnpm/setup@v2
         with:
-          node-version: 22
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          version: 11.20.0
+          version: 11.21.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install
