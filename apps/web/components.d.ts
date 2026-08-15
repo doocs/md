@@ -84,6 +84,7 @@ declare module 'vue' {
     EditorHeader: typeof import('./src/components/editor/editor-header/index.vue')['default']
     EditorPanel: typeof import('./src/components/editor/EditorPanel.vue')['default']
     EditorStateDialog: typeof import('./src/components/editor/dialogs/EditorStateDialog.vue')['default']
+    EmojiManagerPanel: typeof import('./src/components/editor/emoji/EmojiManagerPanel.vue')['default']
     FileDropdown: typeof import('./src/components/editor/editor-header/FileDropdown.vue')['default']
     FolderSourcePanel: typeof import('./src/components/editor/folder-source-panel/index.vue')['default']
     FolderTree: typeof import('./src/components/editor/folder-source-panel/FolderTree.vue')['default']

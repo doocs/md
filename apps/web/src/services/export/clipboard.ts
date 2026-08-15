@@ -1,3 +1,4 @@
+import { inlineAssetsAsBase64 } from '@/lib/export/inlineAssets'
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -47,6 +48,7 @@ export async function processClipboardContent(primaryColor: string) {
   try {
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
+    await inlineAssetsAsBase64(clipboardDiv)
 
     const stylesToAdd = await getStylesToAdd()
 

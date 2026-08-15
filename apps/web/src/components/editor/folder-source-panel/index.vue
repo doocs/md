@@ -37,11 +37,11 @@ watch(isMobile, () => {
 const {
   currentFolderHandle,
   fileTree,
-  selectedFilePath,
   isLoading,
   loadError,
   isFileSystemAPISupported,
 } = storeToRefs(folderSourceStore)
+const { currentPost } = storeToRefs(postStore)
 
 const expandedPaths = ref<Set<string>>(new Set())
 
@@ -74,16 +74,22 @@ async function handleRefreshFolder() {
 function handleCloseFolder() {
   folderSourceStore.closeFolder()
   expandedPaths.value.clear()
+  // Detach the current post from its source file: rendering must stop treating
+  // it as a folder-sourced post, and disk sync must stop writing it back.
+  const currentId = postStore.currentPostId
+  if (currentId)
+    postStore.setPostSourceFilePath(currentId, null)
   setCurrentFilePath(null)
 }
 
 async function handleOpenFile(node: any) {
   try {
-    const content = await folderSourceStore.readFile(node.path)
+    const rawContent = await folderSourceStore.readFile(node.path)
     const title = node.name.replace(/\.md$/i, ``)
 
     postStore.addPost(title)
-    postStore.updatePostContent(postStore.currentPostId, content)
+    postStore.updatePostContent(postStore.currentPostId, rawContent)
+    postStore.setPostSourceFilePath(postStore.currentPostId, node.path)
 
     setCurrentFilePath(node.path)
 
@@ -224,7 +230,7 @@ async function handleOpenFile(node: any) {
         </div>
         <FolderTree
           :nodes="fileTree"
-          :selected-path="selectedFilePath"
+          :selected-path="currentPost?.sourceFilePath ?? ''"
           :expanded-paths="expandedPaths"
           @select="handleOpenFile"
           @toggle-expand="handleToggleExpand"

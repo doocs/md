@@ -112,6 +112,7 @@ export default {
     sharePreview: `共有`,
     preferences: `環境設定`,
     importExportConfig: `インポート/エクスポート`,
+    emoji: `スタンプを挿入`,
     undo: `元に戻す`,
     redo: `やり直す`,
     copy: `コピー`,
@@ -164,6 +165,7 @@ export default {
     menu: `メニュー`,
     copy: `コピー`,
     style: `スタイル`,
+    emoji: `スタンプ`,
   },
   toast: {
     copiedMarkdown: `Markdown ソースをクリップボードにコピーしました。`,

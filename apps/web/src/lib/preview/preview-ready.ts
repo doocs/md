@@ -40,6 +40,18 @@ function isMathStillLoading(output: HTMLElement): boolean {
   return false
 }
 
+/**
+ * Folder-image hydration runs in a `MutationObserver` callback after the
+ * renderer emits a placeholder `<img src="about:blank">`. Export / clipboard
+ * paths that clone `#output` before the observer has a chance to swap in the
+ * blob URL will end up serializing the placeholder, which is useless on the
+ * receiving end. Wait for every folder image to either carry a real URL or
+ * to be removed entirely (failure case).
+ */
+function isFolderImageStillLoading(output: HTMLElement): boolean {
+  return Boolean(output.querySelector(`img.md-folder-img[src="about:blank"]`))
+}
+
 /** Wait for async diagrams and math in preview; returns false on timeout. */
 export async function waitForPreviewReady(
   timeoutMs = PREVIEW_READY_TIMEOUT_MS,
@@ -59,14 +71,14 @@ export async function waitForPreviewReady(
   while (Date.now() < deadline) {
     hydratePendingInfographicDiagrams(output, infographicOptions)
 
-    if (!isDiagramStillLoading(output) && !isMathStillLoading(output))
+    if (!isDiagramStillLoading(output) && !isMathStillLoading(output) && !isFolderImageStillLoading(output))
       return true
 
     await delay(PREVIEW_POLL_INTERVAL_MS)
   }
 
   hydratePendingInfographicDiagrams(output, infographicOptions)
-  return !isDiagramStillLoading(output) && !isMathStillLoading(output)
+  return !isDiagramStillLoading(output) && !isMathStillLoading(output) && !isFolderImageStillLoading(output)
 }
 
 /** Strip unresolved async placeholders so copy/export omit loading text. */

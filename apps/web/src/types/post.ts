@@ -16,6 +16,13 @@ export interface Post {
   updateDatetime: Date
   parentId?: string | null
   collapsed?: boolean
+  /**
+   * Tree path of the local folder file this post was opened from
+   * (e.g. `my-folder/docs/intro.md`). Present only for posts loaded via the
+   * folder panel; absent for ordinary in-app posts. Drives the relative-image
+   * resolution and disk-sync paths.
+   */
+  sourceFilePath?: string
 }
 
 export interface PostItemDragState {

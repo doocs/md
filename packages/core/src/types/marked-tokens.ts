@@ -37,6 +37,11 @@ export interface RubyToken extends TextToken {
   format: 'basic' | 'basic-hat'
 }
 
+export interface EmojiToken extends TextToken {
+  type: 'emoji'
+  id: string
+}
+
 export interface KatexToken extends TextToken {
   type: 'inlineKatex' | 'blockKatex' | 'inlineLatexKatex' | 'blockLatexKatex'
   displayMode?: boolean

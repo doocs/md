@@ -112,6 +112,7 @@ export default {
     sharePreview: `Share`,
     preferences: `Preferences`,
     importExportConfig: `Import/Export`,
+    emoji: `Insert emoji`,
     undo: `Undo`,
     redo: `Redo`,
     copy: `Copy`,
@@ -164,6 +165,7 @@ export default {
     menu: `Menu`,
     copy: `Copy`,
     style: `Style`,
+    emoji: `Emoji`,
   },
   toast: {
     copiedMarkdown: `Markdown source copied to clipboard.`,

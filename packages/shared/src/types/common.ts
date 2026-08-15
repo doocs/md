@@ -45,6 +45,18 @@ export interface IOpts {
   countMessages?: CountMessages
   /** Footnotes, unknown components, math loading, etc. (injected by locale on Web) */
   renderMessages?: RenderMessages
+  /**
+   * Resolve a content-addressed local asset ID. The Web app injects a blob-URL
+   * lookup at render time so the markdown package stays storage-agnostic.
+   */
+  assetResolver?: (id: string) => string
+  /**
+   * Resolve a relative image path from a Markdown file opened from a local
+   * folder. Missing entries return an empty string so hydration can retry.
+   */
+  folderImageResolver?: (mdFilePath: string, relPath: string) => string
+  /** Tree path of the Markdown file currently being rendered, if any. */
+  folderSourcePath?: string
 }
 
 export interface IConfigOption<VT = string> {

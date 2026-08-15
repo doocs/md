@@ -4,6 +4,7 @@ import { createApp } from 'vue'
 import { detectInitialLocale } from '@/i18n/detect'
 import { setAppI18n, setupI18n } from '@/i18n/index'
 import { initStorage } from '@/storage'
+import { useEmojiPackStore } from '@/stores/emojiPack'
 import { useLocaleStore } from '@/stores/locale'
 
 import AppRoot from './App.vue'
@@ -22,6 +23,8 @@ export async function bootstrap(): Promise<void> {
   app.use(i18n)
   app.use(createPinia())
   useLocaleStore()
+  // Hydrate emoji pack store (rebuilds blob: URLs from IDB cache).
+  void useEmojiPackStore().hydrate()
   app.mount(`#app`)
   scheduleInitialLoaderFallback()
 }

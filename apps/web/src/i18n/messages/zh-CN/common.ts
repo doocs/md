@@ -112,6 +112,7 @@ export default {
     sharePreview: `分享预览`,
     preferences: `偏好设置`,
     importExportConfig: `导入/导出配置`,
+    emoji: `表情包插入`,
     undo: `撤销`,
     redo: `重做`,
     copy: `复制`,
@@ -164,6 +165,7 @@ export default {
     menu: `菜单`,
     copy: `复制`,
     style: `样式`,
+    emoji: `表情包`,
   },
   toast: {
     copiedMarkdown: `已复制 Markdown 源码到剪贴板。`,
