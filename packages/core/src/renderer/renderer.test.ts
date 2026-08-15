@@ -3,6 +3,16 @@ import { postProcessHtml, renderMarkdown } from '../utils/markdownHelpers'
 import { initRenderer } from './renderer-impl'
 
 describe('initRenderer', () => {
+  it('renders content-addressed assets through the injected resolver', () => {
+    const renderer = initRenderer({ assetResolver: id => `blob:${id}` })
+    const html = renderer.renderMarkdownToHtml(`![emoji](asset://hash){20%}`)
+
+    expect(html).toContain(`src="blob:hash"`)
+    expect(html).toContain(`data-asset-id="hash"`)
+    expect(html).toContain(`class="md-asset-img"`)
+    expect(html).toContain(`style="width:20%"`)
+  })
+
   it('renders headings and paragraphs', () => {
     const renderer = initRenderer({})
     const { html } = renderMarkdown(`# Hello\n\nWorld`, renderer)

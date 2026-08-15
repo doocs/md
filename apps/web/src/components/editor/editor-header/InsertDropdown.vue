@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Blocks, FunctionSquare, Image, Table } from '@lucide/vue'
+import { Blocks, FunctionSquare, Image, Smile, Table } from '@lucide/vue'
 import { normalizeFormulaInput } from '@/lib/markdown/formula'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
@@ -15,7 +15,7 @@ const { t } = useI18n()
 const uiStore = useUIStore()
 const editorStore = useEditorStore()
 
-const { openTableEditDialog, toggleShowUploadImgDialog, toggleShowComponentDialog } = uiStore
+const { openTableEditDialog, toggleShowUploadImgDialog, toggleShowComponentDialog, toggleShowEmojiManager } = uiStore
 
 function openFormulaEditor() {
   const selection = normalizeFormulaInput(editorStore.getSelection())
@@ -48,6 +48,10 @@ function openFormulaEditor() {
         <Blocks class="mr-2 h-4 w-4" />
         {{ t('menu.component') }}
       </MenubarItem>
+      <MenubarItem @click="toggleShowEmojiManager()">
+        <Smile class="mr-2 h-4 w-4" />
+        {{ t('menu.emoji') }}
+      </MenubarItem>
     </MenubarSubContent>
   </MenubarSub>
 
@@ -71,6 +75,10 @@ function openFormulaEditor() {
       <MenubarItem @click="toggleShowComponentDialog()">
         <Blocks class="mr-2 h-4 w-4" />
         {{ t('menu.component') }}
+      </MenubarItem>
+      <MenubarItem @click="toggleShowEmojiManager()">
+        <Smile class="mr-2 h-4 w-4" />
+        {{ t('menu.emoji') }}
       </MenubarItem>
     </MenubarContent>
   </MenubarMenu>

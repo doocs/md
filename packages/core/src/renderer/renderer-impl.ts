@@ -11,7 +11,9 @@ import {
   getBuiltInRegistry,
   markedAlert,
   markedComponent,
+  markedEmoji,
   markedFootnotes,
+  markedImageSizeSuffix,
   markedInfographic,
   markedMarkup,
   markedMermaid,
@@ -34,6 +36,11 @@ const DOUBLE_QUOTE_REGEX = /"/g
 const UNDERSCORE_REGEX = /_/g
 const HEADING_TAG_REGEX = /^h\d$/
 const HTML_TAG_REGEX = /<[^>]*>/g
+const ASSET_URL_REGEX = /^asset:\/*([^\s/]+)\/*$/
+
+function parseAssetId(href: string): string | null {
+  return ASSET_URL_REGEX.exec(href)?.[1] ?? null
+}
 
 /** Plain text of inline heading HTML, mirroring what `textContent` would yield. */
 function stripInlineHtml(html: string): string {
@@ -377,19 +384,37 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     image({ href, title, text }: Tokens.Image): string {
       let widthAttr = ``
       let heightAttr = ``
+      let styleAttr = ``
       let altText = text
 
-      const sizeMatch = text.match(/\|(\d+)(?:x(\d+))?$/)
+      // |WxH -> explicit pixel size; {NN%} -> CSS width percentage.
+      const sizeMatch = text.match(/(?:\|(\d+)(?:x(\d+))?|\{(\d+)%\})$/)
       if (sizeMatch) {
-        altText = text.replace(/\|(\d+)(?:x(\d+))?$/, ``)
-        widthAttr = sizeMatch[1] ? ` width="${sizeMatch[1]}"` : ``
-        heightAttr = sizeMatch[2] ? ` height="${sizeMatch[2]}"` : ``
+        altText = text.replace(/(?:\|(\d+)(?:x(\d+))?|\{(\d+)%\})$/, ``)
+        if (sizeMatch[3]) {
+          styleAttr = ` style="width:${sizeMatch[3]}%"`
+        }
+        else {
+          widthAttr = sizeMatch[1] ? ` width="${sizeMatch[1]}"` : ``
+          heightAttr = sizeMatch[2] ? ` height="${sizeMatch[2]}"` : ``
+        }
       }
 
       const newText = opts.legend ? transform(opts.legend, altText, title, href) : ``
       const subText = newText ? styledContent(`figcaption`, newText) : ``
       const titleAttr = title ? ` title="${title}"` : ``
-      return `<figure><img src="${href}"${titleAttr}${widthAttr}${heightAttr} alt="${altText}"/>${subText}</figure>`
+
+      // Content-addressed images inserted from the emoji panel as
+      // `![name](asset://<id>)`. Resolve to a cached blob URL at render time;
+      // if the blob has not been hydrated yet, the Web-side observer swaps in
+      // the URL once it is available.
+      const assetId = parseAssetId(href)
+      if (assetId) {
+        const resolved = opts.assetResolver?.(assetId) ?? `about:blank`
+        return `<figure><img src="${resolved}" data-asset-id="${assetId}" class="md-asset-img"${titleAttr}${widthAttr}${heightAttr}${styleAttr} alt="${altText}"/>${subText}</figure>`
+      }
+
+      return `<figure><img src="${href}"${titleAttr}${widthAttr}${heightAttr}${styleAttr} alt="${altText}"/>${subText}</figure>`
     },
 
     link({ href, title, text, tokens }: Tokens.Link): string {
@@ -487,6 +512,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     diagramMessages: opts.diagramMessages,
   })))
   markdownParser.use(markedRuby())
+  markdownParser.use(markedImageSizeSuffix())
+  markdownParser.use(markedEmoji({ resolveUrl: id => opts.assetResolver?.(id) ?? `about:blank` }))
 
   return {
     buildAddition: () => ADDITION_STYLE,

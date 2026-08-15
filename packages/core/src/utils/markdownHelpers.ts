@@ -6,6 +6,11 @@ import { stripBreakBeforeInlineKatex } from './mathDetection'
 const INFOGRAPHIC_PLACEHOLDER_REGEX = /<!--infographic-start-->[\s\S]*?<!--infographic-end-->/g
 const MERMAID_PLACEHOLDER_REGEX = /<!--mermaid-start-->[\s\S]*?<!--mermaid-end-->/g
 const PROTECTED_SPAN_REGEX = /<span data-md-protected="(\d+)"><\/span>/g
+// Markdown sources of the form `…paragraph…\n\n{{emoji:id}}` parse as two
+// paragraphs. Lift an emoji-only `<p>` into the end of the preceding `<p>`
+// so the small emoji flows inline with the preceding text instead of
+// landing on its own line at the tail of the article.
+const MD_EMOJI_ONLY_PARA_REGEX = /<\/p>\s*<p(?:\s[^>]*)?>\s*((?:<img class="md-emoji"[^>]*>\s*)+)<\/p>/g
 
 /**
  * DOMPurify v3.1.7+ strips foreignObject content.
@@ -45,6 +50,30 @@ export function sanitizeHtml(html: string): string {
   return html
 }
 
+/**
+ * Lift a `<p>` that contains nothing but one or more `<img class="md-emoji">`
+ * tags into the end of the immediately preceding `<p>`. Markdown sources of
+ * the form `…paragraph…\n\n{{emoji:id}}` parse as two `<p>` blocks (an empty
+ * line is a paragraph separator). Without this lift the emoji lands on its
+ * own line at the tail of the article; with it, the emoji flows inline with
+ * the preceding text.
+ *
+ * Runs to a fixed point so consecutive emoji paragraphs collapse together.
+ * Standalone emoji paragraphs at the very start of the document are left
+ * alone — there is no preceding paragraph to lift into.
+ */
+export function liftTrailingEmojiParagraphs(html: string): string {
+  let prev: string
+  do {
+    prev = html
+    html = html.replace(
+      MD_EMOJI_ONLY_PARA_REGEX,
+      (_, imgs: string) => `${imgs}</p>`,
+    )
+  } while (html !== prev)
+  return html
+}
+
 export function renderMarkdown(raw: string, renderer: RendererAPI) {
   const { markdownContent, readingTime }
     = renderer.parseFrontMatterAndContent(raw)
@@ -52,6 +81,7 @@ export function renderMarkdown(raw: string, renderer: RendererAPI) {
   // marked -> html
   let html = renderer.renderMarkdownToHtml(markdownContent)
   html = stripBreakBeforeInlineKatex(html)
+  html = liftTrailingEmojiParagraphs(html)
   html = sanitizeHtml(html)
   return { html, readingTime }
 }
@@ -86,6 +116,7 @@ export function modifyHtmlContent(content: string, renderer: RendererAPI): strin
 
   let html = renderer.renderMarkdownToHtml(markdownContent)
   html = stripBreakBeforeInlineKatex(html)
+  html = liftTrailingEmojiParagraphs(html)
   html = sanitizeHtml(html)
   return postProcessHtml(html, readingTimeResult, renderer)
 }

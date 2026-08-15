@@ -47,3 +47,17 @@ section table {
   color: unset !important;
   letter-spacing: unset !important;
 }
+
+/* ==================== Inline emoji ====================
+ * `<img class="md-emoji">` comes from `{{emoji:id}}` syntax. Native pixel
+ * sizing makes the image dwarf the surrounding text and look like a trailing
+ * element; constrain to the line box so it reads as an inline character.
+ */
+#output img.md-emoji,
+section img.md-emoji {
+  max-height: 1.4em;
+  width: auto;
+  vertical-align: text-bottom;
+  margin: 0 0.1em;
+  display: inline;
+}
