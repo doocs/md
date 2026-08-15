@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v7
 
       - name: Extract Changelog for Tag
