@@ -693,8 +693,9 @@ export function prepareMathFormulasForWeChat(root: ParentNode) {
 }
 
 /**
- * Remap dark fill/stroke on diagram SVGs to currentColor so Mermaid / PlantUML /
- * infographic ink stays readable when WeChat reader is in dark mode.
+ * Remap dark grayscale strokes/fills to currentColor for WeChat reader dark mode.
+ * Text is left as baked ink: labels often sit on light node/entity boxes, and
+ * currentColor would wash them out when the reader switches to light-on-dark.
  */
 function isDiagramTextNode(node: Element): boolean {
   return node.localName === `text`
@@ -1036,21 +1037,19 @@ function parseCssNumber(value: string): { n: number, unit: string } | null {
   return { n, unit: (match[2] || ``).toLowerCase() }
 }
 
-function scaleFontSizeValue(value: string, viewScale: number, labelScale: number): string | null {
+function clampFontSizeValue(value: string): string | null {
   const parsed = parseCssNumber(value)
+  // em/rem follow parent size; leave them so WeChat viewBox shrink cannot blow up labels.
   if (!parsed || parsed.unit === `%` || parsed.unit === `em` || parsed.unit === `rem`)
     return null
-  const scale = parsed.unit === `em` || parsed.unit === `rem`
-    ? labelScale
-    : viewScale * labelScale
-  const next = Math.max(MIN_DIAGRAM_FONT_PX, Math.round(parsed.n * scale * 10) / 10)
+  const next = Math.max(MIN_DIAGRAM_FONT_PX, Math.round(parsed.n * 10) / 10)
   return parsed.unit ? `${next}${parsed.unit}` : String(next)
 }
 
-function scaleFontSizeInStyle(style: string, viewScale: number, labelScale: number): string {
+function clampFontSizeInStyle(style: string): string {
   return style.replace(/(^|;)\s*font-size\s*:\s*([^;]*)/gi, (full, prefix: string, value: string) => {
-    const scaled = scaleFontSizeValue(value, viewScale, labelScale)
-    return scaled ? `${prefix} font-size: ${scaled}` : full
+    const clamped = clampFontSizeValue(value)
+    return clamped ? `${prefix} font-size: ${clamped}` : full
   })
 }
 
@@ -1289,7 +1288,7 @@ function clampMermaidFontSizes(svg: SVGSVGElement, mermaid = false) {
   svg.querySelectorAll(`text, tspan`).forEach((el) => {
     const attr = el.getAttribute(`font-size`)
     if (attr) {
-      const clamped = scaleFontSizeValue(attr, 1, 1)
+      const clamped = clampFontSizeValue(attr)
       if (clamped)
         el.setAttribute(`font-size`, clamped)
       return
@@ -1297,7 +1296,7 @@ function clampMermaidFontSizes(svg: SVGSVGElement, mermaid = false) {
 
     const style = el.getAttribute(`style`)
     if (style && /font-size/i.test(style))
-      el.setAttribute(`style`, scaleFontSizeInStyle(style, 1, 1))
+      el.setAttribute(`style`, clampFontSizeInStyle(style))
   })
 }
 
