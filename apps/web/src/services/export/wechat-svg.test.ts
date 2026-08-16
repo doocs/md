@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
 import {
+  prepareDiagramSvgsForWeChat,
   prepareMathFormulasForWeChat,
   remapDiagramInkToCurrentColor,
   sanitizeSvgForWeChat,
@@ -71,6 +72,321 @@ describe(`sanitizeSvgForWeChat`, () => {
 
     expect(Number(svg.getAttribute(`width`))).toBeLessThanOrEqual(677)
     expect(Number(svg.getAttribute(`height`))).toBeLessThanOrEqual(677)
+
+    svg.remove()
+  })
+
+  it(`bakes sankey gradient strokes into a solid color before stripping ids`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <g class="links" fill="none" stroke-opacity="0.5">
+          <g class="link">
+            <linearGradient id="linearGradient-flow" gradientUnits="userSpaceOnUse" x1="20" x2="180">
+              <stop offset="0%" stop-color="#4e79a7"></stop>
+              <stop offset="100%" stop-color="#f28e2c"></stop>
+            </linearGradient>
+            <path d="M20 20C80 20 80 60 180 60" stroke="url(#linearGradient-flow)" stroke-width="12"></path>
+          </g>
+        </g>
+        <g class="nodes">
+          <rect x="10" y="10" width="10" height="20" fill="#4e79a7"></rect>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    const path = svg.querySelector(`path`)!
+    const stroke = path.getAttribute(`stroke`) ?? ``
+    expect(stroke.startsWith(`url(`)).toBe(false)
+    expect(stroke).toMatch(/#|rgb/i)
+    expect(svg.querySelector(`linearGradient`)).toBeNull()
+    expect(svg.querySelector(`rect`)?.getAttribute(`fill`)).toBe(`#4e79a7`)
+
+    svg.remove()
+  })
+
+  it(`keeps flowchart edge fill=none so links are not painted as blobs`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg id="mermaid-svg-flow" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <style>#mermaid-svg-flow .node rect{fill:#ECECFF;stroke:#9370DB;}</style>
+        <g class="node"><rect width="80" height="40" style="fill:#ECECFF;stroke:#9370DB"></rect></g>
+        <g class="edgePath"><path fill="none" stroke="#333333" d="M0 40h80"></path></g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    expect(svg.querySelector(`path`)?.getAttribute(`fill`)).toBe(`none`)
+    expect(svg.querySelector(`path`)?.getAttribute(`stroke`)).toBe(`currentColor`)
+    expect(svg.querySelector(`rect`)?.getAttribute(`fill`)?.toLowerCase()).toMatch(/#ececff|rgb\(236,\s*236,\s*255\)/)
+    expect(svg.querySelector(`rect`)?.getAttribute(`stroke`)?.toLowerCase()).toMatch(/#9370db|rgb\(147,\s*112,\s*219\)/)
+
+    svg.remove()
+  })
+
+  it(`persists CSS-only fill:none before classes and style tags are stripped`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg id="mermaid-svg-css-none" viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <style>#mermaid-svg-css-none .flowchart-link{fill:none;stroke:#333333;}</style>
+        <path class="flowchart-link" style="fill:none;stroke:#333333" d="M0 40h80"></path>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    expect(svg.querySelector(`path`)?.getAttribute(`fill`)).toBe(`none`)
+    expect(svg.querySelector(`path`)?.getAttribute(`stroke`)).toBe(`currentColor`)
+
+    svg.remove()
+  })
+
+  it(`does not let juice-inlined style fill override an explicit fill=none`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <g class="edgePath" style="fill: rgb(51, 51, 51)">
+          <path fill="none" stroke="#333333" style="fill: rgb(51, 51, 51)" d="M0 40h80"></path>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    const path = svg.querySelector(`path`)!
+    expect(path.getAttribute(`fill`)).toBe(`none`)
+    expect(path.getAttribute(`style`) ?? ``).not.toMatch(/fill\s*:/)
+    expect(svg.querySelector(`g`)?.getAttribute(`fill`)).toBeNull()
+    expect(svg.querySelector(`g`)?.getAttribute(`style`) ?? ``).not.toMatch(/fill\s*:/)
+
+    svg.remove()
+  })
+
+  it(`converts mermaid html labels to SVG text without extra dy offset`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 1000 200" width="100%" xmlns="http://www.w3.org/2000/svg">
+        <text font-size="16px" x="10" y="20">决策</text>
+        <g>
+          <foreignObject width="80" height="40">
+            <section style="font-size: 16px; display: table;">
+              <span class="nodeLabel">排除问题</span>
+            </section>
+          </foreignObject>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgForWeChat(svg)
+
+    const labels = Array.from(svg.querySelectorAll(`text`)).map(el => el.textContent)
+    expect(labels).toContain(`决策`)
+    expect(labels).toContain(`排除问题`)
+    expect(svg.querySelector(`foreignObject`)).toBeNull()
+    expect(svg.querySelector(`text`)?.getAttribute(`dy`)).toBeNull()
+
+    wrapper.remove()
+  })
+
+  it(`flattens mermaid labels even after the svg is detached for getComputedStyle`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+        <foreignObject x="8" y="40" width="160" height="24">
+          <div style="color:#333333;font-size:16px">Risk: Medium</div>
+        </foreignObject>
+      </svg>
+    `
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgsForWeChat(wrapper)
+
+    expect(wrapper.querySelector(`foreignObject`)).toBeNull()
+    expect(wrapper.querySelector(`text`)?.textContent).toBe(`Risk: Medium`)
+    expect(Number(wrapper.querySelector(`svg`)?.getAttribute(`width`))).toBe(240)
+
+    wrapper.remove()
+  })
+
+  it(`converts mermaid foreignObject labels to SVG text for WeChat`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 240 80" xmlns="http://www.w3.org/2000/svg">
+        <g class="name">
+          <foreignObject x="8" y="10" width="120" height="24">
+            <div xmlns="http://www.w3.org/1999/xhtml" style="color:#333333;font-size:16px">量表</div>
+          </foreignObject>
+        </g>
+        <g class="req">
+          <foreignObject x="8" y="40" width="160" height="24">
+            <div style="color:#333333;font-size:16px">Risk: Medium</div>
+          </foreignObject>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgForWeChat(svg)
+
+    expect(svg.querySelector(`foreignObject`)).toBeNull()
+    const labels = Array.from(svg.querySelectorAll(`text`)).map(el => el.textContent)
+    expect(labels).toContain(`量表`)
+    expect(labels).toContain(`Risk: Medium`)
+    const risk = Array.from(svg.querySelectorAll(`text`)).find(el => el.textContent === `Risk: Medium`)
+    expect(risk?.getAttribute(`fill`)?.toLowerCase()).toMatch(/#333|rgb\(51,\s*51,\s*51\)/)
+    expect(risk?.getAttribute(`dy`)).toBeNull()
+    expect(Number.parseFloat(risk?.getAttribute(`y`) ?? `0`)).toBeGreaterThan(40)
+
+    wrapper.remove()
+  })
+
+  it(`separates overlapping bidirectional state edge labels`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 240 200" xmlns="http://www.w3.org/2000/svg">
+        <g class="edgeLabel" transform="translate(120, 100)">
+          <g class="label" transform="translate(-24, -12)">
+            <foreignObject width="48" height="24">
+              <div style="color:#333333;font-size:16px;background-color:#e8e8e8;text-align:center">条件 2</div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel" transform="translate(120, 100)">
+          <g class="label" transform="translate(-16, -12)">
+            <foreignObject width="32" height="24">
+              <div style="color:#333333;font-size:16px;background-color:#e8e8e8;text-align:center">返回</div>
+            </foreignObject>
+          </g>
+        </g>
+        <g class="edgeLabel" transform="translate(40, 40)">
+          <g class="label" transform="translate(-24, -12)">
+            <foreignObject width="48" height="24">
+              <div style="color:#333333;font-size:16px;text-align:center">条件 1</div>
+            </foreignObject>
+          </g>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgForWeChat(svg)
+
+    const texts = Array.from(svg.querySelectorAll(`text`))
+    const cond2 = texts.find(el => el.textContent === `条件 2`)
+    const back = texts.find(el => el.textContent === `返回`)
+    const cond1 = texts.find(el => el.textContent === `条件 1`)
+    expect(cond2).toBeTruthy()
+    expect(back).toBeTruthy()
+    expect(cond1).toBeTruthy()
+
+    const outerTranslate = (el: Element) => {
+      let found = { x: 0, y: 0 }
+      let node: Element | null = el
+      while (node && node.localName !== `svg`) {
+        const match = node.getAttribute(`transform`)?.match(/translate\(\s*([-\d.]+)[\s,]+([-\d.]+)\s*\)/)
+        if (match)
+          found = { x: Number.parseFloat(match[1]), y: Number.parseFloat(match[2]) }
+        node = node.parentElement
+      }
+      return found
+    }
+
+    const a = outerTranslate(cond2!)
+    const b = outerTranslate(back!)
+    const c = outerTranslate(cond1!)
+    expect(Math.hypot(a.x - b.x, a.y - b.y)).toBeGreaterThanOrEqual(40)
+    expect(c.x).toBe(40)
+    expect(c.y).toBe(40)
+    expect(svg.querySelector(`rect`)?.getAttribute(`fill`)).toMatch(/#e8e8e8|rgb\(232,\s*232,\s*232\)/i)
+
+    wrapper.remove()
+  })
+
+  it(`does not paint ER/class labels with the entity box fill`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 200 80" xmlns="http://www.w3.org/2000/svg">
+        <g class="node" style="fill:#ECECFF;stroke:#9370DB">
+          <path fill="#ECECFF" stroke="#9370DB" d="M0 0h200v80H0z"></path>
+          <text x="10" y="24" style="color:#333333">用户</text>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgForWeChat(svg)
+
+    const fill = (svg.querySelector(`text`)?.getAttribute(`fill`) ?? ``).toLowerCase()
+    expect(fill).not.toMatch(/#ececff|rgb\(236,\s*236,\s*255\)/)
+    expect(fill).toMatch(/#333|rgb\(51,\s*51,\s*51\)/)
+
+    wrapper.remove()
+  })
+
+  it(`keeps C4-style light label fills instead of forcing currentColor`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+        <rect width="120" height="60" fill="#1168BD"></rect>
+        <text fill="#FFFFFF"><tspan fill="#FFFFFF">Person</tspan></text>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    expect(svg.querySelector(`rect`)?.getAttribute(`fill`)).toBe(`#1168BD`)
+    expect(svg.querySelector(`text`)?.getAttribute(`fill`)).toBe(`#FFFFFF`)
+    expect(svg.querySelector(`tspan`)?.getAttribute(`fill`)).toBe(`#FFFFFF`)
+
+    svg.remove()
+  })
+
+  it(`inlines architecture icon <use> references before stripping defs`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <g id="icon-cloud">
+            <path d="M10 40h60" fill="#333333"></path>
+          </g>
+        </defs>
+        <g class="architecture-service">
+          <use href="#icon-cloud" x="8" y="8"></use>
+        </g>
+      </svg>
+    `
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(svg)
+
+    sanitizeSvgForWeChat(svg)
+
+    expect(svg.querySelector(`use`)).toBeNull()
+    expect(svg.querySelector(`defs`)).toBeNull()
+    expect(svg.querySelector(`path`)).not.toBeNull()
+    expect(svg.querySelector(`path`)?.getAttribute(`d`)).toBe(`M10 40h60`)
 
     svg.remove()
   })
@@ -203,6 +519,30 @@ describe(`sanitizeSvgForWeChat`, () => {
     expect(plantumlContainer.querySelector(`svg`)?.getAttribute(`width`)).toBe(`400`)
 
     wrapper.remove()
+  })
+})
+
+describe(`prepareDiagramSvgsForWeChat`, () => {
+  it(`resolves gradient paints before innerHTML/juice can drop defs`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <div class="mermaid-diagram">
+        <svg viewBox="0 0 100 40" xmlns="http://www.w3.org/2000/svg">
+          <linearGradient id="g1">
+            <stop offset="0%" stop-color="#4e79a7"></stop>
+            <stop offset="100%" stop-color="#f28e2c"></stop>
+          </linearGradient>
+          <path stroke="url(#g1)" fill="none" d="M0 20h100"></path>
+        </svg>
+      </div>
+    `
+
+    prepareDiagramSvgsForWeChat(root)
+
+    const stroke = root.querySelector(`path`)?.getAttribute(`stroke`) ?? ``
+    expect(stroke.startsWith(`url(`)).toBe(false)
+    expect(stroke).toMatch(/#|rgb/i)
+    expect(root.querySelector(`path`)?.getAttribute(`fill`)).toBe(`none`)
   })
 })
 
@@ -360,7 +700,7 @@ describe(`remapDiagramInkToCurrentColor`, () => {
     expect(rects[0].getAttribute(`stroke`)).toBe(`currentColor`)
     expect(rects[1].getAttribute(`fill`)).toBe(`#ECECFF`)
     expect(rects[1].getAttribute(`stroke`)).toBe(`#9370DB`)
-    expect(text.getAttribute(`fill`)).toBe(`currentColor`)
+    expect(text.getAttribute(`fill`)).toBe(`#262626`)
     expect(path.getAttribute(`stroke`)).toBe(`currentColor`)
     expect(path.getAttribute(`fill`)).toBe(`#ECECFF`)
   })

@@ -232,20 +232,306 @@ function expandMarkers(svg: SVGSVGElement) {
   })
 }
 
+function findSvgElementById(svg: SVGSVGElement, id: string): Element | null {
+  const byApi = typeof svg.getElementById === `function` ? svg.getElementById(id) : null
+  if (byApi)
+    return byApi
+  try {
+    return svg.querySelector(`#${CSS.escape(id)}`)
+  }
+  catch {
+    return null
+  }
+}
+
+function stopColorOf(stop: Element): string | null {
+  return stop.getAttribute(`stop-color`)
+    || stop.getAttribute(`style`)?.match(/stop-color:\s*([^;]+)/i)?.[1]?.trim()
+    || null
+}
+
+function mixCssColors(a: string, b: string): string | null {
+  const pa = parseCssColor(a)
+  const pb = parseCssColor(b)
+  if (!pa)
+    return pb ? b : null
+  if (!pb)
+    return a
+  return `rgb(${Math.round((pa[0] + pb[0]) / 2)}, ${Math.round((pa[1] + pb[1]) / 2)}, ${Math.round((pa[2] + pb[2]) / 2)})`
+}
+
+/** WeChat strips defs/id, so url(#gradient) paints vanish. Bake a solid stand-in. */
+function solidColorFromPaintServer(svg: SVGSVGElement, paint: string): string | null {
+  const id = parseMarkerRef(paint)
+  if (!id)
+    return null
+  const ref = findSvgElementById(svg, id)
+  if (!ref)
+    return null
+  if (ref.localName !== `linearGradient` && ref.localName !== `radialGradient`)
+    return null
+  const colors = Array.from(ref.querySelectorAll(`stop`))
+    .map(stopColorOf)
+    .filter((color): color is string => !!color)
+  if (colors.length === 0)
+    return null
+  if (colors.length === 1)
+    return colors[0]
+  return mixCssColors(colors[0], colors[colors.length - 1]) ?? colors[0]
+}
+
+function resolveUrlPaints(svg: SVGSVGElement) {
+  const apply = (el: Element, attr: `fill` | `stroke`) => {
+    const value = el.getAttribute(attr)
+    if (!value?.includes(`url(`))
+      return
+    const solid = solidColorFromPaintServer(svg, value)
+    if (solid)
+      el.setAttribute(attr, solid)
+  }
+
+  svg.querySelectorAll(`*`).forEach((el) => {
+    apply(el, `fill`)
+    apply(el, `stroke`)
+
+    const style = el.getAttribute(`style`)
+    if (!style?.includes(`url(`))
+      return
+    const next = style.replace(/(fill|stroke)\s*:\s*([^;]+)/gi, (full, prop: string, value: string) => {
+      if (!value.includes(`url(`))
+        return full
+      const solid = solidColorFromPaintServer(svg, value.trim())
+      return solid ? `${prop}: ${solid}` : full
+    })
+    if (next !== style)
+      el.setAttribute(`style`, next)
+  })
+}
+
+/** Architecture / Iconify icons often land as <use href="#id"> into defs. */
+function expandUseElements(svg: SVGSVGElement) {
+  Array.from(svg.querySelectorAll(`use`)).forEach((useEl) => {
+    const href = useEl.getAttribute(`href`) || useEl.getAttribute(`xlink:href`)
+    const id = parseMarkerRef(href)
+    if (!id) {
+      useEl.remove()
+      return
+    }
+
+    const ref = findSvgElementById(svg, id)
+    if (!ref) {
+      useEl.remove()
+      return
+    }
+
+    const group = document.createElementNS(SVG_NS, `g`)
+    const x = Number.parseFloat(useEl.getAttribute(`x`) ?? `0`) || 0
+    const y = Number.parseFloat(useEl.getAttribute(`y`) ?? `0`) || 0
+    const transforms: string[] = []
+    if (x || y)
+      transforms.push(`translate(${x}, ${y})`)
+    const existing = useEl.getAttribute(`transform`)
+    if (existing)
+      transforms.push(existing)
+    if (transforms.length)
+      group.setAttribute(`transform`, transforms.join(` `))
+
+    const takeChildren = ref.localName === `symbol` || ref.localName === `svg` || ref.localName === `g`
+    if (takeChildren) {
+      Array.from(ref.childNodes).forEach((child) => {
+        if (child.nodeType === Node.ELEMENT_NODE && (child as Element).localName === `defs`)
+          return
+        group.appendChild(child.cloneNode(true))
+      })
+    }
+    else {
+      const clone = ref.cloneNode(true) as Element
+      clone.removeAttribute(`id`)
+      group.appendChild(clone)
+    }
+
+    for (const attr of [`fill`, `stroke`, `stroke-width`, `opacity`]) {
+      const value = useEl.getAttribute(attr)
+      if (value)
+        group.setAttribute(attr, value)
+    }
+
+    useEl.parentNode?.replaceChild(group, useEl)
+  })
+}
+
+const PAINTED_SHAPES = `path, line, polyline, polygon, rect, circle, ellipse, text, tspan`
+
+function isNonePaint(value: string | null | undefined): boolean {
+  return !!value && value.trim().toLowerCase() === `none`
+}
+
+function isUsablePaint(value: string | null | undefined): value is string {
+  if (!value)
+    return false
+  const normalized = value.trim().toLowerCase()
+  return normalized !== `` && normalized !== `none` && !normalized.includes(`url(`)
+}
+
+function removeStyleProperties(el: Element, keys: string[]) {
+  const style = el.getAttribute(`style`)
+  if (!style)
+    return
+
+  const drop = new Set(keys.map(key => key.toLowerCase()))
+  const next = style
+    .split(`;`)
+    .map(part => part.trim())
+    .filter(Boolean)
+    .filter((part) => {
+      const key = part.split(`:`)[0]?.trim().toLowerCase()
+      return !!key && !drop.has(key)
+    })
+    .join(`; `)
+
+  if (next)
+    el.setAttribute(`style`, next)
+  else
+    el.removeAttribute(`style`)
+}
+
+function paintFromStyle(node: Element, attr: string): string | null {
+  const style = node.getAttribute(`style`)
+  if (!style)
+    return null
+  const match = style.match(new RegExp(`(?:^|;)\\s*${attr}\\s*:\\s*([^;]+)`, `i`))
+  return match?.[1]?.trim() || null
+}
+
+function bakePaint(node: Element, attr: `fill` | `stroke`, computedValue: string) {
+  const explicit = node.getAttribute(attr)
+  const fromStyle = paintFromStyle(node, attr)
+
+  // Explicit / inlined `none` wins over juice painting edge paths as solid blobs.
+  if (isNonePaint(explicit) || isNonePaint(fromStyle)) {
+    node.setAttribute(attr, `none`)
+    removeStyleProperties(node, [attr])
+    return
+  }
+
+  if (isUsablePaint(explicit)) {
+    removeStyleProperties(node, [attr])
+    return
+  }
+
+  if (isUsablePaint(fromStyle)) {
+    node.setAttribute(attr, fromStyle)
+    removeStyleProperties(node, [attr])
+    return
+  }
+
+  if (isNonePaint(computedValue)) {
+    node.setAttribute(attr, `none`)
+    return
+  }
+
+  if (isUsablePaint(computedValue))
+    node.setAttribute(attr, computedValue)
+}
+
+function paintFromColorStyle(node: Element): string | null {
+  const style = node.getAttribute(`style`)
+  if (!style)
+    return null
+  const match = style.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i)
+  return match?.[1]?.trim() || null
+}
+
+/** Text must not inherit the entity/node box fill, or ER/class titles vanish. */
+function bakeTextPaint(node: Element) {
+  const explicit = node.getAttribute(`fill`)
+  const fromStyle = paintFromStyle(node, `fill`)
+  const fromColor = paintFromColorStyle(node)
+
+  if (isNonePaint(explicit) || isNonePaint(fromStyle)) {
+    node.setAttribute(`fill`, `none`)
+    removeStyleProperties(node, [`fill`])
+    return
+  }
+  if (isUsablePaint(explicit)) {
+    removeStyleProperties(node, [`fill`])
+    return
+  }
+  if (isUsablePaint(fromStyle)) {
+    node.setAttribute(`fill`, fromStyle)
+    removeStyleProperties(node, [`fill`])
+    return
+  }
+  if (isUsablePaint(fromColor)) {
+    node.setAttribute(`fill`, fromColor)
+    return
+  }
+
+  const computedColor = window.getComputedStyle(node).color
+  if (isUsablePaint(computedColor))
+    node.setAttribute(`fill`, computedColor)
+}
+
+function bakeHtmlLabelColors(svg: SVGSVGElement) {
+  svg.querySelectorAll(`foreignObject section, foreignObject span, foreignObject div, foreignObject p`).forEach((el) => {
+    const style = el.getAttribute(`style`) ?? ``
+    if (/(?:^|;)\s*color\s*:/i.test(style))
+      return
+    const color = window.getComputedStyle(el).color
+    if (!isUsablePaint(color))
+      return
+    el.setAttribute(`style`, `${style}${style ? `; ` : ``}color: ${color}`)
+  })
+}
+
 function inlinePresentationAttributes(svg: SVGSVGElement) {
-  svg.querySelectorAll(`*[class], path, line, polyline, polygon, rect, circle, ellipse, text`).forEach((node) => {
+  svg.querySelectorAll(PAINTED_SHAPES).forEach((node) => {
     if (!(node instanceof SVGElement))
       return
 
     const computed = window.getComputedStyle(node)
-    if (computed.fill && computed.fill !== `none` && !node.hasAttribute(`fill`))
-      node.setAttribute(`fill`, computed.fill)
-    if (computed.stroke && computed.stroke !== `none` && !node.hasAttribute(`stroke`))
-      node.setAttribute(`stroke`, computed.stroke)
+    const isText = node.localName === `text` || node.localName === `tspan`
+    if (isText)
+      bakeTextPaint(node)
+    else
+      bakePaint(node, `fill`, computed.fill)
+
+    if (isText) {
+      if (!node.getAttribute(`stroke`) && !paintFromStyle(node, `stroke`))
+        node.setAttribute(`stroke`, `none`)
+    }
+    else {
+      bakePaint(node, `stroke`, computed.stroke)
+    }
+
     if (computed.strokeWidth && !node.hasAttribute(`stroke-width`))
       node.setAttribute(`stroke-width`, computed.strokeWidth)
+
+    if (computed.fontSize && isText && !node.hasAttribute(`font-size`))
+      node.setAttribute(`font-size`, computed.fontSize)
+
     if (computed.opacity && computed.opacity !== `1` && !node.hasAttribute(`opacity`))
       node.setAttribute(`opacity`, computed.opacity)
+
+    const strokeOpacity = computed.getPropertyValue(`stroke-opacity`) || computed.strokeOpacity
+    const effectiveStroke = node.getAttribute(`stroke`)
+    if (
+      strokeOpacity
+      && strokeOpacity !== `1`
+      && !node.hasAttribute(`stroke-opacity`)
+      && effectiveStroke
+      && effectiveStroke !== `none`
+    ) {
+      node.setAttribute(`stroke-opacity`, strokeOpacity)
+    }
+  })
+
+  // Juice often inlines fills onto <g>; after leaves have explicit paints, drop group
+  // fills so WeChat inheritance cannot re-color edge paths.
+  svg.querySelectorAll(`g`).forEach((group) => {
+    removeStyleProperties(group, [`fill`, `stroke`])
+    group.removeAttribute(`fill`)
+    group.removeAttribute(`stroke`)
   })
 }
 
@@ -410,9 +696,19 @@ export function prepareMathFormulasForWeChat(root: ParentNode) {
  * Remap dark fill/stroke on diagram SVGs to currentColor so Mermaid / PlantUML /
  * infographic ink stays readable when WeChat reader is in dark mode.
  */
+function isDiagramTextNode(node: Element): boolean {
+  return node.localName === `text`
+    || node.localName === `tspan`
+    || node.closest(`foreignObject`) != null
+}
+
 export function remapDiagramInkToCurrentColor(svg: SVGSVGElement) {
-  remapSvgNodeInkToCurrentColor(svg)
-  svg.querySelectorAll(`*`).forEach(remapSvgNodeInkToCurrentColor)
+  if (!isDiagramTextNode(svg))
+    remapSvgNodeInkToCurrentColor(svg)
+  svg.querySelectorAll(`*`).forEach((node) => {
+    if (!isDiagramTextNode(node))
+      remapSvgNodeInkToCurrentColor(node)
+  })
 }
 
 function isHiddenPlantUmlHelper(el: Element): boolean {
@@ -618,6 +914,45 @@ function wrapWidePlantUmlSvg(svg: SVGSVGElement) {
   outer.appendChild(hint)
 }
 
+function parseStyleMaxWidthPx(svg: SVGSVGElement): number | null {
+  const match = (svg.getAttribute(`style`) ?? ``).match(/max-width:\s*([\d.]+)px/i)
+  if (!match)
+    return null
+  const width = Number.parseFloat(match[1])
+  return Number.isFinite(width) && width > 0 ? width : null
+}
+
+/** Keep Mermaid’s layout size so WeChat cannot scale boxes without the labels. */
+function resolveMermaidPixelSize(svg: SVGSVGElement): { width: number, height: number } {
+  const viewBox = parseViewBox(svg.getAttribute(`viewBox`))
+  const maxWidth = parseStyleMaxWidthPx(svg)
+  const attrWidth = parsePixelAttribute(svg.getAttribute(`width`))
+  let width = maxWidth ?? viewBox?.width ?? attrWidth ?? WECHAT_MAX_WIDTH_PX
+  let height = viewBox && viewBox.width > 0
+    ? width * (viewBox.height / viewBox.width)
+    : (parsePixelAttribute(svg.getAttribute(`height`)) ?? width * 0.75)
+
+  if (width > WECHAT_MAX_WIDTH_PX) {
+    height = height * (WECHAT_MAX_WIDTH_PX / width)
+    width = WECHAT_MAX_WIDTH_PX
+  }
+
+  return {
+    width: Math.max(1, Math.round(width)),
+    height: Math.max(1, Math.round(height)),
+  }
+}
+
+function fixMermaidDimensions(svg: SVGSVGElement): { width: number, height: number } {
+  const size = resolveMermaidPixelSize(svg)
+  if (!svg.hasAttribute(`xmlns`))
+    svg.setAttribute(`xmlns`, SVG_NS)
+  svg.setAttribute(`width`, String(size.width))
+  svg.setAttribute(`height`, String(size.height))
+  svg.setAttribute(`preserveAspectRatio`, `xMidYMid meet`)
+  return size
+}
+
 function resolveSvgPixelSize(svg: SVGSVGElement): { width: number, height: number } {
   const rect = svg.getBoundingClientRect()
   const viewBox = parseViewBox(svg.getAttribute(`viewBox`))
@@ -659,6 +994,313 @@ function fixSvgDimensions(svg: SVGSVGElement) {
   svg.setAttribute(`height`, String(height))
 }
 
+const MIN_DIAGRAM_FONT_PX = 9
+
+const DOMINANT_BASELINE_DY: Record<string, string> = {
+  'alphabetic': ``,
+  'central': `0.35em`,
+  'middle': `0.35em`,
+  'hanging': `-0.55em`,
+  'ideographic': `0.18em`,
+  'text-before-edge': `-0.85em`,
+  'text-after-edge': `0.15em`,
+}
+
+function convertDominantBaselineToDy(svg: SVGSVGElement) {
+  svg.querySelectorAll(`text, tspan`).forEach((el) => {
+    const baseline = el.getAttribute(`dominant-baseline`)
+    if (!baseline)
+      return
+    el.removeAttribute(`dominant-baseline`)
+    const em = DOMINANT_BASELINE_DY[baseline]
+    if (!em || el.getAttribute(`dy`))
+      return
+    const fontSize = parseCssNumber(el.getAttribute(`font-size`) || window.getComputedStyle(el).fontSize || `16`)?.n ?? 16
+    const factor = Number.parseFloat(em)
+    if (Number.isFinite(factor))
+      el.setAttribute(`dy`, String(Math.round(fontSize * factor * 10) / 10))
+  })
+}
+
+function isMermaidDiagramSvg(svg: SVGSVGElement, mermaid = false): boolean {
+  return mermaid || svg.closest(`.mermaid-diagram`) != null
+}
+
+function parseCssNumber(value: string): { n: number, unit: string } | null {
+  const match = value.trim().match(/^(-?[\d.]+)(px|pt|em|rem|%)?$/i)
+  if (!match)
+    return null
+  const n = Number.parseFloat(match[1])
+  if (!Number.isFinite(n) || n <= 0)
+    return null
+  return { n, unit: (match[2] || ``).toLowerCase() }
+}
+
+function scaleFontSizeValue(value: string, viewScale: number, labelScale: number): string | null {
+  const parsed = parseCssNumber(value)
+  if (!parsed || parsed.unit === `%` || parsed.unit === `em` || parsed.unit === `rem`)
+    return null
+  const scale = parsed.unit === `em` || parsed.unit === `rem`
+    ? labelScale
+    : viewScale * labelScale
+  const next = Math.max(MIN_DIAGRAM_FONT_PX, Math.round(parsed.n * scale * 10) / 10)
+  return parsed.unit ? `${next}${parsed.unit}` : String(next)
+}
+
+function scaleFontSizeInStyle(style: string, viewScale: number, labelScale: number): string {
+  return style.replace(/(^|;)\s*font-size\s*:\s*([^;]*)/gi, (full, prefix: string, value: string) => {
+    const scaled = scaleFontSizeValue(value, viewScale, labelScale)
+    return scaled ? `${prefix} font-size: ${scaled}` : full
+  })
+}
+
+function collectForeignObjectLines(fo: Element): string[] {
+  const html = fo.innerHTML
+  if (/<br\s*\/?>/i.test(html)) {
+    return html
+      .split(/<br\s*\/?>/i)
+      .map(part => part.replace(/<[^>]+>/g, ``).replace(/&nbsp;/gi, ` `).trim())
+      .filter(Boolean)
+  }
+
+  const text = (fo.textContent || ``).replace(/\u00A0/g, ` `)
+  const lines = text.split(/\n/).map(part => part.trim()).filter(Boolean)
+  if (lines.length)
+    return lines
+  const compact = text.replace(/\s+/g, ` `).trim()
+  return compact ? [compact] : []
+}
+
+function parseTranslate(transform: string | null): { x: number, y: number } | null {
+  if (!transform)
+    return { x: 0, y: 0 }
+  const match = transform.match(/translate\(\s*([-\d.eE]+)(?:[\s,]+([-\d.eE]+))?\s*\)/)
+  if (!match)
+    return null
+  return {
+    x: Number.parseFloat(match[1]) || 0,
+    y: Number.parseFloat(match[2] || `0`) || 0,
+  }
+}
+
+function estimateLabelWidth(text: string, fontSize: number): number {
+  let width = 0
+  for (const ch of text) {
+    width += /[\u1100-\uD7FF\uF900-\uFAFF]/.test(ch) ? fontSize : fontSize * 0.55
+  }
+  return width
+}
+
+function isTransparentPaint(value: string | null | undefined): boolean {
+  if (!value)
+    return true
+  const normalized = value.trim().toLowerCase()
+  return normalized === `` || normalized === `transparent` || normalized === `none`
+    || /^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(normalized)
+}
+
+function edgeLabelBackground(styled: Element): string {
+  const fromStyle = (styled.getAttribute(`style`) ?? ``).match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1]?.trim()
+  if (fromStyle && !isTransparentPaint(fromStyle) && isUsablePaint(fromStyle))
+    return fromStyle
+  try {
+    const computed = window.getComputedStyle(styled).backgroundColor
+    if (computed && !isTransparentPaint(computed) && isUsablePaint(computed))
+      return computed
+  }
+  catch {}
+  return `#e8e8e8`
+}
+
+/**
+ * Bidirectional state/flowchart edges share a path midpoint, so "条件 2" / "返回"
+ * land on the same point after FO flatten. Nudge overlapping edgeLabels apart.
+ */
+function separateOverlappingMermaidEdgeLabels(svg: SVGSVGElement) {
+  const labels = Array.from(svg.querySelectorAll(`g.edgeLabel`))
+  if (labels.length < 2)
+    return
+
+  const items = labels.map((el) => {
+    const pos = parseTranslate(el.getAttribute(`transform`)) ?? { x: 0, y: 0 }
+    const text = el.querySelector(`text`)
+    const fontSize = parseCssNumber(text?.getAttribute(`font-size`) || `16`)?.n ?? 16
+    const rect = el.querySelector(`rect`)
+    const rectWidth = Number.parseFloat(rect?.getAttribute(`width`) ?? `0`) || 0
+    const content = (text?.textContent ?? ``).replace(/\s+/g, ` `).trim()
+    const width = rectWidth > 0 ? rectWidth : Math.max(16, estimateLabelWidth(content, fontSize))
+    return { el, x: pos.x, y: pos.y, halfW: width / 2 }
+  })
+
+  for (let i = 0; i < items.length; i++) {
+    for (let j = i + 1; j < items.length; j++) {
+      const a = items[i]
+      const b = items[j]
+      const dx = b.x - a.x
+      const dy = b.y - a.y
+      const dist = Math.hypot(dx, dy)
+      const need = a.halfW + b.halfW + 8
+      if (dist >= need)
+        continue
+
+      let dirX = 1
+      let dirY = 0
+      if (dist >= 1) {
+        if (Math.abs(dx) >= Math.abs(dy)) {
+          dirX = dx / dist
+          dirY = 0
+        }
+        else {
+          dirX = 0
+          dirY = dy / dist
+        }
+      }
+
+      const extra = (need - dist) / 2
+      nudgeEdgeLabel(a, -dirX * extra, -dirY * extra)
+      nudgeEdgeLabel(b, dirX * extra, dirY * extra)
+    }
+  }
+}
+
+function nudgeEdgeLabel(
+  item: { el: Element, x: number, y: number },
+  nx: number,
+  ny: number,
+) {
+  item.x += nx
+  item.y += ny
+  const raw = item.el.getAttribute(`transform`) ?? ``
+  if (/translate\(/.test(raw)) {
+    item.el.setAttribute(
+      `transform`,
+      raw.replace(
+        /translate\(\s*([-\d.eE]+)(?:[\s,]+([-\d.eE]+))?\s*\)/,
+        `translate(${roundSvg(item.x)}, ${roundSvg(item.y)})`,
+      ),
+    )
+    return
+  }
+  item.el.setAttribute(
+    `transform`,
+    `translate(${roundSvg(item.x)}, ${roundSvg(item.y)})${raw ? ` ${raw}` : ``}`,
+  )
+}
+
+function roundSvg(n: number): number {
+  return Math.round(n * 10) / 10
+}
+
+/**
+ * WeChat drops / mis-paints HTML inside foreignObject (ER, requirement, flowchart).
+ * Convert labels to real SVG text so fill and font-size survive paste.
+ */
+function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
+  if (!isMermaidDiagramSvg(svg, mermaid))
+    return
+
+  svg.querySelectorAll(`foreignObject`).forEach((fo) => {
+    const lines = collectForeignObjectLines(fo)
+    if (lines.length === 0) {
+      fo.remove()
+      return
+    }
+
+    const x = Number.parseFloat(fo.getAttribute(`x`) ?? `0`) || 0
+    const y = Number.parseFloat(fo.getAttribute(`y`) ?? `0`) || 0
+    const width = Number.parseFloat(fo.getAttribute(`width`) ?? `0`) || 0
+    const height = Number.parseFloat(fo.getAttribute(`height`) ?? `0`) || 0
+    const styled = fo.querySelector(`[style], section, div, span, p`) ?? fo
+    const color = paintFromColorStyle(styled)
+      || paintFromStyle(styled, `fill`)
+      || window.getComputedStyle(styled).color
+      || `#333333`
+    const fontSize = parseCssNumber(
+      paintFromStyle(styled, `font-size`) || window.getComputedStyle(styled).fontSize || `16`,
+    )?.n ?? 16
+    const style = `${styled.getAttribute(`style`) ?? ``} ${window.getComputedStyle(styled).textAlign}`
+    const centered = /center/i.test(style) && width > 0
+    const inEdgeLabel = fo.closest(`.edgeLabel`) != null
+    const foTransform = fo.getAttribute(`transform`)
+
+    const text = document.createElementNS(SVG_NS, `text`)
+    const textX = centered ? x + width / 2 : x
+    // HTML in foreignObject is top-aligned; WeChat uses alphabetic baseline (no em dy).
+    const textY = y + (height > 0 ? Math.min(fontSize, height * 0.8) : fontSize * 0.8)
+    text.setAttribute(`x`, String(textX))
+    text.setAttribute(`y`, String(textY))
+    text.setAttribute(`fill`, isUsablePaint(color) ? color : `#333333`)
+    text.setAttribute(`stroke`, `none`)
+    text.setAttribute(`font-size`, String(fontSize))
+    text.setAttribute(`text-anchor`, centered ? `middle` : `start`)
+
+    if (lines.length === 1) {
+      text.textContent = lines[0]
+    }
+    else {
+      lines.forEach((line, index) => {
+        const tspan = document.createElementNS(SVG_NS, `tspan`)
+        tspan.setAttribute(`x`, String(textX))
+        tspan.setAttribute(`dy`, index === 0 ? `0` : `1.2em`)
+        tspan.setAttribute(`fill`, isUsablePaint(color) ? color : `#333333`)
+        tspan.textContent = line
+        text.appendChild(tspan)
+      })
+    }
+
+    const parent = fo.parentNode
+    if (!parent) {
+      fo.remove()
+      return
+    }
+
+    const needsBackdrop = inEdgeLabel && width > 0 && height > 0
+    if (!foTransform && !needsBackdrop) {
+      parent.replaceChild(text, fo)
+      return
+    }
+
+    const replacement = document.createElementNS(SVG_NS, `g`)
+    if (foTransform)
+      replacement.setAttribute(`transform`, foTransform)
+
+    if (needsBackdrop) {
+      const rect = document.createElementNS(SVG_NS, `rect`)
+      rect.setAttribute(`x`, String(x))
+      rect.setAttribute(`y`, String(y))
+      rect.setAttribute(`width`, String(width))
+      rect.setAttribute(`height`, String(height))
+      rect.setAttribute(`fill`, edgeLabelBackground(styled))
+      rect.setAttribute(`stroke`, `none`)
+      replacement.appendChild(rect)
+    }
+    replacement.appendChild(text)
+    parent.replaceChild(replacement, fo)
+  })
+
+  separateOverlappingMermaidEdgeLabels(svg)
+}
+
+/** Keep baked label sizes readable after WeChat shrinks a wide viewBox. */
+function clampMermaidFontSizes(svg: SVGSVGElement, mermaid = false) {
+  if (!isMermaidDiagramSvg(svg, mermaid))
+    return
+
+  svg.querySelectorAll(`text, tspan`).forEach((el) => {
+    const attr = el.getAttribute(`font-size`)
+    if (attr) {
+      const clamped = scaleFontSizeValue(attr, 1, 1)
+      if (clamped)
+        el.setAttribute(`font-size`, clamped)
+      return
+    }
+
+    const style = el.getAttribute(`style`)
+    if (style && /font-size/i.test(style))
+      el.setAttribute(`style`, scaleFontSizeInStyle(style, 1, 1))
+  })
+}
+
 function stripUnsupportedAttributes(svg: SVGSVGElement) {
   svg.querySelectorAll(`[clip-path], [clipPath]`).forEach((el) => {
     el.removeAttribute(`clip-path`)
@@ -667,6 +1309,7 @@ function stripUnsupportedAttributes(svg: SVGSVGElement) {
 
   svg.querySelectorAll(`style`).forEach(styleEl => styleEl.remove())
   svg.querySelectorAll(`defs`).forEach(defsEl => defsEl.remove())
+  svg.querySelectorAll(`linearGradient, radialGradient, filter, clipPath, mask, pattern, symbol`).forEach(el => el.remove())
 
   svg.querySelectorAll(`*`).forEach((el) => {
     el.removeAttribute(`id`)
@@ -679,6 +1322,58 @@ function stripUnsupportedAttributes(svg: SVGSVGElement) {
 export interface SanitizeSvgOptions {
   /** Keep natural width and wrap with horizontal scroll when wider than the article column. */
   plantuml?: boolean
+  /** Caller already knows this SVG came from `.mermaid-diagram` (may be detached). */
+  mermaid?: boolean
+}
+
+/**
+ * Attach SVGs to a hidden host so getComputedStyle works.
+ * Capture mermaid/plantuml before detach — closest() is null on the host.
+ */
+function forEachClipboardSvg(
+  root: ParentNode,
+  fn: (svg: SVGSVGElement, ctx: { mermaid: boolean, plantuml: boolean }) => void,
+) {
+  const svgs = Array.from(root.querySelectorAll<SVGSVGElement>(`svg`))
+  if (svgs.length === 0)
+    return
+
+  const host = document.createElement(`div`)
+  host.style.cssText = `position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;width:${WECHAT_MAX_WIDTH_PX}px;`
+  document.body.appendChild(host)
+
+  try {
+    for (const svg of svgs) {
+      if (isMathFormulaSvg(svg))
+        continue
+
+      const parent = svg.parentElement
+      const nextSibling = svg.nextSibling
+      const mermaid = isMermaidDiagramSvg(svg)
+      const plantuml = isPlantUmlDiagramSvg(svg)
+      host.appendChild(svg)
+      fn(svg, { mermaid, plantuml })
+      if (parent)
+        parent.insertBefore(svg, nextSibling)
+    }
+  }
+  finally {
+    host.remove()
+  }
+}
+
+/**
+ * Bake WeChat-unsafe paints (gradients, <use> icons) while the live SVG still has defs.
+ * Call before any innerHTML serialization / juice pass.
+ */
+export function prepareDiagramSvgsForWeChat(root: ParentNode) {
+  forEachClipboardSvg(root, (svg, { mermaid }) => {
+    expandUseElements(svg)
+    resolveUrlPaints(svg)
+    bakeHtmlLabelColors(svg)
+    flattenMermaidHtmlLabels(svg, mermaid)
+    convertDominantBaselineToDy(svg)
+  })
 }
 
 /**
@@ -686,16 +1381,32 @@ export interface SanitizeSvgOptions {
  */
 export function sanitizeSvgForWeChat(svg: SVGSVGElement, options?: SanitizeSvgOptions) {
   const isPlantuml = options?.plantuml ?? isPlantUmlDiagramSvg(svg)
+  const mermaid = options?.mermaid ?? isMermaidDiagramSvg(svg)
 
   expandMarkers(svg)
+  expandUseElements(svg)
+  resolveUrlPaints(svg)
+  bakeHtmlLabelColors(svg)
+  flattenMermaidHtmlLabels(svg, mermaid)
   inlinePresentationAttributes(svg)
   remapDiagramInkToCurrentColor(svg)
+  convertDominantBaselineToDy(svg)
+  svg.setAttribute(`overflow`, `visible`)
+  svg.querySelectorAll(`[style]`).forEach((el) => {
+    const style = el.getAttribute(`style`)
+    if (style && /overflow\s*:\s*hidden/i.test(style))
+      el.setAttribute(`style`, style.replace(/overflow\s*:\s*hidden/gi, `overflow: visible`))
+  })
 
   if (isPlantuml) {
     tightenPlantUmlViewBox(svg)
     const size = fixPlantUmlDimensions(svg)
     if (size.width <= WECHAT_MAX_WIDTH_PX)
       applyPlantUmlSvgDisplay(svg, size.width, size.height)
+  }
+  else if (mermaid) {
+    fixMermaidDimensions(svg)
+    clampMermaidFontSizes(svg, true)
   }
   else {
     fixSvgDimensions(svg)
@@ -708,36 +1419,17 @@ export function sanitizeSvgForWeChat(svg: SVGSVGElement, options?: SanitizeSvgOp
  * Process all SVG elements under `root` (attaches temporarily for getComputedStyle).
  */
 export function sanitizeSvgsForWeChat(root: ParentNode) {
-  const svgs = Array.from(root.querySelectorAll<SVGSVGElement>(`svg`))
-  if (svgs.length === 0)
-    return
+  const plantumlSvgs: SVGSVGElement[] = []
+  forEachClipboardSvg(root, (svg, { mermaid, plantuml }) => {
+    sanitizeSvgForWeChat(svg, { plantuml, mermaid })
+    if (plantuml)
+      plantumlSvgs.push(svg)
+  })
 
-  const host = document.createElement(`div`)
-  host.style.cssText = `position:fixed;left:-99999px;top:0;visibility:hidden;pointer-events:none;width:677px;`
-  document.body.appendChild(host)
-
-  try {
-    for (const node of svgs) {
-      const svg = node
-      if (isMathFormulaSvg(svg))
-        continue
-
-      const parent = svg.parentElement
-      const nextSibling = svg.nextSibling
-      const isPlantuml = isPlantUmlDiagramSvg(svg)
-      host.appendChild(svg)
-      sanitizeSvgForWeChat(svg, { plantuml: isPlantuml })
-      if (parent)
-        parent.insertBefore(svg, nextSibling)
-      if (isPlantuml) {
-        const container = svg.closest(`.plantuml-diagram`) as HTMLElement | null
-        if (container)
-          normalizePlantUmlContainer(container)
-        wrapWidePlantUmlSvg(svg)
-      }
-    }
-  }
-  finally {
-    host.remove()
+  for (const svg of plantumlSvgs) {
+    const container = svg.closest(`.plantuml-diagram`) as HTMLElement | null
+    if (container)
+      normalizePlantUmlContainer(container)
+    wrapWidePlantUmlSvg(svg)
   }
 }

@@ -193,6 +193,16 @@ defineExpose({
   position: relative;
 }
 
+/*
+ * Journey (and other useMaxWidth diagrams) emit width="100%" plus a fixed
+ * pixel height. With preserveAspectRatio=xMinYMin meet, leftover height
+ * becomes a blank band under the chart. Let height follow the viewBox.
+ */
+.mermaid-diagram > svg {
+  max-width: 100%;
+  height: auto;
+}
+
 .diagram-download-bar {
   position: absolute;
   top: 8px;

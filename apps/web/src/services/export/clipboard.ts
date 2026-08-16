@@ -2,19 +2,37 @@ import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/pre
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
-import { createEmptyNode, modifyHtmlStructure, solveWeChatImage } from './clipboard-dom'
+import { createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
 import { getStylesToAdd } from './share-styles'
-import { prepareMathFormulasForWeChat, sanitizeSvgsForWeChat } from './wechat-svg'
+import { prepareDiagramSvgsForWeChat, prepareMathFormulasForWeChat, sanitizeSvgsForWeChat } from './wechat-svg'
 
 export { modifyHtmlStructure, solveWeChatImage } from './clipboard-dom'
 
+const JUICE_OPTIONS = {
+  inlinePseudoElements: true,
+  preserveImportant: true,
+  resolveCSSVariables: false,
+} as const
+
 async function mergeCss(html: string): Promise<string> {
   const { default: juice } = await import(`juice`)
-  return juice(html, {
-    inlinePseudoElements: true,
-    preserveImportant: true,
-    resolveCSSVariables: false,
-  })
+  const sanitized = sanitizeHtmlCssForJuice(html)
+  const attempts = [
+    () => juice(sanitized, JUICE_OPTIONS),
+    () => juice(sanitized, { ...JUICE_OPTIONS, inlinePseudoElements: false }),
+    () => juice(stripFontFamilyForJuiceFallback(sanitized), { ...JUICE_OPTIONS, inlinePseudoElements: false }),
+  ]
+
+  for (const attempt of attempts) {
+    try {
+      return attempt()
+    }
+    catch (error) {
+      console.warn(`WeChat copy: juice failed, trying fallback`, error)
+    }
+  }
+
+  return sanitized
 }
 
 /**
@@ -47,6 +65,7 @@ export async function processClipboardContent(primaryColor: string) {
   try {
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
+    prepareDiagramSvgsForWeChat(clipboardDiv)
 
     const stylesToAdd = await getStylesToAdd()
 
@@ -54,6 +73,7 @@ export async function processClipboardContent(primaryColor: string) {
       clipboardDiv.innerHTML = stylesToAdd + clipboardDiv.innerHTML
     }
 
+    stripInvalidCssForJuice(clipboardDiv)
     clipboardDiv.innerHTML = modifyHtmlStructure(await mergeCss(clipboardDiv.innerHTML))
 
     clipboardDiv.querySelectorAll(`a[href^="#"]`).forEach(a => a.removeAttribute(`href`))
@@ -82,55 +102,7 @@ export async function processClipboardContent(primaryColor: string) {
     clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
     clipboardDiv.appendChild(afterNode)
 
-    const nodes = clipboardDiv.querySelectorAll(`.nodeLabel`)
-    nodes.forEach((node) => {
-      const parent = node.parentElement
-      if (!parent)
-        return
-      const xmlns = parent.getAttribute(`xmlns`)
-      const style = parent.getAttribute(`style`)
-      if (!xmlns || !style)
-        return
-      const section = document.createElement(`section`)
-      section.setAttribute(`xmlns`, xmlns)
-      section.setAttribute(`style`, style)
-      section.innerHTML = parent.innerHTML
-
-      const grand = parent.parentElement
-      if (!grand)
-        return
-      grand.innerHTML = ``
-      grand.appendChild(section)
-    })
-
-    clipboardDiv.innerHTML = clipboardDiv.innerHTML
-      .replace(
-        /<tspan([^>]*)>/g,
-        `<tspan$1 style="fill: currentColor !important; color: currentColor !important; stroke: none !important;">`,
-      )
-
-    clipboardDiv.querySelectorAll(`.infographic-diagram`).forEach((diagram) => {
-      diagram.querySelectorAll(`text`).forEach((textElem) => {
-        const dominantBaseline = textElem.getAttribute(`dominant-baseline`)
-        const variantMap = {
-          'alphabetic': ``,
-          'central': `0.35em`,
-          'middle': `0.35em`,
-          'hanging': `-0.55em`,
-          'ideographic': `0.18em`,
-          'text-before-edge': `-0.85em`,
-          'text-after-edge': `0.15em`,
-        }
-        if (dominantBaseline) {
-          textElem.removeAttribute(`dominant-baseline`)
-          const dy = variantMap[dominantBaseline as keyof typeof variantMap]
-          if (dy) {
-            textElem.setAttribute(`dy`, dy)
-          }
-        }
-      })
-    })
-
+    promoteSvgHtmlLabels(clipboardDiv)
     sanitizeSvgsForWeChat(clipboardDiv)
     prepareMathFormulasForWeChat(clipboardDiv)
 
