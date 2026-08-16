@@ -9,9 +9,6 @@ catalogs:
     '@cloudflare/workers-types':
       specifier: ^5.20260816.1
       version: 5.20260816.1
-    '@codemirror/view':
-      specifier: 6.43.9
-      version: 6.43.9
     '@types/node':
       specifier: ^26.2.0
       version: 26.2.0
@@ -215,7 +212,7 @@ importers:
         specifier: 6.7.1
         version: 6.7.1
       '@codemirror/view':
-        specifier: 'catalog:'
+        specifier: 6.43.9
         version: 6.43.9(patch_hash=fb7c06790e50e3f9b13f12f0a772d655b690381d8aeb8b36a12503542b74ea7f)
       '@lucide/vue':
         specifier: ^1.31.0
@@ -524,7 +521,7 @@ importers:
         specifier: 6.7.1
         version: 6.7.1
       '@codemirror/view':
-        specifier: 'catalog:'
+        specifier: 6.43.9
         version: 6.43.9(patch_hash=fb7c06790e50e3f9b13f12f0a772d655b690381d8aeb8b36a12503542b74ea7f)
       '@fsegurai/codemirror-theme-vscode-dark':
         specifier: ^6.2.6
