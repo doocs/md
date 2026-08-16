@@ -85,15 +85,15 @@ allowBuilds:
   workerd: true
 
 patchedDependencies:
-  '@codemirror/view@6.43.8': patches/@codemirror__view@6.43.8.patch
+  '@codemirror/view@6.43.9': patches/@codemirror__view@6.43.9.patch
   front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.2: patches/juice@12.1.2.patch
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260814.1
+  '@cloudflare/workers-types': ^5.20260816.1
   '@codemirror/state': 6.7.1
-  '@codemirror/view': 6.43.8
+  '@codemirror/view': 6.43.9
   '@types/node': ^26.2.0
   isomorphic-dompurify: ^3.22.0
   marked: ^18.0.9
