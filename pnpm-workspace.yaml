@@ -12,7 +12,7 @@ overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
   # GHSA-frvp-7c67-39w9 (dependabot/312): @modelcontextprotocol/sdk pins ^1.19.9; fix only in 2.0.5+
-  '@hono/node-server': ^2.0.5
+  '@hono/node-server': ^2.1.1
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
   '@typescript-eslint/eslint-plugin': 8.67.0
   '@typescript-eslint/parser': 8.67.0
@@ -32,14 +32,14 @@ overrides:
   bn.js: '>=5.2.5'
   bn.js@^5: ^5.2.5
   confbox: 0.2.4
-  core-js: ^3.49.0
+  core-js: ^3.50.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
-  dompurify: ^3.4.12
-  esbuild: '>=0.28.1'
+  dompurify: ^3.4.13
+  esbuild: '>=0.28.2'
   # CVE-2026-16221 / GHSA-v2hh-gcrm-f6hx (dependabot/314): ajv pins fast-uri ^3.0.1
   fast-uri: ^3.1.4
-  flatted@<3.4.0: ^3.4.2
+  flatted@<3.4.0: ^3.4.4
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
@@ -50,15 +50,15 @@ overrides:
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
   markdown-it: ^14.3.0
-  minimatch: ^10.2.5
-  minimatch@^10: ^10.2.5
-  minimatch@^5: ^10.2.5
-  minimatch@^9: ^10.2.5
+  minimatch: ^10.2.6
+  minimatch@^10: ^10.2.6
+  minimatch@^5: ^10.2.6
+  minimatch@^9: ^10.2.6
   prettier: 'catalog:'
   qs: ^6.15.3
   querystring: npm:qs@^6.15.3
   semver: ^7.8.5
-  serialize-javascript@<7.0.3: ^7.0.7
+  serialize-javascript@<7.0.3: ^7.1.0
   # GHSA sharp/libvips (dependabot/313): miniflare/wrangler pin sharp 0.34.5
   sharp: ^0.35.0
   shell-quote: ^1.10.0
@@ -66,11 +66,11 @@ overrides:
   tinyexec: 1.2.4
   tmp: '>=0.2.7'
   underscore@<1.13.8: 1.13.8
-  undici@^6: ^8.8.0
-  undici@^7: ^8.8.0
+  undici@^6: ^8.10.0
+  undici@^7: ^8.10.0
   uuid: 'catalog:'
   workbox-build>source-map: 0.7.4
-  ws@<8.21.0: ^8.21.1
+  ws@<8.21.0: ^8.21.3
   yauzl: ^3.4.0
 
 allowBuilds:
@@ -91,7 +91,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260816.1
+  '@cloudflare/workers-types': ^5.20260817.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.9
   '@types/node': ^26.2.0
