@@ -1,10 +1,12 @@
 import type { S3ClientConfig } from '@aws-sdk/client-s3'
+import type { UploadProviderId } from '@/services/upload/provider-registry'
 import fetch from '@md/shared/utils/fetch'
 import * as tokenTools from '@md/shared/utils/tokenTools'
 import { base64encode, safe64, utf16to8 } from '@md/shared/utils/tokenTools'
 import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { uploadDefaultImage } from '@/services/upload/client'
+import { resolveUploadProvider } from '@/services/upload/provider-registry'
 import { store } from '@/storage'
 import { loadCryptoJS } from './crypto-js-compat'
 import { loadS3Sdk } from './s3-sdk'
@@ -727,37 +729,29 @@ async function formCustomUpload(content: string, file: File) {
   })
 }
 
+type UploadHandler = (content: string, file: File) => Promise<string>
+
+const UPLOAD_HANDLERS = {
+  default: (_content, file) => defaultImageUpload(_content, file),
+  github: (content, file) => ghFileUpload(content, file.name),
+  aliOSS: (_content, file) => aliOSSFileUpload(file),
+  txCOS: (_content, file) => txCOSFileUpload(file),
+  qiniu: (_content, file) => qiniuUpload(file),
+  minio: (_content, file) => minioFileUpload(file),
+  s3: (_content, file) => s3Upload(file),
+  mp: (_content, file) => mpFileUpload(file),
+  r2: (_content, file) => r2Upload(file),
+  upyun: (_content, file) => upyunUpload(file),
+  telegram: (_content, file) => telegramUpload(file),
+  cloudinary: (_content, file) => cloudinaryUpload(file),
+  formCustom: (content, file) => formCustomUpload(content, file),
+} satisfies Record<UploadProviderId, UploadHandler>
+
 export async function fileUpload(content: string, file: File) {
-  const imgHost = await store.get(`imgHost`)
-  if (!imgHost) {
+  const storedProvider = await store.get(`imgHost`)
+  if (!storedProvider)
     await store.set(`imgHost`, `default`)
-  }
-  switch (imgHost) {
-    case `aliOSS`:
-      return aliOSSFileUpload(file)
-    case `minio`:
-      return minioFileUpload(file)
-    case `s3`:
-      return s3Upload(file)
-    case `txCOS`:
-      return txCOSFileUpload(file)
-    case `qiniu`:
-      return qiniuUpload(file)
-    case `github`:
-      return ghFileUpload(content, file.name)
-    case `mp`:
-      return mpFileUpload(file)
-    case `r2`:
-      return r2Upload(file)
-    case `upyun`:
-      return upyunUpload(file)
-    case `telegram`:
-      return telegramUpload(file)
-    case `cloudinary`:
-      return cloudinaryUpload(file)
-    case `formCustom`:
-      return formCustomUpload(content, file)
-    default:
-      return defaultImageUpload(content, file)
-  }
+
+  const provider = resolveUploadProvider(storedProvider)
+  return UPLOAD_HANDLERS[provider.id](content, file)
 }
