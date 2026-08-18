@@ -19,6 +19,7 @@ import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { validateImageFile } from '@/lib/upload/validate-image'
 import { fileUpload } from '@/services/upload'
+import { isUploadProviderConfigured } from '@/services/upload/provider-registry'
 import { store } from '@/storage'
 import { useEditorStore } from '@/stores/editor'
 import { usePostStore } from '@/stores/post'
@@ -176,9 +177,7 @@ async function beforeImageUpload(file: File) {
   const imgHost = (await store.get(`imgHost`)) || `default`
   await store.set(`imgHost`, imgHost)
 
-  const config = await store.get(`${imgHost}Config`)
-  const isValidHost = imgHost === `default` || config
-  if (!isValidHost) {
+  if (!await isUploadProviderConfigured(imgHost)) {
     const hostLabel = uploadHostOptions.value.find(option => option.value === imgHost)?.label ?? imgHost
     toast.error(t('editorPanel.configureImgHost', { host: hostLabel }))
     toggleShowUploadImgDialog(true)

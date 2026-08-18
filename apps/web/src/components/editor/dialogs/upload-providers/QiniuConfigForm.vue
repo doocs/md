@@ -1,0 +1,42 @@
+<script setup lang="ts">
+import { toTypedSchema } from '@vee-validate/yup'
+import * as yup from 'yup'
+import UploadProviderForm from './UploadProviderForm.vue'
+import UploadProviderTextField from './UploadProviderTextField.vue'
+import { useUploadProviderConfig } from './useUploadProviderConfig'
+
+const { t } = useI18n()
+const schema = computed(() => toTypedSchema(yup.object({
+  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
+  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
+  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
+  domain: yup.string().required(t(`upload.validation.domainRequired`)),
+  region: yup.string().optional(),
+  path: yup.string().optional(),
+})))
+const { config, saveConfig } = useUploadProviderConfig(`qiniuConfig`, {
+  accessKey: ``,
+  secretKey: ``,
+  bucket: ``,
+  domain: ``,
+  region: ``,
+  path: ``,
+})
+</script>
+
+<template>
+  <UploadProviderForm :validation-schema="schema" :initial-values="config" @submit="saveConfig">
+    <UploadProviderTextField name="accessKey" label="AccessKey" :placeholder="t('upload.placeholders.qiniuAccessKey')" required />
+    <UploadProviderTextField name="secretKey" label="SecretKey" type="password" :placeholder="t('upload.placeholders.qiniuSecretKey')" required />
+    <UploadProviderTextField name="bucket" label="Bucket" :placeholder="t('upload.placeholders.qiniuBucket')" required />
+    <UploadProviderTextField name="domain" :label="t('upload.labels.domain')" :placeholder="t('upload.placeholders.qiniuDomain')" required />
+    <UploadProviderTextField name="region" :label="t('upload.labels.storageRegion')" :placeholder="t('upload.placeholders.qiniuRegion')" />
+    <UploadProviderTextField name="path" :label="t('upload.labels.storagePath')" :placeholder="t('upload.placeholders.storagePath')" />
+
+    <FormItem>
+      <Button variant="link" class="p-0 h-auto text-left whitespace-normal" as="a" href="https://developer.qiniu.com/kodo" target="_blank" rel="noopener noreferrer">
+        {{ t('upload.help.qiniu') }}
+      </Button>
+    </FormItem>
+  </UploadProviderForm>
+</template>

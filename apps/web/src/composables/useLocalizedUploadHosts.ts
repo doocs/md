@@ -1,24 +1,12 @@
 import type { IConfigOption } from '@md/shared/types'
+import type { UploadProviderId } from '@/services/upload/provider-registry'
+import { UPLOAD_PROVIDERS } from '@/services/upload/provider-registry'
 
 type Translate = (key: string) => string
 
-export const UPLOAD_HOST_VALUES = [
-  `default`,
-  `github`,
-  `aliOSS`,
-  `txCOS`,
-  `qiniu`,
-  `minio`,
-  `s3`,
-  `mp`,
-  `r2`,
-  `upyun`,
-  `telegram`,
-  `cloudinary`,
-  `formCustom`,
-] as const
+export const UPLOAD_HOST_VALUES = UPLOAD_PROVIDERS.map(provider => provider.id)
 
-export type UploadHostValue = typeof UPLOAD_HOST_VALUES[number]
+export type UploadHostValue = UploadProviderId
 
 export function getUploadHostLabel(t: Translate, value: string): string {
   const key = `upload.hosts.${value}`
