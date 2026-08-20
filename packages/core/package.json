@@ -18,7 +18,7 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@antv/infographic": "^0.2.19",
+    "@antv/infographic": "^0.2.20",
     "@md/shared": "workspace:*",
     "entities": "^8.0.0",
     "fflate": "^0.8.3",
@@ -26,7 +26,7 @@
     "highlight.js": "^11.12.0",
     "isomorphic-dompurify": "catalog:",
     "marked": "catalog:",
-    "mermaid": "^11.16.1"
+    "mermaid": "^11.17.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*",
