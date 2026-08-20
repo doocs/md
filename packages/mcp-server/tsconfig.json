@@ -3,7 +3,6 @@
     "target": "ES2022",
     "lib": ["ES2022"],
     "ignoreDeprecations": "6.0",
-    "baseUrl": ".",
     "module": "ESNext",
     "moduleResolution": "bundler",
     "paths": {
