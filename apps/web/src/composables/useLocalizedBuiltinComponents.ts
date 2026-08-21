@@ -1,6 +1,6 @@
 import type { CustomComponentDef } from '@md/shared'
 import type { AppLocale } from '@/i18n/types'
-import { BUILT_IN_COMPONENTS } from '@md/core'
+import { BUILT_IN_COMPONENTS } from '@md/core/extensions'
 import { getBuiltinComponentExample } from '@/i18n/builtin-component-examples'
 import { mergeLocalizedComponents } from '@/lib/merge-localized-components'
 import { useCustomComponentStore } from '@/stores/customComponent'

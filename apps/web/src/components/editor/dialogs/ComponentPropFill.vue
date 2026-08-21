@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { CustomComponentDef } from '@md/shared'
-import { previewComponent } from '@md/core'
+import { previewComponent } from '@md/core/extensions'
 import { sanitizeHtml } from '@md/core/utils'
 import { buildComponentSnippet, getInitialPropValues } from '@/lib/component-snippet'
 

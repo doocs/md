@@ -63,6 +63,8 @@ export default {
       failedTooltip: `同步失败，点击重试`,
       pendingTooltip: `有未同步的更改`,
       rateLimited: `同步次数已达上限，请稍后再试`,
+      quotaExceeded: `云端文档数量已达上限，请删除部分文章或升级 Pro 后再同步`,
+      payloadTooLarge: `同步数据过大，请缩短文章后再试`,
     },
     uploader: {
       fileReadFailed: `文件读取失败`,

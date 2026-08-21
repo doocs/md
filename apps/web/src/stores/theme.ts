@@ -1,5 +1,5 @@
 import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, PerThemeSettingsMap, ThemeName } from '@md/shared/configs'
-import { applyTheme } from '@md/core'
+import { applyTheme } from '@md/core/theme'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { isMarketplaceThemeKey } from '@md/shared/types'
 import { store } from '@/storage'

@@ -1,9 +1,9 @@
+import { hydratePendingInfographicDiagrams } from '@md/core/extensions'
 import {
-  hydratePendingInfographicDiagrams,
   isAsyncDiagramPending,
   MD_DIAGRAM_STATE,
   MD_DIAGRAM_STATE_ATTR,
-} from '@md/core'
+} from '@md/core/utils'
 import { nextTick } from 'vue'
 import { delay } from '@/lib/delay'
 

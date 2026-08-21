@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
-import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { useRenderStore } from '@/stores/render'
@@ -27,10 +26,16 @@ const effectivePreviewWidth = computed(() => {
 
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
-function hydratePreviewDiagrams() {
+async function hydratePreviewDiagrams() {
   const outputElement = document.getElementById(`output`)
   if (!outputElement)
     return
+
+  const [{ hljs }, { highlightPendingBlocks }, { hydratePendingInfographicDiagrams }] = await Promise.all([
+    import(`@md/core/renderer`),
+    import(`@md/core/utils`),
+    import(`@md/core/extensions`),
+  ])
 
   highlightPendingBlocks(hljs, outputElement)
   hydratePendingInfographicDiagrams(outputElement, {
@@ -38,14 +43,22 @@ function hydratePreviewDiagrams() {
   })
 }
 
+function scheduleHydratePreviewDiagrams() {
+  nextTick(() => {
+    void hydratePreviewDiagrams().catch((error) => {
+      console.error(`[PreviewPanel] Failed to hydrate diagrams`, error)
+    })
+  })
+}
+
 watch(output, () => {
-  nextTick(hydratePreviewDiagrams)
+  scheduleHydratePreviewDiagrams()
 })
 
 watch(viewMode, () => {
   if (viewMode.value === `edit`)
     return
-  nextTick(hydratePreviewDiagrams)
+  scheduleHydratePreviewDiagrams()
 })
 
 let diagramOverlay: DiagramDownloadOverlay | null = null
@@ -67,7 +80,9 @@ onMounted(() => {
     const outputEl = document.getElementById(`output`)
     if (outputEl) {
       diagramOverlay = setupDiagramDownloadOverlay(outputEl)
-      hydratePreviewDiagrams()
+      void hydratePreviewDiagrams().catch((error) => {
+        console.error(`[PreviewPanel] Failed to hydrate diagrams`, error)
+      })
     }
   })
 })

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@md/shared'
 import { Plus, Trash2 } from '@lucide/vue'
-import { previewComponent } from '@md/core'
+import { previewComponent } from '@md/core/extensions'
 import { sanitizeHtml } from '@md/core/utils'
 import { useCustomComponentStore } from '@/stores/customComponent'
 

@@ -1,5 +1,5 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
-import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core'
+import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core/extensions'
 import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { buildComponentSnippet } from '@/lib/component-snippet'

@@ -70,6 +70,7 @@ declare global {
   const getUploadHostLabel: typeof import('./src/composables/useLocalizedUploadHosts').getUploadHostLabel
   const h: typeof import('vue').h
   const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
+  const imageUploadCacheKey: typeof import('./src/composables/useImageUploader').imageUploadCacheKey
   const inject: typeof import('vue').inject
   const injectLocal: typeof import('@vueuse/core').injectLocal
   const isBuiltinQuickCommand: typeof import('./src/stores/quickCommands').isBuiltinQuickCommand

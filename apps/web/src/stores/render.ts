@@ -1,4 +1,4 @@
-import { initRenderer } from '@md/core'
+import type { RendererAPI } from '@md/shared/types'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { t } from '@/i18n/translate'
 import { useCustomComponentStore } from './customComponent'
@@ -27,20 +27,11 @@ export const useRenderStore = defineStore(`render`, () => {
     level: number
   }[]>([])
 
-  let renderer: ReturnType<typeof initRenderer> | null = null
+  let renderer: RendererAPI | null = null
   let lastOptionsFingerprint = ``
   let lastContent = ``
-
-  /** Init renderer; theme CSS is injected via useThemeStore().applyCurrentTheme(). */
-  const initRendererInstance = (options?: {
-    isMacCodeBlock?: boolean
-    isShowLineNumber?: boolean
-  }) => {
-    renderer = initRenderer(options || {})
-    lastOptionsFingerprint = ``
-    lastContent = ``
-    return renderer
-  }
+  let initPromise: Promise<RendererAPI> | null = null
+  let pendingRender: { content: string, options?: RenderOptions } | null = null
 
   const getRenderer = () => renderer
 
@@ -125,7 +116,8 @@ export const useRenderStore = defineStore(`render`, () => {
 
   const render = (content: string, options?: RenderOptions) => {
     if (!renderer) {
-      throw new Error(`Renderer not initialized. Call initRendererInstance first.`)
+      pendingRender = { content, options }
+      return output.value
     }
 
     const themeStore = useThemeStore()
@@ -163,6 +155,34 @@ export const useRenderStore = defineStore(`render`, () => {
     lastOptionsFingerprint = optionsFingerprint
 
     return output.value
+  }
+
+  function flushPendingRender() {
+    if (!pendingRender || !renderer)
+      return
+    const next = pendingRender
+    pendingRender = null
+    render(next.content, next.options)
+  }
+
+  /** Init renderer; theme CSS is injected via useThemeStore().applyCurrentTheme(). */
+  const initRendererInstance = async (options?: {
+    isMacCodeBlock?: boolean
+    isShowLineNumber?: boolean
+  }) => {
+    initPromise ??= import(`@md/core/renderer`).then(({ initRenderer }) => {
+      renderer = initRenderer(options || {})
+      lastOptionsFingerprint = ``
+      lastContent = ``
+      return renderer
+    }).catch((error) => {
+      initPromise = null
+      throw error
+    })
+
+    await initPromise
+    flushPendingRender()
+    return renderer
   }
 
   return {

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { MD_DIAGRAM_STATE, MD_DIAGRAM_STATE_ATTR } from '@md/core'
+import { MD_DIAGRAM_STATE, MD_DIAGRAM_STATE_ATTR } from '@md/core/utils'
 import { describe, expect, it } from 'vitest'
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from './preview-ready'
 

@@ -3,6 +3,7 @@
   "type": "module",
   "version": "2.1.0",
   "private": true,
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./renderer": "./src/renderer/index.ts",
