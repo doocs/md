@@ -157,8 +157,8 @@ const HISTORY_PREVIEW_SCOPE = `#history-preview-output`
 const styleTag = `style` as const
 
 interface HistoryCoreModules {
-  hljs: (typeof import('@md/core'))[`hljs`]
-  initRenderer: (typeof import('@md/core'))[`initRenderer`]
+  hljs: (typeof import('@md/core/renderer'))[`hljs`]
+  initRenderer: (typeof import('@md/core/renderer'))[`initRenderer`]
   renderMarkdown: (typeof import('@md/core/utils'))[`renderMarkdown`]
   postProcessHtml: (typeof import('@md/core/utils'))[`postProcessHtml`]
 }
@@ -171,7 +171,7 @@ const coreModulesFailed = ref(false)
 let coreModulesPromise: Promise<HistoryCoreModules> | null = null
 
 function ensureCoreModules(): Promise<HistoryCoreModules> {
-  coreModulesPromise ??= Promise.all([import('@md/core'), import('@md/core/utils')])
+  coreModulesPromise ??= Promise.all([import('@md/core/renderer'), import('@md/core/utils')])
     .then(([core, coreUtils]) => {
       const modules: HistoryCoreModules = {
         hljs: core.hljs,

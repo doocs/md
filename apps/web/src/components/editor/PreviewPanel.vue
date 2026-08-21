@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
-import { highlightPendingBlocks, hljs, hydratePendingInfographicDiagrams } from '@md/core'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { useRenderStore } from '@/stores/render'
@@ -27,10 +26,16 @@ const effectivePreviewWidth = computed(() => {
 
 const previewRef = useTemplateRef<HTMLDivElement>(`previewRef`)
 
-function hydratePreviewDiagrams() {
+async function hydratePreviewDiagrams() {
   const outputElement = document.getElementById(`output`)
   if (!outputElement)
     return
+
+  const [{ hljs }, { highlightPendingBlocks }, { hydratePendingInfographicDiagrams }] = await Promise.all([
+    import(`@md/core/renderer`),
+    import(`@md/core/utils`),
+    import(`@md/core/extensions`),
+  ])
 
   highlightPendingBlocks(hljs, outputElement)
   hydratePendingInfographicDiagrams(outputElement, {

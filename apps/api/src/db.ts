@@ -77,6 +77,57 @@ export async function getUserById(db: D1Database, id: string): Promise<UserRow |
   return db.prepare(`SELECT * FROM users WHERE id = ?`).bind(id).first<UserRow>()
 }
 
+export async function countActiveDocuments(db: D1Database, userId: string): Promise<number> {
+  const row = await db
+    .prepare(`SELECT COUNT(*) AS count FROM documents WHERE user_id = ? AND deleted = 0`)
+    .bind(userId)
+    .first<{ count: number }>()
+  return Number(row?.count ?? 0)
+}
+
+export async function countStoredDocuments(db: D1Database, userId: string): Promise<number> {
+  const row = await db
+    .prepare(`SELECT COUNT(*) AS count FROM documents WHERE user_id = ?`)
+    .bind(userId)
+    .first<{ count: number }>()
+  return Number(row?.count ?? 0)
+}
+
+/** D1 allows 100 bound parameters per query; reserve one slot for `user_id`. */
+export const D1_IN_ID_CHUNK = 99
+
+export function chunkDocumentIds(ids: string[], size = D1_IN_ID_CHUNK): string[][] {
+  const unique = [...new Set(ids)]
+  const chunks: string[][] = []
+  for (let i = 0; i < unique.length; i += size)
+    chunks.push(unique.slice(i, i + size))
+  return chunks
+}
+
+/** Map of existing document id → currently deleted. */
+export async function listExistingDocuments(
+  db: D1Database,
+  userId: string,
+  ids: string[],
+): Promise<Map<string, boolean>> {
+  const existing = new Map<string, boolean>()
+  if (ids.length === 0)
+    return existing
+
+  for (const chunk of chunkDocumentIds(ids)) {
+    const placeholders = chunk.map(() => `?`).join(`, `)
+    const result = await db
+      .prepare(`SELECT id, deleted FROM documents WHERE user_id = ? AND id IN (${placeholders})`)
+      .bind(userId, ...chunk)
+      .all<{ id: string, deleted: number }>()
+
+    for (const row of result.results ?? [])
+      existing.set(row.id, Number(row.deleted) === 1)
+  }
+
+  return existing
+}
+
 /** Fetch documents and settings changed after cursor. */
 export async function pullChanges(
   env: Env,

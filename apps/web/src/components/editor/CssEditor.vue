@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import type { ThemeName } from '@md/shared/configs'
 import { Check, CheckSquare, CircleHelp, Download, Edit3, Ellipsis, Eye, Plus, X } from '@lucide/vue'
-import { exportMergedTheme, hljs } from '@md/core'
+import { hljs } from '@md/core/renderer'
+import { exportMergedTheme } from '@md/core/theme'
 import { getDefaultCustomTheme, isBuiltinThemeName, isMarketplaceThemeKey, themeMap } from '@md/shared'
 import { getThemeLabel } from '@/composables/useLocalizedStyleOptions'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'

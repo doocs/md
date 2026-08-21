@@ -1,4 +1,4 @@
-import { initComponentDarkVars } from '@md/core'
+import { initComponentDarkVars } from '@md/core/theme'
 import { createPinia } from 'pinia'
 import { createApp } from 'vue'
 import { detectInitialLocale } from '@/i18n/detect'

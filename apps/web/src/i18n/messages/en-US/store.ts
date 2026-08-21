@@ -63,6 +63,8 @@ export default {
       failedTooltip: `Sync failed. Click to retry`,
       pendingTooltip: `Unsynced changes`,
       rateLimited: `Sync rate limit reached. Please try again later`,
+      quotaExceeded: `Cloud document limit reached. Delete some posts or upgrade to Pro, then sync again`,
+      payloadTooLarge: `Sync payload is too large. Shorten some posts and try again`,
     },
     uploader: {
       fileReadFailed: `Failed to read file`,

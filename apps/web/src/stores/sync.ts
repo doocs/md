@@ -6,6 +6,7 @@ import { isSyncConfigured } from '@/services/sync/client'
 import { hydrateSyncedSettings } from '@/services/sync/hydrate'
 import { mergeRemoteIntoLocal, postToDoc, toMs } from '@/services/sync/merge'
 import { isProPlan, SYNC_DEBOUNCE_MS_PRO, SYNC_PRO_ENABLED } from '@/services/sync/plan'
+import { buildPushBatches } from '@/services/sync/push-batch'
 import { applyRemoteSettings, collectChangedSettings } from '@/services/sync/settings'
 import { store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
@@ -102,9 +103,25 @@ export const useSyncStore = defineStore(`sync`, () => {
     if (e instanceof ApiError) {
       if (e.status === 429)
         return t(`store.sync.rateLimited`)
+      if (e.status === 403)
+        return t(`store.sync.quotaExceeded`)
+      if (e.status === 413)
+        return t(`store.sync.payloadTooLarge`)
       return e.message
     }
     return e instanceof Error ? e.message : String(e)
+  }
+
+  async function pushInBatches(
+    documents: SyncDocument[],
+    settings: ReturnType<typeof collectChangedSettings>,
+  ): Promise<number> {
+    let nextCursor = 0
+    for (const batch of buildPushBatches(documents, settings)) {
+      const pushed = await authStore.syncClient.push(batch)
+      nextCursor = Math.max(nextCursor, pushed.cursor)
+    }
+    return nextCursor
   }
 
   async function sync(): Promise<void> {
@@ -116,10 +133,8 @@ export const useSyncStore = defineStore(`sync`, () => {
 
     try {
       const tombstones = collectLocalDocuments().filter(doc => doc.deleted)
-      if (tombstones.length) {
-        const pushed = await authStore.syncClient.push({ documents: tombstones, settings: [] })
-        cursor = Math.max(cursor, pushed.cursor)
-      }
+      if (tombstones.length)
+        cursor = Math.max(cursor, await pushInBatches(tombstones, []))
 
       const pulled = await authStore.syncClient.pull(cursor)
 
@@ -139,10 +154,8 @@ export const useSyncStore = defineStore(`sync`, () => {
 
       const documents = collectLocalDocuments()
       const settings = collectChangedSettings()
-      if (documents.length || settings.length) {
-        const pushed = await authStore.syncClient.push({ documents, settings })
-        cursor = Math.max(cursor, pushed.cursor)
-      }
+      if (documents.length || settings.length)
+        cursor = Math.max(cursor, await pushInBatches(documents, settings))
 
       writeSyncedIds(postStore.posts.map(p => p.id))
       await postStore.persistImmediately()

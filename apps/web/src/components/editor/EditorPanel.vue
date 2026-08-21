@@ -1,11 +1,9 @@
 <script setup lang="ts">
+import type SearchTabType from '@/components/ui/search-tab/SearchTab.vue'
 import { Compartment, EditorState, Prec } from '@codemirror/state'
 import { EditorView, keymap, placeholder } from '@codemirror/view'
 import { history, markdownSetup, replaceDocumentWithoutHistory, resetEditorHistory, theme } from '@md/shared/editor'
 import { toBase64 } from '@md/shared/utils/fileHelpers'
-import { defineAsyncComponent } from 'vue'
-import SlashCommandMenu from '@/components/editor/SlashCommandMenu.vue'
-import { SearchTab } from '@/components/ui/search-tab'
 import { createComponentCompletionExtension } from '@/composables/useComponentCompletion'
 import { useEditorRefresh } from '@/composables/useEditorRefresh'
 import { useImageUploader } from '@/composables/useImageUploader'
@@ -18,7 +16,6 @@ import { toStoredDateTime } from '@/lib/format/datetime'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
 import { validateImageFile } from '@/lib/upload/validate-image'
-import { fileUpload } from '@/services/upload'
 import { isUploadProviderConfigured } from '@/services/upload/provider-registry'
 import { store } from '@/storage'
 import { useEditorStore } from '@/stores/editor'
@@ -28,6 +25,8 @@ import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 const SidebarAIToolbar = defineAsyncComponent(() => import('@/components/ai/SidebarAIToolbar.vue'))
+const SlashCommandMenu = defineAsyncComponent(() => import('@/components/editor/SlashCommandMenu.vue'))
+const SearchTab = defineAsyncComponent(() => import('@/components/ui/search-tab/SearchTab.vue'))
 
 const { t, locale } = useI18n()
 const uploadHostOptions = useLocalizedUploadHostOptions()
@@ -93,66 +92,73 @@ const isImgLoading = ref(false)
 // Editor refresh is provided by useEditorRefresh()
 
 // --- Search tab integration ---
-const searchTabRef = useTemplateRef<InstanceType<typeof SearchTab>>(`searchTabRef`)
+const searchTabRef = useTemplateRef<InstanceType<typeof SearchTabType>>(`searchTabRef`)
+const searchTabMounted = ref(false)
 const pendingSearchRequest = ref<{ selected: string } | null>(null)
 
+function applySearchRequest(
+  target: InstanceType<typeof SearchTabType>,
+  word: string,
+  showReplace = false,
+) {
+  if (showReplace)
+    target.setSearchWithReplace(word)
+  else if (word)
+    target.setSearchWord(word)
+  else
+    target.showSearchTab = true
+}
+
+function mountSearchTab() {
+  searchTabMounted.value = true
+}
+
+const { searchTabRequest } = storeToRefs(uiStore)
+
 function openSearchWithSelection(view: EditorView) {
+  mountSearchTab()
   const selection = view.state.selection.main
   const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
 
-  if (searchTabRef.value) {
-    if (selected) {
-      searchTabRef.value.setSearchWord(selected)
-    }
-    else {
-      searchTabRef.value.showSearchTab = true
-    }
-  }
-  else {
+  if (searchTabRef.value)
+    applySearchRequest(searchTabRef.value, selected)
+  else
     pendingSearchRequest.value = { selected }
-  }
 }
 
 function openReplaceWithSelection(view: EditorView) {
+  mountSearchTab()
   const selection = view.state.selection.main
   const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
 
-  if (searchTabRef.value) {
+  if (searchTabRef.value)
     searchTabRef.value.setSearchWithReplace(selected)
-  }
-  else {
+  else
     uiStore.openSearchTab(selected, true)
-  }
 }
 
 watch(searchTabRef, (newRef) => {
-  if (newRef && pendingSearchRequest.value) {
-    const { selected } = pendingSearchRequest.value
-    if (selected) {
-      newRef.setSearchWord(selected)
-    }
-    else {
-      newRef.showSearchTab = true
-    }
+  if (!newRef)
+    return
+
+  if (pendingSearchRequest.value) {
+    applySearchRequest(newRef, pendingSearchRequest.value.selected)
     pendingSearchRequest.value = null
+  }
+
+  if (searchTabRequest.value) {
+    const { word, showReplace } = searchTabRequest.value
+    applySearchRequest(newRef, word, showReplace)
+    uiStore.clearSearchTabRequest()
   }
 })
 
-const { searchTabRequest } = storeToRefs(uiStore)
 watch(searchTabRequest, (request) => {
-  if (request && searchTabRef.value) {
-    const { word, showReplace } = request
-    if (showReplace) {
-      searchTabRef.value.setSearchWithReplace(word)
-    }
-    else {
-      if (word) {
-        searchTabRef.value.setSearchWord(word)
-      }
-      else {
-        searchTabRef.value.showSearchTab = true
-      }
-    }
+  if (!request)
+    return
+  mountSearchTab()
+  if (searchTabRef.value) {
+    applySearchRequest(searchTabRef.value, request.word, request.showReplace)
     uiStore.clearSearchTabRequest()
   }
 })
@@ -214,31 +220,28 @@ async function compressImage(file: File) {
 
 async function uploadImage(
   file: File,
-  cb?: { (url: any, data: string): void, (arg0: unknown): void } | undefined,
+  cb?: (url: string, data: string) => void,
   applyUrl?: boolean,
 ) {
   try {
     isImgLoading.value = true
     const useCompression = (await store.get(`useCompression`)) === `true`
-    if (useCompression) {
+    if (useCompression)
       file = await compressImage(file)
-    }
-    const base64Content = await toBase64(file)
-    const url = await fileUpload(base64Content, file)
+
+    const url = await upload(file)
     if (cb) {
-      cb(url, base64Content)
+      cb(url, await toBase64(file))
     }
     else {
       uploaded(url)
     }
-    if (applyUrl) {
+    if (applyUrl)
       return uploaded(url)
-    }
   }
   catch (err) {
-    toast.error((err as any).message)
-    if (cb)
-      cb(``, ``)
+    toast.error(err instanceof Error ? err.message : t('store.uploader.uploadFailed'))
+    cb?.('', '')
   }
   finally {
     isImgLoading.value = false
@@ -544,15 +547,16 @@ onMounted(() => {
   }
 
   window.addEventListener(MATHJAX_READY_EVENT, handleMathJaxReady)
+  document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 
-  renderStore.initRendererInstance({
-    isMacCodeBlock: themeStore.isMacCodeBlock,
-    isShowLineNumber: themeStore.isShowLineNumber,
-  })
+  void (async () => {
+    await renderStore.initRendererInstance({
+      isMacCodeBlock: themeStore.isMacCodeBlock,
+      isShowLineNumber: themeStore.isShowLineNumber,
+    })
+    themeStore.applyCurrentTheme()
+    await nextTick()
 
-  themeStore.applyCurrentTheme()
-
-  void nextTick(async () => {
     const editorView = createFormTextArea(editorDom)
     editor.value = editorView
     editorStore.registerContentFlush(commitEditorContentToPost)
@@ -563,9 +567,7 @@ onMounted(() => {
     editorRefresh()
     mdLocalToRemote()
     void completeInitialPreviewBoot()
-  })
-
-  document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
+  })()
 })
 
 watch(isDark, () => {
@@ -668,8 +670,13 @@ defineExpose({
     class="codeMirror-wrapper relative h-full"
     @contextmenu.capture="onWrapperContextMenuCapture"
   >
-    <SearchTab v-if="codeMirrorView" ref="searchTabRef" :editor-view="codeMirrorView as any" />
+    <SearchTab
+      v-if="searchTabMounted && codeMirrorView"
+      ref="searchTabRef"
+      :editor-view="codeMirrorView as any"
+    />
     <SlashCommandMenu
+      v-if="slashVisible"
       :visible="slashVisible"
       :position="slashPosition"
       :active-index="slashActiveIndex"

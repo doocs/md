@@ -14,7 +14,7 @@ import type {
   PublishThemePayload,
   UpdateMarketplacePayload,
 } from '@/services/marketplace/types'
-import { BUILT_IN_COMPONENTS } from '@md/core'
+import { BUILT_IN_COMPONENTS } from '@md/core/extensions'
 import {
   isMarketplaceThemeKey,
   marketplaceThemeKey,

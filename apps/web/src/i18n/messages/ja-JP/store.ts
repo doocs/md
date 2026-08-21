@@ -63,6 +63,8 @@ export default {
       failedTooltip: `同期に失敗しました。クリックして再試行`,
       pendingTooltip: `未同期の変更があります`,
       rateLimited: `同期のレート制限に達しました。しばらくしてから再試行してください`,
+      quotaExceeded: `クラウドの文書数上限に達しました。記事を削除するか Pro にアップグレードしてから再同期してください`,
+      payloadTooLarge: `同期データが大きすぎます。記事を短くしてから再試行してください`,
     },
     uploader: {
       fileReadFailed: `ファイルの読み込みに失敗しました`,

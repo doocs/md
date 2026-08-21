@@ -6,6 +6,10 @@ import { store } from '@/storage'
 
 const STORAGE_KEY = `uploaded_image_map`
 
+export function imageUploadCacheKey(host: string, hash: string): string {
+  return `${host}:${hash}`
+}
+
 export function useImageUploader() {
   const isUploading = ref(false)
   const error = ref<string | null>(null)
@@ -79,17 +83,19 @@ export function useImageUploader() {
       }
 
       const hash = await calculateHash(file)
+      const imgHost = (await store.get(`imgHost`)) || `default`
+      const cacheKey = imageUploadCacheKey(imgHost, hash)
 
       const cache = await getStorageMap()
-      if (cache[hash])
-        return cache[hash]
+      if (cache[cacheKey])
+        return cache[cacheKey]
 
       const base64Content = await toBase64(file)
 
       const url = await fileUpload(base64Content, file)
 
       if (url)
-        await updateStorageMap(hash, url)
+        await updateStorageMap(cacheKey, url)
 
       return url
     }

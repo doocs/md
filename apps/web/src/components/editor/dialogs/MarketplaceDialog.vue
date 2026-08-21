@@ -14,7 +14,8 @@ import {
   Store,
   Trash2,
 } from '@lucide/vue'
-import { initRenderer, wrapCSSWithScope } from '@md/core'
+import { initRenderer } from '@md/core/renderer'
+import { wrapCSSWithScope } from '@md/core/theme'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { marketplaceThemeKey, themeMap } from '@md/shared'
 import { toTypedSchema } from '@vee-validate/yup'

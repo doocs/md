@@ -1,4 +1,4 @@
-import { hydratePendingInfographicDiagrams } from '@md/core'
+import { hydratePendingInfographicDiagrams } from '@md/core/extensions'
 import { applyExportLayout } from './apply-export-layout'
 
 export interface GetHtmlContentOptions {
