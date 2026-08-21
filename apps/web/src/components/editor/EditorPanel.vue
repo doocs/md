@@ -550,23 +550,30 @@ onMounted(() => {
   document.addEventListener(`keydown`, handleGlobalKeydown, { passive: false, capture: false })
 
   void (async () => {
-    await renderStore.initRendererInstance({
-      isMacCodeBlock: themeStore.isMacCodeBlock,
-      isShowLineNumber: themeStore.isShowLineNumber,
-    })
-    themeStore.applyCurrentTheme()
-    await nextTick()
+    try {
+      await renderStore.initRendererInstance({
+        isMacCodeBlock: themeStore.isMacCodeBlock,
+        isShowLineNumber: themeStore.isShowLineNumber,
+      })
+      themeStore.applyCurrentTheme()
+      await nextTick()
 
-    const editorView = createFormTextArea(editorDom)
-    editor.value = editorView
-    editorStore.registerContentFlush(commitEditorContentToPost)
+      const editorView = createFormTextArea(editorDom)
+      editor.value = editorView
+      editorStore.registerContentFlush(commitEditorContentToPost)
 
-    const content = posts.value[currentPostIndex.value]?.content ?? ``
-    await preloadMathJaxIfNeeded(content)
+      const content = posts.value[currentPostIndex.value]?.content ?? ``
+      await preloadMathJaxIfNeeded(content)
 
-    editorRefresh()
-    mdLocalToRemote()
-    void completeInitialPreviewBoot()
+      editorRefresh()
+      mdLocalToRemote()
+    }
+    catch (error) {
+      console.error(`[EditorPanel] Failed to initialize editor`, error)
+    }
+    finally {
+      void completeInitialPreviewBoot()
+    }
   })()
 })
 

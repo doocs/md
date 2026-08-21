@@ -77,10 +77,10 @@ describe(`validatePushPayload`, () => {
   })
 
   it(`rejects oversize titles by utf-8 bytes`, () => {
-    const title = `你`.repeat(SYNC_PUSH_LIMITS.maxTitleChars)
+    const title = `你`.repeat(SYNC_PUSH_LIMITS.maxTitleBytes)
     const result = validatePushPayload([doc({ title })], [])
     expect(result?.error).toBe(`title_too_large`)
-    expect(utf8Bytes(title)).toBeGreaterThan(SYNC_PUSH_LIMITS.maxTitleChars)
+    expect(utf8Bytes(title)).toBeGreaterThan(SYNC_PUSH_LIMITS.maxTitleBytes)
   })
 
   it(`rejects malformed documents`, () => {
@@ -90,6 +90,9 @@ describe(`validatePushPayload`, () => {
     expect(validatePushPayload([doc({ history: `oops` as never })], [])?.error).toBe(`invalid_history`)
     expect(validatePushPayload([doc({ parentId: `x`.repeat(SYNC_PUSH_LIMITS.maxIdChars + 1) })], [])?.error).toBe(`invalid_document_parent_id`)
     expect(validatePushPayload([doc({ parentId: `` })], [])?.error).toBe(`invalid_document_parent_id`)
+    expect(validatePushPayload([doc({ createDatetime: `nope` })], [])?.field).toBe(`documents.createDatetime`)
+    expect(validatePushPayload([doc({ updateDatetime: Number.NaN })], [])?.field).toBe(`documents.updateDatetime`)
+    expect(validatePushPayload({} as never, [])?.error).toBe(`invalid_body`)
   })
 
   it(`rejects overlong history and history content`, () => {

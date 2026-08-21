@@ -5,7 +5,7 @@ export const SYNC_PUSH_LIMITS = {
   maxDocumentsPerPush: 100,
   maxSettingsPerPush: 80,
   maxIdChars: 128,
-  maxTitleChars: 500,
+  maxTitleBytes: 500,
   maxContentBytes: 512 * 1024,
   maxHistoryItems: 20,
   maxHistoryContentBytes: 512 * 1024,
@@ -91,8 +91,8 @@ function validateDocument(doc: unknown): SyncPayloadRejection | null {
     return reject(`invalid_document_id`, 400, { field: `documents.id`, max: SYNC_PUSH_LIMITS.maxIdChars })
   if (typeof record.title !== `string`)
     return reject(`invalid_document`, 400, { field: `documents.title` })
-  if (utf8Bytes(record.title) > SYNC_PUSH_LIMITS.maxTitleChars)
-    return reject(`title_too_large`, 413, { field: `documents.title`, max: SYNC_PUSH_LIMITS.maxTitleChars })
+  if (utf8Bytes(record.title) > SYNC_PUSH_LIMITS.maxTitleBytes)
+    return reject(`title_too_large`, 413, { field: `documents.title`, max: SYNC_PUSH_LIMITS.maxTitleBytes })
   if (typeof record.content !== `string`)
     return reject(`invalid_document`, 400, { field: `documents.content` })
   if (utf8Bytes(record.content) > SYNC_PUSH_LIMITS.maxContentBytes) {
@@ -109,7 +109,9 @@ function validateDocument(doc: unknown): SyncPayloadRejection | null {
       })
     }
   }
-  if (!isFiniteNumber(record.createDatetime) || !isFiniteNumber(record.updateDatetime))
+  if (!isFiniteNumber(record.createDatetime))
+    return reject(`invalid_document`, 400, { field: `documents.createDatetime` })
+  if (!isFiniteNumber(record.updateDatetime))
     return reject(`invalid_document`, 400, { field: `documents.updateDatetime` })
   if (typeof record.deleted !== `boolean`)
     return reject(`invalid_document`, 400, { field: `documents.deleted` })

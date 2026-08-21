@@ -43,14 +43,22 @@ async function hydratePreviewDiagrams() {
   })
 }
 
+function scheduleHydratePreviewDiagrams() {
+  nextTick(() => {
+    void hydratePreviewDiagrams().catch((error) => {
+      console.error(`[PreviewPanel] Failed to hydrate diagrams`, error)
+    })
+  })
+}
+
 watch(output, () => {
-  nextTick(hydratePreviewDiagrams)
+  scheduleHydratePreviewDiagrams()
 })
 
 watch(viewMode, () => {
   if (viewMode.value === `edit`)
     return
-  nextTick(hydratePreviewDiagrams)
+  scheduleHydratePreviewDiagrams()
 })
 
 let diagramOverlay: DiagramDownloadOverlay | null = null
@@ -72,7 +80,9 @@ onMounted(() => {
     const outputEl = document.getElementById(`output`)
     if (outputEl) {
       diagramOverlay = setupDiagramDownloadOverlay(outputEl)
-      hydratePreviewDiagrams()
+      void hydratePreviewDiagrams().catch((error) => {
+        console.error(`[PreviewPanel] Failed to hydrate diagrams`, error)
+      })
     }
   })
 })

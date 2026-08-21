@@ -1,5 +1,5 @@
 import type { Context } from 'hono'
-import type { Env, PushRequest, SyncDocument, SyncSetting } from './types'
+import type { Env, PushRequest, SyncDocument, SyncSetting, UserRow } from './types'
 import { countActiveDocuments, countStoredDocuments, getUserById, listExistingDocuments, pullChanges, pushChanges } from './db'
 import { checkSyncRateLimit, getEffectivePlan } from './plan'
 import {
@@ -16,30 +16,34 @@ import {
 
 type SyncContext = Context<{ Bindings: Env, Variables: { userId: string } }>
 
-async function enforceSyncRateLimit(c: SyncContext): Promise<Response | null> {
+async function enforceSyncRateLimit(
+  c: SyncContext,
+): Promise<{ blocked: Response, user?: undefined } | { blocked: null, user: UserRow }> {
   const userId = c.get(`userId`)
   const user = await getUserById(c.env.DB, userId)
   if (!user)
-    return c.json({ error: `not_found` }, 404)
+    return { blocked: c.json({ error: `not_found` }, 404) }
 
   const plan = getEffectivePlan(user.plan, user.plan_expires_at)
   const rate = await checkSyncRateLimit(c.env.DB, userId, plan)
   if (!rate.allowed) {
-    return c.json({
-      error: `rate_limit_exceeded`,
-      plan,
-      limit: rate.limit,
-      retryAfterSec: rate.retryAfterSec,
-      upgradeRequired: plan === `free`,
-    }, 429)
+    return {
+      blocked: c.json({
+        error: `rate_limit_exceeded`,
+        plan,
+        limit: rate.limit,
+        retryAfterSec: rate.retryAfterSec,
+        upgradeRequired: plan === `free`,
+      }, 429),
+    }
   }
-  return null
+  return { blocked: null, user }
 }
 
 export async function pullHandler(c: SyncContext) {
-  const blocked = await enforceSyncRateLimit(c)
-  if (blocked)
-    return blocked
+  const gated = await enforceSyncRateLimit(c)
+  if (gated.blocked)
+    return gated.blocked
 
   const userId = c.get(`userId`)
   const sinceRaw = c.req.query(`since`)
@@ -51,9 +55,9 @@ export async function pullHandler(c: SyncContext) {
 }
 
 export async function pushHandler(c: SyncContext) {
-  const blocked = await enforceSyncRateLimit(c)
-  if (blocked)
-    return blocked
+  const gated = await enforceSyncRateLimit(c)
+  if (gated.blocked)
+    return gated.blocked
 
   const contentLength = Number.parseInt(c.req.header(`Content-Length`) ?? ``, 10)
   if (Number.isFinite(contentLength) && contentLength > SYNC_PUSH_LIMITS.maxRequestBytes) {
@@ -73,8 +77,8 @@ export async function pushHandler(c: SyncContext) {
     return c.json({ error: `invalid_body` }, 400)
   }
 
-  const documents = Array.isArray(body.documents) ? body.documents : []
-  const settings = Array.isArray(body.settings) ? body.settings : []
+  const documents = body.documents ?? []
+  const settings = body.settings ?? []
 
   const invalid = validatePushPayload(documents, settings)
   if (invalid) {
@@ -89,11 +93,7 @@ export async function pushHandler(c: SyncContext) {
   const typedSettings = settings as SyncSetting[]
 
   if (typedDocuments.length > 0) {
-    const user = await getUserById(c.env.DB, userId)
-    if (!user)
-      return c.json({ error: `not_found` }, 404)
-
-    const plan = getEffectivePlan(user.plan, user.plan_expires_at)
+    const plan = getEffectivePlan(gated.user.plan, gated.user.plan_expires_at)
     const existing = await listExistingDocuments(
       c.env.DB,
       userId,
