@@ -165,8 +165,10 @@ function findAllMatches() {
         const flags = `gm${isCaseSensitive.value ? `` : `i`}`
         const regex = new RegExp(searchTerm, flags)
         let match
-        // eslint-disable-next-line no-cond-assign
-        while ((match = regex.exec(content)) !== null) {
+        while (true) {
+          match = regex.exec(content)
+          if (match === null)
+            break
           if (match[0].length === 0) {
             regex.lastIndex++
             continue

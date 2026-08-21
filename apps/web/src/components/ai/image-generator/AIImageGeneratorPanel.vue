@@ -647,12 +647,7 @@ function getTimeRemainingClass(index: number): string {
           <Button
             :disabled="!prompt.trim() && !loading"
             size="icon"
-            :class="[
-              // eslint-disable-next-line vue/prefer-separate-static-class
-              'absolute bottom-3 right-3 rounded-full disabled:opacity-40',
-              // eslint-disable-next-line vue/prefer-separate-static-class
-              'bg-primary hover:bg-primary/90 text-primary-foreground',
-            ]"
+            class="absolute bottom-3 right-3 rounded-full disabled:opacity-40 bg-primary hover:bg-primary/90 text-primary-foreground"
             :aria-label="loading ? t('common.cancel') : t('ai.image.generate')"
             @click="loading ? cancelGeneration() : generateImage()"
           >
