@@ -234,8 +234,7 @@ onUnmounted(() => {
 
 // Force computed to depend on refreshKey and locale
 const displaySavedTime = computed(() => {
-  // eslint-disable-next-line ts/no-unused-expressions
-  refreshKey.value
+  void refreshKey.value
   void locale.value
   return savedTimeAgo.value
 })

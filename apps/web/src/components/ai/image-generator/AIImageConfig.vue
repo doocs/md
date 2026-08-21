@@ -54,8 +54,7 @@ function saveConfig() {
   }
 
   try {
-    // eslint-disable-next-line no-new
-    new URL(endpoint.value)
+    void new URL(endpoint.value)
   }
   catch {
     testResult.value = t('ai.imageConfig.invalidEndpoint')
