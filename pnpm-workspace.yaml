@@ -35,7 +35,7 @@ overrides:
   core-js: ^3.50.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
-  dompurify: ^3.4.13
+  dompurify: ^3.4.14
   esbuild: '>=0.28.2'
   # CVE-2026-16221 / GHSA-v2hh-gcrm-f6hx (dependabot/314): ajv pins fast-uri ^3.0.1
   fast-uri: ^3.1.4
@@ -91,7 +91,7 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260820.1
+  '@cloudflare/workers-types': ^5.20260821.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.9
   '@types/node': ^26.2.0
@@ -102,7 +102,7 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^4.1.11
-  wrangler: ^4.124.0
+  wrangler: ^4.125.0
 
 peerDependencyRules:
   allowedVersions:
