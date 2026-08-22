@@ -1,0 +1,1 @@
+import{dt as e,v as t}from"./md-vendor_vue-DZd6QO7g.js";import{T as n}from"./md-Teleport-JQDylpDo.js";function r(r){let i=n({nonce:e()});return t(()=>r?.value||i.nonce?.value)}export{r as t};
