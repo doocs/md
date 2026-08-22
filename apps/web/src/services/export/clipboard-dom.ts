@@ -11,21 +11,6 @@ function isUndefinedCssValue(value: string): boolean {
   return !normalized || /^undefined$/i.test(normalized) || /\bundefined\b/i.test(normalized)
 }
 
-/** Multi-word fonts that juice/PostCSS reject when unquoted. WeChat does not ship them anyway. */
-const FONT_FAMILY_REPLACEMENTS: Array<[RegExp, string]> = [
-  [/^open sans$/i, `sans-serif`],
-  [/^trebuchet ms$/i, `sans-serif`],
-  [/^segoe ui$/i, `sans-serif`],
-  [/^helvetica neue$/i, `sans-serif`],
-  [/^noto sans$/i, `sans-serif`],
-  [/^pingfang sc$/i, `sans-serif`],
-  [/^microsoft yahei$/i, `sans-serif`],
-  [/^微软雅黑$/, `sans-serif`],
-  [/^operator mono$/i, `monospace`],
-  [/^fira code$/i, `monospace`],
-  [/^courier new$/i, `monospace`],
-]
-
 function mapFontFamilyName(family: string): string {
   const unquoted = family.replace(/["']/g, ``).trim()
   if (!unquoted)
@@ -34,10 +19,9 @@ function mapFontFamilyName(family: string): string {
     return family
   if (GENERIC_FONT_FAMILIES.test(unquoted))
     return unquoted
-  for (const [pattern, replacement] of FONT_FAMILY_REPLACEMENTS) {
-    if (pattern.test(unquoted))
-      return replacement
-  }
+  // Quote multi-word / CJK names so juice/PostCSS can parse them.
+  // Do not rewrite them to generic families: a mid-stack `sans-serif`
+  // would make later serif fonts unreachable (WeChat copy of the serif preset).
   if (/\s/.test(unquoted) || unquoted.split(``).some(ch => ch.charCodeAt(0) > 127))
     return `'${unquoted}'`
   return unquoted
