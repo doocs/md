@@ -111,8 +111,9 @@ describe(`stripInvalidCssForJuice`, () => {
 
     stripInvalidCssForJuice(root)
 
-    expect(root.querySelector(`path`)?.getAttribute(`style`)).toContain(`sans-serif`)
-    expect(root.querySelector(`path`)?.getAttribute(`style`)).not.toMatch(/Open Sans/)
+    const style = root.querySelector(`path`)?.getAttribute(`style`) ?? ``
+    expect(style).toContain(`sans-serif`)
+    expect(style).toMatch(/['"]Open Sans['"]/)
     expect(() => juice(sanitizeHtmlCssForJuice(root.innerHTML), {
       inlinePseudoElements: true,
       preserveImportant: true,
@@ -120,13 +121,13 @@ describe(`stripInvalidCssForJuice`, () => {
     })).not.toThrow()
   })
 
-  it(`rewrites Open Sans in the HTML string after browsers drop style quotes`, async () => {
+  it(`quotes Open Sans in the HTML string after browsers drop style quotes`, async () => {
     const { default: juice } = await import(`juice`)
     const html = `<svg><path style="fill: #1168BD;stroke: #0B4884;color: #FFFFFF;font-family:Open Sans, sans-serif"></path></svg>`
 
     const sanitized = sanitizeHtmlCssForJuice(html)
     expect(sanitized).toContain(`sans-serif`)
-    expect(sanitized).not.toMatch(/Open Sans/)
+    expect(sanitized).toMatch(/['"]Open Sans['"]/)
     expect(() => juice(sanitized, {
       inlinePseudoElements: true,
       preserveImportant: true,
@@ -134,17 +135,48 @@ describe(`stripInvalidCssForJuice`, () => {
     })).not.toThrow()
   })
 
-  it(`rewrites sequence/C4 text styles that juice reports at column 43`, async () => {
+  it(`quotes sequence/C4 text styles that juice reports at column 43`, async () => {
     const { default: juice } = await import(`juice`)
     const html = `<svg><text style="dominant-baseline:central;font-family:Open Sans,sans-serif" font-family="Open Sans, sans-serif">A</text></svg>`
 
     const sanitized = sanitizeHtmlCssForJuice(html)
-    expect(sanitized).not.toMatch(/Open Sans/)
+    expect(sanitized).toMatch(/['"]Open Sans['"]/)
     expect(() => juice(sanitized, {
       inlinePseudoElements: true,
       preserveImportant: true,
       resolveCSSVariables: false,
     })).not.toThrow()
+  })
+
+  it(`keeps editor serif stack so WeChat copy does not fall back to sans-serif`, async () => {
+    const { default: juice } = await import(`juice`)
+    const serif = `Optima-Regular, Optima, PingFangSC-light, PingFangTC-light, 'PingFang SC', Cambria, Cochin, Georgia, Times, 'Times New Roman', serif`
+    const html = `<style>p{font-family:${serif}}</style><p>hello</p>`
+
+    const sanitized = sanitizeHtmlCssForJuice(html)
+    expect(sanitized).toMatch(/PingFang SC/)
+    expect(sanitized).toMatch(/\bserif\b/)
+    expect(sanitized).not.toMatch(/sans-serif/)
+
+    const inlined = juice(sanitized, {
+      inlinePseudoElements: true,
+      preserveImportant: true,
+      resolveCSSVariables: false,
+    })
+    expect(inlined).toMatch(/PingFang SC/)
+    expect(inlined).toMatch(/\bserif\b/)
+    expect(inlined).not.toMatch(/sans-serif/)
+  })
+
+  it(`quotes editor sans-serif stack without dropping PingFang / YaHei`, () => {
+    const sans = `-apple-system-font,BlinkMacSystemFont, Helvetica Neue, PingFang SC, Hiragino Sans GB , Microsoft YaHei UI , Microsoft YaHei ,Arial,sans-serif`
+    const html = `<style>p{font-family:${sans}}</style><p>hello</p>`
+
+    const sanitized = sanitizeHtmlCssForJuice(html)
+    expect(sanitized).toMatch(/['"]PingFang SC['"]/)
+    expect(sanitized).toMatch(/['"]Microsoft YaHei['"]/)
+    expect(sanitized).toMatch(/['"]Helvetica Neue['"]/)
+    expect(sanitized).toMatch(/sans-serif/)
   })
 })
 

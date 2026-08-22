@@ -1,6 +1,7 @@
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
 import { getStylesToAdd } from './share-styles'
@@ -52,6 +53,7 @@ export async function processClipboardContent(primaryColor: string) {
 
   const renderStore = useRenderStore()
   const editorStore = useEditorStore()
+  const themeStore = useThemeStore()
   const uiStore = useUIStore()
   const content = editorStore.getContent()
   const wechatThemeMode = `light` as const
@@ -83,6 +85,8 @@ export async function processClipboardContent(primaryColor: string) {
       .replace(/hsl\(var\(--foreground\)\)/g, `#3f3f3f`)
       .replace(/var\(--blockquote-background\)/g, `#f7f7f7`)
       .replace(/var\(--md-primary-color\)/g, primaryColor)
+      .replace(/var\(--md-font-family\)/g, themeStore.fontFamily)
+      .replace(/var\(--md-font-size\)/g, themeStore.fontSize)
       .replace(/--md-primary-color:.+?;/g, ``)
       .replace(/--md-font-family:.+?;/g, ``)
       .replace(/--md-font-size:.+?;/g, ``)
