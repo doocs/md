@@ -3,7 +3,7 @@ import type { GenericObject } from 'vee-validate'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { Field, Form } from 'vee-validate'
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 
 const props = defineProps<{
   open: boolean
@@ -57,30 +57,34 @@ const schema = computed(() => z.object({
   serviceType: z.enum([`1`, `2`]),
   verify: z.enum([`0`, `1`, `2`]),
 }))
+const formSchema = computed(() => toTypedSchema(schema.value))
 
 function submit(formValues: GenericObject) {
-  const parsed = schema.value.parse(formValues)
+  const parsed = schema.value.safeParse(formValues)
+  if (!parsed.success)
+    return
+  const { mpId, name, logo, desc, serviceType, verify } = parsed.data
   if (props.accountId) {
     mpAccountsStore.updateAccount(props.accountId, {
-      mpId: parsed.mpId,
-      name: parsed.name,
-      logo: parsed.logo,
-      desc: parsed.desc,
-      serviceType: parsed.serviceType,
-      verify: parsed.verify,
+      mpId,
+      name,
+      logo,
+      desc,
+      serviceType,
+      verify,
     })
-    toast.success(t('mpAccount.updated', { name: parsed.name }))
+    toast.success(t('mpAccount.updated', { name }))
   }
   else {
     mpAccountsStore.addAccount({
-      mpId: parsed.mpId,
-      name: parsed.name,
-      logo: parsed.logo,
-      desc: parsed.desc,
-      serviceType: parsed.serviceType,
-      verify: parsed.verify,
+      mpId,
+      name,
+      logo,
+      desc,
+      serviceType,
+      verify,
     })
-    toast.success(t('mpAccount.added', { name: parsed.name }))
+    toast.success(t('mpAccount.added', { name }))
   }
   emit(`saved`)
   emit(`update:open`, false)
@@ -96,7 +100,7 @@ function submit(formValues: GenericObject) {
 
       <Form
         :key="formKey"
-        :validation-schema="schema"
+        :validation-schema="formSchema"
         :initial-values="initialValues"
         class="flex flex-col flex-1 overflow-hidden"
         @submit="submit"

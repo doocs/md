@@ -1,6 +1,7 @@
 export default {
   upload: {
     title: `Local Upload`,
+    description: `Upload an image to the selected host, or configure host settings.`,
     selectUpload: `Upload`,
     selectHostPlaceholder: `Select image host`,
     enableCompression: `Enable image compression`,

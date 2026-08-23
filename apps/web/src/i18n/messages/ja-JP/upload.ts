@@ -1,6 +1,7 @@
 export default {
   upload: {
     title: `ローカルアップロード`,
+    description: `画像ホストを選んでアップロードするか、ホスト設定を構成します。`,
     selectUpload: `アップロード`,
     selectHostPlaceholder: `画像ホストを選択`,
     enableCompression: `画像圧縮を有効化`,

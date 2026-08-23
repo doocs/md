@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   bucket: requiredString(t(`upload.validation.bucketRequired`)),
   operator: requiredString(t(`upload.validation.operatorRequired`)),
   password: requiredString(t(`upload.validation.passwordRequired`)),
   domain: requiredString(t(`upload.validation.cdnDomainRequired`)),
   path: optionalString(),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`upyunConfig`, {
   bucket: ``,
   operator: ``,

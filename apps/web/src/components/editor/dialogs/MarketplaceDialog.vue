@@ -41,7 +41,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { DEFAULT_LOCALE, isAppLocale } from '@/i18n/constants'
-import { requiredString } from '@/lib/form-schema'
+import { requiredString, toTypedSchema } from '@/lib/form-schema'
 import { isMarketplaceUiEnabled } from '@/services/marketplace/client'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
@@ -145,7 +145,7 @@ function optionalHttpUrl() {
 
 const publishSchema = computed(() => {
   void locale.value
-  return z.object({
+  return toTypedSchema(z.object({
     name: requiredString(t(`marketplace.validation.nameRequired`))
       .max(64, t(`marketplace.validation.nameMax`)),
     slug: requiredString(t(`marketplace.validation.slugRequired`))
@@ -155,7 +155,7 @@ const publishSchema = computed(() => {
     primaryColor: requiredString(t(`marketplace.validation.primaryColorRequired`))
       .regex(HEX_COLOR_RE, t(`marketplace.validation.primaryColorInvalid`)),
     css: requiredString(t(`marketplace.validation.cssRequired`)),
-  })
+  }))
 })
 
 const statusLabel = computed(() => {

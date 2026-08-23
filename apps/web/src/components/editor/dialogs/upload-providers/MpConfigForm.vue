@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
@@ -9,13 +9,13 @@ const { t } = useI18n()
 const isWebsite = window.location.protocol.startsWith(`http`)
 const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 const isProxyRequired = computed(() => isWebsite && !isCfWorkers)
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   proxyOrigin: isProxyRequired.value
     ? requiredString(t(`upload.validation.proxyRequired`))
     : optionalString(),
   appID: requiredString(t(`upload.validation.appIdRequired`)),
   appsecret: requiredString(t(`upload.validation.appSecretRequired`)),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`mpConfig`, {
   proxyOrigin: ``,
   appID: ``,

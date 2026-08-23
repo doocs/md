@@ -9,11 +9,24 @@ export interface ParsedFrontMatter {
 /** CommonMark / Jekyll-style YAML fence, including optional BOM and `...` closer. */
 const FRONT_MATTER_RE = /^\uFEFF?(?:---|= yaml =)[ \t]*\r?\n([\s\S]*?)\r?\n(?:---|\.\.\.|= yaml =)[ \t]*(?:\r?\n|$)/
 
-function parseYamlObject(input: string): FrontMatterData {
-  const data = loadYaml(input)
-  if (data == null || typeof data !== `object` || Array.isArray(data))
-    return {}
-  return data as FrontMatterData
+/**
+ * Markdown list markers (`* item`) are YAML aliases. Blog front matter often
+ * uses them as lists; rewrite only `* ` + non-space (invalid alias) to `- `.
+ */
+function normalizeMarkdownListMarkers(input: string): string {
+  return input.replace(/(^|\n)([ \t]*)\*(?=[ \t]+\S)/g, `$1$2-`)
+}
+
+function parseYamlObject(input: string): FrontMatterData | null {
+  try {
+    const data = loadYaml(normalizeMarkdownListMarkers(input))
+    if (data == null || typeof data !== `object` || Array.isArray(data))
+      return {}
+    return data as FrontMatterData
+  }
+  catch {
+    return null
+  }
 }
 
 export function parseFrontMatter(markdownText: string): ParsedFrontMatter {
@@ -25,8 +38,16 @@ export function parseFrontMatter(markdownText: string): ParsedFrontMatter {
     }
   }
 
+  const attributes = parseYamlObject(match[1] ?? ``)
+  if (attributes == null) {
+    return {
+      attributes: {},
+      body: markdownText,
+    }
+  }
+
   return {
-    attributes: parseYamlObject(match[1] ?? ``),
+    attributes,
     body: markdownText.slice(match[0].length),
   }
 }

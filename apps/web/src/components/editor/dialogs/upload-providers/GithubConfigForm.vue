@@ -1,18 +1,18 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderSwitchField from './UploadProviderSwitchField.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   repo: requiredString(t(`upload.validation.githubRepoRequired`)),
   branch: optionalString(),
   accessToken: requiredString(t(`upload.validation.githubTokenRequired`)),
   useCDN: z.boolean(),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`githubConfig`, {
   repo: ``,
   branch: ``,

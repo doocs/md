@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   secretId: requiredString(t(`upload.validation.secretIdRequired`)),
   secretKey: requiredString(t(`upload.validation.secretKeyRequired`)),
   bucket: requiredString(t(`upload.validation.bucketRequired`)),
   region: requiredString(t(`upload.validation.regionRequired`)),
   cdnHost: optionalString(),
   path: optionalString(),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`txCOSConfig`, {
   secretId: ``,
   secretKey: ``,

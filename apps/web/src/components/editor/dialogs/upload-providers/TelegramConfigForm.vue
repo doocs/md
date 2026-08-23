@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { requiredString } from '@/lib/form-schema'
+import { requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   token: requiredString(t(`upload.validation.botTokenRequired`)),
   chatId: requiredString(t(`upload.validation.chatIdRequired`)),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`telegramConfig`, {
   token: ``,
   chatId: ``,

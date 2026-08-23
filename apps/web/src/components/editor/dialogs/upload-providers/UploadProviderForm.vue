@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import type { GenericObject } from 'vee-validate'
+import type { GenericObject, TypedSchema } from 'vee-validate'
 import { Form } from 'vee-validate'
 
 defineProps<{
-  validationSchema: object
+  validationSchema: TypedSchema
   initialValues: GenericObject
 }>()
 

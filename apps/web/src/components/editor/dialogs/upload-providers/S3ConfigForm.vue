@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderSwitchField from './UploadProviderSwitchField.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   endpoint: optionalString(),
   region: requiredString(t(`upload.validation.regionRequired`)),
   bucket: requiredString(t(`upload.validation.bucketRequired`)),
@@ -16,7 +16,7 @@ const schema = computed(() => z.object({
   path: optionalString(),
   cdnHost: optionalString(),
   pathStyle: z.boolean().optional(),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`s3Config`, {
   endpoint: ``,
   region: ``,

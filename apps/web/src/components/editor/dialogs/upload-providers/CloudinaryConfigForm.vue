@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   cloudName: requiredString(t(`upload.validation.cloudNameRequired`)),
   apiKey: requiredString(t(`upload.validation.apiKeyRequired`)),
   apiSecret: optionalString(),
@@ -21,7 +21,7 @@ const schema = computed(() => z.object({
       message: t(`upload.validation.uploadPresetRequired`),
     })
   }
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`cloudinaryConfig`, {
   cloudName: ``,
   apiKey: ``,

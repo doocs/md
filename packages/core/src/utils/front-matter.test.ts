@@ -29,4 +29,36 @@ describe(`parseFrontMatter`, () => {
       body: `# Body`,
     })
   })
+
+  it(`treats Markdown star lists as YAML sequences`, () => {
+    const markdown = `---
+title: Agent
+tags:
+
+* AI
+* Agent
+categories:
+* 技术
+draft: false
+---
+
+# Body`
+    expect(parseFrontMatter(markdown)).toEqual({
+      attributes: {
+        title: `Agent`,
+        tags: [`AI`, `Agent`],
+        categories: [`技术`],
+        draft: false,
+      },
+      body: `\n# Body`,
+    })
+  })
+
+  it(`keeps the original text when YAML is invalid`, () => {
+    const markdown = `---\nfoo: [unterminated\n---\n# Body`
+    expect(parseFrontMatter(markdown)).toEqual({
+      attributes: {},
+      body: markdown,
+    })
+  })
 })

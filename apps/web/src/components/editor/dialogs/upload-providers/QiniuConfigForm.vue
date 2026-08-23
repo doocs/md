@@ -1,19 +1,19 @@
 <script setup lang="ts">
 import { z } from 'zod'
-import { optionalString, requiredString } from '@/lib/form-schema'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => z.object({
+const schema = computed(() => toTypedSchema(z.object({
   accessKey: requiredString(t(`upload.validation.accessKeyRequired`)),
   secretKey: requiredString(t(`upload.validation.secretKeyRequired`)),
   bucket: requiredString(t(`upload.validation.bucketRequired`)),
   domain: requiredString(t(`upload.validation.domainRequired`)),
   region: optionalString(),
   path: optionalString(),
-}))
+})))
 const { config, saveConfig } = useUploadProviderConfig(`qiniuConfig`, {
   accessKey: ``,
   secretKey: ``,
