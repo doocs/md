@@ -10,7 +10,7 @@
 ### 🏗️ 架构与部署
 
 - **CodeMirror 升级至 v6**：编辑器核心组件全面升级，提升性能与稳定性。
-- **Vite 升级至 v7**：构建工具全面升级，显著提升构建速度与开发体验。  
+- **Vite 升级至 v8**：构建工具全面升级，显著提升构建速度与开发体验。  
 - **pnpm Monorepo 重构**：项目重构为 pnpm monorepo 架构，提升代码组织与维护效率。  
 - **Cloudflare Workers 部署**：支持 Cloudflare Workers 部署与自动化 CI/CD，增强全球访问性能。  
 

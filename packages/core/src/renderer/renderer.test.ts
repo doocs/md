@@ -30,10 +30,11 @@ describe('initRenderer', () => {
 
   it('parses YAML front matter', () => {
     const renderer = initRenderer({})
-    const { markdownContent, readingTime } = renderer.parseFrontMatterAndContent(
+    const { markdownContent, readingTime, yamlData } = renderer.parseFrontMatterAndContent(
       `---\ntitle: Test\n---\n\n# Body`,
     )
 
+    expect(yamlData).toEqual({ title: `Test` })
     expect(markdownContent.trim()).toBe(`# Body`)
     expect(readingTime.words).toBeGreaterThan(0)
   })

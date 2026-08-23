@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderSwitchField from './UploadProviderSwitchField.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  repo: yup.string().required(t(`upload.validation.githubRepoRequired`)),
-  branch: yup.string().optional(),
-  accessToken: yup.string().required(t(`upload.validation.githubTokenRequired`)),
-  useCDN: yup.boolean().required(),
+const schema = computed(() => toTypedSchema(z.object({
+  repo: requiredString(t(`upload.validation.githubRepoRequired`)),
+  branch: optionalString(),
+  accessToken: requiredString(t(`upload.validation.githubTokenRequired`)),
+  useCDN: z.boolean(),
 })))
 const { config, saveConfig } = useUploadProviderConfig(`githubConfig`, {
   repo: ``,

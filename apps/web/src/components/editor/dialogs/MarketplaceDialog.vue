@@ -18,12 +18,11 @@ import { initRenderer } from '@md/core/renderer'
 import { wrapCSSWithScope } from '@md/core/theme'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { marketplaceThemeKey, themeMap } from '@md/shared'
-import { toTypedSchema } from '@vee-validate/yup'
 import { storeToRefs } from 'pinia'
 import { Field, Form } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 import PickColors from 'vue-pick-colors'
-import * as yup from 'yup'
+import { z } from 'zod'
 import { getDefaultContent } from '@/assets/example/default-content'
 import FormItem from '@/components/editor/FormItem.vue'
 import PanelDialog from '@/components/shared/panel-dialog/PanelDialog.vue'
@@ -42,6 +41,7 @@ import {
 } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
 import { DEFAULT_LOCALE, isAppLocale } from '@/i18n/constants'
+import { requiredString, toTypedSchema } from '@/lib/form-schema'
 import { isMarketplaceUiEnabled } from '@/services/marketplace/client'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
@@ -130,49 +130,31 @@ const SLUG_RE = /^[a-z0-9](?:[a-z0-9-]{0,46}[a-z0-9])?$/
 const HEX_COLOR_RE = /^#(?:[0-9a-f]{3}|[0-9a-f]{6}|[0-9a-f]{8})$/i
 
 function optionalHttpUrl() {
-  return yup
-    .string()
-    .trim()
-    .transform(value => (value || undefined))
-    .test(`http-url`, t(`marketplace.validation.coverUrlInvalid`), (value) => {
-      if (!value)
-        return true
-      try {
-        const url = new URL(value)
-        return url.protocol === `http:` || url.protocol === `https:`
-      }
-      catch {
-        return false
-      }
-    })
+  return z.string().trim().refine((value) => {
+    if (!value)
+      return true
+    try {
+      const url = new URL(value)
+      return url.protocol === `http:` || url.protocol === `https:`
+    }
+    catch {
+      return false
+    }
+  }, t(`marketplace.validation.coverUrlInvalid`))
 }
 
 const publishSchema = computed(() => {
   void locale.value
-  return toTypedSchema(yup.object({
-    name: yup
-      .string()
-      .trim()
-      .required(t(`marketplace.validation.nameRequired`))
+  return toTypedSchema(z.object({
+    name: requiredString(t(`marketplace.validation.nameRequired`))
       .max(64, t(`marketplace.validation.nameMax`)),
-    slug: yup
-      .string()
-      .trim()
-      .required(t(`marketplace.validation.slugRequired`))
-      .matches(SLUG_RE, t(`marketplace.validation.slugInvalid`)),
-    description: yup
-      .string()
-      .max(2000, t(`marketplace.validation.descriptionMax`)),
+    slug: requiredString(t(`marketplace.validation.slugRequired`))
+      .regex(SLUG_RE, t(`marketplace.validation.slugInvalid`)),
+    description: z.string().max(2000, t(`marketplace.validation.descriptionMax`)).optional(),
     coverUrl: optionalHttpUrl(),
-    primaryColor: yup
-      .string()
-      .trim()
-      .required(t(`marketplace.validation.primaryColorRequired`))
-      .matches(HEX_COLOR_RE, t(`marketplace.validation.primaryColorInvalid`)),
-    css: yup
-      .string()
-      .trim()
-      .required(t(`marketplace.validation.cssRequired`)),
+    primaryColor: requiredString(t(`marketplace.validation.primaryColorRequired`))
+      .regex(HEX_COLOR_RE, t(`marketplace.validation.primaryColorInvalid`)),
+    css: requiredString(t(`marketplace.validation.cssRequired`)),
   }))
 })
 

@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
-  operator: yup.string().required(t(`upload.validation.operatorRequired`)),
-  password: yup.string().required(t(`upload.validation.passwordRequired`)),
-  domain: yup.string().required(t(`upload.validation.cdnDomainRequired`)),
-  path: yup.string().optional(),
+const schema = computed(() => toTypedSchema(z.object({
+  bucket: requiredString(t(`upload.validation.bucketRequired`)),
+  operator: requiredString(t(`upload.validation.operatorRequired`)),
+  password: requiredString(t(`upload.validation.passwordRequired`)),
+  domain: requiredString(t(`upload.validation.cdnDomainRequired`)),
+  path: optionalString(),
 })))
 const { config, saveConfig } = useUploadProviderConfig(`upyunConfig`, {
   bucket: ``,

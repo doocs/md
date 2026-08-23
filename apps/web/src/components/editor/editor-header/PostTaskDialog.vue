@@ -1,12 +1,7 @@
 <script setup lang="ts">
 import type { Post } from '@md/shared/types'
+import type { CoseTaskStatus } from '@/types/cose'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
-
-declare global {
-  interface Window {
-    $cose: any
-  }
-}
 
 const props = defineProps<{
   post: Post
@@ -22,7 +17,7 @@ const dialogVisible = computed({
   set: value => emit(`update:open`, value),
 })
 
-const taskStatus = ref<any>(null)
+const taskStatus = ref<CoseTaskStatus | null>(null)
 const submitting = ref(false)
 
 async function startPost() {
@@ -40,7 +35,7 @@ async function startPost() {
     accounts: props.post.accounts.filter(a => a.checked),
   }
 
-  const onProgress = (newStatus: any) => {
+  const onProgress = (newStatus: CoseTaskStatus) => {
     taskStatus.value = newStatus
   }
 
@@ -49,7 +44,7 @@ async function startPost() {
   }
 
   try {
-    window.$cose?.addTask(taskData, onProgress, onComplete)
+    window.$cose?.addTask?.(taskData, onProgress, onComplete)
   }
   catch (error) {
     console.error(`发布失败:`, error)

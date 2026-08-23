@@ -11,8 +11,6 @@ packages:
 overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
-  # GHSA-frvp-7c67-39w9 (dependabot/312): @modelcontextprotocol/sdk pins ^1.19.9; fix only in 2.0.5+
-  '@hono/node-server': ^2.1.1
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
   '@typescript-eslint/eslint-plugin': 8.67.0
   '@typescript-eslint/parser': 8.67.0
@@ -43,7 +41,6 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  # CVE-2026-69207 / GHSA-8j4g-w8fx-2239 (dependabot/317): @modelcontextprotocol/sdk pins hono 4.12.33
   hono: ^4.13.3
   ini: '>=7.0.0'
   js-yaml: ^4.3.0
@@ -86,7 +83,6 @@ allowBuilds:
 
 patchedDependencies:
   '@codemirror/view@6.43.9': patches/@codemirror__view@6.43.9.patch
-  front-matter@4.0.2: patches/front-matter@4.0.2.patch
   juice@12.1.2: patches/juice@12.1.2.patch
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
@@ -103,6 +99,7 @@ catalog:
   uuid: ^14.0.2
   vitest: ^4.1.11
   wrangler: ^4.125.0
+  zod: ^4.4.3
 
 peerDependencyRules:
   allowedVersions:

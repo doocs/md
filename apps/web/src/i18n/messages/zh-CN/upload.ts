@@ -1,6 +1,7 @@
 export default {
   upload: {
     title: `本地上传`,
+    description: `选择图床上传图片，或配置各图床参数。`,
     selectUpload: `选择上传`,
     selectHostPlaceholder: `请选择图床`,
     enableCompression: `开启图片压缩`,

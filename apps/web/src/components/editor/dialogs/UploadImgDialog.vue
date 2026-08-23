@@ -107,6 +107,9 @@ function onTabScroll(e: WheelEvent) {
     <DialogContent class="md:max-w-3xl max-h-[90vh] flex flex-col overflow-hidden" @pointer-down-outside="ev => ev.preventDefault()">
       <DialogHeader>
         <DialogTitle>{{ t('upload.title') }}</DialogTitle>
+        <DialogDescription>
+          {{ t('upload.description') }}
+        </DialogDescription>
       </DialogHeader>
       <Tabs v-model="activeName" class="w-full md:w-full flex flex-col flex-1 overflow-hidden">
         <TabsList

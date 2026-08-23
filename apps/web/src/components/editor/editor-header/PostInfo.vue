@@ -137,19 +137,10 @@ watch(dialogVisible, (newVal) => {
   }
 })
 
-declare global {
-  interface Window {
-    syncPost: (data: { thumb: string, title: string, desc: string, content: string }) => void
-
-    $cose: any
-  }
-}
-
-// Initial platform list without login state for instant display
 function getInitialPlatforms(): PostAccount[] {
-  if (window.$cose !== undefined && typeof window.$cose.getPlatforms === 'function') {
-    return window.$cose.getPlatforms().map((p: any) => ({
-      ...p,
+  if (typeof window.$cose?.getPlatforms === `function`) {
+    return window.$cose.getPlatforms().map(platform => ({
+      ...platform,
       checked: false,
       loggedIn: false,
       isChecking: true,
@@ -160,7 +151,8 @@ function getInitialPlatforms(): PostAccount[] {
 
 // Async login check with progressive UI updates
 function startLoginDetection() {
-  if (window.$cose === undefined)
+  const cose = window.$cose
+  if (!cose)
     return
 
   const initialPlatforms = getInitialPlatforms()
@@ -180,8 +172,8 @@ function startLoginDetection() {
     }
   }, LOGIN_CHECK_TIMEOUT_MS)
 
-  if (typeof window.$cose.getAccountsProgressive === 'function') {
-    window.$cose.getAccountsProgressive(
+  if (typeof cose.getAccountsProgressive === `function`) {
+    cose.getAccountsProgressive(
       (account: PostAccount, _completed: number, _total: number) => {
         hasReceivedAny = true
 
@@ -197,8 +189,7 @@ function startLoginDetection() {
     )
   }
   else {
-    // Fallback to legacy API
-    window.$cose.getAccounts((resp: PostAccount[]) => {
+    cose.getAccounts?.((resp: PostAccount[]) => {
       hasReceivedAny = true
       clearTimeout(timeoutId)
       allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))

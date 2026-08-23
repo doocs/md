@@ -1,22 +1,26 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString, toTypedSchema } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  cloudName: yup.string().required(t(`upload.validation.cloudNameRequired`)),
-  apiKey: yup.string().required(t(`upload.validation.apiKeyRequired`)),
-  apiSecret: yup.string().optional(),
-  uploadPreset: yup.string().when(`apiSecret`, {
-    is: (value: string | undefined) => !value,
-    then: current => current.required(t(`upload.validation.uploadPresetRequired`)),
-    otherwise: current => current.optional(),
-  }),
-  folder: yup.string().optional(),
-  domain: yup.string().optional(),
+const schema = computed(() => toTypedSchema(z.object({
+  cloudName: requiredString(t(`upload.validation.cloudNameRequired`)),
+  apiKey: requiredString(t(`upload.validation.apiKeyRequired`)),
+  apiSecret: optionalString(),
+  uploadPreset: optionalString(),
+  folder: optionalString(),
+  domain: optionalString(),
+}).superRefine((data, ctx) => {
+  if (!data.apiSecret?.trim() && !data.uploadPreset?.trim()) {
+    ctx.addIssue({
+      code: `custom`,
+      path: [`uploadPreset`],
+      message: t(`upload.validation.uploadPresetRequired`),
+    })
+  }
 })))
 const { config, saveConfig } = useUploadProviderConfig(`cloudinaryConfig`, {
   cloudName: ``,
