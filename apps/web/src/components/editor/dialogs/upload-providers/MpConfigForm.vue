@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
@@ -9,13 +9,13 @@ const { t } = useI18n()
 const isWebsite = window.location.protocol.startsWith(`http`)
 const isCfWorkers = import.meta.env.CF_WORKERS === `1`
 const isProxyRequired = computed(() => isWebsite && !isCfWorkers)
-const schema = computed(() => toTypedSchema(yup.object({
+const schema = computed(() => z.object({
   proxyOrigin: isProxyRequired.value
-    ? yup.string().required(t(`upload.validation.proxyRequired`))
-    : yup.string().optional(),
-  appID: yup.string().required(t(`upload.validation.appIdRequired`)),
-  appsecret: yup.string().required(t(`upload.validation.appSecretRequired`)),
-})))
+    ? requiredString(t(`upload.validation.proxyRequired`))
+    : optionalString(),
+  appID: requiredString(t(`upload.validation.appIdRequired`)),
+  appsecret: requiredString(t(`upload.validation.appSecretRequired`)),
+}))
 const { config, saveConfig } = useUploadProviderConfig(`mpConfig`, {
   proxyOrigin: ``,
   appID: ``,

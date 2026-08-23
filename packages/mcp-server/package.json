@@ -15,9 +15,9 @@
   "dependencies": {
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
-    "@modelcontextprotocol/sdk": "^1.30.0",
+    "@modelcontextprotocol/server": "^2.0.0",
     "tsx": "catalog:",
-    "zod": "^4.4.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@types/node": "catalog:",

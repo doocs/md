@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderSwitchField from './UploadProviderSwitchField.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  accessKeyId: yup.string().required(t(`upload.validation.accessKeyIdRequired`)),
-  accessKeySecret: yup.string().required(t(`upload.validation.accessKeySecretRequired`)),
-  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
-  region: yup.string().required(t(`upload.validation.regionRequired`)),
-  useSSL: yup.boolean().required(),
-  cdnHost: yup.string().optional(),
-  path: yup.string().optional(),
-})))
+const schema = computed(() => z.object({
+  accessKeyId: requiredString(t(`upload.validation.accessKeyIdRequired`)),
+  accessKeySecret: requiredString(t(`upload.validation.accessKeySecretRequired`)),
+  bucket: requiredString(t(`upload.validation.bucketRequired`)),
+  region: requiredString(t(`upload.validation.regionRequired`)),
+  useSSL: z.boolean(),
+  cdnHost: optionalString(),
+  path: optionalString(),
+}))
 const { config, saveConfig } = useUploadProviderConfig(`aliOSSConfig`, {
   accessKeyId: ``,
   accessKeySecret: ``,

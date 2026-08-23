@@ -1,20 +1,20 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderSwitchField from './UploadProviderSwitchField.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  endpoint: yup.string().required(t(`upload.validation.endpointRequired`)),
-  port: yup.string().optional(),
-  useSSL: yup.boolean().required(),
-  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
-  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
-  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
-})))
+const schema = computed(() => z.object({
+  endpoint: requiredString(t(`upload.validation.endpointRequired`)),
+  port: optionalString(),
+  useSSL: z.boolean(),
+  bucket: requiredString(t(`upload.validation.bucketRequired`)),
+  accessKey: requiredString(t(`upload.validation.accessKeyRequired`)),
+  secretKey: requiredString(t(`upload.validation.secretKeyRequired`)),
+}))
 const { config, saveConfig } = useUploadProviderConfig(`minioConfig`, {
   endpoint: ``,
   port: ``,

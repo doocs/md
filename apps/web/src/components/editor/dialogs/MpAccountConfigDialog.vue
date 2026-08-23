@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { GenericObject } from 'vee-validate'
 import type { MpAccount } from '@/stores/mpAccounts'
-import { toTypedSchema } from '@vee-validate/yup'
 import { Field, Form } from 'vee-validate'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString } from '@/lib/form-schema'
 
 const props = defineProps<{
   open: boolean
@@ -45,37 +46,41 @@ const initialValues = computed(() => {
   }
 })
 
-const schema = computed(() => toTypedSchema(yup.object({
-  mpId: yup.string().required(t('mpAccount.errors.mpIdRequired')),
-  name: yup.string().required(t('mpAccount.errors.nameRequired')),
-  logo: yup.string().optional().url(t('mpAccount.errors.logoInvalid')),
-  desc: yup.string().optional(),
-  serviceType: yup.string().required(),
-  verify: yup.string().required(),
-})))
+const schema = computed(() => z.object({
+  mpId: requiredString(t(`mpAccount.errors.mpIdRequired`)),
+  name: requiredString(t(`mpAccount.errors.nameRequired`)),
+  logo: z.string().refine((value) => {
+    const trimmed = value.trim()
+    return trimmed === `` || z.url().safeParse(trimmed).success
+  }, t(`mpAccount.errors.logoInvalid`)).optional(),
+  desc: optionalString(),
+  serviceType: z.enum([`1`, `2`]),
+  verify: z.enum([`0`, `1`, `2`]),
+}))
 
-function submit(formValues: any) {
+function submit(formValues: GenericObject) {
+  const parsed = schema.value.parse(formValues)
   if (props.accountId) {
     mpAccountsStore.updateAccount(props.accountId, {
-      mpId: formValues.mpId,
-      name: formValues.name,
-      logo: formValues.logo,
-      desc: formValues.desc,
-      serviceType: formValues.serviceType,
-      verify: formValues.verify,
+      mpId: parsed.mpId,
+      name: parsed.name,
+      logo: parsed.logo,
+      desc: parsed.desc,
+      serviceType: parsed.serviceType,
+      verify: parsed.verify,
     })
-    toast.success(t('mpAccount.updated', { name: formValues.name }))
+    toast.success(t('mpAccount.updated', { name: parsed.name }))
   }
   else {
     mpAccountsStore.addAccount({
-      mpId: formValues.mpId,
-      name: formValues.name,
-      logo: formValues.logo,
-      desc: formValues.desc,
-      serviceType: formValues.serviceType,
-      verify: formValues.verify,
+      mpId: parsed.mpId,
+      name: parsed.name,
+      logo: parsed.logo,
+      desc: parsed.desc,
+      serviceType: parsed.serviceType,
+      verify: parsed.verify,
     })
-    toast.success(t('mpAccount.added', { name: formValues.name }))
+    toast.success(t('mpAccount.added', { name: parsed.name }))
   }
   emit(`saved`)
   emit(`update:open`, false)

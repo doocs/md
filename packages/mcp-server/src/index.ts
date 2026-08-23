@@ -2,8 +2,8 @@
 
 import process from 'node:process'
 import { serviceOptions } from '@md/shared/configs/ai-service-options'
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
-import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js'
+import { McpServer } from '@modelcontextprotocol/server'
+import { StdioServerTransport } from '@modelcontextprotocol/server/stdio'
 import { z } from 'zod'
 import {
   codeBlockThemeOptions,
@@ -19,7 +19,7 @@ import { buildRenderedOutput } from './render-article'
 
 const headingStyleEnum = z.enum([`default`, `color-only`, `border-bottom`, `border-left`, `custom`])
 
-export const renderMarkdownInputSchema = {
+export const renderMarkdownInputSchema = z.object({
   markdown: z.string().describe(`The Markdown source text to render.`),
   theme: z
     .enum([`default`, `grace`, `simple`])
@@ -106,7 +106,7 @@ export const renderMarkdownInputSchema = {
     .string()
     .optional()
     .describe(`Additional custom CSS appended after theme styles (highest priority).`),
-}
+})
 
 function jsonText(data: unknown) {
   return {

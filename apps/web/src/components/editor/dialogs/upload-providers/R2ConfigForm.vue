@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { optionalString, requiredString } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  accountId: yup.string().required(t(`upload.validation.accountIdRequired`)),
-  accessKey: yup.string().required(t(`upload.validation.accessKeyRequired`)),
-  secretKey: yup.string().required(t(`upload.validation.secretKeyRequired`)),
-  bucket: yup.string().required(t(`upload.validation.bucketRequired`)),
-  domain: yup.string().required(t(`upload.validation.domainRequired`)),
-  path: yup.string().optional(),
-})))
+const schema = computed(() => z.object({
+  accountId: requiredString(t(`upload.validation.accountIdRequired`)),
+  accessKey: requiredString(t(`upload.validation.accessKeyRequired`)),
+  secretKey: requiredString(t(`upload.validation.secretKeyRequired`)),
+  bucket: requiredString(t(`upload.validation.bucketRequired`)),
+  domain: requiredString(t(`upload.validation.domainRequired`)),
+  path: optionalString(),
+}))
 const { config, saveConfig } = useUploadProviderConfig(`r2Config`, {
   accountId: ``,
   accessKey: ``,

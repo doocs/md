@@ -23,14 +23,15 @@
     "@md/shared": "workspace:*",
     "entities": "^8.0.0",
     "fflate": "^0.8.3",
-    "front-matter": "^4.0.2",
     "highlight.js": "^11.12.0",
     "isomorphic-dompurify": "catalog:",
+    "js-yaml": "^4.3.0",
     "marked": "catalog:",
     "mermaid": "^11.17.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*",
+    "@types/js-yaml": "^4.0.9",
     "jsdom": "^30.0.1",
     "typescript": "catalog:",
     "vitest": "catalog:"

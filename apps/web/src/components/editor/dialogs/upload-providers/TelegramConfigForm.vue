@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { toTypedSchema } from '@vee-validate/yup'
-import * as yup from 'yup'
+import { z } from 'zod'
+import { requiredString } from '@/lib/form-schema'
 import UploadProviderForm from './UploadProviderForm.vue'
 import UploadProviderTextField from './UploadProviderTextField.vue'
 import { useUploadProviderConfig } from './useUploadProviderConfig'
 
 const { t } = useI18n()
-const schema = computed(() => toTypedSchema(yup.object({
-  token: yup.string().required(t(`upload.validation.botTokenRequired`)),
-  chatId: yup.string().required(t(`upload.validation.chatIdRequired`)),
-})))
+const schema = computed(() => z.object({
+  token: requiredString(t(`upload.validation.botTokenRequired`)),
+  chatId: requiredString(t(`upload.validation.chatIdRequired`)),
+}))
 const { config, saveConfig } = useUploadProviderConfig(`telegramConfig`, {
   token: ``,
   chatId: ``,

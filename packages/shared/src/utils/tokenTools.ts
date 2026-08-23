@@ -1,67 +1,30 @@
-export function utf16to8(str: string) {
+const textEncoder = new TextEncoder()
+
+function bytesToLatin1(bytes: Uint8Array): string {
+  const chunk = 0x8000
   let out = ``
-  const len = str.length
-
-  for (let i = 0; i < len; i++) {
-    const c = str.charCodeAt(i)
-
-    if (c >= 0x0001 && c <= 0x007F) {
-      out += str.charAt(i)
-    }
-    else if (c > 0x07FF) {
-      out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F))
-      out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F))
-      out += String.fromCharCode(0x80 | (c & 0x3F))
-    }
-    else {
-      out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F))
-      out += String.fromCharCode(0x80 | (c & 0x3F))
-    }
-  }
-
+  for (let i = 0; i < bytes.length; i += chunk)
+    out += String.fromCharCode(...bytes.subarray(i, i + chunk))
   return out
 }
 
-const base64EncodeChars = `ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_`
-
-export function base64encode(str: string) {
-  let out = ``
-  let i = 0
-  const len = str.length
-
-  while (i < len) {
-    const c1 = str.charCodeAt(i++) & 0xFF
-
-    if (i === len) {
-      out += base64EncodeChars.charAt(c1 >> 2)
-      out += base64EncodeChars.charAt((c1 & 0x3) << 4)
-      out += `==`
-      break
-    }
-
-    const c2 = str.charCodeAt(i++)
-
-    if (i === len) {
-      out += base64EncodeChars.charAt(c1 >> 2)
-      out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4))
-      out += base64EncodeChars.charAt((c2 & 0xF) << 2)
-      out += `=`
-      break
-    }
-
-    const c3 = str.charCodeAt(i++)
-
-    out += base64EncodeChars.charAt(c1 >> 2)
-    out += base64EncodeChars.charAt(((c1 & 0x3) << 4) | ((c2 & 0xF0) >> 4))
-    out += base64EncodeChars.charAt(((c2 & 0xF) << 2) | ((c3 & 0xC0) >> 6))
-    out += base64EncodeChars.charAt(c3 & 0x3F)
-  }
-
-  return out
+/**
+ * Encode a JS string as a Latin-1 string of UTF-8 bytes.
+ * Kept for Qiniu token signing and custom-upload `util.tokenTools` compatibility.
+ */
+export function utf16to8(str: string): string {
+  return bytesToLatin1(textEncoder.encode(str))
 }
 
-export function safe64(base64: string) {
-  base64 = base64.replace(/\+/g, `-`)
-  base64 = base64.replace(/\//g, `_`)
-  return base64
+function latin1ToBase64(str: string): string {
+  return btoa(str)
+}
+
+/** URL-safe Base64 (with padding) of a Latin-1 byte string. */
+export function base64encode(str: string): string {
+  return safe64(latin1ToBase64(str))
+}
+
+export function safe64(base64: string): string {
+  return base64.replace(/\+/g, `-`).replace(/\//g, `_`)
 }

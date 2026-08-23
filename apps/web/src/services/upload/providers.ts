@@ -134,7 +134,10 @@ async function qiniuUpload(file: File) {
   })
   const dir = path ? `${path}/` : ``
   const dateFilename = dir + getDateFilename(file.name)
-  const observable = qiniu.upload(file, dateFilename, token, {}, { region: region as any })
+  const trimmedRegion = region?.trim()
+  type QiniuUploadConfig = NonNullable<Parameters<typeof qiniu.upload>[4]>
+  const extraConfig = (trimmedRegion ? { region: trimmedRegion } : {}) as QiniuUploadConfig
+  const observable = qiniu.upload(file, dateFilename, token, {}, extraConfig)
   return new Promise<string>((resolve, reject) => {
     observable.subscribe({
       next: () => {},
