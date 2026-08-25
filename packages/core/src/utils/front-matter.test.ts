@@ -54,6 +54,13 @@ draft: false
     })
   })
 
+  it(`treats an empty YAML block as empty attributes`, () => {
+    expect(parseFrontMatter(`---\n\n---\n# Body`)).toEqual({
+      attributes: {},
+      body: `# Body`,
+    })
+  })
+
   it(`keeps the original text when YAML is invalid`, () => {
     const markdown = `---\nfoo: [unterminated\n---\n# Body`
     expect(parseFrontMatter(markdown)).toEqual({

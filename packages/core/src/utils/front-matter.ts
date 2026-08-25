@@ -19,7 +19,11 @@ function normalizeMarkdownListMarkers(input: string): string {
 
 function parseYamlObject(input: string): FrontMatterData | null {
   try {
-    const data = loadYaml(normalizeMarkdownListMarkers(input))
+    const yaml = normalizeMarkdownListMarkers(input)
+    // js-yaml 5 throws on empty input; treat it as an empty mapping.
+    if (!yaml.trim())
+      return {}
+    const data = loadYaml(yaml)
     if (data == null || typeof data !== `object` || Array.isArray(data))
       return {}
     return data as FrontMatterData
