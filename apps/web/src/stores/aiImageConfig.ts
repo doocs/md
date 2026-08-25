@@ -59,18 +59,10 @@ export const useAIImageConfigStore = defineStore(`AIImageConfig`, () => {
         endpoint.value = svc.endpoint
       }
 
-      if (newType === `custom`) {
-        const savedModel = await store.get(`openai_image_model_${newType}`) || ``
-        model.value = savedModel
-      }
-      else {
-        const saved = await store.get(`openai_image_model_${newType}`) || ``
-        model.value = svc.models.includes(saved) ? saved : svc.models[0]
+      const saved = await store.get(`openai_image_model_${newType}`) || ``
+      model.value = saved || svc.models[0] || ``
 
-        if (!svc.models.includes(saved) && svc.models[0]) {
-          await store.set(`openai_image_model_${newType}`, svc.models[0])
-        }
-      }
+      await store.set(`openai_image_model_${newType}`, model.value)
 
       const keyValue = await store.get(`openai_image_key_${newType}`)
       apiKey.value = keyValue || DEFAULT_SERVICE_KEY

@@ -12,8 +12,14 @@ const AIConfigStore = useAIConfigStore()
 const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
 const { t } = useI18n()
 
-const { loading, fetchJSON } = useAIFetch()
+const { loading, fetchJSON, fetchGET } = useAIFetch()
 const testResult = ref(``)
+const discoveredModels = ref<string[]>([])
+const discoveringModels = ref(false)
+
+interface ModelListResponse {
+  data?: Array<{ id?: unknown }>
+}
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -88,6 +94,38 @@ async function testConnection() {
     loading.value = false
   }
 }
+async function discoverModels() {
+  discoveringModels.value = true
+  testResult.value = ``
+
+  try {
+    const url = resolveEndpointUrl(endpoint.value, `models`)
+    const headers = buildAIHeaders(apiKey.value, type.value)
+    const res = await fetchGET<ModelListResponse>(url, headers)
+
+    if (!res.ok) {
+      testResult.value = t('ai.config.discoverModelsFailed', { status: res.status, statusText: res.statusText })
+      return
+    }
+
+    discoveredModels.value = (res.data?.data || [])
+      .map(item => typeof item.id === `string` ? item.id : ``)
+      .filter(Boolean)
+
+    if (discoveredModels.value.length === 0) {
+      testResult.value = t('ai.config.discoverModelsEmpty')
+      return
+    }
+
+    testResult.value = t('ai.config.discoverModelsSuccess', { count: discoveredModels.value.length })
+  }
+  catch (err) {
+    testResult.value = t('ai.config.discoverModelsFailedMessage', { message: (err as Error).message })
+  }
+  finally {
+    discoveringModels.value = false
+  }
+}
 </script>
 
 <template>
@@ -136,28 +174,31 @@ async function testConnection() {
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
-      <Select v-if="currentService.models.length > 0" v-model="model">
-        <SelectTrigger class="w-full">
-          <SelectValue>
-            {{ model || t('ai.config.selectModel') }}
-          </SelectValue>
+      <div class="flex gap-2">
+        <Input
+          v-model="model"
+          :placeholder="t('ai.config.modelPlaceholder')"
+          class="min-w-0 flex-1 focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+        />
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="discoveringModels"
+          @click="discoverModels"
+        >
+          {{ discoveringModels ? t('ai.config.discoveringModels') : t('ai.config.discoverModels') }}
+        </Button>
+      </div>
+      <Select v-if="discoveredModels.length > 0" v-model="model">
+        <SelectTrigger class="mt-2 w-full">
+          <SelectValue :placeholder="t('ai.config.discoveredModels')" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem
-            v-for="_model in currentService.models"
-            :key="_model"
-            :value="_model"
-          >
-            {{ _model }}
+          <SelectItem v-for="discoveredModel in discoveredModels" :key="discoveredModel" :value="discoveredModel">
+            {{ discoveredModel }}
           </SelectItem>
         </SelectContent>
       </Select>
-      <Input
-        v-else
-        v-model="model"
-        :placeholder="t('ai.config.modelPlaceholder')"
-        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-      />
     </div>
 
     <div>

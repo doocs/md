@@ -12,7 +12,7 @@ export function buildAIHeaders(apiKey: string, serviceType: string): Record<stri
  * Resolve the full endpoint URL by appending the appropriate API path
  * if it is not already present.
  */
-export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image`): string {
+export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image` | `models`): string {
   const url = new URL(endpoint)
   // Normalize trailing slashes so endsWith checks work reliably
   url.pathname = url.pathname.replace(/\/+$/, ``)
@@ -20,11 +20,22 @@ export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image`): st
     if (!url.pathname.endsWith(`/chat/completions`))
       url.pathname += `/chat/completions`
   }
-  else {
+  else if (kind === `image`) {
     if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`))
       url.pathname += `/images/generations`
   }
+  else if (!url.pathname.endsWith(`/models`)) {
+    url.pathname += `/models`
+  }
   return url.toString()
+}
+
+interface AIJSONResponse<T> {
+  ok: boolean
+  status: number
+  statusText: string
+  data: T | null
+  errorText: string
 }
 
 export interface SSECallbacks {
@@ -119,7 +130,7 @@ export function useAIFetch() {
     headers: Record<string, string>,
     payload: Record<string, unknown>,
     signal?: AbortSignal,
-  ): Promise<{ ok: boolean, status: number, statusText: string, data: T | null, errorText: string }> {
+  ): Promise<AIJSONResponse<T>> {
     const res = await window.fetch(url, {
       method: `POST`,
       headers,
@@ -136,5 +147,21 @@ export function useAIFetch() {
     return { ok: false, status: res.status, statusText: res.statusText, data: null, errorText }
   }
 
-  return { loading, abortController, abort, fetchSSE, fetchJSON }
+  async function fetchGET<T = any>(
+    url: string,
+    headers: Record<string, string>,
+    signal?: AbortSignal,
+  ): Promise<AIJSONResponse<T>> {
+    const res = await window.fetch(url, { method: `GET`, headers, signal })
+
+    if (res.ok) {
+      const data = await res.json()
+      return { ok: true, status: res.status, statusText: res.statusText, data, errorText: `` }
+    }
+
+    const errorText = await res.text()
+    return { ok: false, status: res.status, statusText: res.statusText, data: null, errorText }
+  }
+
+  return { loading, abortController, abort, fetchSSE, fetchJSON, fetchGET }
 }

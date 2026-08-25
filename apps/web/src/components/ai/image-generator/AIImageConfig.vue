@@ -21,8 +21,14 @@ const AIImageConfigStore = useAIImageConfigStore()
 const { type, endpoint, model, apiKey, size, quality, style } = storeToRefs(AIImageConfigStore)
 const { t } = useI18n()
 
-const { loading, fetchJSON } = useAIFetch()
+const { loading, fetchJSON, fetchGET } = useAIFetch()
 const testResult = ref(``)
+const discoveredModels = ref<string[]>([])
+const discoveringModels = ref(false)
+
+interface ModelListResponse {
+  data?: Array<{ id?: unknown }>
+}
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -104,6 +110,38 @@ async function testConnection() {
     loading.value = false
   }
 }
+async function discoverModels() {
+  discoveringModels.value = true
+  testResult.value = ``
+
+  try {
+    const url = resolveEndpointUrl(endpoint.value, `models`)
+    const headers = buildAIHeaders(apiKey.value, type.value)
+    const res = await fetchGET<ModelListResponse>(url, headers)
+
+    if (!res.ok) {
+      testResult.value = t('ai.imageConfig.discoverModelsFailed', { status: res.status, statusText: res.statusText })
+      return
+    }
+
+    discoveredModels.value = (res.data?.data || [])
+      .map(item => typeof item.id === `string` ? item.id : ``)
+      .filter(Boolean)
+
+    if (discoveredModels.value.length === 0) {
+      testResult.value = t('ai.imageConfig.discoverModelsEmpty')
+      return
+    }
+
+    testResult.value = t('ai.imageConfig.discoverModelsSuccess', { count: discoveredModels.value.length })
+  }
+  catch (error) {
+    testResult.value = t('ai.imageConfig.discoverModelsFailedMessage', { message: (error as Error).message })
+  }
+  finally {
+    discoveringModels.value = false
+  }
+}
 
 const sizeOptions = computed(() => [
   { label: t('ai.imageConfig.sizeSquare'), value: `1024x1024` },
@@ -153,7 +191,7 @@ const styleOptions = computed(() => [
       <input
         v-model="endpoint"
         type="url"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+        class="w-full mt-1 rounded-md border bg-background p-2 transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
         :placeholder="t('ai.imageConfig.apiEndpointPlaceholder')"
         :readonly="type !== 'custom'"
       >
@@ -170,29 +208,32 @@ const styleOptions = computed(() => [
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.imageConfig.model') }}</Label>
-      <Select v-if="type !== 'custom' && currentService.models.length > 0" v-model="model">
-        <SelectTrigger class="w-full">
-          <SelectValue>
-            {{ model || t('ai.imageConfig.selectModel') }}
-          </SelectValue>
+      <div class="flex gap-2">
+        <input
+          v-model="model"
+          type="text"
+          class="mt-1 min-w-0 flex-1 rounded-md border bg-background p-2 transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
+          :placeholder="t('ai.imageConfig.modelPlaceholder')"
+        >
+        <Button
+          size="sm"
+          variant="outline"
+          :disabled="discoveringModels"
+          @click="discoverModels"
+        >
+          {{ discoveringModels ? t('ai.imageConfig.discoveringModels') : t('ai.imageConfig.discoverModels') }}
+        </Button>
+      </div>
+      <Select v-if="discoveredModels.length > 0" v-model="model">
+        <SelectTrigger class="mt-2 w-full">
+          <SelectValue :placeholder="t('ai.imageConfig.discoveredModels')" />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem
-            v-for="modelName in currentService.models"
-            :key="modelName"
-            :value="modelName"
-          >
-            {{ modelName }}
+          <SelectItem v-for="discoveredModel in discoveredModels" :key="discoveredModel" :value="discoveredModel">
+            {{ discoveredModel }}
           </SelectItem>
         </SelectContent>
       </Select>
-      <input
-        v-else
-        v-model="model"
-        type="text"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
-        :placeholder="t('ai.imageConfig.modelPlaceholder')"
-      >
     </div>
 
     <div>
