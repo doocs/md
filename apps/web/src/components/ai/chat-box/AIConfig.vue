@@ -28,6 +28,7 @@ const currentService = computed(
 )
 
 watch(type, () => {
+  discoveredModels.value = []
   testResult.value = ``
 })
 
@@ -175,7 +176,20 @@ async function discoverModels() {
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
       <div class="flex gap-2">
+        <Select v-if="currentService.models.length > 0" v-model="model">
+          <SelectTrigger class="min-w-0 flex-1">
+            <SelectValue :placeholder="t('ai.config.selectModel')">
+              {{ currentService.models.find(option => option === model) || model }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in currentService.models" :key="option" :value="option">
+              {{ option }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <Input
+          v-else
           v-model="model"
           :placeholder="t('ai.config.modelPlaceholder')"
           class="min-w-0 flex-1 focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
@@ -189,7 +203,7 @@ async function discoverModels() {
           {{ discoveringModels ? t('ai.config.discoveringModels') : t('ai.config.discoverModels') }}
         </Button>
       </div>
-      <Select v-if="discoveredModels.length > 0" v-model="model">
+      <Select v-if="discoveredModels.length > 0" v-model="model" data-testid="discovered-model-select">
         <SelectTrigger class="mt-2 w-full">
           <SelectValue :placeholder="t('ai.config.discoveredModels')" />
         </SelectTrigger>

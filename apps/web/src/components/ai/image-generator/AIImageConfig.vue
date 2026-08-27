@@ -37,6 +37,7 @@ const currentService = computed(
 )
 
 watch(type, () => {
+  discoveredModels.value = []
   testResult.value = ``
 })
 
@@ -209,7 +210,20 @@ const styleOptions = computed(() => [
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.imageConfig.model') }}</Label>
       <div class="flex gap-2">
+        <Select v-if="currentService.models.length > 0" v-model="model">
+          <SelectTrigger class="mt-1 min-w-0 flex-1">
+            <SelectValue :placeholder="t('ai.imageConfig.selectModel')">
+              {{ currentService.models.find(option => option === model) || model }}
+            </SelectValue>
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem v-for="option in currentService.models" :key="option" :value="option">
+              {{ option }}
+            </SelectItem>
+          </SelectContent>
+        </Select>
         <input
+          v-else
           v-model="model"
           type="text"
           class="mt-1 min-w-0 flex-1 rounded-md border bg-background p-2 transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
@@ -224,7 +238,7 @@ const styleOptions = computed(() => [
           {{ discoveringModels ? t('ai.imageConfig.discoveringModels') : t('ai.imageConfig.discoverModels') }}
         </Button>
       </div>
-      <Select v-if="discoveredModels.length > 0" v-model="model">
+      <Select v-if="discoveredModels.length > 0" v-model="model" data-testid="discovered-image-model-select">
         <SelectTrigger class="mt-2 w-full">
           <SelectValue :placeholder="t('ai.imageConfig.discoveredModels')" />
         </SelectTrigger>
