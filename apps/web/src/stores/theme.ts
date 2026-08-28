@@ -10,8 +10,8 @@ import { useCssEditorStore } from '@/stores/cssEditor'
  * Theme and style configuration.
  *
  * Each theme has its own settings (primaryColor, fontFamily, fontSize, lineHeight,
- * blockSpacing, codeBlockTheme, headingStyles, isShowLineNumber, isMacCodeBlock);
- * switching themes loads the matching config.
+ * blockSpacing, linkColor, blockquoteBackground, codeBlockTheme, headingStyles,
+ * isShowLineNumber, isMacCodeBlock); switching themes loads the matching config.
  */
 export const useThemeStore = defineStore(`theme`, () => {
   const theme = store.reactive<ThemeName>(addPrefix(`theme`), defaultStyleConfig.theme)
@@ -50,6 +50,16 @@ export const useThemeStore = defineStore(`theme`, () => {
   const blockSpacing = computed<string>({
     get: () => currentSettings.value.blockSpacing ?? defaultStyleConfig.blockSpacing,
     set: (v: string) => { setThemeField(`blockSpacing`, v) },
+  })
+
+  const linkColor = computed<string>({
+    get: () => currentSettings.value.linkColor ?? defaultStyleConfig.linkColor,
+    set: (v: string) => { setThemeField(`linkColor`, v) },
+  })
+
+  const blockquoteBackground = computed<string>({
+    get: () => currentSettings.value.blockquoteBackground ?? defaultStyleConfig.blockquoteBackground,
+    set: (v: string) => { setThemeField(`blockquoteBackground`, v) },
   })
 
   const codeBlockTheme = computed<string>({
@@ -162,6 +172,8 @@ export const useThemeStore = defineStore(`theme`, () => {
           fontSize: fontSize.value,
           lineHeight: lineHeight.value,
           blockSpacing: blockSpacing.value,
+          linkColor: linkColor.value,
+          blockquoteBackground: blockquoteBackground.value,
           isUseIndent: isUseIndent.value,
           isUseJustify: isUseJustify.value,
           headingStyles: headingStyles.value,
@@ -181,6 +193,8 @@ export const useThemeStore = defineStore(`theme`, () => {
     fontSizeNumber,
     lineHeight,
     blockSpacing,
+    linkColor,
+    blockquoteBackground,
     primaryColor,
     codeBlockTheme,
     legend,

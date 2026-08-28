@@ -48,6 +48,7 @@ blockquote {
   font-style: italic;
   padding: 1em 1em 1em 2em;
   color: rgba(0, 0, 0, 0.6);
+  background: var(--md-blockquote-background, transparent);
   border-bottom: 0.2px solid rgba(0, 0, 0, 0.04);
   border-top: 0.2px solid rgba(0, 0, 0, 0.04);
   border-right: 0.2px solid rgba(0, 0, 0, 0.04);
@@ -124,6 +125,6 @@ em {
 
 /* Links */
 a {
-  color: #576b95;
+  color: var(--md-link-color);
   text-decoration: none;
 }

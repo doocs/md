@@ -6,6 +6,7 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio'
 import { z } from 'zod'
 import {
+  blockquoteBackgroundOptions,
   blockSpacingOptions,
   codeBlockThemeOptions,
   colorOptions,
@@ -14,6 +15,7 @@ import {
   headingStyleOptions,
   legendOptions,
   lineHeightOptions,
+  linkColorOptions,
   themeOptions,
 } from './config-options'
 
@@ -58,6 +60,17 @@ export const renderMarkdownInputSchema = z.object({
     .describe(
       `Multiplier for the theme's vertical block margins (e.g. 1.15 loosens by 15%). `
       + `Use list_spacing_options for presets.`,
+    ),
+  linkColor: z
+    .string()
+    .optional()
+    .describe(`Link colour. Use list_color_options for presets, including var(--md-primary-color).`),
+  blockquoteBackground: z
+    .string()
+    .optional()
+    .describe(
+      `Blockquote background. Use list_color_options for presets; `
+      + `"default" keeps each theme's own background.`,
     ),
   legend: z
     .enum([`title-alt`, `alt-title`, `title`, `alt`, `filename`, `none`])
@@ -260,6 +273,25 @@ server.registerTool(
 )
 
 server.registerTool(
+  `list_color_options`,
+  {
+    description: `List preset link colour and blockquote background options for render_markdown.`,
+  },
+  () => jsonText({
+    linkColors: linkColorOptions.map(o => ({
+      label: o.label,
+      value: o.value,
+      description: o.desc,
+    })),
+    blockquoteBackgrounds: blockquoteBackgroundOptions.map(o => ({
+      label: o.label,
+      value: o.value,
+      description: o.desc,
+    })),
+  }),
+)
+
+server.registerTool(
   `list_code_block_themes`,
   {
     description: `List highlight.js code block theme URLs for render_markdown.`,
@@ -381,6 +413,8 @@ server.registerTool(
       { name: `fontSize`, type: `string (px)`, default: `16px`, description: `Base font size. See list_font_sizes.` },
       { name: `lineHeight`, type: `string (unitless)`, default: `1.75`, description: `Body line height. See list_spacing_options.` },
       { name: `blockSpacing`, type: `string (unitless)`, default: `1`, description: `Multiplier for the theme's vertical block margins. See list_spacing_options.` },
+      { name: `linkColor`, type: `string (colour)`, default: `#576b95`, description: `Link colour. See list_color_options.` },
+      { name: `blockquoteBackground`, type: `string (colour)`, default: `default`, description: `Blockquote background; "default" keeps the theme's own. See list_color_options.` },
       { name: `legend`, type: `'title-alt' | 'alt-title' | 'title' | 'alt' | 'filename' | 'none'`, default: `alt`, description: `Image caption format.` },
       { name: `isMacCodeBlock`, type: `boolean`, default: false, description: `macOS-style code block title bar.` },
       { name: `isShowLineNumber`, type: `boolean`, default: false, description: `Line numbers in code blocks.` },

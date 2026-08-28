@@ -43,6 +43,7 @@ blockquote {
   border-left: 4px solid var(--md-primary-color);
   border-radius: 6px;
   color: rgba(0, 0, 0, 0.6);
+  background: var(--md-blockquote-background, transparent);
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
   margin-bottom: calc(1em * var(--md-block-spacing));
 }
@@ -130,6 +131,6 @@ em {
 
 /* Links */
 a {
-  color: #576b95;
+  color: var(--md-link-color);
   text-decoration: none;
 }

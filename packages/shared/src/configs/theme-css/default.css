@@ -78,7 +78,7 @@ blockquote {
   border-left: 4px solid var(--md-primary-color);
   border-radius: 6px;
   color: hsl(var(--foreground));
-  background: var(--blockquote-background);
+  background: var(--md-blockquote-background, var(--blockquote-background));
   margin-bottom: calc(1em * var(--md-block-spacing));
 }
 
@@ -482,7 +482,7 @@ em {
 
 /* ==================== Links ==================== */
 a {
-  color: #576b95;
+  color: var(--md-link-color);
   text-decoration: none;
 }
 

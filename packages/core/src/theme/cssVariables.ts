@@ -10,6 +10,10 @@ export interface CSSVariableConfig {
   lineHeight?: string
   /** Multiplier for the vertical block margins defined by the theme. */
   blockSpacing?: string
+  /** Link colour; accepts a colour or a var() reference such as var(--md-primary-color). */
+  linkColor?: string
+  /** Blockquote background; `default` leaves each theme's own background in place. */
+  blockquoteBackground?: string
   isUseIndent?: boolean
   isUseJustify?: boolean
   headingStyles?: HeadingStyles
@@ -18,8 +22,17 @@ export interface CSSVariableConfig {
 /** Kept in sync with defaultStyleConfig; optional so existing callers (VSCode preview, theme export) need no change. */
 const DEFAULT_LINE_HEIGHT = `1.75`
 const DEFAULT_BLOCK_SPACING = `1`
+const DEFAULT_LINK_COLOR = `#576b95`
+const THEME_BLOCKQUOTE_BACKGROUND = `default`
 
 export function generateCSSVariables(config: CSSVariableConfig): string {
+  // Left undeclared for `default` so the per-theme var() fallback wins: the
+  // default theme keeps its mode-aware grey while grace and simple stay
+  // background-free. Declaring it unconditionally would give them all a grey box.
+  const blockquoteBackground = config.blockquoteBackground && config.blockquoteBackground !== THEME_BLOCKQUOTE_BACKGROUND
+    ? `\n  --md-blockquote-background: ${config.blockquoteBackground};`
+    : ``
+
   return `
 :root {
   /* Theme config */
@@ -28,6 +41,7 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   --md-font-size: ${config.fontSize};
   --md-line-height: ${config.lineHeight || DEFAULT_LINE_HEIGHT};
   --md-block-spacing: ${config.blockSpacing || DEFAULT_BLOCK_SPACING};
+  --md-link-color: ${config.linkColor || DEFAULT_LINK_COLOR};${blockquoteBackground}
 }
 
 /* Paragraph indent & justify */

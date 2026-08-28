@@ -2,14 +2,22 @@
 import type { IConfigOption } from '@md/shared/types'
 import type { Component } from 'vue'
 
+type StyleKey = `font` | `fontSize` | `color` | `lineHeight` | `blockSpacing` | `linkColor` | `blockquoteBackground`
+
 const props = defineProps<{
   title: string
-  styleKey?: `font` | `fontSize` | `color` | `lineHeight` | `blockSpacing`
+  styleKey?: StyleKey
   options: IConfigOption[]
   current: string
   change: (val: any) => void
   icon?: Component
 }>()
+
+// Keys whose desc reads as a plain hint beside the label. `font` renders its desc
+// in the font itself, and `color` has no useful hint to show.
+const DESC_AS_HINT_KEYS: StyleKey[] = [`fontSize`, `lineHeight`, `blockSpacing`, `linkColor`, `blockquoteBackground`]
+
+const showDescHint = computed(() => !!props.styleKey && DESC_AS_HINT_KEYS.includes(props.styleKey))
 
 function setStyle(styleKey: typeof props.styleKey, value: string) {
   switch (styleKey) {
@@ -46,7 +54,7 @@ function setStyle(styleKey: typeof props.styleKey, value: string) {
             {{ desc }}
           </DropdownMenuShortcut>
           <DropdownMenuShortcut
-            v-else-if="(styleKey === 'fontSize' || styleKey === 'lineHeight' || styleKey === 'blockSpacing') && desc"
+            v-else-if="showDescHint && desc"
           >
             {{ desc }}
           </DropdownMenuShortcut>

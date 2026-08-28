@@ -151,6 +151,8 @@ export default {
     lineHeight: `行距`,
     blockSpacing: `段間距`,
     primaryColor: `主題色`,
+    linkColor: `連結色`,
+    blockquoteBackground: `引用背景`,
     codeBlockTheme: `程式碼主題`,
     legendFormat: `圖注`,
     customPrimaryColor: `自訂色`,
@@ -225,6 +227,16 @@ export default {
       recommended: `推薦`,
       slightlyLoose: `稍鬆`,
       loose: `寬鬆`,
+    },
+    linkColor: {
+      wechatBlue: { label: `微信藍`, desc: `預設` },
+      primary: { label: `主題色`, desc: `跟隨主題色` },
+      body: { label: `正文色`, desc: `與正文一致` },
+    },
+    blockquoteBackground: {
+      theme: { label: `跟隨主題`, desc: `預設` },
+      none: { label: `無背景`, desc: `透明` },
+      primary: { label: `主題色`, desc: `主題色淺底` },
     },
     color: {
       classicBlue: { label: `經典藍`, desc: `穩重冷靜` },

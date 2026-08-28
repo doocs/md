@@ -28,6 +28,68 @@ describe(`generateCSSVariables`, () => {
   })
 })
 
+describe(`link colour`, () => {
+  it(`emits the configured colour`, () => {
+    expect(generateCSSVariables({ ...baseConfig, linkColor: `inherit` }))
+      .toContain(`--md-link-color: inherit;`)
+  })
+
+  it(`defaults to the WeChat blue every theme used to hard-code`, () => {
+    expect(generateCSSVariables(baseConfig)).toContain(`--md-link-color: #576b95;`)
+  })
+
+  it(`resolves a var() reference down to the primary colour`, () => {
+    const variables = generateCSSVariables({ ...baseConfig, linkColor: `var(--md-primary-color)` })
+    const css = processCSS(`${variables}\n\na { color: var(--md-link-color); }`)
+
+    expect(css).toContain(`color: #0F4C81;`)
+    expect(css).not.toContain(`var(--md-link-color)`)
+  })
+})
+
+describe(`blockquote background`, () => {
+  const rule = `blockquote { background: var(--md-blockquote-background, var(--blockquote-background)); }`
+
+  it(`is left undeclared for the theme default`, () => {
+    expect(generateCSSVariables({ ...baseConfig, blockquoteBackground: `default` }))
+      .not
+      .toContain(`--md-blockquote-background`)
+  })
+
+  it(`falls through to the theme's own background when undeclared`, () => {
+    // The web shell and VSCode preview both define --blockquote-background per
+    // colour mode, so the fall-through has to survive processCSS untouched.
+    const css = processCSS(`${generateCSSVariables(baseConfig)}\n\n${rule}`)
+
+    expect(css).toContain(`background: var(--blockquote-background);`)
+  })
+
+  it(`overrides the theme background when set`, () => {
+    const variables = generateCSSVariables({ ...baseConfig, blockquoteBackground: `transparent` })
+    const css = processCSS(`${variables}\n\n${rule}`)
+
+    expect(css).toContain(`background: transparent;`)
+  })
+
+  it(`resolves a nested primary colour inside color-mix`, () => {
+    const variables = generateCSSVariables({
+      ...baseConfig,
+      blockquoteBackground: `color-mix(in srgb, var(--md-primary-color) 8%, transparent)`,
+    })
+    const css = processCSS(`${variables}\n\n${rule}`)
+
+    expect(css).toContain(`background: color-mix(in srgb, #0F4C81 8%, transparent);`)
+  })
+
+  it(`keeps the background-free themes background-free by default`, () => {
+    const css = processCSS(
+      `${generateCSSVariables(baseConfig)}\n\nblockquote { background: var(--md-blockquote-background, transparent); }`,
+    )
+
+    expect(css).toContain(`background: transparent;`)
+  })
+})
+
 describe(`block spacing resolution`, () => {
   // WeChat drops calc() and var(), so processCSS has to flatten both before juice
   // inlines the styles. These cases pin that the multiplier survives that pass.

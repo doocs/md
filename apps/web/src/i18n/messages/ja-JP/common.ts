@@ -151,6 +151,8 @@ export default {
     lineHeight: `行間`,
     blockSpacing: `段落間隔`,
     primaryColor: `色`,
+    linkColor: `リンク色`,
+    blockquoteBackground: `引用の背景`,
     codeBlockTheme: `コードテーマ`,
     legendFormat: `キャプション`,
     customPrimaryColor: `カスタム色`,
@@ -225,6 +227,16 @@ export default {
       recommended: `推奨`,
       slightlyLoose: `やや広い`,
       loose: `広い`,
+    },
+    linkColor: {
+      wechatBlue: { label: `WeChat ブルー`, desc: `デフォルト` },
+      primary: { label: `テーマカラー`, desc: `テーマカラーに従う` },
+      body: { label: `本文の色`, desc: `本文と同じ` },
+    },
+    blockquoteBackground: {
+      theme: { label: `テーマに従う`, desc: `デフォルト` },
+      none: { label: `なし`, desc: `透明` },
+      primary: { label: `テーマカラー`, desc: `テーマカラーの淡い背景` },
     },
     color: {
       classicBlue: { label: `ブルー`, desc: `` },
