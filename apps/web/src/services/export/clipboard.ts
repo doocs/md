@@ -87,9 +87,13 @@ export async function processClipboardContent(primaryColor: string) {
       .replace(/var\(--md-primary-color\)/g, primaryColor)
       .replace(/var\(--md-font-family\)/g, themeStore.fontFamily)
       .replace(/var\(--md-font-size\)/g, themeStore.fontSize)
+      .replace(/var\(--md-line-height\)/g, themeStore.lineHeight)
+      .replace(/var\(--md-block-spacing\)/g, themeStore.blockSpacing)
       .replace(/--md-primary-color:.+?;/g, ``)
       .replace(/--md-font-family:.+?;/g, ``)
       .replace(/--md-font-size:.+?;/g, ``)
+      .replace(/--md-line-height:.+?;/g, ``)
+      .replace(/--md-block-spacing:.+?;/g, ``)
       .replace(
         /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
         `<span class="nodeLabel"$1>$2</span>`,

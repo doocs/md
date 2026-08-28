@@ -53,6 +53,22 @@ export const fontSizeOptions = [
   { label: `18px`, value: `18px`, desc: `更大` },
 ] as const
 
+export const lineHeightOptions = [
+  { label: `1.5`, value: `1.5`, desc: `紧凑` },
+  { label: `1.65`, value: `1.65`, desc: `稍紧` },
+  { label: `1.75`, value: `1.75`, desc: `推荐` },
+  { label: `1.9`, value: `1.9`, desc: `稍松` },
+  { label: `2.05`, value: `2.05`, desc: `宽松` },
+] as const
+
+export const blockSpacingOptions = [
+  { label: `0.75×`, value: `0.75`, desc: `紧凑` },
+  { label: `0.9×`, value: `0.9`, desc: `稍紧` },
+  { label: `1×`, value: `1`, desc: `推荐` },
+  { label: `1.15×`, value: `1.15`, desc: `稍松` },
+  { label: `1.35×`, value: `1.35`, desc: `宽松` },
+] as const
+
 export const legendOptions = [
   { label: `title 优先`, value: `title-alt`, desc: `` },
   { label: `alt 优先`, value: `alt-title`, desc: `` },
@@ -112,6 +128,8 @@ export const defaultRenderOptions = {
   primaryColor: colorOptions[0].value,
   fontFamily: fontFamilyOptions[0].value,
   fontSize: fontSizeOptions[2].value,
+  lineHeight: lineHeightOptions[2].value,
+  blockSpacing: blockSpacingOptions[2].value,
   legend: legendOptions[3].value as LegendValue,
   codeBlockTheme: codeBlockThemeOptions[0].value,
   isMacCodeBlock: false,

@@ -336,6 +336,8 @@ function exportCurrentTheme() {
       primaryColor: themeStore.primaryColor,
       fontFamily: themeStore.fontFamily,
       fontSize: themeStore.fontSize,
+      lineHeight: themeStore.lineHeight,
+      blockSpacing: themeStore.blockSpacing,
     },
     currentThemeName,
   )

@@ -2,6 +2,8 @@
  * MD default theme (classic).
  * Format with Alt/Option + Shift + F.
  * Use var(--md-primary-color) for theme color instead of hard-coded values.
+ * Vertical block margins are scaled by var(--md-block-spacing) so the theme's
+ * own rhythm is preserved while the user tightens or loosens the whole page.
  */
 
 /* ==================== H1 ==================== */
@@ -9,7 +11,7 @@ h1 {
   display: table;
   padding: 0 1em;
   border-bottom: 2px solid var(--md-primary-color);
-  margin: 2em auto 1em;
+  margin: calc(2em * var(--md-block-spacing)) auto calc(1em * var(--md-block-spacing));
   color: hsl(var(--foreground));
   font-size: calc(var(--md-font-size) * 1.2);
   font-weight: bold;
@@ -20,7 +22,7 @@ h1 {
 h2 {
   display: table;
   padding: 0 0.2em;
-  margin: 4em auto 2em;
+  margin: calc(4em * var(--md-block-spacing)) auto calc(2em * var(--md-block-spacing));
   color: #fff;
   background: var(--md-primary-color);
   font-size: calc(var(--md-font-size) * 1.2);
@@ -32,7 +34,7 @@ h2 {
 h3 {
   padding-left: 8px;
   border-left: 3px solid var(--md-primary-color);
-  margin: 2em 8px 0.75em 0;
+  margin: calc(2em * var(--md-block-spacing)) 8px calc(0.75em * var(--md-block-spacing)) 0;
   color: hsl(var(--foreground));
   font-size: calc(var(--md-font-size) * 1.1);
   font-weight: bold;
@@ -41,7 +43,7 @@ h3 {
 
 /* ==================== H4 ==================== */
 h4 {
-  margin: 2em 8px 0.5em;
+  margin: calc(2em * var(--md-block-spacing)) 8px calc(0.5em * var(--md-block-spacing));
   color: var(--md-primary-color);
   font-size: calc(var(--md-font-size) * 1);
   font-weight: bold;
@@ -49,7 +51,7 @@ h4 {
 
 /* ==================== H5 ==================== */
 h5 {
-  margin: 1.5em 8px 0.5em;
+  margin: calc(1.5em * var(--md-block-spacing)) 8px calc(0.5em * var(--md-block-spacing));
   color: var(--md-primary-color);
   font-size: calc(var(--md-font-size) * 1);
   font-weight: bold;
@@ -57,14 +59,14 @@ h5 {
 
 /* ==================== H6 ==================== */
 h6 {
-  margin: 1.5em 8px 0.5em;
+  margin: calc(1.5em * var(--md-block-spacing)) 8px calc(0.5em * var(--md-block-spacing));
   font-size: calc(var(--md-font-size) * 1);
   color: var(--md-primary-color);
 }
 
 /* ==================== Paragraph ==================== */
 p {
-  margin: 1.5em 8px;
+  margin: calc(1.5em * var(--md-block-spacing)) 8px;
   letter-spacing: 0.1em;
   color: hsl(var(--foreground));
 }
@@ -77,7 +79,7 @@ blockquote {
   border-radius: 6px;
   color: hsl(var(--foreground));
   background: var(--blockquote-background);
-  margin-bottom: 1em;
+  margin-bottom: calc(1em * var(--md-block-spacing));
 }
 
 blockquote > p {
@@ -384,14 +386,14 @@ pre.code__pre,
   border-radius: 8px;
   padding: 0 !important;
   line-height: 1.5;
-  margin: 10px 8px;
+  margin: calc(10px * var(--md-block-spacing)) 8px;
 }
 
 /* ==================== Images ==================== */
 img {
   display: block;
   max-width: 100%;
-  margin: 0.1em auto 0.5em;
+  margin: calc(0.1em * var(--md-block-spacing)) auto calc(0.5em * var(--md-block-spacing));
   border-radius: 4px;
 }
 
@@ -411,21 +413,21 @@ ul {
 
 li {
   display: block;
-  margin: 0.2em 8px;
+  margin: calc(0.2em * var(--md-block-spacing)) 8px;
   color: hsl(var(--foreground));
 }
 
 /* Footnotes */
 /* footnotes rendered as <p> in buildFootnotes() */
 p.footnotes {
-  margin: 0.5em 8px;
+  margin: calc(0.5em * var(--md-block-spacing)) 8px;
   font-size: 80%;
   color: hsl(var(--foreground));
 }
 
 /* Diagrams */
 figure {
-  margin: 1.5em 8px;
+  margin: calc(1.5em * var(--md-block-spacing)) 8px;
   color: hsl(var(--foreground));
 }
 
@@ -446,7 +448,7 @@ hr {
   transform-origin: 0 0;
   transform: scale(1, 0.5);
   height: 0.4em;
-  margin: 1.5em 0;
+  margin: calc(1.5em * var(--md-block-spacing)) 0;
 }
 
 /* Inline code */

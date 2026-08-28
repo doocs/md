@@ -6,12 +6,14 @@ import { McpServer } from '@modelcontextprotocol/server'
 import { StdioServerTransport } from '@modelcontextprotocol/server/stdio'
 import { z } from 'zod'
 import {
+  blockSpacingOptions,
   codeBlockThemeOptions,
   colorOptions,
   fontFamilyOptions,
   fontSizeOptions,
   headingStyleOptions,
   legendOptions,
+  lineHeightOptions,
   themeOptions,
 } from './config-options'
 
@@ -44,6 +46,19 @@ export const renderMarkdownInputSchema = z.object({
     .regex(/^\d+px$/, `Must be a pixel size like 16px`)
     .optional()
     .describe(`Base font size (e.g. 16px). Use list_font_sizes for presets.`),
+  lineHeight: z
+    .string()
+    .regex(/^\d+(?:\.\d+)?$/, `Must be a unitless number like 1.75`)
+    .optional()
+    .describe(`Body line height, unitless (e.g. 1.75). Use list_spacing_options for presets.`),
+  blockSpacing: z
+    .string()
+    .regex(/^\d+(?:\.\d+)?$/, `Must be a unitless number like 1`)
+    .optional()
+    .describe(
+      `Multiplier for the theme's vertical block margins (e.g. 1.15 loosens by 15%). `
+      + `Use list_spacing_options for presets.`,
+    ),
   legend: z
     .enum([`title-alt`, `alt-title`, `title`, `alt`, `filename`, `none`])
     .optional()
@@ -226,6 +241,25 @@ server.registerTool(
 )
 
 server.registerTool(
+  `list_spacing_options`,
+  {
+    description: `List preset line height and block spacing options for render_markdown.`,
+  },
+  () => jsonText({
+    lineHeights: lineHeightOptions.map(o => ({
+      label: o.label,
+      value: o.value,
+      description: o.desc,
+    })),
+    blockSpacings: blockSpacingOptions.map(o => ({
+      label: o.label,
+      value: o.value,
+      description: o.desc,
+    })),
+  }),
+)
+
+server.registerTool(
   `list_code_block_themes`,
   {
     description: `List highlight.js code block theme URLs for render_markdown.`,
@@ -340,6 +374,8 @@ server.registerTool(
       { name: `primaryColor`, type: `string (hex)`, default: `#0F4C81`, description: `Primary accent color via --md-primary-color.` },
       { name: `fontFamily`, type: `string`, default: `system sans-serif stack`, description: `CSS font-family. See list_fonts.` },
       { name: `fontSize`, type: `string (px)`, default: `16px`, description: `Base font size. See list_font_sizes.` },
+      { name: `lineHeight`, type: `string (unitless)`, default: `1.75`, description: `Body line height. See list_spacing_options.` },
+      { name: `blockSpacing`, type: `string (unitless)`, default: `1`, description: `Multiplier for the theme's vertical block margins. See list_spacing_options.` },
       { name: `legend`, type: `'title-alt' | 'alt-title' | 'title' | 'alt' | 'filename' | 'none'`, default: `alt`, description: `Image caption format.` },
       { name: `isMacCodeBlock`, type: `boolean`, default: false, description: `macOS-style code block title bar.` },
       { name: `isShowLineNumber`, type: `boolean`, default: false, description: `Line numbers in code blocks.` },

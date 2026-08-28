@@ -1,6 +1,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import type { IConfigOption } from '@md/shared/types'
 import {
+  blockSpacingOptions,
   codeBlockThemeOptions,
   colorOptions,
   fontFamilyOptions,
@@ -8,6 +9,7 @@ import {
   headingLevelOptions,
   headingStyleOptions,
   legendOptions,
+  lineHeightOptions,
   themeOptions,
 } from '@md/shared/configs'
 import { isMarketplaceThemeKey } from '@md/shared/types'
@@ -17,6 +19,7 @@ type Translate = (key: string) => string
 
 const FONT_FAMILY_KEYS = [`sansSerif`, `serif`, `monospace`] as const
 const FONT_SIZE_DESC_KEYS = [`smaller`, `slightlySmaller`, `recommended`, `slightlyLarger`, `larger`] as const
+const SPACING_DESC_KEYS = [`tight`, `slightlyTight`, `recommended`, `slightlyLoose`, `loose`] as const
 const COLOR_KEYS = [
   `classicBlue`,
   `emeraldGreen`,
@@ -62,6 +65,20 @@ function localizeFontSizeOptions(t: Translate): IConfigOption[] {
   return fontSizeOptions.map((option, index) => ({
     ...option,
     desc: t(`styleOptions.fontSize.${FONT_SIZE_DESC_KEYS[index]}`),
+  }))
+}
+
+function localizeLineHeightOptions(t: Translate): IConfigOption[] {
+  return lineHeightOptions.map((option, index) => ({
+    ...option,
+    desc: t(`styleOptions.lineHeight.${SPACING_DESC_KEYS[index]}`),
+  }))
+}
+
+function localizeBlockSpacingOptions(t: Translate): IConfigOption[] {
+  return blockSpacingOptions.map((option, index) => ({
+    ...option,
+    desc: t(`styleOptions.blockSpacing.${SPACING_DESC_KEYS[index]}`),
   }))
 }
 
@@ -116,6 +133,8 @@ export function createLocalizedStyleOptions(
     themeOptions: themeOptionsLocalized,
     fontFamilyOptions: localizeFontFamilyOptions(t),
     fontSizeOptions: localizeFontSizeOptions(t),
+    lineHeightOptions: localizeLineHeightOptions(t),
+    blockSpacingOptions: localizeBlockSpacingOptions(t),
     colorOptions: localizeColorOptions(t),
     codeBlockThemeOptions,
     headingLevelOptions: localizeHeadingLevelOptions(t),
