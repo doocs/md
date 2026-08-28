@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
+import AIModelPicker from '@/components/ai/AIModelPicker.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useDiscoverAIModels } from '@/composables/useDiscoverAIModels'
 import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 
@@ -21,14 +23,20 @@ const AIImageConfigStore = useAIImageConfigStore()
 const { type, endpoint, model, apiKey, size, quality, style } = storeToRefs(AIImageConfigStore)
 const { t } = useI18n()
 
-const { loading, fetchJSON, fetchGET } = useAIFetch()
+const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
-const discoveredModels = ref<string[]>([])
-const discoveringModels = ref(false)
-
-interface ModelListResponse {
-  data?: Array<{ id?: unknown }>
-}
+const {
+  discoveredModels,
+  discovering,
+  canDiscover,
+  discover,
+  resetDiscovered,
+} = useDiscoverAIModels({
+  endpoint,
+  apiKey,
+  serviceType: type,
+  kind: `image`,
+})
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -37,7 +45,6 @@ const currentService = computed(
 )
 
 watch(type, () => {
-  discoveredModels.value = []
   testResult.value = ``
 })
 
@@ -73,6 +80,7 @@ function saveConfig() {
 }
 
 function clearConfig() {
+  resetDiscovered()
   AIImageConfigStore.reset()
   testResult.value = t('ai.imageConfig.cleared')
 }
@@ -111,37 +119,12 @@ async function testConnection() {
     loading.value = false
   }
 }
+
 async function discoverModels() {
-  discoveringModels.value = true
   testResult.value = ``
-
-  try {
-    const url = resolveEndpointUrl(endpoint.value, `models`)
-    const headers = buildAIHeaders(apiKey.value, type.value)
-    const res = await fetchGET<ModelListResponse>(url, headers)
-
-    if (!res.ok) {
-      testResult.value = t('ai.imageConfig.discoverModelsFailed', { status: res.status, statusText: res.statusText })
-      return
-    }
-
-    discoveredModels.value = (res.data?.data || [])
-      .map(item => typeof item.id === `string` ? item.id : ``)
-      .filter(Boolean)
-
-    if (discoveredModels.value.length === 0) {
-      testResult.value = t('ai.imageConfig.discoverModelsEmpty')
-      return
-    }
-
-    testResult.value = t('ai.imageConfig.discoverModelsSuccess', { count: discoveredModels.value.length })
-  }
-  catch (error) {
-    testResult.value = t('ai.imageConfig.discoverModelsFailedMessage', { message: (error as Error).message })
-  }
-  finally {
-    discoveringModels.value = false
-  }
+  const message = await discover()
+  if (message)
+    testResult.value = message
 }
 
 const sizeOptions = computed(() => [
@@ -209,45 +192,20 @@ const styleOptions = computed(() => [
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.imageConfig.model') }}</Label>
-      <div class="flex gap-2">
-        <Select v-if="currentService.models.length > 0" v-model="model">
-          <SelectTrigger class="mt-1 min-w-0 flex-1">
-            <SelectValue :placeholder="t('ai.imageConfig.selectModel')">
-              {{ currentService.models.find(option => option === model) || model }}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in currentService.models" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <input
-          v-else
-          v-model="model"
-          type="text"
-          class="mt-1 min-w-0 flex-1 rounded-md border bg-background p-2 transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
-          :placeholder="t('ai.imageConfig.modelPlaceholder')"
-        >
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="discoveringModels"
-          @click="discoverModels"
-        >
-          {{ discoveringModels ? t('ai.imageConfig.discoveringModels') : t('ai.imageConfig.discoverModels') }}
-        </Button>
-      </div>
-      <Select v-if="discoveredModels.length > 0" v-model="model" data-testid="discovered-image-model-select">
-        <SelectTrigger class="mt-2 w-full">
-          <SelectValue :placeholder="t('ai.imageConfig.discoveredModels')" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem v-for="discoveredModel in discoveredModels" :key="discoveredModel" :value="discoveredModel">
-            {{ discoveredModel }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <AIModelPicker
+        v-model="model"
+        :preset-models="currentService.models"
+        :discovered-models="discoveredModels"
+        :placeholder="t('ai.imageConfig.modelPlaceholder')"
+        :select-placeholder="t('ai.imageConfig.selectModel')"
+        :discover-label="t('ai.imageConfig.discoverModels')"
+        :discovering-label="t('ai.imageConfig.discoveringModels')"
+        :need-config-label="t('ai.imageConfig.discoverModelsNeedConfig')"
+        :discovering="discovering"
+        :can-discover="canDiscover"
+        :show-discover="type !== DEFAULT_SERVICE_TYPE"
+        @discover="discoverModels"
+      />
     </div>
 
     <div>

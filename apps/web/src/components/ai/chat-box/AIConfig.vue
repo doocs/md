@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
+import AIModelPicker from '@/components/ai/AIModelPicker.vue'
 import { PasswordInput } from '@/components/ui/password-input'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useDiscoverAIModels } from '@/composables/useDiscoverAIModels'
 import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIConfigStore from '@/stores/aiConfig'
 
@@ -12,14 +14,20 @@ const AIConfigStore = useAIConfigStore()
 const { type, endpoint, model, apiKey, temperature, maxToken } = storeToRefs(AIConfigStore)
 const { t } = useI18n()
 
-const { loading, fetchJSON, fetchGET } = useAIFetch()
+const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
-const discoveredModels = ref<string[]>([])
-const discoveringModels = ref(false)
-
-interface ModelListResponse {
-  data?: Array<{ id?: unknown }>
-}
+const {
+  discoveredModels,
+  discovering,
+  canDiscover,
+  discover,
+  resetDiscovered,
+} = useDiscoverAIModels({
+  endpoint,
+  apiKey,
+  serviceType: type,
+  kind: `chat`,
+})
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -28,7 +36,6 @@ const currentService = computed(
 )
 
 watch(type, () => {
-  discoveredModels.value = []
   testResult.value = ``
 })
 
@@ -44,6 +51,7 @@ function saveConfig(emitEvent = true) {
 }
 
 function clearConfig() {
+  resetDiscovered()
   AIConfigStore.reset()
   testResult.value = t('ai.config.cleared')
 }
@@ -95,37 +103,12 @@ async function testConnection() {
     loading.value = false
   }
 }
+
 async function discoverModels() {
-  discoveringModels.value = true
   testResult.value = ``
-
-  try {
-    const url = resolveEndpointUrl(endpoint.value, `models`)
-    const headers = buildAIHeaders(apiKey.value, type.value)
-    const res = await fetchGET<ModelListResponse>(url, headers)
-
-    if (!res.ok) {
-      testResult.value = t('ai.config.discoverModelsFailed', { status: res.status, statusText: res.statusText })
-      return
-    }
-
-    discoveredModels.value = (res.data?.data || [])
-      .map(item => typeof item.id === `string` ? item.id : ``)
-      .filter(Boolean)
-
-    if (discoveredModels.value.length === 0) {
-      testResult.value = t('ai.config.discoverModelsEmpty')
-      return
-    }
-
-    testResult.value = t('ai.config.discoverModelsSuccess', { count: discoveredModels.value.length })
-  }
-  catch (err) {
-    testResult.value = t('ai.config.discoverModelsFailedMessage', { message: (err as Error).message })
-  }
-  finally {
-    discoveringModels.value = false
-  }
+  const message = await discover()
+  if (message)
+    testResult.value = message
 }
 </script>
 
@@ -175,44 +158,20 @@ async function discoverModels() {
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
-      <div class="flex gap-2">
-        <Select v-if="currentService.models.length > 0" v-model="model">
-          <SelectTrigger class="min-w-0 flex-1">
-            <SelectValue :placeholder="t('ai.config.selectModel')">
-              {{ currentService.models.find(option => option === model) || model }}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="option in currentService.models" :key="option" :value="option">
-              {{ option }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
-        <Input
-          v-else
-          v-model="model"
-          :placeholder="t('ai.config.modelPlaceholder')"
-          class="min-w-0 flex-1 focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
-        />
-        <Button
-          size="sm"
-          variant="outline"
-          :disabled="discoveringModels"
-          @click="discoverModels"
-        >
-          {{ discoveringModels ? t('ai.config.discoveringModels') : t('ai.config.discoverModels') }}
-        </Button>
-      </div>
-      <Select v-if="discoveredModels.length > 0" v-model="model" data-testid="discovered-model-select">
-        <SelectTrigger class="mt-2 w-full">
-          <SelectValue :placeholder="t('ai.config.discoveredModels')" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem v-for="discoveredModel in discoveredModels" :key="discoveredModel" :value="discoveredModel">
-            {{ discoveredModel }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
+      <AIModelPicker
+        v-model="model"
+        :preset-models="currentService.models"
+        :discovered-models="discoveredModels"
+        :placeholder="t('ai.config.modelPlaceholder')"
+        :select-placeholder="t('ai.config.selectModel')"
+        :discover-label="t('ai.config.discoverModels')"
+        :discovering-label="t('ai.config.discoveringModels')"
+        :need-config-label="t('ai.config.discoverModelsNeedConfig')"
+        :discovering="discovering"
+        :can-discover="canDiscover"
+        :show-discover="type !== DEFAULT_SERVICE_TYPE"
+        @discover="discoverModels"
+      />
     </div>
 
     <div>

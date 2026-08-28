@@ -17,6 +17,7 @@ declare module 'vue' {
     AIConfig: typeof import('./src/components/ai/chat-box/AIConfig.vue')['default']
     AIImageConfig: typeof import('./src/components/ai/image-generator/AIImageConfig.vue')['default']
     AIImageGeneratorPanel: typeof import('./src/components/ai/image-generator/AIImageGeneratorPanel.vue')['default']
+    AIModelPicker: typeof import('./src/components/ai/AIModelPicker.vue')['default']
     Alert: typeof import('./src/components/ui/alert/Alert.vue')['default']
     AlertDescription: typeof import('./src/components/ui/alert/AlertDescription.vue')['default']
     AlertDialog: typeof import('./src/components/ui/alert-dialog/AlertDialog.vue')['default']
