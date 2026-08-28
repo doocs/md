@@ -1,7 +1,7 @@
 import type { CollectedHeading, IOpts, RendererAPI } from '@md/shared/types'
 import type { FrontMatterData } from '@md/shared/types/front-matter'
 import type { ReadTimeResults } from '@md/shared/utils/readingTime'
-import type { RendererObject, Tokens } from 'marked'
+import type { RendererObject, Token, Tokens } from 'marked'
 import readingTime from '@md/shared/utils/readingTime'
 import { decodeHTML } from 'entities'
 import hljs from 'highlight.js/lib/core'
@@ -41,6 +41,27 @@ function stripInlineHtml(html: string): string {
   return decodeHTML(html.replace(HTML_TAG_REGEX, ``))
 }
 const PARAGRAPH_WRAPPER_REGEX = /^<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/
+
+function renderTaskCheckbox(checked: boolean): string {
+  const className = checked ? `task-checkbox task-checkbox-checked` : `task-checkbox`
+  return `<section class="${className}" style="display:table-cell;vertical-align:middle;">✓</section>`
+}
+
+/** Drop marked's checkbox tokens so listitem can emit a WeChat-safe marker itself. */
+function stripCheckboxTokens(tokens: Token[]): Token[] {
+  const result: Token[] = []
+  for (const token of tokens) {
+    if (token.type === `checkbox`)
+      continue
+    if (`tokens` in token && Array.isArray(token.tokens)) {
+      result.push({ ...token, tokens: stripCheckboxTokens(token.tokens) } as Token)
+    }
+    else {
+      result.push(token)
+    }
+  }
+  return result
+}
 const MP_WEIXIN_LINK_REGEX = /^https?:\/\/mp\.weixin\.qq\.com/
 /** Locale-neutral English fallbacks; Web injects localized strings via IOpts. */
 const DEFAULT_COUNT_SUMMARY = `{words} words, about {minutes} min read`
@@ -348,12 +369,9 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     },
 
     checkbox({ checked }: Tokens.Checkbox): string {
-      // WeChat drops form controls, so task state is drawn with a styled span.
-      // The glyph is always emitted and hidden via `color: transparent` when
-      // unchecked, keeping the box non-empty and both states the same size.
-      const className = checked ? `task-checkbox task-checkbox-checked` : `task-checkbox`
-      // nbsp so WeChat cannot split the marker from the label at a regular space.
-      return `<span class="${className}">✓</span>&nbsp;`
+      // WeChat drops form controls and promotes bordered spans to block
+      // <section>s, so the marker is a table-cell section instead.
+      return renderTaskCheckbox(!!checked)
     },
 
     listitem(token: Tokens.ListItem) {
@@ -362,24 +380,41 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
       listCounters[listCounters.length - 1] = idx + 1
 
-      // Task items carry their own marker from checkbox(); a bullet would double up.
       const prefix = ordered
         ? `${idx}. `
         : token.task ? `` : `• `
 
+      const bodyTokens = token.task
+        ? stripCheckboxTokens(token.tokens)
+        : token.tokens
+      const nestedLists = token.task
+        ? bodyTokens.filter((item): item is Tokens.List => item.type === `list`)
+        : []
+      const rest = token.task
+        ? bodyTokens.filter(item => item.type !== `list`)
+        : bodyTokens
+
       let content: string
       try {
-        content = this.parser.parseInline(token.tokens)
+        content = this.parser.parseInline(rest)
       }
       catch {
         content = this.parser
-          .parse(token.tokens)
+          .parse(rest)
           .replace(PARAGRAPH_WRAPPER_REGEX, `$1`)
+      }
+
+      const nested = nestedLists.map(list => this.list(list)).join(``)
+
+      if (token.task) {
+        // display:table survives WeChat paste; inline-block / bordered spans do not.
+        const marker = renderTaskCheckbox(!!token.checked)
+        content = `<section class="task-item" style="display:table;width:100%;">${marker}<section class="task-item-text" style="display:table-cell;vertical-align:middle;">${prefix}${content}</section></section>`
       }
 
       return styledContent(
         `listitem`,
-        `${prefix}${content}`,
+        `${token.task ? `` : prefix}${content}${nested}`,
         `li`,
       )
     },

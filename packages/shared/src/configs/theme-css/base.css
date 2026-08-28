@@ -53,21 +53,39 @@ section table {
  * Lives in base (not theme CSS) so the marker survives every consumer:
  * scoped web preview, unscoped VSCode preview, exported HTML and share pages.
  * Avoids --foreground, which only the web shell injects.
+ *
+ * WeChat paste promotes bordered <span>s to block <section>s, which puts the
+ * label on the next line. A table + table-cell pair is the layout WeChat
+ * already uses for headings, so the marker and label stay on one row.
  */
+.task-item {
+  display: table;
+  width: 100%;
+}
+
 .task-checkbox {
-  /*
-   * Must stay `inline` (the span default). `inline-block` + width/height makes
-   * WeChat treat the marker as a replaced box on paste, wrap the following
-   * label in a block, and put the text on the next line.
-   */
+  display: table-cell;
+  width: 1.35em;
   border: 1px solid var(--md-primary-color);
   border-radius: 3px;
-  padding: 0 0.15em;
-  margin-right: 0.35em;
   color: transparent;
   font-size: 0.8em;
   line-height: 1.2;
+  text-align: center;
+  vertical-align: middle;
   white-space: nowrap;
+}
+
+.task-checkbox-checked {
+  border-color: var(--md-primary-color);
+  background: var(--md-primary-color);
+  color: #fff;
+}
+
+.task-item-text {
+  display: table-cell;
+  padding-left: 0.45em;
+  vertical-align: middle;
 }
 
 .task-checkbox-checked {

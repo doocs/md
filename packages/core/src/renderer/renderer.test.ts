@@ -103,15 +103,18 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     const { html } = renderMarkdown(`- [x] done\n- [ ] todo`, renderer)
 
     expect(html).not.toContain(`<input`)
+    expect(html).toContain(`display:table`)
     expect(html).toContain(`class="task-checkbox task-checkbox-checked"`)
     expect(html).toContain(`class="task-checkbox"`)
+    expect(html).toContain(`done`)
+    expect(html).toContain(`todo`)
   })
 
   it('omits the bullet prefix on task list items but keeps it on plain items', () => {
     const renderer = initRenderer({})
     const { html } = renderMarkdown(`- [ ] todo\n- plain`, renderer)
 
-    expect(html).toContain(`<li class="listitem"><span class="task-checkbox"`)
+    expect(html).toContain(`<section class="task-item"`)
     expect(html).toContain(`<li class="listitem">• plain</li>`)
   })
 
@@ -119,8 +122,11 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     const renderer = initRenderer({})
     const { html } = renderMarkdown(`1. [x] first\n2. [ ] second`, renderer)
 
-    expect(html).toContain(`<li class="listitem">1. <span class="task-checkbox task-checkbox-checked"`)
-    expect(html).toContain(`<li class="listitem">2. <span class="task-checkbox"`)
+    expect(html).toContain(`class="task-item-text"`)
+    expect(html).toContain(`1. first`)
+    expect(html).toContain(`2. second`)
+    expect(html).toContain(`class="task-checkbox task-checkbox-checked"`)
+    expect(html).toContain(`class="task-checkbox"`)
   })
 
   it('renders checkboxes in nested task lists', () => {
