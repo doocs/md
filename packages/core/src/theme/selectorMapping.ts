@@ -99,6 +99,7 @@ export const SELECTOR_MAPPING: Record<string, string> = {
   markup_highlight: `markup-highlight`,
   markup_underline: `markup-underline`,
   markup_wavyline: `markup-wavyline`,
+  markup_superscript: `markup-superscript`,
 
   listitem: `listitem`,
 }

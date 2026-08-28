@@ -138,6 +138,7 @@ export default {
         { name: `Strikethrough`, syntax: `~~strikethrough~~`, example: `strikethrough` },
         { name: `Highlight`, syntax: `==highlighted text==`, example: `highlighted text` },
         { name: `Underline`, syntax: `++underline++`, example: `underline` },
+        { name: `Superscript`, syntax: `x^2^`, example: `x²`, tip: `Write it right after the text; the content cannot contain spaces` },
         { name: `Inline code`, syntax: `\`code\``, example: `code` },
         { name: `Unordered list`, syntax: `- Item 1\n- Item 2\n  - Nested item`, tip: `Use -, *, or + followed by a space` },
         { name: `Ordered list`, syntax: `1. Item 1\n2. Item 2`, tip: `Number followed by a period` },

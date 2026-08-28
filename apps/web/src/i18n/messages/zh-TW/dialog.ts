@@ -138,6 +138,7 @@ export default {
         { name: `刪除線`, syntax: `~~刪除線~~`, example: `刪除線` },
         { name: `高亮`, syntax: `==高亮文本==`, example: `高亮文本` },
         { name: `下劃線`, syntax: `++下劃線++`, example: `下劃線` },
+        { name: `上標`, syntax: `x^2^`, example: `x²`, tip: `緊跟在文字後面書寫，內容中不能有空格` },
         { name: `行內程式碼`, syntax: `\`程式碼\``, example: `程式碼` },
         { name: `無序列表`, syntax: `- 專案 1\n- 專案 2\n  - 巢狀專案`, tip: `使用 -、* 或 + 加空格` },
         { name: `有序列表`, syntax: `1. 專案 1\n2. 專案 2`, tip: `數字加點號` },
