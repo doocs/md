@@ -47,3 +47,29 @@ section table {
   color: unset !important;
   letter-spacing: unset !important;
 }
+
+/*
+ * ==================== Task lists ====================
+ * Lives in base (not theme CSS) so the marker survives every consumer:
+ * scoped web preview, unscoped VSCode preview, exported HTML and share pages.
+ * Avoids --foreground, which only the web shell injects.
+ */
+.task-checkbox {
+  display: inline-block;
+  box-sizing: border-box;
+  width: 1em;
+  height: 1em;
+  border: 1px solid color-mix(in srgb, var(--md-primary-color) 45%, transparent);
+  border-radius: 3px;
+  color: transparent;
+  font-size: 0.85em;
+  line-height: 1;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.task-checkbox-checked {
+  border-color: var(--md-primary-color);
+  background: var(--md-primary-color);
+  color: #fff;
+}

@@ -347,15 +347,24 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       )
     },
 
+    checkbox({ checked }: Tokens.Checkbox): string {
+      // WeChat drops form controls, so task state is drawn with a styled span.
+      // The glyph is always emitted and hidden via `color: transparent` when
+      // unchecked, keeping the box non-empty and both states the same size.
+      const className = checked ? `task-checkbox task-checkbox-checked` : `task-checkbox`
+      return `<span class="${className}">✓</span> `
+    },
+
     listitem(token: Tokens.ListItem) {
       const ordered = listOrderedStack[listOrderedStack.length - 1]
       const idx = listCounters[listCounters.length - 1]!
 
       listCounters[listCounters.length - 1] = idx + 1
 
+      // Task items carry their own marker from checkbox(); a bullet would double up.
       const prefix = ordered
         ? `${idx}. `
-        : `• `
+        : token.task ? `` : `• `
 
       let content: string
       try {

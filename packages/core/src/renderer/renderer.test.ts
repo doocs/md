@@ -98,6 +98,48 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     expect(html).not.toMatch(/<p[^>]*>\s*<section class="katex-block"/)
   })
 
+  it('renders task list items with a styled checkbox instead of an input', () => {
+    const renderer = initRenderer({})
+    const { html } = renderMarkdown(`- [x] done\n- [ ] todo`, renderer)
+
+    expect(html).not.toContain(`<input`)
+    expect(html).toContain(`class="task-checkbox task-checkbox-checked"`)
+    expect(html).toContain(`class="task-checkbox"`)
+  })
+
+  it('omits the bullet prefix on task list items but keeps it on plain items', () => {
+    const renderer = initRenderer({})
+    const { html } = renderMarkdown(`- [ ] todo\n- plain`, renderer)
+
+    expect(html).toContain(`<li class="listitem"><span class="task-checkbox"`)
+    expect(html).toContain(`<li class="listitem">• plain</li>`)
+  })
+
+  it('keeps the number prefix on ordered task list items', () => {
+    const renderer = initRenderer({})
+    const { html } = renderMarkdown(`1. [x] first\n2. [ ] second`, renderer)
+
+    expect(html).toContain(`<li class="listitem">1. <span class="task-checkbox task-checkbox-checked"`)
+    expect(html).toContain(`<li class="listitem">2. <span class="task-checkbox"`)
+  })
+
+  it('renders checkboxes in nested task lists', () => {
+    const renderer = initRenderer({})
+    const { html } = renderMarkdown(`- [ ] parent\n  - [x] child`, renderer)
+
+    expect(html).not.toContain(`<input`)
+    expect(html.match(/class="task-checkbox/g)).toHaveLength(2)
+    expect(html).toContain(`task-checkbox-checked`)
+  })
+
+  it('renders checkboxes in loose task lists', () => {
+    const renderer = initRenderer({})
+    const { html } = renderMarkdown(`- [x] first\n\n- [ ] second`, renderer)
+
+    expect(html).not.toContain(`<input`)
+    expect(html.match(/class="task-checkbox/g)).toHaveLength(2)
+  })
+
   it('collects headings in document order with plain text', () => {
     const renderer = initRenderer({})
     renderMarkdown(`# Title\n\n## Sub \`code\` & **bold**\n\nBody\n\n### Third`, renderer)
