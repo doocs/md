@@ -164,6 +164,7 @@ export default {
         { name: `信息图`, syntax: `\`\`\`infographic\ninfographic list-row\n...\n\`\`\``, tip: `AntV 信息图引擎` },
       ],
       other: [
+        { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `使用 GitHub 短代码，未收录的名称将原样显示` },
         { name: `注音标注`, syntax: `[文字]{注音}\n[文字]^(注音)`, example: `你好`, tip: `支持日语假名、拼音等` },
         { name: `幻灯片`, syntax: `<![alt](url1),![alt](url2)>`, tip: `横屏滑动图片，仅支持微信公众号` },
         { name: `HTML 标签`, syntax: `<center>居中内容</center>`, tip: `部分 HTML 标签可用` },

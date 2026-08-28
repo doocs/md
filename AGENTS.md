@@ -81,7 +81,7 @@ pnpm mcp dev          # MCP Server 监听模式
 
 ### 渲染管线
 
-1. `@md/core` 封装 `marked`，实现自定义扩展（Mermaid、PlantUML、Ruby、KaTeX、TOC、alert 块、infographic、slider、markup、脚注）
+1. `@md/core` 封装 `marked`，实现自定义扩展（Mermaid、PlantUML、Ruby、KaTeX、TOC、alert 块、infographic、slider、markup、emoji、脚注）
 2. `juice` 内联 CSS 以兼容微信
 3. `isomorphic-dompurify` 净化输出
 4. 主题系统（`@md/core/src/theme/`）注入 CSS 变量

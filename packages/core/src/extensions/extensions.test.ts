@@ -172,6 +172,56 @@ describe(`strikethrough`, () => {
   })
 })
 
+describe(`emoji extension`, () => {
+  it(`replaces known shortcodes with emoji characters`, () => {
+    const html = render(`Ship it :rocket: :tada:`)
+
+    expect(html).toContain(`🚀`)
+    expect(html).toContain(`🎉`)
+    expect(html).not.toContain(`:rocket:`)
+  })
+
+  it(`supports the +1 and -1 aliases`, () => {
+    const html = render(`:+1: and :-1:`)
+
+    expect(html).toContain(`👍`)
+    expect(html).toContain(`👎`)
+  })
+
+  it(`leaves unknown shortcodes as literal text`, () => {
+    const html = render(`:definitely_not_an_emoji:`)
+
+    expect(html).toContain(`:definitely_not_an_emoji:`)
+  })
+
+  it(`leaves incidental colon pairs in prose alone`, () => {
+    expect(render(`ratio 3:4:5`)).toContain(`3:4:5`)
+    expect(render(`meeting at 12:30:45`)).toContain(`12:30:45`)
+    expect(render(`key: value`)).toContain(`key: value`)
+  })
+
+  it(`does not replace shortcodes inside inline code`, () => {
+    const html = render(`use \`:rocket:\` to launch`)
+
+    expect(html).toContain(`:rocket:`)
+    expect(html).not.toContain(`🚀`)
+  })
+
+  it(`does not replace shortcodes inside fenced code blocks`, () => {
+    const html = render(`\`\`\`\n:rocket:\n\`\`\``)
+
+    expect(html).toContain(`:rocket:`)
+    expect(html).not.toContain(`🚀`)
+  })
+
+  it(`keeps Obsidian callout syntax working`, () => {
+    const html = render(`:::tip\nBody\n:::`)
+
+    expect(html).toContain(`markdown-alert`)
+    expect(html).toContain(`Body`)
+  })
+})
+
 describe(`slider extension`, () => {
   it(`renders a horizontal scroll container with all images`, () => {
     const html = render(`<![alt1](https://example.com/1.png),![alt2](https://example.com/2.png)>`)
