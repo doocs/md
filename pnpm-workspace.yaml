@@ -41,10 +41,10 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  hono: ^4.13.4
+  hono: ^4.13.5
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.1
-  js-yaml@^5: ^5.4.0
+  js-yaml@^5: ^5.4.1
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
   markdown-it: ^14.3.0
@@ -88,10 +88,10 @@ patchedDependencies:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260825.1
+  '@cloudflare/workers-types': ^5.20260827.1
   '@codemirror/state': 6.7.1
   '@codemirror/view': 6.43.9
-  '@types/node': ^26.3.0
+  '@types/node': ^26.4.0
   isomorphic-dompurify: ^3.23.0
   marked: ^18.0.11
   prettier: 2.8.8
@@ -99,7 +99,7 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^4.1.11
-  wrangler: ^4.125.0
+  wrangler: ^4.127.0
   zod: ^4.4.3
 
 peerDependencyRules:
