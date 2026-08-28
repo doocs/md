@@ -50,6 +50,7 @@ export default {
     exportHtml: `导出 .html`,
     exportPdf: `导出 .pdf`,
     exportPng: `导出 .png`,
+    exportPngSegments: `导出分段长图`,
   },
   search: {
     toggleReplace: `切换替换`,

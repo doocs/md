@@ -50,6 +50,7 @@ export default {
     exportHtml: `Export .html`,
     exportPdf: `Export .pdf`,
     exportPng: `Export .png`,
+    exportPngSegments: `Export split .png`,
   },
   search: {
     toggleReplace: `Toggle replace`,

@@ -15,4 +15,9 @@ export {
   resolvePdfSiteFooterUrl,
 } from './pdf'
 export { exportPNG } from './png'
+export {
+  DEFAULT_PNG_SEGMENT_HEIGHT,
+  exportPNGSegments,
+  PNG_SEGMENT_HEIGHTS,
+} from './png-segments'
 export { getExportStyles, getShareExportStyles } from './share-styles'

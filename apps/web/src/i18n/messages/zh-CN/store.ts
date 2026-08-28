@@ -78,6 +78,13 @@ export default {
       pageFooter: `第 " counter(page) " 页，共 " counter(pages) " 页`,
       pageFooterN: `" counter(page) "`,
     },
+    png: {
+      segmentsStart: `正在准备长图…`,
+      segmentsProgress: `正在导出第 {done} / {total} 张…`,
+      segmentsDone: `已导出 {count} 张长图`,
+      segmentsEmpty: `没有可导出的内容`,
+      segmentsFailed: `长图导出失败：{message}`,
+    },
     relativeTime: {
       justNow: `刚刚`,
       secondsAgo: `{seconds} 秒前`,

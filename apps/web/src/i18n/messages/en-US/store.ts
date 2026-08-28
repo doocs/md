@@ -78,6 +78,13 @@ export default {
       pageFooter: `Page " counter(page) " of " counter(pages) "`,
       pageFooterN: `" counter(page) "`,
     },
+    png: {
+      segmentsStart: `Preparing long images…`,
+      segmentsProgress: `Exporting image {done} of {total}…`,
+      segmentsDone: `Exported {count} images`,
+      segmentsEmpty: `Nothing to export`,
+      segmentsFailed: `Long image export failed: {message}`,
+    },
     relativeTime: {
       justNow: `Just now`,
       secondsAgo: `{seconds}s ago`,
