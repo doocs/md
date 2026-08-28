@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
+import AIModelPicker from '@/components/ai/AIModelPicker.vue'
 import { PasswordInput } from '@/components/ui/password-input'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useDiscoverAIModels } from '@/composables/useDiscoverAIModels'
 import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIConfigStore from '@/stores/aiConfig'
 
@@ -14,6 +16,18 @@ const { t } = useI18n()
 
 const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
+const {
+  discoveredModels,
+  discovering,
+  canDiscover,
+  discover,
+  resetDiscovered,
+} = useDiscoverAIModels({
+  endpoint,
+  apiKey,
+  serviceType: type,
+  kind: `chat`,
+})
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -37,6 +51,7 @@ function saveConfig(emitEvent = true) {
 }
 
 function clearConfig() {
+  resetDiscovered()
   AIConfigStore.reset()
   testResult.value = t('ai.config.cleared')
 }
@@ -88,6 +103,13 @@ async function testConnection() {
     loading.value = false
   }
 }
+
+async function discoverModels() {
+  testResult.value = ``
+  const message = await discover()
+  if (message)
+    testResult.value = message
+}
 </script>
 
 <template>
@@ -136,27 +158,19 @@ async function testConnection() {
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.config.modelName') }}</Label>
-      <Select v-if="currentService.models.length > 0" v-model="model">
-        <SelectTrigger class="w-full">
-          <SelectValue>
-            {{ model || t('ai.config.selectModel') }}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="_model in currentService.models"
-            :key="_model"
-            :value="_model"
-          >
-            {{ _model }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
-      <Input
-        v-else
+      <AIModelPicker
         v-model="model"
+        :preset-models="currentService.models"
+        :discovered-models="discoveredModels"
         :placeholder="t('ai.config.modelPlaceholder')"
-        class="focus:border-gray-400 focus:ring-1 focus:ring-gray-300"
+        :select-placeholder="t('ai.config.selectModel')"
+        :discover-label="t('ai.config.discoverModels')"
+        :discovering-label="t('ai.config.discoveringModels')"
+        :need-config-label="t('ai.config.discoverModelsNeedConfig')"
+        :discovering="discovering"
+        :can-discover="canDiscover"
+        :show-discover="type !== DEFAULT_SERVICE_TYPE"
+        @discover="discoverModels"
       />
     </div>
 

@@ -23,6 +23,7 @@ declare global {
   const buildAIHeaders: typeof import('./src/composables/useAIFetch').buildAIHeaders
   const buildPostTree: typeof import('./src/composables/usePostTree').buildPostTree
   const buildSlashCommands: typeof import('./src/composables/slashCommands').buildSlashCommands
+  const canDiscoverAIModels: typeof import('./src/composables/useDiscoverAIModels').canDiscoverAIModels
   const completeInitialPreviewBoot: typeof import('./src/composables/useInitialPreviewBoot').completeInitialPreviewBoot
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
@@ -118,6 +119,7 @@ declare global {
   const reactiveComputed: typeof import('@vueuse/core').reactiveComputed
   const reactiveOmit: typeof import('@vueuse/core').reactiveOmit
   const reactivePick: typeof import('@vueuse/core').reactivePick
+  const readAIJSONResponse: typeof import('./src/composables/useAIFetch').readAIJSONResponse
   const readonly: typeof import('vue').readonly
   const ref: typeof import('vue').ref
   const refAutoReset: typeof import('@vueuse/core').refAutoReset
@@ -212,6 +214,7 @@ declare global {
   const useDeviceOrientation: typeof import('@vueuse/core').useDeviceOrientation
   const useDevicePixelRatio: typeof import('@vueuse/core').useDevicePixelRatio
   const useDevicesList: typeof import('@vueuse/core').useDevicesList
+  const useDiscoverAIModels: typeof import('./src/composables/useDiscoverAIModels').useDiscoverAIModels
   const useDisplayMedia: typeof import('@vueuse/core').useDisplayMedia
   const useDocumentVisibility: typeof import('@vueuse/core').useDocumentVisibility
   const useDraggable: typeof import('@vueuse/core').useDraggable

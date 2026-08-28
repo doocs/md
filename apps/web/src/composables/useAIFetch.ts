@@ -8,23 +8,61 @@ export function buildAIHeaders(apiKey: string, serviceType: string): Record<stri
   return headers
 }
 
+const CHAT_COMPLETIONS_PATH = `/chat/completions`
+const IMAGE_GENERATIONS_PATH = `/images/generations`
+const MODELS_PATH = `/models`
+
+function stripSuffix(pathname: string, suffix: string): string {
+  if (!pathname.endsWith(suffix))
+    return pathname
+  return pathname.slice(0, -suffix.length)
+}
+
 /**
  * Resolve the full endpoint URL by appending the appropriate API path
  * if it is not already present.
  */
-export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image`): string {
+export function resolveEndpointUrl(endpoint: string, kind: `chat` | `image` | `models`): string {
   const url = new URL(endpoint)
   // Normalize trailing slashes so endsWith checks work reliably
-  url.pathname = url.pathname.replace(/\/+$/, ``)
+  let pathname = url.pathname.replace(/\/+$/, ``)
   if (kind === `chat`) {
-    if (!url.pathname.endsWith(`/chat/completions`))
-      url.pathname += `/chat/completions`
+    if (!pathname.endsWith(CHAT_COMPLETIONS_PATH))
+      pathname += CHAT_COMPLETIONS_PATH
+  }
+  else if (kind === `image`) {
+    if (!pathname.includes(`/images/`) && !pathname.endsWith(IMAGE_GENERATIONS_PATH))
+      pathname += IMAGE_GENERATIONS_PATH
   }
   else {
-    if (!url.pathname.includes(`/images/`) && !url.pathname.endsWith(`/images/generations`))
-      url.pathname += `/images/generations`
+    pathname = stripSuffix(pathname, CHAT_COMPLETIONS_PATH)
+    pathname = stripSuffix(pathname, IMAGE_GENERATIONS_PATH)
+    if (!pathname.endsWith(MODELS_PATH))
+      pathname += MODELS_PATH
   }
+  url.pathname = pathname || `/`
   return url.toString()
+}
+
+interface AIJSONResponse<T> {
+  ok: boolean
+  status: number
+  statusText: string
+  data: T | null
+  errorText: string
+}
+
+export async function readAIJSONResponse<T>(res: Response): Promise<AIJSONResponse<T>> {
+  const body = await res.text()
+  if (!res.ok)
+    return { ok: false, status: res.status, statusText: res.statusText, data: null, errorText: body }
+
+  try {
+    return { ok: true, status: res.status, statusText: res.statusText, data: JSON.parse(body) as T, errorText: `` }
+  }
+  catch {
+    return { ok: false, status: res.status, statusText: res.statusText, data: null, errorText: body || `Invalid JSON response` }
+  }
 }
 
 export interface SSECallbacks {
@@ -119,7 +157,7 @@ export function useAIFetch() {
     headers: Record<string, string>,
     payload: Record<string, unknown>,
     signal?: AbortSignal,
-  ): Promise<{ ok: boolean, status: number, statusText: string, data: T | null, errorText: string }> {
+  ): Promise<AIJSONResponse<T>> {
     const res = await window.fetch(url, {
       method: `POST`,
       headers,
@@ -127,14 +165,17 @@ export function useAIFetch() {
       signal,
     })
 
-    if (res.ok) {
-      const data = await res.json()
-      return { ok: true, status: res.status, statusText: res.statusText, data, errorText: `` }
-    }
-
-    const errorText = await res.text()
-    return { ok: false, status: res.status, statusText: res.statusText, data: null, errorText }
+    return readAIJSONResponse<T>(res)
   }
 
-  return { loading, abortController, abort, fetchSSE, fetchJSON }
+  async function fetchGET<T = any>(
+    url: string,
+    headers: Record<string, string>,
+    signal?: AbortSignal,
+  ): Promise<AIJSONResponse<T>> {
+    const res = await window.fetch(url, { method: `GET`, headers, signal })
+    return readAIJSONResponse<T>(res)
+  }
+
+  return { loading, abortController, abort, fetchSSE, fetchJSON, fetchGET }
 }

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Info } from '@lucide/vue'
 import { DEFAULT_SERVICE_TYPE } from '@md/shared/constants'
+import AIModelPicker from '@/components/ai/AIModelPicker.vue'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { PasswordInput } from '@/components/ui/password-input'
@@ -12,6 +13,7 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { buildAIHeaders, resolveEndpointUrl, useAIFetch } from '@/composables/useAIFetch'
+import { useDiscoverAIModels } from '@/composables/useDiscoverAIModels'
 import { useLocalizedAIServiceOptions } from '@/composables/useLocalizedAIServices'
 import useAIImageConfigStore from '@/stores/aiImageConfig'
 
@@ -23,6 +25,18 @@ const { t } = useI18n()
 
 const { loading, fetchJSON } = useAIFetch()
 const testResult = ref(``)
+const {
+  discoveredModels,
+  discovering,
+  canDiscover,
+  discover,
+  resetDiscovered,
+} = useDiscoverAIModels({
+  endpoint,
+  apiKey,
+  serviceType: type,
+  kind: `image`,
+})
 const localizedAIServices = useLocalizedAIServiceOptions()
 
 const currentService = computed(
@@ -66,6 +80,7 @@ function saveConfig() {
 }
 
 function clearConfig() {
+  resetDiscovered()
   AIImageConfigStore.reset()
   testResult.value = t('ai.imageConfig.cleared')
 }
@@ -103,6 +118,13 @@ async function testConnection() {
   finally {
     loading.value = false
   }
+}
+
+async function discoverModels() {
+  testResult.value = ``
+  const message = await discover()
+  if (message)
+    testResult.value = message
 }
 
 const sizeOptions = computed(() => [
@@ -153,7 +175,7 @@ const styleOptions = computed(() => [
       <input
         v-model="endpoint"
         type="url"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+        class="w-full mt-1 rounded-md border bg-background p-2 transition-colors focus:border-primary focus:ring-2 focus:ring-primary"
         :placeholder="t('ai.imageConfig.apiEndpointPlaceholder')"
         :readonly="type !== 'custom'"
       >
@@ -170,29 +192,20 @@ const styleOptions = computed(() => [
 
     <div>
       <Label class="mb-1 block text-sm font-medium">{{ t('ai.imageConfig.model') }}</Label>
-      <Select v-if="type !== 'custom' && currentService.models.length > 0" v-model="model">
-        <SelectTrigger class="w-full">
-          <SelectValue>
-            {{ model || t('ai.imageConfig.selectModel') }}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem
-            v-for="modelName in currentService.models"
-            :key="modelName"
-            :value="modelName"
-          >
-            {{ modelName }}
-          </SelectItem>
-        </SelectContent>
-      </Select>
-      <input
-        v-else
+      <AIModelPicker
         v-model="model"
-        type="text"
-        class="w-full mt-1 p-2 border rounded-md bg-background focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+        :preset-models="currentService.models"
+        :discovered-models="discoveredModels"
         :placeholder="t('ai.imageConfig.modelPlaceholder')"
-      >
+        :select-placeholder="t('ai.imageConfig.selectModel')"
+        :discover-label="t('ai.imageConfig.discoverModels')"
+        :discovering-label="t('ai.imageConfig.discoveringModels')"
+        :need-config-label="t('ai.imageConfig.discoverModelsNeedConfig')"
+        :discovering="discovering"
+        :can-discover="canDiscover"
+        :show-discover="type !== DEFAULT_SERVICE_TYPE"
+        @discover="discoverModels"
+      />
     </div>
 
     <div>

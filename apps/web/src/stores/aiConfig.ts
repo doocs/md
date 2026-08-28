@@ -38,7 +38,7 @@ export const useAIConfigStore = defineStore(`AIConfig`, () => {
       endpoint.value = svc.endpoint
 
       const saved = await store.get(`openai_model_${newType}`) || ``
-      model.value = svc.models.includes(saved) ? saved : svc.models[0]
+      model.value = saved || svc.models[0] || ``
 
       await store.set(`openai_model_${newType}`, model.value)
 
