@@ -352,7 +352,8 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       // The glyph is always emitted and hidden via `color: transparent` when
       // unchecked, keeping the box non-empty and both states the same size.
       const className = checked ? `task-checkbox task-checkbox-checked` : `task-checkbox`
-      return `<span class="${className}">✓</span> `
+      // nbsp so WeChat cannot split the marker from the label at a regular space.
+      return `<span class="${className}">✓</span>&nbsp;`
     },
 
     listitem(token: Tokens.ListItem) {
