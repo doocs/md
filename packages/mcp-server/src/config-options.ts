@@ -69,6 +69,18 @@ export const blockSpacingOptions = [
   { label: `1.35×`, value: `1.35`, desc: `宽松` },
 ] as const
 
+export const linkColorOptions = [
+  { label: `微信蓝`, value: `#576b95`, desc: `默认` },
+  { label: `主题色`, value: `var(--md-primary-color)`, desc: `跟随主题色` },
+  { label: `正文色`, value: `inherit`, desc: `与正文一致` },
+] as const
+
+export const blockquoteBackgroundOptions = [
+  { label: `跟随主题`, value: `default`, desc: `默认` },
+  { label: `无背景`, value: `transparent`, desc: `透明` },
+  { label: `主题色`, value: `color-mix(in srgb, var(--md-primary-color) 8%, transparent)`, desc: `主题色浅底` },
+] as const
+
 export const legendOptions = [
   { label: `title 优先`, value: `title-alt`, desc: `` },
   { label: `alt 优先`, value: `alt-title`, desc: `` },
@@ -130,6 +142,8 @@ export const defaultRenderOptions = {
   fontSize: fontSizeOptions[2].value,
   lineHeight: lineHeightOptions[2].value,
   blockSpacing: blockSpacingOptions[2].value,
+  linkColor: linkColorOptions[0].value,
+  blockquoteBackground: blockquoteBackgroundOptions[0].value,
   legend: legendOptions[3].value as LegendValue,
   codeBlockTheme: codeBlockThemeOptions[0].value,
   isMacCodeBlock: false,

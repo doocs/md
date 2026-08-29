@@ -338,6 +338,8 @@ function exportCurrentTheme() {
       fontSize: themeStore.fontSize,
       lineHeight: themeStore.lineHeight,
       blockSpacing: themeStore.blockSpacing,
+      linkColor: themeStore.linkColor,
+      blockquoteBackground: themeStore.blockquoteBackground,
     },
     currentThemeName,
   )

@@ -28,6 +28,8 @@ const {
   fontSize,
   lineHeight,
   blockSpacing,
+  linkColor,
+  blockquoteBackground,
   primaryColor,
   codeBlockTheme,
   legend,
@@ -103,6 +105,20 @@ function lineHeightChanged(value: string) {
 
 function blockSpacingChanged(value: string) {
   themeStore.blockSpacing = value
+
+  themeStore.applyCurrentTheme()
+  scheduleEditorRefresh()
+}
+
+function linkColorChanged(value: string) {
+  themeStore.linkColor = value
+
+  themeStore.applyCurrentTheme()
+  scheduleEditorRefresh()
+}
+
+function blockquoteBackgroundChanged(value: string) {
+  themeStore.blockquoteBackground = value
 
   themeStore.applyCurrentTheme()
   scheduleEditorRefresh()
@@ -352,6 +368,34 @@ const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth
             v-for="{ label, value, desc } in localizedStyleOptions.blockSpacingOptions" :key="value" variant="outline" class="h-auto w-full px-1 py-2 text-xs whitespace-nowrap" :title="desc" :class="{
               'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': blockSpacing === value,
             }" @click="blockSpacingChanged(value)"
+          >
+            {{ label }}
+          </Button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-sm font-medium">
+          {{ t('menu.linkColor') }}
+        </h2>
+        <div class="grid grid-cols-3 gap-1.5">
+          <Button
+            v-for="{ label, value, desc } in localizedStyleOptions.linkColorOptions" :key="value" variant="outline" class="h-auto w-full px-1 py-2 text-xs whitespace-nowrap" :title="desc" :class="{
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': linkColor === value,
+            }" @click="linkColorChanged(value)"
+          >
+            {{ label }}
+          </Button>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-sm font-medium">
+          {{ t('menu.blockquoteBackground') }}
+        </h2>
+        <div class="grid grid-cols-3 gap-1.5">
+          <Button
+            v-for="{ label, value, desc } in localizedStyleOptions.blockquoteBackgroundOptions" :key="value" variant="outline" class="h-auto w-full px-1 py-2 text-xs whitespace-nowrap" :title="desc" :class="{
+              'bg-accent text-accent-foreground ring-1 ring-primary/20 border-primary': blockquoteBackground === value,
+            }" @click="blockquoteBackgroundChanged(value)"
           >
             {{ label }}
           </Button>

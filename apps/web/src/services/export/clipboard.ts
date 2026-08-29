@@ -94,6 +94,8 @@ export async function processClipboardContent(primaryColor: string) {
       .replace(/--md-font-size:.+?;/g, ``)
       .replace(/--md-line-height:.+?;/g, ``)
       .replace(/--md-block-spacing:.+?;/g, ``)
+      .replace(/--md-link-color:.+?;/g, ``)
+      .replace(/--md-blockquote-background:.+?;/g, ``)
       .replace(
         /<span class="nodeLabel"([^>]*)><p[^>]*>(.*?)<\/p><\/span>/g,
         `<span class="nodeLabel"$1>$2</span>`,

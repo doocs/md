@@ -109,6 +109,51 @@ export const blockSpacingOptions: IConfigOption[] = [
   },
 ]
 
+/**
+ * Every built-in theme hard-coded the same WeChat blue for links, so a single
+ * always-emitted variable is enough here.
+ */
+export const linkColorOptions: IConfigOption[] = [
+  {
+    label: `微信蓝`,
+    value: `#576b95`,
+    desc: `默认`,
+  },
+  {
+    label: `主题色`,
+    value: `var(--md-primary-color)`,
+    desc: `跟随主题色`,
+  },
+  {
+    label: `正文色`,
+    value: `inherit`,
+    desc: `与正文一致`,
+  },
+]
+
+/**
+ * `default` keeps whatever background each theme already defines: the default
+ * theme uses a mode-aware grey, while grace and simple are deliberately
+ * background-free. Any other value overrides all of them.
+ */
+export const blockquoteBackgroundOptions: IConfigOption[] = [
+  {
+    label: `跟随主题`,
+    value: `default`,
+    desc: `默认`,
+  },
+  {
+    label: `无背景`,
+    value: `transparent`,
+    desc: `透明`,
+  },
+  {
+    label: `主题色`,
+    value: `color-mix(in srgb, var(--md-primary-color) 8%, transparent)`,
+    desc: `主题色浅底`,
+  },
+]
+
 export const colorOptions: IConfigOption[] = [
   {
     label: `经典蓝`,
@@ -333,6 +378,8 @@ export const defaultStyleConfig = {
   lineHeight: lineHeightOptions[2].value,
   blockSpacing: blockSpacingOptions[2].value,
   primaryColor: colorOptions[0].value,
+  linkColor: linkColorOptions[0].value,
+  blockquoteBackground: blockquoteBackgroundOptions[0].value,
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
@@ -344,6 +391,8 @@ export interface PerThemeSettings {
   fontSize: string
   lineHeight: string
   blockSpacing: string
+  linkColor: string
+  blockquoteBackground: string
   codeBlockTheme: string
   headingStyles: HeadingStyles
   isShowLineNumber: boolean
@@ -357,6 +406,8 @@ export function defaultPerThemeSettings(): PerThemeSettings {
     fontSize: defaultStyleConfig.fontSize,
     lineHeight: defaultStyleConfig.lineHeight,
     blockSpacing: defaultStyleConfig.blockSpacing,
+    linkColor: defaultStyleConfig.linkColor,
+    blockquoteBackground: defaultStyleConfig.blockquoteBackground,
     codeBlockTheme: defaultStyleConfig.codeBlockTheme,
     headingStyles: { ...defaultStyleConfig.headingStyles },
     isShowLineNumber: defaultStyleConfig.isShowLineNumber,

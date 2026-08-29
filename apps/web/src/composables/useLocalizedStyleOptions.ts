@@ -1,6 +1,7 @@
 import type { ThemeName } from '@md/shared/configs'
 import type { IConfigOption } from '@md/shared/types'
 import {
+  blockquoteBackgroundOptions,
   blockSpacingOptions,
   codeBlockThemeOptions,
   colorOptions,
@@ -10,6 +11,7 @@ import {
   headingStyleOptions,
   legendOptions,
   lineHeightOptions,
+  linkColorOptions,
   themeOptions,
 } from '@md/shared/configs'
 import { isMarketplaceThemeKey } from '@md/shared/types'
@@ -20,6 +22,8 @@ type Translate = (key: string) => string
 const FONT_FAMILY_KEYS = [`sansSerif`, `serif`, `monospace`] as const
 const FONT_SIZE_DESC_KEYS = [`smaller`, `slightlySmaller`, `recommended`, `slightlyLarger`, `larger`] as const
 const SPACING_DESC_KEYS = [`tight`, `slightlyTight`, `recommended`, `slightlyLoose`, `loose`] as const
+const LINK_COLOR_KEYS = [`wechatBlue`, `primary`, `body`] as const
+const BLOCKQUOTE_BACKGROUND_KEYS = [`theme`, `none`, `primary`] as const
 const COLOR_KEYS = [
   `classicBlue`,
   `emeraldGreen`,
@@ -82,6 +86,22 @@ function localizeBlockSpacingOptions(t: Translate): IConfigOption[] {
   }))
 }
 
+function localizeLinkColorOptions(t: Translate): IConfigOption[] {
+  return linkColorOptions.map((option, index) => ({
+    ...option,
+    label: t(`styleOptions.linkColor.${LINK_COLOR_KEYS[index]}.label`),
+    desc: t(`styleOptions.linkColor.${LINK_COLOR_KEYS[index]}.desc`),
+  }))
+}
+
+function localizeBlockquoteBackgroundOptions(t: Translate): IConfigOption[] {
+  return blockquoteBackgroundOptions.map((option, index) => ({
+    ...option,
+    label: t(`styleOptions.blockquoteBackground.${BLOCKQUOTE_BACKGROUND_KEYS[index]}.label`),
+    desc: t(`styleOptions.blockquoteBackground.${BLOCKQUOTE_BACKGROUND_KEYS[index]}.desc`),
+  }))
+}
+
 function localizeColorOptions(t: Translate): IConfigOption[] {
   return colorOptions.map((option, index) => ({
     ...option,
@@ -135,6 +155,8 @@ export function createLocalizedStyleOptions(
     fontSizeOptions: localizeFontSizeOptions(t),
     lineHeightOptions: localizeLineHeightOptions(t),
     blockSpacingOptions: localizeBlockSpacingOptions(t),
+    linkColorOptions: localizeLinkColorOptions(t),
+    blockquoteBackgroundOptions: localizeBlockquoteBackgroundOptions(t),
     colorOptions: localizeColorOptions(t),
     codeBlockThemeOptions,
     headingLevelOptions: localizeHeadingLevelOptions(t),

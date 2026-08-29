@@ -151,6 +151,8 @@ export default {
     lineHeight: `Line height`,
     blockSpacing: `Block spacing`,
     primaryColor: `Color`,
+    linkColor: `Link color`,
+    blockquoteBackground: `Quote background`,
     codeBlockTheme: `Code theme`,
     legendFormat: `Caption`,
     customPrimaryColor: `Custom color`,
@@ -225,6 +227,16 @@ export default {
       recommended: `Recommended`,
       slightlyLoose: `Slightly loose`,
       loose: `Loose`,
+    },
+    linkColor: {
+      wechatBlue: { label: `WeChat blue`, desc: `Default` },
+      primary: { label: `Theme color`, desc: `Follows the theme color` },
+      body: { label: `Body color`, desc: `Same as body text` },
+    },
+    blockquoteBackground: {
+      theme: { label: `Theme default`, desc: `Default` },
+      none: { label: `None`, desc: `Transparent` },
+      primary: { label: `Theme color`, desc: `Tinted with the theme color` },
     },
     color: {
       classicBlue: { label: `Blue`, desc: `` },
