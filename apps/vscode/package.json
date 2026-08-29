@@ -111,6 +111,6 @@
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "tsx": "catalog:",
     "webpack": "^5.110.1",
-    "webpack-cli": "^7.2.2"
+    "webpack-cli": "^7.2.3"
   }
 }

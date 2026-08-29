@@ -45,7 +45,7 @@
     "lint-staged": "^17.4.1",
     "prettier": "2.8.8",
     "shx": "^0.4.0",
-    "simple-git-hooks": "^2.13.1",
+    "simple-git-hooks": "^2.14.0",
     "typescript": "~6.0.3"
   },
   "simple-git-hooks": {
