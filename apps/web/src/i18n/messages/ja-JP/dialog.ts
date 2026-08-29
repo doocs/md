@@ -164,6 +164,7 @@ export default {
         { name: `インフォグラフィック`, syntax: `\`\`\`infographic\ninfographic list-row\n...\n\`\`\``, tip: `AntV インフォグラフィックエンジン` },
       ],
       other: [
+        { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `GitHub のショートコード。未収録の名前はそのまま表示されます` },
         { name: `ルビ注釈`, syntax: `[テキスト]{ルビ}\n[テキスト]^(ルビ)`, example: `こんにちは`, tip: `かな、拼音などに対応` },
         { name: `スライドショー`, syntax: `<![alt](url1),![alt](url2)>`, tip: `横スワイプ画像、微信公式アカウントのみ` },
         { name: `HTML タグ`, syntax: `<center>中央揃えコンテンツ</center>`, tip: `一部の HTML タグに対応` },

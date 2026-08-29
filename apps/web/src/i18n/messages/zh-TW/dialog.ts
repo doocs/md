@@ -164,6 +164,7 @@ export default {
         { name: `資訊圖`, syntax: `\`\`\`infographic\ninfographic list-row\n...\n\`\`\``, tip: `AntV 資訊圖引擎` },
       ],
       other: [
+        { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `使用 GitHub 短代碼，未收錄的名稱將原樣顯示` },
         { name: `注音標註`, syntax: `[文字]{注音}\n[文字]^(注音)`, example: `你好`, tip: `支援日語假名、拼音等` },
         { name: `幻燈片`, syntax: `<![alt](url1),![alt](url2)>`, tip: `橫屏滑動圖片，僅支援微信公眾號` },
         { name: `HTML 標籤`, syntax: `<center>居中內容</center>`, tip: `部分 HTML 標籤可用` },

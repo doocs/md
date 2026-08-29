@@ -319,6 +319,11 @@ server.registerTool(
         example: `==highlighted text== ++underlined++ ~wavy~ x^2^`,
       },
       {
+        name: `Emoji`,
+        description: `GitHub-style emoji shortcodes. Unknown names stay literal.`,
+        example: `Ship it :rocket: :tada:`,
+      },
+      {
         name: `Slider`,
         description: `Horizontal scroll slider blocks for narrow viewports.`,
         example: `<<< slide content >>>`,

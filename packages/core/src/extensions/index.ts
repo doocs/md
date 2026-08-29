@@ -1,6 +1,7 @@
 export * from './alert'
 export * from './component'
 export * from './diagram-theme'
+export * from './emoji'
 export * from './footnotes'
 export * from './infographic'
 export * from './katex'

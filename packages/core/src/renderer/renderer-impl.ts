@@ -10,6 +10,7 @@ import {
   getBuiltInRegistry,
   markedAlert,
   markedComponent,
+  markedEmoji,
   markedFootnotes,
   markedInfographic,
   markedMarkup,
@@ -469,6 +470,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     () => opts.renderMessages,
   ))
   markdownParser.use(markedMarkup())
+  markdownParser.use(markedEmoji())
   markdownParser.use(markedToc())
   markdownParser.use(markedSlider())
   markdownParser.use(markedAlert({}))

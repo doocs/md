@@ -164,6 +164,7 @@ export default {
         { name: `Infographic`, syntax: `\`\`\`infographic\ninfographic list-row\n...\n\`\`\``, tip: `AntV infographic engine` },
       ],
       other: [
+        { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `GitHub shortcodes; names that are not included stay as plain text` },
         { name: `Ruby annotation`, syntax: `[text]{ruby}\n[text]^(ruby)`, example: `hello`, tip: `Supports kana, pinyin, and more` },
         { name: `Slideshow`, syntax: `<![alt](url1),![alt](url2)>`, tip: `Horizontal swipe images, WeChat Official Accounts only` },
         { name: `HTML tags`, syntax: `<center>centered content</center>`, tip: `Some HTML tags are supported` },
