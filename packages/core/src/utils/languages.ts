@@ -9,6 +9,7 @@ import python from 'highlight.js/lib/languages/python'
 import shell from 'highlight.js/lib/languages/shell'
 import typescript from 'highlight.js/lib/languages/typescript'
 import xml from 'highlight.js/lib/languages/xml'
+import { LRUMap } from './svgCache'
 
 /**
  * Languages bundled with the renderer. Everything else loads from CDN on first use
@@ -130,8 +131,26 @@ function splitHighlightedHtmlByLines(html: string): string[] {
   return lines
 }
 
+/**
+ * Highlighting plus the span/whitespace post-processing below is pure, so the
+ * preview's full re-render on every keystroke batch would otherwise re-highlight
+ * every untouched code block.
+ *
+ * Entries hold generated HTML — several times the size of the source, and much
+ * more with line numbers, since every line becomes its own element. The cap only
+ * has to cover the code blocks of the documents in play, so it is kept well
+ * below the point where retained markup becomes noticeable.
+ */
+const highlightCache = new LRUMap<string>(128)
+
 /** Highlight code and format for display, optionally with line numbers. */
 export function highlightAndFormatCode(text: string, language: string, hljs: HLJSApi, showLineNumber: boolean): string {
+  const cacheKey = `${language}\u0000${showLineNumber ? `1` : `0`}\u0000${text}`
+  const cached = highlightCache.get(cacheKey)
+  if (cached !== undefined) {
+    return cached
+  }
+
   let highlighted = ``
 
   if (showLineNumber) {
@@ -164,7 +183,17 @@ export function highlightAndFormatCode(text: string, language: string, hljs: HLJ
     highlighted = `<span class="code-block__inner" style="display:block">${formatted}</span>`
   }
 
+  highlightCache.set(cacheKey, highlighted)
   return highlighted
+}
+
+/**
+ * Drop memoized highlight output. Not needed for grammar loading — a block
+ * highlighted before its grammar arrives is keyed under `plaintext`, so the
+ * later re-highlight under the real language name misses the cache anyway.
+ */
+export function clearHighlightCache(): void {
+  highlightCache.clear()
 }
 
 export function highlightCodeBlock(codeBlock: Element, language: string, hljs: HLJSApi): void {

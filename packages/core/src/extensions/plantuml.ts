@@ -11,6 +11,7 @@ import {
   resolveDiagramMessages,
 } from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
+import { blockScanLimit, findAtLineStart } from '../utils/scan'
 import { createSVGCache } from '../utils/svgCache'
 import { diagramCacheThemeSuffix, injectPlantUmlTheme } from './diagram-theme'
 
@@ -261,7 +262,7 @@ export function markedPlantUML(options: PlantUMLOptions = {}): MarkedExtension {
         name: `plantuml`,
         level: `block`,
         start(src: string) {
-          return src.match(/^```plantuml/m)?.index
+          return findAtLineStart(src, '```plantuml', blockScanLimit(src))
         },
         tokenizer(src: string) {
           const match = /^```plantuml\r?\n([\s\S]*?)\r?\n```/.exec(src)

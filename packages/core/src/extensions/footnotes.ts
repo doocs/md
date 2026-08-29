@@ -28,7 +28,7 @@ export function markedFootnotes(): MarkedExtension {
         name: `footnoteDef`,
         level: `block`,
         start(src: string) {
-          return src.match(/^\[\^/)?.index
+          return src.startsWith(`[^`) ? 0 : undefined
         },
         tokenizer(src: string) {
           const match = src.match(/^\[\^(.*)\]:(.*)/)
@@ -67,7 +67,8 @@ export function markedFootnotes(): MarkedExtension {
         name: `footnoteRef`,
         level: `inline`,
         start(src: string) {
-          return src.match(/\[\^/)?.index
+          const index = src.indexOf(`[^`)
+          return index === -1 ? undefined : index
         },
         tokenizer(src: string) {
           const match = src.match(/^\[\^(.*?)\]/)

@@ -11,7 +11,7 @@ export function markedSlider(): MarkedExtension {
         name: `horizontalSlider`,
         level: `block`,
         start(src: string) {
-          return src.match(/^<!\[/)?.index
+          return src.startsWith(`<![`) ? 0 : undefined
         },
         tokenizer(src: string) {
           const rule = /^<(!\[.*?\]\(.*?\)(?:,!\[.*?\]\(.*?\))*)>/

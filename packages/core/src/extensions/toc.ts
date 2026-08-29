@@ -1,4 +1,5 @@
 import type { MarkedExtension } from 'marked'
+import { blockScanLimit, findLineEquals } from '../utils/scan'
 
 /** marked extension: [TOC] syntax for nested table of contents */
 export function markedToc(): MarkedExtension {
@@ -25,8 +26,7 @@ export function markedToc(): MarkedExtension {
         level: `block`,
         start(src) {
           // Match [TOC] on its own line only
-          const match = src.match(/^\s*\[TOC\]\s*$/m)
-          return match ? match.index : undefined
+          return findLineEquals(src, `[TOC]`, blockScanLimit(src))
         },
         tokenizer(src) {
           const match = /^\[TOC\]/.exec(src)
