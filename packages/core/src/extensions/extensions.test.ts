@@ -134,6 +134,42 @@ describe(`markup extension`, () => {
     expect(html).toContain(`class="markup-highlight"`)
     expect(html).toContain(`class="markup-wavyline"`)
   })
+
+  it(`renders superscript directly after a word char`, () => {
+    const html = render(`x^2^ + y^10^ = z`)
+
+    expect((html.match(/class="markup-superscript"/g) ?? []).length).toBe(2)
+    expect(html).toContain(`<sup class="markup-superscript">2</sup>`)
+    expect(html).toContain(`<sup class="markup-superscript">10</sup>`)
+  })
+
+  it(`keeps carets as literal text when superscript cannot pair`, () => {
+    expect(render(`a ^ b ^ c`)).not.toContain(`markup-superscript`)
+    expect(render(`2^10 is 1024`)).not.toContain(`markup-superscript`)
+    expect(render(`^ leading caret`)).not.toContain(`markup-superscript`)
+  })
+
+  it(`leaves ruby hat syntax to the ruby extension`, () => {
+    const html = render(`[汉字]^(han-zi)`)
+
+    expect(html).not.toContain(`markup-superscript`)
+    expect(html).toContain(`data-format="basic-hat"`)
+  })
+})
+
+describe(`strikethrough`, () => {
+  it(`renders del with a theme class`, () => {
+    const html = render(`~~gone~~`)
+
+    expect(html).toContain(`<del class="del">gone</del>`)
+  })
+
+  it(`keeps wavyline distinct from strikethrough`, () => {
+    const html = render(`~~gone~~ and ~wave~`)
+
+    expect(html).toContain(`<del class="del">gone</del>`)
+    expect(html).toContain(`class="markup-wavyline"`)
+  })
 })
 
 describe(`slider extension`, () => {

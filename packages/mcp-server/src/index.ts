@@ -315,8 +315,8 @@ server.registerTool(
       },
       {
         name: `Markup Highlighting`,
-        description: `Inline ==highlighted== text.`,
-        example: `==highlighted text==`,
+        description: `Inline markup: ==highlight==, ++underline++, ~wavy line~ and ^superscript^.`,
+        example: `==highlighted text== ++underlined++ ~wavy~ x^2^`,
       },
       {
         name: `Slider`,

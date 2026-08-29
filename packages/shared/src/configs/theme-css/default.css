@@ -491,6 +491,12 @@ strong {
   font-size: inherit;
 }
 
+/* ==================== Strikethrough ==================== */
+.del {
+  color: color-mix(in srgb, hsl(var(--foreground)) 55%, transparent);
+  text-decoration: line-through;
+}
+
 /* ==================== Tables ==================== */
 table {
   color: hsl(var(--foreground));
@@ -562,4 +568,11 @@ td {
   text-decoration: underline wavy;
   text-decoration-color: var(--md-primary-color);
   text-decoration-thickness: 2px;
+}
+
+/* line-height: 0 keeps the raised glyph from stretching the line box */
+.markup-superscript {
+  font-size: 0.75em;
+  line-height: 0;
+  vertical-align: super;
 }

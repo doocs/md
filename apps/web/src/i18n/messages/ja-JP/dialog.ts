@@ -138,6 +138,7 @@ export default {
         { name: `取り消し線`, syntax: `~~取り消し線~~`, example: `取り消し線` },
         { name: `ハイライト`, syntax: `==ハイライトテキスト==`, example: `ハイライトテキスト` },
         { name: `下線`, syntax: `++下線++`, example: `下線` },
+        { name: `上付き文字`, syntax: `x^2^`, example: `x²`, tip: `文字の直後に書きます。内容に空白は使えません` },
         { name: `インラインコード`, syntax: `\`コード\``, example: `コード` },
         { name: `箇条書き`, syntax: `- 項目 1\n- 項目 2\n  - ネスト項目`, tip: `-、*、または + の後にスペース` },
         { name: `番号付きリスト`, syntax: `1. 項目 1\n2. 項目 2`, tip: `数字の後にピリオド` },

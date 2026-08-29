@@ -1,5 +1,5 @@
 import type { MarkedExtension, Token } from 'marked'
-import type { MarkupHighlightToken, MarkupUnderlineToken, MarkupWavylineToken } from '../types/marked-tokens'
+import type { MarkupHighlightToken, MarkupSuperscriptToken, MarkupUnderlineToken, MarkupWavylineToken } from '../types/marked-tokens'
 import { asTextTokenRenderer } from '../types/marked-tokens'
 
 // ASCII-only on purpose: `C++`/`x==1`/`v1~2` must stay literal, while CJK
@@ -38,7 +38,7 @@ function boundaryStart(src: string, delimiter: RegExp): number | undefined {
   }
 }
 
-/** Extended markup: ==highlight==, ++underline++, ~wavyline~ */
+/** Extended markup: ==highlight==, ++underline++, ~wavyline~, ^superscript^ */
 export function markedMarkup(): MarkedExtension {
   return {
     extensions: [
@@ -114,6 +114,33 @@ export function markedMarkup(): MarkedExtension {
         },
         renderer: asTextTokenRenderer((token: MarkupWavylineToken) => {
           return `<span class="markup-wavyline">${token.text}</span>`
+        }),
+      },
+
+      {
+        name: `markup_superscript`,
+        level: `inline`,
+        start(src: string) {
+          // Superscript is the one delimiter meant to sit right after a word
+          // char (`x^2^`), so the shared word-boundary filtering is skipped.
+          const index = src.indexOf(`^`)
+          return index === -1 ? undefined : index
+        },
+        tokenizer(src: string) {
+          // Content must be whitespace-free, so prose like `a ^ b` and dangling
+          // carets such as `2^10` stay literal.
+          const rule = /^\^([^\s^]+)\^/
+          const match = rule.exec(src)
+          if (match) {
+            return {
+              type: `markup_superscript`,
+              raw: match[0],
+              text: match[1],
+            }
+          }
+        },
+        renderer: asTextTokenRenderer((token: MarkupSuperscriptToken) => {
+          return `<sup class="markup-superscript">${token.text}</sup>`
         }),
       },
     ],
