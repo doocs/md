@@ -20,6 +20,8 @@ export interface RenderMarkdownInput {
   primaryColor?: string
   fontFamily?: string
   fontSize?: string
+  lineHeight?: string
+  blockSpacing?: string
   legend?: LegendValue
   isMacCodeBlock?: boolean
   isShowLineNumber?: boolean
@@ -106,6 +108,8 @@ export async function buildRenderedOutput(input: RenderMarkdownInput) {
   const primaryColor = input.primaryColor ?? defaultRenderOptions.primaryColor
   const fontFamily = input.fontFamily ?? defaultRenderOptions.fontFamily
   const fontSize = input.fontSize ?? defaultRenderOptions.fontSize
+  const lineHeight = input.lineHeight ?? defaultRenderOptions.lineHeight
+  const blockSpacing = input.blockSpacing ?? defaultRenderOptions.blockSpacing
   const legend = input.legend ?? defaultRenderOptions.legend
   const codeBlockTheme = input.codeBlockTheme ?? defaultRenderOptions.codeBlockTheme
   const headingStyles = normalizeHeadingStyles(input.headingStyles)
@@ -127,6 +131,8 @@ export async function buildRenderedOutput(input: RenderMarkdownInput) {
     primaryColor,
     fontFamily,
     fontSize,
+    lineHeight,
+    blockSpacing,
     isUseIndent: input.isUseIndent ?? defaultRenderOptions.isUseIndent,
     isUseJustify: input.isUseJustify ?? defaultRenderOptions.isUseJustify,
     headingStyles,

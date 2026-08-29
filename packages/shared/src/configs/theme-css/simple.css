@@ -105,14 +105,14 @@ ul {
 }
 
 li {
-  margin: 0.5em 8px;
+  margin: calc(0.5em * var(--md-block-spacing)) 8px;
 }
 
 /* Horizontal rules */
 hr {
   height: 1px;
   border: none;
-  margin: 2em 0;
+  margin: calc(2em * var(--md-block-spacing)) 0;
   background: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0));
 }
 

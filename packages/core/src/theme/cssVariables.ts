@@ -6,10 +6,18 @@ export interface CSSVariableConfig {
   primaryColor: string
   fontFamily: string
   fontSize: string
+  /** Body line height, unitless. */
+  lineHeight?: string
+  /** Multiplier for the vertical block margins defined by the theme. */
+  blockSpacing?: string
   isUseIndent?: boolean
   isUseJustify?: boolean
   headingStyles?: HeadingStyles
 }
+
+/** Kept in sync with defaultStyleConfig; optional so existing callers (VSCode preview, theme export) need no change. */
+const DEFAULT_LINE_HEIGHT = `1.75`
+const DEFAULT_BLOCK_SPACING = `1`
 
 export function generateCSSVariables(config: CSSVariableConfig): string {
   return `
@@ -18,6 +26,8 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
   --md-primary-color: ${config.primaryColor};
   --md-font-family: ${config.fontFamily};
   --md-font-size: ${config.fontSize};
+  --md-line-height: ${config.lineHeight || DEFAULT_LINE_HEIGHT};
+  --md-block-spacing: ${config.blockSpacing || DEFAULT_BLOCK_SPACING};
 }
 
 /* Paragraph indent & justify */

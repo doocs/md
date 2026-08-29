@@ -8,14 +8,14 @@ section,
 #output .container {
   font-family: var(--md-font-family);
   font-size: var(--md-font-size);
-  line-height: 1.75;
+  line-height: var(--md-line-height);
   text-align: left;
 }
 
 #output {
   font-family: var(--md-font-family);
   font-size: var(--md-font-size);
-  line-height: 1.75;
+  line-height: var(--md-line-height);
   text-align: left;
 }
 

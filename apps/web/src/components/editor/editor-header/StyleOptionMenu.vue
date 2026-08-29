@@ -4,7 +4,7 @@ import type { Component } from 'vue'
 
 const props = defineProps<{
   title: string
-  styleKey?: `font` | `fontSize` | `color`
+  styleKey?: `font` | `fontSize` | `color` | `lineHeight` | `blockSpacing`
   options: IConfigOption[]
   current: string
   change: (val: any) => void
@@ -46,7 +46,7 @@ function setStyle(styleKey: typeof props.styleKey, value: string) {
             {{ desc }}
           </DropdownMenuShortcut>
           <DropdownMenuShortcut
-            v-else-if="styleKey === 'fontSize' && desc"
+            v-else-if="(styleKey === 'fontSize' || styleKey === 'lineHeight' || styleKey === 'blockSpacing') && desc"
           >
             {{ desc }}
           </DropdownMenuShortcut>
