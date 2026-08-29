@@ -50,6 +50,7 @@ export default {
     exportHtml: `.html をエクスポート`,
     exportPdf: `.pdf をエクスポート`,
     exportPng: `.png をエクスポート`,
+    exportPngSegments: `分割 .png をエクスポート`,
   },
   search: {
     toggleReplace: `置換の切替`,

@@ -35,6 +35,7 @@ import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions
 import { useEditorFormat } from '@/composables/useEditorFormat'
 import { copyPlain, readPlainFromClipboard } from '@/lib/browser/clipboard'
 import { normalizeFormulaInput } from '@/lib/markdown/formula'
+import { PNG_SEGMENT_HEIGHTS } from '@/services/export'
 import { useConfirmStore } from '@/stores/confirm'
 import { useCssEditorStore } from '@/stores/cssEditor'
 import { useEditorStore } from '@/stores/editor'
@@ -159,6 +160,10 @@ function exportEditorContent2MD() {
 
 function downloadAsCardImage() {
   exportStore.downloadAsCardImage()
+}
+
+function downloadAsSegmentedImages(maxSegmentHeight: number) {
+  exportStore.downloadAsSegmentedImages(maxSegmentHeight)
 }
 </script>
 
@@ -316,6 +321,21 @@ function downloadAsCardImage() {
             <FileImage class="mr-2 h-4 w-4" />
             {{ t('contextMenu.exportPng') }}
           </ContextMenuItem>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>
+              <FileImage class="mr-2 h-4 w-4" />
+              {{ t('contextMenu.exportPngSegments') }}
+            </ContextMenuSubTrigger>
+            <ContextMenuSubContent class="w-48">
+              <ContextMenuItem
+                v-for="height in PNG_SEGMENT_HEIGHTS"
+                :key="height"
+                @click="downloadAsSegmentedImages(height)"
+              >
+                {{ t('menu.exportPngSegmentHeight', { height }) }}
+              </ContextMenuItem>
+            </ContextMenuSubContent>
+          </ContextMenuSub>
         </ContextMenuSubContent>
       </ContextMenuSub>
 

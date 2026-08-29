@@ -105,6 +105,8 @@ export default {
     exportHtmlNoStyle: `HTML (plain)`,
     exportPdf: `PDF`,
     exportPng: `PNG`,
+    exportPngSegments: `PNG (split)`,
+    exportPngSegmentHeight: `~{height}px per image`,
     templateManage: `Templates`,
     marketplace: `Community Themes`,
     contentManage: `Content`,

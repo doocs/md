@@ -78,6 +78,13 @@ export default {
       pageFooter: `第 " counter(page) " 頁，共 " counter(pages) " 頁`,
       pageFooterN: `" counter(page) "`,
     },
+    png: {
+      segmentsStart: `正在準備長圖…`,
+      segmentsProgress: `正在匯出第 {done} / {total} 張…`,
+      segmentsDone: `已匯出 {count} 張長圖`,
+      segmentsEmpty: `沒有可匯出的內容`,
+      segmentsFailed: `長圖匯出失敗：{message}`,
+    },
     relativeTime: {
       justNow: `剛剛`,
       secondsAgo: `{seconds} 秒前`,

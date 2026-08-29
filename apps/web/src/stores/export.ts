@@ -1,9 +1,12 @@
 import type { PdfExportOptions } from '@/services/export'
+import { t } from '@/i18n/translate'
 import {
+  DEFAULT_PNG_SEGMENT_HEIGHT,
   downloadMD,
   exportHTML,
   exportPDF,
   exportPNG,
+  exportPNGSegments,
   exportPureHTML,
   getHtmlContent,
 } from '@/services/export'
@@ -43,6 +46,32 @@ export const useExportStore = defineStore(`export`, () => {
     })
   }
 
+  const downloadAsSegmentedImages = async (maxSegmentHeight = DEFAULT_PNG_SEGMENT_HEIGHT) => {
+    const currentPost = postStore.currentPost
+    if (!currentPost)
+      return
+
+    const toastId = toast.loading(t(`store.png.segmentsStart`))
+    try {
+      const count = await exportPNGSegments(currentPost.title, {
+        previewDevice: uiStore.previewDevice,
+        maxSegmentHeight,
+        onProgress: (done, total) => {
+          toast.loading(t(`store.png.segmentsProgress`, { done, total }), { id: toastId })
+        },
+      })
+
+      if (count === 0)
+        toast.error(t(`store.png.segmentsEmpty`), { id: toastId })
+      else
+        toast.success(t(`store.png.segmentsDone`, { count }), { id: toastId })
+    }
+    catch (error) {
+      const message = error instanceof Error ? error.message : String(error)
+      toast.error(t(`store.png.segmentsFailed`, { message }), { id: toastId })
+    }
+  }
+
   const exportEditorContent2PDF = async (options?: Partial<PdfExportOptions>) => {
     const currentPost = postStore.currentPost
     if (!currentPost)
@@ -64,6 +93,7 @@ export const useExportStore = defineStore(`export`, () => {
     exportEditorContent2HTML,
     exportEditorContent2PureHTML,
     downloadAsCardImage,
+    downloadAsSegmentedImages,
     exportEditorContent2PDF,
     exportEditorContent2MD,
   }

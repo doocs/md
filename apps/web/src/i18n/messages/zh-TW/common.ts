@@ -105,6 +105,8 @@ export default {
     exportHtmlNoStyle: `HTML（純）`,
     exportPdf: `PDF 文件`,
     exportPng: `PNG 圖片`,
+    exportPngSegments: `PNG 分段長圖`,
+    exportPngSegmentHeight: `每段約 {height}px`,
     templateManage: `範本管理`,
     marketplace: `社群主題`,
     contentManage: `內容管理`,

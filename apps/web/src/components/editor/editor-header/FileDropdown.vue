@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Cloud, Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Settings, Share2, Upload } from '@lucide/vue'
+import { Cloud, Download, FileCode, FileCog, FileText, FolderKanban, FolderOpen, Package, Rows3, Settings, Share2, Upload } from '@lucide/vue'
+import { PNG_SEGMENT_HEIGHTS } from '@/services/export'
 import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useEditorStore } from '@/stores/editor'
@@ -50,6 +51,10 @@ function exportEditorContent2MD() {
 
 function downloadAsCardImage() {
   exportStore.downloadAsCardImage()
+}
+
+function downloadAsSegmentedImages(maxSegmentHeight: number) {
+  exportStore.downloadAsSegmentedImages(maxSegmentHeight)
 }
 
 function exportEditorContent2PDF() {
@@ -111,6 +116,21 @@ function exportEditorContent2PDF() {
             <Download class="mr-2 size-4" />
             {{ t('menu.exportPng') }}
           </MenubarItem>
+          <MenubarSub>
+            <MenubarSubTrigger>
+              <Rows3 class="mr-2 size-4" />
+              {{ t('menu.exportPngSegments') }}
+            </MenubarSubTrigger>
+            <MenubarSubContent class="min-w-48">
+              <MenubarItem
+                v-for="height in PNG_SEGMENT_HEIGHTS"
+                :key="height"
+                @click="downloadAsSegmentedImages(height)"
+              >
+                {{ t('menu.exportPngSegmentHeight', { height }) }}
+              </MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
         </MenubarSubContent>
       </MenubarSub>
 
@@ -205,6 +225,21 @@ function exportEditorContent2PDF() {
             <Download class="mr-2 size-4" />
             {{ t('menu.exportPng') }}
           </MenubarItem>
+          <MenubarSub>
+            <MenubarSubTrigger>
+              <Rows3 class="mr-2 size-4" />
+              {{ t('menu.exportPngSegments') }}
+            </MenubarSubTrigger>
+            <MenubarSubContent class="min-w-48">
+              <MenubarItem
+                v-for="height in PNG_SEGMENT_HEIGHTS"
+                :key="height"
+                @click="downloadAsSegmentedImages(height)"
+              >
+                {{ t('menu.exportPngSegmentHeight', { height }) }}
+              </MenubarItem>
+            </MenubarSubContent>
+          </MenubarSub>
         </MenubarSubContent>
       </MenubarSub>
 

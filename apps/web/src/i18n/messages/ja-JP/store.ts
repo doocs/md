@@ -78,6 +78,13 @@ export default {
       pageFooter: `" counter(page) " / " counter(pages) " ページ`,
       pageFooterN: `" counter(page) "`,
     },
+    png: {
+      segmentsStart: `長い画像を準備中…`,
+      segmentsProgress: `{total} 枚中 {done} 枚目を書き出し中…`,
+      segmentsDone: `{count} 枚の画像を書き出しました`,
+      segmentsEmpty: `書き出す内容がありません`,
+      segmentsFailed: `長い画像の書き出しに失敗しました: {message}`,
+    },
     relativeTime: {
       justNow: `たった今`,
       secondsAgo: `{seconds}秒前`,
