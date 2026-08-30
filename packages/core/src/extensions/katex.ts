@@ -12,6 +12,8 @@ import {
   matchBlockKatex,
 } from '../utils/mathDetection'
 import { ensureMathJaxLoaded, isMathJaxReady } from '../utils/mathjax'
+import { blockScanLimit, findIndentedLineStart } from '../utils/scan'
+import { LRUMap } from '../utils/svgCache'
 
 export interface MarkedKatexOptions {
   nonStandard?: boolean
@@ -20,6 +22,20 @@ export interface MarkedKatexOptions {
 }
 
 const DEFAULT_KATEX_LOADING = `Loading formula…`
+
+/**
+ * tex2svg is a full synchronous typeset per formula. The preview re-renders the
+ * whole document on every keystroke batch, so a formula-heavy article would
+ * otherwise re-typeset every untouched formula each time. Only settled output is
+ * cached — pending placeholders must stay uncached so they resolve once MathJax
+ * finishes loading.
+ */
+const mathSvgCache = new LRUMap<string>(400)
+
+/** Drop memoized formula SVG (exported for tests and MathJax reloads). */
+export function clearMathSvgCache(): void {
+  mathSvgCache.clear()
+}
 
 let mathJaxLoadRequested = false
 
@@ -45,6 +61,12 @@ function createRenderer(
   return (token: KatexToken) => {
     const display = token.displayMode ?? defaultDisplay
     const rawAttr = escapeHtml(token.raw ?? token.text)
+    const cacheKey = `${display ? `1` : `0`}\u0000${withStyle ? `1` : `0`}\u0000${rawAttr}\u0000${token.text}`
+
+    const cached = mathSvgCache.get(cacheKey)
+    if (cached !== undefined) {
+      return cached
+    }
 
     if (typeof window === `undefined` || !isMathJaxReady()) {
       requestMathJaxLoad()
@@ -82,11 +104,12 @@ function createRenderer(
       firstG.setAttribute(`stroke`, `currentColor`)
     }
 
-    if (!display) {
-      return `<span class="katex-inline" data-math-display="false" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</span>`
-    }
+    const html = display
+      ? `<section class="katex-block" data-math-display="true" data-math-raw="${rawAttr}">${svg.outerHTML}</section>`
+      : `<span class="katex-inline" data-math-display="false" data-math-raw="${rawAttr}">${svg.outerHTML}</span>`
 
-    return `<section class="katex-block" data-math-display="true" data-math-raw="${escapeHtml(token.raw ?? token.text)}">${svg.outerHTML}</section>`
+    mathSvgCache.set(cacheKey, html)
+    return html
   }
 }
 
@@ -119,8 +142,7 @@ function blockKatex(_options: MarkedKatexOptions | undefined, renderer: KatexRen
     name: `blockKatex`,
     level: `block` as const,
     start(src: string) {
-      const index = src.search(/^\s{0,3}\$\$/m)
-      return index === -1 ? undefined : index
+      return findIndentedLineStart(src, `$$`, 3, blockScanLimit(src))
     },
     tokenizer(src: string) {
       const match = matchBlockKatex(src)

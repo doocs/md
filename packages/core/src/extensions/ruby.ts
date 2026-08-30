@@ -17,7 +17,8 @@ export function markedRuby(): MarkedExtension {
         name: `ruby`,
         level: `inline`,
         start(src: string) {
-          return src.match(/\[/)?.index
+          const index = src.indexOf(`[`)
+          return index === -1 ? undefined : index
         },
         tokenizer(src: string) {
           const rule1 = /^\[([^\]]+)\]\{([^}]+)\}/

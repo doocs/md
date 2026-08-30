@@ -11,6 +11,7 @@ import {
   resolveDiagramMessages,
 } from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
+import { blockScanLimit, findAtLineStart } from '../utils/scan'
 import { createSVGCache } from '../utils/svgCache'
 import { DIAGRAM_DARK_COLORS, DIAGRAM_LIGHT_COLORS, resolveDiagramThemeMode } from './diagram-theme'
 
@@ -25,7 +26,7 @@ const svgCache = createSVGCache(50)
 const pendingMeta = new Map<string, { code: string, options?: InfographicOptions }>()
 const inFlight = new Set<string>()
 
-const RE_INFOGRAPHIC_START = /^```infographic/m
+const INFOGRAPHIC_FENCE = '```infographic'
 const RE_INFOGRAPHIC_BLOCK = /^```infographic\r?\n([\s\S]*?)\r?\n```/
 const INFOGRAPHIC_ID_PREFIX = `infographic-`
 const OFFSCREEN_ROOT_ID = `md-infographic-offscreen-root`
@@ -236,7 +237,7 @@ export function markedInfographic(options?: InfographicOptionsSource): MarkedExt
         name: `infographic`,
         level: `block`,
         start(src: string) {
-          return src.match(RE_INFOGRAPHIC_START)?.index
+          return findAtLineStart(src, INFOGRAPHIC_FENCE, blockScanLimit(src))
         },
         tokenizer(src: string) {
           const match = RE_INFOGRAPHIC_BLOCK.exec(src)

@@ -121,7 +121,7 @@ export function markedAlert(options: AlertOptions = {}): MarkedExtension {
         name: `alertContainer`,
         level: `block`,
         start(src) {
-          return src.match(/^:::/)?.index
+          return src.startsWith(`:::`) ? 0 : undefined
         },
         tokenizer(src, _tokens) {
           // Name: any non-whitespace (incl. CJK); optional custom title on same line

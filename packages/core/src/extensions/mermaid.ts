@@ -11,6 +11,7 @@ import {
   resolveDiagramMessages,
 } from '../utils/asyncDiagramState'
 import { simpleHash } from '../utils/basicHelpers'
+import { blockScanLimit, findAtLineStart } from '../utils/scan'
 import { createSVGCache } from '../utils/svgCache'
 import { diagramCacheThemeSuffix, getMermaidThemeConfig } from './diagram-theme'
 
@@ -106,7 +107,7 @@ export function markedMermaid(options?: MermaidOptionsSource): MarkedExtension {
         name: 'mermaid',
         level: 'block',
         start(src: string) {
-          return src.match(/^```mermaid/m)?.index
+          return findAtLineStart(src, '```mermaid', blockScanLimit(src))
         },
         tokenizer(src: string) {
           const match = /^```mermaid\r?\n([\s\S]*?)\r?\n```/.exec(src)

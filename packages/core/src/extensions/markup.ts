@@ -29,12 +29,28 @@ function followsWordChar(tokens: Token[] | undefined): boolean {
 // Regex lookbehind throws at parse time in JS engines without support (older
 // WebViews) and would take down the whole renderer, so boundaries are enforced
 // with plain scans/character classes instead of `(?<!...)`/`(?<=...)`.
-function boundaryStart(src: string, delimiter: RegExp): number | undefined {
-  const rule = new RegExp(delimiter.source, `g`)
-  for (let match = rule.exec(src); match !== null; match = rule.exec(src)) {
-    if (!WORD_CHAR.test(src.charAt(match.index - 1))) {
-      return match.index
+//
+// `start()` runs for every inline scan position, so the delimiter search uses
+// indexOf rather than a per-call `new RegExp`.
+function boundaryStart(src: string, delimiter: string): number | undefined {
+  let from = 0
+  for (;;) {
+    const index = src.indexOf(delimiter, from)
+    if (index === -1)
+      return undefined
+
+    // `==(?!=)` / `++(?!+)` / `~(?!~)`: the delimiter run must stop here.
+    // A failed lookahead only advances the scan by one, same as the regex engine.
+    if (src[index + delimiter.length] === delimiter[0]) {
+      from = index + 1
+      continue
     }
+
+    if (!WORD_CHAR.test(src.charAt(index - 1)))
+      return index
+
+    // Match consumed but rejected by the boundary rule: resume past it.
+    from = index + delimiter.length
   }
 }
 
@@ -46,7 +62,7 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_highlight`,
         level: `inline`,
         start(src: string) {
-          return boundaryStart(src, /==(?!=)/)
+          return boundaryStart(src, `==`)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {
@@ -71,7 +87,7 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_underline`,
         level: `inline`,
         start(src: string) {
-          return boundaryStart(src, /\+\+(?!\+)/)
+          return boundaryStart(src, `++`)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {
@@ -96,7 +112,7 @@ export function markedMarkup(): MarkedExtension {
         name: `markup_wavyline`,
         level: `inline`,
         start(src: string) {
-          return boundaryStart(src, /~(?!~)/)
+          return boundaryStart(src, `~`)
         },
         tokenizer(src: string, tokens: Token[]) {
           if (followsWordChar(tokens)) {

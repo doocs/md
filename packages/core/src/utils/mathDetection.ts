@@ -9,14 +9,42 @@ export function matchBlockKatex(src: string): RegExpMatchArray | null {
   return src.match(blockRuleMultiline) ?? src.match(blockRuleSingleLine)
 }
 
-function contentHasBlockKatex(content: string): boolean {
-  for (let i = 0; i <= content.length; i++) {
-    if (i > 0 && content[i - 1] !== '\n')
-      continue
-    if (matchBlockKatex(content.slice(i)))
-      return true
+/**
+ * Sticky twin of an `^`-anchored rule, so a position can be tested in place
+ * instead of slicing the source first. Keyed by rule identity; the rules are
+ * module constants, so this holds a couple of entries.
+ */
+const stickyRules = new Map<RegExp, RegExp>()
+
+function stickyRuleFor(rule: RegExp): RegExp {
+  let sticky = stickyRules.get(rule)
+  if (!sticky) {
+    sticky = new RegExp(rule.source.replace(/^\^/, ``), `${rule.flags.replace(/[gy]/g, ``)}y`)
+    stickyRules.set(rule, sticky)
   }
-  return false
+  return sticky
+}
+
+function matchesAt(rule: RegExp, src: string, index: number): boolean {
+  const sticky = stickyRuleFor(rule)
+  sticky.lastIndex = index
+  return sticky.test(src)
+}
+
+function contentHasBlockKatex(content: string): boolean {
+  if (!content.includes(`$`))
+    return false
+
+  let lineStart = 0
+  for (;;) {
+    if (matchesAt(blockRuleMultiline, content, lineStart) || matchesAt(blockRuleSingleLine, content, lineStart))
+      return true
+
+    const next = content.indexOf(`\n`, lineStart)
+    if (next === -1)
+      return false
+    lineStart = next + 1
+  }
 }
 
 export const inlineLatexRule = /^\\\(([^\\]*(?:\\.[^\\]*)*?)\\\)/
@@ -25,40 +53,48 @@ export const blockLatexRule = /^\\\[([^\\]*(?:\\.[^\\]*)*?)\\\]/
 const blockLatexAnywhere = /\\\[[^\\]*(?:\\.[^\\]*)*?\\\]/
 const inlineLatexAnywhere = /\\\([^\\]*(?:\\.[^\\]*)*?\\\)/
 
-function isAmountDollarSign(src: string, index: number): boolean {
-  if (index <= 0)
+const DOLLAR = 36
+
+/**
+ * `offset` is where the current scan region begins. The original implementation
+ * re-sliced the source after every `$`, so the "is this the region start" checks
+ * below stay relative to that region rather than to the absolute index.
+ */
+function isAmountDollarSign(src: string, index: number, offset: number): boolean {
+  if (index <= offset)
     return false
   const prev = src.charAt(index - 1)
   if (/[\d,.]/.test(prev))
     return true
-  return prev === ` ` && index >= 2 && /\d/.test(src.charAt(index - 2))
+  return prev === ` ` && index - offset >= 2 && /\d/.test(src.charAt(index - 2))
 }
 
-function isInlineKatexStart(src: string, index: number, nonStandard: boolean): boolean {
+function isInlineKatexStart(src: string, index: number, offset: number, nonStandard: boolean): boolean {
   if (nonStandard)
-    return !isAmountDollarSign(src, index)
-  return index === 0 || src.charAt(index - 1) === ` `
+    return !isAmountDollarSign(src, index, offset)
+  return index === offset || src.charAt(index - 1) === ` `
 }
 
 export function findInlineKatexStart(src: string, nonStandard: boolean, ruleReg: RegExp): number | undefined {
-  let indexSrc = src
   let offset = 0
 
-  while (indexSrc) {
-    const index = indexSrc.indexOf(`$`)
+  while (offset < src.length) {
+    const index = src.indexOf(`$`, offset)
     if (index === -1)
-      return
+      return undefined
 
-    if (isInlineKatexStart(indexSrc, index, nonStandard)) {
-      const possibleKatex = indexSrc.substring(index)
-      if (possibleKatex.match(ruleReg))
-        return offset + index
-    }
+    if (isInlineKatexStart(src, index, offset, nonStandard) && matchesAt(ruleReg, src, index))
+      return index
 
-    const next = indexSrc.substring(index + 1).replace(/^\$+/, ``)
-    offset += indexSrc.length - next.length
-    indexSrc = next
+    // Skip the delimiter plus any immediately adjacent `$`, matching the
+    // original `substring(index + 1).replace(/^\$+/, '')` step.
+    let next = index + 1
+    while (next < src.length && src.charCodeAt(next) === DOLLAR)
+      next++
+    offset = next
   }
+
+  return undefined
 }
 
 /** Whether content contains math recognized by MDKatex (default nonStandard=true, same as renderer-impl). */

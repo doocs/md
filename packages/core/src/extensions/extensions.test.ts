@@ -127,6 +127,11 @@ describe(`markup extension`, () => {
     expect(render(`~ 文字 ~`)).not.toContain(`markup-wavyline`)
   })
 
+  it(`skips over longer delimiter runs and still pairs a later match`, () => {
+    expect(render(`前面 === 后面 ==高亮==`)).toContain(`class="markup-highlight"`)
+    expect(render(`+++ 然后 ++下划线++`)).toContain(`class="markup-underline"`)
+  })
+
   it(`still renders intraword CJK markup`, () => {
     const html = render(`把++重点++标出==高亮==和~波浪~`)
 
