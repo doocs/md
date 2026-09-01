@@ -1,8 +1,8 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index 0fb53bd177b2ba028c445574bc40134f3686e555..7fde56e7ab7c3ff2f1ae783eeb6259c8594a2bff 100644
+index cc44796..d5b8591 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9204,7 +9204,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9207,7 +9207,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -13,7 +13,7 @@ index 0fb53bd177b2ba028c445574bc40134f3686e555..7fde56e7ab7c3ff2f1ae783eeb6259c8
              if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
                  handled = true;
 diff --git a/dist/index.d.cts b/dist/index.d.cts
-index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf88fe973a 100644
+index 0f9bebe..0205eb6 100644
 --- a/dist/index.d.cts
 +++ b/dist/index.d.cts
 @@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
@@ -26,7 +26,7 @@ index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.d.ts b/dist/index.d.ts
-index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf88fe973a 100644
+index 0f9bebe..0205eb6 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
 @@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
@@ -39,10 +39,10 @@ index 0f9bebef8172e0661495b80be58120c49d4feb7b..0205eb6b5d6fcd3897bc58f4b2abd2bf
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index 2507607388dd6f50deabe6b13133a3583103ac11..0ba959432970c3fabad30ddbadf9f47478e21ee8 100644
+index c64457f..5b7cfea 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9199,7 +9199,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9202,7 +9202,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
