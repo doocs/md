@@ -12,17 +12,17 @@ overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
-  '@typescript-eslint/eslint-plugin': 8.68.0
-  '@typescript-eslint/parser': 8.68.0
-  '@typescript-eslint/project-service': 8.68.0
-  '@typescript-eslint/rule-tester': 8.68.0
-  '@typescript-eslint/scope-manager': 8.68.0
-  '@typescript-eslint/tsconfig-utils': 8.68.0
-  '@typescript-eslint/type-utils': 8.68.0
-  '@typescript-eslint/types': 8.68.0
-  '@typescript-eslint/typescript-estree': 8.68.0
-  '@typescript-eslint/utils': 8.68.0
-  '@typescript-eslint/visitor-keys': 8.68.0
+  '@typescript-eslint/eslint-plugin': 8.69.0
+  '@typescript-eslint/parser': 8.69.0
+  '@typescript-eslint/project-service': 8.69.0
+  '@typescript-eslint/rule-tester': 8.69.0
+  '@typescript-eslint/scope-manager': 8.69.0
+  '@typescript-eslint/tsconfig-utils': 8.69.0
+  '@typescript-eslint/type-utils': 8.69.0
+  '@typescript-eslint/types': 8.69.0
+  '@typescript-eslint/typescript-estree': 8.69.0
+  '@typescript-eslint/utils': 8.69.0
+  '@typescript-eslint/visitor-keys': 8.69.0
   '@webext-core/isolated-element': 1.1.4
   # CVE-2026-39244 / GHSA-xcpc-8h2w-3j85 (dependabot/311): firefox-profile pins ~0.5.x
   adm-zip: ^0.6.0
@@ -36,29 +36,29 @@ overrides:
   dompurify: ^3.4.14
   esbuild: '>=0.28.2'
   # CVE-2026-16221 / GHSA-v2hh-gcrm-f6hx (dependabot/314): ajv pins fast-uri ^3.0.1
-  fast-uri: ^3.1.4
+  fast-uri: ^3.1.6
   flatted@<3.4.0: ^3.4.4
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
   hono: ^4.13.5
   ini: '>=7.0.0'
-  js-yaml@^4: ^4.3.1
+  js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.4.1
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
-  markdown-it: ^14.3.0
+  markdown-it: ^14.3.1
   minimatch: ^10.2.6
   minimatch@^10: ^10.2.6
   minimatch@^5: ^10.2.6
   minimatch@^9: ^10.2.6
   prettier: 'catalog:'
-  qs: ^6.15.3
-  querystring: npm:qs@^6.15.3
+  qs: ^6.16.0
+  querystring: npm:qs@^6.16.0
   semver: ^7.8.5
   serialize-javascript@<7.0.3: ^7.1.0
   # GHSA sharp/libvips (dependabot/313): miniflare/wrangler pin sharp 0.34.5
-  sharp: ^0.35.0
+  sharp: ^0.35.4
   shell-quote: ^1.10.0
   source-map@0.8.0-beta.0: 0.7.4
   tinyexec: 1.3.0
@@ -83,24 +83,24 @@ allowBuilds:
   workerd: true
 
 patchedDependencies:
-  '@codemirror/view@6.43.9': patches/@codemirror__view@6.43.9.patch
+  '@codemirror/view@6.43.10': patches/@codemirror__view@6.43.10.patch
   juice@12.1.2: patches/juice@12.1.2.patch
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260829.1
-  '@codemirror/state': 6.7.1
-  '@codemirror/view': 6.43.9
+  '@cloudflare/workers-types': ^5.20260901.1
+  '@codemirror/state': 6.7.2
+  '@codemirror/view': 6.43.10
   '@types/node': ^26.4.0
   isomorphic-dompurify: ^3.23.0
   marked: ^18.0.11
   prettier: 2.8.8
-  tsx: ^4.23.12
+  tsx: ^4.23.13
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^4.1.11
   wrangler: ^4.127.1
-  zod: ^4.5.2
+  zod: ^4.5.4
 
 peerDependencyRules:
   allowedVersions:
