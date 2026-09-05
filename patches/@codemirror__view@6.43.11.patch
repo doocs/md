@@ -1,5 +1,5 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index cc44796..d5b8591 100644
+index d50b20a..9cfda1d 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
 @@ -9207,7 +9207,8 @@ function runHandlers(map, event, view, scope) {
@@ -39,7 +39,7 @@ index 0f9bebe..0205eb6 100644
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index c64457f..5b7cfea 100644
+index 1021312..8b3c5dc 100644
 --- a/dist/index.js
 +++ b/dist/index.js
 @@ -9202,7 +9202,8 @@ function runHandlers(map, event, view, scope) {
