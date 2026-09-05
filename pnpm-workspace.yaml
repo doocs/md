@@ -1,8 +1,12 @@
 minimumReleaseAge: 0
+minimumReleaseAgeExcludePrune: true
+trustPolicy: no-downgrade
+
+peerDependencyRules:
+  allowedVersions:
+    vite: '8'
 
 shellEmulator: true
-
-trustPolicy: no-downgrade
 
 packages:
   - apps/*
@@ -41,7 +45,7 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  hono: ^4.13.5
+  hono: ^4.13.7
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.4.1
@@ -61,7 +65,7 @@ overrides:
   sharp: ^0.35.4
   shell-quote: ^1.10.0
   source-map@0.8.0-beta.0: 0.7.4
-  tinyexec: 1.3.0
+  tinyexec: 1.3.1
   tmp: '>=0.2.7'
   underscore@<1.13.8: 1.13.8
   undici@^6: ^8.10.0
@@ -70,6 +74,10 @@ overrides:
   workbox-build>source-map: 0.7.4
   ws@<8.21.0: ^8.21.3
   yauzl: ^3.4.0
+
+patchedDependencies:
+  '@codemirror/view@6.43.11': patches/@codemirror__view@6.43.11.patch
+  juice@12.1.2: patches/juice@12.1.2.patch
 
 allowBuilds:
   '@vscode/vsce-sign': true
@@ -82,16 +90,12 @@ allowBuilds:
   vue-demi: true
   workerd: true
 
-patchedDependencies:
-  '@codemirror/view@6.43.10': patches/@codemirror__view@6.43.10.patch
-  juice@12.1.2: patches/juice@12.1.2.patch
-
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260901.1
-  '@codemirror/state': 6.7.2
-  '@codemirror/view': 6.43.10
-  '@types/node': ^26.4.0
+  '@cloudflare/workers-types': ^5.20260904.1
+  '@codemirror/state': 6.7.4
+  '@codemirror/view': 6.43.11
+  '@types/node': ^26.4.1
   isomorphic-dompurify: ^3.23.0
   marked: ^18.0.11
   prettier: 2.8.8
@@ -99,9 +103,5 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^4.1.11
-  wrangler: ^4.127.1
+  wrangler: ^4.129.0
   zod: ^4.5.4
-
-peerDependencyRules:
-  allowedVersions:
-    vite: '8'

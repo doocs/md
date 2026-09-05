@@ -105,12 +105,12 @@
   },
   "devDependencies": {
     "@types/node": "catalog:",
-    "@types/vscode": "1.134.0",
+    "@types/vscode": "1.136.0",
     "@vscode/vsce": "^3.9.2",
     "ts-loader": "^9.6.2",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "tsx": "catalog:",
-    "webpack": "^5.110.2",
+    "webpack": "^5.110.3",
     "webpack-cli": "^7.2.3"
   }
 }

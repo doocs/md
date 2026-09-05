@@ -37,10 +37,10 @@
     "link-claude-skills": "node ./scripts/link-claude-skills.mjs"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "9.3.0",
-    "@types/node": "^26.4.0",
+    "@antfu/eslint-config": "9.5.1",
+    "@types/node": "^26.4.1",
     "archiver": "^8.0.0",
-    "eslint": "^10.9.1",
+    "eslint": "^10.10.0",
     "eslint-plugin-format": "^2.0.1",
     "lint-staged": "^17.4.1",
     "prettier": "2.8.8",
