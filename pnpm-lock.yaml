@@ -9,15 +9,12 @@ catalogs:
     '@cloudflare/workers-types':
       specifier: ^5.20260904.1
       version: 5.20260904.1
-    '@codemirror/view':
-      specifier: 6.43.11
-      version: 6.43.11
     '@types/node':
       specifier: ^26.4.1
       version: 26.4.1
     isomorphic-dompurify:
-      specifier: ^3.23.0
-      version: 3.23.0
+      specifier: ^4.1.0
+      version: 4.1.0
     marked:
       specifier: ^18.0.11
       version: 18.0.11
@@ -172,7 +169,7 @@ importers:
         version: link:../../packages/shared
       isomorphic-dompurify:
         specifier: 'catalog:'
-        version: 3.23.0
+        version: 4.1.0
     devDependencies:
       '@types/node':
         specifier: 'catalog:'
@@ -389,7 +386,7 @@ importers:
         version: 11.12.0
       isomorphic-dompurify:
         specifier: 'catalog:'
-        version: 3.23.0
+        version: 4.1.0
       js-yaml:
         specifier: ^5.4.1
         version: 5.4.1
@@ -4427,8 +4424,8 @@ packages:
     resolution: {integrity: sha512-WhB9zCku7EGTj/HQQRz5aUQEUeoQZH2bWcltRErOpymJ4boYE6wL9Tbr23krRPSZ+C5zqNSrSw+Cc7sZZ4b7vg==}
     engines: {node: '>=0.10.0'}
 
-  isomorphic-dompurify@3.23.0:
-    resolution: {integrity: sha512-RuYFgdNApoTlR3QxVUyWdS/1ATpLEWEVg3H2tMImbfr6HkYPnuW1sdEtW4PRGlFhp04VbQQjcjXnucHYpXT44A==}
+  isomorphic-dompurify@4.1.0:
+    resolution: {integrity: sha512-vjQwQSxyEkJHO6g+KIDlWj8swAzUB01pJu9GU9cLGHjE10d59GFzJkgtB2Lj5WTOoq9JeHlYjR/FFuqeopPO0Q==}
     engines: {node: ^22.22.2 || ^24.15.0 || >=26.0.0}
 
   istextorbinary@9.5.0:
@@ -11012,7 +11009,7 @@ snapshots:
 
   isobject@3.0.1: {}
 
-  isomorphic-dompurify@3.23.0:
+  isomorphic-dompurify@4.1.0:
     dependencies:
       dompurify: 3.4.14
       jsdom: 30.0.1

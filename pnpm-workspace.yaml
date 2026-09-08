@@ -96,7 +96,7 @@ catalog:
   '@codemirror/state': 6.7.4
   '@codemirror/view': 6.43.11
   '@types/node': ^26.4.1
-  isomorphic-dompurify: ^3.23.0
+  isomorphic-dompurify: ^4.1.0
   marked: ^18.0.11
   prettier: 2.8.8
   tsx: ^4.23.13
