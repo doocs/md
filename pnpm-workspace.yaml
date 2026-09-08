@@ -102,6 +102,6 @@ catalog:
   tsx: ^4.23.13
   typescript: ~6.0.3
   uuid: ^14.0.2
-  vitest: ^4.1.11
+  vitest: ^5.0.0
   wrangler: ^4.129.0
   zod: ^4.5.4
