@@ -20,26 +20,28 @@
 
 ## 前置条件
 
-- **Node.js ≥ 22**
+- **Node.js ≥ 22.22.2**（见 `.nvmrc`）
 - **pnpm ≥ 10**
 
 ## 快速开始
 
-该项目为 pnpm monorepo 项目，使用 pnpm 管理依赖。
+该项目为 pnpm monorepo 项目，使用 pnpm 管理依赖。完整架构见 [docs/architecture.md](./docs/architecture.md)。
 
 项目结构如下：
 
-```shell
-- apps
-  - web           # 网页及浏览器插件
-  - vscode        # VSCode 插件
-- packages
-  - config        # 项目级别配置
-  - core          # 核心 markdown 渲染器
-  - shared        # 共享的配置、常量、类型和工具函数
-  - example       # 公众号 openapi 接口代理服务示例
-  - md-cli        # 命令行工具
-```
+| 工作区           | 路径                  | 说明                               |
+| ---------------- | --------------------- | ---------------------------------- |
+| `@md/web`        | `apps/web`            | Vue 3 主应用与浏览器扩展（WXT）    |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展                       |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包                    |
+| `@md/api`        | `apps/api`            | 账户、云同步、计费、分享与市场 API |
+| `@md/core`       | `packages/core`       | Markdown 渲染引擎                  |
+| `@md/shared`     | `packages/shared`     | 共享配置、类型与工具               |
+| `@md/config`     | `packages/config`     | 共享 TypeScript 配置               |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI（托管构建产物）                |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务                           |
+
+独立示例（不在 pnpm workspace 内）：`docs/examples/wechat-openapi-worker/`。
 
 以开发 `@md/web` 为例：
 
@@ -79,7 +81,7 @@ pnpm web dev
    ```bash
    pnpm run lint        # ESLint + Prettier
    pnpm run type-check  # TypeScript 类型检查
-   pnpm run web build       # 产物验证
+   pnpm web build       # 产物验证
    ```
 
 5. 提交并推送：
@@ -90,7 +92,7 @@ pnpm web dev
    git push origin feat/awesome-feature
    ```
 
-6. 在 GitHub 页面发起 **Pull Request**。
+6. 在 GitHub 页面发起 **Pull Request**，并按 [`.github/pull_request_template.md`](./.github/pull_request_template.md) 填写说明。
 
 > [!TIP]
 > 开发时可在 `apps/web` 目录下新建 `.env.local` 文件，配置 `VITE_LAUNCH_EDITOR` 为 `code` （默认值）或其他 [支持的编辑器](https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors)，方便调试。
@@ -107,8 +109,11 @@ pnpm web dev
 - 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
 - **代码注释统一使用英文。** 只写非显而易见的 why / 约束 / 坑；删除复述代码的噪音注释。用户可见文案（i18n）不受此限制。
+- Web 主应用新增用户可见文案须同时维护 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**。
 
 ## 提交规范
+
+提交信息遵循 [Conventional Commits](https://www.conventionalcommits.org/)，**标题与描述一律使用英文**（与 `AGENTS.md` 一致）。
 
 | 类型     | 说明                       |
 | -------- | -------------------------- |
@@ -125,22 +130,24 @@ pnpm web dev
 ### Branch 命名
 
 ```
-feat/<简要描述>
-fix/<简要描述>
-docs/<简要描述>
+feat/<short-description>
+fix/<short-description>
+docs/<short-description>
 ```
+
+其他类型使用对应前缀，例如 `chore/<short-description>`、`test/<short-description>`。
 
 ### Pull Request 标题
 
-保持与首条 commit message 一致，建议附带影响范围（Scope）与简要描述，例如：
+保持与首条 commit message 一致，使用英文 Conventional Commit 格式，建议附带影响范围（Scope），例如：
 
 ```
-feat(editor): 支持自定义快捷键
+feat(editor): add custom keyboard shortcuts
 ```
 
 ## Pull Request 流程
 
-1. **描述清晰**：在 PR 模板中说明变更动机、相关 Issue、实现方案及影响范围。
+1. **描述清晰**：在 [PR 模板](./.github/pull_request_template.md) 中说明变更动机、实现方案及影响范围。仅在确实修复某个 Issue 时填写 Related Issue（如 `Closes #123`），不要留占位符。
 2. **保持小而聚焦**：一个 PR 只做一件事，方便审阅。
 3. **确保测试**：新增/变更功能需自测，确保没问题。
 4. **更新文档**：公共 API 或行为变更必须同步更新文档。

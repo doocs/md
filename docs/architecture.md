@@ -25,7 +25,7 @@
 ### 依赖关系
 
 ```
-apps (web / vscode / mcp-server)
+apps/web, apps/vscode, packages/mcp-server
   └── @md/core
         └── @md/shared
               └── @md/config (dev)

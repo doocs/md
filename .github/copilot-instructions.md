@@ -1,57 +1,98 @@
 # Copilot Instructions
 
-This repository is a pnpm monorepo containing a Vue 3 web application, a VSCode extension, and a core markdown rendering library.
+This repository is a pnpm monorepo for **doocs/md**, a WeChat Markdown editor. Canonical agent guidance lives in [AGENTS.md](../AGENTS.md); keep this file aligned with it.
+
+- **Node:** `>=22.22.2` (`.nvmrc`: v22.22.2)
+- **Package manager:** pnpm (`packageManager` in the root `package.json`)
+- **npm registry:** https://registry.npmmirror.com (`.npmrc`)
 
 ## Build, Test, and Lint
 
 ### Global Commands
-- **Install Dependencies:** `pnpm install`
+
+- **Install:** `pnpm install`
 - **Lint (ESLint + Prettier):** `pnpm run lint`
-- **Type Check (Vue/TS):** `pnpm run type-check`
+- **Type Check:** `pnpm run type-check`
+- **Tests:** `pnpm run test` (`@md/shared`, `@md/core`, `@md/web`, `@md/api`)
 
-### Web App (@md/web)
+### Web App (`@md/web`)
+
 - **Development Server:** `pnpm web dev`
-- **Build for Production:** `pnpm web build`
-- **Build Browser Extension:** `pnpm web ext:zip` (uses WXT)
+- **Production Build:** `pnpm web build`
+- **Browser Extension:** `pnpm web ext:zip` (WXT; Chrome) / `pnpm web firefox:zip`
 
-### VSCode Extension (@md/vscode)
-- **Development:** `pnpm vscode`
+### Other Workspaces
 
-### CLI (@doocs/md-cli)
-- **Build CLI:** `pnpm run build:cli`
+- **API (`@md/api`):** `pnpm api dev` / `pnpm api test`
+- **VS Code (`doocs-md`):** `pnpm vscode compile` / `pnpm vscode package`
+- **CLI (`@doocs/md-cli`):** `pnpm run build:cli`
+- **MCP (`@md/mcp-server`):** `pnpm mcp dev`
+- **uTools (`@md/utools`):** `pnpm utools:package`
 
 ## High-Level Architecture
 
 ### Monorepo Structure
-- **apps/web**: The main application. Built with Vue 3, Vite, Pinia, and Tailwind CSS. It functions as both a web app and a browser extension (via WXT).
-- **packages/core**: The markdown rendering engine. It wraps `marked` and implements custom extensions (Mermaid, PlantUML, Ruby, etc.) and theme injection.
-- **packages/shared**: Shared utilities and configurations.
-- **packages/md-cli**: A CLI wrapper that serves the built web application.
+
+- **`apps/web`**: Vue 3 + Vite + Pinia + Tailwind CSS 4. Web app and browser extension (WXT).
+- **`apps/api`**: Cloudflare Workers + Hono + D1 (auth, cloud sync, billing, upload, share, marketplace, emoji).
+- **`apps/vscode`**: VS Code extension (webpack). Marketplace ID: `doocs.doocs-md`.
+- **`apps/utools`**: uTools plugin packaging shell (artifacts from `@md/web`).
+- **`packages/core`**: Markdown renderer (`marked` + custom extensions, theme CSS variables).
+- **`packages/shared`**: Shared config, types, CodeMirror wrapper, theme CSS.
+- **`packages/config`**: Shared TypeScript config.
+- **`packages/md-cli`**: Published npm CLI that serves the built web app.
+- **`packages/mcp-server`**: MCP tools (`render_markdown`, `list_themes`, `list_colors`).
+- **`docs/examples/wechat-openapi-worker/`**: standalone WeChat OpenAPI proxy (not in the pnpm workspace).
+
+Details: [docs/architecture.md](../docs/architecture.md).
 
 ### Key Technologies
-- **Frontend Framework:** Vue 3 (Composition API)
-- **Build System:** Vite
-- **State Management:** Pinia
-- **Styling:** Tailwind CSS + Custom CSS Variables for themes.
-- **Markdown Parsing:** `marked` (in `@md/core`)
-- **Editor Component:** CodeMirror 6
-- **Extension Framework:** WXT (Web Extension Tools)
+
+- **Frontend:** Vue 3 (Composition API), Pinia, Tailwind CSS 4 + PostCSS
+- **Editor:** CodeMirror 6
+- **Markdown:** `marked` in `@md/core`; `juice` inlines CSS for WeChat paste; `isomorphic-dompurify` sanitizes output
+- **Web build:** Vite 8; extension build: WXT
+- **API:** Hono on Cloudflare Workers, D1
+- **i18n (web only):** `vue-i18n` — zh-CN, zh-TW, en-US, ja-JP
 
 ## Key Conventions
 
 ### Development Patterns
-- **Direct TypeScript Imports:** The `@md/core` and `@md/shared` packages export TypeScript source files directly (`src/index.ts`). Do not attempt to build these packages separately; they are compiled by the consumer's build tool (Vite).
-- **UI Components:** The project uses Shadcn-Vue style components located in `apps/web/src/components/ui`. Prefer using these over raw HTML/CSS.
-- **Store Structure:** State is divided into domain-specific Pinia stores (e.g., `useEditorStore`, `useThemeStore`, `useUiStore`) located in `apps/web/src/stores`.
+
+- **`@md/core` and `@md/shared` export TypeScript source** (`src/index.ts`). Do not pre-build them; consumers (Vite/webpack) compile them.
+- **UI:** Shadcn-Vue components in `apps/web/src/components/ui`. Prefer these over raw HTML/CSS.
+- **Stores:** Domain Pinia stores in `apps/web/src/stores` (`useEditorStore`, `useThemeStore`, `useUiStore`, `useLocaleStore`, …).
+- **Comments:** English only. Explain non-obvious why / constraints; do not narrate the next line. Do not rewrite user-facing i18n copy unless asked.
+
+### Internationalization (`@md/web`)
+
+- Messages: `apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`
+- Components: `useI18n()` + `t('key')`. Stores/utils: `@/i18n/translate`.
+- New user-visible strings must be added in all four locales. VS Code, uTools, CLI, and MCP are not localized.
 
 ### Styling & Theming
-- **Theme Injection:** Theming is handled by `@md/core/src/theme`. Themes are applied by injecting CSS variables into the DOM.
-- **CSS processing:** Uses PostCSS and Tailwind. Global styles are in `apps/web/src/assets`.
+
+- Theme injection: `@md/core/src/theme` (CSS variables).
+- Theme CSS sources: `packages/shared/src/configs/theme-css/` (`default.css`, `grace.css`, `simple.css`).
 
 ### Markdown Extensions
-- **Implementation:** New markdown features should be implemented as extensions in `@md/core/src/extensions`.
-- **Registration:** Extensions must be registered in the renderer configuration.
+
+- Implement new Markdown features as extensions in `packages/core/src/extensions`.
+- Register them in the renderer configuration.
+
+### Dependencies
+
+- Shared toolchain versions live in `pnpm-workspace.yaml` `catalog`; workspace packages use `"catalog:"`.
+- Root `package.json` is publishable (`private: false`) — use plain semver there, not `catalog:`.
+- Prettier is pinned to **2.8.8**. Do not remove security `overrides` unless upstream fixed the CVE.
+- If a patched dependency is upgraded, update the matching file in `patches/` and `patchedDependencies`.
 
 ### Git Conventions
-- **Commit Messages:** Follow Conventional Commits (`feat`, `fix`, `docs`, `chore`, etc.).
-- **Branch Naming:** `feat/description`, `fix/description`.
+
+- **Commit messages and PR titles:** Conventional Commits, **English** (`feat`, `fix`, `docs`, `chore`, …).
+- **Branches:** `feat/description`, `fix/description`, `docs/description`; other types use `<type>/`.
+- Never commit on `main`. Follow `.github/pull_request_template.md` when opening a PR.
+
+### Agent Skills
+
+Canonical workflows: `.agents/skills/` (`git-commit`, `create-pr`, `wechat-svg`). Claude Code discovers them via git symlinks under `.claude/skills/`.
