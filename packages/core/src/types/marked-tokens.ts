@@ -36,7 +36,7 @@ export interface MarkupSuperscriptToken extends TextToken {
 }
 
 export interface EmojiToken extends TextToken {
-  type: 'emoji'
+  type: 'emoji' | 'emojiBlock'
   /** Set when the emoji is a custom-pack sticker (`<Emoji id="…">`). */
   id?: string
   /** Display name / alt text when provided. */
