@@ -1,4 +1,4 @@
-import { bench, describe } from 'vitest'
+import { describe, it } from 'vitest'
 import { initRenderer } from '../src/renderer/renderer-impl'
 import { postProcessHtml, renderMarkdown, sanitizeHtml } from '../src/utils/markdownHelpers'
 import { CODE_HEAVY_ARTICLE, LARGE_ARTICLE, MATH_HEAVY_ARTICLE } from './fixture'
@@ -28,26 +28,34 @@ function fullRender(markdown: string, renderer: ReturnType<typeof makeRenderer>)
 describe(`full render pipeline`, () => {
   const renderer = makeRenderer()
 
-  bench(`large article (~50k chars, mixed)`, () => {
-    fullRender(LARGE_ARTICLE, renderer)
+  it(`large article (~50k chars, mixed)`, async ({ bench }) => {
+    await bench(`large article (~50k chars, mixed)`, () => {
+      fullRender(LARGE_ARTICLE, renderer)
+    }).run()
   })
 
-  bench(`code-heavy article`, () => {
-    fullRender(CODE_HEAVY_ARTICLE, renderer)
+  it(`code-heavy article`, async ({ bench }) => {
+    await bench(`code-heavy article`, () => {
+      fullRender(CODE_HEAVY_ARTICLE, renderer)
+    }).run()
   })
 
-  bench(`math-heavy article`, () => {
-    fullRender(MATH_HEAVY_ARTICLE, renderer)
+  it(`math-heavy article`, async ({ bench }) => {
+    await bench(`math-heavy article`, () => {
+      fullRender(MATH_HEAVY_ARTICLE, renderer)
+    }).run()
   })
 })
 
 describe(`pipeline phases (large article)`, () => {
   const renderer = makeRenderer()
 
-  bench(`marked + highlight only`, () => {
-    renderer.reset({})
-    const { markdownContent } = renderer.parseFrontMatterAndContent(LARGE_ARTICLE)
-    renderer.renderMarkdownToHtml(markdownContent)
+  it(`marked + highlight only`, async ({ bench }) => {
+    await bench(`marked + highlight only`, () => {
+      renderer.reset({})
+      const { markdownContent } = renderer.parseFrontMatterAndContent(LARGE_ARTICLE)
+      renderer.renderMarkdownToHtml(markdownContent)
+    }).run()
   })
 
   const renderedHtml = (() => {
@@ -56,8 +64,10 @@ describe(`pipeline phases (large article)`, () => {
     return renderer.renderMarkdownToHtml(markdownContent)
   })()
 
-  bench(`sanitize only`, () => {
-    sanitizeHtml(renderedHtml)
+  it(`sanitize only`, async ({ bench }) => {
+    await bench(`sanitize only`, () => {
+      sanitizeHtml(renderedHtml)
+    }).run()
   })
 })
 
@@ -65,9 +75,11 @@ describe(`incremental typing (one paragraph edited)`, () => {
   const renderer = makeRenderer()
   let counter = 0
 
-  bench(`re-render after single-character edit`, () => {
-    counter++
-    const edited = LARGE_ARTICLE.replace(`# 大文档渲染性能基准`, `# 大文档渲染性能基准${counter}`)
-    fullRender(edited, renderer)
+  it(`re-render after single-character edit`, async ({ bench }) => {
+    await bench(`re-render after single-character edit`, () => {
+      counter++
+      const edited = LARGE_ARTICLE.replace(`# 大文档渲染性能基准`, `# 大文档渲染性能基准${counter}`)
+      fullRender(edited, renderer)
+    }).run()
   })
 })
