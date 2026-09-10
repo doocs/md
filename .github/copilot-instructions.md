@@ -61,7 +61,7 @@ Details: [docs/architecture.md](../docs/architecture.md).
 
 - **`@md/core` and `@md/shared` export TypeScript source** (`src/index.ts`). Do not pre-build them; consumers (Vite/webpack) compile them.
 - **UI:** Shadcn-Vue components in `apps/web/src/components/ui`. Prefer these over raw HTML/CSS.
-- **Stores:** Domain Pinia stores in `apps/web/src/stores` (`useEditorStore`, `useThemeStore`, `useUiStore`, `useLocaleStore`, …).
+- **Stores:** Domain Pinia stores in `apps/web/src/stores` (`useEditorStore`, `useThemeStore`, `useUIStore`, `useLocaleStore`, …).
 - **Comments:** English only. Explain non-obvious why / constraints; do not narrate the next line. Do not rewrite user-facing i18n copy unless asked.
 
 ### Internationalization (`@md/web`)

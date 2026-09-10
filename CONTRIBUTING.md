@@ -38,7 +38,7 @@
 | `@md/core`       | `packages/core`       | Markdown 渲染引擎                  |
 | `@md/shared`     | `packages/shared`     | 共享配置、类型与工具               |
 | `@md/config`     | `packages/config`     | 共享 TypeScript 配置               |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI（托管构建产物）                |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI（代理线上编辑器 + 本地上传）   |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务                           |
 
 独立示例（不在 pnpm workspace 内）：`docs/examples/wechat-openapi-worker/`。
@@ -105,7 +105,7 @@ pnpm web dev
 
 ## 代码规范
 
-- 遵循项目自带的 **ESLint**、**Prettier** 与 **Stylelint** 配置。
+- 遵循项目自带的 **ESLint**（`@antfu/eslint-config`）与 **Prettier**（固定 `2.8.8`）配置。
 - 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
 - **代码注释统一使用英文。** 只写非显而易见的 why / 约束 / 坑；删除复述代码的噪音注释。用户可见文案（i18n）不受此限制。

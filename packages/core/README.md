@@ -8,7 +8,7 @@ Markdown 渲染引擎：将 Markdown 转为适合微信公众号的 HTML。
 | --------------------- | --------------------------------------------------------- |
 | `@md/core`            | 主入口：`initRenderer`、`renderMarkdown`、`applyTheme` 等 |
 | `@md/core/renderer`   | 渲染器实现                                                |
-| `@md/core/extensions` | marked 扩展（Mermaid、KaTeX、alert 等）                   |
+| `@md/core/extensions` | marked 扩展（Mermaid、MathJax、alert 等）                 |
 | `@md/core/utils`      | `postProcessHtml`、`renderMarkdown` 辅助                  |
 | `@md/core/theme`      | 主题注入与 CSS 变量                                       |
 
@@ -42,7 +42,7 @@ const html = postProcessHtml(renderMarkdown(renderer, markdown))
 - **highlight.js** — 代码高亮
 - **mermaid / @antv/infographic** — 图表（按需加载仍建议在消费方做 code-splitting）
 - **isomorphic-dompurify** — HTML 净化（`sanitizeHtml`）
-- **juice** — CSS 内联（仅 Web 端复制到微信时使用，不在本包内）
+- **juice** — CSS 内联（仅 Web 端复制到微信 / 发布时使用，不在本包内）
 
 ## 相关文档
 

@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**简体中文 / English 界面**等特性。
+**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**zh-CN / zh-TW / en-US / ja-JP 界面**等特性。
 
 - **在线地址:** https://md.doocs.org
 - **Node 版本:** >= 22.22.2（`.nvmrc`: v22.22.2）
@@ -13,17 +13,17 @@
 
 ## Monorepo 结构
 
-| 工作区           | 路径                  | 说明                                                                 |
-| ---------------- | --------------------- | -------------------------------------------------------------------- |
-| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                    |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）       |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                      |
-| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                        |
-| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                 |
-| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                              |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                 |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                       |
-| `@md/api`        | `apps/api`            | 后端 API：账户登录 + 云同步 + 计费（Cloudflare Workers + Hono + D1） |
+| 工作区           | 路径                  | 说明                                                                       |
+| ---------------- | --------------------- | -------------------------------------------------------------------------- |
+| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                          |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）             |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                            |
+| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                              |
+| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                       |
+| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                    |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 代理线上编辑器 + 本地上传）                              |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                             |
+| `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、分享与市场（Cloudflare Workers + Hono + D1） |
 
 独立示例（不在 workspace 内）：`docs/examples/wechat-openapi-worker/` — 微信公众号 OpenAPI 代理 Worker。
 
@@ -35,7 +35,7 @@
 pnpm install          # 安装所有依赖
 pnpm start            # 等同于 `pnpm web dev`
 pnpm run lint         # ESLint --fix 全项目检查
-pnpm run type-check   # vue-tsc 类型检查
+pnpm run type-check   # Web vue-tsc + 各包 TypeScript 检查
 pnpm run build:cli    # 构建 web + 复制到 md-cli + npm pack
 pnpm run release:cli  # 通过 scripts/release.js 发布 CLI
 pnpm utools:package   # 打包 uTools 插件
@@ -80,10 +80,10 @@ pnpm mcp dev          # MCP Server 监听模式
 
 ### 渲染管线
 
-1. `@md/core` 封装 `marked`，实现自定义扩展（Mermaid、PlantUML、Ruby、KaTeX、TOC、alert 块、infographic、slider、markup、emoji、脚注）
-2. `juice` 内联 CSS 以兼容微信
-3. `isomorphic-dompurify` 净化输出
-4. 主题系统（`@md/core/src/theme/`）注入 CSS 变量
+1. `@md/core` 封装 `marked`，实现自定义扩展（Mermaid、PlantUML、Ruby、MathJax、TOC、alert 块、infographic、slider、markup、emoji、脚注）
+2. `isomorphic-dompurify` 净化输出（`sanitizeHtml`）
+3. 主题系统（`@md/core/src/theme/`）注入 CSS 变量
+4. `juice` 内联 CSS（仅复制到微信 / 发布时，在 `@md/web` 导出层）
 
 ### 构建系统
 
@@ -94,11 +94,11 @@ pnpm mcp dev          # MCP Server 监听模式
 
 - Web 应用使用 Tailwind CSS 4 + PostCSS
 - 主题 CSS 文件位于 `packages/shared/src/configs/theme-css/`（default.css、grace.css、simple.css）
-- 部分主题文件使用 Less
+- 应用 UI 部分样式使用 Less（`apps/web/src/assets/less/`），主题包为纯 CSS
 
 ### 状态管理
 
-- Pinia store 位于 `apps/web/src/stores/`（按领域划分：`useEditorStore`、`useThemeStore`、`useUiStore`、`useLocaleStore` 等）
+- Pinia store 位于 `apps/web/src/stores/`（按领域划分：`useEditorStore`、`useThemeStore`、`useUIStore`、`useLocaleStore` 等）
 - UI 组件遵循 Shadcn-Vue 模式，位于 `apps/web/src/components/ui`
 - 跨 feature 通用组件位于 `apps/web/src/components/shared`
 - 架构详情见 [docs/architecture.md](./docs/architecture.md)
@@ -108,7 +108,7 @@ pnpm mcp dev          # MCP Server 监听模式
 Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**；VS Code 扩展、uTools、CLI、MCP **未**国际化。
 
 - **库**：`vue-i18n`（composition API，`legacy: false`），在 `apps/web/vite.config.ts` 中通过 `unplugin-auto-import` 自动导入 `useI18n`
-- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`）
+- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`、`marketplace`、`notifications`）
 - **组件内**：`useI18n()` + `t('key')`；**Store / 工具函数**：`@/i18n/translate` 的 `t()` / `getLocale()` / `formatLocalDateTime()`
 - **语言状态**：`useLocaleStore`（持久化 key：`locale`）；用户可在 **偏好设置**（`Ctrl+,`）→ General 切换
 - **启动**：`await initStorage()` → `setupI18n(detectInitialLocale())` → Pinia → `useLocaleStore()`（见 `apps/web/src/bootstrap.ts`）；`index.html` 启动屏从 `localStorage` 读取 locale

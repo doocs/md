@@ -13,7 +13,7 @@
 | `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                                |
 | `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                             |
 | `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                    |
-| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                      |
+| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 代理线上编辑器 + 本地上传）                                     |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                    |
 
 独立示例（不在 pnpm workspace 内）：
@@ -41,8 +41,8 @@ Markdown 原文
   → isomorphic-dompurify 净化
   → 注入主题 CSS 变量 (@md/core/theme)
   → HTML 输出（预览）
-  → juice 内联 CSS（仅复制到微信时，在 `@md/web` 导出层）
-  → 剪贴板 HTML（公众号）
+  → juice 内联 CSS（复制到微信或发布到第三方平台时，在 `@md/web` 导出层）
+  → 剪贴板 HTML（公众号） / 发布 HTML（头条等）
 ```
 
 Web 端入口：
@@ -51,23 +51,23 @@ Web 端入口：
 2. `useThemeStore` 通过 `applyTheme` 将主题 CSS 写入 `<style>` 标签
 3. 编辑器内容变更经 debounce 后触发 `render()`
 
-扩展列表见 `packages/core/src/extensions/`（Mermaid、PlantUML、KaTeX、Ruby、alert、脚注等）。
+扩展列表见 `packages/core/src/extensions/`（Mermaid、PlantUML、MathJax、Ruby、alert、脚注等）。数学公式由 MathJax 渲染，输出仍使用历史 `katex-*` CSS 类名。
 
 ## Web 应用目录约定（`apps/web/src`）
 
-| 目录                 | 职责                                                                    |
-| -------------------- | ----------------------------------------------------------------------- |
-| `i18n/`              | vue-i18n 配置、locale 检测、按领域拆分的 message 模块                   |
-| `stores/`            | Pinia 全局状态，按领域划分                                              |
-| `composables/`       | 跨组件复用的响应式逻辑                                                  |
-| `services/`          | 外部 API 与领域服务（account / sync / share / upload / export）         |
-| `storage/`           | IndexedDB 抽象层、键前缀与安全读写                                      |
-| `lib/`               | 纯函数与浏览器辅助（bootstrap / browser / format / markdown / preview） |
-| `components/ui/`     | Shadcn-Vue 设计系统（无业务逻辑）                                       |
-| `components/editor/` | 编辑器主界面                                                            |
-| `components/ai/`     | AI 相关 UI                                                              |
-| `components/shared/` | 跨 feature 通用组件                                                     |
-| `entrypoints/`       | WXT 浏览器扩展入口                                                      |
+| 目录                 | 职责                                                                                                  |
+| -------------------- | ----------------------------------------------------------------------------------------------------- |
+| `i18n/`              | vue-i18n 配置、locale 检测、按领域拆分的 message 模块                                                 |
+| `stores/`            | Pinia 全局状态，按领域划分                                                                            |
+| `composables/`       | 跨组件复用的响应式逻辑                                                                                |
+| `services/`          | 外部 API 与领域服务（account / sync / share / upload / export / emoji / marketplace / notifications） |
+| `storage/`           | IndexedDB 抽象层、键前缀与安全读写                                                                    |
+| `lib/`               | 纯函数与浏览器辅助（bootstrap / browser / format / markdown / preview）                               |
+| `components/ui/`     | Shadcn-Vue 设计系统（无业务逻辑）                                                                     |
+| `components/editor/` | 编辑器主界面                                                                                          |
+| `components/ai/`     | AI 相关 UI                                                                                            |
+| `components/shared/` | 跨 feature 通用组件                                                                                   |
+| `entrypoints/`       | WXT 浏览器扩展入口                                                                                    |
 
 ## 状态管理（Web）
 
@@ -124,7 +124,7 @@ Pinia stores 按领域划分：
 
 ## 构建
 
-- Web：Vite 8，`manualChunks` 拆分 codemirror、katex、highlight 等
+- Web：Vite 8，`manualChunks` 拆分 codemirror、highlight、prettier 等
 - VSCode 扩展：webpack，预览渲染复用 `@md/core`（见 `apps/vscode/src/previewRenderer.ts`）
 - 浏览器扩展：WXT，`src/entrypoints/` 为入口
 - Core / Shared：**直接导出 TypeScript 源码**，由消费方构建工具编译

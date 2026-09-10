@@ -153,7 +153,7 @@ server.registerTool(
     description:
       `Render Markdown text to styled HTML using the doocs/md rendering engine. `
       + `The output is ready to be used in WeChat Official Accounts (公众号) and other platforms. `
-      + `Supports standard Markdown plus: KaTeX math, Mermaid diagrams, PlantUML, footnotes, alerts, `
+      + `Supports standard Markdown plus: MathJax math, Mermaid diagrams, PlantUML, footnotes, alerts, `
       + `ruby annotations, sliders, and table-of-contents.`,
     inputSchema: renderMarkdownInputSchema,
   },
@@ -333,8 +333,8 @@ server.registerTool(
   () => jsonText({
     extensions: [
       {
-        name: `KaTeX Math`,
-        description: `Inline and block LaTeX math expressions rendered via KaTeX.`,
+        name: `MathJax Math`,
+        description: `Inline and block LaTeX math expressions rendered via MathJax (output still uses katex-* CSS class names).`,
         inlineExample: `$E = mc^2$`,
         blockExample: `$$\n\\int_0^\\infty e^{-x^2} dx = \\frac{\\sqrt{\\pi}}{2}\n$$`,
       },
@@ -356,7 +356,7 @@ server.registerTool(
           + `Obsidian-style: abstract, summary, tldr, todo, success, done, question, help, faq, failure, fail, missing, danger, error, bug, example, quote, cite; `
           + `Academic: theorem, lemma, corollary, proposition, definition, axiom, postulate, assumption, proof, remark. `
           + `Any other name (including non-ASCII, e.g. "::: 推论") renders with a neutral fallback style using the name as the title. `
-          + `Bodies support full Markdown and KaTeX math.`,
+          + `Bodies support full Markdown and MathJax math.`,
         example: `> [!NOTE] 自定义标题\n> This is a note.\n\n::: theorem 勾股定理\n$a^2 + b^2 = c^2$\n:::\n\n::: 推论\n任意名称都会渲染为方框。\n:::`,
       },
       {

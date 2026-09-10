@@ -37,7 +37,7 @@
 
 ## 开发
 
-- **Node.js ≥ 22**
+- **Node.js ≥ 22.22.2**（与仓库 `.nvmrc` 一致）
 - 在 monorepo 根目录安装依赖：`pnpm install`
 
 ```sh

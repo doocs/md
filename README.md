@@ -34,12 +34,12 @@
 
 ## 功能特性
 
-- 支持标准 Markdown 语法及数学公式（KaTeX）
+- 支持标准 Markdown 语法及数学公式（MathJax）
 - 支持 Mermaid 图表、PlantUML、[GFM 警告块](https://github.com/orgs/community/discussions/16925)
 - 支持 Ruby 注音扩展，格式兼容 `[文字]{注音}` 与 `[文字]^(注音)`
 - 代码块提供多种高亮主题，可自定义主题色与 CSS 样式
 - 内置本地草稿管理，支持内容自动保存
-- 登录账户后可同步编辑器偏好（[云同步说明](/docs/cloud-sync.md)）
+- 登录账户后可同步编辑器偏好（[云同步说明](./docs/cloud-sync.md)）
 - 支持多种图床（GitHub、阿里云、腾讯云、七牛云、MinIO、S3、Cloudflare R2 等）
 - 支持文件导入与导出
 - 集成主流 AI 模型（DeepSeek、OpenAI、通义千问、腾讯混元、火山方舟、302.AI 等），辅助内容创作
@@ -53,14 +53,14 @@
 | 3   | [阿里云](https://www.aliyun.com/product/oss)           | 配置 `AccessKey ID`、`AccessKey Secret`、`Bucket`、`Region` 参数           | [如何使用阿里云 OSS？](https://help.aliyun.com/document_detail/31883.html)                                             |
 | 4   | [腾讯云](https://cloud.tencent.com/act/pro/cos)        | 配置 `SecretId`、`SecretKey`、`Bucket`、`Region` 参数                      | [如何使用腾讯云 COS？](https://cloud.tencent.com/document/product/436/38484)                                           |
 | 5   | [七牛云](https://www.qiniu.com/products/kodo)          | 配置 `AccessKey`、`SecretKey`、`Bucket`、`Domain`、`Region` 参数           | [如何使用七牛云 Kodo？](https://developer.qiniu.com/kodo)                                                              |
-| 6   | [MinIO](https://min.io/)                               | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](http://docs.minio.org.cn/docs/master/)                                                              |
+| 6   | [MinIO](https://min.io/)                               | 配置 `Endpoint`、`Port`、`UseSSL`、`Bucket`、`AccessKey`、`SecretKey` 参数 | [如何使用 MinIO？](https://min.io/docs/minio/linux/index.html)                                                         |
 | 7   | [S3 协议](https://aws.amazon.com/s3/)                  | 配置 `Endpoint`、`Region`、`Bucket`、`AccessKey`、`SecretKey` 参数         | 支持 AWS S3、Oracle、DigitalOcean 等兼容 S3 的存储服务                                                                 |
 | 8   | [公众号](https://mp.weixin.qq.com/)                    | 配置 `appID`、`appsecret`、`代理域名` 参数                                 | [如何使用公众号图床？](https://md-pages.doocs.org/tutorial)                                                            |
 | 9   | [Cloudflare R2](https://developers.cloudflare.com/r2/) | 配置 `AccountId`、`AccessKey`、`SecretKey`、`Bucket`、`Domain` 参数        | [如何使用 S3 API 操作 R2？](https://developers.cloudflare.com/r2/api/s3/api/)                                          |
 | 10  | [又拍云](https://www.upyun.com/)                       | 配置 `Bucket`、`Operator`、`Password`、`Domain` 参数                       | [如何使用 又拍云？](https://help.upyun.com/)                                                                           |
 | 11  | [Telegram](https://core.telegram.org/api)              | 配置 `Bot Token`、`Chat ID` 参数                                           | [如何使用 Telegram 图床？](https://github.com/doocs/md/blob/main/docs/telegram-usage.md)                               |
-| 12  | [Cloudinary](https://cloudinary.com/)                  | 配置 `Cloud Name`、`API Key`、`API Secret` 参数                            | [如何使用 Cloudinary？](https://cloudinary.com/documentation/upload_images)                                            |
-| 13  | 自定义上传                                             | 是                                                                         | [如何自定义上传？](/docs/custom-upload.md)                                                                             |
+| 12  | [Cloudinary](https://cloudinary.com/)                  | 配置 `Cloud Name`、`API Key`，以及 `API Secret` 或 `Upload Preset`         | [如何使用 Cloudinary？](https://cloudinary.com/documentation/upload_images)                                            |
+| 13  | 自定义上传                                             | 是                                                                         | [如何自定义上传？](./docs/custom-upload.md)                                                                            |
 
 ## 产品演示
 
@@ -116,6 +116,8 @@ pnpm web wrangler:deploy
 
 ### 方式一：npm cli
 
+`@doocs/md-cli` 在本机启动一个代理服务：界面转发到 [https://md.doocs.org/](https://md.doocs.org/)，并提供本地 `/upload` 上传接口。进程只监听 `127.0.0.1`。
+
 ```sh
 # 全局安装
 npm i -g @doocs/md-cli
@@ -130,7 +132,7 @@ md-cli port=8899
 支持的命令行参数：
 
 - `port`：监听端口，默认 `8800`，端口被占用时自动随机选取
-- `spaceId`：dcloud 服务空间配置
+- `spaceId`：dcloud 服务空间配置（可选，用于将上传转发到 uniCloud）
 - `clientSecret`：dcloud 服务空间配置
 
 ### 方式二：Docker

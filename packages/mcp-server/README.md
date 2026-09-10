@@ -7,7 +7,7 @@ Exposes the `doocs/md` markdown rendering engine and AI service configuration to
 ## Prerequisites
 
 - **Node.js** ≥ 22.22.2（与 monorepo 根目录 `.nvmrc` 一致）
-- **pnpm** ≥ 9（monorepo workspace）
+- **pnpm** ≥ 10（monorepo workspace；根目录 `packageManager` 为 pnpm 11）
 - Clone the monorepo and install dependencies:
 
 ```bash
@@ -22,41 +22,47 @@ pnpm install
 
 Convert Markdown text to styled HTML using the full doocs/md rendering pipeline.
 
-| Parameter          | Type                               | Default     | Description                                            |
-| ------------------ | ---------------------------------- | ----------- | ------------------------------------------------------ |
-| `markdown`         | `string`                           | —           | Markdown source text                                   |
-| `theme`            | `"default" \| "grace" \| "simple"` | `"default"` | Visual theme (经典 / 优雅 / 简洁)                      |
-| `primaryColor`     | `string (hex)`                     | `"#0F4C81"` | Primary accent color (see `list_colors`)               |
-| `fontFamily`       | `string`                           | 无衬线预设  | Font family stack (see `list_fonts`)                   |
-| `fontSize`         | `string (px)`                      | `"16px"`    | Base font size (see `list_font_sizes`)                 |
-| `legend`           | `string`                           | `"alt"`     | Image caption format (see `list_legend_formats`)       |
-| `isMacCodeBlock`   | `boolean`                          | `false`     | Render code blocks with a macOS-style title bar        |
-| `isShowLineNumber` | `boolean`                          | `false`     | Show line numbers in code blocks                       |
-| `citeStatus`       | `boolean`                          | `false`     | Convert links to footnote-style citations              |
-| `countStatus`      | `boolean`                          | `false`     | Prepend a reading-time estimate                        |
-| `themeMode`        | `"light" \| "dark"`                | `"light"`   | Color mode for diagram extensions                      |
-| `isUseIndent`      | `boolean`                          | `false`     | Indent paragraph first lines                           |
-| `isUseJustify`     | `boolean`                          | `false`     | Justify paragraph text                                 |
-| `headingStyles`    | `object`                           | `{}`        | Per-level heading styles (see `list_heading_styles`)   |
-| `codeBlockTheme`   | preset URL                         | GitHub 主题 | highlight.js preset from `list_code_block_themes` only |
-| `customCSS`        | `string`                           | `""`        | Additional custom CSS (highest priority)               |
+| Parameter              | Type                               | Default     | Description                                               |
+| ---------------------- | ---------------------------------- | ----------- | --------------------------------------------------------- |
+| `markdown`             | `string`                           | —           | Markdown source text                                      |
+| `theme`                | `"default" \| "grace" \| "simple"` | `"default"` | Visual theme (经典 / 优雅 / 简洁)                         |
+| `primaryColor`         | `string (hex)`                     | `"#0F4C81"` | Primary accent color (see `list_colors`)                  |
+| `fontFamily`           | `string`                           | 无衬线预设  | Font family stack (see `list_fonts`)                      |
+| `fontSize`             | `string (px)`                      | `"16px"`    | Base font size (see `list_font_sizes`)                    |
+| `lineHeight`           | `string (unitless)`                | `"1.75"`    | Body line height (see `list_spacing_options`)             |
+| `blockSpacing`         | `string (unitless)`                | `"1"`       | Theme vertical-margin multiplier (`list_spacing_options`) |
+| `linkColor`            | `string (colour)`                  | `"#576b95"` | Link colour (see `list_color_options`)                    |
+| `blockquoteBackground` | `string (colour)`                  | `"default"` | Blockquote background; `"default"` keeps the theme        |
+| `legend`               | `string`                           | `"alt"`     | Image caption format (see `list_legend_formats`)          |
+| `isMacCodeBlock`       | `boolean`                          | `false`     | Render code blocks with a macOS-style title bar           |
+| `isShowLineNumber`     | `boolean`                          | `false`     | Show line numbers in code blocks                          |
+| `citeStatus`           | `boolean`                          | `false`     | Convert links to footnote-style citations                 |
+| `countStatus`          | `boolean`                          | `false`     | Prepend a reading-time estimate                           |
+| `themeMode`            | `"light" \| "dark"`                | `"light"`   | Color mode for diagram extensions                         |
+| `isUseIndent`          | `boolean`                          | `false`     | Indent paragraph first lines                              |
+| `isUseJustify`         | `boolean`                          | `false`     | Justify paragraph text                                    |
+| `headingStyles`        | `object`                           | `{}`        | Per-level heading styles (see `list_heading_styles`)      |
+| `codeBlockTheme`       | preset URL                         | GitHub 主题 | highlight.js preset from `list_code_block_themes` only    |
+| `customCSS`            | `string`                           | `""`        | Additional custom CSS (highest priority)                  |
 
 Returns `{ html, frontMatter, readingTime: { words, minutes } }`.
 
 ### Other tools
 
-| Tool                     | Description                                                                       |
-| ------------------------ | --------------------------------------------------------------------------------- |
-| `list_themes`            | List all available visual themes with labels and authors                          |
-| `list_colors`            | List all available primary accent colors                                          |
-| `list_fonts`             | List preset font family options                                                   |
-| `list_font_sizes`        | List preset font size options                                                     |
-| `list_legend_formats`    | List image caption format options                                                 |
-| `list_heading_styles`    | List heading style presets                                                        |
-| `list_code_block_themes` | List highlight.js code block theme URLs                                           |
-| `list_ai_services`       | List all built-in AI service providers with endpoints and models                  |
-| `explain_extensions`     | Describe every Markdown extension beyond CommonMark (KaTeX, Mermaid, PlantUML, …) |
-| `get_renderer_options`   | Describe all renderer configuration options                                       |
+| Tool                     | Description                                                                         |
+| ------------------------ | ----------------------------------------------------------------------------------- |
+| `list_themes`            | List all available visual themes with labels and authors                            |
+| `list_colors`            | List all available primary accent colors                                            |
+| `list_fonts`             | List preset font family options                                                     |
+| `list_font_sizes`        | List preset font size options                                                       |
+| `list_legend_formats`    | List image caption format options                                                   |
+| `list_heading_styles`    | List heading style presets                                                          |
+| `list_spacing_options`   | List preset line height and block spacing options                                   |
+| `list_color_options`     | List preset link colour and blockquote background options                           |
+| `list_code_block_themes` | List highlight.js code block theme URLs                                             |
+| `list_ai_services`       | List all built-in AI service providers with endpoints and models                    |
+| `explain_extensions`     | Describe every Markdown extension beyond CommonMark (MathJax, Mermaid, PlantUML, …) |
+| `get_renderer_options`   | Describe all renderer configuration options                                         |
 
 ## Setup
 

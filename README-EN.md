@@ -34,12 +34,12 @@ Pull requests are welcome. You can also share ideas in [Discussions](https://git
 
 ## Features
 
-- Standard Markdown syntax and math formulas (KaTeX)
+- Standard Markdown syntax and math formulas (MathJax)
 - Mermaid diagrams, PlantUML, and [GFM alert blocks](https://github.com/orgs/community/discussions/16925)
 - Ruby annotation extension: `[text]{ruby}` and `[text]^(ruby)` formats
 - Multiple code highlight themes; customizable theme colors and CSS
 - Local draft management with auto-save
-- Sync editor preferences after sign-in ([cloud sync](/docs/cloud-sync.md))
+- Sync editor preferences after sign-in ([cloud sync](./docs/cloud-sync.md))
 - Multiple image hosting options (GitHub, Alibaba Cloud OSS, Tencent COS, Qiniu, MinIO, S3, Cloudflare R2, and more)
 - File import and export
 - AI assistant integration (DeepSeek, OpenAI, Tongyi Qianwen, Tencent Hunyuan, Volcengine, 302.AI, etc.)
@@ -53,14 +53,14 @@ Pull requests are welcome. You can also share ideas in [Discussions](https://git
 | 3   | [Alibaba Cloud OSS](https://www.aliyun.com/product/oss) | `AccessKey ID`, `AccessKey Secret`, `Bucket`, `Region`           | [Docs](https://help.aliyun.com/document_detail/31883.html)                                                               |
 | 4   | [Tencent COS](https://cloud.tencent.com/act/pro/cos)    | `SecretId`, `SecretKey`, `Bucket`, `Region`                      | [Docs](https://cloud.tencent.com/document/product/436/38484)                                                             |
 | 5   | [Qiniu Kodo](https://www.qiniu.com/products/kodo)       | `AccessKey`, `SecretKey`, `Bucket`, `Domain`, `Region`           | [Docs](https://developer.qiniu.com/kodo)                                                                                 |
-| 6   | [MinIO](https://min.io/)                                | `Endpoint`, `Port`, `UseSSL`, `Bucket`, `AccessKey`, `SecretKey` | [Docs](http://docs.minio.org.cn/docs/master/)                                                                            |
+| 6   | [MinIO](https://min.io/)                                | `Endpoint`, `Port`, `UseSSL`, `Bucket`, `AccessKey`, `SecretKey` | [Docs](https://min.io/docs/minio/linux/index.html)                                                                       |
 | 7   | [S3-compatible](https://aws.amazon.com/s3/)             | `Endpoint`, `Region`, `Bucket`, `AccessKey`, `SecretKey`         | Supports AWS S3, Oracle, DigitalOcean, and other S3-compatible storage                                                   |
 | 8   | [WeChat Official Account](https://mp.weixin.qq.com/)    | `appID`, `appsecret`, proxy domain                               | [Tutorial](https://md-pages.doocs.org/tutorial)                                                                          |
 | 9   | [Cloudflare R2](https://developers.cloudflare.com/r2/)  | `AccountId`, `AccessKey`, `SecretKey`, `Bucket`, `Domain`        | [S3 API docs](https://developers.cloudflare.com/r2/api/s3/api/)                                                          |
 | 10  | [Upyun](https://www.upyun.com/)                         | `Bucket`, `Operator`, `Password`, `Domain`                       | [Docs](https://help.upyun.com/)                                                                                          |
 | 11  | [Telegram](https://core.telegram.org/api)               | `Bot Token`, `Chat ID`                                           | [Usage guide](https://github.com/doocs/md/blob/main/docs/telegram-usage.md)                                              |
-| 12  | [Cloudinary](https://cloudinary.com/)                   | `Cloud Name`, `API Key`, `API Secret`                            | [Docs](https://cloudinary.com/documentation/upload_images)                                                               |
-| 13  | Custom upload                                           | Yes                                                              | [How to configure](/docs/custom-upload.md)                                                                               |
+| 12  | [Cloudinary](https://cloudinary.com/)                   | `Cloud Name`, `API Key`, and `API Secret` or `Upload Preset`     | [Docs](https://cloudinary.com/documentation/upload_images)                                                               |
+| 13  | Custom upload                                           | Yes                                                              | [How to configure](./docs/custom-upload.md)                                                                              |
 
 ## Demo
 
@@ -117,6 +117,8 @@ pnpm web wrangler:deploy
 
 ### Option 1: npm CLI
 
+`@doocs/md-cli` starts a local proxy: the UI is forwarded to [https://md.doocs.org/](https://md.doocs.org/), and a local `/upload` endpoint is served. The process binds to `127.0.0.1` only.
+
 ```sh
 # Install globally
 npm i -g @doocs/md-cli
@@ -131,7 +133,7 @@ md-cli port=8899
 Supported CLI options:
 
 - `port`: Listening port. Defaults to `8800`; a random port is chosen if occupied.
-- `spaceId`: dcloud service space ID
+- `spaceId`: optional dcloud service space ID (for uniCloud uploads)
 - `clientSecret`: dcloud service space secret
 
 ### Option 2: Docker

@@ -1,14 +1,16 @@
 # md-cli
 
-A powerful yet simple tool for rendering Markdown documents locally during development.
+Local CLI for [doocs/md](https://github.com/doocs/md). It starts an Express process that:
+
+- proxies the editor UI to [https://md.doocs.org/](https://md.doocs.org/)
+- serves a local `/upload` endpoint (and `/public` static files)
+- binds to `127.0.0.1` only
+
+It does **not** render Markdown by itself. Offline / fully private hosting should use the Docker image instead.
 
 ## Installation
 
-To get started with `md-cli`, you can install it either globally or locally, depending on your needs.
-
 ### Install locally
-
-If you only need it for a specific project, you can install it locally by running:
 
 ```bash
 npm install @doocs/md-cli
@@ -16,30 +18,32 @@ npm install @doocs/md-cli
 
 ### Install globally
 
-For global access across all your projects, install it globally with:
-
 ```bash
 npm install -g @doocs/md-cli
 ```
 
 ## Usage
 
-Once installed, running `md-cli` is a breeze. Here’s how to get started:
-
 ### Default setup
-
-To launch `md-cli` with the default settings, simply run:
 
 ```bash
 md-cli
 ```
 
-### Custom port
+Then open `http://127.0.0.1:8800`.
 
-If you prefer to run `md-cli` on a different port, say `8899`, just specify it like this:
+### Custom port
 
 ```bash
 md-cli port=8899
+```
+
+### Optional uniCloud upload
+
+If `spaceId` and `clientSecret` are set, `/upload` forwards files to a dcloud service space. Otherwise files stay under `public/upload`.
+
+```bash
+md-cli spaceId=<id> clientSecret=<secret>
 ```
 
 ## Maintainers
