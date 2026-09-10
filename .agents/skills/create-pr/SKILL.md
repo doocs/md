@@ -7,6 +7,8 @@ description: Create a GitHub pull request following project conventions. Use whe
 
 This skill guides you through creating a well-structured GitHub pull request that follows project conventions and best practices.
 
+Do **not** assume Bash. On Windows PowerShell, avoid `&&`, `$(...)`, and POSIX tests; run git/`gh` commands as separate invocations and use `$env:TEMP` for the PR body file.
+
 ## Prerequisites Check
 
 Before proceeding, verify the following:
@@ -53,16 +55,15 @@ Ensure you're not on `main` or `master`. If so, ask the user to create or switch
 
 ### 2. Find the base branch
 
-Determine the default branch once and reuse it as `BASE_BRANCH` in all later commands:
+Resolve the default branch once and reuse it as `BASE_BRANCH`. Do **not** assume Bash (`$(...)`, `sed`, `[ -z ... ]` fail in PowerShell).
 
 ```bash
-BASE_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-
-# Fallback when origin/HEAD is not configured
-if [ -z "$BASE_BRANCH" ]; then
-  BASE_BRANCH=$(git remote show origin | sed -n '/HEAD branch/s/.*: //p')
-fi
+git symbolic-ref refs/remotes/origin/HEAD
 ```
+
+This prints `refs/remotes/origin/<branch>` (usually `main`). Use the last path segment.
+
+If that fails, run `git remote show origin` and parse the `HEAD branch:` line.
 
 This is typically `main` or `master`, but may differ per repo.
 
@@ -141,7 +142,7 @@ git push origin HEAD --force-with-lease
 
 ## Create the Pull Request
 
-Use `CONTRIBUTING.md` (Pull Request 流程) as the source of truth for PR content. If `.github/pull_request_template.md` exists, follow that template exactly. Otherwise, use this structure:
+Use `CONTRIBUTING.md` (Pull Request 流程) as the source of truth for PR content. Follow [`.github/pull_request_template.md`](../../../.github/pull_request_template.md) exactly:
 
 - **Summary** — what changed and why
 - **Related Issue** — only when a real issue is linked (e.g. `Closes #123`); omit entirely if none
@@ -159,19 +160,23 @@ When filling out the PR body:
 
 **Use a temporary file for the PR body** to avoid shell escaping issues, newline problems, and other command-line flakiness:
 
-1. Write the PR body to a temporary file (e.g. `$env:TEMP/pr-body.md` on Windows, `/tmp/pr-body.md` on macOS/Linux).
+1. Write the PR body to a temporary file (`$env:TEMP/pr-body.md` on Windows PowerShell, `/tmp/pr-body.md` on macOS/Linux).
 
 2. Create the PR using the file:
+
    ```bash
+   # Bash / zsh
    gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base "$BASE_BRANCH"
+   ```
+
+   ```powershell
+   # PowerShell
+   gh pr create --title "PR_TITLE" --body-file "$env:TEMP/pr-body.md" --base $BASE_BRANCH
    ```
 
 3. Clean up the temporary file after the PR is created.
 
-For draft PRs:
-```bash
-gh pr create --title "PR_TITLE" --body-file /tmp/pr-body.md --base "$BASE_BRANCH" --draft
-```
+For draft PRs, add `--draft` to the same command.
 
 **Why use a file?** Passing complex markdown with newlines, special characters, and checkboxes directly via `--body` is error-prone. The `--body-file` flag handles all content reliably.
 

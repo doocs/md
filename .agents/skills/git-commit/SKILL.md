@@ -2,7 +2,6 @@
 name: git-commit
 description: 'Execute git commit with conventional commit message analysis, intelligent staging, and message generation. Use when user asks to commit changes, create a git commit, or mentions "/commit". Supports: (1) Auto-detecting type and scope from changes, (2) Creating a feature branch when on main/master before committing, (3) Generating conventional commit messages from diff, (4) Interactive commit with optional type/scope/description overrides, (5) Intelligent file staging for logical grouping'
 license: MIT
-allowed-tools: Bash
 ---
 
 # Git Commit with Conventional Commits
@@ -48,6 +47,14 @@ feat: allow config to extend other configs
 
 BREAKING CHANGE: `extends` key behavior changed
 ```
+
+## Host shell
+
+Do **not** assume Bash. Cursor on Windows uses PowerShell, where `&&`, `$(cat <<'EOF')`, and POSIX `[ -z ... ]` fail.
+
+- Prefer **separate git invocations** over chained one-liners.
+- If you must chain: PowerShell uses `;` (or separate calls). Bash/zsh may use `&&`.
+- Examples below show Bash and PowerShell when the syntax differs.
 
 ## Workflow
 
@@ -128,11 +135,16 @@ Analyze the diff to determine:
 
 ### 5. Execute Commit
 
-```bash
-# Single line
-git commit -m "<type>[scope]: <description>"
+Single line (any shell):
 
-# Multi-line with body/footer
+```bash
+git commit -m "<type>[scope]: <description>"
+```
+
+Multi-line with body/footer:
+
+```bash
+# Bash / zsh
 git commit -m "$(cat <<'EOF'
 <type>[scope]: <description>
 
@@ -141,6 +153,17 @@ git commit -m "$(cat <<'EOF'
 <optional footer>
 EOF
 )"
+```
+
+```powershell
+# PowerShell
+git commit -m @"
+<type>[scope]: <description>
+
+<optional body>
+
+<optional footer>
+"@
 ```
 
 ## Best Practices
@@ -161,6 +184,6 @@ EOF
 
 ## Project Notes (doocs/md)
 
-- Commit messages must be in **English** (see `AGENTS.md`)
+- Commit messages and PR titles must be in **English** (see `AGENTS.md` and `CONTRIBUTING.md`)
 - Branch naming: `feat/`, `fix/`, `docs/` per `CONTRIBUTING.md`; for other commit types use `<type>/` prefix; never commit on `main`/`master` — create a branch first (step 2)
 - Pre-commit runs `eslint --fix` via lint-staged; if the hook modifies files, fix and create a new commit instead of amending
