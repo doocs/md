@@ -118,10 +118,9 @@ git add path/to/file1 path/to/file2
 # Stage by pattern
 git add *.test.*
 git add src/components/*
-
-# Interactive staging
-git add -p
 ```
+
+Do **not** run `git add -p` (interactive; agents cannot complete it). Stage explicit paths instead.
 
 **Never commit secrets** (.env, credentials.json, private keys).
 

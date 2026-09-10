@@ -4,17 +4,17 @@
 
 ## Monorepo 结构
 
-| 包               | 路径                  | 职责                                                                                    |
-| ---------------- | --------------------- | --------------------------------------------------------------------------------------- |
-| `@md/web`        | `apps/web`            | Vue 3 主应用、WXT 浏览器扩展（Chrome/Firefox）、CF Workers 部署                         |
-| `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享链接、主题/组件市场（Cloudflare Workers + Hono + D1） |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID 为 `doocs.doocs-md`）                        |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包壳（构建产物来自 `@md/web`）                                             |
-| `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                                |
-| `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                             |
-| `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                    |
-| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                      |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                    |
+| 包               | 路径                  | 职责                                                                                            |
+| ---------------- | --------------------- | ----------------------------------------------------------------------------------------------- |
+| `@md/web`        | `apps/web`            | Vue 3 主应用、WXT 浏览器扩展（Chrome/Firefox）、CF Workers 部署                                 |
+| `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享链接、主题/组件市场、表情包（Cloudflare Workers + Hono + D1） |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID 为 `doocs.doocs-md`）                                |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包壳（构建产物来自 `@md/web`）                                                     |
+| `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                                        |
+| `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                                     |
+| `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                            |
+| `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                              |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                            |
 
 独立示例（不在 pnpm workspace 内）：
 

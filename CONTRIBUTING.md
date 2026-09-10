@@ -29,17 +29,17 @@
 
 项目结构如下：
 
-| 工作区           | 路径                  | 说明                               |
-| ---------------- | --------------------- | ---------------------------------- |
-| `@md/web`        | `apps/web`            | Vue 3 主应用与浏览器扩展（WXT）    |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展                       |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包                    |
-| `@md/api`        | `apps/api`            | 账户、云同步、计费、分享与市场 API |
-| `@md/core`       | `packages/core`       | Markdown 渲染引擎                  |
-| `@md/shared`     | `packages/shared`     | 共享配置、类型与工具               |
-| `@md/config`     | `packages/config`     | 共享 TypeScript 配置               |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI（托管构建产物）                |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务                           |
+| 工作区           | 路径                  | 说明                                                 |
+| ---------------- | --------------------- | ---------------------------------------------------- |
+| `@md/web`        | `apps/web`            | Vue 3 主应用与浏览器扩展（WXT）                      |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展                                         |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包                                      |
+| `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享、市场与表情包 API |
+| `@md/core`       | `packages/core`       | Markdown 渲染引擎                                    |
+| `@md/shared`     | `packages/shared`     | 共享配置、类型与工具                                 |
+| `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                 |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI（托管构建产物）                                  |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务                                             |
 
 独立示例（不在 pnpm workspace 内）：`docs/examples/wechat-openapi-worker/`。
 
@@ -105,7 +105,7 @@ pnpm web dev
 
 ## 代码规范
 
-- 遵循项目自带的 **ESLint**、**Prettier** 与 **Stylelint** 配置。
+- 遵循项目自带的 **ESLint** 与 **Prettier** 配置。
 - 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
 - **代码注释统一使用英文。** 只写非显而易见的 why / 约束 / 坑；删除复述代码的噪音注释。用户可见文案（i18n）不受此限制。
@@ -147,7 +147,7 @@ feat(editor): add custom keyboard shortcuts
 
 ## Pull Request 流程
 
-1. **描述清晰**：在 [PR 模板](./.github/pull_request_template.md) 中说明变更动机、实现方案及影响范围。仅在确实修复某个 Issue 时填写 Related Issue（如 `Closes #123`），不要留占位符。
+1. **描述清晰**：按 [PR 模板](./.github/pull_request_template.md) 填写 Summary、Type of Change、Test Procedure 与 Checklist。仅当本 PR 确实修复某个 Issue 时，在模板之外增加 `## Related Issue`（如 `Closes #123`），不要留空标题或 `#XXXX` 占位符。
 2. **保持小而聚焦**：一个 PR 只做一件事，方便审阅。
 3. **确保测试**：新增/变更功能需自测，确保没问题。
 4. **更新文档**：公共 API 或行为变更必须同步更新文档。
