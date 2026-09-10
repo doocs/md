@@ -118,7 +118,7 @@ export default {
       isUseJustify: `Justify text`,
       isOpenRightSlider: `Right slider open`,
       isOpenPostSlider: `Post slider open`,
-      showAIToolbox: `AI toolbox`,
+      showAIToolbox: `AI toolbar`,
       theme: `Theme`,
       fontFamily: `Font family`,
       fontSize: `Font size`,
