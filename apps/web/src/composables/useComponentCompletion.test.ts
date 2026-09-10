@@ -46,6 +46,22 @@ describe(`createComponentCompletionSource`, () => {
     expect(source(ctx(`<div`))).toBeNull()
   })
 
+  it(`lists the system Emoji component`, () => {
+    const emoji: CustomComponentDef = {
+      id: `builtin-emoji`,
+      name: `Emoji`,
+      template: ``,
+      props: [{ name: `id`, required: true }],
+      builtIn: true,
+      inline: true,
+      hidden: true,
+    }
+    const source = createComponentCompletionSource(() => [emoji])
+    const result = source(ctx(`<Em`))
+    expect(result).not.toBeNull()
+    expect(result!.options.map(o => o.label)).toEqual([`Emoji`])
+  })
+
   it(`completes props after a component name + space`, () => {
     const result = source(ctx(`<TipBlock `))
     expect(result).not.toBeNull()

@@ -3,7 +3,7 @@ import { addPrefix } from '@/storage/prefix'
 
 /** IndexedDB database name */
 export const DB_NAME = `doocs-md`
-export const DB_VERSION = 2
+export const DB_VERSION = 4
 
 export const STORE_DOCUMENTS = `documents`
 export const STORE_SETTINGS = `settings`
@@ -13,6 +13,7 @@ export const STORE_META = `meta`
 
 export const MIGRATION_V1_KEY = addPrefix(`storage_migrated_v1`)
 export const LOCALSTORAGE_CLEANED_KEY = addPrefix(`storage_localstorage_cleaned_v1`)
+export const LEGACY_EMOJI_PACK_KEY = addPrefix(`emoji_packs`)
 
 /** localStorage key prefix written by this app (MD__) */
 export const LOCALSTORAGE_KEY_PREFIX = `${prefix}__`

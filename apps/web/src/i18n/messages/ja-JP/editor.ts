@@ -295,6 +295,7 @@ export default {
     nameRequired: `コンポーネント名は空にできません`,
     nameInvalid: `名前は大文字で始まり、英数字のみ（PascalCase）である必要があります`,
     nameDuplicate: `コンポーネント名は既に存在します`,
+    nameReserved: `「{name}」はシステム内蔵コンポーネントのため使えません`,
     templateRequired: `コンポーネントテンプレートは空にできません`,
     exportSuccess: `カスタムコンポーネントをエクスポートしました`,
     importSuccess: `{count} 個のコンポーネントをインポートしました`,
@@ -366,6 +367,15 @@ export default {
         props: {
           tags: `タグラベルの JSON 文字列配列`,
           color: `タグアクセント色（hex）`,
+        },
+      },
+      Emoji: {
+        description: `内蔵パックまたはマイ絵文字から挿入するインラインスタンプ`,
+        props: {
+          id: `スタンプ ID`,
+          alt: `代替テキスト（任意）`,
+          width: `幅のパーセント。例: 20%（任意、省略時は小サイズ）`,
+          align: `単独行のときの揃え：left、center、right（任意）`,
         },
       },
     },

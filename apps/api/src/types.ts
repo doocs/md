@@ -1,6 +1,8 @@
 export interface Env {
   DB: D1Database
   ASSETS: Fetcher
+  /** Dedicated private R2 bucket for system and user emoji assets */
+  EMOJI_ASSETS: R2Bucket
   GITHUB_CLIENT_ID: string
   GITHUB_CLIENT_SECRET: string
   JWT_SECRET: string

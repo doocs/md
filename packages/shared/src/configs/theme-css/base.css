@@ -47,3 +47,29 @@ section table {
   color: unset !important;
   letter-spacing: unset !important;
 }
+
+/* ==================== Inline emoji ====================
+ * `<img class="md-emoji">` comes from `<Emoji id="…">` (and legacy
+ * `{{emoji:id}}`). Native pixel sizing makes the image dwarf the surrounding
+ * text; constrain to the line box so it reads as an inline character.
+ */
+#output img.md-emoji,
+section img.md-emoji {
+  max-height: 1.4em;
+  width: auto;
+  vertical-align: text-bottom;
+  margin: 0 0.1em;
+  display: inline;
+}
+
+/*
+ * Original-size stickers (`width="N%"`) use a separate class so the line-box
+ * cap above does not shrink them. Keep aspect ratio and stay inside the article.
+ */
+#output img.md-asset-img,
+section img.md-asset-img {
+  height: auto;
+  max-width: 100%;
+  vertical-align: text-bottom;
+  display: inline;
+}

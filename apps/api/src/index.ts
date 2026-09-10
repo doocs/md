@@ -3,6 +3,7 @@ import { Hono } from 'hono'
 import { cors } from 'hono/cors'
 import { activateHandler } from './activate'
 import { authMiddleware, authRoutes, meHandler } from './auth'
+import { emojiRoutes } from './emojis'
 import { marketplaceRoutes } from './marketplace'
 import { notificationRoutes } from './notifications'
 import { isAllowedOrigin, isBrowserExtensionOrigin } from './origin'
@@ -45,6 +46,9 @@ app.post(`/s/:shareId/unlock`, unlockShareHandler)
 
 // Theme / component marketplace (public browse + auth publish/admin)
 app.route(`/marketplace`, marketplaceRoutes)
+
+// Public manifests/assets and authenticated personal emoji pack management
+app.route(`/emojis`, emojiRoutes)
 
 const api = new Hono<{ Bindings: Env, Variables: { userId: string } }>()
 api.use(`*`, authMiddleware)

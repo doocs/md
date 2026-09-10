@@ -37,6 +37,14 @@ export interface MarkupSuperscriptToken extends TextToken {
 
 export interface EmojiToken extends TextToken {
   type: 'emoji'
+  /** Set when the emoji is a custom-pack sticker (`<Emoji id="…">`). */
+  id?: string
+  /** Display name / alt text when provided. */
+  name?: string
+  /** Width in percent for original-size stickers. */
+  widthPercent?: number
+  /** Block alignment; only applied when the tag sits on its own line. */
+  align?: 'left' | 'center' | 'right'
 }
 
 export interface RubyToken extends TextToken {
@@ -73,6 +81,17 @@ export type AlertRendererFn = (this: AlertRendererThis, token: AlertToken) => st
 
 /** Adapt a typed renderer to marked's Tokens.Generic signature. */
 export function asTextTokenRenderer<T extends TextToken>(
+  fn: (token: T) => string,
+): RendererExtensionFunction {
+  return (token: Tokens.Generic) => fn(token as T)
+}
+
+/**
+ * Like `asTextTokenRenderer` but accepts any token shape — used for custom
+ * inline extensions that add their own fields beyond the `TextToken` baseline
+ * (e.g. the `assetEmoji` extension adds `id`, `name`, `widthPercent`).
+ */
+export function asGenericTokenRenderer<T extends Tokens.Generic>(
   fn: (token: T) => string,
 ): RendererExtensionFunction {
   return (token: Tokens.Generic) => fn(token as T)

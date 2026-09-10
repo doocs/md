@@ -142,4 +142,16 @@ $$ITE_{i}=Y_{i,1}-Y_{i,0} \\tag{1}$$`
     renderMarkdown(`## New`, renderer)
     expect(renderer.getHeadings()).toEqual([{ level: 2, text: `New` }])
   })
+
+  it('resolves <Emoji> tags through assetResolver', () => {
+    const renderer = initRenderer({
+      assetResolver: id => `https://cdn.example/${id}.png`,
+    })
+    const { html } = renderMarkdown(`hello <Emoji id="liulei" alt="流泪" />`, renderer)
+
+    expect(html).toContain(`md-emoji`)
+    expect(html).toContain(`https://cdn.example/liulei.png`)
+    expect(html).toContain(`data-emoji-id="liulei"`)
+    expect(html).not.toContain(`about:blank`)
+  })
 })

@@ -165,6 +165,7 @@ export default {
       ],
       other: [
         { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `使用 GitHub 短代码，未收录的名称将原样显示` },
+        { name: `表情贴纸`, syntax: `<Emoji id="liulei" />\n<Emoji id="liulei" width="20%" />\n<Emoji id="liulei" width="20%" align="center" />`, tip: `系统内置行内组件；align 仅在独占一行时生效` },
         { name: `注音标注`, syntax: `[文字]{注音}\n[文字]^(注音)`, example: `你好`, tip: `支持日语假名、拼音等` },
         { name: `幻灯片`, syntax: `<![alt](url1),![alt](url2)>`, tip: `横屏滑动图片，仅支持微信公众号` },
         { name: `HTML 标签`, syntax: `<center>居中内容</center>`, tip: `部分 HTML 标签可用` },

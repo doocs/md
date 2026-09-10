@@ -15,6 +15,8 @@ const PostSlider = defineAsyncComponent(() => import('@/components/editor/post-s
 const FolderSourcePanel = defineAsyncComponent(() => import('@/components/editor/folder-source-panel/index.vue'))
 const CssEditor = defineAsyncComponent(() => import('@/components/editor/CssEditor.vue'))
 const RightSlider = defineAsyncComponent(() => import('@/components/editor/RightSlider.vue'))
+const loadEmojiManagerPanel = () => import('@/components/editor/emoji/EmojiManagerPanel.vue')
+const EmojiManagerPanel = defineAsyncComponent(loadEmojiManagerPanel)
 const UploadImgDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/UploadImgDialog.vue'))
 const TableEditDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/TableEditDialog.vue'))
 const ImportMarkdownDialog = defineAsyncComponent(() => import('@/components/editor/dialogs/ImportMarkdownDialog.vue'))
@@ -84,7 +86,25 @@ function handleUploadImage(file: File, cb?: any, applyUrl?: boolean) {
   editorPanelCompRef.value?.uploadImage(file, cb, applyUrl)
 }
 
-const hasSidePanel = computed(() => !isMobile.value && (isOpenRightSlider.value || uiStore.isShowCssEditor))
+const CSS_PANEL_TARGET_SIZE = 25
+const RIGHT_PANEL_TARGET_SIZE = 30
+const EMOJI_PANEL_TARGET_SIZE = 30
+const EMOJI_PANEL_MIN_SIZE = 22
+const EMOJI_PANEL_MAX_SIZE = 50
+
+const cssPanelTargetSize = computed(() =>
+  !isMobile.value && uiStore.isShowCssEditor ? CSS_PANEL_TARGET_SIZE : 0)
+const rightPanelTargetSize = computed(() =>
+  !isMobile.value && isOpenRightSlider.value ? RIGHT_PANEL_TARGET_SIZE : 0)
+const emojiPanelTargetSize = computed(() =>
+  !isMobile.value && uiStore.isOpenEmojiManager ? EMOJI_PANEL_TARGET_SIZE : 0)
+const contentPanelTargetSize = computed(() =>
+  100 - cssPanelTargetSize.value - rightPanelTargetSize.value - emojiPanelTargetSize.value)
+
+// Side panels must keep a zero default so Reka can safely re-derive layouts;
+// their non-zero target sizes are applied imperatively after state changes.
+const hasSidePanel = computed(() =>
+  cssPanelTargetSize.value + rightPanelTargetSize.value + emojiPanelTargetSize.value > 0)
 
 const editorPanelConfig = computed(() => {
   const mode = viewMode.value
@@ -117,6 +137,8 @@ const previewResizablePanelRef = ref<InstanceType<typeof ResizablePanel> | null>
 const postSliderPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const cssEditorPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
 const rightSliderPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const emojiManagerPanelRef = ref<InstanceType<typeof ResizablePanel> | null>(null)
+const hasMountedEmojiManager = ref(uiStore.isOpenEmojiManager)
 
 type ResizablePanelRef = Ref<InstanceType<typeof ResizablePanel> | null>
 
@@ -144,9 +166,10 @@ function resizePanelSafely(panelRef: ResizablePanelRef, size: number) {
 }
 
 function redistributePanelSizes() {
-  const cssTarget = !isMobile.value && uiStore.isShowCssEditor ? 25 : 0
-  const rightTarget = !isMobile.value && isOpenRightSlider.value ? 30 : 0
-  const contentSpace = 100 - cssTarget - rightTarget
+  const cssTarget = cssPanelTargetSize.value
+  const rightTarget = rightPanelTargetSize.value
+  const emojiTarget = emojiPanelTargetSize.value
+  const contentSpace = contentPanelTargetSize.value
 
   const mode = viewMode.value
   if (mode === `edit`) {
@@ -165,6 +188,7 @@ function redistributePanelSizes() {
 
   resizePanelSafely(cssEditorPanelRef, cssTarget)
   resizePanelSafely(rightSliderPanelRef, rightTarget)
+  resizePanelSafely(emojiManagerPanelRef, emojiTarget)
 }
 
 watch(viewMode, redistributePanelSizes)
@@ -172,6 +196,12 @@ watch(viewMode, redistributePanelSizes)
 watch(() => uiStore.isShowCssEditor, redistributePanelSizes)
 
 watch(isOpenRightSlider, redistributePanelSizes)
+
+watch(() => uiStore.isOpenEmojiManager, (open) => {
+  if (open)
+    hasMountedEmojiManager.value = true
+  nextTick(redistributePanelSizes)
+})
 
 watch(isOpenPostSlider, (open) => {
   if (isMobile.value)
@@ -190,6 +220,12 @@ onMounted(() => {
   redistributePanelSizes()
   if (!isMobile.value && isOpenPostSlider.value)
     resizePanelSafely(postSliderPanelRef, 20)
+
+  // Warm the deferred chunk after startup so the first panel open is instant.
+  if (`requestIdleCallback` in window)
+    window.requestIdleCallback(() => void loadEmojiManagerPanel(), { timeout: 2000 })
+  else
+    setTimeout(() => void loadEmojiManagerPanel(), 600)
 
   // Warm up the async post-slider chunk while idle: fetches the chunk in prod,
   // and in dev finishes the on-demand transform before the user opens the panel.
@@ -295,10 +331,27 @@ const isImgLoading = computed(() => unref(editorPanelCompRef.value?.isImgLoading
               >
                 <RightSlider v-if="!isMobile && isOpenRightSlider" />
               </ResizablePanel>
+
+              <ResizableHandle v-show="!isMobile && uiStore.isOpenEmojiManager" class="hidden md:block right-slider-handle" />
+              <!-- Stable constraints avoid re-deriving defaults on every toggle. -->
+              <ResizablePanel
+                ref="emojiManagerPanelRef"
+                class="emoji-manager-panel"
+                :order="5"
+                :default-size="0"
+                :min-size="EMOJI_PANEL_MIN_SIZE"
+                :max-size="EMOJI_PANEL_MAX_SIZE"
+                collapsible
+                :collapsed-size="0"
+                @collapse="uiStore.isOpenEmojiManager = false"
+              >
+                <EmojiManagerPanel v-if="!isMobile && hasMountedEmojiManager" />
+              </ResizablePanel>
             </ResizablePanelGroup>
 
             <CssEditor v-if="isMobile" />
             <RightSlider v-if="isMobile" />
+            <EmojiManagerPanel v-if="isMobile" />
           </ResizablePanel>
         </ResizablePanelGroup>
       </div>

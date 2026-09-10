@@ -19,6 +19,9 @@ export const useUIStore = defineStore(`ui`, () => {
 
   const isOpenFolderPanel = store.reactive(addPrefix(`is_open_folder_panel`), false)
 
+  const isOpenEmojiManager = store.reactive(addPrefix(`is_open_emoji_manager`), false)
+  const toggleShowEmojiManager = useToggle(isOpenEmojiManager)
+
   const isMobile = store.reactive(`isMobile`, false)
 
   // viewMode: edit | split | preview
@@ -245,6 +248,7 @@ export const useUIStore = defineStore(`ui`, () => {
     viewMode,
     previewDevice,
     isOpenFolderPanel,
+    isOpenEmojiManager,
     enableImageReupload,
     enableScrollSync,
     copyMode,
@@ -317,6 +321,7 @@ export const useUIStore = defineStore(`ui`, () => {
     toggleAIToolbox,
     toggleImageReupload,
     toggleScrollSync,
+    toggleShowEmojiManager,
     setViewMode,
     setPreviewDevice,
     togglePreviewDevice,

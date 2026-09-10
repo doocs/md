@@ -29,6 +29,13 @@ export interface CustomComponentDef {
   props: ComponentPropDef[]
   /** Built-in components cannot be deleted but may be overridden */
   builtIn?: boolean
+  /**
+   * Inline components are tokenized by a dedicated extension (not the
+   * block-level `<Component />` parser) so they can sit inside a paragraph.
+   */
+  inline?: boolean
+  /** Hide from the component manager; still available to autocomplete. */
+  hidden?: boolean
   /** UI example; preferred over auto-generated snippet */
   example?: string
   createdAt?: number

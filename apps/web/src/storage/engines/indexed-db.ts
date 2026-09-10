@@ -28,7 +28,7 @@ export class IndexedDBEngine implements StorageEngine {
     for (const storeName of stores) {
       const rows = await db.getAll(storeName)
       for (const row of rows)
-        this.cache.set(row.key, row.value)
+        this.cache.set(row.key, row.value as string)
     }
     this.preloaded = true
   }

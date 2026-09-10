@@ -1,5 +1,5 @@
 import type { ComponentRegistry, CreateComponentParams, CustomComponentDef, UpdateComponentParams } from '@md/shared'
-import { BUILT_IN_COMPONENTS, getBuiltInRegistry } from '@md/core/extensions'
+import { BUILT_IN_COMPONENTS, getBuiltInRegistry, isInlineSystemComponent } from '@md/core/extensions'
 import { uuidv4 } from '@md/shared/utils/uuid'
 import { t } from '@/i18n/translate'
 import { buildComponentSnippet } from '@/lib/component-snippet'
@@ -23,6 +23,8 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   const allComponents = computed<CustomComponentDef[]>(() => {
     const builtInMap = new Map(BUILT_IN_COMPONENTS.map(c => [c.name, c]))
     for (const c of userComponents.value) {
+      if (isInlineSystemComponent(c.name))
+        continue
       builtInMap.set(c.name, c)
     }
     return [...builtInMap.values()]
@@ -31,12 +33,18 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
   const registry = computed<ComponentRegistry>(() => {
     const base = getBuiltInRegistry()
     for (const c of userComponents.value) {
+      if (isInlineSystemComponent(c.name))
+        continue
       base[c.name] = c
     }
     return base
   })
 
-  function createComponent(params: CreateComponentParams): CustomComponentDef {
+  function createComponent(params: CreateComponentParams): CustomComponentDef | undefined {
+    if (isInlineSystemComponent(params.name)) {
+      toast.error(t('component.nameReserved', { name: params.name }))
+      return undefined
+    }
     const now = Date.now()
     const def: CustomComponentDef = {
       id: uuidv4(),
@@ -56,6 +64,10 @@ export const useCustomComponentStore = defineStore(`customComponent`, () => {
     const idx = userComponents.value.findIndex(c => c.id === id)
     if (idx === -1) {
       toast.error(t('store.component.notFound'))
+      return false
+    }
+    if (params.name && isInlineSystemComponent(params.name)) {
+      toast.error(t('component.nameReserved', { name: params.name }))
       return false
     }
     userComponents.value[idx] = {

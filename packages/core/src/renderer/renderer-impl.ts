@@ -470,7 +470,9 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
     () => opts.renderMessages,
   ))
   markdownParser.use(markedMarkup())
-  markdownParser.use(markedEmoji())
+  markdownParser.use(markedEmoji({
+    resolveUrl: id => opts.assetResolver?.(id) ?? `about:blank`,
+  }))
   markdownParser.use(markedToc())
   markdownParser.use(markedSlider())
   markdownParser.use(markedAlert({}))

@@ -165,6 +165,7 @@ export default {
       ],
       other: [
         { name: `Emoji`, syntax: `:rocket: :tada: :+1:`, example: `🚀 🎉 👍`, tip: `GitHub shortcodes; names that are not included stay as plain text` },
+        { name: `Sticker`, syntax: `<Emoji id="liulei" />\n<Emoji id="liulei" width="20%" />\n<Emoji id="liulei" width="20%" align="center" />`, tip: `Built-in inline component; align applies only on its own line` },
         { name: `Ruby annotation`, syntax: `[text]{ruby}\n[text]^(ruby)`, example: `hello`, tip: `Supports kana, pinyin, and more` },
         { name: `Slideshow`, syntax: `<![alt](url1),![alt](url2)>`, tip: `Horizontal swipe images, WeChat Official Accounts only` },
         { name: `HTML tags`, syntax: `<center>centered content</center>`, tip: `Some HTML tags are supported` },

@@ -295,6 +295,7 @@ export default {
     nameRequired: `Component name cannot be empty`,
     nameInvalid: `Name must start with uppercase letter and contain only letters and digits (PascalCase)`,
     nameDuplicate: `Component name already exists`,
+    nameReserved: `"{name}" is a built-in system component and cannot be reused`,
     templateRequired: `Component template cannot be empty`,
     exportSuccess: `Custom components exported`,
     importSuccess: `Imported {count} components`,
@@ -366,6 +367,15 @@ export default {
         props: {
           tags: `JSON string array of tag labels`,
           color: `Tag accent color (hex)`,
+        },
+      },
+      Emoji: {
+        description: `Inline sticker from the built-in pack or My Emoji`,
+        props: {
+          id: `Sticker id`,
+          alt: `Alternative text (optional)`,
+          width: `Width percent, e.g. 20% (optional; defaults to small)`,
+          align: `Alignment when on its own line: left, center, or right (optional)`,
         },
       },
     },

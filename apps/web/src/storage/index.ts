@@ -1,6 +1,6 @@
 import { getMeta, setMeta } from '@/storage/db'
 import { IndexedDBEngine } from '@/storage/engines/indexed-db'
-import { LOCALSTORAGE_CLEANED_KEY, MIGRATION_V1_KEY } from '@/storage/keys'
+import { LEGACY_EMOJI_PACK_KEY, LOCALSTORAGE_CLEANED_KEY, MIGRATION_V1_KEY } from '@/storage/keys'
 import { store } from '@/storage/manager'
 import {
   cleanupMigratedLocalStorage,
@@ -31,6 +31,7 @@ let initComplete = false
 async function initLegacyFallback(reason: string): Promise<void> {
   console.warn(`[Storage] ${reason} — using localStorage fallback`)
   setUseLegacyDocumentStorage(true)
+  await store.remove(LEGACY_EMOJI_PACK_KEY)
   await store.restorePendingWrites()
   await documentRepo.loadAll()
   initComplete = true
@@ -66,6 +67,7 @@ export function initStorage(): Promise<void> {
       await engine.preload()
       await migrateLegacyThemeSettings(engine)
       await migrateMpProfile(engine)
+      await engine.remove(LEGACY_EMOJI_PACK_KEY)
 
       const cleaned = await getMeta(LOCALSTORAGE_CLEANED_KEY)
       if (cleaned !== `1`) {

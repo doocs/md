@@ -1,3 +1,4 @@
+import { inlineEmojiImagesAsBase64 } from '@/lib/export/inlineEmojiImages'
 import { stripUnresolvedAsyncPlaceholders, waitForPreviewReady } from '@/lib/preview/preview-ready'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -68,6 +69,7 @@ export async function processClipboardContent(primaryColor: string) {
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
     prepareDiagramSvgsForWeChat(clipboardDiv)
+    await inlineEmojiImagesAsBase64(clipboardDiv)
 
     const stylesToAdd = await getStylesToAdd()
 

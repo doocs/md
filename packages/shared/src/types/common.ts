@@ -45,6 +45,11 @@ export interface IOpts {
   countMessages?: CountMessages
   /** Footnotes, unknown components, math loading, etc. (injected by locale on Web) */
   renderMessages?: RenderMessages
+  /**
+   * Resolve a sticker / emoji id to a URL. The Web app injects the cloud
+   * asset lookup at render time so the markdown package stays storage-agnostic.
+   */
+  assetResolver?: (id: string) => string
 }
 
 export interface IConfigOption<VT = string> {

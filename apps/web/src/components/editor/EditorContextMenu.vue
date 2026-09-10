@@ -24,6 +24,7 @@ import {
   ListOrdered,
   RefreshCw,
   RotateCcw,
+  Smile,
   Strikethrough,
   Table,
   Trash2,
@@ -58,6 +59,7 @@ const {
   toggleShowUploadImgDialog,
   toggleShowImportMdDialog,
   toggleShowComponentDialog,
+  toggleShowEmojiManager,
 } = uiStore
 
 const isContextTargetInTable = ref(false)
@@ -201,6 +203,10 @@ function downloadAsSegmentedImages(maxSegmentHeight: number) {
           <ContextMenuItem @click="toggleShowComponentDialog()">
             <Blocks class="mr-2 h-4 w-4" />
             {{ t('menu.component') }}
+          </ContextMenuItem>
+          <ContextMenuItem @click="toggleShowEmojiManager()">
+            <Smile class="mr-2 h-4 w-4" />
+            {{ t('menu.emoji') }}
           </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>

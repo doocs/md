@@ -8,6 +8,7 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 - 文章与偏好设置的增量同步（`/sync/pull`、`/sync/push`）
 - **预览分享**：登录用户可将编辑器预览快照发布为只读链接（`/share` → `GET /s/:id`），支持访问密码，默认 1 天过期
 - **主题 / 组件市场**：公开浏览已审核内容；登录后可发布（进入 `pending`）；`ADMIN_GITHUB_LOGINS` 管理员审核通过后上架
+- **云表情包**：公开默认表情包与资源代理；登录用户可管理一个最多 100 项的个人表情包
 - **免费 / Pro 套餐**：Pro 支持更高同步频率；免费版限 30 次/小时，Pro 限 300 次/小时
 - **爱发电 Pro 开通**：Webhook 自动激活 + 订单号手动激活
 - 冲突策略：**last-write-wins**（按 `updateDatetime`），软删除墓碑保证删除可传播
@@ -43,6 +44,13 @@ doocs/md 的后端 API，基于 **Cloudflare Workers + Hono + D1**，提供 GitH
 - `POST /marketplace/admin/:id/approve` / `reject` 审核（管理员）
 - `POST /webhooks/afdian` 爱发电订单 Webhook
 - `POST /upload` 默认图床上传（GitHub 或 R2，由服务端 `UPLOAD_BACKEND` 配置）
+- `GET  /emojis/default` 默认表情包清单（公开）
+- `GET  /emojis/assets/:id` 表情资源（公开；系统资源长期 immutable 缓存）
+- `GET  /emojis/me` 获取或创建个人表情包（需登录）
+- `PATCH /emojis/me` 修改个人表情包名称（需登录）
+- `POST /emojis/me/items` 上传单个表情（需登录；PNG/JPEG/GIF/WebP，最大 5 MiB）
+- `DELETE /emojis/me/items/:id` 删除个人表情（需登录）
+- `DELETE /emojis/me` 删除整个个人表情包（需登录）
 
 ## 部署步骤
 
@@ -54,21 +62,33 @@ pnpm api exec wrangler d1 create md-sync
 
 把输出的 `database_id` 填入 [`wrangler.toml`](./wrangler.toml) 的 `database_id`。
 
-### 2. 执行迁移
+### 2. 创建表情专用 R2 bucket
+
+表情资源必须与默认图床的 `UPLOAD_IMAGES` 分开存放：
+
+```bash
+pnpm api exec wrangler r2 bucket create md-emoji-assets
+pnpm api exec wrangler r2 bucket create md-emoji-assets-preview
+```
+
+自行部署时可修改 [`wrangler.toml`](./wrangler.toml) 中 `EMOJI_ASSETS` 的
+`bucket_name` 与 `preview_bucket_name`。
+
+### 3. 执行迁移
 
 ```bash
 pnpm api db:migrate:local    # 本地开发库
 pnpm api db:migrate:remote   # 生产库
 ```
 
-### 3. 配置 GitHub OAuth App
+### 4. 配置 GitHub OAuth App
 
 在 GitHub → Settings → Developer settings → OAuth Apps 新建应用：
 
 - **Authorization callback URL**：`https://<your-worker-domain>/auth/github/callback`
   （本地开发：`http://localhost:8787/auth/github/callback`）
 
-### 4. 设置密钥与变量
+### 5. 设置密钥与变量
 
 ```bash
 pnpm api exec wrangler secret put GITHUB_CLIENT_ID
@@ -107,7 +127,7 @@ pnpm api exec wrangler secret put UPLOAD_GITHUB_TOKENS_BUCKETIO   # 逗号分隔
 
 限流（UTC 小时）：匿名 60 次、登录免费 120 次、Pro 300 次。
 
-### 5. 爱发电配置
+### 6. 爱发电配置
 
 1. 在 [afdian.com 开发者后台](https://afdian.com/dashboard/dev) 配置 Webhook：
    `https://<your-worker-domain>/webhooks/afdian`
@@ -120,19 +140,22 @@ pnpm api exec wrangler secret put UPLOAD_GITHUB_TOKENS_BUCKETIO   # 逗号分隔
 > 因此伪造回调无法骗取 Pro。建议同时设置 `AFDIAN_WEBHOOK_TOKEN` 作为路径密钥，
 > 防止公开端点被刷量、空耗爱发电 API 配额。
 
-### 6. 本地运行 / 部署
+### 7. 本地运行 / 部署
 
 ```bash
 pnpm api dev      # 本地 http://localhost:8787
 pnpm api deploy   # 部署到 Cloudflare
 ```
 
+首次生产发布顺序：创建两个 R2 bucket → 应用 D1 迁移 → 运行经确认的远程种子 →
+部署 Worker。后续代码发布只需先应用新增迁移，再部署 Worker。
+
 > **Worker 改名迁移（md-sync → md-api）**：本服务的 Cloudflare worker 名已由 `md-sync` 更名为 `md-api`。
 > 若你此前部署过 `md-sync`，首次 `pnpm api deploy` 会创建全新的 `md-api` worker，需要在新 worker 上**重新设置所有 secret**
 > （见上方第 4 步），自定义域名 `md-api.doocs.org` 会指向新 worker；确认无误后可在 Cloudflare 控制台删除旧的 `md-sync` worker。
 > D1 数据库（资源名仍为 `md-sync`）按 `database_id` 绑定，数据不受影响。
 
-### 7. 前端接入
+### 8. 前端接入
 
 在 `apps/web/.env`（参考 [`apps/web/.env.example`](../web/.env.example)）设置：
 

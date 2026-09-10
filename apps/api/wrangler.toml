@@ -18,6 +18,12 @@ database_name = "md-sync"
 database_id = "d7659e81-8fda-4abc-b128-f7a5975f7a7d"
 migrations_dir = "migrations"
 
+# Emoji assets use a dedicated private bucket and are served through /emojis/assets/:id.
+[[r2_buckets]]
+binding = "EMOJI_ASSETS"
+bucket_name = "md-emoji-assets"
+preview_bucket_name = "md-emoji-assets-preview"
+
 # 分享页静态资源（favicon 等）
 [assets]
 directory = "./public"

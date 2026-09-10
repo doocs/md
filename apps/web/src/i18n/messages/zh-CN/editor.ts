@@ -295,6 +295,7 @@ export default {
     nameRequired: `组件名称不能为空`,
     nameInvalid: `组件名称必须以大写字母开头，只含字母和数字（PascalCase）`,
     nameDuplicate: `组件名称已存在，请更换名称`,
+    nameReserved: `「{name}」是系统内置组件，不能作为自定义组件名`,
     templateRequired: `组件模板不能为空`,
     exportSuccess: `已导出自定义组件`,
     importSuccess: `成功导入 {count} 个组件`,
@@ -366,6 +367,15 @@ export default {
         props: {
           tags: `JSON 字符串数组，标签列表`,
           color: `标签主色调（hex）`,
+        },
+      },
+      Emoji: {
+        description: `行内表情贴纸，从系统或「我的表情」插入`,
+        props: {
+          id: `表情 ID`,
+          alt: `替代文本（可选）`,
+          width: `宽度百分比，如 20%（可选，默认小尺寸）`,
+          align: `独占一行时的对齐：left、center、right（可选）`,
         },
       },
     },

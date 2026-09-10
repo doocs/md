@@ -3,6 +3,7 @@ import type { ComponentPropDef, CustomComponentDef } from '@md/shared'
 import type { CustomComponentFormPayload } from './CustomComponentForm.vue'
 import type { MpAccount } from '@/stores/mpAccounts'
 import { Blocks, Check, ChevronDown, Copy, Download, Lock, Pencil, Plus, Rss, Trash2, Upload, Zap } from '@lucide/vue'
+import { isInlineSystemComponent } from '@md/core/extensions'
 import { escapeHtml } from '@md/core/utils'
 import { useLocalizedBuiltinComponents } from '@/composables/useLocalizedBuiltinComponents'
 import { buildComponentSnippet, missingRequiredProps } from '@/lib/component-snippet'
@@ -19,6 +20,9 @@ const confirmStore = useConfirmStore()
 const editorStore = useEditorStore()
 const componentStore = useCustomComponentStore()
 const localizedBuiltinComponents = useLocalizedBuiltinComponents()
+const visibleBuiltinComponents = computed(() =>
+  localizedBuiltinComponents.value.filter(c => !c.hidden),
+)
 const mpAccountsStore = useMpAccountsStore()
 const uiStore = useUIStore()
 
@@ -45,10 +49,11 @@ function openEditForm(def: CustomComponentDef) {
 
 function onFormSave(payload: CustomComponentFormPayload) {
   if (formMode.value === 'create') {
-    componentStore.createComponent(payload)
+    if (!componentStore.createComponent(payload))
+      return
   }
-  else {
-    componentStore.updateComponent(editingId.value, payload)
+  else if (!componentStore.updateComponent(editingId.value, payload)) {
+    return
   }
   isShowForm.value = false
 }
@@ -87,7 +92,7 @@ function onImportFile(event: Event) {
         throw new Error(t('component.formatError'))
       let imported = 0
       for (const def of parsed) {
-        if (!def.name || !def.template)
+        if (!def.name || !def.template || isInlineSystemComponent(def.name))
           continue
         const existing = componentStore.userComponents.find(c => c.name === def.name)
         if (existing) {
@@ -315,7 +320,7 @@ watch(() => uiStore.isShowComponentDialog, (val) => {
 
             <TabsContent value="builtin" class="mt-4 space-y-2">
               <div
-                v-for="def in localizedBuiltinComponents"
+                v-for="def in visibleBuiltinComponents"
                 :key="def.id"
                 class="border rounded-xl overflow-hidden transition-all"
                 :class="expandedId === def.id ? 'border-primary/30 bg-primary/2' : 'hover:border-border/80 bg-card'"

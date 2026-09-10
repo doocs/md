@@ -543,3 +543,18 @@ export const EMOJI_SHORTCODES: Record<string, string> = {
   'white_flag': `🏳️`,
   'rainbow_flag': `🏳️‍🌈`,
 }
+
+/**
+ * Ordered list derived from `EMOJI_SHORTCODES`. Used by the web editor's emoji
+ * picker to render a built-in grid; order matches the source map so updates to
+ * the map flow through automatically.
+ */
+export interface GitHubEmoji {
+  /** Shortcode without surrounding colons, e.g. `smile`. */
+  name: string
+  /** The Unicode character(s), e.g. `😄`. */
+  char: string
+}
+
+export const GITHUB_EMOJI_LIST: GitHubEmoji[] = Object.entries(EMOJI_SHORTCODES)
+  .map(([name, char]) => ({ name, char }))

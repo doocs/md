@@ -295,6 +295,7 @@ export default {
     nameRequired: `元件名稱不能為空`,
     nameInvalid: `元件名稱必須以大寫字母開頭，只含字母和數字（PascalCase）`,
     nameDuplicate: `元件名稱已存在，請更換名稱`,
+    nameReserved: `「{name}」是系統內建元件，不能作為自訂元件名`,
     templateRequired: `元件模板不能為空`,
     exportSuccess: `已匯出自定義元件`,
     importSuccess: `成功匯入 {count} 個元件`,
@@ -366,6 +367,15 @@ export default {
         props: {
           tags: `JSON 字串陣列，標籤列表`,
           color: `標籤主色調（hex）`,
+        },
+      },
+      Emoji: {
+        description: `行內表情貼紙，從系統或「我的表情」插入`,
+        props: {
+          id: `表情 ID`,
+          alt: `替代文字（可選）`,
+          width: `寬度百分比，如 20%（可選，預設小尺寸）`,
+          align: `獨佔一行時的對齊：left、center、right（可選）`,
         },
       },
     },

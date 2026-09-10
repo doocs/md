@@ -19,7 +19,8 @@ export class MdApiClient {
   protected async request<T>(method: string, path: string, body?: unknown): Promise<T> {
     const token = this.getToken()
     const headers: Record<string, string> = {}
-    if (body !== undefined)
+    const isFormData = body instanceof FormData
+    if (body !== undefined && !isFormData)
       headers[`Content-Type`] = `application/json`
     if (token)
       headers.Authorization = `Bearer ${token}`
@@ -27,7 +28,9 @@ export class MdApiClient {
     const res = await fetch(`${MD_API_URL}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined
+        ? undefined
+        : isFormData ? body : JSON.stringify(body),
     })
 
     if (!res.ok) {

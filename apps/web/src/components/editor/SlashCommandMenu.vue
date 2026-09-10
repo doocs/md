@@ -24,6 +24,7 @@ import {
   RefreshCw,
   Search,
   Sigma,
+  Smile,
   Strikethrough,
   Table,
   Trash2,
@@ -83,6 +84,7 @@ const iconMap: Record<string, Component> = {
   'find': Search,
   'theme': Palette,
   'color': Palette,
+  'emoji': Smile,
 }
 
 const menuRef = useTemplateRef<HTMLDivElement>(`menuRef`)

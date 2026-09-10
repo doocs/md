@@ -2,6 +2,7 @@
 import type { DiagramDownloadOverlay } from '@/lib/preview/diagram-download'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { setupDiagramDownloadOverlay } from '@/lib/preview/diagram-download'
+import { setupEmojiHydration } from '@/lib/preview/emoji-hydrate'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
 
@@ -62,6 +63,7 @@ watch(viewMode, () => {
 })
 
 let diagramOverlay: DiagramDownloadOverlay | null = null
+let emojiCleanup: (() => void) | null = null
 
 // Pause bar injection for the entire duration of isCoping so that
 // processClipboardContent mutations never re-inject bars, and resume
@@ -80,6 +82,7 @@ onMounted(() => {
     const outputEl = document.getElementById(`output`)
     if (outputEl) {
       diagramOverlay = setupDiagramDownloadOverlay(outputEl)
+      emojiCleanup = setupEmojiHydration(outputEl)
       void hydratePreviewDiagrams().catch((error) => {
         console.error(`[PreviewPanel] Failed to hydrate diagrams`, error)
       })
@@ -89,6 +92,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   diagramOverlay?.cleanup()
+  emojiCleanup?.()
 })
 
 defineExpose({

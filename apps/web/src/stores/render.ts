@@ -1,6 +1,7 @@
 import type { RendererAPI } from '@md/shared/types'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { t } from '@/i18n/translate'
+import { resolveAssetUrl } from '@/services/emoji/urlResolver'
 import { useCustomComponentStore } from './customComponent'
 import { useThemeStore } from './theme'
 import { useUIStore } from './ui'
@@ -141,6 +142,7 @@ export const useRenderStore = defineStore(`render`, () => {
       diagramMessages: buildDiagramMessages(),
       countMessages: buildCountMessages(),
       renderMessages: buildRenderMessages(),
+      assetResolver: resolveAssetUrl,
     })
 
     const { html: baseHtml, readingTime: readingTimeResult } = renderMarkdown(content, renderer)

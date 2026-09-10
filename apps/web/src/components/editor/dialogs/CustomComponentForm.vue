@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { ComponentPropDef, ComponentPropType, CustomComponentDef } from '@md/shared'
 import { Plus, Trash2 } from '@lucide/vue'
-import { previewComponent } from '@md/core/extensions'
+import { isInlineSystemComponent, previewComponent } from '@md/core/extensions'
 import { sanitizeHtml } from '@md/core/utils'
 import { useCustomComponentStore } from '@/stores/customComponent'
 
@@ -94,6 +94,10 @@ function validate(): boolean {
   }
   if (!/^[A-Z][a-zA-Z0-9]*$/.test(name)) {
     formErrors.name = t('component.nameInvalid')
+    return false
+  }
+  if (isInlineSystemComponent(name)) {
+    formErrors.name = t('component.nameReserved', { name })
     return false
   }
   const editingId = props.initial?.id
