@@ -22,6 +22,7 @@ import {
   X,
 } from '@lucide/vue'
 import { formatEmojiSnippet, GITHUB_EMOJI_LIST, padEmojiBlock } from '@md/core/extensions'
+import EmojiWindowedGrid from '@/components/editor/emoji/EmojiWindowedGrid.vue'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -30,6 +31,12 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
+import {
+  builtInEmojiTitle,
+  filterBuiltInEmojis,
+  filterCloudEmojis,
+  normalizeEmojiQuery,
+} from '@/lib/emoji/search'
 import { EMOJI_ACCEPT, EMOJI_MAX_BYTES, USER_EMOJI_LIMIT } from '@/services/emoji/client'
 import { useAuthStore } from '@/stores/auth'
 import { useConfirmStore } from '@/stores/confirm'
@@ -70,8 +77,12 @@ const renaming = ref(false)
 const renamePackName = ref(``)
 const renameInputRef = ref<HTMLInputElement | null>(null)
 
-const searchQuery = computed(() => search.value.trim().toLowerCase())
-const isSearching = computed(() => Boolean(searchQuery.value))
+const pendingQuery = computed(() => search.value.trim().toLowerCase())
+const searchQuery = refDebounced(pendingQuery, 160)
+const isSearching = computed(() => Boolean(pendingQuery.value))
+const isSearchPending = computed(() =>
+  isSearching.value && normalizeEmojiQuery(pendingQuery.value) !== normalizeEmojiQuery(searchQuery.value),
+)
 const widthPercent = computed(() => {
   const value = Number.parseInt(widthPercentStr.value, 10)
   return Number.isFinite(value) ? Math.max(1, Math.min(100, value)) : 20
@@ -84,10 +95,11 @@ const selectedCloudPack = computed(() => {
   return null
 })
 const filteredBuiltIn = computed(() => {
-  const query = searchQuery.value
-  if (!query)
+  if (!isSearching.value)
     return GITHUB_EMOJI_LIST
-  return GITHUB_EMOJI_LIST.filter(item => item.name.includes(query) || item.char.includes(query))
+  if (isSearchPending.value)
+    return []
+  return filterBuiltInEmojis(searchQuery.value)
 })
 const cloudGroups = computed(() => {
   const source = isSearching.value
@@ -97,12 +109,18 @@ const cloudGroups = computed(() => {
     .filter((pack): pack is EmojiPack => Boolean(pack))
     .map(pack => ({
       pack,
-      files: searchQuery.value
-        ? pack.files.filter(file => file.name.toLowerCase().includes(searchQuery.value))
+      files: isSearching.value && searchQuery.value
+        ? filterCloudEmojis(pack.files, pack, searchQuery.value)
         : pack.files,
     }))
     .filter(group => group.files.length > 0 || !isSearching.value)
 })
+const needsDefaultPack = computed(() => isSearching.value || selectedTabId.value === `default`)
+const needsUserPack = computed(() => isSearching.value || selectedTabId.value === `user`)
+const cloudSearchPending = computed(() =>
+  (needsDefaultPack.value && emojiStore.loadingDefault && !emojiStore.defaultPack)
+  || (needsUserPack.value && authStore.isLoggedIn && emojiStore.loadingUser && !emojiStore.userPack),
+)
 const hasSearchHits = computed(() =>
   filteredBuiltIn.value.length > 0 || cloudGroups.value.some(group => group.files.length > 0),
 )
@@ -132,26 +150,34 @@ const cloudError = computed(() =>
   selectedTabId.value === `default` ? emojiStore.defaultError : emojiStore.userError,
 )
 
+function ensurePacksForView(): void {
+  if (!isOpen.value)
+    return
+  if (needsDefaultPack.value)
+    void emojiStore.loadDefault()
+  if (needsUserPack.value && authStore.isLoggedIn)
+    void emojiStore.loadMine()
+}
+
 watch(isOpen, (open) => {
   if (!open)
     return
-  void emojiStore.loadDefault()
-  if (authStore.isLoggedIn)
-    void emojiStore.loadMine()
+  ensurePacksForView()
 }, { immediate: true })
 
+watch([isSearching, selectedTabId], () => {
+  ensurePacksForView()
+})
+
 watch(() => authStore.isLoggedIn, (loggedIn) => {
-  if (loggedIn && isOpen.value)
+  if (loggedIn && isOpen.value && needsUserPack.value)
     void emojiStore.loadMine(true)
 })
 
 function selectTab(id: TabId): void {
   selectedTabId.value = id
   search.value = ``
-  if (id === `default`)
-    void emojiStore.loadDefault()
-  if (id === `user` && authStore.isLoggedIn)
-    void emojiStore.loadMine()
+  ensurePacksForView()
 }
 
 function cycleAlign(): void {
@@ -288,10 +314,12 @@ function retryCloud(): void {
     void emojiStore.loadMine(true)
 }
 
+const isWideStickerGrid = useMediaQuery(`(min-width: 640px)`)
+const stickerColumns = computed(() => isWideStickerGrid.value ? 5 : 4)
 const builtinGridClass = `grid grid-cols-8 gap-0.5`
 const stickerGridClass = `grid grid-cols-4 gap-1.5 sm:grid-cols-5`
-const builtinCellClass = `flex aspect-square items-center justify-center rounded-lg text-[1.5rem] leading-none transition-[transform,background-color] duration-150 hover:bg-background/80 hover:scale-110 active:scale-95`
-const stickerCellClass = `h-full w-full overflow-hidden rounded-xl bg-background/80 p-1.5 shadow-sm ring-1 ring-border/60 transition-[transform,box-shadow] duration-150 hover:scale-[1.04] hover:shadow-md active:scale-95`
+const builtinCellClass = `flex aspect-square items-center justify-center rounded-lg text-[1.5rem] leading-none [content-visibility:auto] [contain-intrinsic-size:40px] transition-[transform,background-color] duration-150 hover:bg-background/80 hover:scale-110 active:scale-95`
+const stickerCellClass = `h-full w-full overflow-hidden rounded-xl bg-background/80 p-1.5 shadow-sm ring-1 ring-border/60 [content-visibility:auto] [contain-intrinsic-size:72px] transition-[transform,box-shadow] duration-150 hover:scale-[1.04] hover:shadow-md active:scale-95`
 </script>
 
 <template>
@@ -454,61 +482,81 @@ const stickerCellClass = `h-full w-full overflow-hidden rounded-xl bg-background
           </Button>
         </div>
 
-        <div v-else-if="isSearching && !hasSearchHits" class="flex h-full min-h-40 items-center justify-center text-sm text-muted-foreground">
+        <div v-else-if="isSearching && !isSearchPending && !hasSearchHits && !cloudSearchPending" class="flex h-full min-h-40 items-center justify-center text-sm text-muted-foreground">
           {{ t('store.emoji.noResults') }}
         </div>
 
         <template v-else>
+          <div v-if="isSearchPending || cloudSearchPending" class="mb-3 grid grid-cols-8 gap-0.5">
+            <div v-for="index in 24" :key="index" class="aspect-square animate-pulse rounded-lg bg-muted" />
+          </div>
+
           <div v-if="showBuiltIn && filteredBuiltIn.length" class="mb-3">
             <div v-if="isSearching" class="mb-1.5 px-1 text-[11px] font-medium text-muted-foreground">
               {{ t('store.emoji.builtIn.title') }}
             </div>
-            <div :class="builtinGridClass">
-              <button
-                v-for="emoji in filteredBuiltIn"
-                :key="emoji.name"
-                type="button"
-                :class="builtinCellClass"
-                :title="`:${emoji.name}:`"
-                @click="insertBuiltIn(emoji.name)"
-              >
-                <span aria-hidden="true">{{ emoji.char }}</span>
-              </button>
-            </div>
+            <EmojiWindowedGrid
+              :items="filteredBuiltIn"
+              :columns="8"
+              :get-key="emoji => emoji.name"
+              :grid-class="builtinGridClass"
+            >
+              <template #default="{ item: emoji }">
+                <button
+                  type="button"
+                  :class="builtinCellClass"
+                  :title="builtInEmojiTitle(emoji.name)"
+                  @click="insertBuiltIn(emoji.name)"
+                >
+                  <span aria-hidden="true">{{ emoji.char }}</span>
+                </button>
+              </template>
+            </EmojiWindowedGrid>
           </div>
 
           <div v-for="group in cloudGroups" :key="group.pack.id" class="mb-3">
             <div v-if="isSearching" class="mb-1.5 truncate px-1 text-[11px] font-medium text-muted-foreground">
               {{ group.pack.source === 'system' ? t('store.emoji.defaultPack') : group.pack.name }}
             </div>
-            <div v-if="group.files.length" :class="stickerGridClass">
-              <div v-for="file in group.files" :key="file.id" class="group relative aspect-square">
-                <button type="button" :class="stickerCellClass" :title="file.name" @click="insert(file)">
-                  <img :src="emojiStore.resolveUrl(file.id)" :alt="file.name" class="h-full w-full object-contain" loading="lazy">
-                </button>
-                <button
-                  v-if="group.pack.source === 'user'"
-                  type="button"
-                  class="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-background/90 text-muted-foreground opacity-100 shadow-sm hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
-                  :aria-label="t('store.emoji.deleteEmoji')"
-                  @click.stop="deleteFile(file)"
-                >
-                  <X class="size-3" />
-                </button>
-              </div>
-              <button
-                v-if="group.pack.source === 'user' && !isSearching"
-                type="button"
-                class="flex aspect-square items-center justify-center rounded-xl bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
-                :disabled="emojiStore.uploading || emojiStore.remainingSlots <= 0"
-                :aria-label="t('store.emoji.addToPack')"
-                @click="openUpload"
+            <div v-if="group.files.length">
+              <EmojiWindowedGrid
+                :items="group.files"
+                :columns="stickerColumns"
+                :get-key="file => file.id"
+                :grid-class="stickerGridClass"
               >
-                <span v-if="emojiStore.uploading" class="text-center text-[10px] tabular-nums">
-                  {{ emojiStore.uploadDone }}/{{ emojiStore.uploadTotal }}
-                </span>
-                <Plus v-else class="size-5" stroke-width="1.5" />
-              </button>
+                <template #default="{ item: file }">
+                  <div class="group relative aspect-square">
+                    <button type="button" :class="stickerCellClass" :title="file.name" @click="insert(file)">
+                      <img :src="emojiStore.resolveUrl(file.id)" :alt="file.name" class="h-full w-full object-contain" loading="lazy" decoding="async">
+                    </button>
+                    <button
+                      v-if="group.pack.source === 'user'"
+                      type="button"
+                      class="absolute right-1 top-1 flex size-5 items-center justify-center rounded-full bg-background/90 text-muted-foreground opacity-100 shadow-sm hover:text-destructive md:opacity-0 md:group-hover:opacity-100"
+                      :aria-label="t('store.emoji.deleteEmoji')"
+                      @click.stop="deleteFile(file)"
+                    >
+                      <X class="size-3" />
+                    </button>
+                  </div>
+                </template>
+                <template #append>
+                  <button
+                    v-if="group.pack.source === 'user' && !isSearching"
+                    type="button"
+                    class="flex aspect-square items-center justify-center rounded-xl bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground"
+                    :disabled="emojiStore.uploading || emojiStore.remainingSlots <= 0"
+                    :aria-label="t('store.emoji.addToPack')"
+                    @click="openUpload"
+                  >
+                    <span v-if="emojiStore.uploading" class="text-center text-[10px] tabular-nums">
+                      {{ emojiStore.uploadDone }}/{{ emojiStore.uploadTotal }}
+                    </span>
+                    <Plus v-else class="size-5" stroke-width="1.5" />
+                  </button>
+                </template>
+              </EmojiWindowedGrid>
             </div>
             <div v-else class="flex min-h-40 flex-col items-center justify-center gap-2 text-center">
               <p class="text-sm text-muted-foreground">

@@ -158,7 +158,7 @@ export default {
       renamePack: `スタンプ名を変更`,
       packRenamed: `スタンプ名を変更しました`,
       addToPack: `この分類に絵文字を追加`,
-      searchPlaceholder: `スタンプを検索`,
+      searchPlaceholder: `名前・ピンイン・コードで検索`,
       noResults: `一致するスタンプがありません`,
       searchResults: `検索結果`,
       mode: {

@@ -2,6 +2,7 @@ import type { MarkedExtension } from 'marked'
 import type { EmojiToken } from '../types/marked-tokens'
 import { asGenericTokenRenderer, asTextTokenRenderer } from '../types/marked-tokens'
 import { escapeHtml } from '../utils/basicHelpers'
+import { blockScanLimit, indexOfWithin } from '../utils/scan'
 import { EMOJI_SHORTCODES } from './emoji-data'
 
 // Shortcode names are lowercase with digits, underscores and the +1/-1 aliases.
@@ -188,17 +189,58 @@ export function parseEmojiTag(src: string): { raw: string, id: string, alt?: str
   }
 }
 
-function findEmojiTagStart(src: string): number | undefined {
-  let from = 0
+function isShortcodeNameChar(code: number): boolean {
+  return (code >= 97 && code <= 122)
+    || (code >= 48 && code <= 57)
+    || code === 95
+    || code === 43
+    || code === 45
+}
+
+/** Next `:name:` that can actually tokenize, skipping `http:` / `12:30`. */
+function findNextShortcodeStart(src: string, from = 0): number | undefined {
+  let i = from
+  while (i < src.length) {
+    const colon = src.indexOf(`:`, i)
+    if (colon === -1)
+      return undefined
+    let j = colon + 1
+    while (j < src.length && isShortcodeNameChar(src.charCodeAt(j)))
+      j++
+    if (j > colon + 1 && src[j] === `:`)
+      return colon
+    i = colon + 1
+  }
+  return undefined
+}
+
+function findEmojiTagStart(src: string, from = 0, limit: number = src.length): number | undefined {
+  let i = from
   for (;;) {
-    const index = src.indexOf(EMOJI_TAG_OPEN, from)
+    const index = indexOfWithin(src, EMOJI_TAG_OPEN, i, limit)
     if (index === -1)
       return undefined
     if (isNameBoundary(src[index + EMOJI_TAG_OPEN.length]))
       return index
-    from = index + EMOJI_TAG_OPEN.length
+    i = index + EMOJI_TAG_OPEN.length
   }
 }
+
+function findInlineEmojiStart(src: string): number | undefined {
+  const shortcode = findNextShortcodeStart(src)
+  const legacy = src.indexOf(`{{emoji:`)
+  const tag = findEmojiTagStart(src)
+  const candidates = [
+    shortcode,
+    legacy === -1 ? undefined : legacy,
+    tag,
+  ].filter((index): index is number => index !== undefined)
+  if (!candidates.length)
+    return undefined
+  return Math.min(...candidates)
+}
+
+const ASSET_EMOJI_WINDOW = 256
 
 function renderSticker(
   resolveUrl: (id: string) => string,
@@ -241,10 +283,11 @@ function fenceRunLength(src: string, lineStart: number, lineEnd: number): { char
 }
 
 function findLineStartEmojiTag(src: string): number | undefined {
+  const limit = blockScanLimit(src)
   let fenceChar = ``
   let fenceLength = 0
   let lineStart = 0
-  while (lineStart <= src.length) {
+  while (lineStart <= limit) {
     const newline = src.indexOf(`\n`, lineStart)
     const lineEnd = newline === -1 ? src.length : newline
     const fence = fenceRunLength(src, lineStart, lineEnd)
@@ -331,7 +374,7 @@ export function markedEmoji(options: MarkedEmojiOptions = {}): MarkedExtension {
           const idx = src.indexOf(`![`)
           if (idx === -1)
             return undefined
-          const closer = src.indexOf(`](asset:`, idx)
+          const closer = indexOfWithin(src, `](asset:`, idx, idx + ASSET_EMOJI_WINDOW)
           if (closer === -1)
             return undefined
           return idx
@@ -367,13 +410,7 @@ export function markedEmoji(options: MarkedEmojiOptions = {}): MarkedExtension {
         name: `emoji`,
         level: `inline`,
         start(src: string) {
-          const shortcode = src.indexOf(`:`)
-          const legacy = src.indexOf(`{{emoji:`)
-          const tag = findEmojiTagStart(src)
-          const candidates = [shortcode, legacy, tag].filter((i): i is number => i !== undefined && i !== -1)
-          if (!candidates.length)
-            return undefined
-          return Math.min(...candidates)
+          return findInlineEmojiStart(src)
         },
         tokenizer(src: string) {
           const tag = parseEmojiTag(src)

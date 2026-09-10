@@ -114,7 +114,7 @@ export default defineConfig(({ mode }) => {
     // Pre-bundle CJS deps that live behind lazily-mounted components; otherwise
     // the dev server discovers them on first interaction and force-reloads the page.
     optimizeDeps: {
-      include: [`diff-match-patch`],
+      include: [`diff-match-patch`, `pinyin-pro`],
     },
     css: { devSourcemap: true },
     build: {

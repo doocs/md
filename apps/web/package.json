@@ -49,6 +49,7 @@
     "idb": "^8.0.3",
     "juice": "^12.1.3",
     "pinia": "^4.0.3",
+    "pinyin-pro": "^3.29.3",
     "qiniu-js": "^3.4.4",
     "reka-ui": "^2.10.4",
     "tailwind-merge": "^3.6.0",
