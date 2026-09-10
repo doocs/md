@@ -158,7 +158,7 @@ export default {
       renamePack: `Rename emoji pack`,
       packRenamed: `Emoji pack renamed`,
       addToPack: `Add emoji to this pack`,
-      searchPlaceholder: `Search emoji`,
+      searchPlaceholder: `Search name, pinyin, or shortcode`,
       noResults: `No matching emoji`,
       searchResults: `Search results`,
       mode: {

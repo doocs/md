@@ -158,7 +158,7 @@ export default {
       renamePack: `重命名表情包`,
       packRenamed: `表情包名称已更新`,
       addToPack: `添加表情到此分类`,
-      searchPlaceholder: `搜索表情`,
+      searchPlaceholder: `搜索名称、拼音或代码`,
       noResults: `没有找到匹配的表情`,
       searchResults: `搜索结果`,
       mode: {

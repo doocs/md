@@ -186,6 +186,20 @@ describe(`markedEmoji legacy aliases`, () => {
   })
 })
 
+describe(`markedEmoji start() scanning`, () => {
+  it(`still finds a shortcode after URLs and clock times`, () => {
+    const out = parse(`see http://example.com/a:b at 12:30 :smile:`)
+    expect(out).toContain(`😄`)
+    expect(out).not.toContain(`:smile:`)
+  })
+
+  it(`still finds a sticker after a blank line`, () => {
+    const out = parse(`hello\n\n${TAG}`)
+    expect(out).toContain(SMALL_IMG)
+    expect(imgCount(out)).toBe(1)
+  })
+})
+
 describe(`markedEmoji with markedComponent`, () => {
   it(`renders an inline sticker next to text`, () => {
     const out = parseWithComponents(`hello <Emoji id="${EMOJI_ID}" /> world`)

@@ -109,6 +109,8 @@ export const useEmojiPackStore = defineStore(`emojiPack`, () => {
     }
   }
 
+  const UPLOAD_CONCURRENCY = 4
+
   async function uploadFiles(files: File[]): Promise<number> {
     const accepted = files.slice(0, remainingSlots.value)
     if (!authStore.isLoggedIn || !accepted.length)
@@ -119,16 +121,32 @@ export const useEmojiPackStore = defineStore(`emojiPack`, () => {
     uploadTotal.value = accepted.length
     userError.value = null
     let uploaded = 0
-    try {
-      for (const file of accepted) {
-        setUserPack(await client.upload(file))
-        uploaded++
-        uploadDone.value = uploaded
+    let cursor = 0
+    let failed = false
+
+    async function worker(): Promise<void> {
+      while (!failed && cursor < accepted.length) {
+        const file = accepted[cursor++]
+        try {
+          await client.upload(file)
+          uploaded++
+          uploadDone.value = uploaded
+        }
+        catch (error) {
+          userError.value = getEmojiErrorCode(error)
+          failed = true
+        }
       }
-      return uploaded
     }
-    catch (error) {
-      userError.value = getEmojiErrorCode(error)
+
+    try {
+      const workers = Array.from(
+        { length: Math.min(UPLOAD_CONCURRENCY, accepted.length) },
+        () => worker(),
+      )
+      await Promise.all(workers)
+      if (uploaded)
+        await loadMine(true)
       return uploaded
     }
     finally {
