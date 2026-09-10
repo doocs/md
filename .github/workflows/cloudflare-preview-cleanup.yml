@@ -1,4 +1,4 @@
-name: Cleanup Cloudflare Preview
+name: Cleanup Cloudflare Workers Preview
 
 on:
   pull_request:

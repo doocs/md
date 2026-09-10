@@ -1,8 +1,8 @@
-name: Surge Preview Deploy
+name: Deploy Surge Preview
 
 on:
   workflow_run:
-    workflows: ["Surge Preview Build"]
+    workflows: ['Build Surge Preview']
     types:
       - completed
 
@@ -122,7 +122,7 @@ jobs:
               });
             }
 
-  failed:
+  notify-build-failure:
     runs-on: ubuntu-latest
     if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'failure' && github.repository == 'doocs/md'
     steps:

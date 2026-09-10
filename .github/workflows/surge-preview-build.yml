@@ -1,8 +1,12 @@
-name: Surge Preview Build
+name: Build Surge Preview
 
 on:
   pull_request:
     types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build-preview:
@@ -12,6 +16,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up pnpm
@@ -22,10 +27,11 @@ jobs:
           cache: true
           install: false
 
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Build
-        run: |
-          pnpm install
-          pnpm web build:h5-netlify
+        run: pnpm web build:h5-netlify
 
       - name: Upload dist artifact
         uses: actions/upload-artifact@v7
