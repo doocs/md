@@ -63,6 +63,11 @@ git symbolic-ref refs/remotes/origin/HEAD
 
 This prints `refs/remotes/origin/<branch>` (usually `main`). Use the last path segment.
 
+```powershell
+# PowerShell
+$BASE_BRANCH = (git symbolic-ref refs/remotes/origin/HEAD).Split('/')[-1]
+```
+
 If that fails, run `git remote show origin` and parse the `HEAD branch:` line.
 
 This is typically `main` or `master`, but may differ per repo.
@@ -70,7 +75,13 @@ This is typically `main` or `master`, but may differ per repo.
 ### 3. Analyze recent commits relevant to this PR
 
 ```bash
+# Bash / zsh
 git log "origin/${BASE_BRANCH}..HEAD" --oneline --no-decorate
+```
+
+```powershell
+# PowerShell
+git log "origin/$BASE_BRANCH..HEAD" --oneline --no-decorate
 ```
 
 Review these commits to understand:
@@ -81,7 +92,13 @@ Review these commits to understand:
 ### 4. Review the diff
 
 ```bash
+# Bash / zsh
 git diff "origin/${BASE_BRANCH}..HEAD" --stat
+```
+
+```powershell
+# PowerShell
+git diff "origin/$BASE_BRANCH..HEAD" --stat
 ```
 
 This shows which files changed and helps identify the type of change.
@@ -121,12 +138,9 @@ Before creating the PR, consider these best practices:
    git fetch origin
    git rebase "origin/${BASE_BRANCH}"
    ```
+   In PowerShell, use `"origin/$BASE_BRANCH"`.
 
-2. **Squash if appropriate**: If there are many small "WIP" commits, consider interactive rebase:
-   ```bash
-   git rebase -i "origin/${BASE_BRANCH}"
-   ```
-   Only suggest this if commits appear messy and the user is comfortable with rebasing.
+2. **Squash if appropriate**: If history is messy, ask the user whether they want commits squashed. Do **not** run `git rebase -i` (interactive; agents cannot complete it).
 
 ### Push Changes
 

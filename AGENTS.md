@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**简体中文 / English 界面**等特性。
+**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**zh-CN / zh-TW / en-US / ja-JP 界面**等特性。
 
 - **在线地址:** https://md.doocs.org
 - **Node 版本:** >= 22.22.2（`.nvmrc`: v22.22.2）
@@ -13,17 +13,17 @@
 
 ## Monorepo 结构
 
-| 工作区           | 路径                  | 说明                                                                       |
-| ---------------- | --------------------- | -------------------------------------------------------------------------- |
-| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                          |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）             |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                            |
-| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                              |
-| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                       |
-| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                    |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                       |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                             |
-| `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、分享与市场（Cloudflare Workers + Hono + D1） |
+| 工作区           | 路径                  | 说明                                                                                                  |
+| ---------------- | --------------------- | ----------------------------------------------------------------------------------------------------- |
+| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                                                     |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）                                        |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                                                       |
+| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                                                         |
+| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                                                  |
+| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                                               |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                                                  |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                                                        |
+| `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、上传代理、分享、主题/组件市场、表情包（Cloudflare Workers + Hono + D1） |
 
 独立示例（不在 workspace 内）：`docs/examples/wechat-openapi-worker/` — 微信公众号 OpenAPI 代理 Worker。
 
