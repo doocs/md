@@ -3,6 +3,6 @@
   "type": "commonjs",
   "private": true,
   "dependencies": {
-    "isomorphic-dompurify": "3.23.0"
+    "isomorphic-dompurify": "4.2.0"
   }
 }

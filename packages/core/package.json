@@ -22,7 +22,7 @@
   "dependencies": {
     "@antv/infographic": "^0.2.20",
     "@md/shared": "workspace:*",
-    "entities": "^8.0.0",
+    "entities": "^8.1.0",
     "fflate": "^0.8.3",
     "highlight.js": "^11.12.0",
     "isomorphic-dompurify": "catalog:",
