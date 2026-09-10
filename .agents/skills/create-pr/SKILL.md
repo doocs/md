@@ -145,16 +145,15 @@ git push origin HEAD --force-with-lease
 Use `CONTRIBUTING.md` (Pull Request 流程) as the source of truth for PR content. Follow [`.github/pull_request_template.md`](../../../.github/pull_request_template.md) exactly:
 
 - **Summary** — what changed and why
-- **Related Issue** — only when a real issue is linked (e.g. `Closes #123`); omit entirely if none
 - **Type of Change** — check applicable boxes
 - **Test Procedure** — how you verified the change
 - **Pre-flight Checklist** — mark items that apply
 
 When filling out the PR body:
-- Include **Related Issue** only when a real issue number is known (e.g. `Closes #123`). **Do not** add a Related Issue section or `#XXXX` placeholder when there is no linked issue.
-- Fill in all other sections with relevant information gathered from commits and context
+- Fill in all template sections with relevant information gathered from commits and context
 - Mark the appropriate "Type of Change" checkbox(es)
 - Complete the "Pre-flight Checklist" items that apply
+- **Related Issue is not in the template.** Add a `## Related Issue` section with `Closes #123` only when this PR actually fixes an issue. Never add `#XXXX` or an empty Related Issue heading.
 
 ### Create PR with gh CLI
 
@@ -214,7 +213,7 @@ Before finalizing, ensure:
 - [ ] Working directory is clean
 - [ ] All commits are pushed
 - [ ] Branch is up-to-date with base branch
-- [ ] Related Issue section included only when a real issue is linked (no `#XXXX` placeholder)
+- [ ] Related Issue included only when a real issue is linked (no empty heading, no `#XXXX` placeholder)
 - [ ] PR description follows the template or project conventions
 - [ ] Appropriate type of change is selected
 - [ ] Pre-flight checklist items are addressed

@@ -2,10 +2,6 @@
 
 <!-- What changed and why / 变更动机与实现要点 -->
 
-## Related Issue
-
-<!-- Optional. Use `Closes #123` when this PR fixes an issue. Delete this section if none. -->
-
 ## Type of Change
 
 - [ ] Bug fix (non-breaking change which fixes an issue)
