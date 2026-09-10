@@ -54,8 +54,11 @@ web-ext.config.ts
 
 # Claude Code local settings
 .claude/settings.local.json
-# Junction/symlink to .agents/skills — run `pnpm link-claude-skills` after clone
-.claude/skills
+# Tracked per-skill git symlinks live under .claude/skills/; ignore extras from `npx skills add`
+.claude/skills/*
+!.claude/skills/create-pr
+!.claude/skills/git-commit
+!.claude/skills/wechat-svg
 
 # vite-plugin-pwa dev output
 dev-dist
