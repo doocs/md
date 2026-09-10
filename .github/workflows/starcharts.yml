@@ -2,7 +2,7 @@ name: Update Starcharts
 
 on:
   schedule:
-    - cron: "0 0/12 * * *"
+    - cron: '0 0/12 * * *'
   workflow_dispatch:
 
 jobs:
@@ -12,7 +12,7 @@ jobs:
     if: github.repository == 'doocs/md'
     steps:
       - name: Generate Starcharts
-        uses: MaoLongLong/actions-starcharts@main
+        uses: MaoLongLong/actions-starcharts@de0ebd5ddf5c5f19bf2b18e9a47b29c8cdfebc8d # v2.0.1
         with:
           github_token: ${{ secrets.DOOCS_BOT_ACTION_TOKEN }}
           svg_path: images/starcharts.svg

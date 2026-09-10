@@ -1,4 +1,4 @@
-name: Cloudflare Workers Preview
+name: Deploy Cloudflare Workers Preview
 
 on:
   pull_request:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: cloudflare-preview-${{ github.event.pull_request.number }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -21,6 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Set up pnpm
@@ -32,7 +33,7 @@ jobs:
           install: false
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build for Cloudflare Workers
         run: pnpm web build:h5-netlify

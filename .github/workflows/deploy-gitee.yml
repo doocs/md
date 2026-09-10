@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: deploy-gitee-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -17,6 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v7
         with:
+          persist-credentials: false
           fetch-depth: 0  # 获取完整历史，便于推送到新分支
 
       - name: Set up pnpm
@@ -28,7 +29,7 @@ jobs:
           install: false
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Build project
         run: pnpm web build
@@ -46,7 +47,7 @@ jobs:
 
       - name: Sync to Gitee
         id: gitee-sync
-        uses: Yikun/hub-mirror-action@master
+        uses: Yikun/hub-mirror-action@ec47170fa9d126a4bee5a1ab9359845bb1395248 # v1.5
         continue-on-error: true
         with:
           src: github/doocs
@@ -61,7 +62,7 @@ jobs:
         id: gitee-deploy
         if: steps.gitee-sync.outcome == 'success'
         continue-on-error: true
-        uses: yanglbme/gitee-pages-action@main
+        uses: yanglbme/gitee-pages-action@b70eff28cd340913f899eab8d0f485b978d78d54 # v1.4.2
         with:
           gitee-username: ${{ secrets.GITEE_USERNAME }}
           gitee-password: ${{ secrets.GITEE_PASSWORD }}
