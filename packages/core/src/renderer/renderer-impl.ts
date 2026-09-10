@@ -113,11 +113,17 @@ const macCodeSvg = `
   </svg>
 `.trim()
 
+function renderMacSign(isMacCodeBlock: boolean): string {
+  if (!isMacCodeBlock)
+    return ``
+  return `<span class="mac-sign" style="display: flex; padding: 10px 14px 0;">${macCodeSvg}</span>`
+}
+
 /**
  * Render diff-{lang} code blocks: + lines green (added), - lines red (deleted),
  * other lines highlighted normally.
  */
-function renderDiffCode(text: string, baseLang: string): string {
+function renderDiffCode(text: string, baseLang: string, isMacCodeBlock: boolean): string {
   const isLangRegistered = hljs.getLanguage(baseLang)
   const lang = isLangRegistered ? baseLang : `plaintext`
 
@@ -156,7 +162,7 @@ function renderDiffCode(text: string, baseLang: string): string {
     })
     .join(``)
 
-  const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
+  const span = renderMacSign(isMacCodeBlock)
   // Same -webkit-box wrapper as normal code blocks (see highlightAndFormatCode)
   return `<pre class="hljs code__pre">${span}<code class="language-diff-${baseLang}"><span class="code-block__inner" style="display:block">${rendered}</span></code></pre>`
 }
@@ -306,7 +312,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
       const langText = lang.split(` `)[0]
 
       if (langText.startsWith(`diff-`)) {
-        return renderDiffCode(text, langText.slice(5))
+        return renderDiffCode(text, langText.slice(5), !!opts.isMacCodeBlock)
       }
 
       const isLanguageRegistered = hljs.getLanguage(langText)
@@ -314,7 +320,7 @@ export function initRenderer(opts: IOpts = {}): RendererAPI {
 
       const highlighted = highlightAndFormatCode(text, language, hljs, !!opts.isShowLineNumber)
 
-      const span = `<span class="mac-sign" style="padding: 10px 14px 0;">${macCodeSvg}</span>`
+      const span = renderMacSign(!!opts.isMacCodeBlock)
       // Defer highlighting until grammar loads from CDN
       let pendingAttr = ``
       if (!isLanguageRegistered && langText !== `plaintext`) {

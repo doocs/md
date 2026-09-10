@@ -16,6 +16,11 @@ const JUICE_OPTIONS = {
   resolveCSSVariables: false,
 } as const
 
+export interface ProcessClipboardOptions {
+  /** WeChat copy inserts empty spacer nodes; omit them for publish HTML. Default true. */
+  includeWeChatSpacers?: boolean
+}
+
 async function mergeCss(html: string): Promise<string> {
   const { default: juice } = await import(`juice`)
   const sanitized = sanitizeHtmlCssForJuice(html)
@@ -42,7 +47,10 @@ async function mergeCss(html: string): Promise<string> {
  * Diagrams are exported in light theme structure, but dark ink colors are remapped
  * to currentColor so WeChat reader dark mode can follow text color.
  */
-export async function processClipboardContent(primaryColor: string) {
+export async function processClipboardContent(
+  primaryColor: string,
+  options: ProcessClipboardOptions = {},
+) {
   const outputElement = document.getElementById(`output`)
   if (!outputElement) {
     return {
@@ -109,10 +117,12 @@ export async function processClipboardContent(primaryColor: string) {
 
     solveWeChatImage(clipboardDiv)
 
-    const beforeNode = createEmptyNode()
-    const afterNode = createEmptyNode()
-    clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
-    clipboardDiv.appendChild(afterNode)
+    if (options.includeWeChatSpacers !== false) {
+      const beforeNode = createEmptyNode()
+      const afterNode = createEmptyNode()
+      clipboardDiv.insertBefore(beforeNode, clipboardDiv.firstChild)
+      clipboardDiv.appendChild(afterNode)
+    }
 
     promoteSvgHtmlLabels(clipboardDiv)
     sanitizeSvgsForWeChat(clipboardDiv)

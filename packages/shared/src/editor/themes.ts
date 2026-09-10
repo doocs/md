@@ -31,6 +31,9 @@ const customStyles = EditorView.theme({
   '&.cm-editor .cm-gutters:hover .cm-foldGutter .cm-gutterElement span': {
     opacity: `1`,
   },
+  '.cm-line': {
+    overflowWrap: `anywhere`,
+  },
 })
 
 export function lightTheme() {

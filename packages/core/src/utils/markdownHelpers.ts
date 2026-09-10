@@ -63,13 +63,6 @@ export function postProcessHtml(baseHtml: string, reading: ReadTimeResults, rend
   html += renderer.buildAddition()
   html += `
     <style>
-      .hljs.code__pre > .mac-sign {
-        display: ${renderer.getOpts().isMacCodeBlock ? `flex` : `none`};
-      }
-    </style>
-  `
-  html += `
-    <style>
       h2 strong {
         color: inherit !important;
       }

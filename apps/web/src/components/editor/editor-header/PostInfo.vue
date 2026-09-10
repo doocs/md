@@ -2,8 +2,10 @@
 import type { Post, PostAccount } from '@md/shared/types'
 import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus } from '@lucide/vue'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'reka-ui'
+import { processClipboardContent } from '@/services/export'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
+import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 
 defineOptions({
@@ -16,6 +18,9 @@ const { editor } = storeToRefs(editorStore)
 
 const renderStore = useRenderStore()
 const { output } = storeToRefs(renderStore)
+
+const themeStore = useThemeStore()
+const { primaryColor } = storeToRefs(themeStore)
 
 const uiStore = useUIStore()
 const { isMobile } = storeToRefs(uiStore)
@@ -110,6 +115,18 @@ async function prePost() {
   }
   const accounts = allAccounts.value.filter(a => ![`ipfs`].includes(a.type))
   try {
+    let content = output.value
+    try {
+      const prepared = await processClipboardContent(primaryColor.value, {
+        includeWeChatSpacers: false,
+      })
+      if (prepared.html)
+        content = prepared.html
+    }
+    catch (error) {
+      console.warn(`Failed to prepare publish HTML, falling back to preview output`, error)
+    }
+
     auto = {
       thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
       title: [1, 2, 3, 4, 5, 6]
@@ -117,7 +134,7 @@ async function prePost() {
         .find(h => h)
         ?.textContent ?? ``,
       desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
-      content: output.value,
+      content,
       markdown: editor.value?.state.doc.toString() ?? ``,
       accounts,
     }

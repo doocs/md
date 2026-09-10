@@ -12,6 +12,11 @@ import { useLocalizedAllComponents } from '@/composables/useLocalizedBuiltinComp
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
+import {
+  collectPlaceholderReplacements,
+  hasMarkdownRemoteImages,
+  rewriteMarkdownImagesToPlaceholders,
+} from '@/lib/editor/pasteMarkdownImages'
 import { toStoredDateTime } from '@/lib/format/datetime'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
@@ -388,70 +393,45 @@ function createPasteHandler() {
     }
 
     const text = event.clipboardData?.getData('text/plain')
-    if (text) {
-      const mdImgRegex = /!\[(.*?)\]\((https?:\/\/[^)]+)\)/g
-      const matches = [...text.matchAll(mdImgRegex)]
+    if (text && hasMarkdownRemoteImages(text)) {
+      // Native paste keeps CodeMirror's height map intact. Only intercept when
+      // we actually need to rewrite remote image URLs through the uploader.
+      if (!enableImageReupload.value)
+        return false
 
-      if (matches.length > 0) {
-        isImgLoading.value = true
+      isImgLoading.value = true
 
-        let previewText = text
-        const placeholderMap = new Map<string, { originalUrl: string, originalAlt: string }>()
+      const placeholderLabel = t('editorPanel.reuploading')
+      const { previewText, placeholders } = rewriteMarkdownImagesToPlaceholders(text, placeholderLabel)
 
-        let matchIndex = 0
-        previewText = previewText.replace(mdImgRegex, (_, alt, url) => {
-          const id = `LOADING_${Date.now()}_${matchIndex++}`
-          placeholderMap.set(id, { originalUrl: url, originalAlt: alt })
-          return `![${t('editorPanel.reuploading')}](${id})`
-        })
+      view.dispatch(view.state.replaceSelection(previewText))
 
-        view.dispatch(view.state.replaceSelection(previewText))
+      const uniqueUrls = [...new Set(placeholders.map(item => item.originalUrl))]
+      const urlByOriginal = new Map<string, string>()
 
-        const uniqueUrls = [...new Set(matches.map(m => m[2]))]
+      Promise.all(uniqueUrls.map(async (url) => {
+        try {
+          urlByOriginal.set(url, await upload(url))
+        }
+        catch (e) {
+          console.error(`转存失败: ${url}`, e)
+          toast.error(t('editorPanel.reuploadFailed'))
+        }
+      })).then(() => {
+        const changes = collectPlaceholderReplacements(
+          view.state.doc.toString(),
+          placeholderLabel,
+          placeholders,
+          urlByOriginal,
+        )
+        if (changes.length > 0)
+          view.dispatch({ changes })
+        view.requestMeasure()
+      }).finally(() => {
+        isImgLoading.value = false
+      })
 
-        Promise.all(uniqueUrls.map(async (url) => {
-          try {
-            const newUrl = enableImageReupload.value ? await upload(url) : url
-
-            for (const [id, info] of placeholderMap.entries()) {
-              if (info.originalUrl === url) {
-                const searchStr = `![${t('editorPanel.reuploading')}](${id})`
-                const currentDoc = view.state.doc.toString()
-                const pos = currentDoc.indexOf(searchStr)
-
-                if (pos !== -1) {
-                  const newText = `![${info.originalAlt}](${newUrl})`
-                  view.dispatch({
-                    changes: { from: pos, to: pos + searchStr.length, insert: newText },
-                  })
-                }
-              }
-            }
-          }
-          catch (e) {
-            console.error(`转存失败: ${url}`, e)
-            for (const [id, info] of placeholderMap.entries()) {
-              if (info.originalUrl === url) {
-                const searchStr = `![${t('editorPanel.reuploading')}](${id})`
-                const currentDoc = view.state.doc.toString()
-                const pos = currentDoc.indexOf(searchStr)
-
-                if (pos !== -1) {
-                  const newText = `![${info.originalAlt}](${info.originalUrl})`
-                  view.dispatch({
-                    changes: { from: pos, to: pos + searchStr.length, insert: newText },
-                  })
-                }
-              }
-            }
-            toast.error(t('editorPanel.reuploadFailed'))
-          }
-        })).finally(() => {
-          isImgLoading.value = false
-        })
-
-        return true
-      }
+      return true
     }
     return false
   }

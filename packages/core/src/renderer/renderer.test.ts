@@ -46,6 +46,18 @@ describe('initRenderer', () => {
 
     expect(output).toContain(`words`)
     expect(output).toContain(`Hi`)
+    expect(output).not.toContain(`mac-sign`)
+  })
+
+  it('emits an inline mac-sign only when isMacCodeBlock is enabled', () => {
+    const withMac = initRenderer({ isMacCodeBlock: true })
+    const withMacHtml = renderMarkdown('```js\nconsole.log(1)\n```', withMac).html
+    expect(withMacHtml).toContain(`class="mac-sign"`)
+    expect(withMacHtml).toContain(`display: flex`)
+
+    const withoutMac = initRenderer({ isMacCodeBlock: false })
+    const withoutMacHtml = renderMarkdown('```js\nconsole.log(1)\n```', withoutMac).html
+    expect(withoutMacHtml).not.toContain(`mac-sign`)
   })
 
   it('uses injected renderMessages for footnotes and unknown components', () => {

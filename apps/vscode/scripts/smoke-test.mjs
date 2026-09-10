@@ -48,7 +48,11 @@ runCase(`countStatus enabled`, { countStatus: true }, [
 ])
 
 runCase(`mac code block`, { isMacCodeBlock: true }, [
-  [`enables mac-sign style`, html => html.includes(`.mac-sign`) && html.includes(`display: flex`)],
+  [`includes mac-sign`, html => html.includes(`class="mac-sign"`) && html.includes(`display: flex`)],
+])
+
+runCase(`mac code block disabled`, { isMacCodeBlock: false }, [
+  [`omits mac-sign`, html => !html.includes(`mac-sign`)],
 ])
 
 console.log(`\nAll VSCode extension smoke tests passed.`)
