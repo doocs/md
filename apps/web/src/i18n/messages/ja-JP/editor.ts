@@ -118,7 +118,7 @@ export default {
       isUseJustify: `両端揃え`,
       isOpenRightSlider: `右スライダーを開く`,
       isOpenPostSlider: `投稿スライダーを開く`,
-      showAIToolbox: `AI ツールボックス`,
+      showAIToolbox: `AI ツールバー`,
       theme: `テーマ`,
       fontFamily: `フォントファミリー`,
       fontSize: `フォントサイズ`,

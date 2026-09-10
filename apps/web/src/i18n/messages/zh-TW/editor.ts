@@ -118,7 +118,7 @@ export default {
       isUseJustify: `使用兩端對齊`,
       isOpenRightSlider: `開啟右側滑塊`,
       isOpenPostSlider: `開啟右側釋出滑塊`,
-      showAIToolbox: `AI 工具箱狀態`,
+      showAIToolbox: `AI 工具列狀態`,
       theme: `主題`,
       fontFamily: `字型`,
       fontSize: `字型大小`,

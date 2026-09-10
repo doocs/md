@@ -243,8 +243,8 @@ export default {
       hint: `編輯區與預覽區滾動聯動`,
     },
     showAIToolbox: {
-      label: `AI 工具箱`,
-      hint: `選中文本時顯示浮動 AI 工具`,
+      label: `AI 工具列`,
+      hint: `在編輯區右側顯示 AI 助手、生圖和工具箱`,
     },
     imageReupload: {
       label: `圖片轉存`,

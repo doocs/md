@@ -243,8 +243,8 @@ export default {
       hint: `エディターとプレビューのスクロールを同期`,
     },
     showAIToolbox: {
-      label: `AI ツールボックス`,
-      hint: `テキスト選択時にフローティング AI ツールを表示`,
+      label: `AI ツールバー`,
+      hint: `エディター右側に AI アシスタント、画像生成、ツールボックスを表示`,
     },
     imageReupload: {
       label: `画像の再アップロード`,

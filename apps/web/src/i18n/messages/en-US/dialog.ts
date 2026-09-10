@@ -243,8 +243,8 @@ export default {
       hint: `Sync editor and preview scrolling`,
     },
     showAIToolbox: {
-      label: `AI toolbox`,
-      hint: `Show floating AI tools when text is selected`,
+      label: `AI toolbar`,
+      hint: `Show the AI assistant, image generator, and toolbox on the editor edge`,
     },
     imageReupload: {
       label: `Image re-upload`,
