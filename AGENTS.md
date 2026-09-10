@@ -13,17 +13,17 @@
 
 ## Monorepo 结构
 
-| 工作区           | 路径                  | 说明                                                                 |
-| ---------------- | --------------------- | -------------------------------------------------------------------- |
-| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                    |
-| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）       |
-| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                      |
-| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                        |
-| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                 |
-| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                              |
-| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                 |
-| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                       |
-| `@md/api`        | `apps/api`            | 后端 API：账户登录 + 云同步 + 计费（Cloudflare Workers + Hono + D1） |
+| 工作区           | 路径                  | 说明                                                                       |
+| ---------------- | --------------------- | -------------------------------------------------------------------------- |
+| `@md/web`        | `apps/web`            | 主应用，Vue 3 + 浏览器扩展（WXT: Chrome/Firefox）                          |
+| `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID: `doocs.doocs-md`）             |
+| `@md/utools`     | `apps/utools`         | uTools 插件打包                                                            |
+| `@md/core`       | `packages/core`       | 核心 Markdown 渲染引擎（marked + 自定义扩展）                              |
+| `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                       |
+| `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                    |
+| `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                       |
+| `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                             |
+| `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、分享与市场（Cloudflare Workers + Hono + D1） |
 
 独立示例（不在 workspace 内）：`docs/examples/wechat-openapi-worker/` — 微信公众号 OpenAPI 代理 Worker。
 
@@ -108,7 +108,7 @@ pnpm mcp dev          # MCP Server 监听模式
 Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**；VS Code 扩展、uTools、CLI、MCP **未**国际化。
 
 - **库**：`vue-i18n`（composition API，`legacy: false`），在 `apps/web/vite.config.ts` 中通过 `unplugin-auto-import` 自动导入 `useI18n`
-- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`）
+- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`、`marketplace`、`notifications`）
 - **组件内**：`useI18n()` + `t('key')`；**Store / 工具函数**：`@/i18n/translate` 的 `t()` / `getLocale()` / `formatLocalDateTime()`
 - **语言状态**：`useLocaleStore`（持久化 key：`locale`）；用户可在 **偏好设置**（`Ctrl+,`）→ General 切换
 - **启动**：`await initStorage()` → `setupI18n(detectInitialLocale())` → Pinia → `useLocaleStore()`（见 `apps/web/src/bootstrap.ts`）；`index.html` 启动屏从 `localStorage` 读取 locale
