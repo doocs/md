@@ -40,7 +40,6 @@ pnpm run build:cli    # 构建 web + 复制到 md-cli + npm pack
 pnpm run release:cli  # 通过 scripts/release.js 发布 CLI
 pnpm utools:package   # 打包 uTools 插件
 pnpm run inspector    # node-modules-inspector 查看依赖树
-pnpm link-claude-skills  # 链接 .claude/skills → .agents/skills
 ```
 
 ### Web 应用 (`@md/web`)
@@ -153,16 +152,10 @@ Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US*
 
 ## Skills
 
-Reusable workflows live in [`.agents/skills/`](./.agents/skills/) (canonical). Claude Code reads the same files via `.claude/skills` → `.agents/skills`.
+Reusable workflows live in [`.agents/skills/`](./.agents/skills/) (canonical). Claude Code discovers each skill through a git symlink:
 
-After clone, create the link once:
-
-```bash
-# macOS / Linux / Git Bash
-./scripts/link-claude-skills.sh
-
-# Windows PowerShell
-./scripts/link-claude-skills.ps1
+```text
+.claude/skills/<name> → ../../.agents/skills/<name>
 ```
 
 | Skill        | When to use                                                                           |

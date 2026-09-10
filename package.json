@@ -33,8 +33,7 @@
     "test": "pnpm --filter @md/shared test && pnpm --filter @md/core test && pnpm --filter @md/web test && pnpm --filter @md/api test",
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector",
-    "utools:package": "node ./scripts/package-utools.mjs",
-    "link-claude-skills": "node ./scripts/link-claude-skills.mjs"
+    "utools:package": "node ./scripts/package-utools.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "9.5.1",
