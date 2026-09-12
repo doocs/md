@@ -1,0 +1,1 @@
+import{t as e}from"./md-createLucideIcon-C0Ek7mAF.js";var t=e({name:`check`,size:24,node:[[`path`,{d:`M20 6 9 17l-5-5`,key:`1gmf2c`}]]});export{t};
