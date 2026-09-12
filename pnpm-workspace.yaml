@@ -33,7 +33,7 @@ overrides:
   ajv@^8: ^8.20.0
   bn.js: '>=5.2.5'
   bn.js@^5: ^5.2.5
-  confbox: 0.2.4
+  confbox: 0.3.1
   core-js: ^3.50.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
@@ -92,7 +92,7 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260908.1
+  '@cloudflare/workers-types': ^5.20260911.1
   '@codemirror/state': 6.7.4
   '@codemirror/view': 6.43.11
   '@types/node': ^26.5.1
@@ -103,5 +103,5 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^5.0.0
-  wrangler: ^4.130.0
-  zod: ^4.6.1
+  wrangler: ^4.131.1
+  zod: ^4.6.2
