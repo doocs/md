@@ -48,7 +48,7 @@ overrides:
   hono: ^4.13.7
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
-  js-yaml@^5: ^5.4.1
+  js-yaml@^5: ^5.4.2
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
   markdown-it: ^14.3.1
@@ -60,7 +60,7 @@ overrides:
   qs: ^6.16.0
   querystring: npm:qs@^6.16.0
   semver: ^7.8.5
-  serialize-javascript@<7.0.3: ^7.1.0
+  serialize-javascript@<7.0.3: ^7.1.1
   # GHSA sharp/libvips (dependabot/313): miniflare/wrangler pin sharp 0.34.5
   sharp: ^0.35.4
   shell-quote: ^1.10.0
@@ -92,16 +92,16 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260911.1
+  '@cloudflare/workers-types': ^5.20260914.1
   '@codemirror/state': 6.7.4
   '@codemirror/view': 6.43.11
   '@types/node': ^26.5.1
   isomorphic-dompurify: ^4.2.0
-  marked: ^18.0.12
+  marked: ^18.0.13
   prettier: 2.8.8
   tsx: ^4.23.13
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^5.0.0
-  wrangler: ^4.131.1
-  zod: ^4.6.2
+  wrangler: ^4.131.2
+  zod: ^4.6.5
