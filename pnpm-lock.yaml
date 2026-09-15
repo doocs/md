@@ -16,8 +16,8 @@ catalogs:
       specifier: ^4.2.0
       version: 4.2.0
     marked:
-      specifier: ^18.0.13
-      version: 18.0.13
+      specifier: ^18.0.12
+      version: 18.0.12
     tsx:
       specifier: ^4.23.13
       version: 4.23.13
@@ -395,7 +395,7 @@ importers:
         version: 5.4.2
       marked:
         specifier: 'catalog:'
-        version: 18.0.13
+        version: 18.0.12
       mermaid:
         specifier: ^11.17.2
         version: 11.17.2
@@ -543,7 +543,7 @@ importers:
         version: link:../config
       marked:
         specifier: 'catalog:'
-        version: 18.0.13
+        version: 18.0.12
       typescript:
         specifier: 'catalog:'
         version: 6.0.3
@@ -4808,8 +4808,8 @@ packages:
     engines: {node: '>= 20'}
     hasBin: true
 
-  marked@18.0.13:
-    resolution: {integrity: sha512-xTxVzZsBFwunP6HDmtBkabUQEYArnP7/rMDGmPj9SlrKlQ4i8MdYVow+nJL0eOqwpUqhzBoTBRADGN6uYwPyOw==}
+  marked@18.0.12:
+    resolution: {integrity: sha512-LEm4ga2YeI2T3GVHj9b0BaDPPk93LLTHMFeMyQbNIzPxc8vCI0y/scy0ZA6z6lXKyT9j9Nhl/OC6ZYKYGuFScA==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -11339,7 +11339,7 @@ snapshots:
 
   marked@16.4.2: {}
 
-  marked@18.0.13: {}
+  marked@18.0.12: {}
 
   math-intrinsics@1.1.0: {}
 
