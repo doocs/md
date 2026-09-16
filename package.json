@@ -37,7 +37,7 @@
   },
   "devDependencies": {
     "@antfu/eslint-config": "9.5.1",
-    "@types/node": "^26.5.1",
+    "@types/node": "^26.6.1",
     "archiver": "^8.0.0",
     "eslint": "^10.10.0",
     "eslint-plugin-format": "^2.0.1",

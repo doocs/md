@@ -1,8 +1,8 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
-index d50b20a..9cfda1d 100644
+index 33ce13ed..460151e0 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9207,7 +9207,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9227,7 +9227,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -13,7 +13,7 @@ index d50b20a..9cfda1d 100644
              if (runFor(scopeObj[prefix + modifiers(baseName, event, true)])) {
                  handled = true;
 diff --git a/dist/index.d.cts b/dist/index.d.cts
-index 0f9bebe..0205eb6 100644
+index 760c0aa8..ec017012 100644
 --- a/dist/index.d.cts
 +++ b/dist/index.d.cts
 @@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
@@ -26,7 +26,7 @@ index 0f9bebe..0205eb6 100644
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.d.ts b/dist/index.d.ts
-index 0f9bebe..0205eb6 100644
+index 760c0aa8..ec017012 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
 @@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
@@ -39,10 +39,10 @@ index 0f9bebe..0205eb6 100644
      Called in a DOM read phase to gather information that requires
      DOM layout. Should _not_ mutate the document.
 diff --git a/dist/index.js b/dist/index.js
-index 1021312..8b3c5dc 100644
+index e4718ac9..62c67624 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9202,7 +9202,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9222,7 +9222,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
