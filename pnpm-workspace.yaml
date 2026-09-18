@@ -92,7 +92,7 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20260916.1
+  '@cloudflare/workers-types': ^5.20260918.1
   '@codemirror/state': 6.7.5
   '@codemirror/view': 6.43.12
   '@types/node': ^26.6.1
@@ -103,5 +103,5 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^5.0.1
-  wrangler: ^4.132.0
+  wrangler: ^4.134.0
   zod: ^4.6.5
