@@ -7,6 +7,7 @@ import { store } from '@/storage/manager'
 import { isStorageQuotaError, warnStorageQuota } from '@/storage/quota'
 import {
   clearDocumentsPagehideBackup,
+  mergeDocumentsWithBackup,
   peekDocumentsPagehideBackup,
 } from '@/storage/repositories/documents-backup'
 
@@ -113,19 +114,41 @@ async function savePostIndexedDB(post: Post): Promise<void> {
   }
 }
 
-async function restorePagehideBackup(backup: Post[]): Promise<Post[]> {
+async function loadStoredPosts(): Promise<Post[]> {
+  if (useLegacyStorage)
+    return loadFromLegacy()
+  const db = await getDatabase()
+  const rows = await db.getAll(STORE_DOCUMENTS)
+  return rows.map(fromStored)
+}
+
+async function restorePagehideBackup(backup: { token: string | null, posts: Post[] }): Promise<Post[]> {
+  let existing: Post[] = []
+  try {
+    existing = await loadStoredPosts()
+  }
+  catch (error) {
+    console.error(`[documentRepo] Failed to read posts before restoring backup:`, error)
+    cachedPosts = backup.posts
+    return backup.posts
+  }
+
+  const merged = mergeDocumentsWithBackup(existing, backup.posts)
   try {
     if (useLegacyStorage)
-      await saveAllLegacy(backup)
+      await saveAllLegacy(merged)
     else
-      await saveAllIndexedDB(backup)
-    clearDocumentsPagehideBackup()
+      await saveAllIndexedDB(merged)
+    if (backup.token)
+      clearDocumentsPagehideBackup(backup.token)
+    else
+      clearDocumentsPagehideBackup()
   }
   catch (error) {
     console.error(`[documentRepo] Failed to restore pagehide backup:`, error)
-    cachedPosts = backup
+    cachedPosts = merged
   }
-  return backup
+  return merged
 }
 
 export const documentRepo = {

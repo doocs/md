@@ -70,6 +70,35 @@ describe(`collectClipboardImages`, () => {
     expect(collectClipboardImages(data)).toEqual([image])
   })
 
+  it(`ignores files when items already contain the clipboard image`, () => {
+    const fromItems = makeFile(`image.png`, `image/png`)
+    const fromFiles = makeFile(`image.png`, `image/png`)
+    const data = {
+      items: [{
+        kind: `file`,
+        type: `image/png`,
+        getAsFile: () => fromItems,
+      }],
+      files: [fromFiles],
+    } as unknown as DataTransfer
+
+    expect(collectClipboardImages(data)).toEqual([fromItems])
+  })
+
+  it(`reads files when clipboard items have no image`, () => {
+    const image = makeFile(`shot.png`, `image/png`)
+    const data = {
+      items: [{
+        kind: `string`,
+        type: `text/plain`,
+        getAsFile: () => null,
+      }],
+      files: [image],
+    } as unknown as DataTransfer
+
+    expect(collectClipboardImages(data)).toEqual([image])
+  })
+
   it(`normalizes nameless clipboard screenshots`, () => {
     const image = makeFile(``, `image/webp`)
     const data = {

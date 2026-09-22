@@ -85,9 +85,9 @@ export const usePostStore = defineStore(`post`, () => {
     dirtyPostIds.clear()
     const snapshot = [...posts.value]
     // IndexedDB writes may not finish before a tab is killed (OAuth redirect).
-    const generation = writeDocumentsPagehideBackup(snapshot)
+    const backupToken = writeDocumentsPagehideBackup(snapshot)
     await documentRepo.saveAll(snapshot)
-    clearDocumentsPagehideBackup(generation)
+    clearDocumentsPagehideBackup(backupToken)
   }
 
   // Watching per-post signatures instead of a deep watch on `posts`: the
