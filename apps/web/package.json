@@ -37,7 +37,7 @@
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@vue/devtools-api": "^8.2.1",
-    "@vueuse/core": "^14.4.0",
+    "@vueuse/core": "^15.0.0",
     "browser-image-compression": "^2.0.2",
     "buffer-from": "^1.1.2",
     "class-variance-authority": "^0.7.1",
