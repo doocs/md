@@ -296,8 +296,8 @@ importers:
         version: 4.6.5
     devDependencies:
       '@cloudflare/vite-plugin':
-        specifier: 1.57.2
-        version: 1.57.2(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.136.1(@cloudflare/workers-types@5.20260922.1)(@types/node@26.6.2))
+        specifier: 1.57.1
+        version: 1.57.1(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.136.1(@cloudflare/workers-types@5.20260922.1)(@types/node@26.6.2))
       '@cloudflare/workers-types':
         specifier: 'catalog:'
         version: 5.20260922.1
@@ -980,12 +980,12 @@ packages:
       workerd:
         optional: true
 
-  '@cloudflare/vite-plugin@1.57.2':
-    resolution: {integrity: sha512-0rjNTnPWGoXRdbknKrCn3Cy0I1SJKs2b7F0B2yLR7IE9ZCuy6GBaA0MSI+kiDRf3FLSzKBRI6TQwOer/+hSh3Q==}
+  '@cloudflare/vite-plugin@1.57.1':
+    resolution: {integrity: sha512-AlyZwnEa/Y5nX8q+jtf5wbXe7rbFt8fkWBbjf0ofWPpHU5yZGoLjDZ7CPo1+7D+0hey6Q8uMOMgoPwYBRNHAWQ==}
     hasBin: true
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0 || ^8.0.0
-      wrangler: ^4.136.2
+      wrangler: ^4.136.1
 
   '@cloudflare/workerd-darwin-64@1.20260921.1':
     resolution: {integrity: sha512-3iB2WnYOlZ29T+1zhCwbHFExCBp6E9bgmDUMryATYwrIGEQ1YbvR78m4ydm56XKN/d/yF3803ivMGfZMYDtiMg==}
@@ -7217,7 +7217,7 @@ snapshots:
     optionalDependencies:
       workerd: 1.20260921.1
 
-  '@cloudflare/vite-plugin@1.57.2(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.136.1(@cloudflare/workers-types@5.20260922.1)(@types/node@26.6.2))':
+  '@cloudflare/vite-plugin@1.57.1(@types/node@26.6.2)(vite@8.3.0(@types/node@26.6.2)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1))(wrangler@4.136.1(@cloudflare/workers-types@5.20260922.1)(@types/node@26.6.2))':
     dependencies:
       '@cloudflare/unenv-preset': 2.16.2(unenv@2.0.0-rc.24)(workerd@1.20260921.1)
       miniflare: 5.20260921.0-alpha(@types/node@26.6.2)
