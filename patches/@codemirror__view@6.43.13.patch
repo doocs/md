@@ -2,7 +2,7 @@ diff --git a/dist/index.cjs b/dist/index.cjs
 index 33ce13ed..460151e0 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9227,7 +9227,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9263,7 +9263,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -16,7 +16,7 @@ diff --git a/dist/index.d.cts b/dist/index.d.cts
 index 760c0aa8..ec017012 100644
 --- a/dist/index.d.cts
 +++ b/dist/index.d.cts
-@@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+@@ -523,7 +523,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
          new (view: EditorView, arg: Arg): V;
      }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
  }
@@ -29,7 +29,7 @@ diff --git a/dist/index.d.ts b/dist/index.d.ts
 index 760c0aa8..ec017012 100644
 --- a/dist/index.d.ts
 +++ b/dist/index.d.ts
-@@ -520,7 +520,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
+@@ -523,7 +523,7 @@ declare class ViewPlugin<V extends PluginValue, Arg = undefined> {
          new (view: EditorView, arg: Arg): V;
      }, spec?: PluginSpec<V>): ViewPlugin<V, Arg>;
  }
@@ -42,7 +42,7 @@ diff --git a/dist/index.js b/dist/index.js
 index e4718ac9..62c67624 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9222,7 +9222,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9258,7 +9258,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
