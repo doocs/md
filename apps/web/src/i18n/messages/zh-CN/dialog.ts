@@ -103,6 +103,7 @@ export default {
     githubLogin: `GitHub 登录`,
     extensionLoginUnavailable: `当前环境不支持扩展内登录，请更新插件或改用网页版登录。`,
     loginFailed: `登录失败，请稍后重试。`,
+    loginCancelled: `已取消登录`,
     loggingIn: `登录中…`,
     cloudSync: `云同步`,
     sharePreview: `分享预览`,

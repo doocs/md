@@ -18,6 +18,14 @@ function callbackUrl(c: Context): string {
   return `${url.origin}/auth/github/callback`
 }
 
+/** Send the browser back to the frontend with a hash payload (token or error). */
+function redirectToApp(c: Context<{ Bindings: Env }>, savedRedirect: string | undefined, hash: Record<string, string>) {
+  const target = resolveRedirect(c.env, savedRedirect)
+  const redirect = new URL(target || defaultOrigin(c.env))
+  redirect.hash = new URLSearchParams(hash).toString()
+  return c.redirect(redirect.toString())
+}
+
 export async function issueToken(env: Env, payload: { sub: string, login: string }): Promise<string> {
   const exp = Math.floor(Date.now() / 1000) + TOKEN_TTL_SECONDS
   return sign({ ...payload, exp }, env.JWT_SECRET, `HS256`)
@@ -72,6 +80,7 @@ authRoutes.get(`/github`, (c) => {
 
 // Step 2: GitHub callback — exchange code, issue JWT, redirect to frontend
 authRoutes.get(`/github/callback`, async (c) => {
+  const oauthError = c.req.query(`error`)
   const code = c.req.query(`code`)
   const state = c.req.query(`state`)
   const savedState = getCookie(c, STATE_COOKIE)
@@ -79,8 +88,12 @@ authRoutes.get(`/github/callback`, async (c) => {
   deleteCookie(c, STATE_COOKIE, { path: `/` })
   deleteCookie(c, REDIRECT_COOKIE, { path: `/` })
 
+  // Cancel / deny must return to the editor instead of a JSON error page.
+  if (oauthError)
+    return redirectToApp(c, savedRedirect, { oauth_error: oauthError })
+
   if (!code || !state || state !== savedState)
-    return c.json({ error: `invalid_oauth_state` }, 400)
+    return redirectToApp(c, savedRedirect, { oauth_error: `invalid_oauth_state` })
 
   const tokenRes = await fetch(`https://github.com/login/oauth/access_token`, {
     method: `POST`,
@@ -95,7 +108,7 @@ authRoutes.get(`/github/callback`, async (c) => {
   const tokenJson = await tokenRes.json<{ access_token?: string }>()
   const accessToken = tokenJson.access_token
   if (!accessToken)
-    return c.json({ error: `oauth_exchange_failed` }, 400)
+    return redirectToApp(c, savedRedirect, { oauth_error: `oauth_exchange_failed` })
 
   // GitHub API requires a User-Agent header
   const userRes = await fetch(`https://api.github.com/user`, {
@@ -106,7 +119,7 @@ authRoutes.get(`/github/callback`, async (c) => {
     },
   })
   if (!userRes.ok)
-    return c.json({ error: `github_user_fetch_failed` }, 400)
+    return redirectToApp(c, savedRedirect, { oauth_error: `github_user_fetch_failed` })
 
   const gh = await userRes.json<{ id: number, login: string, name: string | null, avatar_url: string | null }>()
 
@@ -127,10 +140,7 @@ authRoutes.get(`/github/callback`, async (c) => {
   const token = await issueToken(c.env, { sub: userId, login: gh.login })
 
   // Redirect to the validated frontend origin; token in URL fragment avoids server logs
-  const target = resolveRedirect(c.env, savedRedirect)
-  const redirect = new URL(target || defaultOrigin(c.env))
-  redirect.hash = `account_token=${token}`
-  return c.redirect(redirect.toString())
+  return redirectToApp(c, savedRedirect, { account_token: token })
 })
 
 export async function meHandler(c: Context<{ Bindings: Env, Variables: { userId: string } }>) {

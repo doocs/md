@@ -20,6 +20,7 @@ import { addPrefix } from '@/storage/prefix'
 import { parseStoredValue } from '@/storage/quota'
 import { trimCacheValue } from '@/storage/repositories/cache'
 import { documentRepo } from '@/storage/repositories/documents'
+import { DOCUMENTS_PAGEHIDE_BACKUP_KEY } from '@/storage/repositories/documents-backup'
 
 function legacyRemove(key: string): void {
   try {
@@ -82,6 +83,9 @@ export function cleanupMigratedLocalStorage(explicitKeys?: string[]): number {
   candidates.add(addPrefix(`mp-profile`))
   for (const key of LEGACY_THEME_KEYS)
     candidates.add(key)
+
+  // Crash-recovery snapshots must survive the one-time localStorage cleanup.
+  candidates.delete(DOCUMENTS_PAGEHIDE_BACKUP_KEY)
 
   let removed = 0
   for (const key of candidates) {

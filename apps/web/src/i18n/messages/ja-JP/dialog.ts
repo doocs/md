@@ -103,6 +103,7 @@ export default {
     githubLogin: `GitHub でログイン`,
     extensionLoginUnavailable: `拡張機能内でのログインは利用できません。拡張機能を更新するか、Web アプリをご利用ください。`,
     loginFailed: `ログインに失敗しました。しばらくしてから再試行してください。`,
+    loginCancelled: `ログインをキャンセルしました`,
     loggingIn: `ログイン中…`,
     cloudSync: `クラウド同期`,
     sharePreview: `共有プレビュー`,

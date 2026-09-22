@@ -7,6 +7,7 @@ import { normalizePostHistory, toStoredDateTime } from '@/lib/format/datetime'
 import { postSignature } from '@/lib/post-signature'
 import { documentRepo, getLoadedDocuments, store } from '@/storage'
 import { addPrefix } from '@/storage/prefix'
+import { clearDocumentsPagehideBackup, writeDocumentsPagehideBackup } from '@/storage/repositories/documents-backup'
 import { useEditorStore } from '@/stores/editor'
 
 export type { Post } from '@/types/post'
@@ -82,7 +83,11 @@ export const usePostStore = defineStore(`post`, () => {
     persistAll.cancel()
     persistDirty.cancel()
     dirtyPostIds.clear()
-    await documentRepo.saveAll([...posts.value])
+    const snapshot = [...posts.value]
+    // IndexedDB writes may not finish before a tab is killed (OAuth redirect).
+    const backupToken = writeDocumentsPagehideBackup(snapshot)
+    await documentRepo.saveAll(snapshot)
+    clearDocumentsPagehideBackup(backupToken)
   }
 
   // Watching per-post signatures instead of a deep watch on `posts`: the
