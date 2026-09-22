@@ -15,6 +15,7 @@ import { CONTENT_FONT_LANG } from '@/i18n/constants'
 import { toStoredDateTime } from '@/lib/format/datetime'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
+import { collectClipboardImages } from '@/lib/upload/clipboard-images'
 import { validateImageFile } from '@/lib/upload/validate-image'
 import { isUploadProviderConfigured } from '@/services/upload/provider-registry'
 import { store } from '@/storage'
@@ -365,25 +366,20 @@ function mdLocalToRemote() {
 // --- Image paste handler for CodeMirror ---
 function createPasteHandler() {
   return (event: ClipboardEvent, view: EditorView) => {
-    if (event.clipboardData?.items && [...event.clipboardData.items].some(item => item.kind === 'file')) {
-      if (isImgLoading.value) {
+    const imageFiles = collectClipboardImages(event.clipboardData)
+    if (imageFiles.length > 0) {
+      if (isImgLoading.value)
         return true
-      }
-      Promise.all(
-        Array.from(event.clipboardData.items, item => item.getAsFile())
-          .filter(item => item != null)
-          .map(async item => (await beforeImageUpload(item!)) ? item : null),
-      ).then((items) => {
-        const validItems = items.filter(item => item != null) as File[]
-        if (validItems.length === 0) {
-          return
+
+      void (async () => {
+        const validItems: File[] = []
+        for (const item of imageFiles) {
+          if (await beforeImageUpload(item))
+            validItems.push(item)
         }
-        const processFiles = async () => {
-          for (const item of validItems)
-            await uploadImage(item)
-        }
-        void processFiles()
-      })
+        for (const item of validItems)
+          await uploadImage(item)
+      })()
       return true
     }
 

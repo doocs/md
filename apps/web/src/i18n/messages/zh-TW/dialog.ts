@@ -103,6 +103,7 @@ export default {
     githubLogin: `GitHub 登入`,
     extensionLoginUnavailable: `當前環境不支援擴充套件內登入，請更新外掛或改用網頁版登入。`,
     loginFailed: `登入失敗，請稍後重試。`,
+    loginCancelled: `已取消登入`,
     loggingIn: `登入中…`,
     cloudSync: `雲同步`,
     sharePreview: `分享預覽`,

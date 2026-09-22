@@ -34,6 +34,7 @@ describe(`matchPattern`, () => {
   it(`matches single-label wildcards`, () => {
     expect(matchPattern(`https://abc--doocs-md.netlify.app`, `https://*--doocs-md.netlify.app`)).toBe(true)
     expect(matchPattern(`http://localhost:5173`, `http://localhost:*`)).toBe(true)
+    expect(matchPattern(`http://127.0.0.1:8800`, `http://127.0.0.1:*`)).toBe(true)
     expect(matchPattern(`https://evil.com`, `https://*--doocs-md.netlify.app`)).toBe(false)
   })
 })
@@ -62,5 +63,13 @@ describe(`origin helpers`, () => {
     expect(resolveRedirect(e, `https://md.doocs.org/editor`)).toBe(`https://md.doocs.org/editor`)
     expect(resolveRedirect(e, `https://evil.example/x`)).toBe(`https://md.doocs.org`)
     expect(resolveRedirect(e, null)).toBe(`https://md.doocs.org`)
+  })
+
+  it(`returns local md-cli / Vite origins to the same address`, () => {
+    const local = env(`https://md.doocs.org,http://localhost:*,http://127.0.0.1:*`)
+    expect(resolveRedirect(local, `http://127.0.0.1:8800/`)).toBe(`http://127.0.0.1:8800/`)
+    expect(resolveRedirect(local, `http://localhost:5173/md/`)).toBe(`http://localhost:5173/md/`)
+    expect(isAllowedOrigin(local, `http://127.0.0.1:8899`)).toBe(true)
+    expect(isAllowedOrigin(local, `http://evil.example`)).toBe(false)
   })
 })

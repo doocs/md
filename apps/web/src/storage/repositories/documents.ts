@@ -5,6 +5,10 @@ import { getDatabase } from '@/storage/db'
 import { LEGACY_POSTS_KEY, STORE_DOCUMENTS } from '@/storage/keys'
 import { store } from '@/storage/manager'
 import { isStorageQuotaError, warnStorageQuota } from '@/storage/quota'
+import {
+  clearDocumentsPagehideBackup,
+  peekDocumentsPagehideBackup,
+} from '@/storage/repositories/documents-backup'
 
 function toStored(post: Post): StoredDocument {
   return {
@@ -109,10 +113,31 @@ async function savePostIndexedDB(post: Post): Promise<void> {
   }
 }
 
+async function restorePagehideBackup(backup: Post[]): Promise<Post[]> {
+  try {
+    if (useLegacyStorage)
+      await saveAllLegacy(backup)
+    else
+      await saveAllIndexedDB(backup)
+    clearDocumentsPagehideBackup()
+  }
+  catch (error) {
+    console.error(`[documentRepo] Failed to restore pagehide backup:`, error)
+    cachedPosts = backup
+  }
+  return backup
+}
+
 export const documentRepo = {
   async loadAll(): Promise<Post[]> {
     if (cachedPosts)
       return cachedPosts
+
+    const backup = peekDocumentsPagehideBackup()
+    if (backup) {
+      cachedPosts = await restorePagehideBackup(backup)
+      return cachedPosts
+    }
 
     if (useLegacyStorage) {
       cachedPosts = await loadFromLegacy()

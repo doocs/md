@@ -103,6 +103,7 @@ export default {
     githubLogin: `Sign in with GitHub`,
     extensionLoginUnavailable: `In-extension sign-in is unavailable. Update the extension or use the web app.`,
     loginFailed: `Sign-in failed. Please try again later.`,
+    loginCancelled: `Sign-in cancelled`,
     loggingIn: `Signing in…`,
     cloudSync: `Cloud Sync`,
     sharePreview: `Share Preview`,

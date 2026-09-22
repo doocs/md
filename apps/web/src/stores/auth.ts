@@ -7,7 +7,7 @@ import {
   isExtensionContext,
   loginViaExtensionIdentity,
 } from '@/services/account/extension'
-import { ACCOUNT_TOKEN_KEY, captureOAuthToken } from '@/services/account/oauth'
+import { ACCOUNT_TOKEN_KEY, captureOAuthResult } from '@/services/account/oauth'
 import { SyncClient } from '@/services/sync/client'
 import { store } from '@/storage'
 
@@ -32,9 +32,13 @@ export const useAuthStore = defineStore(`auth`, () => {
       return
     bootstrapped = true
 
-    captureOAuthToken((t) => {
+    const { error } = captureOAuthResult((t) => {
       token.value = t
     })
+    if (error === `access_denied`)
+      toast.info(t(`account.loginCancelled`))
+    else if (error)
+      toast.error(t(`account.loginFailed`))
 
     if (token.value)
       await fetchMe()
@@ -60,7 +64,21 @@ export const useAuthStore = defineStore(`auth`, () => {
     }
   }
 
+  async function persistDraftsBeforeLogin(): Promise<void> {
+    const { useEditorStore } = await import(`@/stores/editor`)
+    const { usePostStore } = await import(`@/stores/post`)
+    useEditorStore().flushContentToPostStore()
+    await usePostStore().persistImmediately()
+  }
+
   async function login(): Promise<void> {
+    try {
+      await persistDraftsBeforeLogin()
+    }
+    catch (error) {
+      console.error(`[auth] Failed to persist drafts before login:`, error)
+    }
+
     if (isExtensionContext()) {
       if (!canLoginInExtension()) {
         toast.error(t(`account.extensionLoginUnavailable`))
