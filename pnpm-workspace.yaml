@@ -103,5 +103,6 @@ catalog:
   typescript: ~6.0.3
   uuid: ^14.0.2
   vitest: ^5.0.1
-  wrangler: ^4.136.1
+  # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
+  wrangler: 4.134.0
   zod: ^4.6.5
