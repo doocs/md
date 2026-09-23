@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up pnpm
-        uses: pnpm/setup@v2
+        uses: pnpm/setup@v3
         with:
           version: 11.27.1
           runtime: node@22
@@ -80,7 +80,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up pnpm
-        uses: pnpm/setup@v2
+        uses: pnpm/setup@v3
         with:
           version: 11.27.1
           runtime: node@22
