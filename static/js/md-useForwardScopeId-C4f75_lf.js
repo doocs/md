@@ -1,0 +1,1 @@
+import{D as e}from"./md-vendor_vue-CLlE97Ni.js";function t(){let t=e()?.vnode?.scopeId;return t?{[t]:``}:{}}export{t};
