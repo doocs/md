@@ -2,7 +2,7 @@
 import type { SplitterResizeHandleEmits, SplitterResizeHandleProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
 import { GripVertical } from '@lucide/vue'
-import { reactiveOmit } from '@vueuse/core'
+import { reactiveOmit } from '@vueuse/shared'
 import { SplitterResizeHandle, useForwardPropsEmits } from 'reka-ui'
 import { cn } from '@/lib/utils'
 

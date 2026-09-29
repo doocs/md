@@ -22,7 +22,7 @@ jobs:
       - name: Set up pnpm
         uses: pnpm/setup@v3
         with:
-          version: 11.27.1
+          version: 12.6.0
           cache: true
           install: false
 

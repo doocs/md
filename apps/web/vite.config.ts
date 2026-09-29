@@ -1,4 +1,6 @@
 import type { Plugin } from 'vite'
+import { readFileSync } from 'node:fs'
+import { createRequire } from 'node:module'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
@@ -18,6 +20,34 @@ const isCfWorkers = process.env.CF_WORKERS === `1`
 const isCfPages = process.env.CF_PAGES === `1`
 
 const base = isNetlify || isCfWorkers || isCfPages ? `/` : isUTools ? `./` : `/md/`
+
+const vueuseAutoImportExclusions = new Set([`toRefs`, `utils`, `toRef`, `toValue`])
+
+/**
+ * unplugin-auto-import's @vueuse/core preset still imports shared helpers from
+ * @vueuse/core. VueUse 15 moved those helpers to @vueuse/shared.
+ */
+function vueuseAutoImports() {
+  const requireFromWeb = createRequire(import.meta.url)
+  const requireFromCore = createRequire(requireFromWeb.resolve(`@vueuse/core/package.json`))
+  const metadataPath = requireFromCore.resolve(`@vueuse/metadata/index.json`)
+  const { functions } = JSON.parse(readFileSync(metadataPath, `utf8`)) as {
+    functions: Array<{ name: string, package: string, alias?: string[] }>
+  }
+  const imports: Record<string, string[]> = {
+    '@vueuse/core': [],
+    '@vueuse/shared': [],
+  }
+  for (const fn of functions) {
+    if (fn.package !== `core` && fn.package !== `shared`)
+      continue
+    const names = [fn.name, ...(fn.alias ?? [])].filter(name =>
+      name.length >= 4 && !vueuseAutoImportExclusions.has(name),
+    )
+    imports[`@vueuse/${fn.package}`].push(...names)
+  }
+  return imports
+}
 
 const cloudflarePlugin = isCfWorkers
   ? (await import(`@cloudflare/vite-plugin`)).cloudflare()
@@ -99,7 +129,7 @@ export default defineConfig(({ mode }) => {
         ? [visualizer({ emitFile: true, filename: `stats.html` }) as Plugin]
         : []),
       AutoImport({
-        imports: [`vue`, `pinia`, `@vueuse/core`, `vue-i18n`],
+        imports: [`vue`, `pinia`, vueuseAutoImports(), `vue-i18n`],
         dirs: [`./src/stores`, `./src/lib/toast`, `./src/composables`],
       }),
       Components({
