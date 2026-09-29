@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { RadioGroupRootEmits, RadioGroupRootProps } from 'reka-ui'
 import type { HTMLAttributes } from 'vue'
-import { reactiveOmit } from '@vueuse/core'
+import { reactiveOmit } from '@vueuse/shared'
 import { RadioGroupRoot, useForwardPropsEmits } from 'reka-ui'
 import { cn } from '@/lib/utils'
 

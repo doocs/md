@@ -19,7 +19,7 @@ declare global {
   const aiConfig: typeof import('./src/stores/aiConfig').default
   const aiImageConfig: typeof import('./src/stores/aiImageConfig').default
   const asyncComputed: typeof import('@vueuse/core').asyncComputed
-  const autoResetRef: typeof import('@vueuse/core').autoResetRef
+  const autoResetRef: typeof import('@vueuse/shared').autoResetRef
   const buildAIHeaders: typeof import('./src/composables/useAIFetch').buildAIHeaders
   const buildPostTree: typeof import('./src/composables/usePostTree').buildPostTree
   const buildSlashCommands: typeof import('./src/composables/slashCommands').buildSlashCommands
@@ -27,38 +27,38 @@ declare global {
   const completeInitialPreviewBoot: typeof import('./src/composables/useInitialPreviewBoot').completeInitialPreviewBoot
   const computed: typeof import('vue').computed
   const computedAsync: typeof import('@vueuse/core').computedAsync
-  const computedEager: typeof import('@vueuse/core').computedEager
+  const computedEager: typeof import('@vueuse/shared').computedEager
   const computedInject: typeof import('@vueuse/core').computedInject
-  const computedWithControl: typeof import('@vueuse/core').computedWithControl
-  const controlledComputed: typeof import('@vueuse/core').controlledComputed
-  const controlledRef: typeof import('@vueuse/core').controlledRef
+  const computedWithControl: typeof import('@vueuse/shared').computedWithControl
+  const controlledComputed: typeof import('@vueuse/shared').controlledComputed
+  const controlledRef: typeof import('@vueuse/shared').controlledRef
   const createApp: typeof import('vue').createApp
   const createComponentCompletionExtension: typeof import('./src/composables/useComponentCompletion').createComponentCompletionExtension
   const createComponentCompletionSource: typeof import('./src/composables/useComponentCompletion').createComponentCompletionSource
-  const createDisposableDirective: typeof import('@vueuse/core').createDisposableDirective
-  const createEventHook: typeof import('@vueuse/core').createEventHook
-  const createGlobalState: typeof import('@vueuse/core').createGlobalState
-  const createInjectionState: typeof import('@vueuse/core').createInjectionState
+  const createDisposableDirective: typeof import('@vueuse/shared').createDisposableDirective
+  const createEventHook: typeof import('@vueuse/shared').createEventHook
+  const createGlobalState: typeof import('@vueuse/shared').createGlobalState
+  const createInjectionState: typeof import('@vueuse/shared').createInjectionState
   const createLocalizedAIServiceOptions: typeof import('./src/composables/useLocalizedAIServices').createLocalizedAIServiceOptions
   const createLocalizedBuiltinComponents: typeof import('./src/composables/useLocalizedBuiltinComponents').createLocalizedBuiltinComponents
   const createLocalizedStyleOptions: typeof import('./src/composables/useLocalizedStyleOptions').createLocalizedStyleOptions
   const createLocalizedUploadHostOptions: typeof import('./src/composables/useLocalizedUploadHosts').createLocalizedUploadHostOptions
   const createPinia: typeof import('pinia').createPinia
-  const createReactiveFn: typeof import('@vueuse/core').createReactiveFn
-  const createRef: typeof import('@vueuse/core').createRef
+  const createReactiveFn: typeof import('@vueuse/shared').createReactiveFn
+  const createRef: typeof import('@vueuse/shared').createRef
   const createReusableTemplate: typeof import('@vueuse/core').createReusableTemplate
-  const createSharedComposable: typeof import('@vueuse/core').createSharedComposable
+  const createSharedComposable: typeof import('@vueuse/shared').createSharedComposable
   const createTemplatePromise: typeof import('@vueuse/core').createTemplatePromise
   const createUnrefFn: typeof import('@vueuse/core').createUnrefFn
   const customRef: typeof import('vue').customRef
-  const debouncedRef: typeof import('@vueuse/core').debouncedRef
-  const debouncedWatch: typeof import('@vueuse/core').debouncedWatch
+  const debouncedRef: typeof import('@vueuse/shared').debouncedRef
+  const debouncedWatch: typeof import('@vueuse/shared').debouncedWatch
   const defineAsyncComponent: typeof import('vue').defineAsyncComponent
   const defineComponent: typeof import('vue').defineComponent
   const defineStore: typeof import('pinia').defineStore
-  const eagerComputed: typeof import('@vueuse/core').eagerComputed
+  const eagerComputed: typeof import('@vueuse/shared').eagerComputed
   const effectScope: typeof import('vue').effectScope
-  const extendRef: typeof import('@vueuse/core').extendRef
+  const extendRef: typeof import('@vueuse/shared').extendRef
   const filterFlatPosts: typeof import('./src/composables/usePostTree').filterFlatPosts
   const flattenPostTree: typeof import('./src/composables/usePostTree').flattenPostTree
   const getAIImageServiceLabel: typeof import('./src/composables/useLocalizedAIServices').getAIImageServiceLabel
@@ -70,18 +70,18 @@ declare global {
   const getThemeLabel: typeof import('./src/composables/useLocalizedStyleOptions').getThemeLabel
   const getUploadHostLabel: typeof import('./src/composables/useLocalizedUploadHosts').getUploadHostLabel
   const h: typeof import('vue').h
-  const ignorableWatch: typeof import('@vueuse/core').ignorableWatch
+  const ignorableWatch: typeof import('@vueuse/shared').ignorableWatch
   const imageUploadCacheKey: typeof import('./src/composables/useImageUploader').imageUploadCacheKey
   const inject: typeof import('vue').inject
-  const injectLocal: typeof import('@vueuse/core').injectLocal
+  const injectLocal: typeof import('@vueuse/shared').injectLocal
   const isBuiltinQuickCommand: typeof import('./src/stores/quickCommands').isBuiltinQuickCommand
-  const isDefined: typeof import('@vueuse/core').isDefined
+  const isDefined: typeof import('@vueuse/shared').isDefined
   const isProxy: typeof import('vue').isProxy
   const isReactive: typeof import('vue').isReactive
   const isReadonly: typeof import('vue').isReadonly
   const isRef: typeof import('vue').isRef
   const isShallow: typeof import('vue').isShallow
-  const makeDestructurable: typeof import('@vueuse/core').makeDestructurable
+  const makeDestructurable: typeof import('@vueuse/shared').makeDestructurable
   const mapActions: typeof import('pinia').mapActions
   const mapGetters: typeof import('pinia').mapGetters
   const mapState: typeof import('pinia').mapState
@@ -109,25 +109,25 @@ declare global {
   const onUnmounted: typeof import('vue').onUnmounted
   const onUpdated: typeof import('vue').onUpdated
   const onWatcherCleanup: typeof import('vue').onWatcherCleanup
-  const pausableWatch: typeof import('@vueuse/core').pausableWatch
+  const pausableWatch: typeof import('@vueuse/shared').pausableWatch
   const postSignature: typeof import('./src/stores/post').postSignature
   const provide: typeof import('vue').provide
-  const provideLocal: typeof import('@vueuse/core').provideLocal
-  const reactify: typeof import('@vueuse/core').reactify
-  const reactifyObject: typeof import('@vueuse/core').reactifyObject
+  const provideLocal: typeof import('@vueuse/shared').provideLocal
+  const reactify: typeof import('@vueuse/shared').reactify
+  const reactifyObject: typeof import('@vueuse/shared').reactifyObject
   const reactive: typeof import('vue').reactive
-  const reactiveComputed: typeof import('@vueuse/core').reactiveComputed
-  const reactiveOmit: typeof import('@vueuse/core').reactiveOmit
-  const reactivePick: typeof import('@vueuse/core').reactivePick
+  const reactiveComputed: typeof import('@vueuse/shared').reactiveComputed
+  const reactiveOmit: typeof import('@vueuse/shared').reactiveOmit
+  const reactivePick: typeof import('@vueuse/shared').reactivePick
   const readAIJSONResponse: typeof import('./src/composables/useAIFetch').readAIJSONResponse
   const readonly: typeof import('vue').readonly
   const ref: typeof import('vue').ref
-  const refAutoReset: typeof import('@vueuse/core').refAutoReset
-  const refDebounced: typeof import('@vueuse/core').refDebounced
-  const refDefault: typeof import('@vueuse/core').refDefault
-  const refManualReset: typeof import('@vueuse/core').refManualReset
-  const refThrottled: typeof import('@vueuse/core').refThrottled
-  const refWithControl: typeof import('@vueuse/core').refWithControl
+  const refAutoReset: typeof import('@vueuse/shared').refAutoReset
+  const refDebounced: typeof import('@vueuse/shared').refDebounced
+  const refDefault: typeof import('@vueuse/shared').refDefault
+  const refManualReset: typeof import('@vueuse/shared').refManualReset
+  const refThrottled: typeof import('@vueuse/shared').refThrottled
+  const refWithControl: typeof import('@vueuse/shared').refWithControl
   const resolveComponent: typeof import('vue').resolveComponent
   const resolveEndpointUrl: typeof import('./src/composables/useAIFetch').resolveEndpointUrl
   const setActivePinia: typeof import('pinia').setActivePinia
@@ -136,44 +136,44 @@ declare global {
   const shallowReadonly: typeof import('vue').shallowReadonly
   const shallowRef: typeof import('vue').shallowRef
   const storeToRefs: typeof import('pinia').storeToRefs
-  const syncRef: typeof import('@vueuse/core').syncRef
-  const syncRefs: typeof import('@vueuse/core').syncRefs
+  const syncRef: typeof import('@vueuse/shared').syncRef
+  const syncRefs: typeof import('@vueuse/shared').syncRefs
   const templateRef: typeof import('@vueuse/core').templateRef
-  const throttledRef: typeof import('@vueuse/core').throttledRef
-  const throttledWatch: typeof import('@vueuse/core').throttledWatch
+  const throttledRef: typeof import('@vueuse/shared').throttledRef
+  const throttledWatch: typeof import('@vueuse/shared').throttledWatch
   const toRaw: typeof import('vue').toRaw
-  const toReactive: typeof import('@vueuse/core').toReactive
+  const toReactive: typeof import('@vueuse/shared').toReactive
   const toRef: typeof import('vue').toRef
   const toRefs: typeof import('vue').toRefs
   const toValue: typeof import('vue').toValue
   const toast: typeof import('./src/lib/toast/index').toast
   const triggerRef: typeof import('vue').triggerRef
-  const tryOnBeforeMount: typeof import('@vueuse/core').tryOnBeforeMount
-  const tryOnBeforeUnmount: typeof import('@vueuse/core').tryOnBeforeUnmount
-  const tryOnMounted: typeof import('@vueuse/core').tryOnMounted
-  const tryOnScopeDispose: typeof import('@vueuse/core').tryOnScopeDispose
-  const tryOnUnmounted: typeof import('@vueuse/core').tryOnUnmounted
+  const tryOnBeforeMount: typeof import('@vueuse/shared').tryOnBeforeMount
+  const tryOnBeforeUnmount: typeof import('@vueuse/shared').tryOnBeforeUnmount
+  const tryOnMounted: typeof import('@vueuse/shared').tryOnMounted
+  const tryOnScopeDispose: typeof import('@vueuse/shared').tryOnScopeDispose
+  const tryOnUnmounted: typeof import('@vueuse/shared').tryOnUnmounted
   const unref: typeof import('vue').unref
   const unrefElement: typeof import('@vueuse/core').unrefElement
-  const until: typeof import('@vueuse/core').until
+  const until: typeof import('@vueuse/shared').until
   const useAIConfigStore: typeof import('./src/stores/aiConfig').useAIConfigStore
   const useAIFetch: typeof import('./src/composables/useAIFetch').useAIFetch
   const useAIImageConfigStore: typeof import('./src/stores/aiImageConfig').useAIImageConfigStore
   const useAccountSyncBootstrap: typeof import('./src/composables/useAccountSyncBootstrap').useAccountSyncBootstrap
   const useActiveElement: typeof import('@vueuse/core').useActiveElement
   const useAnimate: typeof import('@vueuse/core').useAnimate
-  const useArrayDifference: typeof import('@vueuse/core').useArrayDifference
-  const useArrayEvery: typeof import('@vueuse/core').useArrayEvery
-  const useArrayFilter: typeof import('@vueuse/core').useArrayFilter
-  const useArrayFind: typeof import('@vueuse/core').useArrayFind
-  const useArrayFindIndex: typeof import('@vueuse/core').useArrayFindIndex
-  const useArrayFindLast: typeof import('@vueuse/core').useArrayFindLast
-  const useArrayIncludes: typeof import('@vueuse/core').useArrayIncludes
-  const useArrayJoin: typeof import('@vueuse/core').useArrayJoin
-  const useArrayMap: typeof import('@vueuse/core').useArrayMap
-  const useArrayReduce: typeof import('@vueuse/core').useArrayReduce
-  const useArraySome: typeof import('@vueuse/core').useArraySome
-  const useArrayUnique: typeof import('@vueuse/core').useArrayUnique
+  const useArrayDifference: typeof import('@vueuse/shared').useArrayDifference
+  const useArrayEvery: typeof import('@vueuse/shared').useArrayEvery
+  const useArrayFilter: typeof import('@vueuse/shared').useArrayFilter
+  const useArrayFind: typeof import('@vueuse/shared').useArrayFind
+  const useArrayFindIndex: typeof import('@vueuse/shared').useArrayFindIndex
+  const useArrayFindLast: typeof import('@vueuse/shared').useArrayFindLast
+  const useArrayIncludes: typeof import('@vueuse/shared').useArrayIncludes
+  const useArrayJoin: typeof import('@vueuse/shared').useArrayJoin
+  const useArrayMap: typeof import('@vueuse/shared').useArrayMap
+  const useArrayReduce: typeof import('@vueuse/shared').useArrayReduce
+  const useArraySome: typeof import('@vueuse/shared').useArraySome
+  const useArrayUnique: typeof import('@vueuse/shared').useArrayUnique
   const useAsyncQueue: typeof import('@vueuse/core').useAsyncQueue
   const useAsyncState: typeof import('@vueuse/core').useAsyncState
   const useAttrs: typeof import('vue').useAttrs
@@ -194,7 +194,7 @@ declare global {
   const useConfirmDialog: typeof import('@vueuse/core').useConfirmDialog
   const useConfirmStore: typeof import('./src/stores/confirm').useConfirmStore
   const useCountdown: typeof import('@vueuse/core').useCountdown
-  const useCounter: typeof import('@vueuse/core').useCounter
+  const useCounter: typeof import('@vueuse/shared').useCounter
   const useCssEditorStore: typeof import('./src/stores/cssEditor').useCssEditorStore
   const useCssModule: typeof import('vue').useCssModule
   const useCssSupports: typeof import('@vueuse/core').useCssSupports
@@ -205,9 +205,9 @@ declare global {
   const useCustomComponentStore: typeof import('./src/stores/customComponent').useCustomComponentStore
   const useCycleList: typeof import('@vueuse/core').useCycleList
   const useDark: typeof import('@vueuse/core').useDark
-  const useDateFormat: typeof import('@vueuse/core').useDateFormat
-  const useDebounce: typeof import('@vueuse/core').useDebounce
-  const useDebounceFn: typeof import('@vueuse/core').useDebounceFn
+  const useDateFormat: typeof import('@vueuse/shared').useDateFormat
+  const useDebounce: typeof import('@vueuse/shared').useDebounce
+  const useDebounceFn: typeof import('@vueuse/shared').useDebounceFn
   const useDebouncedRefHistory: typeof import('@vueuse/core').useDebouncedRefHistory
   const useDeepLinkImport: typeof import('./src/composables/useDeepLinkImport').useDeepLinkImport
   const useDeviceMotion: typeof import('@vueuse/core').useDeviceMotion
@@ -254,10 +254,11 @@ declare global {
   const useImageUploader: typeof import('./src/composables/useImageUploader').useImageUploader
   const useInfiniteScroll: typeof import('@vueuse/core').useInfiniteScroll
   const useIntersectionObserver: typeof import('@vueuse/core').useIntersectionObserver
-  const useInterval: typeof import('@vueuse/core').useInterval
-  const useIntervalFn: typeof import('@vueuse/core').useIntervalFn
+  const useInterval: typeof import('@vueuse/shared').useInterval
+  const useIntervalFn: typeof import('@vueuse/shared').useIntervalFn
   const useKeyModifier: typeof import('@vueuse/core').useKeyModifier
-  const useLastChanged: typeof import('@vueuse/core').useLastChanged
+  const useLastChanged: typeof import('@vueuse/shared').useLastChanged
+  const useLiveAnnouncer: typeof import('@vueuse/core').useLiveAnnouncer
   const useLocalStorage: typeof import('@vueuse/core').useLocalStorage
   const useLocaleStore: typeof import('./src/stores/locale').useLocaleStore
   const useLocalizedAIServiceOptions: typeof import('./src/composables/useLocalizedAIServices').useLocalizedAIServiceOptions
@@ -337,23 +338,24 @@ declare global {
   const useTemplateRef: typeof import('vue').useTemplateRef
   const useTemplateRefsList: typeof import('@vueuse/core').useTemplateRefsList
   const useTemplateStore: typeof import('./src/stores/template').useTemplateStore
+  const useTemporalNow: typeof import('@vueuse/core').useTemporalNow
   const useTextDirection: typeof import('@vueuse/core').useTextDirection
   const useTextSelection: typeof import('@vueuse/core').useTextSelection
   const useTextareaAutosize: typeof import('@vueuse/core').useTextareaAutosize
   const useThemeStore: typeof import('./src/stores/theme').useThemeStore
-  const useThrottle: typeof import('@vueuse/core').useThrottle
-  const useThrottleFn: typeof import('@vueuse/core').useThrottleFn
+  const useThrottle: typeof import('@vueuse/shared').useThrottle
+  const useThrottleFn: typeof import('@vueuse/shared').useThrottleFn
   const useThrottledRefHistory: typeof import('@vueuse/core').useThrottledRefHistory
   const useTimeAgo: typeof import('@vueuse/core').useTimeAgo
   const useTimeAgoIntl: typeof import('@vueuse/core').useTimeAgoIntl
-  const useTimeout: typeof import('@vueuse/core').useTimeout
-  const useTimeoutFn: typeof import('@vueuse/core').useTimeoutFn
+  const useTimeout: typeof import('@vueuse/shared').useTimeout
+  const useTimeoutFn: typeof import('@vueuse/shared').useTimeoutFn
   const useTimeoutPoll: typeof import('@vueuse/core').useTimeoutPoll
   const useTimestamp: typeof import('@vueuse/core').useTimestamp
   const useTitle: typeof import('@vueuse/core').useTitle
-  const useToNumber: typeof import('@vueuse/core').useToNumber
-  const useToString: typeof import('@vueuse/core').useToString
-  const useToggle: typeof import('@vueuse/core').useToggle
+  const useToNumber: typeof import('@vueuse/shared').useToNumber
+  const useToString: typeof import('@vueuse/shared').useToString
+  const useToggle: typeof import('@vueuse/shared').useToggle
   const useTransition: typeof import('@vueuse/core').useTransition
   const useUIStore: typeof import('./src/stores/ui').useUIStore
   const useUrlSearchParams: typeof import('@vueuse/core').useUrlSearchParams
@@ -363,6 +365,7 @@ declare global {
   const useVibrate: typeof import('@vueuse/core').useVibrate
   const useVirtualList: typeof import('@vueuse/core').useVirtualList
   const useWakeLock: typeof import('@vueuse/core').useWakeLock
+  const useWebMCP: typeof import('@vueuse/core').useWebMCP
   const useWebNotification: typeof import('@vueuse/core').useWebNotification
   const useWebSocket: typeof import('@vueuse/core').useWebSocket
   const useWebWorker: typeof import('@vueuse/core').useWebWorker
@@ -371,21 +374,21 @@ declare global {
   const useWindowScroll: typeof import('@vueuse/core').useWindowScroll
   const useWindowSize: typeof import('@vueuse/core').useWindowSize
   const watch: typeof import('vue').watch
-  const watchArray: typeof import('@vueuse/core').watchArray
-  const watchAtMost: typeof import('@vueuse/core').watchAtMost
-  const watchDebounced: typeof import('@vueuse/core').watchDebounced
-  const watchDeep: typeof import('@vueuse/core').watchDeep
+  const watchArray: typeof import('@vueuse/shared').watchArray
+  const watchAtMost: typeof import('@vueuse/shared').watchAtMost
+  const watchDebounced: typeof import('@vueuse/shared').watchDebounced
+  const watchDeep: typeof import('@vueuse/shared').watchDeep
   const watchEffect: typeof import('vue').watchEffect
-  const watchIgnorable: typeof import('@vueuse/core').watchIgnorable
-  const watchImmediate: typeof import('@vueuse/core').watchImmediate
-  const watchOnce: typeof import('@vueuse/core').watchOnce
-  const watchPausable: typeof import('@vueuse/core').watchPausable
+  const watchIgnorable: typeof import('@vueuse/shared').watchIgnorable
+  const watchImmediate: typeof import('@vueuse/shared').watchImmediate
+  const watchOnce: typeof import('@vueuse/shared').watchOnce
+  const watchPausable: typeof import('@vueuse/shared').watchPausable
   const watchPostEffect: typeof import('vue').watchPostEffect
   const watchSyncEffect: typeof import('vue').watchSyncEffect
-  const watchThrottled: typeof import('@vueuse/core').watchThrottled
-  const watchTriggerable: typeof import('@vueuse/core').watchTriggerable
-  const watchWithFilter: typeof import('@vueuse/core').watchWithFilter
-  const whenever: typeof import('@vueuse/core').whenever
+  const watchThrottled: typeof import('@vueuse/shared').watchThrottled
+  const watchTriggerable: typeof import('@vueuse/shared').watchTriggerable
+  const watchWithFilter: typeof import('@vueuse/shared').watchWithFilter
+  const whenever: typeof import('@vueuse/shared').whenever
 }
 // for type re-export
 declare global {

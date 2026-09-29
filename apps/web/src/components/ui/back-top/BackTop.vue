@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ArrowUpFromLine } from '@lucide/vue'
-import { useThrottleFn } from '@vueuse/core'
+import { useThrottleFn } from '@vueuse/shared'
 
 type Target = HTMLElement | Window | null
 
