@@ -293,7 +293,7 @@ importers:
   apps/api:
     dependencies:
       hono:
-        specifier: ^4.13.10
+        specifier: ^4.13.13
         version: 4.13.13
       uuid:
         specifier: ^14.0.2
@@ -552,7 +552,7 @@ importers:
         specifier: 'catalog:'
         version: 4.5.0
       js-yaml:
-        specifier: ^5.4.2
+        specifier: ^5.4.3
         version: 5.4.3
       marked:
         specifier: 'catalog:'
