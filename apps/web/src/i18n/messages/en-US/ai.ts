@@ -129,6 +129,7 @@ export default {
       'xai': `xAI Grok`,
       'mistral': `Mistral AI`,
       'openrouter': `OpenRouter`,
+      'atlascloud': `Atlas Cloud`,
       'groq': `Groq`,
       'qwen': `Qwen (Tongyi)`,
       'hunyuan': `Tencent Hunyuan`,
