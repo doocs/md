@@ -1,0 +1,1 @@
+import{t as e}from"./md-createLucideIcon-BXdNAL-d.js";var t=e({name:`chevron-right`,size:24,node:[[`path`,{d:`m9 18 6-6-6-6`,key:`mthhwq`}]]});export{t};
