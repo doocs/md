@@ -26,13 +26,13 @@
     "fflate": "^0.8.3",
     "highlight.js": "^11.12.0",
     "isomorphic-dompurify": "catalog:",
-    "js-yaml": "^5.4.2",
+    "js-yaml": "^5.4.3",
     "marked": "catalog:",
-    "mermaid": "^12.0.0"
+    "mermaid": "^12.1.0"
   },
   "devDependencies": {
     "@md/config": "workspace:*",
-    "jsdom": "^30.1.1",
+    "jsdom": "^30.1.2",
     "typescript": "catalog:",
     "vitest": "catalog:"
   }

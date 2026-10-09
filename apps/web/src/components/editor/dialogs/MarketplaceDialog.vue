@@ -19,7 +19,7 @@ import { wrapCSSWithScope } from '@md/core/theme'
 import { postProcessHtml, renderMarkdown } from '@md/core/utils'
 import { marketplaceThemeKey, themeMap } from '@md/shared'
 import { storeToRefs } from 'pinia'
-import { Field, Form } from 'vee-validate'
+import { Field, Form, useField } from 'vee-validate'
 import { computed, ref, watch } from 'vue'
 import PickColors from 'vue-pick-colors'
 import { z } from 'zod'
@@ -107,6 +107,12 @@ const emptyPublishValues = {
 
 const publishInitialValues = ref({ ...emptyPublishValues })
 const isEditing = computed(() => editingItemId.value != null)
+
+const {
+  value: coverUrlValue,
+  errorMessage: coverUrlErrorMessage,
+  handleChange: coverUrlHandleChange,
+} = useField<string>(`coverUrl`)
 
 const dialogOpen = computed({
   get: () => isShowMarketplaceDialog.value,
@@ -278,12 +284,12 @@ function applyInstalledTheme(marketplaceId: string) {
 
 function importCssFromScheme(
   tabId: string,
-  setFieldValue: (field: string, value: string) => void,
+  updateCssValue: (value: string) => void,
 ) {
   const tab = cssEditorStore.cssContentConfig.tabs.find(t => t.id === tabId)
   if (!tab)
     return
-  setFieldValue(`css`, tab.content ?? ``)
+  updateCssValue(tab.content ?? ``)
   toast.success(t(`marketplace.importCssSuccess`, { name: tab.title || tab.name }))
   importSchemeSelectKey.value += 1
 }
@@ -842,21 +848,19 @@ watch(
                 <FormItem :label="t('marketplace.fieldDescription')" :error="errorMessage" :width="120">
                   <Textarea
                     v-bind="field"
-                    v-model.trim="field.value"
+                    v-model="field.value"
                     rows="3"
                   />
                 </FormItem>
               </Field>
 
-              <Field v-slot="{ field, errorMessage }" name="coverUrl">
-                <FormItem :label="t('marketplace.fieldCoverUrl')" :error="errorMessage" :width="120">
-                  <Input
-                    v-bind="field"
-                    v-model.trim="field.value"
-                    placeholder="https://"
-                  />
-                </FormItem>
-              </Field>
+              <FormItem :label="t('marketplace.fieldCoverUrl')" :error="coverUrlErrorMessage" :width="120">
+                <Input
+                  :model-value="coverUrlValue"
+                  placeholder="https://"
+                  @update:model-value="coverUrlHandleChange"
+                />
+              </FormItem>
 
               <Field v-slot="{ value, handleChange, errorMessage }" name="primaryColor">
                 <FormItem :label="t('marketplace.fieldPrimaryColor')" required :error="errorMessage" :width="120">
@@ -886,7 +890,7 @@ watch(
                       :disabled="!cssSchemeOptions.length"
                       @update:model-value="(id) => {
                         if (typeof id === 'string')
-                          importCssFromScheme(id, setFieldValue)
+                          importCssFromScheme(id, (value) => { field.value = value })
                       }"
                     >
                       <SelectTrigger class="h-8 w-full text-xs sm:max-w-[14rem]">
