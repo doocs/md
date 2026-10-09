@@ -222,10 +222,10 @@ overrides:
   glob@<8: ^13.0.6
   glob@^10: ^13.0.6
   glob@^11: ^11.1.0
-  hono: ^4.13.10
+  hono: ^4.13.13
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
-  js-yaml@^5: ^5.4.2
+  js-yaml@^5: ^5.4.3
   jsdom>undici: ^7.25.0
   lodash-es: ^4.18.1
   markdown-it: ^14.3.2
