@@ -261,11 +261,22 @@ function mixCssColors(a: string, b: string): string | null {
 }
 
 function embeddedSvgPaintServer(paint: string): Element | null {
-  const match = paint.trim().match(/^url\(\s*["']?(data:image\/svg\+xml[^)]*?)["']?\s*\)$/i)
-  if (!match)
+  const value = paint.trim()
+  if (!value.startsWith(`url(`) || !value.endsWith(`)`))
     return null
 
-  const url = match[1]
+  let url = value.slice(4, -1).trim()
+
+  if (
+    (url.startsWith(`"`) && url.endsWith(`"`))
+    || (url.startsWith(`'`) && url.endsWith(`'`))
+  ) {
+    url = url.slice(1, -1)
+  }
+
+  if (!url.toLowerCase().startsWith(`data:image/svg+xml`))
+    return null
+
   const comma = url.indexOf(`,`)
   const hash = url.lastIndexOf(`#`)
   if (comma < 0 || hash <= comma)
@@ -313,29 +324,31 @@ function hasMatchingPaintedRectBelow(el: Element): boolean {
     return false
 
   let previous = el.previousElementSibling
+
   while (previous) {
     const candidate = previous
-    .every(attr => candidate.getAttribute(attr) === el.getAttribute(attr))
+
     if (
-      previous.localName === `rect`
+      candidate.localName === `rect`
       && [`x`, `y`, `width`, `height`, `rx`, `ry`]
-        .every(attr => previous!.getAttribute(attr) === el.getAttribute(attr))
+        .every(attr => candidate.getAttribute(attr) === el.getAttribute(attr))
     ) {
-      const fill = previous.getAttribute(`fill`)
+      const fill = candidate.getAttribute(`fill`)
       return !!fill && fill !== `none` && !fill.includes(`url(`)
     }
-    previous = previous.previousElementSibling
+
+    previous = candidate.previousElementSibling
   }
+
   return false
 }
 
 /** WeChat strips defs/id, so url(#gradient) paints vanish. Bake a solid stand-in. */
 function solidColorFromPaintServer(svg: SVGSVGElement, paint: string): string | null {
+  const embedded = embeddedSvgPaintServer(paint)
   const id = parseMarkerRef(paint)
-  if (!id)
-    return null
 
-  const ref = embeddedSvgPaintServer(paint) ?? findSvgElementById(svg, id)
+  const ref = embedded ?? (id ? findSvgElementById(svg, id) : null)
   if (!ref)
     return null
 
