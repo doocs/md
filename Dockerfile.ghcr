@@ -1,0 +1,22 @@
+
+# Build the web application from the checked-out branch
+FROM node:22-alpine AS builder
+
+WORKDIR /app
+
+RUN corepack enable
+
+COPY . .
+
+RUN corepack prepare pnpm@12.6.0 --activate \
+    && pnpm install --frozen-lockfile \
+    && pnpm web build:h5-netlify
+
+# Serve the generated static website
+FROM nginx:1.30.4-alpine
+
+COPY --from=builder /app/apps/web/dist/ /usr/share/nginx/html/
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]
