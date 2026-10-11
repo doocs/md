@@ -620,6 +620,48 @@ describe(`prepareDiagramSvgsForWeChat`, () => {
     expect(stroke).toMatch(/#|rgb/i)
     expect(root.querySelector(`path`)?.getAttribute(`fill`)).toBe(`none`)
   })
+
+
+  it(`converts embedded AntV gradient and transparent pattern for WeChat`, () => {
+    const embedded = `
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <defs>
+      <linearGradient id="card-gradient">
+      <stop offset="0%" stop-color="#026bff"/>
+        <stop offset="100%" stop-color="#539bff"/>
+      </linearGradient>
+      <pattern id="card-pattern" width="10" height="10">
+        <rect width="10" height="10" fill="rgba(255, 255, 255, 0)"/>
+        <rect width="4" height="10" fill="rgba(0, 0, 0, 0.03)"/>
+      </pattern>
+      </defs>
+    </svg>
+    `
+    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(embedded)}`
+
+    const root = document.createElement(`div`)
+    const svg = document.createElementNS(`http://www.w3.org/2000/svg`, `svg`)
+    const base = document.createElementNS(svg.namespaceURI, `rect`)
+    const overlay = document.createElementNS(svg.namespaceURI, `rect`)
+
+    for (const rect of [base, overlay]) {
+    rect.setAttribute(`x`, `0`)
+    rect.setAttribute(`y`, `0`)
+    rect.setAttribute(`width`, `280`)
+    rect.setAttribute(`height`, `160`)
+    svg.appendChild(rect)
+    }
+
+    base.setAttribute(`fill`, `url("${dataUrl}#card-gradient")`)
+    overlay.setAttribute(`fill`, `url("${dataUrl}#card-pattern")`)
+    root.appendChild(svg)
+
+    prepareDiagramSvgsForWeChat(root)
+
+    expect(base.getAttribute(`fill`)).toMatch(/^rgb\(|^#/)
+    expect(overlay.getAttribute(`fill`)).toBe(`none`)
+  })
+
 })
 
 describe(`sanitizeSvgsForWeChat`, () => {

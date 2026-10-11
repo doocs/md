@@ -260,23 +260,98 @@ function mixCssColors(a: string, b: string): string | null {
   return `rgb(${Math.round((pa[0] + pb[0]) / 2)}, ${Math.round((pa[1] + pb[1]) / 2)}, ${Math.round((pa[2] + pb[2]) / 2)})`
 }
 
+function embeddedSvgPaintServer(paint: string): Element | null {
+  const match = paint.trim().match(/^url\(\s*["']?(data:image\/svg\+xml[^)]*?)["']?\s*\)$/i)
+  if (!match)
+    return null
+
+  const url = match[1]
+  const comma = url.indexOf(`,`)
+  const hash = url.lastIndexOf(`#`)
+  if (comma < 0 || hash <= comma)
+    return null
+
+  if (/;base64/i.test(url.slice(0, comma)))
+    return null
+
+  try {
+    const markup = decodeURIComponent(url.slice(comma + 1, hash))
+    const id = decodeURIComponent(url.slice(hash + 1))
+    const doc = new DOMParser().parseFromString(markup, `image/svg+xml`)
+
+    if (doc.querySelector(`parsererror`))
+      return null
+
+    return Array.from(doc.querySelectorAll(`[id]`))
+      .find(el => el.getAttribute(`id`) === id) ?? null
+  }
+  catch {
+    return null
+  }
+}
+
+function isTransparentOverlayPattern(ref: Element): boolean {
+  if (ref.localName !== `pattern`)
+    return false
+
+  const shapes = Array.from(ref.children)
+  if (shapes.length === 0)
+    return false
+
+  return shapes.every((shape) => {
+    if (shape.localName !== `rect`)
+      return false
+
+    const fill = shape.getAttribute(`fill`) ?? ``
+    const rgba = fill.match(/^rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)$/i)
+    return fill === `none` || (rgba !== null && Number(rgba[1]) <= 0.1)
+  })
+}
+
+function hasMatchingPaintedRectBelow(el: Element): boolean {
+  if (el.localName !== `rect`)
+    return false
+
+  let previous = el.previousElementSibling
+  while (previous) {
+    const candidate = previous
+    .every(attr => candidate.getAttribute(attr) === el.getAttribute(attr))
+    if (
+      previous.localName === `rect`
+      && [`x`, `y`, `width`, `height`, `rx`, `ry`]
+        .every(attr => previous!.getAttribute(attr) === el.getAttribute(attr))
+    ) {
+      const fill = previous.getAttribute(`fill`)
+      return !!fill && fill !== `none` && !fill.includes(`url(`)
+    }
+    previous = previous.previousElementSibling
+  }
+  return false
+}
+
 /** WeChat strips defs/id, so url(#gradient) paints vanish. Bake a solid stand-in. */
 function solidColorFromPaintServer(svg: SVGSVGElement, paint: string): string | null {
   const id = parseMarkerRef(paint)
   if (!id)
     return null
-  const ref = findSvgElementById(svg, id)
+
+  const ref = embeddedSvgPaintServer(paint) ?? findSvgElementById(svg, id)
   if (!ref)
     return null
+
   if (ref.localName !== `linearGradient` && ref.localName !== `radialGradient`)
     return null
+
   const colors = Array.from(ref.querySelectorAll(`stop`))
     .map(stopColorOf)
     .filter((color): color is string => !!color)
+
   if (colors.length === 0)
     return null
+
   if (colors.length === 1)
     return colors[0]
+
   return mixCssColors(colors[0], colors[colors.length - 1]) ?? colors[0]
 }
 
@@ -285,6 +360,11 @@ function resolveUrlPaints(svg: SVGSVGElement) {
     const value = el.getAttribute(attr)
     if (!value?.includes(`url(`))
       return
+    const embedded = embeddedSvgPaintServer(value)
+    if (embedded && isTransparentOverlayPattern(embedded) && hasMatchingPaintedRectBelow(el)) {
+    el.setAttribute(attr, `none`)
+      return
+    }
     const solid = solidColorFromPaintServer(svg, value)
     if (solid)
       el.setAttribute(attr, solid)
