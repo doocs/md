@@ -1,0 +1,71 @@
+
+name: Check Upstream Updates
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout custom branch
+        uses: actions/checkout@v4
+        with:
+          ref: custom/mermaid-wrapping-fix
+          fetch-depth: 0
+
+      - name: Fetch upstream
+        run: |
+          git remote add upstream https://github.com/doocs/md.git
+          git fetch upstream main
+
+      - name: Check for upstream changes
+        id: check
+        shell: bash
+        run: |
+          COUNT=$(git rev-list --count HEAD..upstream/main)
+          echo "count=$COUNT" >> "$GITHUB_OUTPUT"
+
+          if [ "$COUNT" -gt 0 ]; then
+            echo "Updates available: $COUNT commits"
+          else
+            echo "No new upstream commits"
+          fi
+
+      - name: Create or update reminder issue
+        if: steps.check.outputs.count != '0'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          COUNT: ${{ steps.check.outputs.count }}
+        shell: bash
+        run: |
+          TITLE="Upstream doocs/md updates available"
+
+          EXISTING=$(gh issue list \
+            --state open \
+            --search "$TITLE in:title" \
+            --json number,title \
+            --jq '.[] | select(.title == "Upstream doocs/md updates available") | .number' \
+            | head -n 1)
+
+          BODY="The official doocs/md main branch has $COUNT commits not yet included in custom/mermaid-wrapping-fix.
+
+          Review upstream changes before merging.
+
+          Important: verify Mermaid wrapping and WeChat SVG export before promoting a new stable image."
+
+          if [ -z "$EXISTING" ]; then
+            gh issue create \
+              --title "$TITLE" \
+              --body "$BODY"
+          else
+            gh issue edit "$EXISTING" \
+              --body "$BODY"
+          fi
