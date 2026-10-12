@@ -1,4 +1,3 @@
-
 name: Build and Push Docker Images
 
 on:
@@ -33,6 +32,6 @@ jobs:
           file: ./Dockerfile.ghcr
           platforms: linux/amd64
           push: true
-          tags: ghcr.io/m4trix04/md:antv-test
+          tags: ${{ github.ref_name == 'main' && 'ghcr.io/m4trix04/md:latest' || 'ghcr.io/m4trix04/md:testing' }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
