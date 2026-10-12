@@ -25,7 +25,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push test image
+      - name: Build and push GHCR image
         uses: docker/build-push-action@v6
         with:
           context: .
