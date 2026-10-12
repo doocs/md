@@ -7,7 +7,9 @@ import { useUIStore } from '@/stores/ui'
 import { createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
 import { getStylesToAdd } from './share-styles'
 import {
+  applyMermaidLineHeights,
   applyMermaidVisualLines,
+  captureMermaidLineHeights,
   captureMermaidVisualLines,
   prepareDiagramSvgsForWeChat,
   prepareMathFormulasForWeChat,
@@ -73,10 +75,12 @@ export async function processClipboardContent(primaryColor: string) {
 
   try {
     const visualLines = captureMermaidVisualLines(outputElement)
+    const lineHeights = captureMermaidLineHeights(outputElement)
 
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
     applyMermaidVisualLines(clipboardDiv, visualLines)
+    applyMermaidLineHeights(clipboardDiv, lineHeights)
     prepareDiagramSvgsForWeChat(clipboardDiv)
     await inlineEmojiImagesAsBase64(clipboardDiv)
 

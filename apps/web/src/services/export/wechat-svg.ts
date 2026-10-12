@@ -1222,6 +1222,18 @@ export function captureMermaidVisualLines(root: ParentNode): string[][] {
   return getMermaidForeignObjects(root).map(fo => collectVisualLines(fo))
 }
 
+
+export function captureMermaidLineHeights(root: ParentNode): number[] {
+  return getMermaidForeignObjects(root).map((fo) => {
+    const label = fo.querySelector(`.nodeLabel`) ?? fo
+    const style = window.getComputedStyle(label)
+    const lineHeight = Number.parseFloat(style.lineHeight)
+    return Number.isFinite(lineHeight) && lineHeight > 0
+      ? lineHeight
+      : 0
+  })
+}
+
 export function applyMermaidVisualLines(
   root: ParentNode,
   linesByIndex: string[][],
@@ -1232,6 +1244,20 @@ export function applyMermaidVisualLines(
       return
 
     fo.setAttribute(`data-wechat-visual-lines`, JSON.stringify(lines))
+  })
+}
+
+
+export function applyMermaidLineHeights(
+  root: ParentNode,
+  lineHeights: number[],
+) {
+  getMermaidForeignObjects(root).forEach((fo, index) => {
+    const lineHeight = lineHeights[index]
+    if (!Number.isFinite(lineHeight) || lineHeight <= 0)
+      return
+
+    fo.setAttribute(`data-wechat-line-height`, String(lineHeight))
   })
 }
 
@@ -1399,6 +1425,14 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
     const fontSize = parseCssNumber(
       paintFromStyle(styled, `font-size`) || window.getComputedStyle(styled).fontSize || `16`,
     )?.n ?? 16
+
+    const savedLineHeight = Number.parseFloat(
+      fo.getAttribute(`data-wechat-line-height`) ?? ``,
+    )
+    const lineHeight = Number.isFinite(savedLineHeight) && savedLineHeight > 0
+      ? savedLineHeight
+      : fontSize * 1.2
+
     const style = `${styled.getAttribute(`style`) ?? ``} ${window.getComputedStyle(styled).textAlign}`
     const centered = /center/i.test(style) && width > 0
     const inEdgeLabel = fo.closest(`.edgeLabel`) != null
@@ -1422,7 +1456,7 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
       lines.forEach((line, index) => {
         const tspan = document.createElementNS(SVG_NS, `tspan`)
         tspan.setAttribute(`x`, String(textX))
-        tspan.setAttribute(`dy`, index === 0 ? `0` : `1.2em`)
+        tspan.setAttribute(`dy`, index === 0 ? `0` : String(lineHeight))
         tspan.setAttribute(`fill`, isUsablePaint(color) ? color : `#333333`)
         tspan.textContent = line
         text.appendChild(tspan)
