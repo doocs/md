@@ -4,6 +4,7 @@ import {
   DIAGRAM_LIGHT_COLORS,
   getMermaidThemeConfig,
   injectPlantUmlTheme,
+  MERMAID_FLOWCHART_WRAPPING_WIDTH,
   resolveDiagramThemeMode,
 } from './diagram-theme'
 
@@ -42,5 +43,11 @@ describe(`diagram-theme`, () => {
       theme: `default`,
       themeVariables: { darkMode: false },
     })
+  })
+
+  it(`gives flowchart labels room to fit a bilingual line`, () => {
+    expect(getMermaidThemeConfig().flowchart.wrappingWidth).toBe(MERMAID_FLOWCHART_WRAPPING_WIDTH)
+    expect(getMermaidThemeConfig(`dark`).flowchart.wrappingWidth).toBe(MERMAID_FLOWCHART_WRAPPING_WIDTH)
+    expect(MERMAID_FLOWCHART_WRAPPING_WIDTH).toBeGreaterThan(120)
   })
 })

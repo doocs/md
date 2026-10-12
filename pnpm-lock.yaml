@@ -254,6 +254,7 @@ overrides:
 
 patchedDependencies:
   '@codemirror/view@6.43.14': d6d6e82d1107e9e939bb64b691d6400f842247011ad95b63c69d2864d5a5e9b9
+  mermaid@12.1.0: 918c28c2a1151c2e975598cd22890b983f018a59d55d19dc8b0346f301da6c06
 
 importers:
 
@@ -559,7 +560,7 @@ importers:
         version: 18.1.0
       mermaid:
         specifier: ^12.1.0
-        version: 12.1.0
+        version: 12.1.0(patch_hash=918c28c2a1151c2e975598cd22890b983f018a59d55d19dc8b0346f301da6c06)
     devDependencies:
       '@md/config':
         specifier: workspace:*
@@ -11336,7 +11337,7 @@ snapshots:
 
   merge2@1.4.1: {}
 
-  mermaid@12.1.0:
+  mermaid@12.1.0(patch_hash=918c28c2a1151c2e975598cd22890b983f018a59d55d19dc8b0346f301da6c06):
     dependencies:
       '@braintree/sanitize-url': 7.1.2
       '@iconify/utils': 3.1.7
