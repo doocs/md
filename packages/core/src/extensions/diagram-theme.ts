@@ -61,23 +61,16 @@ export function injectPlantUmlTheme(code: string, themeMode?: DiagramThemeMode):
   return finalCode.replace(/@startuml\r?\n/i, `@startuml\n${skin}\n`)
 }
 
-/**
- * Flowchart labels wider than this wrap.
- * Mermaid defaults to 120 and only enables wrapping when the measured width
- * exactly equals that limit. Fractional device pixel ratios miss the check
- * and clip mixed Chinese/English lines. 300 fits a typical bilingual line
- * in the WeChat column; the mermaid patch wraps anything wider.
- */
-export const MERMAID_FLOWCHART_WRAPPING_WIDTH = 300
-
 export function getMermaidThemeConfig(themeMode?: DiagramThemeMode) {
   const isDark = resolveDiagramThemeMode(themeMode) === `dark`
   return {
     startOnLoad: false,
     theme: isDark ? `dark` as const : `default` as const,
     themeVariables: isDark ? { darkMode: true } : { darkMode: false },
+    // 300 fits a bilingual line. The default 120 clips when Mermaid's
+    // exact-width wrap check misses; wider text wraps via the mermaid patch.
     flowchart: {
-      wrappingWidth: MERMAID_FLOWCHART_WRAPPING_WIDTH,
+      wrappingWidth: 300,
     },
   }
 }

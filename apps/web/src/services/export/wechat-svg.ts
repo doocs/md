@@ -1059,12 +1059,17 @@ function clampFontSizeInStyle(style: string): string {
  * per laid-out line. Returns null when the label has no layout (jsdom).
  */
 function collectRenderedLines(root: Element): string[] | null {
+  const range = document.createRange()
+  if (typeof range.getClientRects !== `function`)
+    return null
+
   const lines: { top: number, text: string }[] = []
   let laidOut = false
   let forceBreak = false
 
   const push = (ch: string, top: number) => {
     const last = lines[lines.length - 1]
+    // Wrapped lines are a line-height apart; same-line tops only differ by subpixels.
     if (forceBreak || !last || Math.abs(last.top - top) > 4) {
       lines.push({ top, text: ch })
       forceBreak = false
@@ -1077,21 +1082,22 @@ function collectRenderedLines(root: Element): string[] | null {
     if (node.nodeType === Node.TEXT_NODE) {
       const text = node.textContent ?? ``
       for (let i = 0; i < text.length; i++) {
-        const range = document.createRange()
         range.setStart(node, i)
         range.setEnd(node, i + 1)
-        const rect = typeof range.getClientRects === `function` ? range.getClientRects()[0] : undefined
-        const height = rect?.height ?? 0
-        if (height > 0)
+        const rect = range.getClientRects()[0]
+        if (rect && rect.height > 0) {
           laidOut = true
-        const top = rect && height > 0 ? rect.top : (lines[lines.length - 1]?.top ?? 0)
-        push(text[i], top)
+          push(text[i], rect.top)
+        }
+        else {
+          push(text[i], lines[lines.length - 1]?.top ?? 0)
+        }
       }
       return
     }
     if (node.nodeType !== Node.ELEMENT_NODE)
       return
-    if ((node as Element).tagName === `BR`) {
+    if ((node as Element).localName === `br`) {
       forceBreak = true
       return
     }
@@ -1099,7 +1105,13 @@ function collectRenderedLines(root: Element): string[] | null {
       walk(child)
   }
 
-  walk(root)
+  try {
+    walk(root)
+  }
+  catch {
+    return null
+  }
+
   if (!laidOut)
     return null
 
@@ -1130,16 +1142,10 @@ function collectForeignObjectLines(fo: Element): string[] {
   return compact ? [compact] : []
 }
 
-/** Pixel line step from the label's used line-height, so wrapped lines stay inside the node. */
+/** Used line-height in px. `getComputedStyle` resolves it; `normal` falls back to the old 1.2em step. */
 function labelLineAdvance(styled: Element, fontSize: number): number {
   const parsed = parseCssNumber(window.getComputedStyle(styled).lineHeight)
-  if (!parsed)
-    return fontSize * 1.2
-  if (parsed.unit === `em` || parsed.unit === `rem`)
-    return parsed.n * fontSize
-  if (parsed.unit === `pt`)
-    return parsed.n * (96 / 72)
-  return parsed.n
+  return parsed?.unit === `px` ? parsed.n : fontSize * 1.2
 }
 
 function parseTranslate(transform: string | null): { x: number, y: number } | null {
