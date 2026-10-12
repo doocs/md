@@ -43,4 +43,9 @@ describe(`diagram-theme`, () => {
       themeVariables: { darkMode: false },
     })
   })
+
+  it(`gives flowchart labels room to fit a bilingual line`, () => {
+    expect(getMermaidThemeConfig().flowchart).toEqual({ wrappingWidth: 300 })
+    expect(getMermaidThemeConfig(`dark`).flowchart).toEqual({ wrappingWidth: 300 })
+  })
 })

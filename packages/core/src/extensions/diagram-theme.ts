@@ -67,5 +67,10 @@ export function getMermaidThemeConfig(themeMode?: DiagramThemeMode) {
     startOnLoad: false,
     theme: isDark ? `dark` as const : `default` as const,
     themeVariables: isDark ? { darkMode: true } : { darkMode: false },
+    // 300 fits a bilingual line. The default 120 clips when Mermaid's
+    // exact-width wrap check misses; wider text wraps via the mermaid patch.
+    flowchart: {
+      wrappingWidth: 300,
+    },
   }
 }
