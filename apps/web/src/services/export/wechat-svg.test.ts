@@ -257,6 +257,107 @@ describe(`sanitizeSvgForWeChat`, () => {
     wrapper.remove()
   })
 
+  it(`splits css-wrapped flowchart labels into tspans for WeChat`, () => {
+    const sentence = `This label is intentionally much longer than three hundred pixels so it must wrap onto multiple lines instead of being clipped by the node`
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 348 136" xmlns="http://www.w3.org/2000/svg">
+        <foreignObject x="8" y="8" width="300" height="96">
+          <div style="white-space:break-spaces;line-height:24px;font-size:16px;color:#333333">
+            <span class="nodeLabel"><p>${sentence}</p></span>
+          </div>
+        </foreignObject>
+      </svg>
+    `
+    document.body.appendChild(wrapper)
+
+    const original = Range.prototype.getClientRects
+    Range.prototype.getClientRects = function () {
+      if (this.startContainer?.nodeType !== Node.TEXT_NODE)
+        return original.call(this)
+      const index = this.startOffset ?? 0
+      const line = Math.floor(index / 40)
+      return [{
+        top: line * 24,
+        height: 16,
+        width: 8,
+        left: 0,
+        bottom: line * 24 + 16,
+        right: 8,
+        x: 0,
+        y: line * 24,
+        toJSON() { return {} },
+      }] as unknown as DOMRectList
+    }
+
+    try {
+      sanitizeSvgForWeChat(wrapper.querySelector(`svg`) as SVGSVGElement)
+    }
+    finally {
+      Range.prototype.getClientRects = original
+    }
+
+    const tspans = Array.from(wrapper.querySelectorAll(`tspan`))
+    expect(wrapper.querySelector(`foreignObject`)).toBeNull()
+    expect(tspans.length).toBeGreaterThan(1)
+    expect(tspans.map(el => el.textContent).join(``)).toContain(`clipped by the node`)
+    expect(tspans[1]?.getAttribute(`dy`)).toBe(`24`)
+    expect(tspans.every(el => el.getAttribute(`dy`) !== `1.2em`)).toBe(true)
+
+    wrapper.remove()
+  })
+
+  it(`splits a br line again when that line is wider than the node`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 208 112" xmlns="http://www.w3.org/2000/svg">
+        <foreignObject x="8" y="8" width="160" height="72">
+          <div style="white-space:break-spaces;line-height:24px;font-size:16px;color:#333333">
+            <span class="nodeLabel"><p>动词的词义与配价<br>Verb Meaning and Valency</p></span>
+          </div>
+        </foreignObject>
+      </svg>
+    `
+    document.body.appendChild(wrapper)
+
+    const original = Range.prototype.getClientRects
+    Range.prototype.getClientRects = function () {
+      if (this.startContainer?.nodeType !== Node.TEXT_NODE)
+        return original.call(this)
+      const text = this.startContainer.textContent ?? ``
+      const index = this.startOffset ?? 0
+      const english = text.includes(`Verb`)
+      const line = english ? 1 + Math.floor(index / 16) : 0
+      return [{
+        top: line * 24,
+        height: 16,
+        width: 8,
+        left: 0,
+        bottom: line * 24 + 16,
+        right: 8,
+        x: 0,
+        y: line * 24,
+        toJSON() { return {} },
+      }] as unknown as DOMRectList
+    }
+
+    try {
+      sanitizeSvgForWeChat(wrapper.querySelector(`svg`) as SVGSVGElement)
+    }
+    finally {
+      Range.prototype.getClientRects = original
+    }
+
+    const lines = Array.from(wrapper.querySelectorAll(`tspan`)).map(el => el.textContent)
+    expect(lines[0]).toBe(`动词的词义与配价`)
+    expect(lines.length).toBeGreaterThan(2)
+    expect(lines.join(` `)).toContain(`Valency`)
+
+    wrapper.remove()
+  })
+
   it(`separates overlapping bidirectional state edge labels`, () => {
     const wrapper = document.createElement(`div`)
     wrapper.className = `mermaid-diagram`

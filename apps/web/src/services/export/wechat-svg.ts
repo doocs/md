@@ -1053,7 +1053,67 @@ function clampFontSizeInStyle(style: string): string {
   })
 }
 
+/**
+ * CSS wrapping (`white-space: break-spaces`) does not insert `<br>` or newlines.
+ * WeChat SVG text never wraps, so a soft-wrapped label must become one `<tspan>`
+ * per laid-out line. Returns null when the label has no layout (jsdom).
+ */
+function collectRenderedLines(root: Element): string[] | null {
+  const lines: { top: number, text: string }[] = []
+  let laidOut = false
+  let forceBreak = false
+
+  const push = (ch: string, top: number) => {
+    const last = lines[lines.length - 1]
+    if (forceBreak || !last || Math.abs(last.top - top) > 4) {
+      lines.push({ top, text: ch })
+      forceBreak = false
+      return
+    }
+    last.text += ch
+  }
+
+  const walk = (node: Node) => {
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node.textContent ?? ``
+      for (let i = 0; i < text.length; i++) {
+        const range = document.createRange()
+        range.setStart(node, i)
+        range.setEnd(node, i + 1)
+        const rect = typeof range.getClientRects === `function` ? range.getClientRects()[0] : undefined
+        const height = rect?.height ?? 0
+        if (height > 0)
+          laidOut = true
+        const top = rect && height > 0 ? rect.top : (lines[lines.length - 1]?.top ?? 0)
+        push(text[i], top)
+      }
+      return
+    }
+    if (node.nodeType !== Node.ELEMENT_NODE)
+      return
+    if ((node as Element).tagName === `BR`) {
+      forceBreak = true
+      return
+    }
+    for (const child of node.childNodes)
+      walk(child)
+  }
+
+  walk(root)
+  if (!laidOut)
+    return null
+
+  const rendered = lines
+    .map(line => line.text.replace(/\u00A0/g, ` `).trim())
+    .filter(Boolean)
+  return rendered.length > 0 ? rendered : null
+}
+
 function collectForeignObjectLines(fo: Element): string[] {
+  const rendered = collectRenderedLines(fo)
+  if (rendered)
+    return rendered
+
   const html = fo.innerHTML
   if (/<br\s*\/?>/i.test(html)) {
     return html
@@ -1068,6 +1128,18 @@ function collectForeignObjectLines(fo: Element): string[] {
     return lines
   const compact = text.replace(/\s+/g, ` `).trim()
   return compact ? [compact] : []
+}
+
+/** Pixel line step from the label's used line-height, so wrapped lines stay inside the node. */
+function labelLineAdvance(styled: Element, fontSize: number): number {
+  const parsed = parseCssNumber(window.getComputedStyle(styled).lineHeight)
+  if (!parsed)
+    return fontSize * 1.2
+  if (parsed.unit === `em` || parsed.unit === `rem`)
+    return parsed.n * fontSize
+  if (parsed.unit === `pt`)
+    return parsed.n * (96 / 72)
+  return parsed.n
 }
 
 function parseTranslate(transform: string | null): { x: number, y: number } | null {
@@ -1237,10 +1309,11 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
       text.textContent = lines[0]
     }
     else {
+      const advance = roundSvg(labelLineAdvance(styled, fontSize))
       lines.forEach((line, index) => {
         const tspan = document.createElementNS(SVG_NS, `tspan`)
         tspan.setAttribute(`x`, String(textX))
-        tspan.setAttribute(`dy`, index === 0 ? `0` : `1.2em`)
+        tspan.setAttribute(`dy`, index === 0 ? `0` : String(advance))
         tspan.setAttribute(`fill`, isUsablePaint(color) ? color : `#333333`)
         tspan.textContent = line
         text.appendChild(tspan)
