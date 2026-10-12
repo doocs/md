@@ -1155,6 +1155,8 @@ function collectVisualLines(fo: Element): string[] {
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
   const lines: { top: number, text: string }[] = []
   const range = document.createRange()
+  if (typeof range.getBoundingClientRect !== `function`)
+    return []
 
   while (walker.nextNode()) {
     const node = walker.currentNode as Text
