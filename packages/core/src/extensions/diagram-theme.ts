@@ -67,5 +67,8 @@ export function getMermaidThemeConfig(themeMode?: DiagramThemeMode) {
     startOnLoad: false,
     theme: isDark ? `dark` as const : `default` as const,
     themeVariables: isDark ? { darkMode: true } : { darkMode: false },
+    flowchart: {
+      wrappingWidth: 300,
+    },
   }
 }

@@ -6,7 +6,15 @@ import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
 import { createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
 import { getStylesToAdd } from './share-styles'
-import { prepareDiagramSvgsForWeChat, prepareMathFormulasForWeChat, sanitizeSvgsForWeChat } from './wechat-svg'
+import {
+  applyMermaidLineHeights,
+  applyMermaidVisualLines,
+  captureMermaidLineHeights,
+  captureMermaidVisualLines,
+  prepareDiagramSvgsForWeChat,
+  prepareMathFormulasForWeChat,
+  sanitizeSvgsForWeChat,
+} from './wechat-svg'
 
 export { modifyHtmlStructure, solveWeChatImage } from './clipboard-dom'
 
@@ -66,8 +74,13 @@ export async function processClipboardContent(primaryColor: string) {
   const previewReady = await waitForPreviewReady(undefined, { themeMode: wechatThemeMode })
 
   try {
+    const visualLines = captureMermaidVisualLines(outputElement)
+    const lineHeights = captureMermaidLineHeights(outputElement)
+
     const clipboardDiv = outputElement.cloneNode(true) as HTMLElement
     stripUnresolvedAsyncPlaceholders(clipboardDiv)
+    applyMermaidVisualLines(clipboardDiv, visualLines)
+    applyMermaidLineHeights(clipboardDiv, lineHeights)
     prepareDiagramSvgsForWeChat(clipboardDiv)
     await inlineEmojiImagesAsBase64(clipboardDiv)
 

@@ -260,23 +260,111 @@ function mixCssColors(a: string, b: string): string | null {
   return `rgb(${Math.round((pa[0] + pb[0]) / 2)}, ${Math.round((pa[1] + pb[1]) / 2)}, ${Math.round((pa[2] + pb[2]) / 2)})`
 }
 
+function embeddedSvgPaintServer(paint: string): Element | null {
+  const value = paint.trim()
+  if (!value.startsWith(`url(`) || !value.endsWith(`)`))
+    return null
+
+  let url = value.slice(4, -1).trim()
+
+  if (
+    (url.startsWith(`"`) && url.endsWith(`"`))
+    || (url.startsWith(`'`) && url.endsWith(`'`))
+  ) {
+    url = url.slice(1, -1)
+  }
+
+  if (!url.toLowerCase().startsWith(`data:image/svg+xml`))
+    return null
+
+  const comma = url.indexOf(`,`)
+  const hash = url.lastIndexOf(`#`)
+  if (comma < 0 || hash <= comma)
+    return null
+
+  if (/;base64/i.test(url.slice(0, comma)))
+    return null
+
+  try {
+    const markup = decodeURIComponent(url.slice(comma + 1, hash))
+    const id = decodeURIComponent(url.slice(hash + 1))
+    const doc = new DOMParser().parseFromString(markup, `image/svg+xml`)
+
+    if (doc.querySelector(`parsererror`))
+      return null
+
+    return Array.from(doc.querySelectorAll(`[id]`))
+      .find(el => el.getAttribute(`id`) === id) ?? null
+  }
+  catch {
+    return null
+  }
+}
+
+function isTransparentOverlayPattern(ref: Element): boolean {
+  if (ref.localName !== `pattern`)
+    return false
+
+  const shapes = Array.from(ref.children)
+  if (shapes.length === 0)
+    return false
+
+  return shapes.every((shape) => {
+    if (shape.localName !== `rect`)
+      return false
+
+    const fill = shape.getAttribute(`fill`) ?? ``
+    const rgba = fill.match(/^rgba\(\s*[\d.]+\s*,\s*[\d.]+\s*,\s*[\d.]+\s*,\s*([\d.]+)\s*\)$/i)
+    return fill === `none` || (rgba !== null && Number(rgba[1]) <= 0.1)
+  })
+}
+
+function hasMatchingPaintedRectBelow(el: Element): boolean {
+  if (el.localName !== `rect`)
+    return false
+
+  let previous = el.previousElementSibling
+
+  while (previous) {
+    const candidate = previous
+
+    if (
+      candidate.localName === `rect`
+      && [`x`, `y`, `width`, `height`, `rx`, `ry`]
+        .every(attr => candidate.getAttribute(attr) === el.getAttribute(attr))
+    ) {
+      const fill = candidate.getAttribute(`fill`)
+      return !!fill && fill !== `none` && !fill.includes(`url(`)
+    }
+
+    previous = candidate.previousElementSibling
+  }
+
+  return false
+}
+
 /** WeChat strips defs/id, so url(#gradient) paints vanish. Bake a solid stand-in. */
 function solidColorFromPaintServer(svg: SVGSVGElement, paint: string): string | null {
+  const embedded = embeddedSvgPaintServer(paint)
   const id = parseMarkerRef(paint)
-  if (!id)
-    return null
-  const ref = findSvgElementById(svg, id)
+
+  const ref = embedded ?? (id ? findSvgElementById(svg, id) : null)
   if (!ref)
     return null
+
   if (ref.localName !== `linearGradient` && ref.localName !== `radialGradient`)
     return null
+
   const colors = Array.from(ref.querySelectorAll(`stop`))
     .map(stopColorOf)
     .filter((color): color is string => !!color)
+
   if (colors.length === 0)
     return null
+
   if (colors.length === 1)
     return colors[0]
+
   return mixCssColors(colors[0], colors[colors.length - 1]) ?? colors[0]
 }
 
@@ -285,6 +373,11 @@ function resolveUrlPaints(svg: SVGSVGElement) {
     const value = el.getAttribute(attr)
     if (!value?.includes(`url(`))
       return
+    const embedded = embeddedSvgPaintServer(value)
+    if (embedded && isTransparentOverlayPattern(embedded) && hasMatchingPaintedRectBelow(el)) {
+      el.setAttribute(attr, `none`)
+      return
+    }
     const solid = solidColorFromPaintServer(svg, value)
     if (solid)
       el.setAttribute(attr, solid)
@@ -747,7 +840,7 @@ function tightenPlantUmlViewBox(svg: SVGSVGElement): boolean {
       maxX = Math.max(maxX, box.x + box.width)
       maxY = Math.max(maxY, box.y + box.height)
     }
-    catch {}
+    catch { }
   })
 
   if (!hasContent) {
@@ -761,7 +854,7 @@ function tightenPlantUmlViewBox(svg: SVGSVGElement): boolean {
         hasContent = true
       }
     }
-    catch {}
+    catch { }
   }
 
   if (!hasContent)
@@ -1053,7 +1146,55 @@ function clampFontSizeInStyle(style: string): string {
   })
 }
 
+
+function collectVisualLines(fo: Element): string[] {
+  if (!fo.isConnected)
+    return []
+
+  const root = fo.querySelector(`.nodeLabel`) ?? fo
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT)
+  const lines: { top: number, text: string }[] = []
+  const range = document.createRange()
+  if (typeof range.getBoundingClientRect !== `function`)
+    return []
+
+  while (walker.nextNode()) {
+    const node = walker.currentNode as Text
+    const value = node.textContent ?? ``
+    let offset = 0
+
+    for (const char of value) {
+      const nextOffset = offset + char.length
+      range.setStart(node, offset)
+      range.setEnd(node, nextOffset)
+      offset = nextOffset
+
+      const rect = range.getBoundingClientRect()
+      if (rect.width === 0 && rect.height === 0)
+        continue
+
+      let line = lines.find(item => Math.abs(item.top - rect.top) < 2)
+      if (!line) {
+        line = { top: rect.top, text: `` }
+        lines.push(line)
+      }
+
+      line.text += char
+    }
+  }
+
+  return lines
+    .sort((a, b) => a.top - b.top)
+    .map(line => line.text.replace(/\u00A0/g, ` `).trim())
+    .filter(Boolean)
+}
+
+
 function collectForeignObjectLines(fo: Element): string[] {
+  const visualLines = collectVisualLines(fo)
+  if (visualLines.length > 0)
+    return visualLines
+
   const html = fo.innerHTML
   if (/<br\s*\/?>/i.test(html)) {
     return html
@@ -1069,6 +1210,57 @@ function collectForeignObjectLines(fo: Element): string[] {
   const compact = text.replace(/\s+/g, ` `).trim()
   return compact ? [compact] : []
 }
+
+
+function getMermaidForeignObjects(root: ParentNode): Element[] {
+  return Array.from(
+    root.querySelectorAll(`.mermaid-diagram svg foreignObject`),
+  )
+}
+
+export function captureMermaidVisualLines(root: ParentNode): string[][] {
+  return getMermaidForeignObjects(root).map(fo => collectVisualLines(fo))
+}
+
+
+export function captureMermaidLineHeights(root: ParentNode): number[] {
+  return getMermaidForeignObjects(root).map((fo) => {
+    const label = fo.querySelector(`.nodeLabel`) ?? fo
+    const style = window.getComputedStyle(label)
+    const lineHeight = Number.parseFloat(style.lineHeight)
+    return Number.isFinite(lineHeight) && lineHeight > 0
+      ? lineHeight
+      : 0
+  })
+}
+
+export function applyMermaidVisualLines(
+  root: ParentNode,
+  linesByIndex: string[][],
+) {
+  getMermaidForeignObjects(root).forEach((fo, index) => {
+    const lines = linesByIndex[index]
+    if (!lines || lines.length === 0)
+      return
+
+    fo.setAttribute(`data-wechat-visual-lines`, JSON.stringify(lines))
+  })
+}
+
+
+export function applyMermaidLineHeights(
+  root: ParentNode,
+  lineHeights: number[],
+) {
+  getMermaidForeignObjects(root).forEach((fo, index) => {
+    const lineHeight = lineHeights[index]
+    if (!Number.isFinite(lineHeight) || lineHeight <= 0)
+      return
+
+    fo.setAttribute(`data-wechat-line-height`, String(lineHeight))
+  })
+}
+
 
 function parseTranslate(transform: string | null): { x: number, y: number } | null {
   if (!transform)
@@ -1107,7 +1299,7 @@ function edgeLabelBackground(styled: Element): string {
     if (computed && !isTransparentPaint(computed) && isUsablePaint(computed))
       return computed
   }
-  catch {}
+  catch { }
   return `#e8e8e8`
 }
 
@@ -1199,7 +1391,23 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
     return
 
   svg.querySelectorAll(`foreignObject`).forEach((fo) => {
-    const lines = collectForeignObjectLines(fo)
+    const savedLines = fo.getAttribute(`data-wechat-visual-lines`)
+    let lines: string[] | null = null
+
+    if (savedLines) {
+      try {
+        const parsed: unknown = JSON.parse(savedLines)
+        if (
+          Array.isArray(parsed)
+          && parsed.every(item => typeof item === `string`)
+        ) {
+          lines = parsed
+        }
+      }
+      catch { }
+    }
+
+    lines ??= collectForeignObjectLines(fo)
     if (lines.length === 0) {
       fo.remove()
       return
@@ -1217,6 +1425,14 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
     const fontSize = parseCssNumber(
       paintFromStyle(styled, `font-size`) || window.getComputedStyle(styled).fontSize || `16`,
     )?.n ?? 16
+
+    const savedLineHeight = Number.parseFloat(
+      fo.getAttribute(`data-wechat-line-height`) ?? ``,
+    )
+    const lineHeight = Number.isFinite(savedLineHeight) && savedLineHeight > 0
+      ? savedLineHeight
+      : fontSize * 1.2
+
     const style = `${styled.getAttribute(`style`) ?? ``} ${window.getComputedStyle(styled).textAlign}`
     const centered = /center/i.test(style) && width > 0
     const inEdgeLabel = fo.closest(`.edgeLabel`) != null
@@ -1240,7 +1456,7 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
       lines.forEach((line, index) => {
         const tspan = document.createElementNS(SVG_NS, `tspan`)
         tspan.setAttribute(`x`, String(textX))
-        tspan.setAttribute(`dy`, index === 0 ? `0` : `1.2em`)
+        tspan.setAttribute(`dy`, index === 0 ? `0` : String(lineHeight))
         tspan.setAttribute(`fill`, isUsablePaint(color) ? color : `#333333`)
         tspan.textContent = line
         text.appendChild(tspan)
