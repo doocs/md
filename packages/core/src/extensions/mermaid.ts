@@ -14,6 +14,7 @@ import { simpleHash } from '../utils/basicHelpers'
 import { blockScanLimit, findAtLineStart } from '../utils/scan'
 import { createSVGCache } from '../utils/svgCache'
 import { diagramCacheThemeSuffix, getMermaidThemeConfig } from './diagram-theme'
+import { normalizeMermaidEdgeLabels } from './mermaid-edge-labels'
 
 let initPromise: Promise<typeof import('mermaid')['default']> | null = null
 
@@ -63,8 +64,10 @@ async function renderMermaidSvg(code: string, themeMode?: DiagramThemeMode): Pro
   const mermaid = await getMermaid()
   mermaid.initialize(getMermaidThemeConfig(themeMode))
   const result = await mermaid.render(`mermaid-svg-${cacheKey}`, code)
-  svgCache.set(cacheKey, result.svg)
-  return result.svg
+  const svg = normalizeMermaidEdgeLabels(result.svg)
+
+  svgCache.set(cacheKey, svg)
+  return svg
 }
 
 function renderMermaid(id: string, code: string, cacheKey: string, themeMode?: DiagramThemeMode) {

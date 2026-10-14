@@ -43,9 +43,11 @@ section table {
   min-width: 100%;
 }
 
-.mermaid-diagram .nodeLabel p {
+/* Keep Mermaid labels isolated from Markdown paragraph typography. */
+.mermaid-diagram .nodeLabel p,
+.mermaid-diagram .edgeLabel p {
   color: unset !important;
-  letter-spacing: unset !important;
+  letter-spacing: normal !important;
 }
 
 /* ==================== Inline emoji ====================
