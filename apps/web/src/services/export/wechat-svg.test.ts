@@ -257,6 +257,54 @@ describe(`sanitizeSvgForWeChat`, () => {
     wrapper.remove()
   })
 
+  it(`exports Mermaid edge labels with opaque backgrounds for WeChat dark mode`, () => {
+    const wrapper = document.createElement(`div`)
+    wrapper.className = `mermaid-diagram`
+    wrapper.innerHTML = `
+      <svg viewBox="0 0 300 120" xmlns="http://www.w3.org/2000/svg">
+        <g class="edgeLabels">
+          <g class="edgeLabel" transform="translate(150, 60)">
+            <g class="label" transform="translate(-80, -24)">
+              <foreignObject width="160" height="48">
+                <div
+                  xmlns="http://www.w3.org/1999/xhtml"
+                  style="color:#333333;font-size:16px;background-color:rgba(232, 232, 232, 0.8);text-align:center"
+                >Words or message</div>
+              </foreignObject>
+            </g>
+          </g>
+        </g>
+      </svg>
+    `
+
+    const svg = wrapper.querySelector(`svg`) as SVGSVGElement
+    document.body.appendChild(wrapper)
+
+    sanitizeSvgForWeChat(svg)
+
+    // SVG classes are stripped during WeChat sanitization.
+    const rect = svg.querySelector(`rect`)
+    const text = svg.querySelector(`text`)
+
+    expect(svg.querySelector(`foreignObject`)).toBeNull()
+    expect(rect).not.toBeNull()
+    expect(text?.textContent).toContain(`Words or message`)
+    expect(rect?.getAttribute(`y`)).toBe(`-4`)
+    expect(rect?.getAttribute(`height`)).toBe(`56`)
+
+    // rgba(232, 232, 232, 0.8) composited over white.
+    expect(rect?.getAttribute(`fill`)).toMatch(
+      /^rgb\(\s*237,\s*237,\s*237\s*\)$/i,
+    )
+
+    // The exported rectangle must remain fully opaque.
+    expect(rect?.getAttribute(`opacity`)).toBe(`1`)
+    expect(rect?.style.opacity).toBe(``)
+    expect(rect?.style.backgroundColor).toBe(``)
+
+    wrapper.remove()
+  })
+
   it(`separates overlapping bidirectional state edge labels`, () => {
     const wrapper = document.createElement(`div`)
     wrapper.className = `mermaid-diagram`
@@ -545,7 +593,6 @@ describe(`prepareDiagramSvgsForWeChat`, () => {
     expect(root.querySelector(`path`)?.getAttribute(`fill`)).toBe(`none`)
   })
 
-
   it(`converts embedded AntV gradient and transparent pattern for WeChat`, () => {
     const embedded = `
     <svg xmlns="http://www.w3.org/2000/svg">
@@ -562,18 +609,17 @@ describe(`prepareDiagramSvgsForWeChat`, () => {
     </svg>
     `
     const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(embedded)}`
-
     const root = document.createElement(`div`)
     const svg = document.createElementNS(`http://www.w3.org/2000/svg`, `svg`)
     const base = document.createElementNS(svg.namespaceURI, `rect`)
     const overlay = document.createElementNS(svg.namespaceURI, `rect`)
 
     for (const rect of [base, overlay]) {
-    rect.setAttribute(`x`, `0`)
-    rect.setAttribute(`y`, `0`)
-    rect.setAttribute(`width`, `280`)
-    rect.setAttribute(`height`, `160`)
-    svg.appendChild(rect)
+      rect.setAttribute(`x`, `0`)
+      rect.setAttribute(`y`, `0`)
+      rect.setAttribute(`width`, `280`)
+      rect.setAttribute(`height`, `160`)
+      svg.appendChild(rect)
     }
 
     base.setAttribute(`fill`, `url("${dataUrl}#card-gradient")`)
@@ -585,7 +631,6 @@ describe(`prepareDiagramSvgsForWeChat`, () => {
     expect(base.getAttribute(`fill`)).toMatch(/^rgb\(|^#/)
     expect(overlay.getAttribute(`fill`)).toBe(`none`)
   })
-
 })
 
 describe(`sanitizeSvgsForWeChat`, () => {

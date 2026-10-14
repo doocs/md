@@ -1146,7 +1146,6 @@ function clampFontSizeInStyle(style: string): string {
   })
 }
 
-
 function collectVisualLines(fo: Element): string[] {
   if (!fo.isConnected)
     return []
@@ -1189,7 +1188,6 @@ function collectVisualLines(fo: Element): string[] {
     .filter(Boolean)
 }
 
-
 function collectForeignObjectLines(fo: Element): string[] {
   const visualLines = collectVisualLines(fo)
   if (visualLines.length > 0)
@@ -1211,7 +1209,6 @@ function collectForeignObjectLines(fo: Element): string[] {
   return compact ? [compact] : []
 }
 
-
 function getMermaidForeignObjects(root: ParentNode): Element[] {
   return Array.from(
     root.querySelectorAll(`.mermaid-diagram svg foreignObject`),
@@ -1221,7 +1218,6 @@ function getMermaidForeignObjects(root: ParentNode): Element[] {
 export function captureMermaidVisualLines(root: ParentNode): string[][] {
   return getMermaidForeignObjects(root).map(fo => collectVisualLines(fo))
 }
-
 
 export function captureMermaidLineHeights(root: ParentNode): number[] {
   return getMermaidForeignObjects(root).map((fo) => {
@@ -1247,7 +1243,6 @@ export function applyMermaidVisualLines(
   })
 }
 
-
 export function applyMermaidLineHeights(
   root: ParentNode,
   lineHeights: number[],
@@ -1260,7 +1255,6 @@ export function applyMermaidLineHeights(
     fo.setAttribute(`data-wechat-line-height`, String(lineHeight))
   })
 }
-
 
 function parseTranslate(transform: string | null): { x: number, y: number } | null {
   if (!transform)
@@ -1290,16 +1284,50 @@ function isTransparentPaint(value: string | null | undefined): boolean {
     || /^rgba\(\s*0\s*,\s*0\s*,\s*0\s*,\s*0\s*\)$/.test(normalized)
 }
 
+/**
+ * Composite an RGBA background over white to prevent
+ * transparency issues in WeChat dark mode.
+ */
+function opaqueEdgeLabelBackground(color: string): string {
+  const match = color.match(
+    /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)(?:\s*,\s*([\d.]+))?\s*\)$/i,
+  )
+
+  if (!match)
+    return color
+
+  const alpha = match[4] === undefined ? 1 : Number.parseFloat(match[4])
+
+  if (!Number.isFinite(alpha))
+    return color
+
+  const channels = [match[1], match[2], match[3]].map(Number)
+  const blended = channels.map(channel =>
+    Math.round(channel * alpha + 255 * (1 - alpha)),
+  )
+
+  return `rgb(${blended.join(`, `)})`
+}
+
+/**
+ * Resolve Mermaid edge-label background to an opaque color.
+ */
 function edgeLabelBackground(styled: Element): string {
-  const fromStyle = (styled.getAttribute(`style`) ?? ``).match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1]?.trim()
+  const fromStyle = (styled.getAttribute(`style`) ?? ``)
+    .match(/(?:^|;)\s*background(?:-color)?\s*:\s*([^;]+)/i)?.[1]
+    ?.trim()
+
   if (fromStyle && !isTransparentPaint(fromStyle) && isUsablePaint(fromStyle))
-    return fromStyle
+    return opaqueEdgeLabelBackground(fromStyle)
+
   try {
     const computed = window.getComputedStyle(styled).backgroundColor
+
     if (computed && !isTransparentPaint(computed) && isUsablePaint(computed))
-      return computed
+      return opaqueEdgeLabelBackground(computed)
   }
   catch { }
+
   return `#e8e8e8`
 }
 
@@ -1481,12 +1509,18 @@ function flattenMermaidHtmlLabels(svg: SVGSVGElement, mermaid = false) {
 
     if (needsBackdrop) {
       const rect = document.createElementNS(SVG_NS, `rect`)
+      const verticalPadding = 4
+
       rect.setAttribute(`x`, String(x))
-      rect.setAttribute(`y`, String(y))
+      rect.setAttribute(`y`, String(y - verticalPadding))
       rect.setAttribute(`width`, String(width))
-      rect.setAttribute(`height`, String(height))
+      rect.setAttribute(`height`, String(height + verticalPadding * 2))
+      // Use an opaque backdrop so edge labels remain readable
+      // in WeChat's light and dark modes.
       rect.setAttribute(`fill`, edgeLabelBackground(styled))
+      rect.setAttribute(`opacity`, `1`)
       rect.setAttribute(`stroke`, `none`)
+
       replacement.appendChild(rect)
     }
     replacement.appendChild(text)
@@ -1606,6 +1640,16 @@ export function sanitizeSvgForWeChat(svg: SVGSVGElement, options?: SanitizeSvgOp
   inlinePresentationAttributes(svg)
   remapDiagramInkToCurrentColor(svg)
   convertDominantBaselineToDy(svg)
+
+  // Prevent Mermaid edge-label backgrounds from becoming
+  // transparent against WeChat's dark-mode background.
+  if (mermaid) {
+    svg.querySelectorAll<SVGRectElement>(`g.edgeLabels g.edgeLabel rect`).forEach((rect) => {
+      rect.style.removeProperty(`opacity`)
+      rect.style.removeProperty(`background-color`)
+      rect.setAttribute(`opacity`, `1`)
+    })
+  }
   svg.setAttribute(`overflow`, `visible`)
   svg.querySelectorAll(`[style]`).forEach((el) => {
     const style = el.getAttribute(`style`)
