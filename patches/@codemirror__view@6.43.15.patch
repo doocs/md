@@ -2,7 +2,7 @@ diff --git a/dist/index.cjs b/dist/index.cjs
 index 33ce13ed..460151e0 100644
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9263,7 +9263,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9293,7 +9293,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -42,7 +42,7 @@ diff --git a/dist/index.js b/dist/index.js
 index e4718ac9..62c67624 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9258,7 +9258,8 @@ function runHandlers(map, event, view, scope) {
+@@ -9288,7 +9288,8 @@ function runHandlers(map, event, view, scope) {
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
