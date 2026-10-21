@@ -54,17 +54,29 @@ function buildCacheKey(code: string, themeMode?: DiagramThemeMode): string {
 
 const svgCache = createSVGCache(50)
 
+// A re-render while a diagram is still rendering (e.g. on `md:mathjax-ready`) would
+// start a second mermaid.render with the same element id; the two runs then measure
+// each other's temporary elements and cache an SVG without viewBox or size.
+const pendingRenders = new Map<string, Promise<string>>()
+
 async function renderMermaidSvg(code: string, themeMode?: DiagramThemeMode): Promise<string> {
   const cacheKey = buildCacheKey(code, themeMode)
   const cached = svgCache.get(cacheKey)
   if (cached)
     return cached
 
-  const mermaid = await getMermaid()
-  mermaid.initialize(getMermaidThemeConfig(themeMode))
-  const result = await mermaid.render(`mermaid-svg-${cacheKey}`, code)
-  svgCache.set(cacheKey, result.svg)
-  return result.svg
+  let pending = pendingRenders.get(cacheKey)
+  if (!pending) {
+    pending = (async () => {
+      const mermaid = await getMermaid()
+      mermaid.initialize(getMermaidThemeConfig(themeMode))
+      const result = await mermaid.render(`mermaid-svg-${cacheKey}`, code)
+      svgCache.set(cacheKey, result.svg)
+      return result.svg
+    })().finally(() => pendingRenders.delete(cacheKey))
+    pendingRenders.set(cacheKey, pending)
+  }
+  return pending
 }
 
 function renderMermaid(id: string, code: string, cacheKey: string, themeMode?: DiagramThemeMode) {
