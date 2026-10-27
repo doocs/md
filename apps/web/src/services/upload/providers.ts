@@ -732,6 +732,68 @@ async function formCustomUpload(content: string, file: File) {
   })
 }
 
+// -----------------------------------------------------------------------
+// PicGo File Upload (via local PicGo Server HTTP API)
+// -----------------------------------------------------------------------
+
+async function picgoUpload(file: File): Promise<string> {
+  const config = await store.getJSON<{ server: string, path: string, key: string }>(`picgoConfig`, {
+    server: `http://127.0.0.1:36677`,
+    path: `/upload`,
+    key: ``,
+  })
+
+  const {
+    server = `http://127.0.0.1:36677`,
+    path = `/upload`,
+    key = ``,
+  } = config
+
+  if (!server) {
+    throw new Error(t(`upload.provider.picgoServerMissing`))
+  }
+
+  let uploadUrl = `${server}${path}`
+  if (key) {
+    const separator = uploadUrl.includes(`?`) ? `&` : `?`
+    uploadUrl += `${separator}key=${encodeURIComponent(key)}`
+  }
+
+  let res: Response
+  try {
+    const formData = new FormData()
+    formData.append(`file`, file, getDateFilename(file.name))
+    res = await window.fetch(uploadUrl, { method: `POST`, body: formData })
+  }
+  catch {
+    throw new Error(t(`upload.provider.picgoNetworkError`, { server }))
+  }
+
+  if (!res.ok) {
+    if (res.status === 403)
+      throw new Error(t(`upload.provider.picgoAuthFailed`))
+    throw new Error(t(`upload.provider.picgoHttpError`, { status: `${res.status}`, statusText: res.statusText }))
+  }
+
+  const responseText = await res.text()
+  let result: { success?: boolean, result?: string[], message?: string, error?: string }
+  try {
+    result = JSON.parse(responseText)
+  }
+  catch {
+    throw new Error(t(`upload.provider.picgoBadResponse`))
+  }
+
+  if (!result.success)
+    throw new Error(t(`upload.provider.picgoUploadFailed`, { msg: result.message || result.error || `` }))
+
+  const urlList = result.result || []
+  if (urlList.length === 0)
+    throw new Error(t(`upload.provider.picgoNoUrl`))
+
+  return urlList[0]
+}
+
 type UploadHandler = (content: string, file: File) => Promise<string>
 
 const UPLOAD_HANDLERS = {
@@ -748,6 +810,7 @@ const UPLOAD_HANDLERS = {
   telegram: (_content, file) => telegramUpload(file),
   cloudinary: (_content, file) => cloudinaryUpload(file),
   formCustom: (content, file) => formCustomUpload(content, file),
+  picgo: (_content, file) => picgoUpload(file),
 } satisfies Record<UploadProviderId, UploadHandler>
 
 export async function fileUpload(content: string, file: File) {

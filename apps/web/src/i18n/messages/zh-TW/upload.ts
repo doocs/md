@@ -26,6 +26,7 @@ export default {
       telegram: `Telegram`,
       cloudinary: `Cloudinary`,
       formCustom: `自定義程式碼`,
+      picgo: `PicGo`,
     },
     errors: {
       invalidFormat: `請上傳 GIF/JPG/JPEG/PNG/WEBP 格式的圖片`,
@@ -45,6 +46,9 @@ export default {
       operatorPassword: `操作員密碼`,
       customDomain: `自定義域名`,
       customDomainCdn: `自定義域名 / CDN`,
+      picgoServer: `PicGo 服務地址`,
+      picgoPath: `上傳路徑`,
+      picgoKey: `鑑權密鑰`,
     },
     placeholders: {
       githubRepo: `如：github.com/yanglbme/resource`,
@@ -95,6 +99,9 @@ export default {
       uploadPresetUnsigned: `unsigned 時必填，signed 時可不填`,
       cloudinaryFolder: `如：blog/image，可不填`,
       cloudinaryDomain: `如：https://cdn.example.com，可不填`,
+      picgoServer: `如：http://127.0.0.1:36677`,
+      picgoPath: `如：/upload，可不填`,
+      picgoKey: `如：your-secret-key，可不填`,
     },
     help: {
       githubToken: `如何獲取 GitHub Token？`,
@@ -109,6 +116,7 @@ export default {
       upyun: `如何使用 又拍雲？`,
       telegram: `如何使用 Telegram？`,
       cloudinary: `Cloudinary 使用文件`,
+      picgo: `如何使用 PicGo？`,
     },
     validation: {
       githubRepoRequired: `GitHub 倉庫不能為空`,
@@ -135,6 +143,7 @@ export default {
       cloudNameRequired: `Cloud Name 不能為空`,
       apiKeyRequired: `API Key 不能為空`,
       uploadPresetRequired: `未填寫 apiSecret 時必須提供上傳預設名`,
+      picgoServerRequired: `PicGo 服務地址不能為空`,
     },
     provider: {
       accessTokenFailed: `獲取 access_token 失敗`,
@@ -145,6 +154,13 @@ export default {
       cloudinaryMissingConfig: `Cloudinary 配置缺少 cloudName / apiKey`,
       cloudinaryMissingPreset: `未配置 apiSecret 時必須提供 uploadPreset`,
       cloudinaryMissingUrl: `Cloudinary 返回缺少 url 欄位`,
+      picgoServerMissing: `PicGo 服務地址未配置`,
+      picgoNetworkError: `無法連線到 PicGo 服務（{server}），請確認 PicGo 已啟動並開啟 Server 功能`,
+      picgoAuthFailed: `PicGo 鑑權失敗，請檢查密鑰`,
+      picgoHttpError: `PicGo 服務返回錯誤: {status} {statusText}`,
+      picgoBadResponse: `PicGo 返回格式錯誤，不是有效的 JSON`,
+      picgoUploadFailed: `PicGo 上傳失敗: {msg}`,
+      picgoNoUrl: `PicGo 上傳成功但未返回圖片 URL`,
     },
   },
 }

@@ -6,6 +6,7 @@ import CloudinaryConfigForm from './CloudinaryConfigForm.vue'
 import GithubConfigForm from './GithubConfigForm.vue'
 import MinioConfigForm from './MinioConfigForm.vue'
 import MpConfigForm from './MpConfigForm.vue'
+import PicGoConfigForm from './PicGoConfigForm.vue'
 import QiniuConfigForm from './QiniuConfigForm.vue'
 import R2ConfigForm from './R2ConfigForm.vue'
 import S3ConfigForm from './S3ConfigForm.vue'
@@ -26,4 +27,5 @@ export const UPLOAD_PROVIDER_CONFIG_COMPONENTS = {
   telegram: TelegramConfigForm,
   cloudinary: CloudinaryConfigForm,
   formCustom: CustomUploadForm,
+  picgo: PicGoConfigForm,
 } satisfies Record<ConfigurableUploadProviderId, Component>

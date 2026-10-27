@@ -19,6 +19,7 @@ export const UPLOAD_PROVIDERS = [
   { id: `telegram`, configKey: `telegramConfig` },
   { id: `cloudinary`, configKey: `cloudinaryConfig` },
   { id: `formCustom`, configKey: `formCustomConfig` },
+  { id: `picgo`, configKey: `picgoConfig` },
 ] as const satisfies readonly UploadProviderDefinition[]
 
 export type UploadProviderId = typeof UPLOAD_PROVIDERS[number][`id`]

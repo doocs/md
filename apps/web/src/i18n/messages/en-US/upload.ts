@@ -26,6 +26,7 @@ export default {
       telegram: `Telegram`,
       cloudinary: `Cloudinary`,
       formCustom: `Custom code`,
+      picgo: `PicGo`,
     },
     errors: {
       invalidFormat: `Please upload GIF/JPG/JPEG/PNG/WEBP images only`,
@@ -45,6 +46,9 @@ export default {
       operatorPassword: `Operator password`,
       customDomain: `Custom domain`,
       customDomainCdn: `Custom domain / CDN`,
+      picgoServer: `PicGo server`,
+      picgoPath: `Upload path`,
+      picgoKey: `Auth key`,
     },
     placeholders: {
       githubRepo: `e.g. github.com/yanglbme/resource`,
@@ -95,6 +99,9 @@ export default {
       uploadPresetUnsigned: `Required for unsigned uploads; optional for signed`,
       cloudinaryFolder: `e.g. blog/image. Optional`,
       cloudinaryDomain: `e.g. https://cdn.example.com. Optional`,
+      picgoServer: `e.g. http://127.0.0.1:36677`,
+      picgoPath: `e.g. /upload. Optional`,
+      picgoKey: `e.g. your-secret-key. Optional`,
     },
     help: {
       githubToken: `How to get a GitHub Token?`,
@@ -109,6 +116,7 @@ export default {
       upyun: `How to use Upyun?`,
       telegram: `How to use Telegram?`,
       cloudinary: `Cloudinary documentation`,
+      picgo: `How to use PicGo?`,
     },
     validation: {
       githubRepoRequired: `GitHub repository is required`,
@@ -135,6 +143,7 @@ export default {
       cloudNameRequired: `Cloud Name is required`,
       apiKeyRequired: `API Key is required`,
       uploadPresetRequired: `Upload preset is required when apiSecret is not provided`,
+      picgoServerRequired: `PicGo server is required`,
     },
     provider: {
       accessTokenFailed: `Failed to obtain access_token`,
@@ -145,6 +154,13 @@ export default {
       cloudinaryMissingConfig: `Cloudinary config is missing cloudName / apiKey`,
       cloudinaryMissingPreset: `uploadPreset is required when apiSecret is not configured`,
       cloudinaryMissingUrl: `Cloudinary response is missing url field`,
+      picgoServerMissing: `PicGo server address is not configured`,
+      picgoNetworkError: `Cannot connect to PicGo server ({server}). Ensure PicGo is running with the Server feature enabled`,
+      picgoAuthFailed: `PicGo authentication failed. Check your key`,
+      picgoHttpError: `PicGo server returned an error: {status} {statusText}`,
+      picgoBadResponse: `PicGo returned an invalid JSON response`,
+      picgoUploadFailed: `PicGo upload failed: {msg}`,
+      picgoNoUrl: `PicGo upload succeeded but returned no image URL`,
     },
   },
 }

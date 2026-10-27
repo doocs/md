@@ -61,6 +61,7 @@
 | 11  | [Telegram](https://core.telegram.org/api)              | 配置 `Bot Token`、`Chat ID` 参数                                           | [如何使用 Telegram 图床？](https://github.com/doocs/md/blob/main/docs/telegram-usage.md)                               |
 | 12  | [Cloudinary](https://cloudinary.com/)                  | 配置 `Cloud Name`、`API Key`、`API Secret` 参数                            | [如何使用 Cloudinary？](https://cloudinary.com/documentation/upload_images)                                            |
 | 13  | 自定义上传                                             | 是                                                                         | [如何自定义上传？](/docs/custom-upload.md)                                                                             |
+| 14  | [PicGo](https://github.com/Molunerfinn/PicGo)         | 配置 `服务地址`、`路径`、`密钥` 参数                                       | [如何使用 PicGo？](https://github.com/Molunerfinn/PicGo)                                                            |
 
 ## 产品演示
 

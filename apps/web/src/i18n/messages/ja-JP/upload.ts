@@ -26,6 +26,7 @@ export default {
       telegram: `Telegram`,
       cloudinary: `Cloudinary`,
       formCustom: `カスタムコード`,
+      picgo: `PicGo`,
     },
     errors: {
       invalidFormat: `GIF/JPG/JPEG/PNG/WEBP 画像のみアップロードできます`,
@@ -45,6 +46,9 @@ export default {
       operatorPassword: `オペレーターパスワード`,
       customDomain: `カスタムドメイン`,
       customDomainCdn: `カスタムドメイン / CDN`,
+      picgoServer: `PicGo サーバー`,
+      picgoPath: `アップロードパス`,
+      picgoKey: `認証キー`,
     },
     placeholders: {
       githubRepo: `例: github.com/yanglbme/resource`,
@@ -95,6 +99,9 @@ export default {
       uploadPresetUnsigned: `unsigned 時は必須、signed 時は任意`,
       cloudinaryFolder: `例: blog/image。任意`,
       cloudinaryDomain: `例: https://cdn.example.com。任意`,
+      picgoServer: `例: http://127.0.0.1:36677`,
+      picgoPath: `例: /upload。任意`,
+      picgoKey: `例: your-secret-key。任意`,
     },
     help: {
       githubToken: `GitHub Token の取得方法は？`,
@@ -109,6 +116,7 @@ export default {
       upyun: `Upyun の使い方は？`,
       telegram: `Telegram の使い方は？`,
       cloudinary: `Cloudinary ドキュメント`,
+      picgo: `PicGo の使い方は？`,
     },
     validation: {
       githubRepoRequired: `GitHub リポジトリは必須です`,
@@ -135,6 +143,7 @@ export default {
       cloudNameRequired: `Cloud Name は必須です`,
       apiKeyRequired: `API Key は必須です`,
       uploadPresetRequired: `apiSecret 未設定時はアップロードプリセットが必須です`,
+      picgoServerRequired: `PicGo サーバーは必須です`,
     },
     provider: {
       accessTokenFailed: `access_token の取得に失敗しました`,
@@ -145,6 +154,13 @@ export default {
       cloudinaryMissingConfig: `Cloudinary 設定に cloudName / apiKey がありません`,
       cloudinaryMissingPreset: `apiSecret 未設定時は uploadPreset が必須です`,
       cloudinaryMissingUrl: `Cloudinary レスポンスに url フィールドがありません`,
+      picgoServerMissing: `PicGo サーバーアドレスが設定されていません`,
+      picgoNetworkError: `PicGo サーバー（{server}）に接続できません。PicGo が起動し、Server 機能が有効であることを確認してください`,
+      picgoAuthFailed: `PicGo 認証に失敗しました。キーを確認してください`,
+      picgoHttpError: `PicGo サーバーがエラーを返しました: {status} {statusText}`,
+      picgoBadResponse: `PicGo の応答が無効な JSON です`,
+      picgoUploadFailed: `PicGo アップロード失敗: {msg}`,
+      picgoNoUrl: `PicGo アップロードは成功しましたが、画像 URL が返されませんでした`,
     },
   },
 }
