@@ -27,13 +27,13 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1153.0",
-    "@aws-sdk/s3-request-presigner": "3.1153.0",
+    "@aws-sdk/client-s3": "3.1156.0",
+    "@aws-sdk/s3-request-presigner": "3.1156.0",
     "@codemirror/autocomplete": "^6.20.4",
     "@codemirror/language": "^6.13.1",
     "@codemirror/state": "catalog:",
     "@codemirror/view": "catalog:",
-    "@lucide/vue": "^1.59.0",
+    "@lucide/vue": "^1.61.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@vue/devtools-api": "^8.2.1",
@@ -62,7 +62,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.64.0",
+    "@cloudflare/vite-plugin": "1.65.0",
     "@cloudflare/workers-types": "catalog:",
     "@md/config": "workspace:*",
     "@tailwindcss/vite": "^4.3.3",
@@ -71,8 +71,8 @@
     "@vitejs/plugin-vue": "^6.0.10",
     "cross-env": "^10.1.0",
     "less": "^4.9.1",
-    "linkedom": "^0.18.13",
-    "npm-run-all2": "^9.0.3",
+    "linkedom": "^0.18.14",
+    "npm-run-all2": "^9.0.4",
     "ohash": "^2.0.12",
     "rollup-plugin-visualizer": "^7.1.1",
     "tailwindcss": "^4.3.3",
