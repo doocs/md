@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b11" />
+    <title>md — 用 Markdown 写作，为公众号排好版</title>
+    <meta
+      name="description"
+      content="开源的微信 Markdown 编辑器。用 Markdown 专注写作，自定义文章主题，一键复制到公众号。支持图床、AI 助手与多端使用。"
+    />
+    <meta property="og:title" content="md — 用 Markdown 写作，为公众号排好版" />
+    <meta property="og:description" content="开源的微信 Markdown 编辑器。实时预览，选择主题，复制到公众号。" />
+    <meta property="og:type" content="website" />
+    <link rel="icon" href="/favicon.png" />
+    <link rel="stylesheet" href="/src/style.css" />
+    <script src="/appearance.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">跳到主要内容</a>
+    <header class="site-header">
+      <nav class="header-inner" aria-label="主导航">
+        <a class="brand" href="#" aria-label="md 首页"
+          ><span class="brand-mark" aria-hidden="true">m<span>↓</span></span
+          ><span>md<span class="brand-dot">.</span></span
+          ><span class="by-doocs">by doocs</span></a
+        >
+        <div class="desktop-nav">
+          <a href="#features">功能特性</a><a href="#workflow">写作体验</a><a href="#compare">功能对比</a
+          ><a href="#ecosystem">多端使用</a><a href="#docs">文档</a>
+        </div>
+        <div class="header-actions">
+          <a
+            class="github-link"
+            href="https://github.com/doocs/md"
+            aria-label="在 GitHub 查看 md，13,487 Stars"
+            title="GitHub · 13,487 Stars（2026-10-30 快照）"
+            data-github-stars
+            ><svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
+              /></svg
+            ><span class="star-count">13.5k</span></a
+          >
+          <button class="icon-button" id="appearance" aria-label="切换浅色外观" aria-pressed="false">
+            <svg class="sun-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <circle cx="12" cy="12" r="4" />
+              <path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5" />
+            </svg>
+            <svg class="moon-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20.5 13.1A8.7 8.7 0 0 1 10.9 3.5 8.7 8.7 0 1 0 20.5 13.1Z" />
+            </svg>
+          </button>
+          <a class="button primary header-cta" href="https://md.doocs.org" aria-label="打开编辑器" title="打开编辑器">
+            <span class="header-cta-label">打开编辑器</span
+            ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M7 7h10v10" /></svg
+          ></a>
+          <details class="mobile-menu" id="mobile-menu">
+            <summary aria-label="打开导航菜单">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" /></svg>
+            </summary>
+            <div>
+              <a href="#features">功能特性</a><a href="#workflow">写作体验</a><a href="#compare">功能对比</a
+              ><a href="#ecosystem">多端使用</a><a href="#docs">文档</a>
+            </div>
+          </details>
+        </div>
+      </nav>
+    </header>
+    <main id="main">
+      <section class="hero container" aria-labelledby="hero-title">
+        <h1 id="hero-title">用 Markdown 写作，<br />为公众号<span>排好版。</span></h1>
+        <p class="hero-description">
+          开源的微信 Markdown 编辑器。文字、代码、图表与公式，即写即预览。<br
+            class="desktop-break"
+          />选好主题，复制到公众号，把时间留给内容。
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="https://md.doocs.org"
+            >打开编辑器 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6" /></svg></a
+          ><a
+            class="button secondary github-button"
+            href="https://github.com/doocs/md"
+            aria-label="在 GitHub 查看 md，13,487 Stars"
+            title="GitHub · 13,487 Stars（2026-10-30 快照）"
+            data-github-stars
+            ><svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
+              /></svg
+            ><span class="github-divider" aria-hidden="true"></span
+            ><span class="github-stars"
+              ><svg class="star-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z" /></svg
+              ><span class="star-count">13.5k</span></span
+            ></a
+          >
+        </div>
+        <p class="hero-note">
+          无需安装 <span class="note-divider">·</span> 本地草稿自动保存 <span class="note-divider">·</span>
+          <a href="https://md-pages.doocs.org/">阅读使用指南 <span aria-hidden="true">↗</span></a>
+        </p>
+        <div class="product-window" aria-label="md 编辑器示意，支持切换文章主题">
+          <div class="window-bar">
+            <div class="window-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <span>md · 微信 Markdown 编辑器</span><span class="demo-label">排版示意</span>
+          </div>
+          <div class="editor-toolbar">
+            <span class="toolbar-title"><span class="tiny-mark">m↓</span> 一份内容，两种视角</span>
+            <a href="https://md.doocs.org" class="demo-open">进入编辑器 <span aria-hidden="true">↗</span></a>
+          </div>
+          <div class="demo-views" role="group" aria-label="排版示意视图">
+            <button data-demo-view="source" aria-controls="demo-source" aria-pressed="false">Markdown 源文</button>
+            <button data-demo-view="preview" aria-controls="demo-preview" aria-pressed="true">排版结果</button>
+          </div>
+          <div class="editor-body" data-view="preview">
+            <div class="source-pane" id="demo-source">
+              <div class="pane-label">MARKDOWN <span>示例内容</span></div>
+              <pre><code><span class="syntax">#</span> 写作，从这里开始
+
+记录灵感，只需要一个简单的开始。
+
+<span class="syntax">##</span> 专注内容，让表达自然发生
+
+好的工具，应该让你忘记工具本身。
+用 <span class="syntax">**</span>Markdown<span class="syntax">**</span> 写下想法，
+剩下的，交给 md。
+
+<span class="syntax">&gt;</span> 文字有力量，排版有温度。
+
+<span class="syntax">###</span> 给文字一点自己的风格
+
+<span class="syntax">-</span> 挑选一个喜欢的主题
+<span class="syntax">-</span> 调整字体与主题色
+<span class="syntax">-</span> 复制到公众号，发布你的作品
+
+<span class="syntax">```javascript</span>
+<span class="code-purple">const</span> inspiration = <span class="code-teal">'随时发生'</span>
+<span class="code-purple">const</span> writing = () =&gt; inspiration
+<span class="syntax">```</span></code></pre>
+              <div class="source-status">Markdown <span>UTF-8 · 自动保存草稿</span></div>
+            </div>
+            <div class="preview-pane" id="demo-preview">
+              <div class="pane-label">文章预览 <span>为公众号排版</span></div>
+              <article id="article-preview" data-theme="blue">
+                <span class="article-category">关于写作的那些小事</span>
+                <h2>写作，从这里开始</h2>
+                <p class="article-lead">记录灵感，只需要一个简单的开始。</p>
+                <h3>专注内容，让表达自然发生</h3>
+                <p>好的工具，应该让你忘记工具本身。<br />用 <strong>Markdown</strong> 写下想法，剩下的，交给 md。</p>
+                <blockquote>文字有力量，排版有温度。</blockquote>
+                <h4>给文字一点自己的风格</h4>
+                <ul>
+                  <li>挑选一个喜欢的主题</li>
+                  <li>调整字体与主题色</li>
+                  <li>复制到公众号，发布你的作品</li>
+                </ul>
+                <div class="article-code">
+                  <span>JavaScript</span
+                  ><code>const inspiration = '随时发生'<br />const writing = () =&gt; inspiration</code>
+                </div>
+              </article>
+            </div>
+          </div>
+          <div class="preview-controls">
+            <span
+              >排版示意 <span class="control-divider">/</span>
+              <output id="preview-theme-name" aria-live="polite">经典蓝</output></span
+            >
+            <div role="group" aria-label="预览文章主题">
+              <button data-preview-theme="blue" aria-controls="article-preview" aria-pressed="true">
+                <i class="swatch blue"></i>经典蓝</button
+              ><button data-preview-theme="teal" aria-controls="article-preview" aria-pressed="false">
+                <i class="swatch teal"></i>翡翠绿</button
+              ><button data-preview-theme="purple" aria-controls="article-preview" aria-pressed="false">
+                <i class="swatch purple"></i>鸢尾紫
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="format-strip container" aria-label="支持的内容格式">
+        <p>从技术长文到日常分享，内容都能各得其所。</p>
+        <div>
+          <span>Markdown</span><span>KaTeX 公式</span><span>Mermaid 图表</span><span>代码高亮</span
+          ><span>自定义 CSS</span>
+        </div>
+      </section>
+      <section class="section container" id="workflow">
+        <div class="section-heading">
+          <h2>写作、排版、发布。<br />一气呵成。</h2>
+          <p>熟悉的 Markdown，熟悉的公众号。<br />md 把中间的排版连起来。</p>
+        </div>
+        <div class="workflow-grid">
+          <div>
+            <span class="step-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15v5Z" /></svg
+            ></span>
+            <h3>写 Markdown</h3>
+            <p>用标题、列表和引用组织内容。代码、图表与公式，也能清晰呈现。</p>
+          </div>
+          <div>
+            <span class="step-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24"><path d="M4 5h16v14H4zM4 9h16M10 9v10" /></svg
+            ></span>
+            <h3>预览与调整</h3>
+            <p>实时查看文章效果。选择主题，调整字体、颜色与间距，或直接编写 CSS。</p>
+          </div>
+          <div>
+            <span class="step-icon" aria-hidden="true"
+              ><svg viewBox="0 0 24 24">
+                <rect x="8" y="8" width="12" height="13" rx="2" />
+                <path d="M16 8V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h3" /></svg
+            ></span>
+            <h3>复制到公众号</h3>
+            <p>复制排版结果，粘贴到微信公众号编辑器。发布前，检查一下最终效果。</p>
+          </div>
+        </div>
+      </section>
+      <section class="section features-section" id="features">
+        <div class="container">
+          <div class="section-heading">
+            <h2>每个细节，<br />都可以有你的风格。</h2>
+            <p>主题、配图和 AI 辅助，<br />接进同一套写作流程。</p>
+          </div>
+          <div class="feature-grid">
+            <div class="feature-story">
+              <div class="mini-themes" aria-hidden="true">
+                <div>
+                  <span>简洁 · SIMPLE</span><b>把复杂的事，<br />写清楚。</b>
+                  <p>从清晰的结构开始，让每一段内容都有自己的位置。</p>
+                  <em>内容先行，表达自如。</em>
+                </div>
+                <div>
+                  <span>优雅 · GRACE</span><b>把复杂的事，<br />写清楚。</b>
+                  <p>给标题、段落与留白恰好的分寸。</p>
+                  <em>好的排版，刚刚好。</em>
+                </div>
+                <div>
+                  <span>经典 · DEFAULT</span><b>把复杂的事，<br />写清楚。</b>
+                  <p>技术分享、阅读笔记，找到适合这一篇的样子。</p>
+                  <em>一份内容，多种呈现。</em>
+                </div>
+              </div>
+              <h3>主题之外，还有自定义 CSS</h3>
+              <p>从内置主题开始，逐步调整成自己的样子。正文、标题和代码块，都能细细打磨。</p>
+            </div>
+            <div class="feature-list">
+              <div>
+                <h3>连接你选择的 AI 模型</h3>
+                <p>接入 DeepSeek、OpenAI、通义千问等模型服务，按需辅助构思与润色。</p>
+              </div>
+              <div>
+                <h3>配图上传，用你自己的图床</h3>
+                <p>支持 GitHub、阿里云、腾讯云、S3、R2 等多种图床，也支持自定义上传。</p>
+              </div>
+              <div>
+                <h3>草稿留在本地，偏好随你同步</h3>
+                <p>写作时自动保存本地草稿。登录后，可在设备间同步编辑器偏好。</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="section container comparison-section" id="compare" aria-labelledby="comparison-title">
+        <div class="section-heading">
+          <h2 id="comparison-title">不止排好版。<br />也接得住你的工作流。</h2>
+          <p>从公众号排版出发，<br />看看哪种工具更适合你的创作方式。</p>
+        </div>
+        <p class="comparison-scroll-hint">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 8-4 4 4 4m10-8 4 4-4 4M3 12h18" /></svg>左右滑动查看
+        </p>
+        <div
+          class="comparison-scroll"
+          role="region"
+          aria-label="排版工具功能对比，窄屏可左右滚动"
+          tabindex="0"
+          aria-describedby="comparison-note"
+        >
+          <table class="comparison-table">
+            <caption class="sr-only">
+              md、mdnice 开源版和 Quaily Markdown 排版工具的公开功能对比
+            </caption>
+            <colgroup>
+              <col class="feature-column" />
+              <col class="md-column" />
+              <col />
+              <col />
+            </colgroup>
+            <thead>
+              <tr>
+                <th scope="col">创作能力</th>
+                <th scope="col" class="md-column">
+                  <a href="https://github.com/doocs/md" aria-label="md 项目源码" class="comparison-md"
+                    >md<span>.</span></a
+                  >
+                </th>
+                <th scope="col">
+                  <a href="https://github.com/mdnice/markdown-nice"
+                    >mdnice<span class="comparison-edition">开源版</span></a
+                  >
+                </th>
+                <th scope="col">
+                  <a href="https://quaily.com/tools/markdown-to-wx/"
+                    >Quaily<span class="comparison-edition">Markdown 排版工具</span></a
+                  >
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path
+                        d="M21 11.5a8.4 8.4 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.4 8.4 0 0 1-3.8-.9L3 21l1.9-5.7a8.4 8.4 0 0 1-.9-3.8A8.5 8.5 0 0 1 8.7 3.9a8.4 8.4 0 0 1 3.8-.9h.5a8.5 8.5 0 0 1 8 8v.5Z"
+                      /></svg
+                    >公众号排版复制</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m16 18 6-6-6-6M8 6l-6 6 6 6m6-15-4 18" /></svg
+                    >自定义 CSS</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 4H6l7 8-7 8h12" /></svg>数学公式</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="3" width="18" height="18" rx="2" />
+                      <circle cx="8.5" cy="8.5" r="1.5" />
+                      <path d="m21 15-5-5L5 21" /></svg
+                    >多图床配置</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <path d="m12 3 2.6 6.4L21 12l-6.4 2.6L12 21l-2.6-6.4L3 12l6.4-2.6L12 3Z" /></svg
+                    >自选模型 AI 助手</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+              </tr>
+              <tr>
+                <th scope="row">
+                  <span class="comparison-feature"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="3" y="4" width="18" height="16" rx="2" />
+                      <path d="m7 9 3 3-3 3m6 0h4" /></svg
+                    >CLI / MCP 集成</span
+                  >
+                </th>
+                <td class="md-column">
+                  <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+                <td>
+                  <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+                    ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg
+                  ></span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="comparison-meta">
+          <p id="comparison-note">
+            <span class="comparison-check" role="img" aria-label="公开资料已确认支持"
+              ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12 4 4L19 6" /></svg></span
+            >已确认支持
+            <span class="comparison-unknown" role="img" aria-label="公开资料未列明，不代表不支持"
+              ><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 12h10" /></svg></span
+            >公开资料未列明，不代表不支持
+          </p>
+          <details class="comparison-sources">
+            <summary>
+              对比依据 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4" /></svg>
+            </summary>
+            <div>
+              <p>核对日期：<time datetime="2026-10-30">2026-10-30</time>。范围为以下公开资料，商业版功能可能不同。</p>
+              <a href="https://github.com/doocs/md#功能特性">md 功能说明</a
+              ><a href="https://github.com/mdnice/markdown-nice">mdnice 开源仓库</a
+              ><a href="https://github.com/mdnice/markdown-nice/blob/master/src/template/content.md"
+                >mdnice 数学公式说明</a
+              ><a href="https://github.com/mdnice/markdown-nice/blob/master/src/store/imageHosting.js"
+                >mdnice 图床配置</a
+              ><a href="https://quaily.com/tools/markdown-to-wx/">Quaily 工具说明</a>
+            </div>
+          </details>
+        </div>
+      </section>
+      <section class="section container" id="ecosystem">
+        <div class="section-heading">
+          <h2>顺着你的工作流。</h2>
+          <p>浏览器里直接写，编辑器里接着写。<br />也能把 md 接入命令行和 AI 工具。</p>
+        </div>
+        <div class="ecosystem-links">
+          <a href="https://md.doocs.org"
+            ><span>Web 编辑器</span>
+            <p>无需安装，打开即写</p>
+            <span aria-hidden="true">↗</span></a
+          ><a href="https://marketplace.visualstudio.com/items?itemName=doocs.doocs-md"
+            ><span>VS Code</span>
+            <p>在熟悉的编辑器中排版</p>
+            <span aria-hidden="true">↗</span></a
+          ><a href="https://chromewebstore.google.com/detail/ilhikcdphhpjofhlnbojifbihhfmmhfk"
+            ><span>Chrome 扩展</span>
+            <p>前往 Chrome 应用商店</p>
+            <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/blob/main/apps/utools/README.md"
+            ><span>uTools</span>
+            <p>查看插件打包与导入指引</p>
+            <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/blob/main/packages/md-cli/README.md"
+            ><span>CLI</span>
+            <p>从命令行启动本地编辑器</p>
+            <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/tree/main/packages/mcp-server"
+            ><span>MCP</span>
+            <p>为 AI 工具提供 Markdown 渲染能力</p>
+            <span aria-hidden="true">↗</span></a
+          >
+        </div>
+      </section>
+      <section class="section container docs-section" id="docs">
+        <div>
+          <h2>下一篇公众号，<br />现在开始。</h2>
+          <p>打开编辑器，写下第一行 Markdown。</p>
+          <a class="button primary" href="https://md.doocs.org">打开编辑器 <span aria-hidden="true">→</span></a>
+        </div>
+        <div class="doc-links">
+          <a href="https://md-pages.doocs.org/">使用指南 <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/blob/main/docs/custom-upload.md"
+            >配置自定义图床 <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/blob/main/docs/cloud-sync.md"
+            >了解云同步 <span aria-hidden="true">↗</span></a
+          ><a href="https://github.com/doocs/md/discussions">交流想法与经验 <span aria-hidden="true">↗</span></a>
+        </div>
+      </section>
+    </main>
+    <footer class="container site-footer">
+      <div>
+        <a class="brand" href="#">md<span class="brand-dot">.</span></a>
+        <p>开源的微信 Markdown 编辑器。</p>
+      </div>
+      <div>
+        <a class="footer-github" href="https://github.com/doocs/md" aria-label="GitHub 源码" title="GitHub 源码"
+          ><svg class="github-icon" viewBox="0 0 24 24" aria-hidden="true">
+            <path
+              d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"
+            /></svg></a
+        ><a class="footer-icon" href="https://github.com/doocs/md/issues" aria-label="反馈建议" title="反馈建议"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z" />
+            <path d="M8 8h8m-8 4h5" /></svg></a
+        ><a
+          class="footer-icon"
+          href="https://github.com/doocs/md/blob/main/CONTRIBUTING.md"
+          aria-label="参与贡献"
+          title="参与贡献"
+          ><svg viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="6" cy="5" r="3" />
+            <circle cx="6" cy="19" r="3" />
+            <circle cx="18" cy="7" r="3" />
+            <path d="M6 8v8m0-4h7a5 5 0 0 0 5-5" /></svg></a
+        ><span>由 doocs 社区用心构建</span>
+      </div>
+    </footer>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
