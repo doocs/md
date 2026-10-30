@@ -36,8 +36,9 @@ pnpm install          # 安装所有依赖
 pnpm start            # 等同于 `pnpm web dev`
 pnpm run lint         # ESLint --fix 全项目检查
 pnpm run type-check   # vue-tsc 类型检查
-pnpm run build:cli    # 构建 web + 复制到 md-cli + npm pack
-pnpm run release:cli  # 通过 scripts/release.js 发布 CLI
+pnpm run build:cli    # 构建 web + 复制产物到 md-cli
+pnpm run pack:cli     # 构建并生成 CLI npm tarball
+pnpm changeset        # 记录下一次 CLI 发布的版本级别与更新说明
 pnpm utools:package   # 打包 uTools 插件
 pnpm run inspector    # node-modules-inspector 查看依赖树
 ```

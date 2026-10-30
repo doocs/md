@@ -76,7 +76,8 @@ pnpm web dev
    ```
 
 3. 编码 & 编写/更新测试。
-4. 运行检查：
+4. 如果变更需要随 npm CLI 发布，运行 `pnpm changeset`，选择 `@doocs/md-cli`、版本变更级别，并填写面向用户的更新说明。将生成的 `.changeset/*.md` 文件一并提交。
+5. 运行检查：
 
    ```bash
    pnpm run lint        # ESLint + Prettier
@@ -84,7 +85,7 @@ pnpm web dev
    pnpm web build       # 产物验证
    ```
 
-5. 提交并推送：
+6. 提交并推送：
 
    ```bash
    git add .
@@ -92,7 +93,7 @@ pnpm web dev
    git push origin feat/awesome-feature
    ```
 
-6. 在 GitHub 页面发起 **Pull Request**，并按 [`.github/pull_request_template.md`](./.github/pull_request_template.md) 填写说明。
+7. 在 GitHub 页面发起 **Pull Request**，并按 [`.github/pull_request_template.md`](./.github/pull_request_template.md) 填写说明。
 
 > [!TIP]
 > 开发时可在 `apps/web` 目录下新建 `.env.local` 文件，配置 `VITE_LAUNCH_EDITOR` 为 `code` （默认值）或其他 [支持的编辑器](https://github.com/yyx990803/launch-editor?tab=readme-ov-file#supported-editors)，方便调试。
