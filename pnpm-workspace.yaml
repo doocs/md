@@ -95,7 +95,7 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261019.1
+  '@cloudflare/workers-types': ^5.20261024.1
   '@codemirror/state': 6.7.6
   '@codemirror/view': 6.43.15
   '@types/node': ^26.6.5
@@ -107,5 +107,5 @@ catalog:
   uuid: ^14.0.3
   vitest: ^5.0.5
   # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
-  wrangler: 4.151.2
+  wrangler: 4.152.0
   zod: ^4.6.7
