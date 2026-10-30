@@ -1,0 +1,9 @@
+md homepage includes adaptations of the Tabularis website.
+Source: https://github.com/TabularisDB/website
+Revision: ec27046fdcde677a8439c8a02402f9fe482502d2
+Copyright 2026 Andrea Debernardi
+Licensed under the Apache License, Version 2.0; see LICENSE.tabularis.
+
+Modified by doocs/md contributors in October 2026:
+adapted theme tokens, header and hero layout to a static Vite homepage;
+replaced product content and branding; added an md article demonstration.
