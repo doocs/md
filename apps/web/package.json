@@ -8,6 +8,9 @@
   "scripts": {
     "start": "pnpm run dev",
     "dev": "vite",
+    "dev:desktop": "cross-env SERVER_ENV=TAURI vite --mode desktop --host 127.0.0.1 --port 1420 --strictPort",
+    "build:desktop": "run-s \"build:desktop:only {@}\" type-check --",
+    "build:desktop:only": "cross-env SERVER_ENV=TAURI vite build --mode desktop --outDir ../desktop/dist --emptyOutDir",
     "build": "run-s \"build:only {@}\" type-check --",
     "build:only": "vite build",
     "build:h5-netlify": "run-s \"build:h5-netlify:only {@}\" type-check --",

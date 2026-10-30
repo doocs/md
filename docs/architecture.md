@@ -10,6 +10,7 @@
 | `@md/api`        | `apps/api`            | 账户、云同步、计费、上传代理、分享链接、主题/组件市场、表情包（Cloudflare Workers + Hono + D1） |
 | `doocs-md`       | `apps/vscode`         | VS Code 扩展（webpack 构建，marketplace ID 为 `doocs.doocs-md`）                                |
 | `@md/utools`     | `apps/utools`         | uTools 插件打包壳（构建产物来自 `@md/web`）                                                     |
+| `@md/desktop`    | `apps/desktop`        | Tauri 2 桌面壳，复用 `@md/web`，打包 Windows / macOS / Linux 应用                               |
 | `@md/core`       | `packages/core`       | Markdown → HTML 渲染引擎                                                                        |
 | `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                                     |
 | `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                            |
@@ -32,6 +33,8 @@ apps/web, apps/vscode, packages/mcp-server
 ```
 
 `@md/core` 与 `@md/shared` **直接导出 TypeScript 源码**，由消费方构建工具（Vite / webpack）编译。
+
+`@md/desktop` 通过 Tauri 的构建钩子调用 `@md/web` 的 `desktop` 模式，产物写入 `apps/desktop/dist` 并嵌入原生程序。开发服务器使用 `http://127.0.0.1:1420`；桌面端数据沿用 WebView 的 IndexedDB，与浏览器数据隔离。桌面接入范围和平台限制见 [apps/desktop/README.md](../apps/desktop/README.md)。
 
 ## 渲染管线
 
