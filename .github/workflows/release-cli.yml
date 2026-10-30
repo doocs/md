@@ -1,18 +1,25 @@
-name: Create CLI Release
+name: Release CLI
 
 on:
   push:
-    tags:
-      - 'cli-v*'
+    branches: [main]
+  workflow_dispatch:
 
-permissions:
-  id-token: write  # Required for OIDC trusted publishing
-  contents: read
+permissions: {}
+
+concurrency:
+  group: release-cli-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
-  build:
+  select-mode:
     runs-on: ubuntu-latest
     if: github.repository == 'doocs/md'
+    permissions:
+      contents: read
+    outputs:
+      mode: ${{ steps.select-mode.outputs.mode }}
+      publish-plan-artifact-id: ${{ steps.select-mode.outputs.publish-plan-artifact-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -23,17 +30,70 @@ jobs:
         uses: pnpm/setup@v3
         with:
           version: 12.14.0
+          runtime: node@22
           cache: true
           install: false
 
-      - name: Set up Node
-        uses: actions/setup-node@v7
-        with:
-          node-version: 22
-          registry-url: https://registry.npmjs.org/
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Update npm
-        run: npm install -g npm@latest
+      - name: Select release mode
+        id: select-mode
+        uses: changesets/action/select-mode@v2
+
+  version:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'version'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
+        with:
+          version: 12.14.0
+          runtime: node@22
+          cache: true
+          install: false
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Create or update release pull request
+        uses: changesets/action/version@v2
+        with:
+          github-token: ${{ secrets.DOOCS_BOT_ACTION_TOKEN }}
+          script: pnpm changeset:version
+          commit-message: 'chore: release CLI'
+          pr-title: 'chore: release CLI'
+
+  pack:
+    needs: select-mode
+    if: needs.select-mode.outputs.mode == 'publish'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      pack-dir-artifact-id: ${{ steps.pack.outputs.pack-dir-artifact-id }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
+        with:
+          version: 12.14.0
+          runtime: node@22
+          cache: true
+          install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -41,5 +101,41 @@ jobs:
       - name: Build CLI
         run: pnpm run build:cli
 
+      - name: Pack CLI
+        id: pack
+        uses: changesets/action/pack@v2
+        with:
+          publish-plan-artifact-id: ${{ needs.select-mode.outputs.publish-plan-artifact-id }}
+
+  publish:
+    needs: pack
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Set up pnpm
+        uses: pnpm/setup@v3
+        with:
+          version: 12.14.0
+          runtime: node@22
+          cache: true
+          install: false
+
+      - name: Update npm
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
       - name: Publish CLI
-        run: cd packages/md-cli && npm publish --registry=https://registry.npmjs.org/
+        uses: changesets/action/publish@v2
+        with:
+          pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}
+        env:
+          NPM_CONFIG_PROVENANCE: true
