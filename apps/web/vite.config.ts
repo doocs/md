@@ -16,10 +16,11 @@ import { utoolsLocalAssetsPlugin } from './plugins/vite-plugin-utools-local-asse
 
 const isNetlify = process.env.SERVER_ENV === `NETLIFY`
 const isUTools = process.env.SERVER_ENV === `UTOOLS`
+const isTauri = process.env.SERVER_ENV === `TAURI`
 const isCfWorkers = process.env.CF_WORKERS === `1`
 const isCfPages = process.env.CF_PAGES === `1`
 
-const base = isNetlify || isCfWorkers || isCfPages ? `/` : isUTools ? `./` : `/md/`
+const base = isNetlify || isCfWorkers || isCfPages || isTauri ? `/` : isUTools ? `./` : `/md/`
 
 const vueuseAutoImportExclusions = new Set([`toRefs`, `utils`, `toRef`, `toValue`])
 
@@ -122,7 +123,7 @@ export default defineConfig(({ mode }) => {
       mode === `development` && env.VITE_VUE_DEVTOOLS === `true` && vueDevTools({
         launchEditor: env.VITE_LAUNCH_EDITOR ?? `code`,
       }),
-      !isUTools && VitePluginRadar({
+      !isUTools && !isTauri && VitePluginRadar({
         analytics: { id: `G-7NZL3PZ0NK` },
       }),
       ...(process.env.ANALYZE === `true`
