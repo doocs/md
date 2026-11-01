@@ -1,0 +1,31 @@
+.site-header {
+  .siteHeader {
+    z-index: var(--z-header);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 0rem var(--space-6);
+    height: var(--header-height);
+    display: flex;
+    align-items: center;
+    background-color: var(--color-bg);
+    border-bottom: var(--border-width) solid transparent;
+
+    &.border {
+      border-bottom-color: var(--color-border);
+    }
+  }
+
+  .container {
+    display: flex;
+    align-items: center;
+    width: var(--max-width-xl);
+    margin: 0 auto;
+    gap: var(--space-8);
+
+    &.containerWide {
+      width: var(--max-width-2xl);
+    }
+  }
+}

@@ -541,9 +541,15 @@ importers:
 
   apps/website:
     devDependencies:
+      marked:
+        specifier: 'catalog:'
+        version: 18.1.1
       vite:
         specifier: 'catalog:'
         version: 8.3.4(@types/node@26.6.5)(esbuild@0.28.2)(jiti@2.7.0)(less@4.9.1(supports-color@10.2.2))(terser@5.51.2)(tsx@4.23.15)(yaml@2.9.1)
+      yaml:
+        specifier: ^2.9.1
+        version: 2.9.1
 
   packages/config: {}
 

@@ -1,0 +1,35 @@
+:root {
+  --max-width-sm: 800px;
+  --max-width-md: 900px;
+  --max-width-lg: 1100px;
+  --max-width-xl: 1200px;
+  --max-width-2xl: 1350px;
+  --header-height: 5rem;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+
+  --radius-xs: 0.25rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-full: 999px;
+
+  --border-width: 0.1rem;
+  --border: var(--border-width) solid var(--color-border);
+
+  --z-dropdown: 10;
+  --z-header: 100;
+  --z-prompt: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+}

@@ -1,0 +1,41 @@
+.release {
+  .pill {
+    border: 0.12rem solid rgb(var(--rgb-tint) / 0.12);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    padding: var(--space-1) 0.625rem var(--space-1) var(--space-1);
+    gap: var(--space-2);
+    max-width: min(400px, 80vw);
+    font-size: 0.9rem;
+    transition: transform 1s ease;
+
+    & svg {
+      min-width: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+
+  .tag {
+    background-color: var(--color-accent-teal);
+    border-radius: var(--radius-full);
+    color: var(--color-bg);
+    padding: var(--space-1) var(--space-3);
+    font-weight: 600;
+  }
+
+  .title {
+    color: var(--color-text-primary);
+    font-style: normal;
+    font-weight: 450;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
