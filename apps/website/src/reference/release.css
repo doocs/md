@@ -1,0 +1,46 @@
+.release {
+  .pill {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    display: flex;
+    align-items: center;
+    padding: 3px 10px 3px 3px;
+    min-height: 32px;
+    gap: var(--space-2);
+    max-width: min(400px, 80vw);
+    font-size: 13px;
+    transition: border-color 0.15s ease, background-color 0.15s ease;
+
+    & svg {
+      min-width: 1rem;
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      border-color: var(--color-border-hover);
+      background-color: var(--color-fill-subtle);
+    }
+  }
+
+  .tag {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+    padding: 2px 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    font-weight: 500;
+  }
+
+  .title {
+    color: var(--color-text-primary);
+    font-style: normal;
+    font-weight: 450;
+    text-transform: capitalize;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
