@@ -58,7 +58,7 @@ The four homepage feature previews use user-provided dark-mode operation recordi
 
 The homepage editor frame unfolds with scroll, followed by small, reversible movements that bring each feature's recording and text into place. Web Animations share navigation's requestAnimationFrame scheduling, use stable layout wrappers, and batch geometry reads before animation writes. Content stays visible without JavaScript; live reduced-motion changes cancel spatial effects. Mobile uses smaller distances without perspective. Header feedback uses CSS transitions. No animation dependency is added; the close-ups inside the videos remain encoded footage.
 
-Homepage title lines, description and actions use a single CSS entrance sequence: a 12px rise and fade, staggered over 600ms. Reduced-motion preferences skip the entrance, and completed animations leave no persistent transforms or hidden content.
+Homepage copy renders immediately without an entrance animation. The release link, title, description, actions and note stay in their final positions when the page loads or refreshes.
 
 ## Assets and provenance
 
