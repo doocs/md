@@ -27,6 +27,7 @@ const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
 const devtoGuideOpen = ref(false)
+const devtoFormHeight = ref(160)
 const isCheckingDevto = ref(false)
 const devtoSetupUrl = computed(() => {
   if (!devtoGuideOpen.value)
@@ -239,20 +240,26 @@ async function recheckDevto() {
   }
 }
 
-function onDevtoConnectionChanged(event: MessageEvent) {
+function onDevtoFrameMessage(event: MessageEvent) {
   const url = devtoSetupUrl.value
   const frame = document.querySelector<HTMLIFrameElement>('#devto-key-frame')
   if (!url || !frame || event.source !== frame.contentWindow
-    || event.origin !== `${url.protocol}//${url.host}`
-    || event.data?.type !== 'cose-devto-connection-changed') {
+    || event.origin !== `${url.protocol}//${url.host}`) {
     return
   }
 
-  void recheckDevto()
+  if (event.data?.type === 'cose-devto-form-height') {
+    const height = event.data.height
+    if (Number.isInteger(height) && height > 0 && height <= 480)
+      devtoFormHeight.value = height
+  }
+  else if (event.data?.type === 'cose-devto-connection-changed') {
+    void recheckDevto()
+  }
 }
 
-onMounted(() => window.addEventListener('message', onDevtoConnectionChanged))
-onUnmounted(() => window.removeEventListener('message', onDevtoConnectionChanged))
+onMounted(() => window.addEventListener('message', onDevtoFrameMessage))
+onUnmounted(() => window.removeEventListener('message', onDevtoFrameMessage))
 
 // Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
@@ -519,7 +526,7 @@ onBeforeMount(() => {
                       v-if="category.accounts.some(account => account.type === 'devto')"
                       v-show="devtoGuideOpen"
                       id="devto-setup"
-                      class="space-y-3 rounded-md border p-3 text-sm sm:col-span-2"
+                      class="space-y-2 rounded-md border p-3 text-sm sm:col-span-2"
                     >
                       <ol class="list-decimal space-y-2 pl-5">
                         <li>
@@ -541,7 +548,8 @@ onBeforeMount(() => {
                         :src="devtoSetupUrl.href"
                         :title="t('postInfo.devtoKeyForm')"
                         referrerpolicy="origin"
-                        class="block h-40 w-full rounded-md border-0"
+                        class="block w-full rounded-md border-0"
+                        :style="{ height: `${devtoFormHeight}px` }"
                       />
                       <p v-else class="text-sm text-muted-foreground">
                         {{ t('postInfo.devtoUpdateExtension') }}
