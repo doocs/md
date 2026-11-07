@@ -26,6 +26,9 @@ const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
+const devtoGuideOpen = ref(false)
+const devtoRechecked = ref(false)
+const isCheckingDevto = ref(false)
 
 const form = ref<Post>({
   title: ``,
@@ -198,6 +201,29 @@ function startLoginDetection() {
   }
 }
 
+async function recheckDevto() {
+  if (isCheckingDevto.value)
+    return
+
+  isCheckingDevto.value = true
+  devtoRechecked.value = false
+  try {
+    await window.$cose?.getAccounts?.((accounts) => {
+      const account = accounts.find(item => item.type === 'devto')
+      const index = allAccounts.value.findIndex(item => item.type === 'devto')
+      if (account && index !== -1)
+        allAccounts.value[index] = { ...account, isChecking: false }
+    }, ['devto'])
+  }
+  catch {
+    // Keep the guide open when account detection fails.
+  }
+  finally {
+    isCheckingDevto.value = false
+    devtoRechecked.value = true
+  }
+}
+
 // Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
   return new Promise((resolve) => {
@@ -235,7 +261,6 @@ function getPlatformUrl(type: string): string {
     wangyihao: 'https://mp.163.com/subscribe_v4/index.html#/article-publish',
     tencentcloud: 'https://cloud.tencent.com/developer',
     medium: 'https://medium.com/m/signin',
-    devto: 'https://dev.to/settings/extensions',
     sspai: 'https://sspai.com/write',
     sohu: 'https://mp.sohu.com/mpfe/v4/login',
     bilibili: 'https://passport.bilibili.com/login',
@@ -429,6 +454,16 @@ onBeforeMount(() => {
                         >
                         <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
                       </template>
+                      <button
+                        v-else-if="account.type === 'devto'"
+                        type="button"
+                        :aria-expanded="devtoGuideOpen"
+                        aria-controls="devto-setup"
+                        class="ml-1 text-sm font-medium text-primary hover:underline"
+                        @click="devtoGuideOpen = !devtoGuideOpen"
+                      >
+                        {{ t('postInfo.devtoConnect') }}
+                      </button>
                       <Primitive
                         v-else
                         as="a"
@@ -437,15 +472,37 @@ onBeforeMount(() => {
                         rel="noopener noreferrer"
                         class="ml-1 text-sm text-muted-foreground hover:underline"
                       >
-                        {{ t(account.type === 'devto' ? 'postInfo.devtoKeyLink' : 'common.login') }}
+                        {{ t('common.login') }}
                       </Primitive>
                     </div>
-                    <p
-                      v-if="category.accounts.some(account => account.type === 'devto' && !account.loggedIn && !account.isChecking)"
-                      class="text-xs text-muted-foreground sm:col-span-2"
+                    <div
+                      v-if="category.accounts.some(account => account.type === 'devto' && !account.loggedIn)"
+                      v-show="devtoGuideOpen"
+                      id="devto-setup"
+                      class="space-y-3 rounded-md border p-3 text-sm sm:col-span-2"
                     >
-                      {{ t('postInfo.devtoSetup') }}
-                    </p>
+                      <ol class="list-decimal space-y-2 pl-5">
+                        <li>
+                          {{ t('postInfo.devtoCreateKey') }}
+                          <a
+                            href="https://dev.to/settings/extensions"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="ml-1 font-medium text-primary underline"
+                          >
+                            {{ t('postInfo.devtoOpenSettings') }}
+                          </a>
+                        </li>
+                        <li>{{ t('postInfo.devtoPasteKey') }}</li>
+                        <li>{{ t('postInfo.devtoFinishSetup') }}</li>
+                      </ol>
+                      <Button type="button" variant="outline" size="sm" :disabled="isCheckingDevto || isCheckingLogin" @click="recheckDevto">
+                        {{ t(isCheckingDevto ? 'postInfo.checking' : 'postInfo.devtoCheckConnection') }}
+                      </Button>
+                      <p v-if="devtoRechecked && !isCheckingDevto" role="status" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.devtoStillDisconnected') }}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
