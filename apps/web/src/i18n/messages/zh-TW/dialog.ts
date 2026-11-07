@@ -180,7 +180,7 @@ export default {
     extensionMissingTitle: `未檢測到外掛`,
     extensionMissingDescription: `請安裝 {link} 瀏覽器擴充套件`,
     extensionLinkText: `COSE 文章同步助手`,
-    coseHint: `此功能由 {githubLink} 支援，完全本地執行，不收集、不儲存任何使用者資訊。`,
+    coseHint: `此功能由 {githubLink} 支援，在瀏覽器中執行，不向 COSE 服務傳送使用者資訊。`,
     coseGithubText: `GitHub 開源外掛 COSE`,
     coseContribute: `如需新增更多平臺或改善同步準確度，歡迎提 {issueLink} 或 PR。`,
     issueLinkText: `Issue`,

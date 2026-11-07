@@ -180,7 +180,7 @@ export default {
     extensionMissingTitle: `拡張機能が検出されません`,
     extensionMissingDescription: `{link} ブラウザ拡張機能をインストールしてください`,
     extensionLinkText: `COSE 記事同期アシスタント`,
-    coseHint: `{githubLink} により提供されています。完全にローカルで動作し、ユーザーデータを収集・保存しません。`,
+    coseHint: `{githubLink} により提供されています。ブラウザー内で動作し、COSE のサーバーにユーザーデータを送信しません。`,
     coseGithubText: `GitHub 上のオープンソース COSE プラグイン`,
     coseContribute: `プラットフォームの追加や同期精度の改善は、{issueLink} または PR でご協力ください。`,
     issueLinkText: `Issue`,

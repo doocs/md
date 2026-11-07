@@ -45,7 +45,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
   },
   {
     id: `cloud`,
@@ -235,6 +235,7 @@ function getPlatformUrl(type: string): string {
     wangyihao: 'https://mp.163.com/subscribe_v4/index.html#/article-publish',
     tencentcloud: 'https://cloud.tencent.com/developer',
     medium: 'https://medium.com/m/signin',
+    devto: 'https://dev.to/settings/extensions',
     sspai: 'https://sspai.com/write',
     sohu: 'https://mp.sohu.com/mpfe/v4/login',
     bilibili: 'https://passport.bilibili.com/login',

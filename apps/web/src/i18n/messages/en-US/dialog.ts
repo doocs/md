@@ -180,7 +180,7 @@ export default {
     extensionMissingTitle: `Extension not detected`,
     extensionMissingDescription: `Install the {link} browser extension`,
     extensionLinkText: `COSE Article Sync Assistant`,
-    coseHint: `Powered by {githubLink}. Runs entirely locally and does not collect or store user data.`,
+    coseHint: `Powered by {githubLink}. Runs in your browser and does not send user data to a COSE server.`,
     coseGithubText: `the open-source COSE plugin on GitHub`,
     coseContribute: `To add platforms or improve sync accuracy, open an {issueLink} or PR.`,
     issueLinkText: `Issue`,
