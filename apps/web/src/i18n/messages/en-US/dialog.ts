@@ -181,6 +181,7 @@ export default {
     extensionMissingDescription: `Install the {link} browser extension`,
     extensionLinkText: `COSE Article Sync Assistant`,
     devtoConnect: `Connect`,
+    devtoCollapse: `Collapse`,
     devtoReplaceKey: `Replace key`,
     devtoCreateKey: `In DEV.to Settings → Extensions, find DEV Community API Keys. Name the key “COSE”, click Generate API Key, and copy it.`,
     devtoOpenSettings: `Open DEV.to settings`,

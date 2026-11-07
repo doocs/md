@@ -181,6 +181,7 @@ export default {
     extensionMissingDescription: `{link} ブラウザ拡張機能をインストールしてください`,
     extensionLinkText: `COSE 記事同期アシスタント`,
     devtoConnect: `接続`,
+    devtoCollapse: `折りたたむ`,
     devtoReplaceKey: `キーを更新`,
     devtoCreateKey: `DEV.to の Settings → Extensions を開きます。DEV Community API Keys で名前に「COSE」と入力し、Generate API Key を押してキーをコピーします。`,
     devtoOpenSettings: `DEV.to の設定を開く`,

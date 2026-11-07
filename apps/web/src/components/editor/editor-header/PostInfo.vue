@@ -491,7 +491,7 @@ onBeforeMount(() => {
                           class="shrink-0 text-sm font-medium text-primary hover:underline"
                           @click="devtoGuideOpen = !devtoGuideOpen"
                         >
-                          {{ t('postInfo.devtoReplaceKey') }}
+                          {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoReplaceKey') }}
                         </button>
                       </template>
                       <button
@@ -502,7 +502,7 @@ onBeforeMount(() => {
                         class="ml-1 text-sm font-medium text-primary hover:underline"
                         @click="devtoGuideOpen = !devtoGuideOpen"
                       >
-                        {{ t('postInfo.devtoConnect') }}
+                        {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoConnect') }}
                       </button>
                       <Primitive
                         v-else

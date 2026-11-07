@@ -181,6 +181,7 @@ export default {
     extensionMissingDescription: `請安裝 {link} 瀏覽器擴充套件`,
     extensionLinkText: `COSE 文章同步助手`,
     devtoConnect: `連線`,
+    devtoCollapse: `摺疊`,
     devtoReplaceKey: `更換金鑰`,
     devtoCreateKey: `開啟 DEV.to 的 Settings → Extensions。在 DEV Community API Keys 輸入名稱「COSE」，點選 Generate API Key，再複製產生的金鑰。`,
     devtoOpenSettings: `開啟 DEV.to 設定`,
