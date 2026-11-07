@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `未檢測到外掛`,
     extensionMissingDescription: `請安裝 {link} 瀏覽器擴充套件`,
     extensionLinkText: `COSE 文章同步助手`,
+    devtoKeyLink: `取得 API Key`,
+    devtoSetup: `在 DEV.to 建立 API Key 後，點選瀏覽器工具列的 COSE 圖示，依彈出視窗提示連線，再重新整理此頁面。`,
     coseHint: `此功能由 {githubLink} 支援，在瀏覽器中執行，不向 COSE 服務傳送使用者資訊。`,
     coseGithubText: `GitHub 開源外掛 COSE`,
     coseContribute: `如需新增更多平臺或改善同步準確度，歡迎提 {issueLink} 或 PR。`,

@@ -437,9 +437,15 @@ onBeforeMount(() => {
                         rel="noopener noreferrer"
                         class="ml-1 text-sm text-muted-foreground hover:underline"
                       >
-                        {{ t('common.login') }}
+                        {{ t(account.type === 'devto' ? 'postInfo.devtoKeyLink' : 'common.login') }}
                       </Primitive>
                     </div>
+                    <p
+                      v-if="category.accounts.some(account => account.type === 'devto' && !account.loggedIn && !account.isChecking)"
+                      class="text-xs text-muted-foreground sm:col-span-2"
+                    >
+                      {{ t('postInfo.devtoSetup') }}
+                    </p>
                   </div>
                 </div>
               </div>

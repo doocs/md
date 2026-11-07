@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `未检测到插件`,
     extensionMissingDescription: `请安装 {link} 浏览器扩展`,
     extensionLinkText: `COSE 文章同步助手`,
+    devtoKeyLink: `获取 API Key`,
+    devtoSetup: `在 DEV.to 创建 API Key 后，点击浏览器工具栏的 COSE 图标，按弹窗提示连接，再刷新此页面。`,
     coseHint: `此功能由 {githubLink} 支持，在浏览器中运行，不向 COSE 服务发送用户信息。`,
     coseGithubText: `GitHub 开源插件 COSE`,
     coseContribute: `如需添加更多平台或改善同步准确度，欢迎提 {issueLink} 或 PR。`,

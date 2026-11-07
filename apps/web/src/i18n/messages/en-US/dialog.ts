@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `Extension not detected`,
     extensionMissingDescription: `Install the {link} browser extension`,
     extensionLinkText: `COSE Article Sync Assistant`,
+    devtoKeyLink: `Get API key`,
+    devtoSetup: `Create an API key on DEV.to, then click COSE in your browser toolbar and follow the connection steps. Refresh this page when connected.`,
     coseHint: `Powered by {githubLink}. Runs in your browser and does not send user data to a COSE server.`,
     coseGithubText: `the open-source COSE plugin on GitHub`,
     coseContribute: `To add platforms or improve sync accuracy, open an {issueLink} or PR.`,
