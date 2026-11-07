@@ -10,7 +10,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 
@@ -27,8 +27,25 @@ const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
 const devtoGuideOpen = ref(false)
-const devtoRechecked = ref(false)
 const isCheckingDevto = ref(false)
+const devtoSetupUrl = computed(() => {
+  if (!devtoGuideOpen.value)
+    return null
+  const src = window.$cose?.getDevtoSetupUrl?.()
+  if (!src)
+    return null
+  try {
+    const url = new URL(src)
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/devto-connect.html')
+      return null
+    url.searchParams.set('lang', locale.value)
+    return url
+  }
+  catch {
+    return null
+  }
+})
+const devtoAccount = computed(() => allAccounts.value.find(account => account.type === 'devto'))
 
 const form = ref<Post>({
   title: ``,
@@ -206,7 +223,6 @@ async function recheckDevto() {
     return
 
   isCheckingDevto.value = true
-  devtoRechecked.value = false
   try {
     await window.$cose?.getAccounts?.((accounts) => {
       const account = accounts.find(item => item.type === 'devto')
@@ -220,9 +236,23 @@ async function recheckDevto() {
   }
   finally {
     isCheckingDevto.value = false
-    devtoRechecked.value = true
   }
 }
+
+function onDevtoConnectionChanged(event: MessageEvent) {
+  const url = devtoSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#devto-key-frame')
+  if (!url || !frame || event.source !== frame.contentWindow
+    || event.origin !== `${url.protocol}//${url.host}`
+    || event.data?.type !== 'cose-devto-connection-changed') {
+    return
+  }
+
+  void recheckDevto()
+}
+
+onMounted(() => window.addEventListener('message', onDevtoConnectionChanged))
+onUnmounted(() => window.removeEventListener('message', onDevtoConnectionChanged))
 
 // Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
@@ -453,6 +483,16 @@ onBeforeMount(() => {
                           @error="onAvatarError(account, $event)"
                         >
                         <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
+                        <button
+                          v-if="account.type === 'devto'"
+                          type="button"
+                          :aria-expanded="devtoGuideOpen"
+                          aria-controls="devto-setup"
+                          class="shrink-0 text-sm font-medium text-primary hover:underline"
+                          @click="devtoGuideOpen = !devtoGuideOpen"
+                        >
+                          {{ t('postInfo.devtoReplaceKey') }}
+                        </button>
                       </template>
                       <button
                         v-else-if="account.type === 'devto'"
@@ -476,7 +516,7 @@ onBeforeMount(() => {
                       </Primitive>
                     </div>
                     <div
-                      v-if="category.accounts.some(account => account.type === 'devto' && !account.loggedIn)"
+                      v-if="category.accounts.some(account => account.type === 'devto')"
                       v-show="devtoGuideOpen"
                       id="devto-setup"
                       class="space-y-3 rounded-md border p-3 text-sm sm:col-span-2"
@@ -494,13 +534,23 @@ onBeforeMount(() => {
                           </a>
                         </li>
                         <li>{{ t('postInfo.devtoPasteKey') }}</li>
-                        <li>{{ t('postInfo.devtoFinishSetup') }}</li>
                       </ol>
-                      <Button type="button" variant="outline" size="sm" :disabled="isCheckingDevto || isCheckingLogin" @click="recheckDevto">
-                        {{ t(isCheckingDevto ? 'postInfo.checking' : 'postInfo.devtoCheckConnection') }}
-                      </Button>
-                      <p v-if="devtoRechecked && !isCheckingDevto" role="status" class="text-xs text-muted-foreground">
-                        {{ t('postInfo.devtoStillDisconnected') }}
+                      <iframe
+                        v-if="devtoSetupUrl"
+                        id="devto-key-frame"
+                        :src="devtoSetupUrl.href"
+                        :title="t('postInfo.devtoKeyForm')"
+                        referrerpolicy="origin"
+                        class="block h-40 w-full rounded-md border-0"
+                      />
+                      <p v-else class="text-sm text-muted-foreground">
+                        {{ t('postInfo.devtoUpdateExtension') }}
+                      </p>
+                      <p v-if="isCheckingDevto" role="status" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.checking') }}
+                      </p>
+                      <p v-else-if="devtoAccount?.loggedIn" role="status" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.devtoReady') }}
                       </p>
                     </div>
                   </div>
