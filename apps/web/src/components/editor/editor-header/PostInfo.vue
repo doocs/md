@@ -62,7 +62,7 @@ const allowPost = computed(() => extensionInstalled.value && allAccounts.value.s
 const platformCategories = [
   {
     id: `media`,
-    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`, `douban`],
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`, `douban`, `xueqiu`],
   },
   {
     id: `blog`,
@@ -314,6 +314,7 @@ function getPlatformUrl(type: string): string {
     xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish?from=menu&target=article',
     elecfans: 'https://www.elecfans.com/d/article/md/',
     douban: 'https://www.douban.com/note/create',
+    xueqiu: 'https://www.xueqiu.com/',
   }
   return urls[type] || '#'
 }
