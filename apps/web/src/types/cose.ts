@@ -42,8 +42,8 @@ export interface CoseAddTaskData {
 /** Window API injected by https://github.com/doocs/cose */
 export interface CoseApi {
   getPlatforms?: () => CosePlatform[]
-  openWordPressSetup?: (locale: string) => Promise<void>
-  getAccounts?: (cb: (accounts: PostAccount[]) => void, platformIds?: string[]) => void
+  getWordPressSetupUrl?: () => string | null
+  getAccounts?: (cb: (accounts: PostAccount[]) => void, platformIds?: string[]) => Promise<PostAccount[]> | void
   getAccountsProgressive?: (
     onAccount: (account: PostAccount, completed: number, total: number) => void,
     onComplete: () => void,
