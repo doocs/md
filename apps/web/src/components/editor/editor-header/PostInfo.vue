@@ -48,6 +48,24 @@ const devtoSetupUrl = computed(() => {
 })
 const devtoAccount = computed(() => allAccounts.value.find(account => account.type === 'devto'))
 
+const wordPressSetupOpen = ref(false)
+const wordPressFormHeight = ref(280)
+const wordPressSetupUrl = computed(() => {
+  const src = window.$cose?.getWordPressSetupUrl?.()
+  if (!src)
+    return null
+  try {
+    const url = new URL(src)
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/wordpress-connect.html')
+      return null
+    url.searchParams.set('lang', locale.value)
+    return url
+  }
+  catch {
+    return null
+  }
+})
+
 const form = ref<Post>({
   title: ``,
   desc: ``,
@@ -66,7 +84,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`],
   },
   {
     id: `cloud`,
@@ -155,6 +173,9 @@ async function prePost() {
 watch(dialogVisible, (newVal) => {
   if (newVal) {
     prePost()
+  }
+  else {
+    wordPressSetupOpen.value = false
   }
 })
 
@@ -318,6 +339,46 @@ function getPlatformUrl(type: string): string {
   return urls[type] || '#'
 }
 
+let wordPressCheck = 0
+
+async function recheckWordPress() {
+  const check = ++wordPressCheck
+  try {
+    await window.$cose?.getAccounts?.((accounts) => {
+      const account = accounts.find(a => a.type === 'wordpress')
+      const index = allAccounts.value.findIndex(a => a.type === 'wordpress')
+      if (account && index >= 0 && check === wordPressCheck)
+        allAccounts.value[index] = { ...account, isChecking: false }
+    }, ['wordpress'])
+  }
+  catch {
+    // The extension can be reloaded while the dialog is open.
+  }
+}
+
+function initializeWordPressFrame(event: Event) {
+  const url = wordPressSetupUrl.value
+  const frame = event.currentTarget as HTMLIFrameElement
+  if (url)
+    frame.contentWindow?.postMessage({ type: 'cose-wordpress-initialize' }, `${url.protocol}//${url.host}`)
+}
+
+useEventListener('message', (event: MessageEvent) => {
+  const url = wordPressSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#wordpress-setup-frame')
+  if (!url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
+    return
+
+  if (event.data?.type === 'cose-wordpress-form-height') {
+    const height = event.data.height
+    if (Number.isInteger(height) && height > 0 && height <= 640)
+      wordPressFormHeight.value = height
+  }
+  else if (event.data?.type === 'cose-wordpress-connection-changed') {
+    void recheckWordPress()
+  }
+})
+
 function onAvatarError(account: PostAccount, event: Event) {
   const img = event.target as HTMLImageElement
   if (!account)
@@ -364,7 +425,10 @@ onBeforeMount(() => {
           {{ t('postInfo.publish') }}
         </Button>
       </DialogTrigger>
-      <DialogContent class="!max-w-[95vw] !w-[min(750px,95vw)] max-h-[85vh] flex flex-col overflow-hidden">
+      <DialogContent
+        class="!max-w-[95vw] !w-[min(750px,95vw)] max-h-[85vh] flex flex-col overflow-hidden"
+        @interact-outside="wordPressSetupOpen && $event.preventDefault()"
+      >
         <DialogHeader>
           <DialogTitle>{{ t('postInfo.title') }}</DialogTitle>
           <DialogDescription class="text-left leading-relaxed">
@@ -512,7 +576,7 @@ onBeforeMount(() => {
                         {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoConnect') }}
                       </button>
                       <Primitive
-                        v-else
+                        v-else-if="account.type !== 'wordpress'"
                         as="a"
                         :href="getPlatformUrl(account.type)"
                         target="_blank"
@@ -521,6 +585,31 @@ onBeforeMount(() => {
                       >
                         {{ t('common.login') }}
                       </Primitive>
+                      <button
+                        v-if="account.type === 'wordpress' && !account.isChecking && wordPressSetupUrl"
+                        type="button"
+                        class="ml-1 shrink-0 text-sm text-muted-foreground hover:underline"
+                        :aria-expanded="wordPressSetupOpen"
+                        aria-controls="wordpress-setup"
+                        @click="wordPressSetupOpen = !wordPressSetupOpen"
+                      >
+                        {{ wordPressSetupOpen ? t('common.close') : account.loggedIn ? t('commandPalette.group.settings') : t('common.login') }}
+                      </button>
+                    </div>
+                    <div
+                      v-if="wordPressSetupOpen && wordPressSetupUrl && category.accounts.some(account => account.type === 'wordpress')"
+                      id="wordpress-setup"
+                      class="rounded-md border p-3 sm:col-span-2"
+                    >
+                      <iframe
+                        id="wordpress-setup-frame"
+                        :src="wordPressSetupUrl.href"
+                        title="WordPress"
+                        referrerpolicy="no-referrer"
+                        class="block w-full rounded-md border-0"
+                        :style="{ height: `${wordPressFormHeight}px` }"
+                        @load="initializeWordPressFrame"
+                      />
                     </div>
                     <div
                       v-if="category.accounts.some(account => account.type === 'devto')"
