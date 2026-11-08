@@ -10,7 +10,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 
@@ -45,7 +45,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`],
   },
   {
     id: `cloud`,
@@ -255,6 +255,32 @@ function getPlatformUrl(type: string): string {
   return urls[type] || '#'
 }
 
+const canConfigureWordPress = () => typeof window.$cose?.openWordPressSetup === `function`
+let wordPressSetupOpened = false
+
+async function openWordPressSetup() {
+  wordPressSetupOpened = true
+  try {
+    await window.$cose?.openWordPressSetup?.(locale.value)
+  }
+  catch {
+    wordPressSetupOpened = false
+    toast.error(t(`common.operationFailed`))
+  }
+}
+
+useEventListener(`focus`, () => {
+  if (!wordPressSetupOpened)
+    return
+  wordPressSetupOpened = false
+  window.$cose?.getAccounts?.((accounts) => {
+    const account = accounts.find(a => a.type === `wordpress`)
+    const index = allAccounts.value.findIndex(a => a.type === `wordpress`)
+    if (account && index >= 0)
+      allAccounts.value[index] = account
+  }, [`wordpress`])
+})
+
 function onAvatarError(account: PostAccount, event: Event) {
   const img = event.target as HTMLImageElement
   if (!account)
@@ -429,7 +455,7 @@ onBeforeMount(() => {
                         <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
                       </template>
                       <Primitive
-                        v-else
+                        v-else-if="account.type !== 'wordpress'"
                         as="a"
                         :href="getPlatformUrl(account.type)"
                         target="_blank"
@@ -438,6 +464,14 @@ onBeforeMount(() => {
                       >
                         {{ t('common.login') }}
                       </Primitive>
+                      <button
+                        v-if="account.type === 'wordpress' && !account.isChecking && canConfigureWordPress()"
+                        type="button"
+                        class="ml-1 shrink-0 text-sm text-muted-foreground hover:underline"
+                        @click="openWordPressSetup"
+                      >
+                        {{ account.loggedIn ? t('commandPalette.group.settings') : t('common.login') }}
+                      </button>
                     </div>
                   </div>
                 </div>
