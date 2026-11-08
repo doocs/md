@@ -10,7 +10,7 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const editorStore = useEditorStore()
 const { editor } = storeToRefs(editorStore)
 
@@ -26,6 +26,27 @@ const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
+const devtoGuideOpen = ref(false)
+const devtoFormHeight = ref(160)
+const isCheckingDevto = ref(false)
+const devtoSetupUrl = computed(() => {
+  if (!devtoGuideOpen.value)
+    return null
+  const src = window.$cose?.getDevtoSetupUrl?.()
+  if (!src)
+    return null
+  try {
+    const url = new URL(src)
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/devto-connect.html')
+      return null
+    url.searchParams.set('lang', locale.value)
+    return url
+  }
+  catch {
+    return null
+  }
+})
+const devtoAccount = computed(() => allAccounts.value.find(account => account.type === 'devto'))
 
 const form = ref<Post>({
   title: ``,
@@ -45,7 +66,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`],
   },
   {
     id: `cloud`,
@@ -197,6 +218,48 @@ function startLoginDetection() {
     })
   }
 }
+
+async function recheckDevto() {
+  if (isCheckingDevto.value)
+    return
+
+  isCheckingDevto.value = true
+  try {
+    await window.$cose?.getAccounts?.((accounts) => {
+      const account = accounts.find(item => item.type === 'devto')
+      const index = allAccounts.value.findIndex(item => item.type === 'devto')
+      if (account && index !== -1)
+        allAccounts.value[index] = { ...account, isChecking: false }
+    }, ['devto'])
+  }
+  catch {
+    // Keep the guide open when account detection fails.
+  }
+  finally {
+    isCheckingDevto.value = false
+  }
+}
+
+function onDevtoFrameMessage(event: MessageEvent) {
+  const url = devtoSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#devto-key-frame')
+  if (!url || !frame || event.source !== frame.contentWindow
+    || event.origin !== `${url.protocol}//${url.host}`) {
+    return
+  }
+
+  if (event.data?.type === 'cose-devto-form-height') {
+    const height = event.data.height
+    if (Number.isInteger(height) && height > 0 && height <= 480)
+      devtoFormHeight.value = height
+  }
+  else if (event.data?.type === 'cose-devto-connection-changed') {
+    void recheckDevto()
+  }
+}
+
+onMounted(() => window.addEventListener('message', onDevtoFrameMessage))
+onUnmounted(() => window.removeEventListener('message', onDevtoFrameMessage))
 
 // Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
@@ -427,7 +490,27 @@ onBeforeMount(() => {
                           @error="onAvatarError(account, $event)"
                         >
                         <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
+                        <button
+                          v-if="account.type === 'devto'"
+                          type="button"
+                          :aria-expanded="devtoGuideOpen"
+                          aria-controls="devto-setup"
+                          class="shrink-0 text-sm font-medium text-primary hover:underline"
+                          @click="devtoGuideOpen = !devtoGuideOpen"
+                        >
+                          {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoReplaceKey') }}
+                        </button>
                       </template>
+                      <button
+                        v-else-if="account.type === 'devto'"
+                        type="button"
+                        :aria-expanded="devtoGuideOpen"
+                        aria-controls="devto-setup"
+                        class="ml-1 text-sm font-medium text-primary hover:underline"
+                        @click="devtoGuideOpen = !devtoGuideOpen"
+                      >
+                        {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoConnect') }}
+                      </button>
                       <Primitive
                         v-else
                         as="a"
@@ -438,6 +521,45 @@ onBeforeMount(() => {
                       >
                         {{ t('common.login') }}
                       </Primitive>
+                    </div>
+                    <div
+                      v-if="category.accounts.some(account => account.type === 'devto')"
+                      v-show="devtoGuideOpen"
+                      id="devto-setup"
+                      class="space-y-2 rounded-md border p-3 text-sm sm:col-span-2"
+                    >
+                      <ol class="list-decimal space-y-2 pl-5">
+                        <li>
+                          {{ t('postInfo.devtoCreateKey') }}
+                          <a
+                            href="https://dev.to/settings/extensions"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="ml-1 font-medium text-primary underline"
+                          >
+                            {{ t('postInfo.devtoOpenSettings') }}
+                          </a>
+                        </li>
+                        <li>{{ t('postInfo.devtoPasteKey') }}</li>
+                      </ol>
+                      <iframe
+                        v-if="devtoSetupUrl"
+                        id="devto-key-frame"
+                        :src="devtoSetupUrl.href"
+                        :title="t('postInfo.devtoKeyForm')"
+                        referrerpolicy="origin"
+                        class="block w-full rounded-md border-0"
+                        :style="{ height: `${devtoFormHeight}px` }"
+                      />
+                      <p v-else class="text-sm text-muted-foreground">
+                        {{ t('postInfo.devtoUpdateExtension') }}
+                      </p>
+                      <p v-if="isCheckingDevto" role="status" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.checking') }}
+                      </p>
+                      <p v-else-if="devtoAccount?.loggedIn" role="status" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.devtoReady') }}
+                      </p>
                     </div>
                   </div>
                 </div>
