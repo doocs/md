@@ -1,0 +1,10 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "main",
+  "description": "Allow the editor to open web links in the default browser.",
+  "windows": ["main"],
+  "permissions": [
+    "opener:allow-open-url",
+    "opener:allow-default-urls"
+  ]
+}

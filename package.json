@@ -19,6 +19,7 @@
   "scripts": {
     "start": "pnpm web dev",
     "web": "pnpm --filter @md/web",
+    "desktop": "pnpm --filter @md/desktop",
     "vscode": "pnpm --prefix ./apps/vscode",
     "vscode:test": "pnpm --prefix ./apps/vscode test",
     "mcp": "pnpm --filter @md/mcp-server",
