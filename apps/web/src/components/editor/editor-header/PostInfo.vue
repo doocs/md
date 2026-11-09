@@ -80,7 +80,7 @@ const allowPost = computed(() => extensionInstalled.value && allAccounts.value.s
 const platformCategories = [
   {
     id: `media`,
-    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`, `douban`, `xueqiu`],
+    platforms: [`wechat`, `toutiao`, `zhihu`, `baijiahao`, `wangyihao`, `sohu`, `weibo`, `bilibili`, `sspai`, `twitter`, `douyin`, `xiaohongshu`, `rednote`, `douban`, `xueqiu`],
   },
   {
     id: `blog`,
@@ -333,6 +333,7 @@ function getPlatformUrl(type: string): string {
     volcengine: 'https://developer.volcengine.com/articles/draft',
     douyin: 'https://creator.douyin.com/creator-micro/content/post/article?default-tab=5&enter_from=publish_page&media_type=article&type=new',
     xiaohongshu: 'https://creator.xiaohongshu.com/publish/publish?from=menu&target=article',
+    rednote: 'https://creator.rednote.com/',
     elecfans: 'https://www.elecfans.com/d/article/md/',
     douban: 'https://www.douban.com/note/create',
     xueqiu: 'https://www.xueqiu.com/',
