@@ -102,7 +102,7 @@ watch(() => props.open, (newVal) => {
               <template v-if="account.status === 'done' && account.editResp">
                 {{ t('postTask.syncSuccess') }}
                 <a
-                  v-if="account.type !== 'wordpress' && account.editResp"
+                  v-if="account.editResp.draftLink"
                   :href="account.editResp.draftLink"
                   class="ml-2 text-blue-500 hover:underline"
                   referrerPolicy="no-referrer"
