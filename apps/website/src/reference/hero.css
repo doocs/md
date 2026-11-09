@@ -1,0 +1,48 @@
+.hero {
+  .hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-5);
+    width: 100%;
+    padding: var(--space-4) 0 var(--space-16);
+
+    @media (max-width: 767px) {
+      padding-top: 0;
+    }
+  }
+
+  .tagline {
+    max-width: var(--max-width-sm);
+    font-size: clamp(2.5rem, 9.23vw, 3.5rem);
+    font-weight: 500;
+    line-height: 100%;
+    text-align: center;
+    color: var(--color-text-primary);
+  }
+
+  .description {
+    width: 100%;
+    max-width: var(--max-width-sm);
+    margin-top: var(--space-1);
+    font-size: 1rem;
+    line-height: 1.4;
+    text-align: center;
+    color: var(--color-text-secondary);
+
+    @media (max-width: 767px) {
+      margin-top: 0;
+    }
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-3);
+
+    @media (max-width: 480px) {
+      margin-top: var(--space-1);
+    }
+  }
+}

@@ -1,0 +1,78 @@
+.feature {
+  .block {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-16);
+    align-items: center;
+
+    @media (min-width: 901px) {
+      &.reversed {
+        .textCol {
+          order: 1;
+        }
+
+        .visualCol {
+          order: 2;
+        }
+      }
+    }
+
+    @media (max-width: 900px) {
+      grid-template-columns: 1fr;
+      gap: var(--space-8);
+      padding-block: var(--space-4);
+      max-width: 700px;
+      margin-inline: auto;
+    }
+  }
+
+  .textCol {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    align-items: flex-start;
+  }
+
+  .visualCol {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-accent-teal);
+    letter-spacing: 0.05em;
+
+    & svg {
+      width: 0.9rem;
+      min-width: 0.9rem;
+    }
+  }
+
+  .title {
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .description {
+    font-size: 1rem;
+    line-height: 1.5;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--space-2);
+    font-weight: 400;
+  }
+
+  .learnMore svg {
+    width: 1.125rem;
+    height: 1.125rem;
+    min-width: 1.125rem;
+  }
+}

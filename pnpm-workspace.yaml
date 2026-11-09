@@ -105,6 +105,7 @@ catalog:
   tsx: ^4.23.15
   typescript: ~6.0.3
   uuid: ^14.0.3
+  vite: ^8.3.4
   vitest: ^5.0.5
   # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
   wrangler: 4.151.2

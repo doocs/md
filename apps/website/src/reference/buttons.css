@@ -1,0 +1,116 @@
+.buttons {
+  .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    font-weight: 500;
+    border-radius: var(--radius-sm);
+    letter-spacing: 0;
+    cursor: pointer;
+    text-decoration: none;
+    border: 1px solid transparent;
+    transition: filter 0.15s ease, border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+    white-space: nowrap;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    &:focus-visible {
+      outline-color: var(--color-text-primary);
+      outline-offset: 3px;
+    }
+
+    & > i {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .primary {
+    background: var(--color-text-primary);
+    border-color: var(--color-text-primary);
+    color: var(--color-bg);
+
+    &:hover:not(:disabled) {
+      background: color-mix(in srgb, var(--color-text-primary) 90%, var(--color-bg));
+      border-color: color-mix(in srgb, var(--color-text-primary) 90%, var(--color-bg));
+    }
+  }
+
+  .secondary {
+    background: var(--color-surface);
+    color: white;
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.1);
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  .outline {
+    background: transparent;
+    border-color: var(--color-border);
+    color: var(--color-text-primary);
+
+    &:hover:not(:disabled) {
+      border-color: var(--color-border-hover);
+    }
+  }
+
+  .ghost {
+    background: transparent;
+    color: var(--color-text-primary);
+    padding-inline: 0;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.15);
+    }
+  }
+
+  .sm {
+    font-size: 0.85rem;
+    padding-block: 0.4rem;
+    padding-inline: 0.875rem;
+
+    &.ghost {
+      padding-inline: 0;
+    }
+  }
+
+  .md {
+    min-height: 36px;
+    font-size: 0.875rem;
+    padding-block: var(--space-2);
+    padding-inline: 0.9rem;
+
+    &.ghost {
+      padding-inline: 0;
+    }
+  }
+
+  .lg {
+    min-height: 40px;
+    font-size: 0.9375rem;
+    padding-block: 0.625rem;
+    padding-inline: 1.125rem;
+
+    &.ghost {
+      padding-inline: 0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    .button {
+      min-height: 44px;
+    }
+
+    .icon-button {
+      min-width: 44px;
+    }
+  }
+}

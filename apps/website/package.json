@@ -1,0 +1,20 @@
+{
+  "name": "@md/website",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "scripts": {
+    "dev": "vite --host 127.0.0.1 --port 5174",
+    "build": "vite build && node scripts/check-build.mjs",
+    "preview": "vite preview --host 127.0.0.1 --port 4174",
+    "test": "node --test src/*.check.js",
+    "data:update": "node scripts/sync-data.mjs --force"
+  },
+  "devDependencies": {
+    "marked": "catalog:",
+    "vite": "catalog:",
+    "yaml": "^2.9.1"
+  }
+}

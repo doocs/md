@@ -1,0 +1,909 @@
+{
+  "schemaVersion": 1,
+  "repository": {
+    "stars": 13496,
+    "forks": 2251,
+    "url": "https://github.com/doocs/md",
+    "source": "https://api.github.com/repos/doocs/md",
+    "fetchedAt": "2026-11-01T08:46:15.174Z"
+  },
+  "contributors": {
+    "items": [
+      {
+        "login": "yanglbme",
+        "url": "https://github.com/yanglbme",
+        "avatar": "https://avatars.githubusercontent.com/u/21008209?v=4"
+      },
+      {
+        "login": "YangFong",
+        "url": "https://github.com/YangFong",
+        "avatar": "https://avatars.githubusercontent.com/u/70502828?v=4"
+      },
+      {
+        "login": "dependabot[bot]",
+        "url": "https://github.com/apps/dependabot",
+        "avatar": "https://avatars.githubusercontent.com/in/29110?v=4"
+      },
+      {
+        "login": "JimQing",
+        "url": "https://github.com/JimQing",
+        "avatar": "https://avatars.githubusercontent.com/u/33045162?v=4"
+      },
+      {
+        "login": "honwhy",
+        "url": "https://github.com/honwhy",
+        "avatar": "https://avatars.githubusercontent.com/u/2212273?v=4"
+      },
+      {
+        "login": "timerring",
+        "url": "https://github.com/timerring",
+        "avatar": "https://avatars.githubusercontent.com/u/89397553?v=4"
+      },
+      {
+        "login": "zeevenn",
+        "url": "https://github.com/zeevenn",
+        "avatar": "https://avatars.githubusercontent.com/u/72367140?v=4"
+      },
+      {
+        "login": "wll8",
+        "url": "https://github.com/wll8",
+        "avatar": "https://avatars.githubusercontent.com/u/28223260?v=4"
+      },
+      {
+        "login": "acbin",
+        "url": "https://github.com/acbin",
+        "avatar": "https://avatars.githubusercontent.com/u/44314231?v=4"
+      },
+      {
+        "login": "zzydannyer",
+        "url": "https://github.com/zzydannyer",
+        "avatar": "https://avatars.githubusercontent.com/u/41351002?v=4"
+      },
+      {
+        "login": "idoocs",
+        "url": "https://github.com/idoocs",
+        "avatar": "https://avatars.githubusercontent.com/u/59782701?v=4"
+      },
+      {
+        "login": "syhxzzz",
+        "url": "https://github.com/syhxzzz",
+        "avatar": "https://avatars.githubusercontent.com/u/101933236?v=4"
+      },
+      {
+        "login": "bravekingzhang",
+        "url": "https://github.com/bravekingzhang",
+        "avatar": "https://avatars.githubusercontent.com/u/4476322?v=4"
+      },
+      {
+        "login": "quiet-river",
+        "url": "https://github.com/quiet-river",
+        "avatar": "https://avatars.githubusercontent.com/u/53182993?v=4"
+      },
+      {
+        "login": "loopcayrad",
+        "url": "https://github.com/loopcayrad",
+        "avatar": "https://avatars.githubusercontent.com/u/4294727?v=4"
+      },
+      {
+        "login": "wNing50",
+        "url": "https://github.com/wNing50",
+        "avatar": "https://avatars.githubusercontent.com/u/38874640?v=4"
+      },
+      {
+        "login": "XAihan",
+        "url": "https://github.com/XAihan",
+        "avatar": "https://avatars.githubusercontent.com/u/56574869?v=4"
+      },
+      {
+        "login": "ImgBotApp",
+        "url": "https://github.com/ImgBotApp",
+        "avatar": "https://avatars.githubusercontent.com/u/31427850?v=4"
+      },
+      {
+        "login": "ting772",
+        "url": "https://github.com/ting772",
+        "avatar": "https://avatars.githubusercontent.com/u/73220578?v=4"
+      },
+      {
+        "login": "dodolalorc",
+        "url": "https://github.com/dodolalorc",
+        "avatar": "https://avatars.githubusercontent.com/u/114007020?v=4"
+      },
+      {
+        "login": "thinkasany",
+        "url": "https://github.com/thinkasany",
+        "avatar": "https://avatars.githubusercontent.com/u/117748716?v=4"
+      },
+      {
+        "login": "ocian",
+        "url": "https://github.com/ocian",
+        "avatar": "https://avatars.githubusercontent.com/u/18749280?v=4"
+      },
+      {
+        "login": "lurenyang418",
+        "url": "https://github.com/lurenyang418",
+        "avatar": "https://avatars.githubusercontent.com/u/15855043?v=4"
+      },
+      {
+        "login": "biggerboy",
+        "url": "https://github.com/biggerboy",
+        "avatar": "https://avatars.githubusercontent.com/u/38937764?v=4"
+      },
+      {
+        "login": "MoonIRL",
+        "url": "https://github.com/MoonIRL",
+        "avatar": "https://avatars.githubusercontent.com/u/56023866?v=4"
+      },
+      {
+        "login": "ye-guan-xing",
+        "url": "https://github.com/ye-guan-xing",
+        "avatar": "https://avatars.githubusercontent.com/u/193039111?v=4"
+      },
+      {
+        "login": "Nefelibata-Zhu",
+        "url": "https://github.com/Nefelibata-Zhu",
+        "avatar": "https://avatars.githubusercontent.com/u/142072600?v=4"
+      },
+      {
+        "login": "aveyuan",
+        "url": "https://github.com/aveyuan",
+        "avatar": "https://avatars.githubusercontent.com/u/10907648?v=4"
+      },
+      {
+        "login": "chinenkai",
+        "url": "https://github.com/chinenkai",
+        "avatar": "https://avatars.githubusercontent.com/u/169480188?v=4"
+      },
+      {
+        "login": "codedogQBY",
+        "url": "https://github.com/codedogQBY",
+        "avatar": "https://avatars.githubusercontent.com/u/50551207?v=4"
+      },
+      {
+        "login": "fossabot",
+        "url": "https://github.com/fossabot",
+        "avatar": "https://avatars.githubusercontent.com/u/29791463?v=4"
+      },
+      {
+        "login": "jenken827",
+        "url": "https://github.com/jenken827",
+        "avatar": "https://avatars.githubusercontent.com/u/185325381?v=4"
+      },
+      {
+        "login": "mev15",
+        "url": "https://github.com/mev15",
+        "avatar": "https://avatars.githubusercontent.com/u/188537796?v=4"
+      },
+      {
+        "login": "miaogaolin",
+        "url": "https://github.com/miaogaolin",
+        "avatar": "https://avatars.githubusercontent.com/u/57740293?v=4"
+      },
+      {
+        "login": "rwecho",
+        "url": "https://github.com/rwecho",
+        "avatar": "https://avatars.githubusercontent.com/u/8048753?v=4"
+      },
+      {
+        "login": "simonzhangs",
+        "url": "https://github.com/simonzhangs",
+        "avatar": "https://avatars.githubusercontent.com/u/87564791?v=4"
+      },
+      {
+        "login": "realskyrin",
+        "url": "https://github.com/realskyrin",
+        "avatar": "https://avatars.githubusercontent.com/u/16552732?v=4"
+      },
+      {
+        "login": "xxxxxxxjy",
+        "url": "https://github.com/xxxxxxxjy",
+        "avatar": "https://avatars.githubusercontent.com/u/185573244?v=4"
+      },
+      {
+        "login": "li-xunhuan",
+        "url": "https://github.com/li-xunhuan",
+        "avatar": "https://avatars.githubusercontent.com/u/10476982?v=4"
+      },
+      {
+        "login": "lihuacai168",
+        "url": "https://github.com/lihuacai168",
+        "avatar": "https://avatars.githubusercontent.com/u/11568297?v=4"
+      },
+      {
+        "login": "chensirup",
+        "url": "https://github.com/chensirup",
+        "avatar": "https://avatars.githubusercontent.com/u/18551169?v=4"
+      },
+      {
+        "login": "Aarebecca",
+        "url": "https://github.com/Aarebecca",
+        "avatar": "https://avatars.githubusercontent.com/u/25787943?v=4"
+      },
+      {
+        "login": "bygsn",
+        "url": "https://github.com/bygsn",
+        "avatar": "https://avatars.githubusercontent.com/u/51038773?v=4"
+      },
+      {
+        "login": "arunsathiya",
+        "url": "https://github.com/arunsathiya",
+        "avatar": "https://avatars.githubusercontent.com/u/18581859?v=4"
+      },
+      {
+        "login": "bingfree88",
+        "url": "https://github.com/bingfree88",
+        "avatar": "https://avatars.githubusercontent.com/u/5858688?v=4"
+      },
+      {
+        "login": "dislazy",
+        "url": "https://github.com/dislazy",
+        "avatar": "https://avatars.githubusercontent.com/u/30426054?v=4"
+      },
+      {
+        "login": "monkeywithacupcake",
+        "url": "https://github.com/monkeywithacupcake",
+        "avatar": "https://avatars.githubusercontent.com/u/7316730?v=4"
+      },
+      {
+        "login": "alswl",
+        "url": "https://github.com/alswl",
+        "avatar": "https://avatars.githubusercontent.com/u/227562?v=4"
+      },
+      {
+        "login": "zhjwpku",
+        "url": "https://github.com/zhjwpku",
+        "avatar": "https://avatars.githubusercontent.com/u/12639404?v=4"
+      },
+      {
+        "login": "justa-cai",
+        "url": "https://github.com/justa-cai",
+        "avatar": "https://avatars.githubusercontent.com/u/487867?v=4"
+      },
+      {
+        "login": "zemu2718",
+        "url": "https://github.com/zemu2718",
+        "avatar": "https://avatars.githubusercontent.com/u/23187296?v=4"
+      },
+      {
+        "login": "yanglfree",
+        "url": "https://github.com/yanglfree",
+        "avatar": "https://avatars.githubusercontent.com/u/15564798?v=4"
+      },
+      {
+        "login": "orime",
+        "url": "https://github.com/orime",
+        "avatar": "https://avatars.githubusercontent.com/u/31160182?v=4"
+      },
+      {
+        "login": "carol1863",
+        "url": "https://github.com/carol1863",
+        "avatar": "https://avatars.githubusercontent.com/u/36195500?v=4"
+      },
+      {
+        "login": "SiZV200",
+        "url": "https://github.com/SiZV200",
+        "avatar": "https://avatars.githubusercontent.com/u/25417389?v=4"
+      },
+      {
+        "login": "soulteary",
+        "url": "https://github.com/soulteary",
+        "avatar": "https://avatars.githubusercontent.com/u/1500781?v=4"
+      },
+      {
+        "login": "cheeseburgertony",
+        "url": "https://github.com/cheeseburgertony",
+        "avatar": "https://avatars.githubusercontent.com/u/36628162?v=4"
+      },
+      {
+        "login": "WekyJay",
+        "url": "https://github.com/WekyJay",
+        "avatar": "https://avatars.githubusercontent.com/u/20734333?v=4"
+      }
+    ],
+    "source": "https://api.github.com/repos/doocs/md/contributors?per_page=100",
+    "fetchedAt": "2026-11-01T08:46:15.174Z"
+  },
+  "releases": {
+    "items": [
+      {
+        "channel": "cli",
+        "tag": "@doocs/md-cli@2.1.4",
+        "name": "@doocs/md-cli@2.1.4",
+        "date": "2026-10-30T07:57:03Z",
+        "url": "https://github.com/doocs/md/releases/tag/%40doocs/md-cli%402.1.4",
+        "highlights": [
+          "[#2001](https://github.com/doocs/md/pull/2001) [`9915a8e`](https://github.com/doocs/md/commit/9915a8e89b6bb7a2959133b3cdebb1e43b808d3d) Thanks [@zeevenn](https://github.com/zeevenn)! - Automate CLI versioning, changelog generation, and npm publishing with Changesets."
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.1.0",
+        "name": "v2.1.0",
+        "date": "2025-10-17T14:08:04Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.1.0",
+        "highlights": [
+          "**AI 助手侧边栏 & 文生图**：新增独立的 AI 助手侧边栏，支持智能对话、文本生成与 AI 图像生成功能，让创作更高效便捷。  ",
+          "**PlantUML & Ruby 语法支持**：支持 PlantUML 图表渲染和 Ruby 文本标注（注音符号），扩展图表与多语言表达能力。  ",
+          "**图片压缩 & 上传进度条**：上传图片时自动压缩并显示进度条，优化存储空间与用户体验。  ",
+          "**移动端适配增强**：进一步优化移动端显示与交互体验，支持更流畅的移动端创作。",
+          "**CodeMirror 升级至 v6**：编辑器核心组件全面升级，提升性能与稳定性。",
+          "**Vite 升级至 v7**：构建工具全面升级，显著提升构建速度与开发体验。  "
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.0.4",
+        "name": "v2.0.4",
+        "date": "2025-06-19T23:08:04Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.0.4",
+        "highlights": [
+          "**编辑器搜索与替换**：编辑器新增搜索和替换快捷键，提升文本编辑效率。  ",
+          "**标题快捷键支持**：新增 `Ctrl/Cmd + 1~6` 快捷键，可快速插入对应级别的 Markdown 标题。",
+          "**VSCode 插件初步集成**：开始支持 VSCode 插件，为桌面端用户提供另一种创作体验。  ",
+          "**浏览器插件扩展 SitePanel 支持**：浏览器插件支持 SitePanel 集成，增强页面侧边栏能力。",
+          "**重置问题修复**：修复重置编辑器文档时未正确清空的问题。  ",
+          "**XSS 漏洞修复**：修复潜在的跨站脚本攻击问题，提升系统安全性。  "
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.0.3",
+        "name": "v2.0.3",
+        "date": "2025-05-25T12:40:55Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.0.3",
+        "highlights": [
+          "**AI 引用全文 & 快捷指令**：AI 现在可直接引用整篇文档并支持自定义快捷指令，编辑器与 AI 能力深度融合，提升交互效率。  ",
+          "**一键清空文档**：新增“清空”按钮，支持一键删除全部内容，快速重置编辑环境。  ",
+          "**公众号名片插入**：支持在 Markdown 中便捷插入公众号名片，丰富文章展示形式。  ",
+          "**Telegram & Cloudinary 图床**：新增 Telegram、Cloudinary 图床选项，进一步扩充多图床生态。  ",
+          "**AI Prompt 优化**：改进提示词生成策略，使 AI 回答更精准、上下文衔接更自然。  ",
+          "**文件名修复**：解决保存与导出时偶发的文件名错误问题。  "
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.0.2",
+        "name": "v2.0.2",
+        "date": "2025-05-06T12:32:11Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.0.2",
+        "highlights": [
+          "**AI 工具箱**：支持智能优化文本、翻译、文本纠错、内容总结等功能，进一步提升内容创作效率。  \r",
+          "**配置导入与导出**：支持导出、导入配置，实现跨设备同步，简化配置管理。\r",
+          "**又拍云图床支持**：新增又拍云图床，丰富图床选择。  \r",
+          "**多预览模式**：支持移动端和电脑端两种预览模式，适配不同设备的阅读和编辑体验。  \r",
+          "**AI 推理过程展示**：AI 对话功能支持展示推理过程，提升对话透明度与可解释性。\r",
+          "**脚注支持**：支持 Markdown 脚注功能，方便用户为文档添加注释与引用。\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.0.1",
+        "name": "v2.0.1",
+        "date": "2025-04-28T09:48:57Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.0.1",
+        "highlights": [
+          "**AI 能力增强**：支持多种主流 AI 模型，包括 DeepSeek、OpenAI、通讯千问、腾讯混元、智谱 AI、百川智能、月之暗面等。内置默认 AI 服务，用户无需配置 sk，即可免费使用智能助手功能，提升内容创作与处理体验。\r",
+          "**公众号图片上传体验优化**：通过引入 Cloudflare Functions & Pages，进一步优化了公众号图床的配置与上传体验。\r",
+          "**内容管理功能提升**：支持自定义内容排序方式，帮助用户更灵活地管理和查找内容。\r",
+          "**支持导出为 PNG**：可将文档内容一键导出为 PNG 图片，方便快速分享与保存。\r",
+          "**初步适配移动端**：针对移动端进行了初步适配，优化了浏览与编辑体验，为不同设备使用场景打下基础。\r",
+          "**主题样式修复**：修复了部分主题存在的样式问题，提升整体界面一致性和视觉体验。\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v2.0.0",
+        "name": "v2.0.0",
+        "date": "2025-04-18T12:38:03Z",
+        "url": "https://github.com/doocs/md/releases/tag/v2.0.0",
+        "highlights": [
+          "**数学公式与 Mermaid 流程图支持**：全面支持 Markdown 基础语法、数学公式、Mermaid 图表等，提升内容表达能力。\r",
+          "**自定义样式面板**：新增样式自定义面板，支持主题色和 CSS 定制，适配浅/暗模式。\r",
+          "**本地内容管理**：支持一键导入导出和自动草稿保存，提升编辑效率与安全性。\r",
+          "**图床支持扩展**：新增公众号与 Cloudflare R2 图床支持，灵活的上传逻辑配置。\r",
+          "**插件支持**：新增浏览器扩展插件，支持 Chrome、Edge、Firefox 等主流浏览器。\r",
+          "**AI 助手集成**：集成智能 AI 助手功能，支持与主流 AI 模型（如 DeekSeek、OpenAI、通义千问）进行自然语言对话，辅助内容创作、语法优化、格式转换等场景，极大提升写作效率。\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.6.0",
+        "name": "v1.6.0",
+        "date": "2023-12-05T09:35:37Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.6.0",
+        "highlights": [
+          "支持 Mac-Style 代码块 @YangFong \r",
+          "支持 LATEX 公式编辑 @YangFong @bravekingzhang \r",
+          "部分 bug 修复 @DandelionCloud @YangFong \r",
+          "部分组件重构及优化 @YangFong \r",
+          "升级 Node 版本 @yanglbme \r",
+          "同步推送 Docker 镜像，Docker 用户执行 `docker run -d -p 8080:80 doocs/md:latest` 即可启动本地实例 @yanglbme "
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.9",
+        "name": "v1.5.9",
+        "date": "2022-08-06T13:21:33Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.9",
+        "highlights": [
+          "UI 更新\r",
+          "依赖包升级\r",
+          "其他部分优化"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.7",
+        "name": "v1.5.7",
+        "date": "2022-08-06T11:25:03Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.7",
+        "highlights": []
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.8",
+        "name": "v1.5.8",
+        "date": "2022-05-25T14:32:49Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.8",
+        "highlights": [
+          "支持 minio 图床，移除 Gitee 图床 https://github.com/doocs/md/pull/131 https://github.com/doocs/md/pull/146\r",
+          "支持批量上传图片 https://github.com/doocs/md/pull/144\r",
+          "新增 docker 镜像部署 [#doocs/docker-md](https://github.com/doocs/docker-md)\r",
+          "修复 prettier, cheerio 等依赖包版本问题 https://github.com/doocs/md/issues/140\r",
+          "其他小部分优化"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.6",
+        "name": "v1.5.6",
+        "date": "2021-11-17T14:05:24Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.6",
+        "highlights": [
+          "支持自定义外链颜色 #74\r",
+          "代码块空行问题修复 #75\r",
+          "修复编辑器底部经常无法完全展示内容的问题 #85\r",
+          "修复图片上传问题 #86"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.5",
+        "name": "v1.5.5",
+        "date": "2021-11-01T03:15:32Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.5",
+        "highlights": [
+          "HTML 图文导出 bug 修复 #71 #73\r",
+          "行内样式修复 https://github.com/doocs/md/commit/f0a45933c7e49badf1e03f791875e90bed1b2c43"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.4",
+        "name": "v1.5.4",
+        "date": "2021-10-28T08:42:30Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.4",
+        "highlights": [
+          "HTML 图文导出样式修改 #69\r",
+          "支持有序列表、无序列表样式自定义 #70 "
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.3",
+        "name": "v1.5.3",
+        "date": "2021-10-14T13:04:56Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.3",
+        "highlights": [
+          "新增导出 HTML 页面按钮"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.2",
+        "name": "v1.5.2",
+        "date": "2021-04-25T09:00:20Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.2",
+        "highlights": []
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.1",
+        "name": "v1.5.1",
+        "date": "2021-03-31T13:05:33Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.1",
+        "highlights": []
+      },
+      {
+        "channel": "main",
+        "tag": "v1.5.0",
+        "name": "v1.5.0",
+        "date": "2021-02-28T11:40:59Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.5.0",
+        "highlights": []
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.8",
+        "name": "v1.4.8",
+        "date": "2021-02-03T00:12:34Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.8",
+        "highlights": [
+          "Actions 依赖版本升级\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.7",
+        "name": "v1.4.7",
+        "date": "2020-12-02T06:39:59Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.7",
+        "highlights": [
+          "图片上传组件重构\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.6",
+        "name": "v1.4.6",
+        "date": "2020-12-01T07:39:47Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.6",
+        "highlights": [
+          "重构图片上传功能，修复小 bug\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.5",
+        "name": "v1.4.5",
+        "date": "2020-11-25T06:13:45Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.5",
+        "highlights": [
+          "Actions 缓存，无需每次在 build 之前重新安装所有依赖包\r",
+          "依赖包版本升级\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.4",
+        "name": "v1.4.4",
+        "date": "2020-11-23T15:34:33Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.4",
+        "highlights": [
+          "右键菜单样式美化\r",
+          "依赖包版本升级\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.3",
+        "name": "v1.4.3",
+        "date": "2020-11-09T06:22:05Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.3",
+        "highlights": [
+          "支持 Netlify 站点：https://mdhere.netlify.app"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.2",
+        "name": "v1.4.2",
+        "date": "2020-11-08T13:00:28Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.2",
+        "highlights": [
+          "支持七牛云 Kodo"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.1",
+        "name": "v1.4.1",
+        "date": "2020-10-15T01:41:55Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.1",
+        "highlights": [
+          "阿里云 OSS & 腾讯云 COS 支持自定义域名(#33)\r",
+          "样式小调整"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.4.0",
+        "name": "v1.4.0",
+        "date": "2020-09-17T13:07:14Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.4.0",
+        "highlights": [
+          "新增自定义图床：阿里云 OSS & 腾讯云 COS"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.9",
+        "name": "v1.3.9",
+        "date": "2020-09-15T14:09:57Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.9",
+        "highlights": [
+          "新增自定义图床：阿里云 OSS & 腾讯云 COS"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.8",
+        "name": "v1.3.8",
+        "date": "2020-09-03T13:34:54Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.8",
+        "highlights": [
+          "暗黑模式本地缓存\r",
+          "上传图片 dialog 适配暗黑模式\r",
+          "`/deep/` 深度选择器告警问题处理\r",
+          "`Ctrl` + `S` 禁用，防止手误将网页“另存为”"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.7",
+        "name": "v1.3.7",
+        "date": "2020-08-31T11:51:07Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.7",
+        "highlights": [
+          "改用 GitHub 默认图床\r",
+          "新增自定义图床\r",
+          "统一按钮样式"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.6",
+        "name": "v1.3.6",
+        "date": "2020-07-29T14:44:35Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.6",
+        "highlights": [
+          "微信代码块 CSS 样式美化调整([#I1N25H](https://gitee.com/Doocs/md/issues/I1N25H))\r",
+          " JavaScript 代码优化\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.5",
+        "name": "v1.3.5",
+        "date": "2020-07-26T15:36:48Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.5",
+        "highlights": [
+          "修复编辑器右键弹出功能菜单栏问题\r",
+          "代码优化\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.4",
+        "name": "v1.3.4",
+        "date": "2020-07-13T16:01:35Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.4",
+        "highlights": [
+          "新增编辑器右键弹出功能菜单栏，操作更快捷\r",
+          "插入表格功能改进，更加人性化\r",
+          "项目结构调整，逻辑更清晰\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.3",
+        "name": "v1.3.3",
+        "date": "2020-07-04T02:37:53Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.3",
+        "highlights": [
+          "修复代码块滚动条消息并自动换行的问题([#I1LQY4](https://gitee.com/Doocs/md/issues/I1LQY4))\r",
+          "修复侧边滚动条宽度问题\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.2",
+        "name": "v1.3.2",
+        "date": "2020-06-21T03:08:15Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.2",
+        "highlights": [
+          "修复了一些已知问题：斜体样式换行问题(#20)\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.1",
+        "name": "v1.3.1",
+        "date": "2020-06-07T06:30:44Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.1",
+        "highlights": [
+          "修复了一些已知问题：编辑器字体样式、默认内容格式化、字体强制换行\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.3.0",
+        "name": "v1.3.0",
+        "date": "2020-05-23T08:05:14Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.3.0",
+        "highlights": [
+          "新增黑夜模式\r",
+          "支持 <kbd>Ctrl</kbd>+<kbd>F</kbd> 格式化文档\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.9",
+        "name": "v1.2.9",
+        "date": "2020-01-06T13:01:17Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.9",
+        "highlights": [
+          "修复本地样式存储问题\r",
+          "新增字号大小选项\r",
+          "标题的大小跟随字体大小做相应调整\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.8",
+        "name": "v1.2.8",
+        "date": "2019-12-31T03:43:19Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.8",
+        "highlights": [
+          "修复代码高亮问题\r",
+          "新增快速插入表格功能\r",
+          "图片上传类型及大小限制（受公众号限制，图片大小不应超过 5M）\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.7",
+        "name": "v1.2.7",
+        "date": "2019-12-29T03:21:57Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.7",
+        "highlights": [
+          "修复 table 样式问题\r",
+          "修复自定义 CSS 样式时页面卡死问题\r",
+          "更新编辑器 favicon\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.6",
+        "name": "v1.2.6",
+        "date": "2019-12-23T14:41:05Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.6",
+        "highlights": [
+          "支持一键粘贴剪贴板中的图片到编辑框\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.5",
+        "name": "v1.2.5",
+        "date": "2019-12-19T13:11:43Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.5",
+        "highlights": [
+          "支持一键下载 Markdown 文档到本地\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.4",
+        "name": "v1.2.4",
+        "date": "2019-12-19T01:31:14Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.4",
+        "highlights": [
+          "修复图片无法自动缩放的问题\r",
+          "修改默认 h2 字体大小为 1.2em\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.3",
+        "name": "v1.2.3",
+        "date": "2019-12-18T14:31:40Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.3",
+        "highlights": [
+          "修复自定义样式问题\r",
+          "增加示例文章\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.2",
+        "name": "v1.2.2",
+        "date": "2019-12-15T02:37:21Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.2",
+        "highlights": [
+          "修复多图上传限制\r",
+          "增加示例文章\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.1",
+        "name": "v1.2.1",
+        "date": "2019-12-11T13:08:08Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.1",
+        "highlights": [
+          "使用 [imgkr](https://imgkr.com/) 图床，上传图片更快，成功率更高\r",
+          "修复多图上传无响应的错误\r"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.2.0",
+        "name": "v1.2.0",
+        "date": "2019-12-11T10:16:23Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.2.0",
+        "highlights": [
+          "修复自定义 CSS 样式小错误\r",
+          "移除冗余的编辑器主题，更精简\r",
+          "其它部分代码逻辑小改进"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.1.0",
+        "name": "v1.1.0",
+        "date": "2019-12-10T14:21:42Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.1.0",
+        "highlights": [
+          "支持自定义 CSS 并实时渲染\r",
+          "支持重置页面，清空当前样式缓存\r",
+          "支持打开或关闭引用链接开关"
+        ]
+      },
+      {
+        "channel": "main",
+        "tag": "v1.0.0",
+        "name": "v1.0.0",
+        "date": "2019-12-01T09:22:38Z",
+        "url": "https://github.com/doocs/md/releases/tag/v1.0.0",
+        "highlights": [
+          "支持 Markdown 所有基础语法\r",
+          "支持单独进行字体、字号设置\r",
+          "支持色盘取色，并一键替换颜色\r",
+          "支持一键复制并粘贴到公众号后台\r",
+          "支持链接微信图文，外链自动转为文末索引\r",
+          "支持图片上传并将 URL 插入编辑器光标定位处"
+        ]
+      }
+    ],
+    "source": "https://api.github.com/repos/doocs/md/releases?per_page=100",
+    "fetchedAt": "2026-11-01T08:46:15.174Z"
+  },
+  "activity": {
+    "items": [
+      {
+        "title": "chore: release CLI (#2003)",
+        "date": "2026-10-30T07:54:35Z",
+        "url": "https://github.com/doocs/md/commit/516efead5c5a8a2a49991629533b9a8877924a43",
+        "author": "idoocs"
+      },
+      {
+        "title": "build(release): automate CLI releases with Changesets (#2001)",
+        "date": "2026-10-30T06:04:39Z",
+        "url": "https://github.com/doocs/md/commit/9915a8e89b6bb7a2959133b3cdebb1e43b808d3d",
+        "author": "zeevenn"
+      },
+      {
+        "title": "chore: auto update starcharts",
+        "date": "2026-10-29T00:18:33Z",
+        "url": "https://github.com/doocs/md/commit/07f4830918f2250a5565275dae1caefbb8b27392",
+        "author": "idoocs"
+      },
+      {
+        "title": "chore(deps): upgrade project dependencies (#1996)",
+        "date": "2026-10-21T14:37:41Z",
+        "url": "https://github.com/doocs/md/commit/0bbfe56b67d7683ad4503e7a7690af277c99c5fe",
+        "author": "yanglbme"
+      },
+      {
+        "title": "fix(mermaid): share pending render for concurrent re-renders (#1997)",
+        "date": "2026-10-21T14:35:45Z",
+        "url": "https://github.com/doocs/md/commit/67bba7d68b4536c6e82c529d78f20199548d659f",
+        "author": "yanglfree"
+      }
+    ],
+    "source": "https://api.github.com/repos/doocs/md/commits?per_page=5",
+    "fetchedAt": "2026-11-01T08:46:15.174Z"
+  }
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="%%DESCRIPTION%%" />
+    <meta name="theme-color" content="#030712" />
+    <meta property="og:title" content="%%TITLE%%" />
+    <meta property="og:description" content="%%DESCRIPTION%%" />
+    <meta property="og:type" content="website" />
+    <title>%%TITLE%%</title>
+    %%ROBOTS%%
+    <script src="/appearance.js"></script>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="buttons">
+    <a class="skip" href="#main">跳到正文</a>
+    <header class="site-header">
+      <div class="siteHeader">
+        <div class="container">
+          <a class="brand" href="/" aria-label="MD 首页"><span>MD</span></a>
+          <nav class="desktop-nav" aria-label="主导航">
+            <details class="nav-menu">
+              <summary>产品 <i data-icon="chevron"></i></summary>
+              <div class="dropdown">
+                <a href="https://md.doocs.org">Web 编辑器</a>
+                <a href="https://github.com/doocs/md/tree/main/apps/vscode">VS Code 扩展</a>
+                <a href="https://github.com/doocs/md/tree/main/apps/web">浏览器扩展</a>
+                <a href="https://github.com/doocs/md/tree/main/apps/utools">uTools 插件</a>
+                <a href="https://www.npmjs.com/package/@doocs/md-cli">CLI</a>
+                <a href="https://github.com/doocs/md/tree/main/packages/mcp-server">MCP 服务</a>
+                <a href="https://github.com/doocs/md#docker-部署">Docker</a>
+                <a href="/ecosystem/">全部平台</a>
+              </div>
+            </details>
+            <a href="/#features">功能</a>
+            <details class="nav-menu">
+              <summary>资源 <i data-icon="chevron"></i></summary>
+              <div class="dropdown"><a href="/blog/">博客</a><a href="/changelog/">更新日志</a></div>
+            </details>
+            <a href="https://github.com/doocs/md/tree/main/docs">文档</a>
+          </nav>
+          <div class="header-actions">
+            <a class="github-count" href="https://github.com/doocs/md" aria-label="%%GITHUB_LABEL%%"
+              ><i data-icon="github"></i><span>%%GITHUB_COUNT%%</span></a
+            ><button
+              class="button outline md icon-button"
+              id="appearance"
+              aria-label="切换浅色模式"
+              data-client-control
+              hidden
+            >
+              <i data-icon="sun"></i></button
+            ><a class="button primary md header-cta" href="https://md.doocs.org"
+              >打开编辑器 <i data-icon="arrow-up"></i></a
+            ><button
+              class="button outline md icon-button mobile-toggle"
+              id="mobile-toggle"
+              data-client-control
+              hidden
+              aria-expanded="false"
+              aria-controls="mobile-nav"
+              aria-label="打开导航"
+            >
+              <i data-icon="menu"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+      <nav id="mobile-nav" class="mobile-nav" aria-label="手机导航" hidden>
+        <a href="https://md.doocs.org">Web 编辑器</a>
+        <a href="https://github.com/doocs/md/tree/main/apps/vscode">VS Code 扩展</a>
+        <a href="https://github.com/doocs/md/tree/main/apps/web">浏览器扩展</a>
+        <a href="https://github.com/doocs/md/tree/main/apps/utools">uTools 插件</a>
+        <a href="https://www.npmjs.com/package/@doocs/md-cli">CLI</a>
+        <a href="https://github.com/doocs/md/tree/main/packages/mcp-server">MCP 服务</a>
+        <a href="https://github.com/doocs/md#docker-部署">Docker</a>
+        <a href="/ecosystem/">全部平台</a><a href="/#features">功能</a> <a href="/blog/">博客</a
+        ><a href="/changelog/">更新日志</a>
+      </nav>
+    </header>
+    <main id="main" class="container" tabindex="-1">%%CONTENT%%</main>
+    <footer class="site-footer">
+      <div class="footerWrapper">
+        <section class="closing">
+          <h2>开始创作</h2>
+          <p>在线编辑器免费使用，无需安装。</p>
+          <div class="actions">
+            <a class="button primary lg" href="https://md.doocs.org">打开编辑器 <i data-icon="arrow-up"></i></a
+            ><a class="button outline lg" href="https://github.com/doocs/md"><i data-icon="github"></i> GitHub</a>
+          </div>
+        </section>
+        <div class="footerContent">
+          <div class="footerBrand">
+            <a class="brand" href="/" aria-label="MD 首页"><span>MD</span></a>
+            <p class="footerBrandTagline">微信公众号 Markdown 编辑器</p>
+            <div class="footerSocial">
+              <a href="https://github.com/doocs/md" aria-label="GitHub"><i data-icon="github"></i></a
+              ><a href="https://github.com/doocs/md/discussions" aria-label="社区讨论"><i data-icon="message"></i></a>
+            </div>
+          </div>
+          <div class="footerColumns">
+            <div class="footerColumn">
+              <strong class="columnTitle">产品</strong>
+              <a class="footerLink" href="https://md.doocs.org">Web 编辑器</a>
+              <a class="footerLink" href="https://github.com/doocs/md/tree/main/apps/vscode">VS Code 扩展</a>
+              <a class="footerLink" href="https://github.com/doocs/md/tree/main/apps/web">浏览器扩展</a>
+              <a class="footerLink" href="https://github.com/doocs/md/tree/main/apps/utools">uTools 插件</a>
+              <a class="footerLink" href="https://www.npmjs.com/package/@doocs/md-cli">CLI</a>
+              <a class="footerLink" href="https://github.com/doocs/md/tree/main/packages/mcp-server">MCP 服务</a>
+              <a class="footerLink" href="https://github.com/doocs/md#docker-部署">Docker</a>
+            </div>
+            <div class="footerColumn">
+              <strong class="columnTitle">资源</strong><a class="footerLink" href="/blog/">博客</a
+              ><a class="footerLink" href="/changelog/">更新日志</a
+              ><a class="footerLink" href="https://github.com/doocs/md/tree/main/docs">使用文档</a
+              ><a class="footerLink" href="https://github.com/doocs/md">源码与自部署</a>
+            </div>
+            <div class="footerColumn">
+              <strong class="columnTitle">社区</strong
+              ><a class="footerLink" href="https://github.com/doocs/md/discussions">GitHub Discussions</a
+              ><a class="footerLink" href="https://github.com/doocs/md/blob/main/CONTRIBUTING.md">参与贡献</a
+              ><a class="footerLink" href="https://github.com/doocs/md/issues">反馈问题</a>
+            </div>
+          </div>
+        </div>
+        <div class="footerBottom">
+          <span>© 2026 Doocs · <a href="https://github.com/doocs/md/blob/main/LICENSE">开源许可</a></span>
+        </div>
+      </div>
+    </footer>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
