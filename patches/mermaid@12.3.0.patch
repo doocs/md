@@ -1,7 +1,7 @@
-diff --git a/dist/chunks/mermaid.core/chunk-AQDTSKZB.mjs b/dist/chunks/mermaid.core/chunk-AQDTSKZB.mjs
-index 7e7ab3bcfcca70578d3d14d0367f3a2c167fb767..fd1e891c28c7a6daf332f27ec0716a5704882d90 100644
---- a/dist/chunks/mermaid.core/chunk-AQDTSKZB.mjs
-+++ b/dist/chunks/mermaid.core/chunk-AQDTSKZB.mjs
+diff --git a/dist/chunks/mermaid.core/chunk-STOXU5M4.mjs b/dist/chunks/mermaid.core/chunk-STOXU5M4.mjs
+index 6a3049ac574ccf2c681e03ed1277b5cefd8e6d3a..50fcf81cd7967847d6f46766fbe51dbce30407b7 100644
+--- a/dist/chunks/mermaid.core/chunk-STOXU5M4.mjs
++++ b/dist/chunks/mermaid.core/chunk-STOXU5M4.mjs
 @@ -685,7 +685,7 @@ async function addHtmlSpan(element, node, width, classes, addBackground = false,
      div.attr("class", "labelBkg");
    }

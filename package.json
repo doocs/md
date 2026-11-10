@@ -3,7 +3,7 @@
   "type": "module",
   "version": "2.1.0",
   "private": false,
-  "packageManager": "pnpm@12.14.0",
+  "packageManager": "pnpm@12.18.0",
   "description": "WeChat Markdown Editor | 一款高度简洁的微信 Markdown 编辑器：支持 Markdown 语法、自定义主题样式、内容管理、多图床、AI 助手等特性",
   "homepage": "https://github.com/doocs/md",
   "repository": {
@@ -39,12 +39,12 @@
     "utools:package": "node ./scripts/package-utools.mjs"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "9.5.1",
+    "@antfu/eslint-config": "10.0.0",
     "@changesets/changelog-github": "1.0.1",
-    "@changesets/cli": "3.0.2",
-    "@types/node": "^26.6.5",
+    "@changesets/cli": "3.0.3",
+    "@types/node": "^26.6.6",
     "archiver": "^8.0.0",
-    "eslint": "^10.13.0",
+    "eslint": "^10.14.0",
     "eslint-plugin-format": "^2.0.1",
     "lint-staged": "^17.6.0",
     "prettier": "2.8.8",

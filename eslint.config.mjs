@@ -15,6 +15,9 @@ export default antfu({
     'e18e/prefer-static-regex': `off`,
     'ts/no-namespace': `off`,
     'style/max-statements-per-line': `off`,
+    // v10 turns these on and they reformat the existing tree.
+    'antfu/consistent-list-newline': `off`,
+    'antfu/reasonable-newline': `off`,
     // Catalog is for shared toolchain versions only; package-specific deps stay inline.
     'pnpm/json-enforce-catalog': `off`,
   },

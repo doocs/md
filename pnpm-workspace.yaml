@@ -16,17 +16,17 @@ overrides:
   '@codemirror/state': 'catalog:'
   '@codemirror/view': 'catalog:'
   # Pin typescript-eslint to one exact patch (eslint-plugin-command otherwise pulls 8.60.x).
-  '@typescript-eslint/eslint-plugin': 8.72.0
-  '@typescript-eslint/parser': 8.72.0
-  '@typescript-eslint/project-service': 8.72.0
-  '@typescript-eslint/rule-tester': 8.72.0
-  '@typescript-eslint/scope-manager': 8.72.0
-  '@typescript-eslint/tsconfig-utils': 8.72.0
-  '@typescript-eslint/type-utils': 8.72.0
-  '@typescript-eslint/types': 8.72.0
-  '@typescript-eslint/typescript-estree': 8.72.0
-  '@typescript-eslint/utils': 8.72.0
-  '@typescript-eslint/visitor-keys': 8.72.0
+  '@typescript-eslint/eslint-plugin': 8.72.2
+  '@typescript-eslint/parser': 8.72.2
+  '@typescript-eslint/project-service': 8.72.2
+  '@typescript-eslint/rule-tester': 8.72.2
+  '@typescript-eslint/scope-manager': 8.72.2
+  '@typescript-eslint/tsconfig-utils': 8.72.2
+  '@typescript-eslint/type-utils': 8.72.2
+  '@typescript-eslint/types': 8.72.2
+  '@typescript-eslint/typescript-estree': 8.72.2
+  '@typescript-eslint/utils': 8.72.2
+  '@typescript-eslint/visitor-keys': 8.72.2
   '@webext-core/isolated-element': 1.1.4
   # CVE-2026-39244 / GHSA-xcpc-8h2w-3j85 (dependabot/311): firefox-profile pins ~0.5.x
   adm-zip: ^0.6.1
@@ -42,10 +42,10 @@ overrides:
   # CVE-2026-16221 / GHSA-v2hh-gcrm-f6hx (dependabot/314): ajv pins fast-uri ^3.0.1
   fast-uri: ^3.1.9
   flatted@<3.4.0: ^3.4.4
-  glob@<8: ^13.0.6
-  glob@^10: ^13.0.6
+  glob@<8: ^13.0.7
+  glob@^10: ^13.0.7
   glob@^11: ^11.1.0
-  hono: ^4.13.13
+  hono: ^4.13.17
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.5.0
@@ -57,10 +57,10 @@ overrides:
   minimatch@^5: ^10.2.6
   minimatch@^9: ^10.2.6
   prettier: 'catalog:'
-  qs: ^6.16.1
-  querystring: npm:qs@^6.16.1
-  semver: ^7.8.5
-  serialize-javascript@<7.0.3: ^7.1.2
+  qs: ^6.17.1
+  querystring: npm:qs@^6.17.1
+  semver: ^7.8.6
+  serialize-javascript@<7.0.3: ^7.1.4
   # GHSA sharp/libvips (dependabot/313): miniflare/wrangler pin sharp 0.34.5
   sharp: ^0.35.5
   shell-quote: ^1.12.0
@@ -69,18 +69,18 @@ overrides:
   tmp: '>=0.2.7'
   underscore@<1.13.8: 1.13.8
   # undici 8.11.0 dropped content-encoding on HTTP/2; fixed in 8.11.1
-  undici@^6: 8.12.3
-  undici@^7: 8.12.3
+  undici@^6: 8.12.4
+  undici@^7: 8.12.4
   uuid: 'catalog:'
   # 3.2.2 was published without npm provenance; 3.2.3 restored it
   why-is-node-running@^3: 3.2.3
   workbox-build>source-map: 0.7.4
-  ws@<8.21.0: ^8.22.0
+  ws@<8.21.0: ^8.22.2
   yauzl: ^3.4.0
 
 patchedDependencies:
   '@codemirror/view@6.43.15': patches/@codemirror__view@6.43.15.patch
-  mermaid@12.2.0: patches/mermaid@12.2.0.patch
+  mermaid@12.3.0: patches/mermaid@12.3.0.patch
 
 allowBuilds:
   '@vscode/vsce-sign': true
@@ -95,17 +95,17 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261019.1
+  '@cloudflare/workers-types': ^5.20261110.1
   '@codemirror/state': 6.7.6
   '@codemirror/view': 6.43.15
-  '@types/node': ^26.6.5
-  isomorphic-dompurify: ^4.6.0
-  marked: ^18.1.1
+  '@types/node': ^26.6.6
+  isomorphic-dompurify: ^4.7.0
+  marked: ^18.2.0
   prettier: 2.8.8
   tsx: ^4.23.15
   typescript: ~6.0.3
   uuid: ^14.0.3
-  vitest: ^5.0.5
+  vitest: ^5.1.0
   # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
-  wrangler: 4.151.2
+  wrangler: 4.159.0
   zod: ^4.6.7
