@@ -21,6 +21,7 @@ import { join, resolve } from 'node:path'
 import process from 'node:process'
 import { compareOutputs } from './verify/compare.mjs'
 import { assertConfigApplied, buildConfigSeedScript, ConfigError, projectDesignerConfig } from './verify/config.mjs'
+import { isCiEnvironment } from './verify/environment.mjs'
 import { assertOutsideRepository, REPO_ROOT } from './verify/paths.mjs'
 import { runSelfTest } from './verify/self-test.mjs'
 import { findStructuralProblems } from './verify/structural.mjs'
@@ -342,6 +343,10 @@ async function main() {
   }
   if (args.selfTest)
     return runSelfTestMode()
+
+  process.stdout.write(
+    `[verify] environment: ${isCiEnvironment() ? `CI` : `local (system Chrome is a fallback only)`}\n`,
+  )
 
   const fixtures = resolveFixtures(args.fixture)
   for (const fixture of fixtures) {

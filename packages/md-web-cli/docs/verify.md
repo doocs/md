@@ -129,6 +129,15 @@ Where Playwright looks for its browsers can be redirected with
 `PLAYWRIGHT_BROWSERS_PATH`. The capture is deterministic and cross-platform:
 two Chromium builds on two operating systems produce byte-identical Oracle HTML.
 
+On a developer machine, a missing pinned browser does not block the run: the
+gate falls back to an installed Google Chrome, prints which binary it used, and
+notes that local and CI results may differ. CI never takes this fallback — a
+missing pinned browser is an infrastructure failure there, because the runner
+may also happen to have Chrome installed. Set `MD_WEB_CLI_CI=1` to require the
+pinned browser locally, or `MD_WEB_CLI_CHROMIUM` to name a binary explicitly.
+Detection uses `CI` plus the usual vendor markers, never terminal state; see
+`scripts/verify/environment.mjs`.
+
 ## Status in CI
 
 - **CI** runs the gate on every push and pull request as a **non-blocking**

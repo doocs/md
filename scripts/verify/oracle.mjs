@@ -17,6 +17,7 @@ import { createServer } from 'node:http'
 import { extname, join, normalize, resolve } from 'node:path'
 import process from 'node:process'
 import { chromium } from 'playwright'
+import { findSystemChrome, isCiEnvironment } from './environment.mjs'
 import { assertOutsideRepository, REPO_ROOT } from './paths.mjs'
 
 const WEB_DIST = resolve(REPO_ROOT, `apps/web/dist`)
@@ -98,6 +99,41 @@ function launchOptions() {
     headless: true,
     args: [`--headless=new`, `--disable-web-security`, `--allow-file-access-from-files`],
     ...(executablePath ? { executablePath } : {}),
+  }
+}
+
+/**
+ * Launch the pinned Playwright browser, falling back to a system Chrome only
+ * on a developer machine.
+ *
+ * CI must never take this path: GitHub runners ship Google Chrome, so a silent
+ * fallback would turn a broken `playwright install` into a green gate running
+ * a different browser than the one the publish workflow uses. An explicit
+ * `MD_WEB_CLI_CHROMIUM` is also never overridden — the caller named a binary,
+ * so its failure is real.
+ */
+async function launchBrowser() {
+  try {
+    return await chromium.launch(launchOptions())
+  }
+  catch (error) {
+    const missingPinnedBrowser = /Executable doesn't exist/.test(error?.message ?? ``)
+    if (process.env.MD_WEB_CLI_CHROMIUM || isCiEnvironment() || !missingPinnedBrowser)
+      throw error
+
+    const chrome = findSystemChrome()
+    if (!chrome)
+      throw error
+
+    process.stderr.write(
+      `[oracle] local fallback: the pinned Playwright browser is not installed; `
+      + `using system Chrome at ${chrome}. CI runs the pinned build, so local and CI results `
+      + `may differ. Install it for parity: pnpm exec playwright install chromium\n`,
+    )
+    // Remember the fallback so a multi-fixture run pays the failed lookup once
+    // and does not repeat the warning per fixture.
+    process.env.MD_WEB_CLI_CHROMIUM = chrome
+    return await chromium.launch(launchOptions())
   }
 }
 
@@ -216,7 +252,7 @@ export async function captureOracle(options) {
 
   let browser
   try {
-    browser = await chromium.launch(launchOptions())
+    browser = await launchBrowser()
     const context = await browser.newContext({
       viewport: { width: 1400, height: 1000 },
       permissions: [`clipboard-read`, `clipboard-write`],
