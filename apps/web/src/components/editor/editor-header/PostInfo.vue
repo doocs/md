@@ -3,6 +3,7 @@ import type { Post, PostAccount } from '@md/shared/types'
 import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus } from '@lucide/vue'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'reka-ui'
 import { accountHandle, isSignedInAccount } from '@/lib/post/account-label'
+import { getCoseBridge } from '@/lib/post/cose'
 import { extractPublishDraft } from '@/lib/post/publish-draft'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -25,6 +26,7 @@ const { isMobile } = storeToRefs(uiStore)
 const dialogVisible = ref(false)
 const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
+const haloSupported = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
@@ -34,7 +36,7 @@ const isCheckingDevto = ref(false)
 const devtoSetupUrl = computed(() => {
   if (!devtoGuideOpen.value)
     return null
-  const src = window.$cose?.getDevtoSetupUrl?.()
+  const src = getCoseBridge()?.getDevtoSetupUrl?.()
   if (!src)
     return null
   try {
@@ -50,15 +52,22 @@ const devtoSetupUrl = computed(() => {
 })
 const devtoAccount = computed(() => allAccounts.value.find(account => account.type === 'devto'))
 
-const wordPressSetupOpen = ref(false)
-const wordPressFormHeight = ref(280)
-const wordPressSetupUrl = computed(() => {
-  const src = window.$cose?.getWordPressSetupUrl?.()
+type SelfHostedPlatform = 'wordpress' | 'halo'
+const selfHostedSetup = ref<SelfHostedPlatform | null>(null)
+const selfHostedFormHeight = ref(280)
+
+function isSelfHosted(type: string): type is SelfHostedPlatform {
+  return type === 'wordpress' || type === 'halo'
+}
+
+function selfHostedUrl(type: SelfHostedPlatform) {
+  const cose = getCoseBridge()
+  const src = type === 'halo' ? cose?.getHaloSetupUrl?.() : cose?.getWordPressSetupUrl?.()
   if (!src)
     return null
   try {
     const url = new URL(src)
-    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/wordpress-connect.html')
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== `/${type}-connect.html`)
       return null
     url.searchParams.set('lang', locale.value)
     return url
@@ -66,7 +75,14 @@ const wordPressSetupUrl = computed(() => {
   catch {
     return null
   }
-})
+}
+
+const selfHostedSetupUrl = computed(() => selfHostedSetup.value ? selfHostedUrl(selfHostedSetup.value) : null)
+
+function toggleSelfHosted(type: SelfHostedPlatform) {
+  selfHostedFormHeight.value = 280
+  selfHostedSetup.value = selfHostedSetup.value === type ? null : type
+}
 
 const form = ref<Post>({
   title: ``,
@@ -86,7 +102,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`, `halo`],
   },
   {
     id: `cloud`,
@@ -156,13 +172,14 @@ watch(dialogVisible, (newVal) => {
     prePost()
   }
   else {
-    wordPressSetupOpen.value = false
+    selfHostedSetup.value = null
   }
 })
 
 function getInitialPlatforms(): PostAccount[] {
-  if (typeof window.$cose?.getPlatforms === `function`) {
-    return window.$cose.getPlatforms().map(platform => ({
+  const cose = getCoseBridge()
+  if (typeof cose?.getPlatforms === `function`) {
+    return cose.getPlatforms().map(platform => ({
       ...platform,
       checked: false,
       loggedIn: false,
@@ -174,7 +191,7 @@ function getInitialPlatforms(): PostAccount[] {
 
 // Async login check with progressive UI updates
 function startLoginDetection() {
-  const cose = window.$cose
+  const cose = getCoseBridge()
   if (!cose)
     return
 
@@ -189,7 +206,7 @@ function startLoginDetection() {
   // Stop detection after 15s with no response
   const LOGIN_CHECK_TIMEOUT_MS = 15000
   const timeoutId = setTimeout(() => {
-    if (!hasReceivedAny) {
+    if (!hasReceivedAny && cose === getCoseBridge()) {
       allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
       isCheckingLogin.value = false
     }
@@ -198,6 +215,8 @@ function startLoginDetection() {
   if (typeof cose.getAccountsProgressive === `function`) {
     cose.getAccountsProgressive(
       (account: PostAccount, _completed: number, _total: number) => {
+        if (cose !== getCoseBridge())
+          return
         hasReceivedAny = true
 
         const idx = allAccounts.value.findIndex(a => a.type === account.type)
@@ -207,12 +226,15 @@ function startLoginDetection() {
       },
       () => {
         clearTimeout(timeoutId)
-        isCheckingLogin.value = false
+        if (cose === getCoseBridge())
+          isCheckingLogin.value = false
       },
     )
   }
   else {
     cose.getAccounts?.((resp: PostAccount[]) => {
+      if (cose !== getCoseBridge())
+        return
       hasReceivedAny = true
       clearTimeout(timeoutId)
       allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))
@@ -227,7 +249,7 @@ async function recheckDevto() {
 
   isCheckingDevto.value = true
   try {
-    await window.$cose?.getAccounts?.((accounts) => {
+    await getCoseBridge()?.getAccounts?.((accounts) => {
       const account = accounts.find(item => item.type === 'devto')
       const index = allAccounts.value.findIndex(item => item.type === 'devto')
       if (account && index !== -1)
@@ -322,43 +344,44 @@ function getPlatformUrl(type: string): string {
   return urls[type] || '#'
 }
 
-let wordPressCheck = 0
+const selfHostedChecks = { wordpress: 0, halo: 0 }
 
-async function recheckWordPress() {
-  const check = ++wordPressCheck
+async function recheckSelfHosted(type: SelfHostedPlatform) {
+  const check = ++selfHostedChecks[type]
   try {
-    await window.$cose?.getAccounts?.((accounts) => {
-      const account = accounts.find(a => a.type === 'wordpress')
-      const index = allAccounts.value.findIndex(a => a.type === 'wordpress')
-      if (account && index >= 0 && check === wordPressCheck)
+    await getCoseBridge()?.getAccounts?.((accounts) => {
+      const account = accounts.find(a => a.type === type)
+      const index = allAccounts.value.findIndex(a => a.type === type)
+      if (account && index >= 0 && check === selfHostedChecks[type])
         allAccounts.value[index] = { ...account, isChecking: false }
-    }, ['wordpress'])
+    }, [type])
   }
   catch {
     // The extension can be reloaded while the dialog is open.
   }
 }
 
-function initializeWordPressFrame(event: Event) {
-  const url = wordPressSetupUrl.value
+function initializeSelfHostedFrame(event: Event) {
+  const url = selfHostedSetupUrl.value
   const frame = event.currentTarget as HTMLIFrameElement
   if (url)
-    frame.contentWindow?.postMessage({ type: 'cose-wordpress-initialize' }, `${url.protocol}//${url.host}`)
+    frame.contentWindow?.postMessage({ type: `cose-${selfHostedSetup.value}-initialize` }, `${url.protocol}//${url.host}`)
 }
 
 useEventListener('message', (event: MessageEvent) => {
-  const url = wordPressSetupUrl.value
-  const frame = document.querySelector<HTMLIFrameElement>('#wordpress-setup-frame')
-  if (!url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
+  const url = selfHostedSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#self-hosted-setup-frame')
+  const type = selfHostedSetup.value
+  if (!type || !url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
     return
 
-  if (event.data?.type === 'cose-wordpress-form-height') {
+  if (event.data?.type === `cose-${type}-form-height`) {
     const height = event.data.height
     if (Number.isInteger(height) && height > 0 && height <= 640)
-      wordPressFormHeight.value = height
+      selfHostedFormHeight.value = height
   }
-  else if (event.data?.type === 'cose-wordpress-connection-changed') {
-    void recheckWordPress()
+  else if (event.data?.type === `cose-${type}-connection-changed`) {
+    void recheckSelfHosted(type)
   }
 })
 
@@ -369,35 +392,21 @@ function onAvatarError(account: PostAccount, event: Event) {
   img.style.display = 'none'
 }
 
+let connectedBridge: ReturnType<typeof getCoseBridge>
+
 function checkExtension() {
-  if (window.$cose !== undefined) {
-    extensionInstalled.value = true
-    getAccounts()
+  const bridge = getCoseBridge()
+  if (!bridge || bridge === connectedBridge)
     return
-  }
 
-  // Poll every 500ms for 5s if extension not loaded
-  const EXTENSION_CHECK_INTERVAL_MS = 500
-  const MAX_EXTENSION_CHECKS = 10
-  let count = 0
-  const timer = setInterval(async () => {
-    if (window.$cose !== undefined) {
-      extensionInstalled.value = true
-      await getAccounts()
-      clearInterval(timer)
-      return
-    }
-
-    count++
-    if (count > MAX_EXTENSION_CHECKS) {
-      clearInterval(timer)
-    }
-  }, EXTENSION_CHECK_INTERVAL_MS)
+  connectedBridge = bridge
+  extensionInstalled.value = true
+  haloSupported.value = typeof bridge.getHaloSetupUrl === 'function'
+  getAccounts()
 }
 
-onBeforeMount(() => {
-  checkExtension()
-})
+useEventListener('cose-ready', checkExtension)
+onMounted(checkExtension)
 </script>
 
 <template>
@@ -410,7 +419,7 @@ onBeforeMount(() => {
       </DialogTrigger>
       <DialogContent
         class="!max-w-[95vw] !w-[min(750px,95vw)] max-h-[85vh] flex flex-col overflow-hidden"
-        @interact-outside="wordPressSetupOpen && $event.preventDefault()"
+        @interact-outside="selfHostedSetup && $event.preventDefault()"
       >
         <DialogHeader>
           <DialogTitle>{{ t('postInfo.title') }}</DialogTitle>
@@ -431,6 +440,11 @@ onBeforeMount(() => {
             </AlertDescription>
           </Alert>
 
+          <Alert v-if="extensionInstalled && !haloSupported">
+            <Info class="h-4 w-4" />
+            <AlertDescription>{{ t('postInfo.haloExtensionMissing') }}</AlertDescription>
+          </Alert>
+
           <Alert>
             <Info class="h-4 w-4" />
             <AlertDescription>
@@ -448,7 +462,7 @@ onBeforeMount(() => {
             </AlertDescription>
           </Alert>
 
-          <div class="w-full flex flex-col gap-4" :class="{ 'pointer-events-none opacity-50': !extensionInstalled }" :inert="!extensionInstalled || undefined" :aria-disabled="!extensionInstalled">
+          <div v-if="extensionInstalled" class="w-full flex flex-col gap-4">
             <div class="grid grid-cols-1 items-center gap-2 sm:grid-cols-[minmax(5.5rem,auto)_1fr] sm:gap-x-4">
               <Label for="thumb" class="sm:text-end">
                 {{ t('postInfo.cover') }}
@@ -519,6 +533,7 @@ onBeforeMount(() => {
                         </CheckboxIndicator>
                       </CheckboxRoot>
                       <img
+                        v-if="account.icon"
                         :src="account.icon"
                         alt=""
                         class="inline-block h-[16px] w-[16px] shrink-0"
@@ -559,7 +574,7 @@ onBeforeMount(() => {
                         {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoConnect') }}
                       </button>
                       <Primitive
-                        v-else-if="account.type !== 'wordpress'"
+                        v-else-if="!isSelfHosted(account.type)"
                         as="a"
                         :href="getPlatformUrl(account.type)"
                         target="_blank"
@@ -569,29 +584,30 @@ onBeforeMount(() => {
                         {{ t('common.login') }}
                       </Primitive>
                       <button
-                        v-if="account.type === 'wordpress' && !account.isChecking && wordPressSetupUrl"
+                        v-if="isSelfHosted(account.type) && (account.type === 'halo' || !account.isChecking) && extensionInstalled && selfHostedUrl(account.type)"
                         type="button"
                         class="ml-1 shrink-0 text-sm text-muted-foreground hover:underline"
-                        :aria-expanded="wordPressSetupOpen"
-                        aria-controls="wordpress-setup"
-                        @click="wordPressSetupOpen = !wordPressSetupOpen"
+                        :aria-expanded="selfHostedSetup === account.type"
+                        aria-controls="self-hosted-setup"
+                        @click="toggleSelfHosted(account.type)"
                       >
-                        {{ wordPressSetupOpen ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
+                        {{ selfHostedSetup === account.type ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
                     </div>
                     <div
-                      v-if="wordPressSetupOpen && wordPressSetupUrl && category.accounts.some(account => account.type === 'wordpress')"
-                      id="wordpress-setup"
+                      v-if="selfHostedSetupUrl && category.accounts.some(account => account.type === selfHostedSetup)"
+                      id="self-hosted-setup"
                       class="rounded-md border p-3 sm:col-span-2"
                     >
                       <iframe
-                        id="wordpress-setup-frame"
-                        :src="wordPressSetupUrl.href"
-                        title="WordPress"
+                        id="self-hosted-setup-frame"
+                        :key="selfHostedSetupUrl.href"
+                        :src="selfHostedSetupUrl.href"
+                        :title="selfHostedSetup === 'halo' ? 'Halo' : 'WordPress'"
                         referrerpolicy="no-referrer"
                         class="block w-full rounded-md border-0"
-                        :style="{ height: `${wordPressFormHeight}px` }"
-                        @load="initializeWordPressFrame"
+                        :style="{ height: `${selfHostedFormHeight}px` }"
+                        @load="initializeSelfHostedFrame"
                       />
                     </div>
                     <div

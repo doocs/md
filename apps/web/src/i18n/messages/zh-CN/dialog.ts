@@ -177,6 +177,7 @@ export default {
     publish: `发布`,
     title: `发布`,
     description: `将文章发布到多个平台`,
+    haloExtensionMissing: `当前连接的 COSE 版本没有 Halo。请重新加载本地开发版扩展，再刷新此页。`,
     extensionMissingTitle: `未检测到插件`,
     extensionMissingDescription: `请安装 {link} 浏览器扩展`,
     extensionLinkText: `COSE 文章同步助手`,

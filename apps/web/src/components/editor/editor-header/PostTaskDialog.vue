@@ -3,6 +3,7 @@ import type { Post } from '@md/shared/types'
 import type { CoseTaskStatus } from '@/types/cose'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { accountHandle } from '@/lib/post/account-label'
+import { getCoseBridge } from '@/lib/post/cose'
 
 const props = defineProps<{
   post: Post
@@ -45,7 +46,7 @@ async function startPost() {
   }
 
   try {
-    window.$cose?.addTask?.(taskData, onProgress, onComplete)
+    getCoseBridge()?.addTask?.(taskData, onProgress, onComplete)
   }
   catch (error) {
     console.error(`发布失败:`, error)

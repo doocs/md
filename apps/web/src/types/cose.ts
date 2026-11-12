@@ -43,6 +43,7 @@ export interface CoseAddTaskData {
 export interface CoseApi {
   getPlatforms?: () => CosePlatform[]
   getDevtoSetupUrl?: () => string | null
+  getHaloSetupUrl?: () => string | null
   getWordPressSetupUrl?: () => string | null
   getAccounts?: (cb: (accounts: PostAccount[]) => void, platformIds?: string[]) => void | Promise<PostAccount[]>
   getAccountsProgressive?: (

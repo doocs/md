@@ -177,6 +177,7 @@ export default {
     publish: `Publish`,
     title: `Publish`,
     description: `Publish your article to multiple platforms`,
+    haloExtensionMissing: `The connected COSE version has no Halo support. Reload the local development extension, then refresh this page.`,
     extensionMissingTitle: `Extension not detected`,
     extensionMissingDescription: `Install the {link} browser extension`,
     extensionLinkText: `COSE Article Sync Assistant`,
