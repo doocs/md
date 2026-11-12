@@ -2,6 +2,8 @@
 import type { Post, PostAccount } from '@md/shared/types'
 import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus } from '@lucide/vue'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'reka-ui'
+import { accountHandle, isSignedInAccount } from '@/lib/post/account-label'
+import { extractPublishDraft } from '@/lib/post/publish-draft'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useUIStore } from '@/stores/ui'
@@ -75,7 +77,7 @@ const form = ref<Post>({
   accounts: [] as PostAccount[],
 })
 
-const allowPost = computed(() => extensionInstalled.value && allAccounts.value.some(a => a.checked && a.loggedIn))
+const allowPost = computed(() => extensionInstalled.value && allAccounts.value.some(a => a.checked && isSignedInAccount(a)))
 
 const platformCategories = [
   {
@@ -116,57 +118,36 @@ const accountsByCategory = computed(() => {
 
 // Whether category is fully selected (logged-in only)
 function isCategoryAllSelected(accounts: PostAccount[]) {
-  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  const loggedInAccounts = accounts.filter(isSignedInAccount)
   return loggedInAccounts.length > 0 && loggedInAccounts.every(a => a.checked)
 }
 
 function isCategoryIndeterminate(accounts: PostAccount[]) {
-  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  const loggedInAccounts = accounts.filter(isSignedInAccount)
   const checkedCount = loggedInAccounts.filter(a => a.checked).length
   return checkedCount > 0 && checkedCount < loggedInAccounts.length
 }
 
 function toggleCategorySelectAll(accounts: PostAccount[]) {
-  const loggedInAccounts = accounts.filter(a => a.loggedIn)
+  const loggedInAccounts = accounts.filter(isSignedInAccount)
   const allSelected = loggedInAccounts.every(a => a.checked)
   loggedInAccounts.forEach(a => a.checked = !allSelected)
 }
 
-async function prePost() {
+function prePost() {
   // Start detection when extension installed but no account data
   if (extensionInstalled.value && allAccounts.value.length === 0) {
     // Fire-and-forget; detection runs in background
     startLoginDetection()
   }
 
-  let auto: Post = {
-    thumb: ``,
-    title: ``,
-    desc: ``,
-    content: ``,
-    markdown: ``,
-    accounts: [],
-  }
-  const accounts = allAccounts.value.filter(a => ![`ipfs`].includes(a.type))
-  try {
-    auto = {
-      thumb: document.querySelector<HTMLImageElement>(`#output img`)?.src ?? ``,
-      title: [1, 2, 3, 4, 5, 6]
-        .map(h => document.querySelector(`#output h${h}`))
-        .find(h => h)
-        ?.textContent ?? ``,
-      desc: document.querySelector(`#output p`)?.textContent?.trim() ?? ``,
-      content: output.value,
-      markdown: editor.value?.state.doc.toString() ?? ``,
-      accounts,
-    }
-  }
-  catch {
-  }
-  finally {
-    form.value = {
-      ...auto,
-    }
+  const markdown = editor.value?.state.doc.toString() ?? ``
+  const draft = extractPublishDraft(output.value, markdown)
+  form.value = {
+    ...draft,
+    content: output.value,
+    markdown,
+    accounts: allAccounts.value.filter(account => account.type !== `ipfs`),
   }
 }
 
@@ -291,7 +272,7 @@ async function getAccounts(): Promise<void> {
 }
 
 function post() {
-  form.value.accounts = allAccounts.value.filter(a => a.checked && a.loggedIn)
+  form.value.accounts = allAccounts.value.filter(a => a.checked && isSignedInAccount(a))
   postTaskDialogVisible.value = true
   dialogVisible.value = false
 }
@@ -530,7 +511,7 @@ onBeforeMount(() => {
                     >
                       <CheckboxRoot
                         v-model="account.checked"
-                        :disabled="!account.loggedIn"
+                        :disabled="!isSignedInAccount(account)"
                         class="bg-background hover:bg-muted h-[18px] w-[18px] flex shrink-0 appearance-none items-center justify-center border border-gray-300 rounded-[3px] outline-hidden disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         <CheckboxIndicator>
@@ -547,7 +528,7 @@ onBeforeMount(() => {
                         <Loader2 class="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />
                         <span class="text-xs text-muted-foreground">{{ t('postInfo.checking') }}</span>
                       </template>
-                      <template v-else-if="account.loggedIn">
+                      <template v-else-if="isSignedInAccount(account)">
                         <img
                           v-if="account.avatar"
                           :src="account.avatar"
@@ -555,7 +536,7 @@ onBeforeMount(() => {
                           class="ml-1 h-4 w-4 rounded-full object-cover"
                           @error="onAvatarError(account, $event)"
                         >
-                        <span class="truncate text-sm text-muted-foreground">@{{ account.displayName }}</span>
+                        <span v-if="accountHandle(account)" class="truncate text-sm text-muted-foreground">@{{ accountHandle(account) }}</span>
                         <button
                           v-if="account.type === 'devto'"
                           type="button"
@@ -595,7 +576,7 @@ onBeforeMount(() => {
                         aria-controls="wordpress-setup"
                         @click="wordPressSetupOpen = !wordPressSetupOpen"
                       >
-                        {{ wordPressSetupOpen ? t('common.close') : account.loggedIn ? t('commandPalette.group.settings') : t('common.login') }}
+                        {{ wordPressSetupOpen ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
                     </div>
                     <div

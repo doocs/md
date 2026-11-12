@@ -2,6 +2,7 @@
 import type { Post } from '@md/shared/types'
 import type { CoseTaskStatus } from '@/types/cose'
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { accountHandle } from '@/lib/post/account-label'
 
 const props = defineProps<{
   post: Post
@@ -82,7 +83,7 @@ watch(() => props.open, (newVal) => {
                 class="object-cover h-5 w-5"
                 alt=""
               >
-              <span>{{ account.title }} - {{ account.displayName || account.home }}</span>
+              <span>{{ account.title }}<template v-if="accountHandle(account)"> - @{{ accountHandle(account) }}</template></span>
             </div>
             <div
               class="w-full flex-1 gap-2 overflow-auto pl-7 text-sm" :class="{

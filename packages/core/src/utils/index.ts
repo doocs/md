@@ -1,6 +1,7 @@
 export { initializeMermaid } from '../extensions/mermaid'
 export * from './asyncDiagramState'
 export * from './basicHelpers'
+export * from './front-matter'
 export * from './languages'
 export * from './markdownHelpers'
 export * from './mathDetection'
