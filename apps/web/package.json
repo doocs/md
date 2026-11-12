@@ -27,8 +27,8 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1166.0",
-    "@aws-sdk/s3-request-presigner": "3.1166.0",
+    "@aws-sdk/client-s3": "3.1167.0",
+    "@aws-sdk/s3-request-presigner": "3.1167.0",
     "@codemirror/autocomplete": "^6.20.4",
     "@codemirror/language": "^6.13.1",
     "@codemirror/state": "catalog:",
@@ -62,7 +62,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.68.0",
+    "@cloudflare/vite-plugin": "1.69.1",
     "@cloudflare/workers-types": "catalog:",
     "@md/config": "workspace:*",
     "@tailwindcss/vite": "^4.3.5",

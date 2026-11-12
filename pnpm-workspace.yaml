@@ -49,7 +49,7 @@ overrides:
   glob@<8: ^13.0.7
   glob@^10: ^13.0.7
   glob@^11: ^11.1.0
-  hono: ^4.13.17
+  hono: ^4.13.18
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.5.0
@@ -104,7 +104,7 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261110.1
+  '@cloudflare/workers-types': ^5.20261112.1
   '@codemirror/state': 6.7.6
   '@codemirror/view': 6.43.15
   '@types/node': ^26.6.6
@@ -116,5 +116,5 @@ catalog:
   uuid: ^14.0.3
   vitest: ^5.1.0
   # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
-  wrangler: 4.160.0
+  wrangler: 4.160.1
   zod: ^4.6.7
