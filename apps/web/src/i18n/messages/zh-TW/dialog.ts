@@ -177,7 +177,6 @@ export default {
     publish: `釋出`,
     title: `釋出`,
     description: `將文章釋出到多個平臺`,
-    haloExtensionMissing: `目前連線的 COSE 版本沒有 Halo。請重新載入本機開發版擴充功能，再重新整理此頁。`,
     extensionMissingTitle: `未檢測到外掛`,
     extensionMissingDescription: `請安裝 {link} 瀏覽器擴充套件`,
     extensionLinkText: `COSE 文章同步助手`,

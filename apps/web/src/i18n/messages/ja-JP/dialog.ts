@@ -177,7 +177,6 @@ export default {
     publish: `公開`,
     title: `公開`,
     description: `記事を複数のプラットフォームに公開します`,
-    haloExtensionMissing: `接続中の COSE は Halo に対応していません。ローカル開発版の拡張機能を再読み込みし、このページを更新してください。`,
     extensionMissingTitle: `拡張機能が検出されません`,
     extensionMissingDescription: `{link} ブラウザ拡張機能をインストールしてください`,
     extensionLinkText: `COSE 記事同期アシスタント`,

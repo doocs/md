@@ -3,14 +3,9 @@ import type { CoseApi } from './cose'
 export {}
 
 declare global {
-  interface WindowEventMap {
-    'cose-ready': CustomEvent
-  }
-
   interface Window {
     __MD_UTOOLS__?: boolean
     $cose?: CoseApi
-    $coseV2?: CoseApi
     syncPost?: (data: { thumb: string, title: string, desc: string, content: string }) => void
 
     __MP_Editor_JSAPI__: {

@@ -3,7 +3,6 @@ import type { Post, PostAccount } from '@md/shared/types'
 import { Check, ChevronDown, ChevronRight, Info, Loader2, Minus } from '@lucide/vue'
 import { CheckboxIndicator, CheckboxRoot, Primitive } from 'reka-ui'
 import { accountHandle, isSignedInAccount } from '@/lib/post/account-label'
-import { getCoseBridge } from '@/lib/post/cose'
 import { extractPublishDraft } from '@/lib/post/publish-draft'
 import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
@@ -26,7 +25,6 @@ const { isMobile } = storeToRefs(uiStore)
 const dialogVisible = ref(false)
 const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
-const haloSupported = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
@@ -36,7 +34,7 @@ const isCheckingDevto = ref(false)
 const devtoSetupUrl = computed(() => {
   if (!devtoGuideOpen.value)
     return null
-  const src = getCoseBridge()?.getDevtoSetupUrl?.()
+  const src = window.$cose?.getDevtoSetupUrl?.()
   if (!src)
     return null
   try {
@@ -61,7 +59,7 @@ function isSelfHosted(type: string): type is SelfHostedPlatform {
 }
 
 function selfHostedUrl(type: SelfHostedPlatform) {
-  const cose = getCoseBridge()
+  const cose = window.$cose
   const src = type === 'halo' ? cose?.getHaloSetupUrl?.() : cose?.getWordPressSetupUrl?.()
   if (!src)
     return null
@@ -177,9 +175,8 @@ watch(dialogVisible, (newVal) => {
 })
 
 function getInitialPlatforms(): PostAccount[] {
-  const cose = getCoseBridge()
-  if (typeof cose?.getPlatforms === `function`) {
-    return cose.getPlatforms().map(platform => ({
+  if (typeof window.$cose?.getPlatforms === `function`) {
+    return window.$cose.getPlatforms().map(platform => ({
       ...platform,
       checked: false,
       loggedIn: false,
@@ -191,7 +188,7 @@ function getInitialPlatforms(): PostAccount[] {
 
 // Async login check with progressive UI updates
 function startLoginDetection() {
-  const cose = getCoseBridge()
+  const cose = window.$cose
   if (!cose)
     return
 
@@ -206,7 +203,7 @@ function startLoginDetection() {
   // Stop detection after 15s with no response
   const LOGIN_CHECK_TIMEOUT_MS = 15000
   const timeoutId = setTimeout(() => {
-    if (!hasReceivedAny && cose === getCoseBridge()) {
+    if (!hasReceivedAny) {
       allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
       isCheckingLogin.value = false
     }
@@ -215,8 +212,6 @@ function startLoginDetection() {
   if (typeof cose.getAccountsProgressive === `function`) {
     cose.getAccountsProgressive(
       (account: PostAccount, _completed: number, _total: number) => {
-        if (cose !== getCoseBridge())
-          return
         hasReceivedAny = true
 
         const idx = allAccounts.value.findIndex(a => a.type === account.type)
@@ -226,15 +221,12 @@ function startLoginDetection() {
       },
       () => {
         clearTimeout(timeoutId)
-        if (cose === getCoseBridge())
-          isCheckingLogin.value = false
+        isCheckingLogin.value = false
       },
     )
   }
   else {
     cose.getAccounts?.((resp: PostAccount[]) => {
-      if (cose !== getCoseBridge())
-        return
       hasReceivedAny = true
       clearTimeout(timeoutId)
       allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))
@@ -249,7 +241,7 @@ async function recheckDevto() {
 
   isCheckingDevto.value = true
   try {
-    await getCoseBridge()?.getAccounts?.((accounts) => {
+    await window.$cose?.getAccounts?.((accounts) => {
       const account = accounts.find(item => item.type === 'devto')
       const index = allAccounts.value.findIndex(item => item.type === 'devto')
       if (account && index !== -1)
@@ -349,7 +341,7 @@ const selfHostedChecks = { wordpress: 0, halo: 0 }
 async function recheckSelfHosted(type: SelfHostedPlatform) {
   const check = ++selfHostedChecks[type]
   try {
-    await getCoseBridge()?.getAccounts?.((accounts) => {
+    await window.$cose?.getAccounts?.((accounts) => {
       const account = accounts.find(a => a.type === type)
       const index = allAccounts.value.findIndex(a => a.type === type)
       if (account && index >= 0 && check === selfHostedChecks[type])
@@ -392,21 +384,35 @@ function onAvatarError(account: PostAccount, event: Event) {
   img.style.display = 'none'
 }
 
-let connectedBridge: ReturnType<typeof getCoseBridge>
-
 function checkExtension() {
-  const bridge = getCoseBridge()
-  if (!bridge || bridge === connectedBridge)
+  if (window.$cose !== undefined) {
+    extensionInstalled.value = true
+    getAccounts()
     return
+  }
 
-  connectedBridge = bridge
-  extensionInstalled.value = true
-  haloSupported.value = typeof bridge.getHaloSetupUrl === 'function'
-  getAccounts()
+  // Poll every 500ms for 5s if extension not loaded
+  const EXTENSION_CHECK_INTERVAL_MS = 500
+  const MAX_EXTENSION_CHECKS = 10
+  let count = 0
+  const timer = setInterval(async () => {
+    if (window.$cose !== undefined) {
+      extensionInstalled.value = true
+      await getAccounts()
+      clearInterval(timer)
+      return
+    }
+
+    count++
+    if (count > MAX_EXTENSION_CHECKS) {
+      clearInterval(timer)
+    }
+  }, EXTENSION_CHECK_INTERVAL_MS)
 }
 
-useEventListener('cose-ready', checkExtension)
-onMounted(checkExtension)
+onBeforeMount(() => {
+  checkExtension()
+})
 </script>
 
 <template>
@@ -438,11 +444,6 @@ onMounted(checkExtension)
                 </template>
               </i18n-t>
             </AlertDescription>
-          </Alert>
-
-          <Alert v-if="extensionInstalled && !haloSupported">
-            <Info class="h-4 w-4" />
-            <AlertDescription>{{ t('postInfo.haloExtensionMissing') }}</AlertDescription>
           </Alert>
 
           <Alert>
