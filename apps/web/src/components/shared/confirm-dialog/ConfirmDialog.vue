@@ -32,10 +32,7 @@ const confirmStore = useConfirmStore()
       </AlertDialogHeader>
       <AlertDialogFooter>
         <AlertDialogCancel
-          :class="cn(
-            buttonVariants({ variant: 'outline' }),
-            'mt-2 sm:mt-0',
-          )"
+          :class="buttonVariants({ variant: 'outline' })"
           @click="confirmStore.handleCancel()"
         >
           {{ confirmStore.cancelText }}
