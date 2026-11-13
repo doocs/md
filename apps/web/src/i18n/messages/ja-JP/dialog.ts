@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `拡張機能が検出されません`,
     extensionMissingDescription: `{link} ブラウザ拡張機能をインストールしてください`,
     extensionLinkText: `COSE 記事同期アシスタント`,
+    substackUpdateExtension: '現在の COSE バージョンは Substack に対応していません',
+    substackConnect: '接続',
     devtoConnect: `接続`,
     devtoCollapse: `折りたたむ`,
     devtoReplaceKey: `キーを更新`,
