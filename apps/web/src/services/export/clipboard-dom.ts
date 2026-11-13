@@ -170,7 +170,7 @@ export function modifyHtmlStructure(htmlString: string): string {
   return tempDiv.innerHTML
 }
 
-const ZERO_CSS_LENGTH = /^0px?$/i
+const ZERO_CSS_LENGTH = /^0(?:px)?$/i
 
 function hasVisibleText(el: HTMLElement): boolean {
   return (el.textContent ?? ``).replace(/[\s\u200B]/g, ``).length > 0

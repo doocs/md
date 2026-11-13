@@ -310,6 +310,6 @@ describe(`applyWeChatStructureFixes`, () => {
     expect(diagram.style.lineHeight).toBe(`normal`)
     expect(diagram.style.fontSize).toBe(``)
     expect(root.querySelector(`p`)!.style.lineHeight).toBe(`0`)
-    expect(root.querySelector(`.katex`)!.style.lineHeight).toBe(`0`)
+    expect((root.querySelector(`.katex`) as HTMLElement).style.lineHeight).toBe(`0`)
   })
 })
