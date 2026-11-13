@@ -50,15 +50,22 @@ const devtoSetupUrl = computed(() => {
 })
 const devtoAccount = computed(() => allAccounts.value.find(account => account.type === 'devto'))
 
-const wordPressSetupOpen = ref(false)
-const wordPressFormHeight = ref(280)
-const wordPressSetupUrl = computed(() => {
-  const src = window.$cose?.getWordPressSetupUrl?.()
+type SelfHostedPlatform = 'wordpress' | 'halo'
+const selfHostedSetup = ref<SelfHostedPlatform | null>(null)
+const selfHostedFormHeight = ref(280)
+
+function isSelfHosted(type: string): type is SelfHostedPlatform {
+  return type === 'wordpress' || type === 'halo'
+}
+
+function selfHostedUrl(type: SelfHostedPlatform) {
+  const cose = window.$cose
+  const src = type === 'halo' ? cose?.getHaloSetupUrl?.() : cose?.getWordPressSetupUrl?.()
   if (!src)
     return null
   try {
     const url = new URL(src)
-    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/wordpress-connect.html')
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== `/${type}-connect.html`)
       return null
     url.searchParams.set('lang', locale.value)
     return url
@@ -66,7 +73,14 @@ const wordPressSetupUrl = computed(() => {
   catch {
     return null
   }
-})
+}
+
+const selfHostedSetupUrl = computed(() => selfHostedSetup.value ? selfHostedUrl(selfHostedSetup.value) : null)
+
+function toggleSelfHosted(type: SelfHostedPlatform) {
+  selfHostedFormHeight.value = 280
+  selfHostedSetup.value = selfHostedSetup.value === type ? null : type
+}
 
 const form = ref<Post>({
   title: ``,
@@ -86,7 +100,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`, `substack`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`, `halo`, `substack`],
   },
   {
     id: `cloud`,
@@ -185,7 +199,7 @@ watch(dialogVisible, (newVal) => {
     prePost()
   }
   else {
-    wordPressSetupOpen.value = false
+    selfHostedSetup.value = null
     substackSetupOpen.value = false
   }
 })
@@ -352,43 +366,44 @@ function getPlatformUrl(type: string): string {
   return urls[type] || '#'
 }
 
-let wordPressCheck = 0
+const selfHostedChecks = { wordpress: 0, halo: 0 }
 
-async function recheckWordPress() {
-  const check = ++wordPressCheck
+async function recheckSelfHosted(type: SelfHostedPlatform) {
+  const check = ++selfHostedChecks[type]
   try {
     await window.$cose?.getAccounts?.((accounts) => {
-      const account = accounts.find(a => a.type === 'wordpress')
-      const index = allAccounts.value.findIndex(a => a.type === 'wordpress')
-      if (account && index >= 0 && check === wordPressCheck)
+      const account = accounts.find(a => a.type === type)
+      const index = allAccounts.value.findIndex(a => a.type === type)
+      if (account && index >= 0 && check === selfHostedChecks[type])
         allAccounts.value[index] = { ...account, isChecking: false }
-    }, ['wordpress'])
+    }, [type])
   }
   catch {
     // The extension can be reloaded while the dialog is open.
   }
 }
 
-function initializeWordPressFrame(event: Event) {
-  const url = wordPressSetupUrl.value
+function initializeSelfHostedFrame(event: Event) {
+  const url = selfHostedSetupUrl.value
   const frame = event.currentTarget as HTMLIFrameElement
   if (url)
-    frame.contentWindow?.postMessage({ type: 'cose-wordpress-initialize' }, `${url.protocol}//${url.host}`)
+    frame.contentWindow?.postMessage({ type: `cose-${selfHostedSetup.value}-initialize` }, `${url.protocol}//${url.host}`)
 }
 
 useEventListener('message', (event: MessageEvent) => {
-  const url = wordPressSetupUrl.value
-  const frame = document.querySelector<HTMLIFrameElement>('#wordpress-setup-frame')
-  if (!url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
+  const url = selfHostedSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#self-hosted-setup-frame')
+  const type = selfHostedSetup.value
+  if (!type || !url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
     return
 
-  if (event.data?.type === 'cose-wordpress-form-height') {
+  if (event.data?.type === `cose-${type}-form-height`) {
     const height = event.data.height
     if (Number.isInteger(height) && height > 0 && height <= 640)
-      wordPressFormHeight.value = height
+      selfHostedFormHeight.value = height
   }
-  else if (event.data?.type === 'cose-wordpress-connection-changed') {
-    void recheckWordPress()
+  else if (event.data?.type === `cose-${type}-connection-changed`) {
+    void recheckSelfHosted(type)
   }
 })
 
@@ -464,7 +479,7 @@ onBeforeMount(() => {
       </DialogTrigger>
       <DialogContent
         class="!max-w-[95vw] !w-[min(750px,95vw)] max-h-[85vh] flex flex-col overflow-hidden"
-        @interact-outside="(wordPressSetupOpen || substackSetupOpen) && $event.preventDefault()"
+        @interact-outside="(selfHostedSetup || substackSetupOpen) && $event.preventDefault()"
       >
         <DialogHeader>
           <DialogTitle>{{ t('postInfo.title') }}</DialogTitle>
@@ -502,7 +517,7 @@ onBeforeMount(() => {
             </AlertDescription>
           </Alert>
 
-          <div class="w-full flex flex-col gap-4" :class="{ 'pointer-events-none opacity-50': !extensionInstalled }" :inert="!extensionInstalled || undefined" :aria-disabled="!extensionInstalled">
+          <div v-if="extensionInstalled" class="w-full flex flex-col gap-4">
             <div class="grid grid-cols-1 items-center gap-2 sm:grid-cols-[minmax(5.5rem,auto)_1fr] sm:gap-x-4">
               <Label for="thumb" class="sm:text-end">
                 {{ t('postInfo.cover') }}
@@ -573,6 +588,7 @@ onBeforeMount(() => {
                         </CheckboxIndicator>
                       </CheckboxRoot>
                       <img
+                        v-if="account.icon"
                         :src="account.icon"
                         alt=""
                         class="inline-block h-[16px] w-[16px] shrink-0"
@@ -616,7 +632,7 @@ onBeforeMount(() => {
                         {{ t('postInfo.substackUpdateExtension') }}
                       </span>
                       <Primitive
-                        v-else-if="account.type !== 'wordpress' && account.type !== 'substack'"
+                        v-else-if="!isSelfHosted(account.type) && account.type !== 'substack'"
                         as="a"
                         :href="getPlatformUrl(account.type)"
                         target="_blank"
@@ -636,14 +652,14 @@ onBeforeMount(() => {
                         {{ substackSetupOpen ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('postInfo.substackConnect') }}
                       </button>
                       <button
-                        v-if="account.type === 'wordpress' && !account.isChecking && wordPressSetupUrl"
+                        v-if="isSelfHosted(account.type) && (account.type === 'halo' || !account.isChecking) && extensionInstalled && selfHostedUrl(account.type)"
                         type="button"
                         class="ml-1 shrink-0 text-sm text-muted-foreground hover:underline"
-                        :aria-expanded="wordPressSetupOpen"
-                        aria-controls="wordpress-setup"
-                        @click="wordPressSetupOpen = !wordPressSetupOpen"
+                        :aria-expanded="selfHostedSetup === account.type"
+                        aria-controls="self-hosted-setup"
+                        @click="toggleSelfHosted(account.type)"
                       >
-                        {{ wordPressSetupOpen ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
+                        {{ selfHostedSetup === account.type ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
                     </div>
                     <div
@@ -662,18 +678,19 @@ onBeforeMount(() => {
                       />
                     </div>
                     <div
-                      v-if="wordPressSetupOpen && wordPressSetupUrl && category.accounts.some(account => account.type === 'wordpress')"
-                      id="wordpress-setup"
+                      v-if="selfHostedSetupUrl && category.accounts.some(account => account.type === selfHostedSetup)"
+                      id="self-hosted-setup"
                       class="rounded-md border p-3 sm:col-span-2"
                     >
                       <iframe
-                        id="wordpress-setup-frame"
-                        :src="wordPressSetupUrl.href"
-                        title="WordPress"
+                        id="self-hosted-setup-frame"
+                        :key="selfHostedSetupUrl.href"
+                        :src="selfHostedSetupUrl.href"
+                        :title="selfHostedSetup === 'halo' ? 'Halo' : 'WordPress'"
                         referrerpolicy="no-referrer"
                         class="block w-full rounded-md border-0"
-                        :style="{ height: `${wordPressFormHeight}px` }"
-                        @load="initializeWordPressFrame"
+                        :style="{ height: `${selfHostedFormHeight}px` }"
+                        @load="initializeSelfHostedFrame"
                       />
                     </div>
                     <div
