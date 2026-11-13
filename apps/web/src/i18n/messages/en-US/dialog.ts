@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `Extension not detected`,
     extensionMissingDescription: `Install the {link} browser extension`,
     extensionLinkText: `COSE Article Sync Assistant`,
+    substackUpdateExtension: 'Current COSE build does not support Substack',
+    substackConnect: 'Connect',
     devtoConnect: `Connect`,
     devtoCollapse: `Collapse`,
     devtoReplaceKey: `Replace key`,

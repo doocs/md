@@ -665,7 +665,7 @@ function exportCurrentTheme() {
           <p>{{ t('cssEditor.editorHint') }}</p>
         </div>
         <DialogFooter>
-          <Button @click="isOpenTipsDialog = false">
+          <Button variant="outline" @click="isOpenTipsDialog = false">
             {{ t('common.close') }}
           </Button>
         </DialogFooter>
@@ -708,14 +708,14 @@ function exportCurrentTheme() {
         </div>
       </div>
 
-      <DialogFooter class="flex-col sm:flex-row gap-2">
+      <DialogFooter>
         <Button variant="outline" @click="isOpenViewThemeDialog = false">
           {{ t('common.close') }}
         </Button>
         <Button variant="outline" @click="copyThemeCSS">
           {{ t('cssEditor.copyAll') }}
         </Button>
-        <Button variant="outline" @click="createFromViewTheme">
+        <Button @click="createFromViewTheme">
           {{ t('cssEditor.createFromTheme') }}
         </Button>
       </DialogFooter>

@@ -78,11 +78,11 @@ function saveEdit() {
               :placeholder="t('ai.quickCommand.templatePlaceholder')"
             />
             <div class="flex justify-end gap-2">
+              <Button variant="outline" size="xs" @click="cancelEdit">
+                {{ t('common.cancel') }}
+              </Button>
               <Button size="xs" @click="saveEdit">
                 {{ t('common.save') }}
-              </Button>
-              <Button variant="ghost" size="xs" @click="cancelEdit">
-                {{ t('common.cancel') }}
               </Button>
             </div>
           </template>
@@ -120,7 +120,7 @@ function saveEdit() {
                         <Button size="xs" variant="outline" @click="confirmDeleteId = null">
                           {{ t('common.cancel') }}
                         </Button>
-                        <Button size="xs" @click="store.remove(cmd.id); confirmDeleteId = null">
+                        <Button size="xs" variant="destructive" @click="store.remove(cmd.id); confirmDeleteId = null">
                           {{ t('common.confirm') }}
                         </Button>
                       </div>

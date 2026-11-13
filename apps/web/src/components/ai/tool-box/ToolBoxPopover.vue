@@ -340,23 +340,22 @@ defineExpose({ dialogVisible, runAIAction, replaceText, show, close, stopAI })
       </div>
 
       <div v-if="!configVisible" class="flex justify-end gap-2 px-6 py-3.5 mt-auto">
-        <Button v-if="loading" variant="secondary" @click="stopAI">
+        <Button v-if="loading" variant="outline" @click="stopAI">
           <Pause class="mr-1 h-4 w-4" /> {{ t('ai.toolbox.stop') }}
         </Button>
         <Button
           v-if="hasResult && !loading"
-          variant="default"
-          @click="replaceText"
+          variant="outline"
+          @click="runAIAction"
         >
-          {{ t('ai.toolbox.accept') }}
+          {{ t('ai.toolbox.retry') }}
         </Button>
         <Button
           v-if="!loading"
-          variant="outline"
           :disabled="!hasResult && !!message"
-          @click="runAIAction"
+          @click="hasResult ? replaceText() : runAIAction()"
         >
-          {{ hasResult ? t('ai.toolbox.retry') : t('ai.toolbox.process') }}
+          {{ hasResult ? t('ai.toolbox.accept') : t('ai.toolbox.process') }}
         </Button>
       </div>
     </DialogContent>

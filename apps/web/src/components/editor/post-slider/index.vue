@@ -1103,15 +1103,18 @@ function handleDragEnd() {
   </div>
 
   <Dialog v-model:open="isOpenAddDialog">
-    <DialogContent>
+    <DialogContent class="sm:max-w-[425px]">
       <DialogHeader>
         <DialogTitle>{{ t('post.addTitle') }}</DialogTitle>
         <DialogDescription>{{ t('post.addDescription') }}</DialogDescription>
       </DialogHeader>
       <Input v-model="addPostInputVal" :placeholder="t('post.titlePlaceholder')" @keyup.enter="addPost" />
       <DialogFooter>
+        <Button variant="outline" @click="isOpenAddDialog = false">
+          {{ t('common.cancel') }}
+        </Button>
         <Button @click="addPost">
-          {{ t('common.confirm') }}
+          {{ t('common.create') }}
         </Button>
       </DialogFooter>
     </DialogContent>
@@ -1123,7 +1126,7 @@ function handleDragEnd() {
         <DialogTitle>{{ t('post.editTitle') }}</DialogTitle>
         <DialogDescription>{{ t('post.editDescription') }}</DialogDescription>
       </DialogHeader>
-      <Input v-model="renamePostInputVal" @keyup.enter="renamePost" />
+      <Input v-model="renamePostInputVal" :placeholder="t('post.titlePlaceholder')" @keyup.enter="renamePost" />
       <DialogFooter>
         <Button variant="outline" @click="isOpenEditDialog = false">
           {{ t('common.cancel') }}
@@ -1142,23 +1145,21 @@ function handleDragEnd() {
         <AlertDialogDescription>{{ delConfirmText }}</AlertDialogDescription>
       </AlertDialogHeader>
       <div v-if="hasSubPosts" class="flex items-center gap-2 mt-2">
-        <input
-          id="del-recursive"
-          v-model="delRecursive"
-          type="checkbox"
-          class="size-3.5 rounded border-border accent-primary cursor-pointer"
-        >
+        <Checkbox id="del-recursive" v-model="delRecursive" />
         <label
           for="del-recursive"
-          class="text-xs text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
+          class="text-sm text-foreground select-none cursor-pointer"
         >
           {{ t('post.deleteRecursive') }}
         </label>
       </div>
       <AlertDialogFooter>
         <AlertDialogCancel>{{ t('common.cancel') }}</AlertDialogCancel>
-        <AlertDialogAction @click="delPost">
-          {{ t('common.confirm') }}
+        <AlertDialogAction
+          class="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+          @click="delPost"
+        >
+          {{ t('post.confirmDelete') }}
         </AlertDialogAction>
       </AlertDialogFooter>
     </AlertDialogContent>
@@ -1291,7 +1292,7 @@ function handleDragEnd() {
         <Button variant="outline" @click="copyHistoryContent">
           {{ t('common.copy') }}
         </Button>
-        <Button variant="outline" @click="confirmRestoreHistory">
+        <Button @click="confirmRestoreHistory">
           {{ t('post.restore') }}
         </Button>
       </DialogFooter>

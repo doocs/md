@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `未检测到插件`,
     extensionMissingDescription: `请安装 {link} 浏览器扩展`,
     extensionLinkText: `COSE 文章同步助手`,
+    substackUpdateExtension: '当前 COSE 版本不支持 Substack',
+    substackConnect: '连接',
     devtoConnect: `连接`,
     devtoCollapse: `折叠`,
     devtoReplaceKey: `更换 Key`,

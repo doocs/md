@@ -180,6 +180,8 @@ export default {
     extensionMissingTitle: `未檢測到外掛`,
     extensionMissingDescription: `請安裝 {link} 瀏覽器擴充套件`,
     extensionLinkText: `COSE 文章同步助手`,
+    substackUpdateExtension: '目前的 COSE 版本不支援 Substack',
+    substackConnect: '連線',
     devtoConnect: `連線`,
     devtoCollapse: `摺疊`,
     devtoReplaceKey: `更換金鑰`,

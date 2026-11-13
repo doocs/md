@@ -100,7 +100,7 @@ const platformCategories = [
   },
   {
     id: `blog`,
-    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`, `halo`],
+    platforms: [`csdn`, `cnblogs`, `juejin`, `medium`, `devto`, `cto51`, `segmentfault`, `oschina`, `infoq`, `jianshu`, `wordpress`, `halo`, `substack`],
   },
   {
     id: `cloud`,
@@ -120,12 +120,41 @@ function toggleCategory(categoryName: string) {
   }
 }
 
+const substackSetupOpen = ref(false)
+const substackFormHeight = ref(120)
+const substackSetupUrl = computed(() => {
+  const src = extensionInstalled.value && window.$cose?.getSubstackSetupUrl?.()
+  if (!src)
+    return null
+  try {
+    const url = new URL(src)
+    if (!['chrome-extension:', 'moz-extension:'].includes(url.protocol) || url.pathname !== '/substack-connect.html')
+      return null
+    url.searchParams.set('lang', locale.value)
+    return url
+  }
+  catch {
+    return null
+  }
+})
+const substackPlaceholder: PostAccount = {
+  uid: 'substack',
+  type: 'substack',
+  title: 'Substack',
+  displayName: 'Substack',
+  icon: 'https://substack.com/favicon.ico',
+  home: '',
+  checked: false,
+  loggedIn: false,
+}
+
 const accountsByCategory = computed(() => {
   return platformCategories.map(category => ({
     id: category.id,
     name: t(`postInfo.categories.${category.id}`),
     accounts: category.platforms
-      .map(type => allAccounts.value.find(a => a.type === type))
+      .map(type => allAccounts.value.find(a => a.type === type)
+        ?? (type === 'substack' && extensionInstalled.value ? substackPlaceholder : undefined))
       .filter((a): a is PostAccount => a !== undefined),
   }))
 })
@@ -171,6 +200,7 @@ watch(dialogVisible, (newVal) => {
   }
   else {
     selfHostedSetup.value = null
+    substackSetupOpen.value = false
   }
 })
 
@@ -377,6 +407,30 @@ useEventListener('message', (event: MessageEvent) => {
   }
 })
 
+function initializeSubstackFrame(event: Event) {
+  const url = substackSetupUrl.value
+  const frame = event.currentTarget as HTMLIFrameElement
+  if (url)
+    frame.contentWindow?.postMessage({ type: 'cose-substack-initialize' }, `${url.protocol}//${url.host}`)
+}
+
+useEventListener('message', (event: MessageEvent) => {
+  const url = substackSetupUrl.value
+  const frame = document.querySelector<HTMLIFrameElement>('#substack-setup-frame')
+  if (!url || !frame || event.source !== frame.contentWindow || event.origin !== `${url.protocol}//${url.host}`)
+    return
+
+  if (event.data?.type === 'cose-substack-form-height') {
+    const height = event.data.height
+    if (Number.isInteger(height) && height > 0 && height <= 640)
+      substackFormHeight.value = height
+  }
+  else if (event.data?.type === 'cose-substack-connection-changed') {
+    substackSetupOpen.value = false
+    startLoginDetection()
+  }
+})
+
 function onAvatarError(account: PostAccount, event: Event) {
   const img = event.target as HTMLImageElement
   if (!account)
@@ -425,7 +479,7 @@ onBeforeMount(() => {
       </DialogTrigger>
       <DialogContent
         class="!max-w-[95vw] !w-[min(750px,95vw)] max-h-[85vh] flex flex-col overflow-hidden"
-        @interact-outside="selfHostedSetup && $event.preventDefault()"
+        @interact-outside="(selfHostedSetup || substackSetupOpen) && $event.preventDefault()"
       >
         <DialogHeader>
           <DialogTitle>{{ t('postInfo.title') }}</DialogTitle>
@@ -544,7 +598,7 @@ onBeforeMount(() => {
                         <Loader2 class="ml-1 h-3.5 w-3.5 animate-spin text-muted-foreground" />
                         <span class="text-xs text-muted-foreground">{{ t('postInfo.checking') }}</span>
                       </template>
-                      <template v-else-if="isSignedInAccount(account)">
+                      <template v-else-if="isSignedInAccount(account) || (account.type === 'substack' && account.loggedIn)">
                         <img
                           v-if="account.avatar"
                           :src="account.avatar"
@@ -574,8 +628,11 @@ onBeforeMount(() => {
                       >
                         {{ t(devtoGuideOpen ? 'postInfo.devtoCollapse' : 'postInfo.devtoConnect') }}
                       </button>
+                      <span v-else-if="account.type === 'substack' && !substackSetupUrl" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.substackUpdateExtension') }}
+                      </span>
                       <Primitive
-                        v-else-if="!isSelfHosted(account.type)"
+                        v-else-if="!isSelfHosted(account.type) && account.type !== 'substack'"
                         as="a"
                         :href="getPlatformUrl(account.type)"
                         target="_blank"
@@ -584,6 +641,16 @@ onBeforeMount(() => {
                       >
                         {{ t('common.login') }}
                       </Primitive>
+                      <button
+                        v-if="account.type === 'substack' && !account.isChecking && substackSetupUrl"
+                        type="button"
+                        class="ml-1 shrink-0 text-sm text-primary hover:underline"
+                        :aria-expanded="substackSetupOpen"
+                        aria-controls="substack-setup"
+                        @click="substackSetupOpen = !substackSetupOpen"
+                      >
+                        {{ substackSetupOpen ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('postInfo.substackConnect') }}
+                      </button>
                       <button
                         v-if="isSelfHosted(account.type) && (account.type === 'halo' || !account.isChecking) && extensionInstalled && selfHostedUrl(account.type)"
                         type="button"
@@ -594,6 +661,21 @@ onBeforeMount(() => {
                       >
                         {{ selfHostedSetup === account.type ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
+                    </div>
+                    <div
+                      v-if="substackSetupOpen && substackSetupUrl && category.accounts.some(account => account.type === 'substack')"
+                      id="substack-setup"
+                      class="rounded-md border p-3 sm:col-span-2"
+                    >
+                      <iframe
+                        id="substack-setup-frame"
+                        :src="substackSetupUrl.href"
+                        title="Substack"
+                        referrerpolicy="no-referrer"
+                        class="block w-full rounded-md border-0"
+                        :style="{ height: `${substackFormHeight}px` }"
+                        @load="initializeSubstackFrame"
+                      />
                     </div>
                     <div
                       v-if="selfHostedSetupUrl && category.accounts.some(account => account.type === selfHostedSetup)"

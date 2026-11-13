@@ -1,5 +1,7 @@
 interface AccountIdentity {
   loggedIn?: boolean
+  type?: string
+  home?: string
   title?: string
   displayName?: string
   avatar?: string
@@ -20,6 +22,8 @@ export function accountHandle(account: AccountIdentity): string {
 export function isSignedInAccount(account: AccountIdentity): boolean {
   if (!account.loggedIn)
     return false
+  if (account.type === `substack`)
+    return Boolean(account.home)
   if (account.avatar?.trim())
     return true
   return accountHandle(account) !== ``
