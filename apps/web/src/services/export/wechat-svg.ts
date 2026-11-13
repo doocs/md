@@ -861,9 +861,11 @@ function fixPlantUmlDimensions(svg: SVGSVGElement): { width: number, height: num
 }
 
 function normalizePlantUmlContainer(container: HTMLElement) {
+  // line-height/font-size 0 collapses the inline gap, but WeChat counts SVG
+  // label text and reports that pair as overlapping lines. The SVG is display:block.
   container.setAttribute(
     `style`,
-    `box-sizing: border-box; width: 100%; margin: 0; padding: 0; line-height: 0; font-size: 0;`,
+    `box-sizing: border-box; width: 100%; margin: 0; padding: 0;`,
   )
 }
 
@@ -882,21 +884,24 @@ function wrapWidePlantUmlSvg(svg: SVGSVGElement) {
     return
 
   const outer = document.createElement(`section`)
+  outer.setAttribute(`data-ignore-width`, ``)
   outer.setAttribute(
     `style`,
-    `box-sizing: border-box; width: 100%; margin: 0; padding: 0; line-height: 0; font-size: 0;`,
+    `box-sizing: border-box; width: 100%; margin: 0; padding: 0;`,
   )
 
   const scroll = document.createElement(`section`)
+  scroll.setAttribute(`data-ignore-width`, ``)
   scroll.setAttribute(
     `style`,
-    `overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%; font-size: 0; line-height: 0;${height > 0 ? ` height: ${height}px;` : ``}`,
+    `overflow-x: scroll; overflow-y: hidden; -webkit-overflow-scrolling: touch; white-space: nowrap; width: 100%;${height > 0 ? ` height: ${height}px;` : ``}`,
   )
 
   const inner = document.createElement(`section`)
+  inner.setAttribute(`data-ignore-width`, ``)
   inner.setAttribute(
     `style`,
-    `display: inline-block; width: ${width}px;${height > 0 ? ` height: ${height}px;` : ``} vertical-align: top; line-height: 0; font-size: 0;`,
+    `display: inline-block; width: ${width}px;${height > 0 ? ` height: ${height}px;` : ``} vertical-align: top;`,
   )
 
   const hint = document.createElement(`p`)

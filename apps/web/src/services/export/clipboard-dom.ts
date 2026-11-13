@@ -170,6 +170,76 @@ export function modifyHtmlStructure(htmlString: string): string {
   return tempDiv.innerHTML
 }
 
+const ZERO_CSS_LENGTH = /^0px?$/i
+
+function hasVisibleText(el: HTMLElement): boolean {
+  return (el.textContent ?? ``).replace(/[\s\u200B]/g, ``).length > 0
+}
+
+/**
+ * WeChat's structure checker measures the pasted article at several phone widths.
+ * Shrink-to-fit headings, nowrap code, and unbreakable tables overflow those widths.
+ * `line-height: 0` on any node that still has text is reported as overlapping lines,
+ * including diagram wrappers whose SVG labels count as text. Whitespace-only spacers
+ * stay as they are, and KaTeX keeps its own smash line-height.
+ */
+export function applyWeChatStructureFixes(root: HTMLElement) {
+  root.querySelectorAll<HTMLElement>(`h1, h2`).forEach((heading) => {
+    const display = heading.style.display
+    if (display !== `table` && display !== `inline-table`)
+      return
+    heading.style.display = `block`
+    heading.style.width = `fit-content`
+    heading.style.maxWidth = `100%`
+    heading.style.boxSizing = `border-box`
+    heading.style.marginLeft = `auto`
+    heading.style.marginRight = `auto`
+    heading.style.whiteSpace = `normal`
+    heading.style.wordBreak = `break-word`
+  })
+
+  root.querySelectorAll<HTMLElement>(`table`).forEach((table) => {
+    table.style.width = `100%`
+    table.style.maxWidth = `100%`
+    table.style.minWidth = `0`
+    table.style.tableLayout = `fixed`
+    table.querySelectorAll<HTMLElement>(`th, td`).forEach((cell) => {
+      cell.style.wordBreak = `break-word`
+      cell.style.whiteSpace = `normal`
+      cell.style.overflowWrap = `anywhere`
+      cell.style.minWidth = `0`
+      cell.style.maxWidth = `100%`
+      if (/^\d+(?:\.\d*)?px$/.test(cell.style.width))
+        cell.style.width = `auto`
+    })
+  })
+
+  root.querySelectorAll<HTMLElement>(`pre, code, .code-block__inner, .code-scroll, .code-scroll div`).forEach((el) => {
+    el.style.whiteSpace = `pre-wrap`
+    el.style.wordBreak = `break-all`
+    el.style.overflowWrap = `anywhere`
+    el.style.minWidth = `0`
+    el.style.maxWidth = `100%`
+    el.style.boxSizing = `border-box`
+    if (el.tagName === `PRE`)
+      el.style.width = `100%`
+    if (el.style.display === `-webkit-box`)
+      el.style.display = `block`
+  })
+
+  root.querySelectorAll<HTMLElement>(`[style*="line-height"]`).forEach((el) => {
+    if (!ZERO_CSS_LENGTH.test(el.style.lineHeight.trim()))
+      return
+    if (!hasVisibleText(el))
+      return
+    if (el.closest(`.katex, .katex-block, .katex-inline, mjx-container`))
+      return
+    el.style.lineHeight = `normal`
+    if (ZERO_CSS_LENGTH.test(el.style.fontSize.trim()))
+      el.style.fontSize = ``
+  })
+}
+
 export function createEmptyNode(): HTMLElement {
   const node = document.createElement(`p`)
   node.style.fontSize = `0`

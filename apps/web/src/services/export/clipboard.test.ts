@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripInvalidCssForJuice } from './clipboard-dom'
+import { applyWeChatStructureFixes, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripInvalidCssForJuice } from './clipboard-dom'
 
 describe(`modifyHtmlStructure`, () => {
   it(`moves nested lists out of their parent li`, () => {
@@ -257,5 +257,59 @@ describe(`juice + sanitize flowchart pipeline`, () => {
     expect(root.querySelector(`svg[class], svg [class]`)).toBeNull()
 
     root.remove()
+  })
+})
+
+describe(`applyWeChatStructureFixes`, () => {
+  it(`keeps shrink-wrapped headings, code, and tables inside the article width`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <h2 style="display: table; margin: 2em auto; background: rgb(0, 128, 0);">进阶技巧</h2>
+      <table style="min-width: 100%;">
+        <th style="width: 240px; word-break: keep-all;">邮箱</th>
+        <td style="word-break: keep-all;">contact@yanglibin.info</td>
+      </table>
+      <pre class="hljs code__pre" style="overflow-x: auto;">
+        <code style="display: -webkit-box; white-space: nowrap;">console.log('Hello')</code>
+      </pre>
+    `
+
+    applyWeChatStructureFixes(root)
+
+    const heading = root.querySelector(`h2`)!
+    expect(heading.style.display).toBe(`block`)
+    expect(heading.style.width).toBe(`fit-content`)
+    expect(heading.style.maxWidth).toBe(`100%`)
+    expect(heading.style.marginLeft).toBe(`auto`)
+    expect(heading.style.marginRight).toBe(`auto`)
+
+    const table = root.querySelector(`table`)!
+    expect(table.style.width).toBe(`100%`)
+    expect(table.style.tableLayout).toBe(`fixed`)
+    expect(root.querySelector(`th`)!.style.wordBreak).toBe(`break-word`)
+    expect(root.querySelector(`th`)!.style.width).toBe(`auto`)
+    expect(root.querySelector(`td`)!.style.whiteSpace).toBe(`normal`)
+
+    const code = root.querySelector(`code`)!
+    expect(code.style.whiteSpace).toBe(`pre-wrap`)
+    expect(code.style.display).toBe(`block`)
+    expect(root.querySelector(`pre`)!.style.width).toBe(`100%`)
+  })
+
+  it(`lifts line-height 0 off text, and leaves spacers and formulas alone`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <section style="line-height: 0; font-size: 0;">图表标签</section>
+      <p style="font-size: 0; line-height: 0; margin: 0;">&nbsp;</p>
+      <span class="katex" style="line-height: 0;">x</span>
+    `
+
+    applyWeChatStructureFixes(root)
+
+    const diagram = root.querySelector(`section`)!
+    expect(diagram.style.lineHeight).toBe(`normal`)
+    expect(diagram.style.fontSize).toBe(``)
+    expect(root.querySelector(`p`)!.style.lineHeight).toBe(`0`)
+    expect(root.querySelector(`.katex`)!.style.lineHeight).toBe(`0`)
   })
 })

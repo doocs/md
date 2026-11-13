@@ -566,6 +566,8 @@ describe(`sanitizeSvgForWeChat`, () => {
     expect(scrollWrapper?.getAttribute(`style`)).toContain(`overflow-y: hidden`)
     expect(scrollWrapper?.getAttribute(`style`)).toContain(`height: 400px`)
     expect(scrollWrapper?.getAttribute(`style`)).toContain(`white-space: nowrap`)
+    expect(scrollWrapper?.getAttribute(`style`)).not.toContain(`line-height: 0`)
+    expect(scrollWrapper?.hasAttribute(`data-ignore-width`)).toBe(true)
     expect(innerWrapper?.getAttribute(`style`)).toContain(`display: inline-block`)
     expect(innerWrapper?.getAttribute(`style`)).toContain(`width: 1200px`)
     expect(innerWrapper?.getAttribute(`style`)).toContain(`height: 400px`)

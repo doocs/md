@@ -235,6 +235,7 @@ describe(`slider extension`, () => {
     expect(html).toContain(`src="https://example.com/2.png"`)
     expect(html).toContain(`alt="alt1"`)
     expect(html).toContain(`overflow-x: scroll`)
+    expect(html).toContain(`data-ignore-width`)
   })
 })
 

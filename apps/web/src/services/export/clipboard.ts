@@ -4,7 +4,7 @@ import { useEditorStore } from '@/stores/editor'
 import { useRenderStore } from '@/stores/render'
 import { useThemeStore } from '@/stores/theme'
 import { useUIStore } from '@/stores/ui'
-import { createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
+import { applyWeChatStructureFixes, createEmptyNode, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripFontFamilyForJuiceFallback, stripInvalidCssForJuice } from './clipboard-dom'
 import { getStylesToAdd } from './share-styles'
 import { prepareDiagramSvgsForWeChat, prepareMathFormulasForWeChat, sanitizeSvgsForWeChat } from './wechat-svg'
 
@@ -117,6 +117,7 @@ export async function processClipboardContent(primaryColor: string) {
     promoteSvgHtmlLabels(clipboardDiv)
     sanitizeSvgsForWeChat(clipboardDiv)
     prepareMathFormulasForWeChat(clipboardDiv)
+    applyWeChatStructureFixes(clipboardDiv)
 
     return {
       html: clipboardDiv.innerHTML,

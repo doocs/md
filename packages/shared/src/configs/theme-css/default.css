@@ -572,9 +572,9 @@ td {
   text-decoration-thickness: 2px;
 }
 
-/* line-height: 0 keeps the raised glyph from stretching the line box */
+/* line-height: 1 stays above WeChat's overlap threshold; 0 is flagged as stacked text */
 .markup-superscript {
   font-size: 0.75em;
-  line-height: 0;
+  line-height: 1;
   vertical-align: super;
 }
