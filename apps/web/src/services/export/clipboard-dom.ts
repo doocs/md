@@ -221,8 +221,10 @@ export function applyWeChatStructureFixes(root: HTMLElement) {
     el.style.minWidth = `0`
     el.style.maxWidth = `100%`
     el.style.boxSizing = `border-box`
-    if (el.tagName === `PRE`)
-      el.style.width = `100%`
+    // Theme code blocks already have an 8px side margin. width:100% is the
+    // margin box's parent width, so the border box sticks out by that margin.
+    if (el.tagName === `PRE` && el.style.width.trim() === `100%`)
+      el.style.width = `auto`
     if (el.style.display === `-webkit-box`)
       el.style.display = `block`
   })

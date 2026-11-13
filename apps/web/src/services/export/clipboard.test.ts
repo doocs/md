@@ -269,7 +269,7 @@ describe(`applyWeChatStructureFixes`, () => {
         <th style="width: 240px; word-break: keep-all;">邮箱</th>
         <td style="word-break: keep-all;">contact@yanglibin.info</td>
       </table>
-      <pre class="hljs code__pre" style="overflow-x: auto;">
+      <pre class="hljs code__pre" style="overflow-x: auto; width: 100%; margin: 10px 8px;">
         <code style="display: -webkit-box; white-space: nowrap;">console.log('Hello')</code>
       </pre>
     `
@@ -293,7 +293,8 @@ describe(`applyWeChatStructureFixes`, () => {
     const code = root.querySelector(`code`)!
     expect(code.style.whiteSpace).toBe(`pre-wrap`)
     expect(code.style.display).toBe(`block`)
-    expect(root.querySelector(`pre`)!.style.width).toBe(`100%`)
+    expect(root.querySelector(`pre`)!.style.width).toBe(`auto`)
+    expect(root.querySelector(`pre`)!.style.maxWidth).toBe(`100%`)
   })
 
   it(`lifts line-height 0 off text, and leaves spacers and formulas alone`, () => {
