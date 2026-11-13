@@ -46,6 +46,67 @@ describe(`extractMarkdownHeadings`, () => {
       { title: `Body`, level: 1, line: 4 },
     ])
   })
+
+  it(`ignores commented headings while preserving navigation positions`, () => {
+    const doc = mockDoc([
+      `# Article`,
+      `## Section`,
+      `<!--`,
+      `## Hidden draft`,
+      `-->`,
+      `## Section`,
+    ])
+    const headings = extractMarkdownHeadings(doc)
+    expect(headings).toEqual([
+      { title: `Article`, level: 1, line: 1 },
+      { title: `Section`, level: 2, line: 2 },
+      { title: `Section`, level: 2, line: 6 },
+    ])
+    expect(computeHeadingBreadcrumbs(headings, 4)).toEqual(headings.slice(0, 2))
+    expect(computeHeadingBreadcrumbs(headings, 6)).toEqual([headings[0], headings[2]])
+  })
+
+  it.each([`\`\`\``, `~~~`])(`keeps comments and %s code fences independent`, (fence) => {
+    const doc = mockDoc([
+      `# Before`,
+      `<!--`,
+      `## Hidden draft`,
+      fence,
+      `-->`,
+      `## After comment`,
+      fence,
+      `<!--`,
+      `## Code example`,
+      fence,
+      `## After code`,
+    ])
+    expect(extractMarkdownHeadings(doc)).toEqual([
+      { title: `Before`, level: 1, line: 1 },
+      { title: `After comment`, level: 2, line: 6 },
+      { title: `After code`, level: 2, line: 11 },
+    ])
+  })
+
+  it(`handles single-line and unclosed block comments`, () => {
+    const doc = mockDoc([
+      `# Before`,
+      `<!-- draft -->`,
+      `## After`,
+      `   <!--`,
+      `## Hidden draft`,
+    ])
+    expect(extractMarkdownHeadings(doc)).toEqual([
+      { title: `Before`, level: 1, line: 1 },
+      { title: `After`, level: 2, line: 3 },
+    ])
+  })
+
+  it.each([`Text \`<!--\``, `Text <!--`, `    <!--`, `\t<!--`])(`does not start a block comment at %s`, (text) => {
+    const doc = mockDoc([text, ``, `## After`])
+    expect(extractMarkdownHeadings(doc)).toEqual([
+      { title: `After`, level: 2, line: 3 },
+    ])
+  })
 })
 
 describe(`computeHeadingBreadcrumbs`, () => {

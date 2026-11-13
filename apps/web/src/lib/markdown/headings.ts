@@ -14,6 +14,7 @@ export function extractMarkdownHeadings(doc: MarkdownDoc): MarkdownHeading[] {
   let codeFenceChar = ``
   let codeFenceCount = 0
   let inFrontMatter = false
+  let inHtmlComment = false
 
   for (let i = 1; i <= doc.lines; i++) {
     const text = doc.line(i).text
@@ -35,6 +36,10 @@ export function extractMarkdownHeadings(doc: MarkdownDoc): MarkdownHeading[] {
         codeFenceChar = ``
         codeFenceCount = 0
       }
+      continue
+    }
+    if (inHtmlComment || /^ {0,3}<!--/.test(text)) {
+      inHtmlComment = !text.includes(`-->`)
       continue
     }
     const openMatch = trimmed.match(/^(`{3,}|~{3,})/)
