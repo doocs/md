@@ -176,9 +176,31 @@ function hasVisibleText(el: HTMLElement): boolean {
   return (el.textContent ?? ``).replace(/[\s\u200B]/g, ``).length > 0
 }
 
+function canScrollHorizontally(el: HTMLElement): boolean {
+  const overflowX = el.style.overflowX || el.style.overflow
+  return overflowX === `auto` || overflowX === `scroll`
+}
+
+/**
+ * WeChat paints its own gray left border on every `<blockquote>`.
+ * The theme already draws a quote bar, so the tag shows up as a second strip.
+ * A `<section>` keeps the inlined theme styles and skips that platform chrome.
+ */
+function replaceBlockquotesWithSections(root: HTMLElement) {
+  root.querySelectorAll(`blockquote`).forEach((quote) => {
+    const section = document.createElement(`section`)
+    for (const attr of [...quote.attributes])
+      section.setAttribute(attr.name, attr.value)
+    section.append(...quote.childNodes)
+    quote.replaceWith(section)
+  })
+}
+
 /**
  * WeChat's structure checker measures the pasted article at several phone widths.
- * Shrink-to-fit headings, nowrap code, and unbreakable tables overflow those widths.
+ * Shrink-to-fit headings overflow those widths. Code blocks and tables are meant
+ * to scroll sideways; `data-ignore-width` is the checker's exemption for that,
+ * and `overflow-x: auto` keeps the separate `<pre>` rule from firing.
  * `line-height: 0` on any node that still has text is reported as overlapping lines,
  * including diagram wrappers whose SVG labels count as text. Whitespace-only spacers
  * stay as they are, and KaTeX keeps its own smash line-height.
@@ -199,35 +221,23 @@ export function applyWeChatStructureFixes(root: HTMLElement) {
   })
 
   root.querySelectorAll<HTMLElement>(`table`).forEach((table) => {
-    table.style.width = `100%`
-    table.style.maxWidth = `100%`
-    table.style.minWidth = `0`
-    table.style.tableLayout = `fixed`
-    table.querySelectorAll<HTMLElement>(`th, td`).forEach((cell) => {
-      cell.style.wordBreak = `break-word`
-      cell.style.whiteSpace = `normal`
-      cell.style.overflowWrap = `anywhere`
-      cell.style.minWidth = `0`
-      cell.style.maxWidth = `100%`
-      if (/^\d+(?:\.\d*)?px$/.test(cell.style.width))
-        cell.style.width = `auto`
-    })
+    table.setAttribute(`data-ignore-width`, ``)
+    const wrapper = table.parentElement
+    if (wrapper?.tagName === `SECTION`)
+      wrapper.setAttribute(`data-ignore-width`, ``)
   })
 
-  root.querySelectorAll<HTMLElement>(`pre, code, .code-block__inner, .code-scroll, .code-scroll div`).forEach((el) => {
-    el.style.whiteSpace = `pre-wrap`
-    el.style.wordBreak = `break-all`
-    el.style.overflowWrap = `anywhere`
-    el.style.minWidth = `0`
-    el.style.maxWidth = `100%`
-    el.style.boxSizing = `border-box`
+  root.querySelectorAll<HTMLElement>(`pre, .code-scroll`).forEach((el) => {
+    el.setAttribute(`data-ignore-width`, ``)
     // Theme code blocks already have an 8px side margin. width:100% is the
     // margin box's parent width, so the border box sticks out by that margin.
     if (el.tagName === `PRE` && el.style.width.trim() === `100%`)
       el.style.width = `auto`
-    if (el.style.display === `-webkit-box`)
-      el.style.display = `block`
+    if (!canScrollHorizontally(el))
+      el.style.overflowX = `auto`
   })
+
+  replaceBlockquotesWithSections(root)
 
   root.querySelectorAll<HTMLElement>(`[style*="line-height"]`).forEach((el) => {
     if (!ZERO_CSS_LENGTH.test(el.style.lineHeight.trim()))
