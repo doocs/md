@@ -37,7 +37,7 @@ overrides:
   bn.js@^5: ^5.2.5
   # GHSA-27r3-jxmh-p828: express 5.3 depends on body-parser ^2.3.0
   body-parser: ^2.4.0
-  confbox: 0.3.1
+  confbox: 0.3.2
   core-js: ^3.51.0
   cross-spawn@<7: ^7.0.6
   crypto-browserify: npm:empty-module@0.0.2
@@ -104,7 +104,7 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261112.1
+  '@cloudflare/workers-types': ^5.20261114.1
   '@codemirror/state': 6.7.6
   '@codemirror/view': 6.43.15
   '@types/node': ^26.6.6
@@ -116,5 +116,5 @@ catalog:
   uuid: ^14.0.3
   vitest: ^5.1.0
   # wrangler 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys
-  wrangler: 4.160.1
+  wrangler: 4.162.0
   zod: ^4.6.7

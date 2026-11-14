@@ -106,7 +106,7 @@
   "devDependencies": {
     "@types/node": "catalog:",
     "@types/vscode": "1.146.0",
-    "@vscode/vsce": "^4.1.0",
+    "@vscode/vsce": "^4.1.1",
     "ts-loader": "^9.6.2",
     "tsconfig-paths-webpack-plugin": "^4.2.0",
     "tsx": "catalog:",
