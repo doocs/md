@@ -152,7 +152,7 @@ export function useCommandPalette() {
       },
       {
         id: `new-document`,
-        label: t(`editor.addPost`),
+        label: t(`post.addPost`),
         group: t(`commandPalette.group.file`),
         keywords: [`新建`, `文档`, `内容`, `new`, `document`, `untitled`],
         action: () => { postStore.addPost(t(`common.unnamed`)) },
