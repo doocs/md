@@ -44,7 +44,7 @@ export function markedSlider(): MarkedExtension {
 
           // WeChat-compatible horizontal scroll: section tags + overflow-x scroll
           return `
-            <section style="box-sizing: border-box; font-size: 16px;">
+            <section data-ignore-width style="box-sizing: border-box; font-size: 16px;">
               <section data-role="outer" style="font-family: 微软雅黑; font-size: 16px;">
                 <section data-role="paragraph" style="margin: 0px auto; box-sizing: border-box; width: 100%;">
                   <section style="margin: 0px auto; text-align: center;">

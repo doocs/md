@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from 'vitest'
-import { modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripInvalidCssForJuice } from './clipboard-dom'
+import { applyWeChatStructureFixes, modifyHtmlStructure, promoteSvgHtmlLabels, sanitizeHtmlCssForJuice, solveWeChatImage, stripInvalidCssForJuice } from './clipboard-dom'
 
 describe(`modifyHtmlStructure`, () => {
   it(`moves nested lists out of their parent li`, () => {
@@ -257,5 +257,74 @@ describe(`juice + sanitize flowchart pipeline`, () => {
     expect(root.querySelector(`svg[class], svg [class]`)).toBeNull()
 
     root.remove()
+  })
+})
+
+describe(`applyWeChatStructureFixes`, () => {
+  it(`keeps heading labels inside the column and leaves code and table scrolling intact`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <h2 style="display: table; margin: 2em auto; background: rgb(0, 128, 0);">进阶技巧</h2>
+      <section style="max-width: 100%; overflow: auto;">
+        <table style="min-width: 100%;">
+          <th style="width: 240px; word-break: keep-all;">邮箱</th>
+          <td style="word-break: keep-all;">contact@yanglibin.info</td>
+        </table>
+      </section>
+      <pre class="hljs code__pre" style="overflow-x: auto; width: 100%; margin: 10px 8px;">
+        <code style="display: -webkit-box; white-space: nowrap;">console.log('Hello')</code>
+      </pre>
+      <blockquote style="border-left: 4px solid rgb(0, 128, 0); background: rgb(247, 247, 247); padding: 1em;">
+        <p style="margin: 0;">引用</p>
+        <blockquote style="border-left: 4px solid rgb(0, 128, 0);">嵌套</blockquote>
+      </blockquote>
+    `
+
+    applyWeChatStructureFixes(root)
+
+    const heading = root.querySelector(`h2`)!
+    expect(heading.style.display).toBe(`block`)
+    expect(heading.style.width).toBe(`fit-content`)
+    expect(heading.style.maxWidth).toBe(`100%`)
+    expect(heading.style.marginLeft).toBe(`auto`)
+    expect(heading.style.marginRight).toBe(`auto`)
+
+    const table = root.querySelector(`table`)!
+    expect(table.getAttribute(`data-ignore-width`)).toBe(``)
+    expect(table.parentElement?.getAttribute(`data-ignore-width`)).toBe(``)
+    expect(table.style.tableLayout).toBe(``)
+    expect(root.querySelector(`th`)!.style.wordBreak).toBe(`keep-all`)
+    expect(root.querySelector(`th`)!.style.width).toBe(`240px`)
+
+    const code = root.querySelector(`code`)!
+    expect(code.style.whiteSpace).toBe(`nowrap`)
+    expect(code.style.display).toBe(`-webkit-box`)
+    const pre = root.querySelector(`pre`)!
+    expect(pre.getAttribute(`data-ignore-width`)).toBe(``)
+    expect(pre.style.overflowX).toBe(`auto`)
+    expect(pre.style.width).toBe(`auto`)
+
+    expect(root.querySelector(`blockquote`)).toBeNull()
+    const quotes = [...root.querySelectorAll(`section`)].filter(section => section.style.borderLeftWidth === `4px`)
+    expect(quotes).toHaveLength(2)
+    expect(quotes[0].querySelector(`p`)!.textContent).toBe(`引用`)
+    expect(quotes[1].textContent).toBe(`嵌套`)
+  })
+
+  it(`lifts line-height 0 off text, and leaves spacers and formulas alone`, () => {
+    const root = document.createElement(`div`)
+    root.innerHTML = `
+      <section style="line-height: 0; font-size: 0;">图表标签</section>
+      <p style="font-size: 0; line-height: 0; margin: 0;">&nbsp;</p>
+      <span class="katex" style="line-height: 0;">x</span>
+    `
+
+    applyWeChatStructureFixes(root)
+
+    const diagram = root.querySelector(`section`)!
+    expect(diagram.style.lineHeight).toBe(`normal`)
+    expect(diagram.style.fontSize).toBe(``)
+    expect(root.querySelector(`p`)!.style.lineHeight).toBe(`0`)
+    expect((root.querySelector(`.katex`) as HTMLElement).style.lineHeight).toBe(`0`)
   })
 })
