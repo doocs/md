@@ -268,6 +268,12 @@ export default {
       borderLeft: `左線`,
       custom: `カスタム`,
     },
+    listStyle: {
+      theme: `テーマに従う`,
+      disc: `黒丸`,
+      decimal: `数字`,
+      none: `なし`,
+    },
     legend: {
       titleAlt: `title 優先`,
       altTitle: `alt 優先`,

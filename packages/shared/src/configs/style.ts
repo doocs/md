@@ -334,6 +334,16 @@ export type HeadingStyles = {
 
 export const defaultHeadingStyles: HeadingStyles = {}
 
+/** `theme` keeps each theme's own list markers. Other values override them. */
+export type ListStyleType = 'theme' | 'disc' | 'decimal' | 'none'
+
+export const listStyleOptions: Array<{ value: ListStyleType }> = [
+  { value: `theme` },
+  { value: `disc` },
+  { value: `decimal` },
+  { value: `none` },
+]
+
 export const legendOptions: IConfigOption[] = [
   {
     label: `title 优先`,
@@ -383,6 +393,7 @@ export const defaultStyleConfig = {
   codeBlockTheme: codeBlockThemeOptions[23].value,
   legend: legendOptions[3].value,
   headingStyles: defaultHeadingStyles as HeadingStyles,
+  listStyle: `theme` as ListStyleType,
 }
 
 export interface PerThemeSettings {
@@ -395,6 +406,7 @@ export interface PerThemeSettings {
   blockquoteBackground: string
   codeBlockTheme: string
   headingStyles: HeadingStyles
+  listStyle: ListStyleType
   isShowLineNumber: boolean
   isMacCodeBlock: boolean
 }
@@ -410,6 +422,7 @@ export function defaultPerThemeSettings(): PerThemeSettings {
     blockquoteBackground: defaultStyleConfig.blockquoteBackground,
     codeBlockTheme: defaultStyleConfig.codeBlockTheme,
     headingStyles: { ...defaultStyleConfig.headingStyles },
+    listStyle: defaultStyleConfig.listStyle,
     isShowLineNumber: defaultStyleConfig.isShowLineNumber,
     isMacCodeBlock: defaultStyleConfig.isMacCodeBlock,
   }

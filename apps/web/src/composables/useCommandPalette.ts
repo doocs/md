@@ -2,11 +2,14 @@ import type { EditorView } from '@codemirror/view'
 import { ctrlSign, shiftSign } from '@md/shared/configs'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { t } from '@/i18n/translate'
+import { readSearchSeed } from '@/lib/editor/searchSeed'
 import { isAccountUiEnabled } from '@/services/account/config'
 import { isShareUiEnabled } from '@/services/share/client'
 import { isSyncUiEnabled } from '@/services/sync/client'
 import { useEditorStore } from '@/stores/editor'
+import { useExportStore } from '@/stores/export'
 import { useLocaleStore } from '@/stores/locale'
+import { usePostStore } from '@/stores/post'
 import { useUIStore } from '@/stores/ui'
 
 export interface PaletteCommand {
@@ -21,6 +24,8 @@ export interface PaletteCommand {
 export function useCommandPalette() {
   const uiStore = useUIStore()
   const editorStore = useEditorStore()
+  const exportStore = useExportStore()
+  const postStore = usePostStore()
   const localeStore = useLocaleStore()
   const { formatContent } = useEditorDocumentActions()
 
@@ -146,15 +151,35 @@ export function useCommandPalette() {
         action: () => { uiStore.toggleShowEditorStateDialog(true) },
       },
       {
+        id: `new-document`,
+        label: t(`post.addPost`),
+        group: t(`commandPalette.group.file`),
+        keywords: [`新建`, `文档`, `内容`, `new`, `document`, `untitled`],
+        action: () => { postStore.addPost(t(`common.unnamed`)) },
+      },
+      {
+        id: `export-markdown`,
+        label: t(`menu.exportMarkdown`),
+        group: t(`commandPalette.group.file`),
+        keywords: [`导出`, `markdown`, `md`, `export`],
+        action: () => { exportStore.exportEditorContent2MD(editorStore.getContent()) },
+      },
+      {
+        id: `export-pdf`,
+        label: t(`menu.exportPdf`),
+        group: t(`commandPalette.group.file`),
+        keywords: [`导出`, `pdf`, `export`],
+        action: () => { uiStore.openPdfExportDialog() },
+      },
+      {
         id: `find`,
         label: t(`menu.find`),
         group: t(`commandPalette.group.edit`),
         keywords: [`查找`, `搜索`, `find`, `search`],
         shortcut: [ctrlSign, `F`],
         action: () => withEditor((view) => {
-          const selection = view.state.selection.main
-          const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
-          uiStore.openSearchTab(selected)
+          const seed = readSearchSeed(view)
+          uiStore.openSearchTab(seed.word, false, seed.findInSelection)
           view.focus()
         }),
       },
@@ -165,11 +190,17 @@ export function useCommandPalette() {
         keywords: [`替换`, `replace`],
         shortcut: [ctrlSign, `H`],
         action: () => withEditor((view) => {
-          const selection = view.state.selection.main
-          const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
-          uiStore.openSearchTab(selected, true)
+          const seed = readSearchSeed(view)
+          uiStore.openSearchTab(seed.word, true, seed.findInSelection)
           view.focus()
         }),
+      },
+      {
+        id: `copy-wechat`,
+        label: t(`menu.copyWechat`),
+        group: t(`commandPalette.group.edit`),
+        keywords: [`复制`, `公众号`, `微信`, `copy`, `wechat`],
+        action: () => { uiStore.requestCopy(`txt`) },
       },
       {
         id: `format-doc`,

@@ -39,7 +39,7 @@ const { editorRefresh } = useEditorRefresh()
 const { editor } = storeToRefs(editorStore)
 const { output } = storeToRefs(renderStore)
 const { primaryColor } = storeToRefs(themeStore)
-const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowPdfExportDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowPreferencesDialog, isShowMarkdownHelpDialog, isShowKeyboardShortcutsDialog, copyMode } = storeToRefs(uiStore)
+const { isOpenRightSlider, isShowSyncDialog, isShowAccountDialog, isShowShareDialog, isShowPdfExportDialog, isShowAboutDialog, isShowFundDialog, isShowEditorStateDialog, isShowPreferencesDialog, isShowMarkdownHelpDialog, isShowKeyboardShortcutsDialog, copyMode, copyRequest, copyRequestMode } = storeToRefs(uiStore)
 
 const isCopying = ref(false)
 
@@ -221,6 +221,12 @@ function copyToWeChat() {
   copyMode.value = 'txt'
   copy()
 }
+
+watch(copyRequest, (tick) => {
+  if (!tick)
+    return
+  handleCopy(copyRequestMode.value)
+})
 </script>
 
 <template>

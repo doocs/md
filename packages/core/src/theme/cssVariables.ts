@@ -1,6 +1,6 @@
 /** Dynamic CSS variable generation from editor config */
 
-import type { HeadingLevel, HeadingStyles, HeadingStyleType } from '@md/shared/configs'
+import type { HeadingLevel, HeadingStyles, HeadingStyleType, ListStyleType } from '@md/shared/configs'
 
 export interface CSSVariableConfig {
   primaryColor: string
@@ -17,6 +17,8 @@ export interface CSSVariableConfig {
   isUseIndent?: boolean
   isUseJustify?: boolean
   headingStyles?: HeadingStyles
+  /** `theme` (or omitted) leaves each theme's list markers unchanged. */
+  listStyle?: ListStyleType
 }
 
 /** Kept in sync with defaultStyleConfig; optional so existing callers (VSCode preview, theme export) need no change. */
@@ -55,6 +57,39 @@ export function generateCSSVariables(config: CSSVariableConfig): string {
 /** Heading preset CSS (apply after theme CSS) */
 export function generateHeadingStyles(config: CSSVariableConfig): string {
   return generateHeadingStylesCSS(config.headingStyles)
+}
+
+/**
+ * List marker override. Themes set `li { display: block }`, which hides
+ * `list-style` markers, so a visible preset also restores `list-item`.
+ */
+export function generateListStyleCSS(listStyle?: ListStyleType): string {
+  if (!listStyle || listStyle === `theme`)
+    return ``
+
+  if (listStyle === `none`) {
+    return `#output ul,
+#output ol {
+  list-style-type: none;
+}
+
+#output li {
+  display: block;
+}`
+  }
+
+  const unordered = listStyle === `decimal` ? `decimal` : `disc`
+  return `#output ul {
+  list-style-type: ${unordered};
+}
+
+#output ol {
+  list-style-type: decimal;
+}
+
+#output li {
+  display: list-item;
+}`
 }
 
 function generateHeadingStylesCSS(headingStyles?: HeadingStyles): string {

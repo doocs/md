@@ -268,6 +268,12 @@ export default {
       borderLeft: `左邊框`,
       custom: `自訂`,
     },
+    listStyle: {
+      theme: `跟隨主題`,
+      disc: `圓點`,
+      decimal: `數字`,
+      none: `無標記`,
+    },
     legend: {
       titleAlt: `title 優先`,
       altTitle: `alt 優先`,

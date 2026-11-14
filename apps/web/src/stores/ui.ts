@@ -49,6 +49,13 @@ export const useUIStore = defineStore(`ui`, () => {
   const toggleScrollSync = useToggle(enableScrollSync)
 
   const copyMode = store.reactive(addPrefix(`copyMode`), `txt`)
+  const copyRequest = ref(0)
+  const copyRequestMode = ref(`txt`)
+
+  function requestCopy(mode: string) {
+    copyRequestMode.value = mode
+    copyRequest.value += 1
+  }
 
   const isShowCssEditor = store.reactive(`isShowCssEditor`, false)
   const toggleShowCssEditor = useToggle(isShowCssEditor)
@@ -194,10 +201,10 @@ export const useUIStore = defineStore(`ui`, () => {
     aiImageDialogVisible.value = value ?? !aiImageDialogVisible.value
   }
 
-  const searchTabRequest = ref<{ word: string, showReplace: boolean } | null>(null)
+  const searchTabRequest = ref<{ word: string, showReplace: boolean, findInSelection: boolean } | null>(null)
 
-  function openSearchTab(searchWord: string = '', showReplace: boolean = false) {
-    searchTabRequest.value = { word: searchWord, showReplace }
+  function openSearchTab(searchWord: string = '', showReplace: boolean = false, findInSelection: boolean = false) {
+    searchTabRequest.value = { word: searchWord, showReplace, findInSelection }
   }
 
   function clearSearchTabRequest() {
@@ -252,6 +259,9 @@ export const useUIStore = defineStore(`ui`, () => {
     enableImageReupload,
     enableScrollSync,
     copyMode,
+    copyRequest,
+    copyRequestMode,
+    requestCopy,
 
     isShowCssEditor,
     toggleShowCssEditor,
