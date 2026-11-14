@@ -268,6 +268,12 @@ export default {
       borderLeft: `Left line`,
       custom: `Custom`,
     },
+    listStyle: {
+      theme: `Theme`,
+      disc: `Bullets`,
+      decimal: `Numbers`,
+      none: `None`,
+    },
     legend: {
       titleAlt: `title first`,
       altTitle: `alt first`,

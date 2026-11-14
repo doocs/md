@@ -32,6 +32,7 @@ export default {
   rightSlider: {
     title: `Styles`,
     headingStyle: `Heading`,
+    listStyle: `List`,
     selectHeading: `Heading`,
     selectStyle: `Style`,
     styleConfig: `Actions`,

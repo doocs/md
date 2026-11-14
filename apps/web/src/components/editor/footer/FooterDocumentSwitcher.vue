@@ -63,7 +63,7 @@ function switchToPost(id: string) {
       <Tooltip>
         <TooltipTrigger as-child>
           <button
-            class="ml-1.5 flex max-w-24 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-36"
+            class="ml-1.5 flex max-w-40 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-56"
             @click="openSwitcher"
           >
             <FileText class="size-3 shrink-0 opacity-60" />
@@ -71,7 +71,10 @@ function switchToPost(id: string) {
             <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
           </button>
         </TooltipTrigger>
-        <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+        <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="max-w-xs text-xs text-muted-foreground">
+          <p class="break-all text-foreground">
+            {{ props.currentTitle || t('common.unnamed') }}
+          </p>
           <p>{{ t('footer.switchDocument') }}</p>
         </TooltipContent>
       </Tooltip>

@@ -12,6 +12,7 @@ import { useLocalizedAllComponents } from '@/composables/useLocalizedBuiltinComp
 import { useLocalizedUploadHostOptions } from '@/composables/useLocalizedUploadHosts'
 import { useSlashCommand } from '@/composables/useSlashCommand'
 import { CONTENT_FONT_LANG } from '@/i18n/constants'
+import { readSearchSeed } from '@/lib/editor/searchSeed'
 import { toStoredDateTime } from '@/lib/format/datetime'
 import { jumpToAdjacentHeading } from '@/lib/markdown/headingNavigation'
 import { contentHasMath, loadMathJax, MATHJAX_READY_EVENT } from '@/lib/preview/mathjax'
@@ -95,17 +96,18 @@ const isImgLoading = ref(false)
 // --- Search tab integration ---
 const searchTabRef = useTemplateRef<InstanceType<typeof SearchTabType>>(`searchTabRef`)
 const searchTabMounted = ref(false)
-const pendingSearchRequest = ref<{ selected: string } | null>(null)
+const pendingSearchRequest = ref<{ word: string, showReplace: boolean, findInSelection: boolean } | null>(null)
 
 function applySearchRequest(
   target: InstanceType<typeof SearchTabType>,
   word: string,
   showReplace = false,
+  findInSelection = false,
 ) {
   if (showReplace)
-    target.setSearchWithReplace(word)
-  else if (word)
-    target.setSearchWord(word)
+    target.setSearchWithReplace(word, findInSelection)
+  else if (word || findInSelection)
+    target.setSearchWord(word, findInSelection)
   else
     target.showSearchTab = true
 }
@@ -118,24 +120,22 @@ const { searchTabRequest } = storeToRefs(uiStore)
 
 function openSearchWithSelection(view: EditorView) {
   mountSearchTab()
-  const selection = view.state.selection.main
-  const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
+  const seed = readSearchSeed(view)
 
   if (searchTabRef.value)
-    applySearchRequest(searchTabRef.value, selected)
+    applySearchRequest(searchTabRef.value, seed.word, false, seed.findInSelection)
   else
-    pendingSearchRequest.value = { selected }
+    pendingSearchRequest.value = { word: seed.word, showReplace: false, findInSelection: seed.findInSelection }
 }
 
 function openReplaceWithSelection(view: EditorView) {
   mountSearchTab()
-  const selection = view.state.selection.main
-  const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
+  const seed = readSearchSeed(view)
 
   if (searchTabRef.value)
-    searchTabRef.value.setSearchWithReplace(selected)
+    searchTabRef.value.setSearchWithReplace(seed.word, seed.findInSelection)
   else
-    uiStore.openSearchTab(selected, true)
+    uiStore.openSearchTab(seed.word, true, seed.findInSelection)
 }
 
 watch(searchTabRef, (newRef) => {
@@ -143,13 +143,14 @@ watch(searchTabRef, (newRef) => {
     return
 
   if (pendingSearchRequest.value) {
-    applySearchRequest(newRef, pendingSearchRequest.value.selected)
+    const pending = pendingSearchRequest.value
+    applySearchRequest(newRef, pending.word, pending.showReplace, pending.findInSelection)
     pendingSearchRequest.value = null
   }
 
   if (searchTabRequest.value) {
-    const { word, showReplace } = searchTabRequest.value
-    applySearchRequest(newRef, word, showReplace)
+    const { word, showReplace, findInSelection } = searchTabRequest.value
+    applySearchRequest(newRef, word, showReplace, findInSelection)
     uiStore.clearSearchTabRequest()
   }
 })
@@ -159,7 +160,7 @@ watch(searchTabRequest, (request) => {
     return
   mountSearchTab()
   if (searchTabRef.value) {
-    applySearchRequest(searchTabRef.value, request.word, request.showReplace)
+    applySearchRequest(searchTabRef.value, request.word, request.showReplace, request.findInSelection)
     uiStore.clearSearchTabRequest()
   }
 })

@@ -5,7 +5,7 @@ import type { CSSVariableConfig } from './cssVariables'
 import { baseCSSContent, isBuiltinThemeName, themeMap } from '@md/shared/configs'
 import { processCSS } from './cssProcessor'
 import { wrapCSSWithScope } from './cssScopeWrapper'
-import { generateCSSVariables, generateHeadingStyles } from './cssVariables'
+import { generateCSSVariables, generateHeadingStyles, generateListStyleCSS } from './cssVariables'
 import { getThemeInjector } from './themeInjector'
 
 export interface ThemeConfig {
@@ -38,6 +38,7 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
   const scopedThemeCSS = wrapCSSWithScope(themeCSS, `#output`)
 
   const headingStylesCSS = generateHeadingStyles(config.variables)
+  const listStyleCSS = generateListStyleCSS(config.variables.listStyle)
 
   const scopedCustomCSS = config.customCSS
     ? wrapCSSWithScope(config.customCSS, `#output`)
@@ -48,6 +49,7 @@ export async function applyTheme(config: ThemeConfig): Promise<void> {
     baseCSSContent,
     scopedThemeCSS,
     headingStylesCSS,
+    listStyleCSS,
     scopedCustomCSS,
   ].filter(Boolean).join(`\n\n`)
 
