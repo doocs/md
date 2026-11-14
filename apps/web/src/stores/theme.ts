@@ -1,4 +1,4 @@
-import type { HeadingLevel, HeadingStyles, HeadingStyleType, PerThemeSettings, PerThemeSettingsMap, ThemeName } from '@md/shared/configs'
+import type { HeadingLevel, HeadingStyles, HeadingStyleType, ListStyleType, PerThemeSettings, PerThemeSettingsMap, ThemeName } from '@md/shared/configs'
 import { applyTheme } from '@md/core/theme'
 import { defaultPerThemeSettings, defaultStyleConfig, widthOptions } from '@md/shared/configs'
 import { isMarketplaceThemeKey } from '@md/shared/types'
@@ -10,7 +10,7 @@ import { useCssEditorStore } from '@/stores/cssEditor'
  * Theme and style configuration.
  *
  * Each theme has its own settings (primaryColor, fontFamily, fontSize, lineHeight,
- * blockSpacing, linkColor, blockquoteBackground, codeBlockTheme, headingStyles,
+ * blockSpacing, linkColor, blockquoteBackground, codeBlockTheme, headingStyles, listStyle,
  * isShowLineNumber, isMacCodeBlock); switching themes loads the matching config.
  */
 export const useThemeStore = defineStore(`theme`, () => {
@@ -70,6 +70,11 @@ export const useThemeStore = defineStore(`theme`, () => {
   const headingStyles = computed<HeadingStyles>({
     get: () => currentSettings.value.headingStyles,
     set: (v: HeadingStyles) => { setThemeField(`headingStyles`, v) },
+  })
+
+  const listStyle = computed<ListStyleType>({
+    get: () => currentSettings.value.listStyle ?? defaultStyleConfig.listStyle,
+    set: (v: ListStyleType) => { setThemeField(`listStyle`, v) },
   })
 
   const isShowLineNumber = computed<boolean>({
@@ -177,6 +182,7 @@ export const useThemeStore = defineStore(`theme`, () => {
           isUseIndent: isUseIndent.value,
           isUseJustify: isUseJustify.value,
           headingStyles: headingStyles.value,
+          listStyle: listStyle.value,
         },
       })
     }
@@ -206,6 +212,7 @@ export const useThemeStore = defineStore(`theme`, () => {
     isUseJustify,
     previewWidth,
     headingStyles,
+    listStyle,
     toggleMacCodeBlock,
     toggleShowLineNumber,
     toggleCiteStatus,

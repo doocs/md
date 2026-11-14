@@ -86,12 +86,6 @@ watch(showSearchTab, async () => {
     selectionRange.value = null
   }
   else {
-    // Auto-enable find-in-selection when text is selected
-    const selection = props.editorView.state.selection.main
-    if (!selection.empty) {
-      findInSelection.value = true
-      selectionRange.value = { from: selection.from, to: selection.to }
-    }
     markMatch()
     // Focus search input after DOM update without losing editor selection
     await nextTick()
@@ -359,8 +353,19 @@ function handleReplaceAll() {
   findAllMatches()
 }
 
-function setSearchWord(word: string) {
+function applySelectionScope(inSelection: boolean) {
+  findInSelection.value = inSelection
+  if (!inSelection) {
+    selectionRange.value = null
+    return
+  }
+  const selection = props.editorView.state.selection.main
+  selectionRange.value = { from: selection.from, to: selection.to }
+}
+
+function setSearchWord(word: string, inSelection = false) {
   searchWord.value = word
+  applySelectionScope(inSelection)
   if (!showSearchTab.value) {
     showSearchTab.value = true
   }
@@ -375,8 +380,9 @@ function setSearchWord(word: string) {
 /**
  * Open search panel with replace expanded
  */
-function setSearchWithReplace(word: string) {
+function setSearchWithReplace(word: string, inSelection = false) {
   searchWord.value = word
+  applySelectionScope(inSelection)
   showReplace.value = true
   if (!showSearchTab.value) {
     showSearchTab.value = true

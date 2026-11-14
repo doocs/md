@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { processCSS } from './cssProcessor'
-import { generateCSSVariables } from './cssVariables'
+import { generateCSSVariables, generateListStyleCSS } from './cssVariables'
 
 const baseConfig = {
   primaryColor: `#0F4C81`,
@@ -120,5 +120,29 @@ describe(`block spacing resolution`, () => {
 
     expect(css).not.toContain(`calc(`)
     expect(css).not.toContain(`var(--md-block-spacing)`)
+  })
+})
+
+describe(`generateListStyleCSS`, () => {
+  it(`leaves the theme list markers alone by default`, () => {
+    expect(generateListStyleCSS()).toBe(``)
+    expect(generateListStyleCSS(`theme`)).toBe(``)
+  })
+
+  it(`restores list-item so disc and decimal markers are visible`, () => {
+    const disc = generateListStyleCSS(`disc`)
+    expect(disc).toContain(`list-style-type: disc`)
+    expect(disc).toContain(`list-style-type: decimal`)
+    expect(disc).toContain(`display: list-item`)
+
+    const decimal = generateListStyleCSS(`decimal`)
+    expect(decimal).toContain(`#output ul`)
+    expect(decimal).toContain(`list-style-type: decimal`)
+  })
+
+  it(`can hide markers explicitly`, () => {
+    const css = generateListStyleCSS(`none`)
+    expect(css).toContain(`list-style-type: none`)
+    expect(css).toContain(`display: block`)
   })
 })
