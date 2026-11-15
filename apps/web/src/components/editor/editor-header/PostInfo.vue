@@ -26,6 +26,10 @@ const dialogVisible = ref(false)
 const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
+const logoutPlatforms = ref<string[]>([])
+const logoutStatus = ref('')
+const logoutPending = ref(false)
+const logoutTarget = ref('')
 const postTaskDialogVisible = ref(false)
 const isCheckingLogin = ref(false)
 const devtoGuideOpen = ref(false)
@@ -196,6 +200,12 @@ function prePost() {
 
 watch(dialogVisible, (newVal) => {
   if (newVal) {
+    logoutStatus.value = ''
+    void window.$cose?.getLogoutPlatforms?.().then((platforms) => {
+      logoutPlatforms.value = window.$cose?.clearPlatformSession && Array.isArray(platforms) ? platforms : []
+    }).catch(() => {
+      logoutPlatforms.value = []
+    })
     prePost()
   }
   else {
@@ -228,28 +238,42 @@ function startLoginDetection() {
   }
 
   isCheckingLogin.value = true
-  let hasReceivedAny = false
-
-  // Stop detection after 15s with no response
-  const LOGIN_CHECK_TIMEOUT_MS = 15000
   const timeoutId = setTimeout(() => {
-    if (!hasReceivedAny) {
-      allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
+    const pending = allAccounts.value.filter(account => account.isChecking).map(account => account.type)
+    if (!pending.length)
+      return
+
+    // Retry unresolved platforms without restarting checks that already finished.
+    const finishPending = () => {
+      allAccounts.value = allAccounts.value.map(account => account.isChecking ? { ...account, isChecking: false } : account)
       isCheckingLogin.value = false
     }
-  }, LOGIN_CHECK_TIMEOUT_MS)
+    const fallbackTimeout = setTimeout(finishPending, 10000)
+    void Promise.resolve(cose.getAccounts?.((accounts) => {
+      for (const account of accounts) {
+        const index = allAccounts.value.findIndex(item => item.type === account.type && item.isChecking)
+        if (index !== -1)
+          allAccounts.value[index] = { ...account, isChecking: false }
+      }
+      clearTimeout(fallbackTimeout)
+      finishPending()
+    }, pending)).catch(() => {
+      clearTimeout(fallbackTimeout)
+      finishPending()
+    })
+  }, 15000)
 
   if (typeof cose.getAccountsProgressive === `function`) {
     cose.getAccountsProgressive(
       (account: PostAccount, _completed: number, _total: number) => {
-        hasReceivedAny = true
-
         const idx = allAccounts.value.findIndex(a => a.type === account.type)
         if (idx !== -1) {
           allAccounts.value[idx] = { ...account, checked: false, isChecking: false }
         }
       },
       () => {
+        if (allAccounts.value.some(account => account.isChecking))
+          return
         clearTimeout(timeoutId)
         isCheckingLogin.value = false
       },
@@ -257,7 +281,6 @@ function startLoginDetection() {
   }
   else {
     cose.getAccounts?.((resp: PostAccount[]) => {
-      hasReceivedAny = true
       clearTimeout(timeoutId)
       allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))
       isCheckingLogin.value = false
@@ -301,6 +324,44 @@ function onDevtoFrameMessage(event: MessageEvent) {
   }
   else if (event.data?.type === 'cose-devto-connection-changed') {
     void recheckDevto()
+  }
+}
+
+async function logoutPlatform(account: PostAccount) {
+  if (logoutPending.value)
+    return
+  logoutPending.value = true
+  logoutTarget.value = account.type
+  logoutStatus.value = ''
+  try {
+    const result = await window.$cose?.clearPlatformSession?.(account.type, locale.value)
+    if (result?.status === 'cancelled')
+      return
+    if (result?.status === 'cleared' || result?.status === 'missing') {
+      let refreshedAccount: PostAccount | undefined
+      await window.$cose?.getAccounts?.((accounts) => {
+        const refreshed = accounts.find(item => item.type === account.type)
+        refreshedAccount = refreshed
+        const index = allAccounts.value.findIndex(item => item.type === account.type)
+        if (refreshed && index !== -1)
+          allAccounts.value[index] = { ...refreshed, isChecking: false }
+      }, [account.type])
+      if (!refreshedAccount)
+        logoutStatus.value = 'platformLogoutError'
+      else if (refreshedAccount.loggedIn)
+        logoutStatus.value = 'platformLogoutStillSignedIn'
+      else
+        logoutStatus.value = result.status === 'cleared' ? 'platformLogoutSuccess' : 'platformLogoutMissing'
+    }
+    else {
+      logoutStatus.value = 'platformLogoutError'
+    }
+  }
+  catch {
+    logoutStatus.value = 'platformLogoutError'
+  }
+  finally {
+    logoutPending.value = false
   }
 }
 
@@ -577,6 +638,7 @@ onBeforeMount(() => {
                       v-for="account in category.accounts"
                       :key="account.uid"
                       class="flex min-w-0 items-center gap-2"
+                      :class="{ 'flex-wrap': logoutTarget === account.type && logoutStatus }"
                     >
                       <CheckboxRoot
                         v-model="account.checked"
@@ -608,6 +670,17 @@ onBeforeMount(() => {
                         >
                         <span v-if="accountHandle(account)" class="truncate text-sm text-muted-foreground">@{{ accountHandle(account) }}</span>
                         <button
+                          v-if="logoutPlatforms.includes(account.type)"
+                          :disabled="logoutPending"
+                          :aria-busy="logoutPending && logoutTarget === account.type"
+                          type="button"
+                          class="shrink-0 cursor-pointer rounded px-1 py-1 text-xs text-primary underline-offset-4 hover:underline focus-visible:ring-2"
+                          @click.stop="logoutPlatform(account)"
+                        >
+                          <Loader2 v-if="logoutPending && logoutTarget === account.type" class="mr-1 inline-block h-3 w-3 animate-spin" aria-hidden="true" />
+                          {{ t('postInfo.platformLogout') }}
+                        </button>
+                        <button
                           v-if="account.type === 'devto'"
                           type="button"
                           :aria-expanded="devtoGuideOpen"
@@ -630,6 +703,9 @@ onBeforeMount(() => {
                       </button>
                       <span v-else-if="account.type === 'substack' && !substackSetupUrl" class="text-xs text-muted-foreground">
                         {{ t('postInfo.substackUpdateExtension') }}
+                      </span>
+                      <span v-else-if="account.accountClosed" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.platformAccountClosed') }}
                       </span>
                       <Primitive
                         v-else-if="!isSelfHosted(account.type) && account.type !== 'substack'"
@@ -661,6 +737,9 @@ onBeforeMount(() => {
                       >
                         {{ selfHostedSetup === account.type ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
+                      <p v-if="logoutStatus && logoutTarget === account.type" role="status" class="basis-full text-xs text-muted-foreground">
+                        {{ t(`postInfo.${logoutStatus}`) }}
+                      </p>
                     </div>
                     <div
                       v-if="substackSetupOpen && substackSetupUrl && category.accounts.some(account => account.type === 'substack')"

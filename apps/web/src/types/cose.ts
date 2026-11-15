@@ -42,6 +42,8 @@ export interface CoseAddTaskData {
 /** Window API injected by https://github.com/doocs/cose */
 export interface CoseApi {
   getPlatforms?: () => CosePlatform[]
+  getLogoutPlatforms?: () => Promise<string[]>
+  clearPlatformSession?: (platformId: string, locale: string) => Promise<{ status?: string }>
   getDevtoSetupUrl?: () => string | null
   getHaloSetupUrl?: () => string | null
   getSubstackSetupUrl?: () => string | null
