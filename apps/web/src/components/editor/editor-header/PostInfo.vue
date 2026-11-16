@@ -678,7 +678,7 @@ onBeforeMount(() => {
                           @click.stop="logoutPlatform(account)"
                         >
                           <Loader2 v-if="logoutPending && logoutTarget === account.type" class="mr-1 inline-block h-3 w-3 animate-spin" aria-hidden="true" />
-                          {{ t('postInfo.platformLogout') }}
+                          {{ t('common.logout') }}
                         </button>
                         <button
                           v-if="account.type === 'devto'"

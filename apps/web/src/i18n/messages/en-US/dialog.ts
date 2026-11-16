@@ -183,7 +183,6 @@ export default {
     substackUpdateExtension: 'Current COSE build does not support Substack',
     substackConnect: 'Connect',
     platformAccountClosed: `Account closed`,
-    platformLogout: `Log out`,
     platformLogoutSuccess: `Login cookies cleared.`,
     platformLogoutMissing: `No login cookies found.`,
     platformLogoutStillSignedIn: `Still signed in. Try signing out on the platform website.`,

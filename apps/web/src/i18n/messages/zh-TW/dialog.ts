@@ -183,7 +183,6 @@ export default {
     substackUpdateExtension: '目前的 COSE 版本不支援 Substack',
     substackConnect: '連線',
     platformAccountClosed: `帳號已註銷`,
-    platformLogout: `Log out`,
     platformLogoutSuccess: `已清除登入 Cookie。`,
     platformLogoutMissing: `找不到登入 Cookie。`,
     platformLogoutStillSignedIn: `帳號仍處於登入狀態，請在平台官網登出。`,

@@ -183,7 +183,6 @@ export default {
     substackUpdateExtension: '当前 COSE 版本不支持 Substack',
     substackConnect: '连接',
     platformAccountClosed: `账号已注销`,
-    platformLogout: `Log out`,
     platformLogoutSuccess: `已清理登录 Cookie。`,
     platformLogoutMissing: `未找到登录 Cookie。`,
     platformLogoutStillSignedIn: `账号仍然在线，请在平台官网退出。`,
