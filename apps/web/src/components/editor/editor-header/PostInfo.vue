@@ -27,7 +27,6 @@ const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
 const logoutPlatforms = ref<string[]>([])
-const logoutStatus = ref('')
 const logoutPending = ref(false)
 const logoutTarget = ref('')
 const postTaskDialogVisible = ref(false)
@@ -200,7 +199,6 @@ function prePost() {
 
 watch(dialogVisible, (newVal) => {
   if (newVal) {
-    logoutStatus.value = ''
     void window.$cose?.getLogoutPlatforms?.().then((platforms) => {
       logoutPlatforms.value = window.$cose?.clearPlatformSession && Array.isArray(platforms) ? platforms : []
     }).catch(() => {
@@ -332,33 +330,19 @@ async function logoutPlatform(account: PostAccount) {
     return
   logoutPending.value = true
   logoutTarget.value = account.type
-  logoutStatus.value = ''
   try {
     const result = await window.$cose?.clearPlatformSession?.(account.type, locale.value)
-    if (result?.status === 'cancelled')
+    if (result?.status !== 'cleared' && result?.status !== 'missing')
       return
-    if (result?.status === 'cleared' || result?.status === 'missing') {
-      let refreshedAccount: PostAccount | undefined
-      await window.$cose?.getAccounts?.((accounts) => {
-        const refreshed = accounts.find(item => item.type === account.type)
-        refreshedAccount = refreshed
-        const index = allAccounts.value.findIndex(item => item.type === account.type)
-        if (refreshed && index !== -1)
-          allAccounts.value[index] = { ...refreshed, isChecking: false }
-      }, [account.type])
-      if (!refreshedAccount)
-        logoutStatus.value = 'platformLogoutError'
-      else if (refreshedAccount.loggedIn)
-        logoutStatus.value = 'platformLogoutStillSignedIn'
-      else
-        logoutStatus.value = result.status === 'cleared' ? 'platformLogoutSuccess' : 'platformLogoutMissing'
-    }
-    else {
-      logoutStatus.value = 'platformLogoutError'
-    }
+    await window.$cose?.getAccounts?.((accounts) => {
+      const refreshed = accounts.find(item => item.type === account.type)
+      const index = allAccounts.value.findIndex(item => item.type === account.type)
+      if (refreshed && index !== -1)
+        allAccounts.value[index] = { ...refreshed, isChecking: false }
+    }, [account.type])
   }
   catch {
-    logoutStatus.value = 'platformLogoutError'
+    // Leave the current row in place when logout or the follow-up check fails.
   }
   finally {
     logoutPending.value = false
@@ -638,7 +622,6 @@ onBeforeMount(() => {
                       v-for="account in category.accounts"
                       :key="account.uid"
                       class="flex min-w-0 items-center gap-2"
-                      :class="{ 'flex-wrap': logoutTarget === account.type && logoutStatus }"
                     >
                       <CheckboxRoot
                         v-model="account.checked"
@@ -737,9 +720,6 @@ onBeforeMount(() => {
                       >
                         {{ selfHostedSetup === account.type ? t('common.close') : isSignedInAccount(account) ? t('commandPalette.group.settings') : t('common.login') }}
                       </button>
-                      <p v-if="logoutStatus && logoutTarget === account.type" role="status" class="basis-full text-xs text-muted-foreground">
-                        {{ t(`postInfo.${logoutStatus}`) }}
-                      </p>
                     </div>
                     <div
                       v-if="substackSetupOpen && substackSetupUrl && category.accounts.some(account => account.type === 'substack')"
