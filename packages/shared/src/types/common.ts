@@ -95,6 +95,7 @@ export interface Alert {
 }
 
 export interface PostAccount {
+  accountClosed?: boolean
   avatar?: string
   displayName: string
   home: string

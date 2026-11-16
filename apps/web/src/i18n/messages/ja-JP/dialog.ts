@@ -182,6 +182,7 @@ export default {
     extensionLinkText: `COSE 記事同期アシスタント`,
     substackUpdateExtension: '現在の COSE バージョンは Substack に対応していません',
     substackConnect: '接続',
+    platformAccountClosed: `アカウントは閉鎖済みです`,
     devtoConnect: `接続`,
     devtoCollapse: `折りたたむ`,
     devtoReplaceKey: `キーを更新`,

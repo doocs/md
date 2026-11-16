@@ -182,6 +182,7 @@ export default {
     extensionLinkText: `COSE Article Sync Assistant`,
     substackUpdateExtension: 'Current COSE build does not support Substack',
     substackConnect: 'Connect',
+    platformAccountClosed: `Account closed`,
     devtoConnect: `Connect`,
     devtoCollapse: `Collapse`,
     devtoReplaceKey: `Replace key`,

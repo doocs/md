@@ -182,6 +182,7 @@ export default {
     extensionLinkText: `COSE 文章同步助手`,
     substackUpdateExtension: '目前的 COSE 版本不支援 Substack',
     substackConnect: '連線',
+    platformAccountClosed: `帳號已註銷`,
     devtoConnect: `連線`,
     devtoCollapse: `摺疊`,
     devtoReplaceKey: `更換金鑰`,

@@ -26,8 +26,10 @@ const dialogVisible = ref(false)
 const thumbPreviewVisible = ref(false)
 const extensionInstalled = ref(false)
 const allAccounts = ref<PostAccount[]>([])
+const logoutPlatforms = ref<string[]>([])
+const logoutPending = ref(false)
+const logoutTarget = ref('')
 const postTaskDialogVisible = ref(false)
-const isCheckingLogin = ref(false)
 const devtoGuideOpen = ref(false)
 const devtoFormHeight = ref(160)
 const isCheckingDevto = ref(false)
@@ -196,6 +198,11 @@ function prePost() {
 
 watch(dialogVisible, (newVal) => {
   if (newVal) {
+    void window.$cose?.getLogoutPlatforms?.().then((platforms) => {
+      logoutPlatforms.value = window.$cose?.clearPlatformSession && Array.isArray(platforms) ? platforms : []
+    }).catch(() => {
+      logoutPlatforms.value = []
+    })
     prePost()
   }
   else {
@@ -216,51 +223,95 @@ function getInitialPlatforms(): PostAccount[] {
   return []
 }
 
-// Async login check with progressive UI updates
+let loginCheckToken = 0
+let loginCheckTimer: ReturnType<typeof setTimeout> | undefined
+
+function stopLoginCheckTimer() {
+  if (loginCheckTimer === undefined)
+    return
+  clearTimeout(loginCheckTimer)
+  loginCheckTimer = undefined
+}
+
+function applyDetectedAccount(account: PostAccount, pendingOnly = false) {
+  const index = allAccounts.value.findIndex(item => item.type === account.type && (!pendingOnly || item.isChecking))
+  if (index === -1)
+    return
+  const current = allAccounts.value[index]
+  allAccounts.value[index] = {
+    ...account,
+    checked: account.loggedIn ? current.checked : false,
+    isChecking: false,
+  }
+}
+
+function finishPendingAccounts(token: number) {
+  if (token !== loginCheckToken)
+    return
+  allAccounts.value = allAccounts.value.map(account => account.isChecking ? { ...account, isChecking: false } : account)
+  stopLoginCheckTimer()
+}
+
+// Async login check with progressive UI updates.
+// A newer check invalidates callbacks and timers from the previous one.
 function startLoginDetection() {
   const cose = window.$cose
   if (!cose)
     return
 
+  const token = ++loginCheckToken
+  stopLoginCheckTimer()
+
   const initialPlatforms = getInitialPlatforms()
-  if (initialPlatforms.length > 0) {
+  if (initialPlatforms.length > 0)
     allAccounts.value = initialPlatforms
-  }
 
-  isCheckingLogin.value = true
-  let hasReceivedAny = false
+  const pendingTypes = () => allAccounts.value.filter(account => account.isChecking).map(account => account.type)
 
-  // Stop detection after 15s with no response
-  const LOGIN_CHECK_TIMEOUT_MS = 15000
-  const timeoutId = setTimeout(() => {
-    if (!hasReceivedAny) {
-      allAccounts.value = allAccounts.value.map(a => ({ ...a, isChecking: false }))
-      isCheckingLogin.value = false
-    }
-  }, LOGIN_CHECK_TIMEOUT_MS)
+  loginCheckTimer = setTimeout(() => {
+    if (token !== loginCheckToken)
+      return
+    const pending = pendingTypes()
+    if (!pending.length)
+      return
+
+    // Retry only rows still waiting, then stop the spinner if the retry itself stalls.
+    const fallbackTimer = setTimeout(finishPendingAccounts, 10000, token)
+    void Promise.resolve(cose.getAccounts?.((accounts) => {
+      clearTimeout(fallbackTimer)
+      if (token !== loginCheckToken)
+        return
+      for (const account of accounts)
+        applyDetectedAccount(account, true)
+      finishPendingAccounts(token)
+    }, pending)).catch(() => {
+      clearTimeout(fallbackTimer)
+      finishPendingAccounts(token)
+    })
+  }, 15000)
 
   if (typeof cose.getAccountsProgressive === `function`) {
     cose.getAccountsProgressive(
-      (account: PostAccount, _completed: number, _total: number) => {
-        hasReceivedAny = true
-
-        const idx = allAccounts.value.findIndex(a => a.type === account.type)
-        if (idx !== -1) {
-          allAccounts.value[idx] = { ...account, checked: false, isChecking: false }
-        }
+      (account: PostAccount) => {
+        if (token !== loginCheckToken)
+          return
+        applyDetectedAccount(account)
+        if (!pendingTypes().length)
+          stopLoginCheckTimer()
       },
       () => {
-        clearTimeout(timeoutId)
-        isCheckingLogin.value = false
+        if (token !== loginCheckToken || pendingTypes().length)
+          return
+        stopLoginCheckTimer()
       },
     )
   }
   else {
     cose.getAccounts?.((resp: PostAccount[]) => {
-      hasReceivedAny = true
-      clearTimeout(timeoutId)
-      allAccounts.value = resp.map(a => ({ ...a, checked: false, isChecking: false }))
-      isCheckingLogin.value = false
+      if (token !== loginCheckToken)
+        return
+      stopLoginCheckTimer()
+      allAccounts.value = resp.map(account => ({ ...account, checked: false, isChecking: false }))
     })
   }
 }
@@ -304,8 +355,46 @@ function onDevtoFrameMessage(event: MessageEvent) {
   }
 }
 
+async function logoutPlatform(account: PostAccount) {
+  if (logoutPending.value)
+    return
+  logoutPending.value = true
+  logoutTarget.value = account.type
+  try {
+    const result = await window.$cose?.clearPlatformSession?.(account.type, locale.value)
+    if (result?.status !== `cleared` && result?.status !== `missing`)
+      return
+
+    let refreshed = false
+    try {
+      await window.$cose?.getAccounts?.((accounts) => {
+        const next = accounts.find(item => item.type === account.type)
+        if (!next)
+          return
+        refreshed = true
+        applyDetectedAccount(next)
+      }, [account.type])
+    }
+    catch {
+      // The session is already cleared; replace the stale signed-in row below.
+    }
+    if (!refreshed)
+      applyDetectedAccount({ ...account, loggedIn: false })
+  }
+  catch {
+    // Leave the current row in place when logout fails before the session is cleared.
+  }
+  finally {
+    logoutPending.value = false
+  }
+}
+
 onMounted(() => window.addEventListener('message', onDevtoFrameMessage))
-onUnmounted(() => window.removeEventListener('message', onDevtoFrameMessage))
+onUnmounted(() => {
+  window.removeEventListener('message', onDevtoFrameMessage)
+  loginCheckToken += 1
+  stopLoginCheckTimer()
+})
 
 // Legacy getAccounts for checkExtension
 async function getAccounts(): Promise<void> {
@@ -608,6 +697,17 @@ onBeforeMount(() => {
                         >
                         <span v-if="accountHandle(account)" class="truncate text-sm text-muted-foreground">@{{ accountHandle(account) }}</span>
                         <button
+                          v-if="logoutPlatforms.includes(account.type)"
+                          :disabled="logoutPending"
+                          :aria-busy="logoutPending && logoutTarget === account.type"
+                          type="button"
+                          class="shrink-0 cursor-pointer rounded px-1 py-1 text-xs text-primary underline-offset-4 hover:underline focus-visible:ring-2"
+                          @click.stop="logoutPlatform(account)"
+                        >
+                          <Loader2 v-if="logoutPending && logoutTarget === account.type" class="mr-1 inline-block h-3 w-3 animate-spin" aria-hidden="true" />
+                          {{ t('common.logout') }}
+                        </button>
+                        <button
                           v-if="account.type === 'devto'"
                           type="button"
                           :aria-expanded="devtoGuideOpen"
@@ -630,6 +730,9 @@ onBeforeMount(() => {
                       </button>
                       <span v-else-if="account.type === 'substack' && !substackSetupUrl" class="text-xs text-muted-foreground">
                         {{ t('postInfo.substackUpdateExtension') }}
+                      </span>
+                      <span v-else-if="account.accountClosed" class="text-xs text-muted-foreground">
+                        {{ t('postInfo.platformAccountClosed') }}
                       </span>
                       <Primitive
                         v-else-if="!isSelfHosted(account.type) && account.type !== 'substack'"
