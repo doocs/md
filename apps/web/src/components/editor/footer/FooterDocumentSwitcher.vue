@@ -35,6 +35,21 @@ const { locale } = storeToRefs(localeStore)
 const isSwitcherOpen = ref(false)
 const switcherQuery = ref(``)
 const switcherInputRef = ref<HTMLInputElement | null>(null)
+const titleTrack = ref<HTMLElement | null>(null)
+const titleOffset = ref(0)
+const titleDuration = ref(0)
+let titleScrollTimer = 0
+let titleScrollToken = 0
+
+const titleLabel = computed(() => props.currentTitle?.trim() || t(`common.unnamed`))
+const titleStyle = computed(() => {
+  if (!titleDuration.value && !titleOffset.value)
+    return undefined
+  return {
+    transform: `translateX(-${titleOffset.value}px)`,
+    transition: titleDuration.value ? `transform ${titleDuration.value}ms linear` : undefined,
+  }
+})
 
 const flatPosts = computed(() => flattenPostTree(buildPostTree(postStore.posts)))
 const filteredPosts = computed(() => filterFlatPosts(flatPosts.value, switcherQuery.value))
@@ -45,7 +60,50 @@ function relativeTime(datetime: string | Date) {
   return formatRelativeTime(datetime)
 }
 
+function stopTitleScroll() {
+  titleScrollToken += 1
+  window.clearTimeout(titleScrollTimer)
+  titleDuration.value = 0
+  nextTick(() => {
+    titleOffset.value = 0
+  })
+}
+
+function startTitleScroll() {
+  const token = ++titleScrollToken
+  window.clearTimeout(titleScrollTimer)
+  titleDuration.value = 0
+  titleOffset.value = 0
+  nextTick(() => {
+    if (token !== titleScrollToken)
+      return
+    const track = titleTrack.value
+    if (!track)
+      return
+    const overflow = Math.ceil(track.scrollWidth - track.clientWidth)
+    if (overflow <= 1)
+      return
+    const duration = Math.min(8000, Math.max(1200, overflow * 30))
+    titleScrollTimer = window.setTimeout(() => {
+      if (token !== titleScrollToken)
+        return
+      titleDuration.value = duration
+      requestAnimationFrame(() => {
+        if (token !== titleScrollToken)
+          return
+        titleOffset.value = overflow
+      })
+    }, 250)
+  })
+}
+
+onUnmounted(() => {
+  titleScrollToken += 1
+  window.clearTimeout(titleScrollTimer)
+})
+
 function openSwitcher() {
+  stopTitleScroll()
   isSwitcherOpen.value = true
   switcherQuery.value = ``
   nextTick(() => switcherInputRef.value?.focus())
@@ -63,11 +121,16 @@ function switchToPost(id: string) {
       <Tooltip>
         <TooltipTrigger as-child>
           <button
-            class="ml-1.5 flex max-w-24 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-36"
+            type="button"
+            class="ml-1.5 flex max-w-40 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-56"
+            @mouseenter="startTitleScroll"
+            @mouseleave="stopTitleScroll"
             @click="openSwitcher"
           >
             <FileText class="size-3 shrink-0 opacity-60" />
-            <span class="truncate">{{ props.currentTitle || t('common.unnamed') }}</span>
+            <span ref="titleTrack" class="min-w-0 overflow-hidden">
+              <span class="inline-block whitespace-nowrap" :style="titleStyle">{{ titleLabel }}</span>
+            </span>
             <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
           </button>
         </TooltipTrigger>

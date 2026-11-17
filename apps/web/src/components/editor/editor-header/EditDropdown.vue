@@ -15,6 +15,7 @@ import { altSign, ctrlSign, shiftSign } from '@md/shared/configs'
 import { redoAction, undoAction } from '@md/shared/editor'
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { copyPlain, readPlainFromClipboard } from '@/lib/browser/clipboard'
+import { readSearchSeed } from '@/lib/editor/searchSeed'
 import { useEditorStore } from '@/stores/editor'
 import { useUIStore } from '@/stores/ui'
 
@@ -77,19 +78,15 @@ function redo() {
 
 function openSearch() {
   if (editor.value) {
-    const selection = editor.value.state.selection.main
-    const selected = editor.value.state.doc.sliceString(selection.from, selection.to).trim()
-
-    uiStore.openSearchTab(selected)
+    const seed = readSearchSeed(toRaw(editor.value) as EditorView)
+    uiStore.openSearchTab(seed.word, false, seed.findInSelection)
   }
 }
 
 function openReplace() {
   if (editor.value) {
-    const selection = editor.value.state.selection.main
-    const selected = editor.value.state.doc.sliceString(selection.from, selection.to).trim()
-
-    uiStore.openSearchTab(selected, true)
+    const seed = readSearchSeed(toRaw(editor.value) as EditorView)
+    uiStore.openSearchTab(seed.word, true, seed.findInSelection)
   }
 }
 </script>

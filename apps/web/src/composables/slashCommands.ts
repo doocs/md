@@ -10,6 +10,7 @@ import {
 import { useEditorDocumentActions } from '@/composables/useEditorDocumentActions'
 import { createLocalizedStyleOptions } from '@/composables/useLocalizedStyleOptions'
 import { t } from '@/i18n/translate'
+import { readSearchSeed } from '@/lib/editor/searchSeed'
 import { useEditorStore } from '@/stores/editor'
 import { useMarketplaceStore } from '@/stores/marketplace'
 import { useRenderStore } from '@/stores/render'
@@ -290,9 +291,8 @@ export function buildSlashCommands(): SlashCommandItem[] {
       keywords: [`find`, `search`, `查找`, `chazhao`],
       icon: `find`,
       action: (view) => {
-        const selection = view.state.selection.main
-        const selected = view.state.doc.sliceString(selection.from, selection.to).trim()
-        uiStore.openSearchTab(selected)
+        const seed = readSearchSeed(view)
+        uiStore.openSearchTab(seed.word, false, seed.findInSelection)
         view.focus()
       },
     }),
