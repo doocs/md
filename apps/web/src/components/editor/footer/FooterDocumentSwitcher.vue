@@ -6,6 +6,11 @@ import {
   PopoverTrigger as PopoverTriggerPrimitive,
 } from '@/components/ui/popover'
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
+import {
   buildPostTree,
   filterFlatPosts,
   flattenPostTree,
@@ -113,18 +118,26 @@ function switchToPost(id: string) {
 <template>
   <Popover v-model:open="isSwitcherOpen">
     <PopoverTriggerPrimitive as-child>
-      <button
-        class="ml-1.5 flex max-w-40 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-56"
-        @mouseenter="startTitleScroll"
-        @mouseleave="stopTitleScroll"
-        @click="openSwitcher"
-      >
-        <FileText class="size-3 shrink-0 opacity-60" />
-        <span ref="titleTrack" class="min-w-0 overflow-hidden">
-          <span class="inline-block whitespace-nowrap" :style="titleStyle">{{ titleLabel }}</span>
-        </span>
-        <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
-      </button>
+      <Tooltip>
+        <TooltipTrigger as-child>
+          <button
+            type="button"
+            class="ml-1.5 flex max-w-40 shrink-0 cursor-pointer items-center gap-1 rounded px-1.5 py-0.5 transition-colors hover:bg-accent hover:text-foreground sm:ml-2 sm:max-w-56"
+            @mouseenter="startTitleScroll"
+            @mouseleave="stopTitleScroll"
+            @click="openSwitcher"
+          >
+            <FileText class="size-3 shrink-0 opacity-60" />
+            <span ref="titleTrack" class="min-w-0 overflow-hidden">
+              <span class="inline-block whitespace-nowrap" :style="titleStyle">{{ titleLabel }}</span>
+            </span>
+            <ChevronsUpDown class="size-3 shrink-0 opacity-40" />
+          </button>
+        </TooltipTrigger>
+        <TooltipContent v-if="!isSwitcherOpen" side="top" :side-offset="6" class="text-xs text-muted-foreground">
+          <p>{{ t('footer.switchDocument') }}</p>
+        </TooltipContent>
+      </Tooltip>
     </PopoverTriggerPrimitive>
     <PopoverContent side="top" :side-offset="8" align="start" class="w-64 p-0">
       <div class="flex items-center gap-2 border-b px-3 py-2">
