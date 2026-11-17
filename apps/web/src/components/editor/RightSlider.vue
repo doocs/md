@@ -2,7 +2,6 @@
 import type {
   HeadingLevel,
   HeadingStyleType,
-  ListStyleType,
   ThemeName,
 } from '@md/shared/configs'
 import type { Format } from 'vue-pick-colors'
@@ -67,21 +66,6 @@ const selectedHeadingStyle = computed({
 const selectedHeadingStyleLabel = computed(() =>
   localizedStyleOptions.value.headingStyleOptions
     .find(option => option.value === selectedHeadingStyle.value)
-    ?.label,
-)
-
-const listStyle = computed({
-  get: () => themeStore.listStyle,
-  set: (val: ListStyleType) => {
-    themeStore.listStyle = val
-    themeStore.applyCurrentTheme()
-    scheduleEditorRefresh()
-  },
-})
-
-const selectedListStyleLabel = computed(() =>
-  localizedStyleOptions.value.listStyleOptions
-    .find(option => option.value === listStyle.value)
     ?.label,
 )
 
@@ -490,23 +474,6 @@ const isThemeCompact = computed(() => themeGridWidth.value > 0 && themeGridWidth
             </SelectContent>
           </Select>
         </div>
-      </div>
-      <div class="space-y-2">
-        <h2 class="text-sm font-medium">
-          {{ t('rightSlider.listStyle') }}
-        </h2>
-        <Select v-model="listStyle">
-          <SelectTrigger>
-            <SelectValue :placeholder="t('rightSlider.selectStyle')">
-              {{ selectedListStyleLabel }}
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem v-for="{ label, value } in localizedStyleOptions.listStyleOptions" :key="value" :value="value">
-              {{ label }}
-            </SelectItem>
-          </SelectContent>
-        </Select>
       </div>
       <div class="space-y-2">
         <h2 class="text-sm font-medium">

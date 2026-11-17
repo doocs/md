@@ -12,7 +12,6 @@ import {
   legendOptions,
   lineHeightOptions,
   linkColorOptions,
-  listStyleOptions,
   themeOptions,
 } from '@md/shared/configs'
 import { isMarketplaceThemeKey } from '@md/shared/types'
@@ -128,14 +127,6 @@ function localizeHeadingStyleOptions(t: Translate): IConfigOption[] {
   })
 }
 
-function localizeListStyleOptions(t: Translate): IConfigOption[] {
-  return listStyleOptions.map(option => ({
-    label: t(`styleOptions.listStyle.${option.value}`),
-    value: option.value,
-    desc: ``,
-  }))
-}
-
 function localizeLegendOptions(t: Translate): IConfigOption[] {
   return legendOptions.map((option, index) => ({
     ...option,
@@ -170,7 +161,6 @@ export function createLocalizedStyleOptions(
     codeBlockThemeOptions,
     headingLevelOptions: localizeHeadingLevelOptions(t),
     headingStyleOptions: localizeHeadingStyleOptions(t),
-    listStyleOptions: localizeListStyleOptions(t),
     legendOptions: localizeLegendOptions(t),
     getThemeLabel: (theme: ThemeName) => {
       const installed = installedThemeOptions.find(o => o.value === theme)

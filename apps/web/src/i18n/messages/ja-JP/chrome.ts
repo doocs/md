@@ -32,7 +32,6 @@ export default {
   rightSlider: {
     title: `スタイル`,
     headingStyle: `見出し`,
-    listStyle: `リスト`,
     selectHeading: `見出し`,
     selectStyle: `スタイル`,
     styleConfig: `操作`,

@@ -32,7 +32,6 @@ export default {
   rightSlider: {
     title: `樣式`,
     headingStyle: `標題`,
-    listStyle: `列表`,
     selectHeading: `標題`,
     selectStyle: `樣式`,
     styleConfig: `操作`,
