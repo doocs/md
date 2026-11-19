@@ -108,6 +108,12 @@ pnpm web firefox:zip
 # Package the uTools plugin — output: apps/utools/release/md-utools-v{version}.zip
 pnpm utools:package
 
+# Develop the Tauri desktop app (requires Rust and OS dependencies; see apps/desktop/README.md)
+pnpm desktop dev
+
+# Build desktop installers for the current platform
+pnpm desktop build
+
 # Cloudflare Workers development and deployment
 pnpm web wrangler:dev
 pnpm web wrangler:deploy

@@ -107,6 +107,12 @@ pnpm web firefox:zip
 # 打包 uTools 插件，输出至 apps/utools/release/md-utools-v{version}.zip
 pnpm utools:package
 
+# Tauri 桌面端开发（需 Rust 与系统依赖，见 apps/desktop/README.md）
+pnpm desktop dev
+
+# 构建当前平台的桌面安装包
+pnpm desktop build
+
 # Cloudflare Workers 开发与部署
 pnpm web wrangler:dev
 pnpm web wrangler:deploy
