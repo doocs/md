@@ -127,6 +127,22 @@ export const serviceOptions: ServiceOption[] = [
     ],
   },
   {
+    value: `atlascloud`,
+    label: `Atlas Cloud`,
+    endpoint: `https://api.atlascloud.ai/v1`,
+    models: [
+      `deepseek-ai/deepseek-v4-pro`,
+      `deepseek-ai/deepseek-v4-flash`,
+      `zai-org/glm-5.3`,
+      `zai-org/glm-5.3-flash`,
+      `moonshotai/kimi-k3`,
+      `moonshotai/kimi-k2.6`,
+      `qwen/qwen3.8-max`,
+      `qwen/qwen3.5-flash`,
+      `minimaxai/minimax-m3`,
+    ],
+  },
+  {
     value: `groq`,
     label: `Groq`,
     endpoint: `https://api.groq.com/openai/v1`,
