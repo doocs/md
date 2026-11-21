@@ -1,0 +1,1 @@
+import{t as e}from"./md-createLucideIcon-1wyW4Ert.js";var t=e({name:`circle-question-mark`,size:24,node:[[`circle`,{cx:`12`,cy:`12`,r:`10`,key:`1mglay`}],[`path`,{d:`M9 9.5a3 2.5 0 016 0c0 2-2 2-3 3.5`,key:`1awbb0`}],[`path`,{d:`M12 17h.01`,key:`p32p05`}]],aliases:[`help-circle`,`circle-help`]});export{t};
