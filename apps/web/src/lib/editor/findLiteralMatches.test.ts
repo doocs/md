@@ -32,4 +32,11 @@ describe(`findLiteralMatches`, () => {
       [{ line: 1, ch: 1 }, { line: 1, ch: 3 }],
     ])
   })
+
+  it(`does not match the same original character twice after lowercasing`, () => {
+    const state = EditorState.create({ doc: `xİİİZ` })
+    expect(findLiteralMatches(state, `\u0307i`, 1, 4, false)).toEqual([
+      [{ line: 0, ch: 1 }, { line: 0, ch: 3 }],
+    ])
+  })
 })

@@ -27,11 +27,16 @@ export function findLiteralMatches(state: EditorState, query: string, from: numb
     let index = text.indexOf(term)
     while (index !== -1) {
       const last = index + term.length - 1
+      const lastColumn = columns?.[last] ?? last
       matches.push([
         { line: lineNumber, ch: columnOffset + (columns?.[index] ?? index) },
-        { line: lineNumber, ch: columnOffset + (columns?.[last] ?? last) + 1 },
+        { line: lineNumber, ch: columnOffset + lastColumn + 1 },
       ])
-      index = text.indexOf(term, last + 1)
+      let next = last + 1
+      // The match consumes the whole original character even if only part of it matched.
+      while (columns?.[next] === lastColumn)
+        next++
+      index = text.indexOf(term, next)
     }
   })
   return matches
