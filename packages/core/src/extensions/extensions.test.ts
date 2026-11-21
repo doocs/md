@@ -62,6 +62,18 @@ describe(`toc extension`, () => {
 
     expect(html).not.toContain(`markdown-toc`)
   })
+
+  it(`preserves a link or paragraph starting with the TOC label`, () => {
+    const html = render(`[TOC](#contents)\n\n[TOC] guide\n\n## Contents`)
+
+    expect(html).toContain(`href="#contents"`)
+    expect(html).toContain(`[TOC] guide`)
+    expect(html).not.toContain(`markdown-toc`)
+  })
+
+  it(`accepts trailing whitespace on a standalone marker`, () => {
+    expect(render(`[TOC] \t\n\n## Contents`)).toContain(`markdown-toc`)
+  })
 })
 
 describe(`ruby extension`, () => {

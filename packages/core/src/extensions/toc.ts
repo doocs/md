@@ -29,7 +29,7 @@ export function markedToc(): MarkedExtension {
           return findLineEquals(src, `[TOC]`, blockScanLimit(src))
         },
         tokenizer(src) {
-          const match = /^\[TOC\]/.exec(src)
+          const match = /^\[TOC\](?=[\t ]*(?:\n|$))/.exec(src)
           if (match) {
             return {
               type: `toc`,
