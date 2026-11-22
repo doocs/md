@@ -1,0 +1,14 @@
+[package]
+name = "md-desktop"
+version = "2.1.0"
+description = "Doocs Markdown Editor"
+authors = [ "Doocs" ]
+edition = "2021"
+license = "WTFPL"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
