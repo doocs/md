@@ -3,6 +3,7 @@ import type { DecorationSet } from '@codemirror/view'
 import { StateEffect, StateField } from '@codemirror/state'
 import { Decoration, EditorView } from '@codemirror/view'
 import { CaseSensitive, ChevronDown, ChevronRight, ChevronUp, Regex, Replace, ReplaceAll, WholeWord, X } from '@lucide/vue'
+import { findLiteralMatches } from '@/lib/editor/findLiteralMatches'
 
 const props = defineProps<{
   editorView: EditorView
@@ -149,13 +150,13 @@ function findAllMatches() {
     searchTo = selectionRange.value.to
   }
 
-  const content = props.editorView.state.sliceDoc(searchFrom, searchTo)
   const searchTerm = searchWord.value
-  const _matchPositions: Array<Array<{ line: number, ch: number }>> = []
+  let _matchPositions: Array<Array<{ line: number, ch: number }>> = []
 
   if (searchTerm) {
     if (isRegex.value) {
       try {
+        const content = props.editorView.state.sliceDoc(searchFrom, searchTo)
         const flags = `gm${isCaseSensitive.value ? `` : `i`}`
         const regex = new RegExp(searchTerm, flags)
         let match
@@ -184,26 +185,7 @@ function findAllMatches() {
       }
     }
     else {
-      const lines = content.split(`\n`)
-      const searchTermForCompare = isCaseSensitive.value ? searchTerm : searchTerm.toLowerCase()
-
-      lines.forEach((line, lineIndex) => {
-        const lineForCompare = isCaseSensitive.value ? line : line.toLowerCase()
-        let startIndex = 0
-        let index = lineForCompare.indexOf(searchTermForCompare, startIndex)
-
-        while (index !== -1) {
-          const actualLineObj = props.editorView.state.doc.lineAt(searchFrom)
-          const actualLineNumber = actualLineObj.number - 1 + lineIndex
-
-          _matchPositions.push([
-            { line: actualLineNumber, ch: index },
-            { line: actualLineNumber, ch: index + searchTerm.length },
-          ])
-          startIndex = index + searchTerm.length
-          index = lineForCompare.indexOf(searchTermForCompare, startIndex)
-        }
-      })
+      _matchPositions = findLiteralMatches(props.editorView.state, searchTerm, searchFrom, searchTo, isCaseSensitive.value)
     }
   }
 
