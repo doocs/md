@@ -105,19 +105,19 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261117.1
+  '@cloudflare/workers-types': ^5.20261121.1
   '@codemirror/state': 6.7.6
   '@codemirror/view': 6.43.15
   '@types/node': ^26.6.6
-  isomorphic-dompurify: ^4.7.0
+  isomorphic-dompurify: ^4.8.0
   marked: ^18.2.1
   prettier: 2.8.8
   tsx: ^4.23.15
   typescript: ~6.0.3
   uuid: ^14.0.3
-  vitest: ^5.1.0
+  vitest: ^5.1.1
   # Exact pin: 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys.
   # 4.164.0 pulls workerd 1.20261117.1, whose postinstall rejects the published binary
   # ("Expected 2026-11-17 but got workerd 2026-11-16").
-  wrangler: 4.163.0
+  wrangler: 4.166.0
   zod: ^4.6.7
