@@ -1,0 +1,3 @@
+- insert:
+    - id: md-wechat
+      name: '@local/md-wechat'

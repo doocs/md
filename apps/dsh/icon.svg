@@ -1,0 +1,8 @@
+<svg width="36" height="36" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="md WeChat publisher">
+  <g fill="none" stroke="#0F4C81" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="6" y="4" width="18" height="22" rx="3" />
+    <path d="M11 10h8M11 15h8M11 20h5" />
+  </g>
+  <circle cx="26" cy="26" r="6" fill="#0F4C81" />
+  <path d="M23.6 26h4.8M26.4 23.9L28.4 26l-2 2.1" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

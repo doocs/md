@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022"],
+    "ignoreDeprecations": "6.0",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@md/core": ["../../packages/core/src/index.ts"],
+      "@md/core/*": ["../../packages/core/src/*"],
+      "@md/shared/*": ["../../packages/shared/src/*"],
+      "vitest": ["../../packages/core/node_modules/vitest"]
+    },
+    "resolveJsonModule": true,
+    "types": ["node"],
+    "allowJs": true,
+    "checkJs": true,
+    "strict": true,
+    "noEmit": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/**/*.ts",
+    "test/**/*.ts",
+    "scripts/**/*.mjs",
+    "../../packages/shared/src/global.d.ts",
+    "../../packages/shared/src/types/raw-imports.d.ts"
+  ],
+  "exclude": ["node_modules", "dist", "release", "build"]
+}

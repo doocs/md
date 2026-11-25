@@ -36,7 +36,12 @@
     "test": "pnpm --filter @md/shared test && pnpm --filter @md/core test && pnpm --filter @md/web test && pnpm --filter @md/api test",
     "postinstall": "simple-git-hooks",
     "inspector": "pnpx node-modules-inspector",
-    "utools:package": "node ./scripts/package-utools.mjs"
+    "utools:package": "node ./scripts/package-utools.mjs",
+    "dsh:check": "node apps/dsh/scripts/build-editor.mjs && node apps/dsh/scripts/build.mjs && node apps/dsh/scripts/smoke.mjs && node apps/dsh/scripts/check-routes.mjs && node apps/dsh/scripts/test.mjs",
+    "dsh:editor": "node apps/dsh/scripts/build-editor.mjs --force",
+    "dsh:install": "node apps/dsh/scripts/install.mjs",
+    "dsh:pack": "node apps/dsh/scripts/pack.mjs",
+    "dsh:test": "node apps/dsh/scripts/test.mjs"
   },
   "devDependencies": {
     "@antfu/eslint-config": "10.0.0",
