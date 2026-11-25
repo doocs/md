@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "md 公众号排版",
+    "description": "使用 doocs/md 渲染引擎把 Markdown 转换成微信公众号可用的 HTML，支持 KaTeX 公式、Mermaid 图表、callout 提示块以及编辑器内置主题。调用 md_wechat_render 并传入输出路径即可得到可直接发布的 HTML 文件，调用 md_wechat_options 可查看主题、配色与排版预设。渲染在 Harness 进程内完成，除显式指定代码块主题外无需联网。"
+  }
+}
