@@ -27,13 +27,13 @@
     "postinstall": "wxt prepare"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "3.1176.0",
-    "@aws-sdk/s3-request-presigner": "3.1176.0",
+    "@aws-sdk/client-s3": "3.1177.0",
+    "@aws-sdk/s3-request-presigner": "3.1177.0",
     "@codemirror/autocomplete": "^6.20.4",
     "@codemirror/language": "^6.13.1",
     "@codemirror/state": "catalog:",
     "@codemirror/view": "catalog:",
-    "@lucide/vue": "^1.79.0",
+    "@lucide/vue": "^1.80.0",
     "@md/core": "workspace:*",
     "@md/shared": "workspace:*",
     "@vue/devtools-api": "^8.2.1",
@@ -62,7 +62,7 @@
     "zod": "catalog:"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.70.1",
+    "@cloudflare/vite-plugin": "1.70.2",
     "@cloudflare/workers-types": "catalog:",
     "@md/config": "workspace:*",
     "@tailwindcss/vite": "^4.3.5",
