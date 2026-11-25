@@ -42,7 +42,7 @@
     "@antfu/eslint-config": "10.0.0",
     "@changesets/changelog-github": "1.0.1",
     "@changesets/cli": "3.0.3",
-    "@types/node": "^26.6.6",
+    "@types/node": "^26.6.10",
     "archiver": "^8.0.0",
     "eslint": "^10.15.0",
     "eslint-plugin-format": "^2.0.1",

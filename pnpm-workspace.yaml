@@ -49,7 +49,7 @@ overrides:
   glob@<8: ^13.0.7
   glob@^10: ^13.0.7
   glob@^11: ^11.1.0
-  hono: ^4.13.21
+  hono: ^4.13.22
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.5.0
@@ -89,7 +89,7 @@ overrides:
   yauzl: ^3.4.0
 
 patchedDependencies:
-  '@codemirror/view@6.43.15': patches/@codemirror__view@6.43.15.patch
+  '@codemirror/view@6.44.0': patches/@codemirror__view@6.44.0.patch
   mermaid@12.3.0: patches/mermaid@12.3.0.patch
 
 allowBuilds:
@@ -105,18 +105,18 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261124.1
+  '@cloudflare/workers-types': ^5.20261125.1
   '@codemirror/state': 6.7.6
-  '@codemirror/view': 6.43.15
-  '@types/node': ^26.6.6
-  isomorphic-dompurify: ^4.8.0
+  '@codemirror/view': 6.44.0
+  '@types/node': ^26.6.10
+  isomorphic-dompurify: ^4.9.0
   marked: ^18.3.0
   prettier: 2.8.8
   tsx: ^4.23.15
   typescript: ~6.0.3
   uuid: ^14.0.3
-  vitest: ^5.1.1
+  vitest: ^5.1.2
   # Exact pin: 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys.
   # Prefer latest 4.x now that workerd 1.20261123.1 postinstall matches the published binary.
-  wrangler: 4.167.0
+  wrangler: 4.168.0
   zod: ^4.6.7
