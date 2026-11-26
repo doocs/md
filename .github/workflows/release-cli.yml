@@ -1,4 +1,4 @@
-name: Release CLI
+name: Release npm packages
 
 on:
   push:
@@ -70,8 +70,8 @@ jobs:
         with:
           github-token: ${{ secrets.DOOCS_BOT_ACTION_TOKEN }}
           script: pnpm changeset:version
-          commit-message: 'chore: release CLI'
-          pr-title: 'chore: release CLI'
+          commit-message: 'chore: release npm packages'
+          pr-title: 'chore: release npm packages'
 
   pack:
     needs: select-mode
@@ -101,7 +101,10 @@ jobs:
       - name: Build CLI
         run: pnpm run build:cli
 
-      - name: Pack CLI
+      - name: Build DSH plugin
+        run: pnpm run build:dsh
+
+      - name: Pack packages
         id: pack
         uses: changesets/action/pack@v2
         with:
@@ -133,7 +136,7 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Publish CLI
+      - name: Publish packages
         uses: changesets/action/publish@v2
         with:
           pack-dir-artifact-id: ${{ needs.pack.outputs.pack-dir-artifact-id }}

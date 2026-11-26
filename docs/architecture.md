@@ -14,6 +14,7 @@
 | `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                                     |
 | `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                            |
 | `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                              |
+| `@doocs/md-dsh`  | `apps/dsh`            | DeepSeek Harness 插件，发布 `apps/dsh/dist`（侧边栏 doocs/md）                                  |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                            |
 
 独立示例（不在 pnpm workspace 内）：

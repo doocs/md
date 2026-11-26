@@ -1,9 +1,62 @@
 {
-  "name": "@md/deepseek-harness",
+  "name": "@doocs/md-dsh",
   "type": "module",
   "version": "0.0.0",
-  "private": true,
-  "description": "DeepSeek Harness bundle that exposes the doocs/md WeChat renderer as agent tools",
+  "description": "DeepSeek Harness plugin that embeds the doocs/md WeChat Markdown editor",
+  "author": "yanglbme",
+  "license": "ISC",
+  "homepage": "https://github.com/doocs/md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/doocs/md",
+    "directory": "apps/dsh"
+  },
+  "bugs": {
+    "url": "https://github.com/doocs/md/issues"
+  },
+  "keywords": [
+    "markdown",
+    "wechat",
+    "doocs",
+    "deepseek-harness"
+  ],
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "README.md",
+    "client.js",
+    "cordis.patch.yml",
+    "editor/**/*",
+    "icon.svg",
+    "index.js",
+    "locale/*.json",
+    "theme/*.css",
+    "xhr-sync-worker.js"
+  ],
+  "engines": {
+    "node": ">=22.22.2"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/",
+    "directory": "dist"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    }
+  },
   "scripts": {
     "build": "node scripts/build.mjs",
     "verify": "node scripts/smoke.mjs",

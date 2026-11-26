@@ -1,6 +1,6 @@
 {
   "meta": {
-    "title": "md WeChat publisher",
+    "title": "doocs/md",
     "description": "Turns Markdown into WeChat Official Account HTML with the doocs/md engine, including KaTeX math, Mermaid diagrams, callout alerts and the editor's themes. Call md_wechat_render with an output path to get a ready-to-publish HTML file, and call md_wechat_options to list the available themes, colours and spacing presets. Rendering runs inside the Harness process and needs no network access unless you ask for a code-block theme."
   }
 }

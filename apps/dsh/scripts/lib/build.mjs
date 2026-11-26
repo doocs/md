@@ -13,8 +13,11 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 
 import { writeZip } from './zip.mjs'
 
-/** 分发包的包名（与 cordis.patch.yml 的 name 保持一致） */
-export const BUNDLE_PACKAGE_NAME = `@local/md-wechat`
+/** 分发包的包名（与 apps/dsh/package.json、client.js、cordis.patch.yml 保持一致） */
+export const BUNDLE_PACKAGE_NAME = `@doocs/md-dsh`
+
+/** 覆盖安装前要卸掉的旧包名 */
+export const LEGACY_BUNDLE_PACKAGE_NAMES = [`@local/md-wechat`]
 
 /** Loader 行 id（与 cordis.patch.yml 保持一致） */
 export const BUNDLE_ROW_ID = `md-wechat`
@@ -217,39 +220,54 @@ async function writeWorkerStub(layout) {
 }
 
 /**
- * 写分发包清单（只含相对路径与相对导出）
+ * 写分发包清单。字段来自 apps/dsh/package.json，去掉只在仓库里有意义的 scripts，
+ * 并拿掉 publishConfig.directory（发布时 changesets 已经切到 dist/，清单里再带一次会指到 dist/dist）。
  * @param {any} layout 路径集合
  * @param {string} version 版本号
  * @returns {Promise<void>}
  */
 async function writeBundleManifest(layout, version) {
+  const sourcePath = path.join(layout.pluginDir, `package.json`)
+  const source = JSON.parse(await readFile(sourcePath, `utf8`))
+
+  if (source.name !== BUNDLE_PACKAGE_NAME) {
+    throw new Error(`md-wechat: ${sourcePath} 的 name 是 ${source.name}，必须是 ${BUNDLE_PACKAGE_NAME}`)
+  }
+
+  if (source.private)
+    throw new Error(`md-wechat: ${BUNDLE_PACKAGE_NAME} 的 package.json 不能是 private，否则发不了 npm`)
+
+  if (source.version !== version)
+    throw new Error(`md-wechat: 清单版本 ${version} 与 ${sourcePath} 的 ${source.version} 不一致`)
+
+  const publishConfig = { ...(source.publishConfig ?? {}) }
+
+  delete publishConfig.directory
+
+  if (publishConfig.access !== `public`)
+    throw new Error(`md-wechat: publishConfig.access 必须是 public`)
+
+  for (const key of [`exports`, `files`, `dsh`]) {
+    if (source[key] == null)
+      throw new Error(`md-wechat: package.json 缺少 ${key}`)
+  }
+
   const manifest = {
-    name: BUNDLE_PACKAGE_NAME,
-    version,
-    private: true,
-    type: `module`,
-    description: `Render Markdown to WeChat Official Account HTML with the doocs/md engine`,
-    exports: {
-      '.': `./index.js`,
-      './client': `./client.js`,
-      './locale/*.json': `./locale/*.json`,
-      './icon': `./icon.svg`,
-    },
-    files: [
-      `index.js`,
-      `client.js`,
-      `xhr-sync-worker.js`,
-      `theme/*.css`,
-      `locale/*.json`,
-      `cordis.patch.yml`,
-      `icon.svg`,
-      `README.md`,
-      `editor/**/*`,
-    ],
-    dsh: {
-      bundle: { patch: `./cordis.patch.yml` },
-      client: { platform: `web`, immediately: true, inject: [`@deepseek-ai/dsh-client-runtime`] },
-    },
+    name: source.name,
+    version: source.version,
+    type: source.type ?? `module`,
+    description: source.description,
+    license: source.license,
+    author: source.author,
+    homepage: source.homepage,
+    repository: source.repository,
+    bugs: source.bugs,
+    keywords: source.keywords,
+    engines: source.engines,
+    exports: source.exports,
+    files: source.files,
+    publishConfig,
+    dsh: source.dsh,
   }
 
   await writeFile(path.join(layout.distDir, `package.json`), `${JSON.stringify(manifest, null, 2)}\n`, `utf-8`)
@@ -261,7 +279,7 @@ async function writeBundleManifest(layout, version) {
  * @returns {Promise<void>}
  */
 async function copyStaticResources(layout) {
-  for (const entry of [`cordis.patch.yml`, `icon.svg`, `README.md`, `client.js`]) {
+  for (const entry of [`cordis.patch.yml`, `icon.svg`, `client.js`]) {
     const source = path.join(layout.pluginDir, entry)
 
     if (!fs.existsSync(source))
@@ -270,6 +288,12 @@ async function copyStaticResources(layout) {
     await cp(source, path.join(layout.distDir, entry))
   }
 
+  const readme = path.join(layout.pluginDir, `README.npm.md`)
+
+  if (!fs.existsSync(readme))
+    throw new Error(`md-wechat: ${layout.pluginDir} 缺少 README.npm.md（发布到 npm 的说明）`)
+
+  await cp(readme, path.join(layout.distDir, `README.md`))
   await cp(path.join(layout.pluginDir, `locale`), path.join(layout.distDir, `locale`), { recursive: true })
 }
 
@@ -362,8 +386,8 @@ export async function assertPortable(layout) {
  * @returns {Promise<{version: string, bundleBytes: number, themeFiles: string[], editorFiles: number, files: number, bytes: number}>} 构建结果
  */
 export async function buildBundle(layout) {
-  const rootManifest = JSON.parse(await readFile(path.join(layout.repoRoot, `package.json`), `utf-8`))
-  const version = rootManifest.version
+  const pluginManifest = JSON.parse(await readFile(path.join(layout.pluginDir, `package.json`), `utf-8`))
+  const version = pluginManifest.version
 
   await rm(layout.distDir, { recursive: true, force: true })
   await mkdir(layout.distDir, { recursive: true })

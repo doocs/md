@@ -2,7 +2,7 @@
 
 这个目录是 doocs/md 的 **DeepSeek Harness 插件**，装好以后：
 
-- **侧边栏「md 公众号排版」**：点开就是完整的 md 编辑器（`apps/web` 的原样构建产物，嵌在同源 iframe 里），主题、代码高亮、一键复制到公众号全部保持上游行为；
+- **侧边栏「doocs/md」**：点开就是完整的 md 编辑器（`apps/web` 的原样构建产物，嵌在同源 iframe 里），主题、代码高亮、一键复制到公众号全部保持上游行为；
 - **Agent 工具**：`md_wechat_render` / `md_wechat_options`，让 Agent 直接产出公众号 HTML。
 
 和之前 `dsh-md` 那个插件的区别：**这里不额外维护一份上游源码**。插件就住在本仓库的 `apps/dsh`，编辑器和渲染引擎都在构建时从 `apps/web`、`packages/*` 取，所以上游修 bug、加特性后，`git pull` + 一条命令就能更新，没有第二份代码要合并。
@@ -15,6 +15,7 @@
 | 只跑单元测试                           | `pnpm dsh:test`                      |
 | 本地安装到自己的 DSH（自动装好）       | `pnpm dsh:install`                   |
 | 打一个 zip 发给别人                    | `pnpm dsh:pack`                      |
+| 构建 npm 发布用的 `dist/`              | `pnpm run build:dsh`                 |
 | 上游改了 `apps/web`，强制重建编辑器    | `pnpm dsh:editor`                    |
 | 类型检查（编辑器报红时用）             | `pnpm --dir apps/dsh run type-check` |
 
@@ -63,7 +64,7 @@ pnpm dsh:test        # 3 个测试文件 / 21 个用例，约 1 秒
 
 装好后：
 
-- **刷新页面（Ctrl+R）** → 左侧边栏出现「md 公众号排版」图标，点开是完整编辑器；
+- **刷新页面（Ctrl+R）** → 左侧边栏出现「doocs/md」图标，点开是完整编辑器；
 - 也可以直接跟 Agent 说「用 md 把这份 Markdown 排成公众号文章」。
 
 变体：
@@ -93,6 +94,25 @@ node apps/dsh/scripts/install.mjs --cli "D:\...\resources\runtime\cli\bin\dsh.cm
 - 清单结构完整：入口、`client.js`、`cordis.patch.yml`、图标、locale、`editor/**`。
 
 对方安装：解压 →「插件」→「添加插件」选目录 → 刷新页面 → 侧边栏出现入口。
+
+## 4. 发布到 npm：`@doocs/md-dsh`
+
+版本写在 `apps/dsh/package.json`，不跟仓库根的版本走。用户侧边栏看到的是 **doocs/md**，npm 包名是 `@doocs/md-dsh`。
+
+```bash
+dsh plugin --profile desktop add @doocs/md-dsh
+```
+
+发版和 `@doocs/md-cli` 走同一条 changesets 流水线（`.github/workflows/release-cli.yml`）：
+
+1. 改动需要发版时，`pnpm changeset` 选 `@doocs/md-dsh`，把生成的 `.changeset/*.md` 一并提交。
+2. 合并到 `main` 后，workflow 开版本 PR，把 `apps/dsh/package.json` 从 `0.0.0` 起按 changeset 递增，并写 `CHANGELOG.md`。
+3. 版本 PR 合并后，workflow 先 `pnpm run build:dsh`（编辑器 + `apps/dsh/dist`），再把 `dist/` 发到 npm。`publishConfig.directory` 是 `dist`，所以发出去的是构建产物，不是源码。
+4. 第一次发布前，npm 的 `@doocs` 组织要允许这条 GitHub workflow 创建 `@doocs/md-dsh`（和 `@doocs/md-cli` 同一套 OIDC）。
+
+本地开发仍然用 `pnpm dsh:install`，它链接本仓库的 `apps/dsh/dist`。包名从 `@local/md-wechat` 换过来时，安装脚本会先卸掉旧包。
+
+npm 页面上的说明是 `README.npm.md`（构建时复制成 `dist/README.md`）。本文件是仓库里的开发说明。
 
 ## 面板里是什么
 
@@ -142,10 +162,10 @@ GET /md-wechat/editor/static/...  → 哈希静态资源（长缓存）
 
 ## 我们改了上游哪些东西（合并时注意）
 
-| 位置                  | 改动                                                                        |
-| --------------------- | --------------------------------------------------------------------------- |
-| `apps/dsh/`（新目录） | 插件全部代码、脚本、文档                                                    |
-| 根 `package.json`     | `scripts` 里加了 4 行：`dsh:check`、`dsh:editor`、`dsh:install`、`dsh:pack` |
+| 位置                  | 改动                                                               |
+| --------------------- | ------------------------------------------------------------------ |
+| `apps/dsh/`（新目录） | 插件全部代码、脚本、文档                                           |
+| 根 `package.json`     | `scripts` 里有 `dsh:*`，以及 `build:dsh`（npm 发布前构建 `dist/`） |
 
 其余上游文件一行没动；`apps/dsh` 用到的都是仓库既有依赖（vite、esbuild、@md/core），所以 `pnpm-lock.yaml` 不会多出依赖。上游更新后：
 
@@ -174,6 +194,8 @@ pnpm dsh:install           # 自动重建编辑器与插件并装好
 
 ```text
 apps/dsh/
+├── package.json            # @doocs/md-dsh，版本与 publishConfig.directory
+├── README.npm.md           # 发布到 npm / 插件页的说明（构建时变成 dist/README.md）
 ├── cordis.patch.yml        # 告诉 DSH 把这个插件插进配置
 ├── client.js               # 浏览器半片：侧边栏入口 + 编辑器面板
 ├── locale/{en,zh}.json     # 插件页标题与描述

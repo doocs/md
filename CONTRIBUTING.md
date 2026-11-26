@@ -76,7 +76,7 @@ pnpm web dev
    ```
 
 3. 编码 & 编写/更新测试。
-4. 如果变更需要随 npm CLI 发布，运行 `pnpm changeset`，选择 `@doocs/md-cli`、版本变更级别，并填写面向用户的更新说明。将生成的 `.changeset/*.md` 文件一并提交。
+4. 如果变更需要随 npm 包发布，运行 `pnpm changeset`，选择 `@doocs/md-cli` 或 `@doocs/md-dsh`、版本变更级别，并填写面向用户的更新说明。将生成的 `.changeset/*.md` 文件一并提交。`@doocs/md-dsh` 的版本在 `apps/dsh/package.json`，发布前 workflow 会先跑 `pnpm run build:dsh`。
 5. 运行检查：
 
    ```bash

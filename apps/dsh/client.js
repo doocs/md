@@ -1,12 +1,12 @@
 /**
- * @description: 浏览器半片：侧边栏入口「md 公众号排版」+ 完整编辑器面板
+ * @description: 浏览器半片：侧边栏入口「doocs/md」+ 完整编辑器面板
  *
  * 面板只是宿主皮肤里的一层外框：编辑器本体是 `apps/web` 的原样构建产物，
  * 由 Host 半片挂在 `/md-wechat/editor/`，整页嵌在 iframe 里 —— 主题、排版、
  * 代码高亮、复制/导出流程全部保持上游行为，插件不重写任何排版逻辑。
  */
 window.__ModuleLoader__.load({
-  id: `@local/md-wechat`,
+  id: `@doocs/md-dsh`,
   factory(require) {
     const React = require(`react`)
     const h = React.createElement
@@ -19,17 +19,17 @@ window.__ModuleLoader__.load({
 
     const DICTS = {
       zh: {
-        title: `md 公众号排版`,
+        title: `doocs/md`,
         reload: `刷新`,
-        frameTitle: `md 公众号排版 · 微信 Markdown 编辑器`,
+        frameTitle: `doocs/md · 微信 Markdown 编辑器`,
         checking: `正在加载编辑器…`,
         missing: `编辑器路由还没就绪（Host 仍是旧模块）。重启一次 DSH 后刷新页面即可；确认 dist/editor 存在可跑 pnpm dsh:check。`,
         retry: `再试一次`,
       },
       en: {
-        title: `md for WeChat`,
+        title: `doocs/md`,
         reload: `Refresh`,
-        frameTitle: `md for WeChat · Markdown editor`,
+        frameTitle: `doocs/md · WeChat Markdown editor`,
         checking: `Loading editor…`,
         missing: `The editor route is not ready (the Host still runs the previous module). Restart DSH once, then refresh.`,
         retry: `Try again`,
