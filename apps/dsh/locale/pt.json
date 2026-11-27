@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "doocs/md",
+    "description": "Converte Markdown em HTML para contas oficiais do WeChat com o motor doocs/md, incluindo fórmulas KaTeX, diagramas Mermaid, avisos callout e os temas do editor. Chame md_wechat_render com um caminho de saída para obter o HTML pronto a publicar, e md_wechat_options para ver temas, cores e opções de composição. A renderização corre dentro do Harness e não precisa de rede, exceto se pedir um tema de bloco de código."
+  }
+}

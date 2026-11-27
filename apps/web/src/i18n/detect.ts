@@ -2,7 +2,7 @@ import type { AppLocale } from './types'
 import { store } from '@/storage'
 import { DEFAULT_LOCALE, isAppLocale, LOCALE_STORAGE_KEY, SUPPORTED_LOCALES } from './constants'
 
-function normalizeLocale(value: string | null | undefined): AppLocale | null {
+export function normalizeLocale(value: string | null | undefined): AppLocale | null {
   if (!value)
     return null
 
@@ -19,6 +19,21 @@ function normalizeLocale(value: string | null | undefined): AppLocale | null {
 
   if (lower.startsWith(`ja`))
     return `ja-JP`
+
+  if (lower.startsWith(`es`))
+    return `es-ES`
+
+  if (lower.startsWith(`fr`))
+    return `fr-FR`
+
+  if (lower.startsWith(`de`))
+    return `de-DE`
+
+  if (lower.startsWith(`ru`))
+    return `ru-RU`
+
+  if (lower.startsWith(`pt`))
+    return `pt-BR`
 
   if (lower.startsWith(`en`))
     return `en-US`
@@ -43,7 +58,24 @@ function detectFromNavigator(): AppLocale | null {
   return null
 }
 
+/** Explicit `?locale=` from the host (the DSH embed). Wins over the saved preference. */
+export function localeFromQuery(): AppLocale | null {
+  if (typeof window === `undefined`)
+    return null
+
+  try {
+    return normalizeLocale(new URLSearchParams(window.location.search).get(`locale`))
+  }
+  catch {
+    return null
+  }
+}
+
 export function detectInitialLocale(): AppLocale {
+  const fromQuery = localeFromQuery()
+  if (fromQuery && SUPPORTED_LOCALES.includes(fromQuery))
+    return fromQuery
+
   const stored = store.getSync(LOCALE_STORAGE_KEY)
   const fromStorage = normalizeLocale(stored)
   if (fromStorage && SUPPORTED_LOCALES.includes(fromStorage))

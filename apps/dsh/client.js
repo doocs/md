@@ -18,25 +18,163 @@ window.__ModuleLoader__.load({
     const LOCALE_NS = `md-wechat`
 
     const DICTS = {
-      zh: {
+      'zh': {
         title: `doocs/md`,
+        heading: `微信 Markdown 编辑器`,
         reload: `刷新`,
-        frameTitle: `doocs/md · 微信 Markdown 编辑器`,
+        frameTitle: `微信 Markdown 编辑器`,
         checking: `正在加载编辑器…`,
         missing: `编辑器路由还没就绪（Host 仍是旧模块）。重启一次 DSH 后刷新页面即可；确认 dist/editor 存在可跑 pnpm dsh:check。`,
         retry: `再试一次`,
       },
-      en: {
+      'en': {
         title: `doocs/md`,
+        heading: `WeChat Markdown Editor`,
         reload: `Refresh`,
-        frameTitle: `doocs/md · WeChat Markdown editor`,
+        frameTitle: `WeChat Markdown Editor`,
         checking: `Loading editor…`,
         missing: `The editor route is not ready (the Host still runs the previous module). Restart DSH once, then refresh.`,
         retry: `Try again`,
       },
+      'zh-TW': {
+        title: `doocs/md`,
+        heading: `微信 Markdown 編輯器`,
+        reload: `重新整理`,
+        frameTitle: `微信 Markdown 編輯器`,
+        checking: `正在載入編輯器…`,
+        missing: `編輯器路由還沒就緒（Host 仍是舊模組）。重啟一次 DSH 後重新整理頁面即可。`,
+        retry: `再試一次`,
+      },
+      'ja': {
+        title: `doocs/md`,
+        heading: `微信 Markdown エディター`,
+        reload: `更新`,
+        frameTitle: `微信 Markdown エディター`,
+        checking: `エディターを読み込み中…`,
+        missing: `エディターのルートがまだ準備できていません（Host が古いモジュールのままです）。DSH を再起動してからページを更新してください。`,
+        retry: `再試行`,
+      },
+      'es': {
+        title: `doocs/md`,
+        heading: `Editor Markdown de WeChat`,
+        reload: `Actualizar`,
+        frameTitle: `Editor Markdown de WeChat`,
+        checking: `Cargando el editor…`,
+        missing: `La ruta del editor aún no está lista (el Host sigue con el módulo anterior). Reinicia DSH y actualiza la página.`,
+        retry: `Reintentar`,
+      },
+      'fr': {
+        title: `doocs/md`,
+        heading: `Éditeur Markdown WeChat`,
+        reload: `Actualiser`,
+        frameTitle: `Éditeur Markdown WeChat`,
+        checking: `Chargement de l’éditeur…`,
+        missing: `La route de l’éditeur n’est pas prête (le Host utilise encore l’ancien module). Redémarrez DSH, puis actualisez la page.`,
+        retry: `Réessayer`,
+      },
+      'de': {
+        title: `doocs/md`,
+        heading: `WeChat-Markdown-Editor`,
+        reload: `Aktualisieren`,
+        frameTitle: `WeChat-Markdown-Editor`,
+        checking: `Editor wird geladen…`,
+        missing: `Die Editor-Route ist noch nicht bereit (der Host nutzt noch das alte Modul). Starte DSH neu und lade die Seite neu.`,
+        retry: `Erneut versuchen`,
+      },
+      'ru': {
+        title: `doocs/md`,
+        heading: `Markdown-редактор WeChat`,
+        reload: `Обновить`,
+        frameTitle: `Markdown-редактор WeChat`,
+        checking: `Загрузка редактора…`,
+        missing: `Маршрут редактора ещё не готов (Host всё ещё использует старый модуль). Перезапустите DSH и обновите страницу.`,
+        retry: `Повторить`,
+      },
+      'pt': {
+        title: `doocs/md`,
+        heading: `Editor Markdown do WeChat`,
+        reload: `Atualizar`,
+        frameTitle: `Editor Markdown do WeChat`,
+        checking: `A carregar o editor…`,
+        missing: `A rota do editor ainda não está pronta (o Host ainda usa o módulo anterior). Reinicie o DSH e atualize a página.`,
+        retry: `Tentar novamente`,
+      },
     }
 
+    /**
+     * DSH 语言 id（zh / en / ja / es / fr / de / ru / pt，也接受地区后缀）对应面板文案。
+     * 没有文案的语言跟 DSH 一样回落到英文。
+     * @param {string} tag 宿主语言
+     * @returns {string} DICTS 的 key
+     */
+    function toChromeLocale(tag) {
+      const value = String(tag || ``).toLowerCase().replace(/_/g, `-`)
+
+      if (value === `zh-tw` || value === `zh-hk` || value === `zh-mo` || value.startsWith(`zh-hant`))
+        return `zh-TW`
+      if (value.startsWith(`zh`))
+        return `zh`
+      if (value.startsWith(`ja`))
+        return `ja`
+      if (value.startsWith(`es`))
+        return `es`
+      if (value.startsWith(`fr`))
+        return `fr`
+      if (value.startsWith(`de`))
+        return `de`
+      if (value.startsWith(`ru`))
+        return `ru`
+      if (value.startsWith(`pt`))
+        return `pt`
+      if (value.startsWith(`en`))
+        return `en`
+      return `en`
+    }
+
+    /**
+     * Host language id to the editor locale. Unknown tags fall back to English.
+     * @param {string} tag host language
+     * @returns {'zh-CN' | 'zh-TW' | 'en-US' | 'ja-JP' | 'es-ES' | 'fr-FR' | 'de-DE' | 'ru-RU' | 'pt-BR'} editor locale
+     */
+    function toEditorLocale(tag) {
+      const chrome = toChromeLocale(tag)
+
+      if (chrome === `zh-TW`)
+        return `zh-TW`
+      if (chrome === `zh`)
+        return `zh-CN`
+      if (chrome === `ja`)
+        return `ja-JP`
+      if (chrome === `es`)
+        return `es-ES`
+      if (chrome === `fr`)
+        return `fr-FR`
+      if (chrome === `de`)
+        return `de-DE`
+      if (chrome === `ru`)
+        return `ru-RU`
+      if (chrome === `pt`)
+        return `pt-BR`
+      return `en-US`
+    }
+
+    let editorLocaleTag = `zh-CN`
     let activeLocale = `zh`
+    let editorFrame = null
+    const localeListeners = new Set()
+
+    /** 告诉已打开的编辑器切换语言，不重载 iframe */
+    function pushEditorLocale() {
+      editorFrame?.contentWindow?.postMessage(
+        { type: `doocs-md:set-locale`, locale: editorLocaleTag },
+        window.location.origin,
+      )
+    }
+
+    function notifyLocale() {
+      for (const listener of localeListeners)
+        listener()
+    }
 
     /**
      * 取文案
@@ -64,7 +202,7 @@ window.__ModuleLoader__.load({
         borderBottom: `1px solid var(--dsw-alias-border-l1)`,
         background: `var(--dsw-alias-bg-layer-1)`,
       },
-      title: { fontSize: 12, color: `var(--dsw-alias-label-secondary)`, marginRight: `auto` },
+      title: { fontSize: 13, fontWeight: 600, color: `var(--dsw-alias-label-primary)`, marginRight: `auto` },
       button: {
         height: 26,
         padding: `0 10px`,
@@ -125,9 +263,18 @@ window.__ModuleLoader__.load({
       const [revision, setRevision] = useState(0)
       // checking：探测路由；ok：嵌入编辑器；missing：路由没就绪（通常是 Host 旧模块）
       const [health, setHealth] = useState(`checking`)
+      // 宿主切语言时重绘标题。首次 src 带上 locale，之后只 postMessage，避免整页重载。
+      const [, setLocaleTick] = useState(0)
+      const [editorSrc] = useState(() => `${EDITOR_PATH}?locale=${encodeURIComponent(editorLocaleTag)}`)
 
       const reload = useCallback(() => {
         setRevision(current => current + 1)
+      }, [])
+
+      useEffect(() => {
+        const listener = () => setLocaleTick(tick => tick + 1)
+        localeListeners.add(listener)
+        return () => localeListeners.delete(listener)
       }, [])
 
       // 先探接口再渲染 iframe：比「等 iframe 超时」可靠，也不会把正常加载误判成失败
@@ -157,7 +304,7 @@ window.__ModuleLoader__.load({
         h(
           `div`,
           { style: styles.header },
-          h(`span`, { style: styles.title }, t(`title`)),
+          h(`span`, { style: styles.title }, t(`heading`)),
           h(`button`, { type: `button`, style: styles.button, onClick: reload }, t(`reload`)),
         ),
         h(
@@ -176,10 +323,19 @@ window.__ModuleLoader__.load({
               )
             : h(`iframe`, {
                 key: revision,
+                ref: (node) => {
+                  editorFrame = node
+                },
                 style: styles.frame,
                 title: t(`frameTitle`),
-                src: EDITOR_PATH,
-                onLoad: () => setHealth(`ok`),
+                src: editorSrc,
+                onLoad: () => {
+                  setHealth(`ok`)
+                  // 编辑器要等 bootstrap 装上监听，加载完成后再补推几次
+                  pushEditorLocale()
+                  setTimeout(pushEditorLocale, 400)
+                  setTimeout(pushEditorLocale, 1200)
+                },
               }),
           health === `checking`
             ? h(`div`, { style: styles.missing }, h(`span`, null, t(`checking`)))
@@ -211,13 +367,21 @@ window.__ModuleLoader__.load({
       const applyActive = () => {
         try {
           const snapshot = locale.getLocale()
+          const tag = typeof snapshot === `string`
+            ? snapshot
+            : snapshot?.active || snapshot?.locale || ``
 
-          if (DICTS[snapshot?.active])
-            activeLocale = snapshot.active
+          if (tag) {
+            editorLocaleTag = toEditorLocale(tag)
+            activeLocale = toChromeLocale(tag)
+          }
         }
         catch {
           // 忽略：保持当前语言
         }
+
+        notifyLocale()
+        pushEditorLocale()
       }
 
       applyActive()

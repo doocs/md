@@ -11,6 +11,11 @@ const localeLoaders: Record<LazyLocale, () => Promise<{ default: LocaleMessages 
   'zh-TW': () => import(`./messages/zh-TW/index`),
   'en-US': () => import(`./messages/en-US/index`),
   'ja-JP': () => import(`./messages/ja-JP/index`),
+  'es-ES': () => import(`./messages/es-ES/index`),
+  'fr-FR': () => import(`./messages/fr-FR/index`),
+  'de-DE': () => import(`./messages/de-DE/index`),
+  'ru-RU': () => import(`./messages/ru-RU/index`),
+  'pt-BR': () => import(`./messages/pt-BR/index`),
 }
 
 function isLazyLocale(locale: AppLocale): locale is LazyLocale {

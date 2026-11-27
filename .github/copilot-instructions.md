@@ -55,7 +55,7 @@ Details: [docs/architecture.md](../docs/architecture.md).
 - **Markdown:** `marked` in `@md/core`; `juice` inlines CSS for WeChat paste; `isomorphic-dompurify` sanitizes output
 - **Web build:** Vite 8; extension build: WXT
 - **API:** Hono on Cloudflare Workers, D1
-- **i18n (web only):** `vue-i18n` — zh-CN, zh-TW, en-US, ja-JP
+- **i18n (web only):** `vue-i18n` — zh-CN, zh-TW, en-US, ja-JP, es-ES, fr-FR, de-DE, ru-RU, pt-BR
 
 ## Key Conventions
 
@@ -68,7 +68,7 @@ Details: [docs/architecture.md](../docs/architecture.md).
 
 ### Internationalization (`@md/web`)
 
-- Messages: `apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`
+- Messages: `apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP,es-ES,fr-FR,de-DE,ru-RU,pt-BR}/`
 - Components: `useI18n()` + `t('key')`. Stores/utils: `@/i18n/translate`.
 - New user-visible strings must be added in all four locales. VS Code, uTools, CLI, and MCP are not localized.
 
