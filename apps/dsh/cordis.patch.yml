@@ -1,3 +1,3 @@
 - insert:
     - id: md-wechat
-      name: '@doocs/md-dsh'
+      name: '@doocs/dsh-md'

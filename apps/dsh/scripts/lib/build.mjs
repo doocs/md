@@ -14,10 +14,10 @@ import { fileURLToPath, pathToFileURL } from 'node:url'
 import { writeZip } from './zip.mjs'
 
 /** 分发包的包名（与 apps/dsh/package.json、client.js、cordis.patch.yml 保持一致） */
-export const BUNDLE_PACKAGE_NAME = `@doocs/md-dsh`
+export const BUNDLE_PACKAGE_NAME = `@doocs/dsh-md`
 
 /** 覆盖安装前要卸掉的旧包名 */
-export const LEGACY_BUNDLE_PACKAGE_NAMES = [`@local/md-wechat`]
+export const LEGACY_BUNDLE_PACKAGE_NAMES = [`@local/md-wechat`, `@doocs/md-dsh`]
 
 /** Loader 行 id（与 cordis.patch.yml 保持一致） */
 export const BUNDLE_ROW_ID = `md-wechat`

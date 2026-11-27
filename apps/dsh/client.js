@@ -6,7 +6,7 @@
  * 代码高亮、复制/导出流程全部保持上游行为，插件不重写任何排版逻辑。
  */
 window.__ModuleLoader__.load({
-  id: `@doocs/md-dsh`,
+  id: `@doocs/dsh-md`,
   factory(require) {
     const React = require(`react`)
     const h = React.createElement

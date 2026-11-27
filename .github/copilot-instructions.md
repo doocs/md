@@ -26,7 +26,7 @@ This repository is a pnpm monorepo for **doocs/md**, a WeChat Markdown editor. C
 - **API (`@md/api`):** `pnpm api dev` / `pnpm api test`
 - **VS Code (`doocs-md`):** `pnpm vscode compile` / `pnpm vscode package`
 - **CLI (`@doocs/md-cli`):** `pnpm run build:cli`
-- **DeepSeek Harness (`@doocs/md-dsh`):** `pnpm run build:dsh`
+- **DeepSeek Harness (`@doocs/dsh-md`):** `pnpm run build:dsh`
 - **MCP (`@md/mcp-server`):** `pnpm mcp dev`
 - **uTools (`@md/utools`):** `pnpm utools:package`
 
@@ -42,7 +42,7 @@ This repository is a pnpm monorepo for **doocs/md**, a WeChat Markdown editor. C
 - **`packages/shared`**: Shared config, types, CodeMirror wrapper, theme CSS.
 - **`packages/config`**: Shared TypeScript config.
 - **`packages/md-cli`**: Published npm CLI that serves the built web app.
-- **`apps/dsh`**: Published npm plugin `@doocs/md-dsh` for DeepSeek Harness (`publishConfig.directory`: `dist`).
+- **`apps/dsh`**: Published npm plugin `@doocs/dsh-md` for DeepSeek Harness (`publishConfig.directory`: `dist`).
 - **`packages/mcp-server`**: MCP tools (`render_markdown`, `list_themes`, `list_colors`).
 - **`docs/examples/wechat-openapi-worker/`**: standalone WeChat OpenAPI proxy (not in the pnpm workspace).
 

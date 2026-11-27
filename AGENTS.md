@@ -22,7 +22,7 @@
 | `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                                                  |
 | `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                                               |
 | `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                                                  |
-| `@doocs/md-dsh`  | `apps/dsh`            | DeepSeek Harness 插件（侧边栏 doocs/md + `md_wechat_render`），发布 `dist/`                           |
+| `@doocs/dsh-md`  | `apps/dsh`            | DeepSeek Harness 插件（侧边栏 doocs/md + `md_wechat_render`），发布 `dist/`                           |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                                                        |
 | `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、上传代理、分享、主题/组件市场、表情包（Cloudflare Workers + Hono + D1） |
 
@@ -40,7 +40,7 @@ pnpm run type-check   # vue-tsc 类型检查
 pnpm run build:cli    # 构建 web + 复制产物到 md-cli
 pnpm run build:dsh    # 构建 DeepSeek Harness 插件到 apps/dsh/dist
 pnpm run pack:cli     # 构建并生成 CLI npm tarball
-pnpm changeset        # 记录下一次 npm 发布（@doocs/md-cli、@doocs/md-dsh）
+pnpm changeset        # 记录下一次 npm 发布（@doocs/md-cli、@doocs/dsh-md）
 pnpm utools:package   # 打包 uTools 插件
 pnpm run inspector    # node-modules-inspector 查看依赖树
 ```

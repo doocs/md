@@ -88,7 +88,7 @@ describe(`client half`, () => {
     const pkg = JSON.parse(await readFile(path.join(testDir, `..`, `package.json`), `utf8`))
     const patch = await readFile(path.join(testDir, `..`, `cordis.patch.yml`), `utf8`)
 
-    expect(pkg.name).toBe(`@doocs/md-dsh`)
+    expect(pkg.name).toBe(`@doocs/dsh-md`)
     expect(pkg.private).toBeUndefined()
     expect(pkg.publishConfig?.directory).toBe(`dist`)
     expect(definition?.id).toBe(pkg.name)

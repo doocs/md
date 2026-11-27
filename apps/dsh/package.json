@@ -1,5 +1,5 @@
 {
-  "name": "@doocs/md-dsh",
+  "name": "@doocs/dsh-md",
   "type": "module",
   "version": "0.0.0",
   "description": "DeepSeek Harness plugin that embeds the doocs/md WeChat Markdown editor",

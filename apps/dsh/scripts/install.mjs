@@ -354,7 +354,7 @@ try {
 
   console.log(`> 4/4 安装到 DSH（profile: ${options.profile}，CLI 来自：${cli.source}）`)
 
-  // 只有已安装时才 remove，避免 pnpm 报「依赖不存在」。旧包名一并卸掉，避免 profile 里留着 @local/md-wechat。
+  // 只有已安装时才 remove，避免 pnpm 报「依赖不存在」。旧包名一并卸掉。
   const removals = [...(before.dep ? [BUNDLE_PACKAGE_NAME] : []), ...before.legacy]
 
   for (const name of removals) {

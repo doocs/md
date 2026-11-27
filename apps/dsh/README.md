@@ -95,20 +95,20 @@ node apps/dsh/scripts/install.mjs --cli "D:\...\resources\runtime\cli\bin\dsh.cm
 
 对方安装：解压 →「插件」→「添加插件」选目录 → 刷新页面 → 侧边栏出现入口。
 
-## 4. 发布到 npm：`@doocs/md-dsh`
+## 4. 发布到 npm：`@doocs/dsh-md`
 
-版本写在 `apps/dsh/package.json`，不跟仓库根的版本走。用户侧边栏看到的是 **doocs/md**，npm 包名是 `@doocs/md-dsh`。
+版本写在 `apps/dsh/package.json`，不跟仓库根的版本走。用户侧边栏看到的是 **doocs/md**，npm 包名是 `@doocs/dsh-md`。
 
 ```bash
-dsh plugin --profile desktop add @doocs/md-dsh
+dsh plugin --profile desktop add @doocs/dsh-md
 ```
 
 发版和 `@doocs/md-cli` 走同一条 changesets 流水线（`.github/workflows/release-cli.yml`）：
 
-1. 改动需要发版时，`pnpm changeset` 选 `@doocs/md-dsh`，把生成的 `.changeset/*.md` 一并提交。
+1. 改动需要发版时，`pnpm changeset` 选 `@doocs/dsh-md`，把生成的 `.changeset/*.md` 一并提交。
 2. 合并到 `main` 后，workflow 开版本 PR，把 `apps/dsh/package.json` 从 `0.0.0` 起按 changeset 递增，并写 `CHANGELOG.md`。
 3. 版本 PR 合并后，workflow 先 `pnpm run build:dsh`（编辑器 + `apps/dsh/dist`），再把 `dist/` 发到 npm。`publishConfig.directory` 是 `dist`，所以发出去的是构建产物，不是源码。
-4. 第一次发布前，npm 的 `@doocs` 组织要允许这条 GitHub workflow 创建 `@doocs/md-dsh`（和 `@doocs/md-cli` 同一套 OIDC）。
+4. 第一次发布前，npm 的 `@doocs` 组织要允许这条 GitHub workflow 创建 `@doocs/dsh-md`（和 `@doocs/md-cli` 同一套 OIDC）。
 
 本地开发仍然用 `pnpm dsh:install`，它链接本仓库的 `apps/dsh/dist`。包名从 `@local/md-wechat` 换过来时，安装脚本会先卸掉旧包。
 
@@ -194,7 +194,7 @@ pnpm dsh:install           # 自动重建编辑器与插件并装好
 
 ```text
 apps/dsh/
-├── package.json            # @doocs/md-dsh，版本与 publishConfig.directory
+├── package.json            # @doocs/dsh-md，版本与 publishConfig.directory
 ├── README.npm.md           # 发布到 npm / 插件页的说明（构建时变成 dist/README.md）
 ├── cordis.patch.yml        # 告诉 DSH 把这个插件插进配置
 ├── client.js               # 浏览器半片：侧边栏入口 + 编辑器面板
