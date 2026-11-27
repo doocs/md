@@ -1,6 +1,6 @@
 import type { AppLocale } from '@/i18n/types'
 import { getNextLocale, LOCALE_STORAGE_KEY } from '@/i18n/constants'
-import { detectInitialLocale } from '@/i18n/detect'
+import { detectInitialLocale, localeFromQuery } from '@/i18n/detect'
 import { ensureLocaleMessages, getAppI18n } from '@/i18n/index'
 import { t } from '@/i18n/translate'
 import { store } from '@/storage'
@@ -38,12 +38,24 @@ export const useLocaleStore = defineStore(`locale`, () => {
   watch(
     locale,
     (value) => {
-      setI18nLocale(value)
-      syncDocumentLocale(value)
-      syncLocaleBootCache(value)
+      const apply = () => {
+        if (locale.value !== value)
+          return
+
+        setI18nLocale(value)
+        syncDocumentLocale(value)
+        syncLocaleBootCache(value)
+      }
+
+      apply()
+      void ensureLocaleMessages(getAppI18n(), value).then(apply)
     },
     { immediate: true },
   )
+
+  const hostLocale = localeFromQuery()
+  if (hostLocale && locale.value !== hostLocale)
+    locale.value = hostLocale
 
   async function setLocale(value: AppLocale) {
     await ensureLocaleMessages(getAppI18n(), value)

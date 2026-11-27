@@ -106,16 +106,69 @@
             title: '微信 Markdown エディター | Doocs',
             description: 'Wechat Markdown Editor | 微信公式アカウント向けのシンプルな Markdown エディター',
           },
+          'es-ES': {
+            tagline: 'Haciendo la edición de Markdown más simple',
+            loading: 'Cargando el editor',
+            timeout: 'La carga está tardando demasiado. Actualiza la página o pulsa F12 para revisar la consola.',
+            title: 'Editor Markdown de WeChat | Doocs',
+            description: 'Wechat Markdown Editor | Un editor Markdown minimalista para cuentas oficiales de WeChat',
+          },
+          'fr-FR': {
+            tagline: "Rendre l'édition Markdown plus simple",
+            loading: "Chargement de l'éditeur",
+            timeout:
+              'Le chargement prend trop de temps. Actualisez la page ou appuyez sur F12 pour consulter la console.',
+            title: 'Éditeur Markdown WeChat | Doocs',
+            description: 'Wechat Markdown Editor | Un éditeur Markdown minimaliste pour les comptes officiels WeChat',
+          },
+          'de-DE': {
+            tagline: 'Markdown-Bearbeitung einfacher machen',
+            loading: 'Editor wird geladen',
+            timeout: 'Das Laden dauert zu lange. Aktualisiere die Seite oder drücke F12, um die Konsole zu prüfen.',
+            title: 'WeChat-Markdown-Editor | Doocs',
+            description: 'Wechat Markdown Editor | Ein minimalistischer Markdown-Editor für WeChat-Offizialkonten',
+          },
+          'ru-RU': {
+            tagline: 'Делаем редактирование Markdown проще',
+            loading: 'Загрузка редактора',
+            timeout:
+              'Загрузка занимает слишком много времени. Обновите страницу или нажмите F12, чтобы проверить консоль.',
+            title: 'Markdown-редактор WeChat | Doocs',
+            description: 'Wechat Markdown Editor | Минималистичный Markdown-редактор для официальных аккаунтов WeChat',
+          },
+          'pt-BR': {
+            tagline: 'Tornando a edição de Markdown mais simples',
+            loading: 'Carregando o editor',
+            timeout: 'O carregamento está demorando demais. Atualize a página ou pressione F12 para ver o console.',
+            title: 'Editor Markdown do WeChat | Doocs',
+            description: 'Wechat Markdown Editor | Um editor Markdown minimalista para contas oficiais do WeChat',
+          },
         }
 
         function normalizeLocale(value) {
-          if (value === 'zh-CN' || value === 'zh-TW' || value === 'en-US' || value === 'ja-JP') return value
+          if (
+            value === 'zh-CN' ||
+            value === 'zh-TW' ||
+            value === 'en-US' ||
+            value === 'ja-JP' ||
+            value === 'es-ES' ||
+            value === 'fr-FR' ||
+            value === 'de-DE' ||
+            value === 'ru-RU' ||
+            value === 'pt-BR'
+          )
+            return value
           if (typeof value === 'string') {
             const lower = value.toLowerCase()
             if (lower === 'zh-tw' || lower === 'zh-hk' || lower === 'zh-mo' || lower.startsWith('zh-hant'))
               return 'zh-TW'
             if (lower.startsWith('zh')) return 'zh-CN'
             if (lower.startsWith('ja')) return 'ja-JP'
+            if (lower.startsWith('es')) return 'es-ES'
+            if (lower.startsWith('fr')) return 'fr-FR'
+            if (lower.startsWith('de')) return 'de-DE'
+            if (lower.startsWith('ru')) return 'ru-RU'
+            if (lower.startsWith('pt')) return 'pt-BR'
             if (lower.startsWith('en')) return 'en-US'
           }
           return null
@@ -128,6 +181,14 @@
             if (normalized) return normalized
           }
           return 'zh-CN'
+        }
+
+        function readLocaleFromQuery() {
+          try {
+            return normalizeLocale(new URLSearchParams(location.search).get('locale'))
+          } catch {
+            return null
+          }
         }
 
         function readLocaleFromLocalStorage() {
@@ -157,7 +218,7 @@
           if (timeout) timeout.textContent = text.timeout
         }
 
-        window.__MD_BOOT_LOCALE__ = readLocaleFromLocalStorage() || detectFromNavigator()
+        window.__MD_BOOT_LOCALE__ = readLocaleFromQuery() || readLocaleFromLocalStorage() || detectFromNavigator()
 
         const theme = localStorage.getItem('vueuse-color-scheme') ?? 'auto'
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches

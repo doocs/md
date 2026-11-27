@@ -76,7 +76,7 @@ pnpm web dev
    ```
 
 3. 编码 & 编写/更新测试。
-4. 如果变更需要随 npm CLI 发布，运行 `pnpm changeset`，选择 `@doocs/md-cli`、版本变更级别，并填写面向用户的更新说明。将生成的 `.changeset/*.md` 文件一并提交。
+4. 如果变更需要随 npm 包发布，运行 `pnpm changeset`，选择 `@doocs/md-cli` 或 `@doocs/dsh-md`、版本变更级别，并填写面向用户的更新说明。将生成的 `.changeset/*.md` 文件一并提交。`@doocs/dsh-md` 的版本在 `apps/dsh/package.json`，发布前 workflow 会先跑 `pnpm run build:dsh`。
 5. 运行检查：
 
    ```bash
@@ -110,7 +110,7 @@ pnpm web dev
 - 所有提交必须通过 `pnpm run lint` 检查，无警告、无错误。
 - 推荐在 IDE 中启用 **ESLint** 与 **Prettier** 自动修复。
 - **代码注释统一使用英文。** 只写非显而易见的 why / 约束 / 坑；删除复述代码的噪音注释。用户可见文案（i18n）不受此限制。
-- Web 主应用新增用户可见文案须同时维护 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**。
+- Web 主应用新增用户可见文案须同时维护 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**、**es-ES**、**fr-FR**、**de-DE**、**ru-RU**、**pt-BR**。
 
 ## 提交规范
 

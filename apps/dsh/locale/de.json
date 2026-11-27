@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "doocs/md",
+    "description": "Wandelt Markdown mit der doocs/md-Engine in HTML für WeChat-Offizielle-Konten um, einschließlich KaTeX-Formeln, Mermaid-Diagrammen, Callout-Hinweisen und den Editor-Themen. Rufe md_wechat_render mit einem Ausgabepfad auf, um publikationsfertiges HTML zu erhalten, und md_wechat_options, um Themen, Farben und Satzvorgaben zu sehen. Das Rendern läuft im Harness-Prozess und braucht kein Netzwerk, außer du forderst ein Codeblock-Thema an."
+  }
+}

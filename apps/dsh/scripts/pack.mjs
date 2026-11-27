@@ -43,7 +43,7 @@ try {
   console.log(`  分发目录: ${path.relative(layout.repoRoot, layout.distDir)}（${built.files} 个文件，${(built.bytes / 1024 / 1024).toFixed(1)} MB）`)
   console.log(`  压缩包:   ${path.relative(layout.repoRoot, packed.zipPath)}（${(packed.size / 1024 / 1024).toFixed(1)} MB）`)
   console.log(`\n把 zip 发给别人：解压后在 DSH「插件」→「添加插件」选择该目录即可安装。`)
-  console.log(`装好后刷新页面，侧边栏「md 公众号排版」就是完整的 md 编辑器。`)
+  console.log(`装好后刷新页面，侧边栏「doocs/md」就是完整的 md 编辑器。`)
 }
 catch (error) {
   console.error(`✖ md-wechat 打包失败`)

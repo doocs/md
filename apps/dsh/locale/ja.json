@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "doocs/md",
+    "description": "doocs/md のエンジンで Markdown を微信公式アカウント向け HTML に変換します。KaTeX 数式、Mermaid 図、callout、エディターのテーマに対応します。md_wechat_render に出力パスを渡すと公開用 HTML を得られ、md_wechat_options でテーマ、配色、組版の候補を確認できます。レンダリングは Harness プロセス内で完結し、コードブロックのテーマを明示しない限りネットワークは不要です。"
+  }
+}

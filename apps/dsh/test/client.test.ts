@@ -14,7 +14,7 @@ import { describe, expect, it } from 'vitest'
 const testDir = path.dirname(fileURLToPath(import.meta.url))
 const clientPath = path.join(testDir, `..`, `client.js`)
 
-interface SlotRegistration { name: string, key?: string, id?: string }
+interface SlotRegistration { name: string, key?: string, id?: string, label?: () => string }
 
 /**
  * 加载 client.js 并返回它注册的模块定义
@@ -85,8 +85,14 @@ function applyClient(definition: any) {
 describe(`client half`, () => {
   it(`模块 id 与包名一致`, async () => {
     const definition = await loadClientDefinition()
+    const pkg = JSON.parse(await readFile(path.join(testDir, `..`, `package.json`), `utf8`))
+    const patch = await readFile(path.join(testDir, `..`, `cordis.patch.yml`), `utf8`)
 
-    expect(definition?.id).toBe(`@local/md-wechat`)
+    expect(pkg.name).toBe(`@doocs/dsh-md`)
+    expect(pkg.private).toBeUndefined()
+    expect(pkg.publishConfig?.directory).toBe(`dist`)
+    expect(definition?.id).toBe(pkg.name)
+    expect(patch).toContain(`name: '${pkg.name}'`)
     expect(typeof definition?.factory).toBe(`function`)
   })
 
@@ -104,5 +110,6 @@ describe(`client half`, () => {
 
     expect(panel?.key).toBeTruthy()
     expect(entry?.id).toBe(panel?.key)
+    expect(entry?.label?.()).toBe(`doocs/md`)
   })
 })

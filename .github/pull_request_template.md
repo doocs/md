@@ -22,5 +22,5 @@
 - [ ] Self-review of the diff
 - [ ] `pnpm run lint` passes
 - [ ] Tests added or updated when behavior changes
-- [ ] User-facing copy updated in zh-CN, zh-TW, en-US, and ja-JP when UI text changes
+- [ ] User-facing copy updated in zh-CN, zh-TW, en-US, ja-JP, es-ES, fr-FR, de-DE, ru-RU, and pt-BR when UI text changes
 - [ ] Docs updated when public API or contributor workflow changes

@@ -5,6 +5,11 @@ export default {
     zhTW: `繁體中文`,
     enUS: `English`,
     jaJP: `日本語`,
+    esES: `Español`,
+    frFR: `Français`,
+    deDE: `Deutsch`,
+    ruRU: `Русский`,
+    ptBR: `Português`,
   },
   meta: {
     title: `微信 Markdown エディター | Doocs`,

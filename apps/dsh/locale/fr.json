@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "doocs/md",
+    "description": "Transforme le Markdown en HTML pour les comptes officiels WeChat avec le moteur doocs/md, y compris les formules KaTeX, les diagrammes Mermaid, les encadrés callout et les thèmes de l’éditeur. Appelez md_wechat_render avec un chemin de sortie pour obtenir le HTML prêt à publier, et md_wechat_options pour lister les thèmes, couleurs et réglages de mise en page. Le rendu s’exécute dans Harness et ne nécessite pas de réseau, sauf si vous demandez un thème de bloc de code."
+  }
+}

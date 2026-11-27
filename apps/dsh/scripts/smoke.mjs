@@ -105,6 +105,12 @@ async function assertClientHalf(distDir) {
     throw new Error(`package.json 缺少 dsh.client.platform = "web"`)
   if (!manifest.files?.includes(`client.js`))
     throw new Error(`package.json 的 files 里缺少 client.js`)
+  if (manifest.private)
+    throw new Error(`分发包不能标记 private`)
+  if (manifest.publishConfig?.access !== `public`)
+    throw new Error(`分发包 publishConfig.access 必须是 public`)
+  if (manifest.publishConfig?.directory)
+    throw new Error(`分发包不能包含 publishConfig.directory`)
 
   const source = await readFile(path.join(distDir, `client.js`), `utf-8`)
 

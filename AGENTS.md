@@ -4,7 +4,7 @@
 
 ## 项目概览
 
-**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**zh-CN / zh-TW / en-US / ja-JP 界面**等特性。
+**doocs/md** — 一款微信 Markdown 编辑器，将 Markdown 渲染为微信公众号文章格式。支持自定义主题样式、多图床、AI 助手、浏览器扩展、**zh-CN / zh-TW / en-US / ja-JP / es-ES / fr-FR / de-DE / ru-RU / pt-BR 界面**等特性。
 
 - **在线地址:** https://md.doocs.org
 - **Node 版本:** >= 22.22.2（`.nvmrc`: v22.22.2）
@@ -22,6 +22,7 @@
 | `@md/shared`     | `packages/shared`     | 共享工具函数、配置、类型、编辑器配置                                                                  |
 | `@md/config`     | `packages/config`     | TypeScript 配置基础文件                                                                               |
 | `@doocs/md-cli`  | `packages/md-cli`     | CLI 工具（Express 服务托管构建产物）                                                                  |
+| `@doocs/dsh-md`  | `apps/dsh`            | DeepSeek Harness 插件（侧边栏 doocs/md + `md_wechat_render`），发布 `dist/`                           |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务，为 AI Agent 暴露接口                                                                        |
 | `@md/api`        | `apps/api`            | 后端 API：账户、云同步、计费、上传代理、分享、主题/组件市场、表情包（Cloudflare Workers + Hono + D1） |
 
@@ -37,8 +38,9 @@ pnpm start            # 等同于 `pnpm web dev`
 pnpm run lint         # ESLint --fix 全项目检查
 pnpm run type-check   # vue-tsc 类型检查
 pnpm run build:cli    # 构建 web + 复制产物到 md-cli
+pnpm run build:dsh    # 构建 DeepSeek Harness 插件到 apps/dsh/dist
 pnpm run pack:cli     # 构建并生成 CLI npm tarball
-pnpm changeset        # 记录下一次 CLI 发布的版本级别与更新说明
+pnpm changeset        # 记录下一次 npm 发布（@doocs/md-cli、@doocs/dsh-md）
 pnpm utools:package   # 打包 uTools 插件
 pnpm run inspector    # node-modules-inspector 查看依赖树
 ```
@@ -106,15 +108,15 @@ pnpm mcp dev          # MCP Server 监听模式
 
 ### 国际化（i18n，`@md/web`）
 
-Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**；VS Code 扩展、uTools、CLI、MCP **未**国际化。
+Web 主应用与部分浏览器扩展 UI 支持 **zh-CN**、**zh-TW**、**en-US**、**ja-JP**、**es-ES**、**fr-FR**、**de-DE**、**ru-RU**、**pt-BR**；VS Code 扩展、uTools、CLI、MCP **未**国际化。
 
 - **库**：`vue-i18n`（composition API，`legacy: false`），在 `apps/web/vite.config.ts` 中通过 `unplugin-auto-import` 自动导入 `useI18n`
-- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`、`marketplace`、`notifications`）
+- **文案**：`apps/web/src/i18n/messages/{zh-CN,zh-TW,en-US,ja-JP,es-ES,fr-FR,de-DE,ru-RU,pt-BR}/`（`common`、`editor`、`dialog`、`store`、`ai`、`upload`、`chrome`、`marketplace`、`notifications`）
 - **组件内**：`useI18n()` + `t('key')`；**Store / 工具函数**：`@/i18n/translate` 的 `t()` / `getLocale()` / `formatLocalDateTime()`
 - **语言状态**：`useLocaleStore`（持久化 key：`locale`）；用户可在 **偏好设置**（`Ctrl+,`）→ General 切换
 - **启动**：`await initStorage()` → `setupI18n(detectInitialLocale())` → Pinia → `useLocaleStore()`（见 `apps/web/src/bootstrap.ts`）；`index.html` 启动屏从 `localStorage` 读取 locale
 - **云同步**：`locale` 在 `SYNC_SETTING_KEYS` 中，远端应用后由 `hydrateSyncedSettings` 热更新
-- **约定**：新增用户可见文案须同时维护 zh-CN、zh-TW、en-US 与 ja-JP；在 computed 中调用 `t()` 且需随语言切换更新时，应依赖 `locale`（例如 `void locale.value`）
+- **约定**：新增用户可见文案须同时维护 zh-CN、zh-TW、en-US、ja-JP、es-ES、fr-FR、de-DE、ru-RU 与 pt-BR；在 computed 中调用 `t()` 且需随语言切换更新时，应依赖 `locale`（例如 `void locale.value`）
 
 ## Lint 与格式化
 

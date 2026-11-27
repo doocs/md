@@ -14,6 +14,7 @@
 | `@md/shared`     | `packages/shared`     | 配置、类型、CodeMirror 编辑器封装、主题 CSS                                                     |
 | `@md/config`     | `packages/config`     | 共享 TypeScript 配置                                                                            |
 | `@doocs/md-cli`  | `packages/md-cli`     | 已发布 npm CLI（Express 静态服务）                                                              |
+| `@doocs/dsh-md`  | `apps/dsh`            | DeepSeek Harness 插件，发布 `apps/dsh/dist`（侧边栏 doocs/md）                                  |
 | `@md/mcp-server` | `packages/mcp-server` | MCP 服务（`render_markdown` 等工具）                                                            |
 
 独立示例（不在 pnpm workspace 内）：
@@ -77,7 +78,7 @@ Pinia stores 按领域划分：
 - `useThemeStore` — 主题与样式（含 per-theme 配置持久化）
 - `useRenderStore` — 渲染结果与目录标题
 - `useUIStore` — 布局、对话框、视图模式
-- `useLocaleStore` — 界面语言（zh-CN / zh-TW / en-US / ja-JP），同步 `document.title` 与 i18n 实例
+- `useLocaleStore` — 界面语言（zh-CN / zh-TW / en-US / ja-JP / es-ES / fr-FR / de-DE / ru-RU / pt-BR），同步 `document.title` 与 i18n 实例
 - `useSyncStore` / `useAuthStore` — 云同步与账户
 - `useMarketplaceStore` — 主题/组件市场目录、安装与发布
 - `useConfirmStore` — 全局确认对话框（`components/shared/confirm-dialog/`）

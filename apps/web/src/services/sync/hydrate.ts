@@ -1,5 +1,6 @@
 import { storeToRefs } from 'pinia'
 import { isAppLocale } from '@/i18n/constants'
+import { localeFromQuery } from '@/i18n/detect'
 import { store } from '@/storage/manager'
 import { addPrefix } from '@/storage/prefix'
 import { parseStoredValue } from '@/storage/quota'
@@ -92,7 +93,8 @@ export async function hydrateSyncedSettings(appliedKeys: string[]): Promise<void
   hydrateRef(addPrefix(`enableScrollSync`), keys, ui.enableScrollSync)
   hydrateRef(addPrefix(`copyMode`), keys, ui.copyMode)
 
-  if (keys.has(`locale`)) {
+  // A host `?locale=` (the DSH embed) stays in effect for this page load.
+  if (keys.has(`locale`) && !localeFromQuery()) {
     const raw = store.getSync(`locale`)
     if (isAppLocale(raw))
       await useLocaleStore().setLocale(raw)

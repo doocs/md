@@ -26,7 +26,7 @@ import path from 'node:path'
 import process from 'node:process'
 
 import { buildEditor } from './build-editor.mjs'
-import { buildBundle, BUNDLE_PACKAGE_NAME, resolveLayout } from './lib/build.mjs'
+import { buildBundle, BUNDLE_PACKAGE_NAME, LEGACY_BUNDLE_PACKAGE_NAMES, resolveLayout } from './lib/build.mjs'
 import { smokeTest } from './smoke.mjs'
 
 /**
@@ -282,20 +282,50 @@ function runDshCli(cli, args, allowFailure = false) {
 /**
  * 读取 profile 的 package.json，确认依赖与 bundle 列表状态
  * @param {string} profile profile 名
- * @returns {{dep: string, bundled: boolean}} 安装结果
+ * @returns {{dep: string, bundled: boolean, legacy: string[]}} 安装结果
  */
 function readProfileState(profile) {
   const home = process.env.DSH_HOME ?? path.join(process.env.USERPROFILE ?? process.env.HOME ?? ``, `.dsh`)
   const manifestPath = path.join(home, `profiles`, profile, `package.json`)
 
   if (!fs.existsSync(manifestPath))
-    return { dep: ``, bundled: false }
+    return { dep: ``, bundled: false, legacy: [] }
 
   const manifest = JSON.parse(fs.readFileSync(manifestPath, `utf8`))
-  const dep = manifest.dependencies?.[BUNDLE_PACKAGE_NAME] ?? ``
+  const dependencies = manifest.dependencies ?? {}
+  const dep = dependencies[BUNDLE_PACKAGE_NAME] ?? ``
   const bundles = manifest.dsh?.profile?.bundles ?? []
+  const legacy = LEGACY_BUNDLE_PACKAGE_NAMES.filter(name => dependencies[name])
 
-  return { dep, bundled: bundles.includes(BUNDLE_PACKAGE_NAME) }
+  return { dep, bundled: bundles.includes(BUNDLE_PACKAGE_NAME), legacy }
+}
+
+/**
+ * `dsh plugin remove` 会改 profile 依赖，但同目录的 junction 有时会留下。
+ * 只删除符号链接本身，不跟随链接，避免把构建目录删掉。
+ * @param {string} profile profile 名
+ * @returns {void}
+ */
+function removeLegacyLinks(profile) {
+  const home = process.env.DSH_HOME ?? path.join(process.env.USERPROFILE ?? process.env.HOME ?? ``, `.dsh`)
+  const modulesDir = path.join(home, `profiles`, profile, `node_modules`)
+
+  for (const name of LEGACY_BUNDLE_PACKAGE_NAMES) {
+    const link = path.join(modulesDir, ...name.split(`/`))
+
+    if (!fs.existsSync(link))
+      continue
+
+    if (!fs.lstatSync(link).isSymbolicLink())
+      continue
+
+    fs.unlinkSync(link)
+    console.log(`  已删除残留链接 ${name}`)
+
+    const scopeDir = path.dirname(link)
+    if (fs.existsSync(scopeDir) && fs.readdirSync(scopeDir).length === 0)
+      fs.rmdirSync(scopeDir)
+  }
 }
 
 const options = parseArgs(process.argv.slice(2))
@@ -324,9 +354,15 @@ try {
 
   console.log(`> 4/4 安装到 DSH（profile: ${options.profile}，CLI 来自：${cli.source}）`)
 
-  // 只有已安装时才 remove，避免 pnpm 报「依赖不存在」
-  if (before.dep)
-    runDshCli(cli.path, [`plugin`, `--profile`, options.profile, `remove`, BUNDLE_PACKAGE_NAME], true)
+  // 只有已安装时才 remove，避免 pnpm 报「依赖不存在」。旧包名一并卸掉。
+  const removals = [...(before.dep ? [BUNDLE_PACKAGE_NAME] : []), ...before.legacy]
+
+  for (const name of removals) {
+    console.log(`  卸掉已安装的 ${name}`)
+    runDshCli(cli.path, [`plugin`, `--profile`, options.profile, `remove`, name], true)
+  }
+
+  removeLegacyLinks(options.profile)
 
   runDshCli(cli.path, [`plugin`, `--profile`, options.profile, `add`, layout.distDir])
 
@@ -341,7 +377,7 @@ try {
   console.log(`  依赖:     ${state.dep}`)
   console.log(`  bundle:   ${state.bundled ? `已加入 dsh.profile.bundles` : `未加入（重启 DSH 后再看一次）`}`)
   console.log(`\n接下来：`)
-  console.log(`  · 刷新页面（Ctrl+R），侧边栏出现「md 公众号排版」，点开就是完整编辑器`)
+  console.log(`  · 刷新页面（Ctrl+R），侧边栏出现「doocs/md」，点开就是完整编辑器`)
   console.log(`  · 也可以直接让 Agent 用 md_wechat_render 出稿`)
   console.log(`  · Host 代码有改动时（不是首次安装），重启一次 DSH 才会加载新模块；`)
   console.log(`    只刷新页面会看到旧的接口，编辑器 iframe 会提示未加载。`)
