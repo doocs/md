@@ -29,7 +29,7 @@ overrides:
   '@typescript-eslint/typescript-estree': 8.74.0
   '@typescript-eslint/utils': 8.74.0
   '@typescript-eslint/visitor-keys': 8.74.0
-  '@webext-core/isolated-element': 1.1.4
+  '@webext-core/isolated-element': 3.0.1
   # CVE-2026-39244 / GHSA-xcpc-8h2w-3j85 (dependabot/311): firefox-profile pins ~0.5.x
   adm-zip: ^0.6.1
   ajv@^8: ^8.20.0
@@ -49,7 +49,7 @@ overrides:
   glob@<8: ^13.0.7
   glob@^10: ^13.0.7
   glob@^11: ^11.1.0
-  hono: ^4.13.22
+  hono: ^4.13.23
   ini: '>=7.0.0'
   js-yaml@^4: ^4.3.2
   js-yaml@^5: ^5.5.0
@@ -72,25 +72,25 @@ overrides:
   sharp: ^0.35.5
   shell-quote: ^1.12.0
   source-map@0.8.0-beta.0: 0.7.4
-  tinyexec: 1.3.1
+  tinyexec: 1.4.0
   # GHSA-85c8-ppgw-ccpr / GHSA-5gmw-xhrv-c9v3: oxfmt 0.35 pins tinypool 2.1.0
   tinypool: 2.2.0
   tmp: '>=0.2.7'
   underscore@<1.13.8: 1.13.8
   # undici 8.11.0 dropped content-encoding on HTTP/2; fixed in 8.11.1
-  undici@^6: 8.13.1
-  undici@^7: 8.13.1
+  undici@^6: 8.14.0
+  undici@^7: 8.14.0
   uuid: 'catalog:'
   # 3.2.2 was published without npm provenance; 3.2.3 restored it
   why-is-node-running@^3: 3.2.3
   workbox-build>source-map: 0.7.4
   # GHSA-37g9-w4hg-h9qr: ping-flood memory exhaustion, fixed in 8.23.0
-  ws@<8.23.0: ^8.23.0
+  ws@<8.23.1: ^8.23.1
   yauzl: ^3.4.0
 
 patchedDependencies:
-  '@codemirror/view@6.44.0': patches/@codemirror__view@6.44.0.patch
-  mermaid@12.3.0: patches/mermaid@12.3.0.patch
+  '@codemirror/view@6.44.2': patches/@codemirror__view@6.44.2.patch
+  mermaid@12.4.0: patches/mermaid@12.4.0.patch
 
 allowBuilds:
   '@vscode/vsce-sign': true
@@ -105,10 +105,10 @@ allowBuilds:
 
 # Shared direct-dep versions across the monorepo (reference with `catalog:`).
 catalog:
-  '@cloudflare/workers-types': ^5.20261125.1
+  '@cloudflare/workers-types': ^5.20261128.1
   '@codemirror/state': 6.7.6
-  '@codemirror/view': 6.44.0
-  '@types/node': ^26.6.10
+  '@codemirror/view': 6.44.2
+  '@types/node': ^26.6.11
   isomorphic-dompurify: ^4.9.0
   marked: ^18.3.0
   prettier: 2.8.8
@@ -118,5 +118,5 @@ catalog:
   vitest: ^5.1.2
   # Exact pin: 4.136.1 GETs /workers/services/:name before create and fails first-time PR preview deploys.
   # Prefer latest 4.x now that workerd 1.20261123.1 postinstall matches the published binary.
-  wrangler: 4.168.0
+  wrangler: 4.169.0
   zod: ^4.6.7
