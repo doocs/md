@@ -1,7 +1,7 @@
 diff --git a/dist/index.cjs b/dist/index.cjs
 --- a/dist/index.cjs
 +++ b/dist/index.cjs
-@@ -9400,7 +9400,8 @@
+@@ -9425,7 +9425,8 @@
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters
@@ -38,7 +38,7 @@ diff --git a/dist/index.d.ts b/dist/index.d.ts
 diff --git a/dist/index.js b/dist/index.js
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -9395,7 +9395,8 @@
+@@ -9420,7 +9420,8 @@
              // Ctrl-Alt may be used for AltGr on Windows
              !(browser.windows && event.ctrlKey && event.altKey) &&
              // Alt-combinations on macOS tend to be typed characters

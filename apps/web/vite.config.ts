@@ -146,7 +146,7 @@ export default defineConfig(({ mode }) => {
     optimizeDeps: {
       include: [`diff-match-patch`, `pinyin-pro`],
     },
-    css: { devSourcemap: true },
+    dev: { sourcemap: { css: true } },
     build: {
       rolldownOptions: {
         onwarn(warning, warn) {
