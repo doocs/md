@@ -1,0 +1,1 @@
+import{t as e}from"./md-createLucideIcon-bYLVAW4T.js";var t=e({name:`file-input`,size:24,node:[[`path`,{d:`M14 2v5a1 1 0 001 1h5`,key:`9v5fu7`}],[`path`,{d:`M4 11V4a2 2 0 012-2h8a2.4 2.4 0 011.706.706l3.588 3.588A2.4 2.4 0 0120 8v12a2 2 0 01-2 2H6a2 2 0 01-2-2v-1`,key:`nfrl53`}],[`path`,{d:`M4 15h8`,key:`sdjaon`}],[`path`,{d:`m9 18 3-3-3-3`,key:`112psh`}]]});export{t};

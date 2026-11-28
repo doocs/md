@@ -1,0 +1,1 @@
+import{t as e}from"./md-createLucideIcon-bYLVAW4T.js";var t=e({name:`cloud-upload`,size:24,node:[[`path`,{d:`M12 13v8`,key:`1l5pq0`}],[`path`,{d:`M5 16.75A7 7 0 1115.71 9h1.79a4.5 4.5 0 011.5 8.742`,key:`3yx0o9`}],[`path`,{d:`m9 16 3-3 3 3`,key:`1idcnm`}]],aliases:[`upload-cloud`]});export{t};

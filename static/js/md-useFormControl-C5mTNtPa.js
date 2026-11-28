@@ -1,0 +1,1 @@
+import{St as e,_ as t}from"./md-vendor_vue-K7ndpHNL.js";import{h as n}from"./md-vendor_vueuse-D8MPPytt.js";function r(r){return t(()=>!e(r)||!!n(r)?.closest(`form`))}export{r as t};

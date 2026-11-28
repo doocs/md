@@ -1,0 +1,1 @@
+import{a as e}from"./md-DismissableLayer-BmEEKSpt.js";import{_ as t,gt as n}from"./md-vendor_vue-K7ndpHNL.js";function r(){let r=n();return{primitiveElement:r,currentElement:t(()=>e(r.value))}}export{r as t};

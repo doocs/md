@@ -1,0 +1,1 @@
+export{n as EventStreamSerde,a as eventStreamSerdeProvider}from"./md-dist-es-BIBOdKJ4.js";
